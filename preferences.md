@@ -3,8 +3,19 @@
 Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
-**Current versions: Player's Book v2.10 · Keeper's Book v2.2 · Bestiary v2.2 ·
-The Keeper's Table app v1.2 (self-contained, crash-hardened build).**
+**Current versions: Player's Book v2.11 · Keeper's Book v2.3 · Bestiary v2.3 ·
+The Keeper's Table app v1.2.1 (self-contained, crash-hardened build).**
+
+> ⚠️ **OPEN ISSUE — book sources lag the delivered books.** The v2.11/v2.3/v2.3 books
+> (built 2026-07-11, late morning) carry a new multi-pass "feathering" paginator
+> (`FEATHER_MAX`, runt-page absorption) that exists **only in the built HTML files** —
+> `player-src.html` and `pag_patch.py` still carry the v2.10-era paginator and version
+> strings. **Rebuilding from sources today would silently regress the delivered books.**
+> Before the next book edit: port the feathering paginator + version bumps back into
+> `player-src.html` / `pag_patch.py` / the build scripts (diff a built v2.11/v2.3 file
+> against its build output to extract it), verify an idempotent rebuild, then delete
+> this notice. The version table's page counts below are also pre-feathering and need
+> re-measuring.
 *(Keep this doc updated with every change — see the Changelog at the bottom.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
@@ -489,6 +500,37 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 
 ## Changelog (newest first)
 
+- **Keeper's Table v1.2.1 — Copyedit pass over the UI (2026-07-12)** ("go over the user
+  interface and correct any spelling or grammatical errors as if you were an English
+  professor"). Reviewed every user-facing string in `MainForm.cs`, `Tabs.cs`, `Core.cs`,
+  `Program.cs`, `README.md`, and `Data/tables_extra.json`, checking Reference-tab text
+  against the books before touching it (book wording wins). Fixed:
+  - *Recovering Nerve* (Reference): "…or a point of Grit each buy back a measure." had
+    dropped the book's modal — restored "**can** each buy back a measure **of steadiness**"
+    (with "or," the bare "each buy" is a subject–verb agreement error).
+  - *Nonlethal* (Reference): "declare it before the roll; fists and clubs do so by
+    default, most other arms take −2…" — "do so" pointed at "declare it" and the comma
+    spliced two clauses. Now mirrors the book: "declare before the roll that you strike
+    nonlethally; fists and a club do so by default; most other arms take −2…".
+  - *Grit* (Reference): "act while Bleeding Out, or shrug a condition" — "Bleeding Out"
+    is not a book term (the conditions are Bleeding/Dying) and "a condition" overstates
+    the book's "a fright." Rewritten to the Player's Book Ch. II list (add 1d6 / re-roll /
+    refuse to fall / shrug a fright / soften a crit fail). Matching fix to the Posse tab's
+    Spend-Grit tooltip.
+  - Dice-tab parse error: "try like 2d6+3" → "try something like 2d6+3."
+  - Tracker empty-state: "pick a foe … or drop **them** in" → "drop **one** in"
+    (pronoun agreement).
+  - Encounter empty verdict still said creatures could only be added from the Bestiary
+    tab (stale since the v1.2 on-tab picker) — now "add creatures above, or send them
+    over from the Bestiary tab."
+  - Status bar + README book versions were stale (v2.10/v2.2/v2.2 → v2.11/v2.3/v2.3).
+  Book-extracted text (`creatures.json`, `tables.json`, Reference wording that matches
+  the books) deliberately left as the books print it. Loop: build 0/0 → smoke 1360/1360 →
+  publish → delivered `app/` + `source/` synced → zip rebuilt (68.9 MB) → launch-checked
+  (no `startup-error.txt`). **Discovered while proofing:** the built books on disk are
+  v2.11/v2.3/v2.3 with a feathering paginator that never made it back into the lean
+  sources — see the ⚠️ OPEN ISSUE at the top of this doc.
+
 - **Infrastructure — GitHub sync live (2026-07-12).** The project now lives in a **private**
   repo: https://github.com/cwgilgalad/blood-and-grit (account `cwgilgalad`, HTTPS). Local
   `main` tracks `origin/main`; auth is the GitHub CLI (`gh auth setup-git` wired
@@ -717,5 +759,5 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   pregens. Keeper: Ch. XII rollable tables (and Ch. XI Keeper's Year). Bestiary: The Grounds
   + Building Your Own Dead appendices, plus the creature-lore expansion to all 110 entries.
 
-*Current as of the July 2026 sessions. Versions: **Player's Book v2.10 · Keeper's Book v2.2 ·
-Bestiary v2.2 · The Keeper's Table app v1.2 (self-contained, crash-hardened).***
+*Current as of the July 2026 sessions. Versions: **Player's Book v2.11 · Keeper's Book v2.3 ·
+Bestiary v2.3 · The Keeper's Table app v1.2.1 (self-contained, crash-hardened).***
