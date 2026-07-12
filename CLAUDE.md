@@ -489,6 +489,17 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 
 ## Changelog (newest first)
 
+- **Infrastructure — GitHub sync live (2026-07-12).** The project now lives in a **private**
+  repo: https://github.com/cwgilgalad/blood-and-grit (account `cwgilgalad`, HTTPS). Local
+  `main` tracks `origin/main`; auth is the GitHub CLI (`gh auth setup-git` wired
+  `gh auth git-credential` in as git's credential helper for github.com, token in the Windows
+  keyring, so headless pushes work). The **"BloodAndGrit AutoSync" scheduled task** (every
+  30 min + at logon, running `autosync.ps1`) commits & pushes any local changes — so edits
+  made on the laptop reach GitHub within half an hour with no manual step. `.gitignore`
+  excludes regenerated build output, the ~160 MB delivered `app/` folder, the deliverable
+  zip, and per-table runtime state (`session.json`); the lean sources, build scripts, books,
+  and `KT/source` + `KT/smoke` are all tracked.
+
 - **Keeper's Table v1.2 — Seven-tab feature pass** (the user's own wishlist: dice animation,
   bestiary pop-outs, a comprehensible Encounter tab, tracker foe dropdown, bigger generators,
   bigger reference, a clearer Session tab, then a logic review). All built, 1360/1360 smoke
