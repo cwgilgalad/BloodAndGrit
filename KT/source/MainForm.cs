@@ -54,7 +54,7 @@ public partial class MainForm : Form
 
         var status = new StatusStrip { BackColor = Paper };
         status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.10 · Keeper's Book v2.2 · Bestiary v2.2")
+            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.11 · Keeper's Book v2.3 · Bestiary v2.3")
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
@@ -284,7 +284,7 @@ public partial class MainForm : Form
             var p = SelectedPC(); if (p == null) return;
             if (p.Grit > 0) { p.Grit--; Log($"{p.Name} spends Grit ({p.Grit} left)."); }
             else Log($"{p.Name} has no Grit left to spend.");
-        }, 90, "Spend one Grit (reroll, act while bleeding, shrug a condition)"));
+        }, 90, "Spend one Grit (re-roll, refuse to fall at 0 Blood, shrug a fright)"));
         bar.Controls.Add(Btn("Mark +1", (s, e) =>
         {
             var p = SelectedPC(); if (p == null) return;
@@ -559,7 +559,7 @@ public partial class MainForm : Form
     void RollExprBox()
     {
         var (t, br, dice) = Rules.RollExprFull(exprBox.Text);
-        if (br == "could not parse" || br == "empty") { Log($"Couldn't read \"{exprBox.Text}\" — try like 2d6+3."); return; }
+        if (br == "could not parse" || br == "empty") { Log($"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3."); return; }
         AnimateDice(dice);
         Log($"ROLL {exprBox.Text} → {t}   ({br})");
     }

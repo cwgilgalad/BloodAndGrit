@@ -236,7 +236,7 @@ public partial class MainForm
         encGrid.Refresh();
         int budget = 4 * Math.Max(1, party.Count);
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
-        string verdict = spend == 0 ? "Empty — pick creatures on the Bestiary tab (→ Encounter)." :
+        string verdict = spend == 0 ? "Empty — add creatures above, or send them over from the Bestiary tab." :
             spend < budget ? "Under budget — a fight they should win." :
             spend == budget ? "On budget — a fair, hard fight." :
             spend <= budget + 4 ? "Over budget — mean. Somebody bleeds." :
@@ -352,7 +352,7 @@ public partial class MainForm
         {
             Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 11f, FontStyle.Italic), ForeColor = Gold, BackColor = Paper,
-            Text = "The field is empty.\n\nSend the posse over from the Posse tab (Send posse → Tracker),\npick a foe from the Foe box above, or drop them in from the Bestiary tab (→ Tracker)."
+            Text = "The field is empty.\n\nSend the posse over from the Posse tab (Send posse → Tracker),\npick a foe from the Foe box above, or drop one in from the Bestiary tab (→ Tracker)."
         };
         page.Controls.Add(hint);
         hint.BringToFront();
@@ -616,7 +616,7 @@ public partial class MainForm
         T("At 0 Blood a soul is Dying and Bleeding; death comes at −CON. A single blow for half maximum Blood or more, or any critical hit, forces a Fortitude save (DC 15, higher for terrible weapons) or a Lasting Injury:");
         M("  d6   1 Bloody Gash · 2 Cracked Ribs · 3 Maimed Hand");
         M("       4 Lamed Leg · 5 Ruined Eye or Ear · 6 Gut-Shot");
-        T("Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard. Nonlethal: declare it before the roll; fists and clubs do so by default, most other arms take −2 to pull the blow. A foe at 0 Blood that way is senseless, not dead.\n");
+        T("Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard. Nonlethal: declare before the roll that you strike nonlethally; fists and a club do so by default; most other arms take −2 to pull the blow. A foe at 0 Blood that way is senseless, not dead.\n");
 
         H("Conditions  (Appendix B)");
         M("Bleeding    Lose 1 Blood each round until stabilized");
@@ -642,7 +642,7 @@ public partial class MainForm
         T("Nerve = RES score + level. A Dread Check is a Will save against the horror's Dread DC. On a failure, Nerve is lost by the horror's Tier: 1 (I), 1d4 (II), 1d6 (III), 1d10 (IV–V). A critical failure doubles it. At 0 Nerve a soul Breaks. Familiarity is the death of dread — the same sight costs nothing the second time.\n");
 
         H("Recovering Nerve");
-        T("Confession, spoken plainly to someone who listens: 1d6. A full night unmolested in genuine safety: 1d6 — a week of true peace restores all of it. A Preacher's sermon, a Sawbones' reason, a comrade's grim joke, or a point of Grit each buy back a measure. Whiskey steadies the hand now (1d4) but courts a vice and the Fortitude saves that come with it.\n");
+        T("Confession, spoken plainly to someone who listens: 1d6. A full night unmolested in genuine safety: 1d6 — a week of true peace restores all of it. A Preacher's sermon, a Sawbones' reason, a comrade's grim joke, or a point of Grit can each buy back a measure of steadiness. Whiskey steadies the hand now (1d4) but courts a vice and the Fortitude saves that come with it.\n");
 
         H("The Mark  (six steps)");
         T("The Mark moves only when a soul CHOOSES the dark — a bargain, a rite, a heeding. Never for a bad roll, never for merely being wounded. At the sixth step, the country keeps what it was promised.\n");
@@ -654,7 +654,7 @@ public partial class MainForm
         T("Where a Sign forces a save, the DC is the worker's Sign DC = 10 + half their level + RES modifier. A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier — no level added.\n");
 
         H("Grit");
-        T("Three per soul per session. Spend one to reroll a d20, act while Bleeding Out, or shrug a condition until end of turn. Refills at the table, between sessions.");
+        T("Three per soul, refreshed each session. Spend one, after seeing the result, to add 1d6 to a roll just made, re-roll a failed check, refuse to fall at 0 Blood for one more round, shrug a fright until the end of your next turn, or soften a critical failure to an ordinary failure. The Keeper may award a point mid-session for a deed of true courage.");
 
         page.Controls.Add(rtf);
         return page;
