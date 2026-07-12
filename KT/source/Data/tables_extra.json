@@ -1,0 +1,201 @@
+{
+ "townFront": [
+  "Vulture",
+  "Copper",
+  "Sorrow",
+  "Silver",
+  "Bone",
+  "Weeping",
+  "Dutchman's",
+  "Preacher's",
+  "Cold",
+  "Jubilee"
+ ],
+ "townBack": [
+  "Ford",
+  "Gap",
+  "Spur",
+  "Claim",
+  "Rest",
+  "Seep",
+  "Bluff",
+  "Corners",
+  "Mill",
+  "Wash"
+ ],
+ "townAils": [
+  "The bank failed and took every deed with it",
+  "Quarantine — the Army posted it, and won't say for what",
+  "The cemetery is full, and the new one keeps flooding",
+  "Half the men rode out to a strike; nothing has come back but the pay",
+  "The telegraph line is down more than it is up; the repair crews quit",
+  "A land agent is buying everything, sight unseen, cash on the barrel",
+  "The salt has gone bitter in every cellar at once",
+  "The schoolhouse stands empty; the teacher walked west mid-lesson"
+ ],
+ "townSecret": [
+  "The first founder is under the courthouse, and the town charter says why",
+  "Every deed in the vault burned but one, and it names ground that isn't on any map",
+  "The flooded graves are empty; they have been for years",
+  "The pay comes on schedule because someone up at the strike is signing dead men's names",
+  "The line goes down whenever it tries to carry one particular name",
+  "The agent's principal is a company; the company was dissolved in 1851",
+  "It isn't the salt. It's the water under the salt, rising",
+  "The teacher read the children something out of the old survey journal, and the children remember it"
+ ],
+ "npcGiven": [
+  "Cyrus",
+  "Temperance",
+  "Absalom",
+  "Delphine",
+  "Ephraim",
+  "Mercy",
+  "Silas",
+  "Odessa",
+  "Cornelius",
+  "Ruby",
+  "August",
+  "Lavinia"
+ ],
+ "npcSurname": [
+  "Bexley",
+  "Crowder",
+  "Dunmore",
+  "Fairweather",
+  "Gantry",
+  "Hollis",
+  "Kessler",
+  "Larkin",
+  "Ogden",
+  "Purcell",
+  "Ravenel",
+  "Stroud"
+ ],
+ "npcWant": [
+  "A witness gone — paid, scared, or buried",
+  "Passage on the next coach, any seat, any price",
+  "Someone to read them a letter they can't bring themselves to open",
+  "Their claim worked one more month; the vein is close, they can hear it",
+  "A gun that doesn't miss, and they've heard where one is buried",
+  "Absolution from a particular man of God, and he's refused twice",
+  "The party's horses — offered fair, then unfair, then desperate",
+  "To know if a name means anything to you, watching your face as you answer"
+ ],
+ "npcTell": [
+  "Laughs a half-beat after everyone else",
+  "Keeps a coin moving over their knuckles; it stops when they lie",
+  "Never turns their back on the window",
+  "Writes everything down in a ledger nobody's allowed to touch",
+  "Flinches at church bells, covers it with a cough",
+  "Feeds every stray in town and won't own a dog",
+  "Wears mourning black for someone they won't name",
+  "Their shadow sits wrong in lamplight, and they stand where there isn't any"
+ ],
+ "rumors": [
+  "The stage line's paying triple for a driver on the north route; the last three quit at the same milepost",
+  "A man in town sells maps to a mine that's on no claim; every map is different, every buyer leaves happy",
+  "The river ran backward for a minute Tuesday; the ferryman won't take money anymore",
+  "There's a preacher walking the territory baptizing in dust; the baptized don't sweat after",
+  "Old Widow Pruitt's hens are laying black eggs, and she's selling them to somebody",
+  "The fort traded a whole company east midwinter; the replacements don't drill and don't drink",
+  "A card sharp at the crossing pays his debts in coin nobody minted; it spends fine, but count your fingers",
+  "They struck something soft in the new shaft, and the engineer took the first train east",
+  "The coach that went missing in '79 came in Tuesday, on schedule, driver waving. Nobody was at the reins when it stopped",
+  "There's a homestead where the corn grows in rows nobody planted, pointing at the mesa",
+  "A wolfer up the valley collected bounty on the same wolf four times; the hide walks off every winter",
+  "The county surveyor burned his own maps and won't draw the west quarter again"
+ ],
+ "trailDay": [
+  "A survey stake driven where no line should run, ribbon still bright",
+  "Wagon ruts that end mid-prairie — no wreck, no stock, no turnaround",
+  "A swarm of grasshoppers moving against the wind",
+  "An abandoned camp, gear costly and untouched, fire laid but never lit",
+  "A dead man's horse grazing saddled; the brand's from a county that doesn't border this one",
+  "Range cattle bunched in a perfect circle, heads out, since sunup",
+  "A peddler mending a wheel who knows the party's names, and apologizes for it",
+  "Bones in the wash, big ones, wearing a harness"
+ ],
+ "trailNight": [
+  "The coffee tastes of river water; the barrel was filled at a well",
+  "Two fires out on the flat where there should be none; near dawn they go out together",
+  "The picket line's knots are retied, better than anyone in the party ties them",
+  "A smell of a town — bread, smoke, stables — miles from any",
+  "The night birds pass overhead all night, all going the one direction",
+  "Someone's watch runs backward till dawn; it keeps fair time after",
+  "Hoofbeats circle the camp at a canter, twice, and stop where the light ends",
+  "In the morning, every track in camp is your own"
+ ],
+ "plunder": [
+  "A cavalry sabre, presentation-grade, engraved to a battle that history doesn't record",
+  "A strongbox of assay reports, every one for the same claim, every one different",
+  "$40 in scrip on a bank three days burned",
+  "A bridal trunk, packed with care, smelling of cedar; the dress has been buried once",
+  "A preacher's traveling kit — Bible, salt, iron nails — worn to the shape of hard use",
+  "A spyglass that shows the country as it was: greener, watered, peopled",
+  "Letters of credit signed by a man the papers hanged last spring",
+  "A twist of tobacco, a good knife, and a map inked on a scraped hide, older than any survey"
+ ],
+ "omens": [
+  "The team balks at the ford; the water runs clear over nothing",
+  "A ring around the moon, doubled",
+  "The windmill turns hard against the wind, groaning",
+  "Every portrait in the parlor has been turned to the wall",
+  "The church door stands open at midnight, lamplit, empty",
+  "A coyote sits the ridge at noon, watching, and the dogs won't sound",
+  "Fresh-baked bread on the sill of a house dark for years",
+  "The party's names in the hotel register, in yesterday's ink",
+  "A scarecrow gone from its cross, and footprints leading away",
+  "The weathervane points at the party all day, whatever the wind"
+ ],
+ "terrain": {
+  "The Trail & the Open Range": [
+   "The Stray Pack (a living beast)",
+   "The Range Bull (a living beast)",
+   "The Pale Stallion (a living beast)",
+   "The Hidebehind (III)",
+   "The Shadow That Lags (II)",
+   "The Long Trail's End (IV) — the trail itself hunts"
+  ],
+  "Rivers, Lakes & Swamps": [
+   "The Razorback Shoat (II)",
+   "The Bull Moose (a living beast)",
+   "The Great Serpent (a living beast)"
+  ],
+  "Towns, Homesteads & Haunted Houses": [
+   "The Ash Child (II)",
+   "The Cursed Man (II)",
+   "The Flock of the Open Eye (II)",
+   "The Mesmerist (III)"
+  ],
+  "Graveyards & Battlefields": [
+   "The Bonepicker (I)",
+   "The Resurrectionist (II)",
+   "The Tallyman (III) — collecting on the fallen"
+  ],
+  "Mines & Under the Earth": [
+   "The Cold Spot (I)",
+   "The Whisperer's Mouth (III)"
+  ],
+  "Winter & the High Country": [
+   "The Great Bear (a living beast)",
+   "The Carcajou (a living beast)",
+   "The Mountain That Walks (a living beast)"
+  ],
+  "Desert & the Badlands": [
+   "The Drought-Bringer (III)",
+   "The Mummied Prospector (I)",
+   "The Man-Eater (a living beast)"
+  ],
+  "The Old Places": [
+   "The Eye Between Stars (V)",
+   "The Sermon Made Flesh (IV)",
+   "The Long Trail's End (IV)"
+  ],
+  "The Hand Behind It": [
+   "The Skin-Walker (III) — wearing the man you trusted",
+   "The Whisperer's Mouth (III) — the Patron needs hands",
+   "The Sermon Made Flesh (IV) — the doctrine spreads itself",
+   "The Faceless Rider (IV) — it is only the herald"
+  ]
+ }
+}
