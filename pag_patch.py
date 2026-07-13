@@ -136,6 +136,13 @@ _CSS = '  /*sbcont*/ .sb-cont{ font-style:italic; font-weight:400; color:var(--i
 
 
 def patch_paginator(s):
+    # Since the v2.11/v2.3 feathering paginator (2026-07-11), the shared shell
+    # script carries splitContainer / creature / statblock splitting natively,
+    # and the .sb-cont CSS lives in player-src.html — this patch is a no-op.
+    # The guards keep the old behavior available if an old shell ever comes back.
+    if 'FEATHER_MAX' in s and 'splitContainer' in s:
+        assert '.sb-cont' in s, "feathering shell is missing the .sb-cont CSS"
+        return s
     assert _ORIG_SPLITBOX in s, "splitBox anchor missing"
     s = s.replace(_ORIG_SPLITBOX, _NEW_SPLIT, 1)
     assert _ORIG_TOOBIG in s, "tooBig anchor missing"
