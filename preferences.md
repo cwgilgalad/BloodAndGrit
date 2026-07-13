@@ -38,6 +38,12 @@ tools — documented in their own sections below.
   similar) in so many words.
 - **Keep this handoff doc current.** When I make changes, update the version table, the
   Changelog, and any affected section so a fresh chat is never working from stale facts.
+- **Work on session branches, merge on success.** Before the first code/book change of a
+  session, create `session/<yyyy-mm-dd>-<short-topic>` and work there. The autosync task is
+  branch-aware and backs the branch up to GitHub every 30 minutes. When the session's changes
+  are verified (build 0/0, smoke suite green, books measure clean), merge into `main` with
+  `--no-ff` and delete the branch (local + origin). If the changes go bad, abandon the branch —
+  `main` stays clean. Doc-only or trivial housekeeping edits may go straight to `main`.
 - **The Keeper's Table app is built and tested blind.** Claude's environment is Linux, so
   C# builds compile and run headless logic tests successfully there, but nobody can see the
   actual WinForms window render before I do. Real UI/layout bugs (like a bad SplitContainer
@@ -494,6 +500,14 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 ---
 
 ## Changelog (newest first)
+
+- **Infrastructure — session-branch workflow (2026-07-12)** (user-requested: changes start on
+  a branch, merge to main on success). `autosync.ps1` rewritten branch-aware: it commits and
+  pushes whatever branch is checked out (upstream set on first push, rebase against the
+  branch's own remote counterpart, detached-HEAD guard) so session branches are backed up to
+  GitHub like main. Convention documented under "How I like to work"; full lifecycle
+  dry-run-tested (branch → autosync push → `--no-ff` merge → branch deleted local + origin).
+  Git global user.name/email configured on the machine — merges need a committer identity.
 
 - **Player v2.12 / Keeper v2.4 / Bestiary v2.4 / app v1.2.2 — Books copyedit pass +
   feathering port + fresh PDFs (2026-07-12)** ("give the same treatment to the three books,
