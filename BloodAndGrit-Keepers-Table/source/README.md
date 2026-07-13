@@ -2,9 +2,9 @@
 
 A desktop utility for running **Blood & Grit** at the table. Built in C# (.NET 8 /
 Windows Forms), with the complete Bestiary and all the Keeper's rollable tables baked in,
-extracted directly from the books (Player's Book v2.11 · Keeper's Book v2.3 · Bestiary v2.3).
+extracted directly from the books (Player's Book v2.12 · Keeper's Book v2.4 · Bestiary v2.4).
 
-**App version 1.2.1.**
+**App version 1.2.2.**
 
 ---
 
