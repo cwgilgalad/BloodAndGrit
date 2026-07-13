@@ -3,19 +3,14 @@
 Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
-**Current versions: Player's Book v2.11 · Keeper's Book v2.3 · Bestiary v2.3 ·
-The Keeper's Table app v1.2.1 (self-contained, crash-hardened build).**
+**Current versions: Player's Book v2.12 · Keeper's Book v2.4 · Bestiary v2.4 ·
+The Keeper's Table app v1.2.2 (self-contained, crash-hardened build).**
 
-> ⚠️ **OPEN ISSUE — book sources lag the delivered books.** The v2.11/v2.3/v2.3 books
-> (built 2026-07-11, late morning) carry a new multi-pass "feathering" paginator
-> (`FEATHER_MAX`, runt-page absorption) that exists **only in the built HTML files** —
-> `player-src.html` and `pag_patch.py` still carry the v2.10-era paginator and version
-> strings. **Rebuilding from sources today would silently regress the delivered books.**
-> Before the next book edit: port the feathering paginator + version bumps back into
-> `player-src.html` / `pag_patch.py` / the build scripts (diff a built v2.11/v2.3 file
-> against its build output to extract it), verify an idempotent rebuild, then delete
-> this notice. The version table's page counts below are also pre-feathering and need
-> re-measuring.
+*(The 2026-07-11 "feathering" paginator divergence is resolved: the multi-pass
+feathering engine now lives in `player-src.html`'s script block, and `pag_patch.py`
+detects it and no-ops — its old anchors remain as a fallback for old shells. A rebuild
+from sources reproduces the delivered books; verified byte-identical against the
+delivered v2.11 before any new edits were made.)*
 *(Keep this doc updated with every change — see the Changelog at the bottom.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
@@ -61,9 +56,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.10 | 175 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.2 | 89 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.2 | 136 | none (110 creatures) |
+| The Player's Book | v2.12 | 167 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.4 | 84 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.4 | 131 | none (110 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -179,12 +174,12 @@ one US-Letter PDF page. Before printing: wait for `.book.pages.ready` and fonts 
 **force-decode every `<img>` (`img.decode()`)** so any images don't blank. Verify with
 PyMuPDF: page count == sheet count, page size 612×792pt.
 
-Output names → `/mnt/user-data/outputs/`:
+Output names (written beside the sources in the project folder):
 `Blood-and-Grit-Players-Book.pdf` · `Blood-and-Grit-Keepers-Book.pdf` · `Blood-and-Grit-Bestiary.pdf`
 
-*(Note: `make_pdf.py`/`_verifypdf.py` still expect ~18 images in the Player's Book from before
-the plates were removed. That expectation is stale — the Player's Book now correctly has just
-1 image, the cover emblem. Page-parity and page-size checks are the ones that matter.)*
+*(`make_pdf.py` was rewritten for the Windows toolchain on 2026-07-12 — Playwright driving
+system Edge, PyMuPDF verification built in: page count == rendered sheet count, 612×792 pt.
+Regenerating overwrites the three PDFs in place.)*
 
 ---
 
@@ -206,7 +201,7 @@ the plates were removed. That expectation is stale — the Player's Book now cor
 
 ---
 
-## The Player's Book (v2.10) — structure
+## The Player's Book (v2.12) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -245,7 +240,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.2) — structure
+## The Keeper's Book (v2.4) — structure
 
 Chapters I–XIII plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -274,7 +269,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.2) — structure & conventions
+## The Bestiary (v2.4) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **110 creatures** by name (from every `<p class="cr-name">`,
@@ -499,6 +494,40 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 ---
 
 ## Changelog (newest first)
+
+- **Player v2.12 / Keeper v2.4 / Bestiary v2.4 / app v1.2.2 — Books copyedit pass +
+  feathering port + fresh PDFs (2026-07-12)** ("give the same treatment to the three books,
+  and since the app quotes from the book, edit it accordingly as well" + "save the most
+  recent builds of all books as .pdf and remove older PDF versions"). Three parts:
+  - **Feathering paginator ported to sources** (prerequisite — see the resolved-divergence
+    note at the top of this doc). The new script block was spliced verbatim from the
+    delivered v2.11 into `player-src.html` (plus the `.sb-cont` CSS rule), the version
+    cascade tuples in both build scripts were re-anchored, and `pag_patch.py` now detects
+    the feathering engine and no-ops. Proof: rebuilt Player's Book was **byte-identical**
+    to the delivered v2.11; Keeper/Bestiary matched except line-ending/CSS-position
+    artifacts of the old hand-patching (script regions hash-identical).
+  - **Copyedit (professor's rules: real errors only; the frontier voice stays).**
+    Player's Book: "A Word on the Rules" no longer lists the gun rules as both adapted
+    *and* original; a double-"and" list in the Ch. V intro; a double bolt-on "And" in the
+    Ch. VI intro; "sickened" → "Sickened" in the Witch's Hex; and **five pregens in
+    Appendix D used skills that don't exist in this game** (PF2E leakage: Deception→Deceive,
+    Diplomacy→Persuade, Society→Insight, Nature→Animal Handling, Lore (Scripture)→Lore
+    (Occult)). Keeper's Book: two stray `</p>` tags in keeper-notes (Ch. II, Ch. XI);
+    "call for Presence, Deception, or Intimidation" → "Persuade, Deceive, or Intimidate";
+    "better than eighty" creatures → "better than a hundred" (twice; the Bestiary holds
+    110); "a name cut in a board hill" → "a boot-hill board" (Ch. I epigraph). Bestiary:
+    remarkably clean — one clarification, the ordinary-beasts note now reads *marked "—"
+    to say so*. `perdition_map.py` labels checked, clean. **App impact: none of the
+    corrected passages live in `creatures.json`/`tables.json` or the Reference tab**, so
+    app data is untouched; the app got the version-string bump only (status bar + README →
+    v2.12/v2.4/v2.4, csproj 1.2.2), build 0/0, smoke 1360/1360, republished + re-zipped.
+  - **Verification & PDFs.** All three books rebuilt idempotently (double-build md5) and
+    render-verified: Player 167 pp (feathering absorbed 8 pages vs. the old 175; 204 index
+    statics re-patched), Keeper 84 pp, Bestiary 131 pp — desktop/mobile parity, zero
+    true-scale clip, zero h-scroll, all `toc2`/`ix` anchors resolve. `make_pdf.py`
+    recreated for the Windows toolchain (it existed only on the old Linux box) and all
+    three PDFs regenerated in place over the stale v2.11-era set, PyMuPDF-verified
+    (167/84/131 pages, 612×792 pt).
 
 - **Keeper's Table v1.2.1 — Copyedit pass over the UI (2026-07-12)** ("go over the user
   interface and correct any spelling or grammatical errors as if you were an English
@@ -759,5 +788,5 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   pregens. Keeper: Ch. XII rollable tables (and Ch. XI Keeper's Year). Bestiary: The Grounds
   + Building Your Own Dead appendices, plus the creature-lore expansion to all 110 entries.
 
-*Current as of the July 2026 sessions. Versions: **Player's Book v2.11 · Keeper's Book v2.3 ·
-Bestiary v2.3 · The Keeper's Table app v1.2.1 (self-contained, crash-hardened).***
+*Current as of the July 2026 sessions. Versions: **Player's Book v2.12 · Keeper's Book v2.4 ·
+Bestiary v2.4 · The Keeper's Table app v1.2.2 (self-contained, crash-hardened).***

@@ -31,13 +31,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.11 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.3 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.11)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.3)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.12 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.4 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.12)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.4)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.11</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.3</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.12</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.4</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.11 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.3 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.12 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.4 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -268,7 +268,7 @@ CH2 = f"""<!-- II -->
   gets there &mdash; a clock of four to six steps. The cult needs three more nights to finish the rite; the taint spreads
   one homestead a week; the thing under the mine wakes by the new moon. Tick it forward whenever the players dawdle,
   fail, or look away. A ticking clock turns a haunted set-piece into a living threat the players are racing, and it
-  tells you, with no agonizing, what happens when they don't show up.</p></div>
+  tells you, with no agonizing, what happens when they don't show up.</div>
 
   <h2>Running a Mystery Without Stalling It</h2>
   <p>Most Blood &amp; Grit nights are mysteries at heart &mdash; what's killing the stock, who's wearing the wrong face,
@@ -305,7 +305,7 @@ CH2 = f"""<!-- II -->
     will they never do? A man bargaining for his life talks differently than a fanatic who's made his peace with
     dying. Know the answer before the players start working on him.</li>
     <li><strong>Roll once it's uncertain, not to open.</strong> Let the players talk &mdash; the actual words, the
-    angle, the leverage they bring &mdash; and call for Presence, Deception, or Intimidation only when the outcome
+    angle, the leverage they bring &mdash; and call for Persuade, Deceive, or Intimidate only when the outcome
     genuinely hangs and they've made their case. A good argument lowers the DC or grants the roll outright; a clumsy
     one raises it or forfeits it. Reward the play, not just the stat.</li>
     <li><strong>Narrate the four degrees here too.</strong> A critical success turns the NPC further than hoped &mdash;
@@ -529,7 +529,7 @@ CH4 = f"""<!-- IV -->
   a dead man already on the ground, before the players commit.</p>
 
   <h2>Building a Threat from Scratch</h2>
-  <p>The Bestiary holds better than eighty things to fight, but the country always has one more. To make your own,
+  <p>The Bestiary holds better than a hundred things to fight, but the country always has one more. To make your own,
   work down this list &mdash; it takes about a minute.</p>
   <div class="box">
     <h4>Six Steps to a Monster</h4>
@@ -689,7 +689,7 @@ CH5 = f"""<!-- V -->
   <div class="divider"></div>
   {quote("Know the thing before you set it loose. A monster the Keeper does not understand is a monster that kills the wrong player.", "from a Keeper's ledger")}
   <p class="dropcap lead">The creatures once kept in this chapter have a book of their own now &mdash; <em>The Bestiary</em>,
-  the third of these volumes, where better than eighty of the things that walk the country are set down with the numbers
+  the third of these volumes, where better than a hundred of the things that walk the country are set down with the numbers
   to run them and the one hard truth that puts each one down. This chapter is the bridge: how to choose a horror, read
   its block, and wield it well. Keep the Bestiary at your elbow; this book tells you how to use it.</p>
 
@@ -1420,7 +1420,7 @@ CH11 = f"""<!-- XI -->
   than you hope, and that is the way of every table. Don't hoard your best ideas for a someday campaign &mdash; spend
   them. Let the players surprise you, and surprise them back. Keep the watch, bleed the Nerve slow, and salt the grave.
   The country was here before them and will be here after, and for a year you get to be its voice in the dark. Make it
-  worth the night.</p></div>
+  worth the night.</div>
 </section>
 """
 
@@ -1784,7 +1784,7 @@ def _inject_quote(body, cid, text, srcline):
     e = d + len('<div class="divider"></div>')
     return body[:e] + '\n  ' + quote(text, srcline) + body[e:]
 _chq = {
- "chair": ("The players brought the heroes. You brought the country &mdash; and it was here first, and it will be here when the last of them is a name cut in a board hill.", "N. Ashby"),
+ "chair": ("The players brought the heroes. You brought the country &mdash; and it was here first, and it will be here when the last of them is a name cut in a boot-hill board.", "N. Ashby"),
  "running": ("Roll the bones only when the answer matters and you do not already know it. The rest is talk &mdash; and talk is where the game lives.", "Marshal T. Coyle"),
  "fear": ("Fear is a coin, and you are a poor man. Spend it slow, and never the whole purse at once.", "from a Keeper's ledger"),
  "odds": ("A fair fight is one the players can see the shape of before they walk into it. The rest is arithmetic and funerals.", "Eb Tuttle, trapper"),

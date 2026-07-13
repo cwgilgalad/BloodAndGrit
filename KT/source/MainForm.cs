@@ -54,7 +54,7 @@ public partial class MainForm : Form
 
         var status = new StatusStrip { BackColor = Paper };
         status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.11 · Keeper's Book v2.3 · Bestiary v2.3")
+            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.12 · Keeper's Book v2.4 · Bestiary v2.4")
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);

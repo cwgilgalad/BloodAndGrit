@@ -40,13 +40,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.11 -->", "<!-- Blood & Grit — The Bestiary · Version 2.3 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.11)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.3)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.12 -->", "<!-- Blood & Grit — The Bestiary · Version 2.4 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.12)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.4)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.11</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.3</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.12</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.4</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.11 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.3 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.12 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.4 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
