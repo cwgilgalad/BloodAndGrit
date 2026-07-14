@@ -22,7 +22,11 @@ tools — documented in their own sections below.
 
 ## How I like to work
 
-- **I'm on a mobile phone.** Deliverables should be things I can download/open on mobile.
+- **I work primarily in Claude Code CLI with PowerShell on the Windows laptop now** (updated
+  2026-07-13; this project began phone-first). **Responsive design is still a priority:**
+  deliverables must render well on a phone — keep the mobile checks in every verification
+  pass (page parity, zero true-scale clip, zero h-scroll at natural zoom) and keep artifacts
+  reasonably small.
 - **I direct in plain words** ("add a Tier-III creature called X," "rewrite the Afflictions
   intro," "cut the Pursuit section," "move that plate," "tighten the whitespace"). You do the
   whole loop: edit the source → rebuild → re-measure the contents page numbers → verify →
