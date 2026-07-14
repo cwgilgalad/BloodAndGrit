@@ -38,12 +38,13 @@ tools — documented in their own sections below.
   similar) in so many words.
 - **Keep this handoff doc current.** When I make changes, update the version table, the
   Changelog, and any affected section so a fresh chat is never working from stale facts.
-- **Work on session branches, merge on success.** Before the first code/book change of a
-  session, create `session/<yyyy-mm-dd>-<short-topic>` and work there. The autosync task is
-  branch-aware and backs the branch up to GitHub every 30 minutes. When the session's changes
-  are verified (build 0/0, smoke suite green, books measure clean), merge into `main` with
-  `--no-ff` and delete the branch (local + origin). If the changes go bad, abandon the branch —
-  `main` stays clean. Doc-only or trivial housekeeping edits may go straight to `main`.
+- **Work on session branches, merge on success — every edit, no exceptions.** Before making
+  any change in a session (code, books, docs, scripts), create
+  `session/<yyyy-mm-dd>-<short-topic>` and work there. The autosync task is branch-aware and
+  backs the branch up to GitHub every 30 minutes. When the session's changes are verified
+  (build 0/0, smoke suite green, books measure clean — or, for doc edits, simply read back
+  correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
+  changes go bad, abandon the branch — `main` stays clean.
 - **The Keeper's Table app is built and tested blind.** Claude's environment is Linux, so
   C# builds compile and run headless logic tests successfully there, but nobody can see the
   actual WinForms window render before I do. Real UI/layout bugs (like a bad SplitContainer
