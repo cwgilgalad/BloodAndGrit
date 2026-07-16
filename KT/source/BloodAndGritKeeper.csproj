@@ -11,6 +11,17 @@
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <Version>1.2.2</Version>
+
+    <!-- Ship as a self-contained, single-file Windows exe so the target machine needs NO
+         .NET install (the runtime is bundled). These live in the project (not just the
+         publish command line) so a publish can never silently regress to framework-dependent.
+         Path handling uses AppContext.BaseDirectory, so Data/ + session.json resolve beside
+         the single-file exe. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
