@@ -506,6 +506,19 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 
 ## Changelog (newest first)
 
+- **Infrastructure — relocated under `Desktop\Git\` (2026-07-15)** (user-requested: gather all
+  local git repos into one `Git` folder on the desktop). The repo moved from
+  `C:\Users\Cole\Desktop\BloodAndGrit` to **`C:\Users\Cole\Desktop\Git\BloodAndGrit`** (alongside
+  `TideWatch` and the newly-imported `DebForge`). Two path fixes were needed: `autosync.ps1` had
+  the repo root **hardcoded** to the old path (`$repo = "…\Desktop\BloodAndGrit"`), so it now
+  derives it from `$PSScriptRoot` — portable, survives future moves (the same fix TideWatch's
+  scripts already had); and the `/session-start` command's path was updated. Added the previously
+  missing **`register_autosync_task.ps1`** (self-locating, "BloodAndGrit AutoSync"). The "BloodAndGrit
+  AutoSync" scheduled task stores an absolute path to `autosync.ps1`, so it must be **re-registered
+  from an elevated shell** to point at the new location: `pwsh -File
+  "C:\Users\Cole\Desktop\Git\BloodAndGrit\register_autosync_task.ps1"`. Git repo, remote, and
+  history are unaffected by the move. Done on `session/2026-07-15-relocate-under-git`.
+
 - **Infrastructure — session-branch workflow (2026-07-12)** (user-requested: changes start on
   a branch, merge to main on success). `autosync.ps1` rewritten branch-aware: it commits and
   pushes whatever branch is checked out (upstream set on first push, rebase against the

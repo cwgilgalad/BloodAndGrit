@@ -4,7 +4,7 @@ argument-hint: (no args)
 allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git log:*), Bash(git checkout:*), Bash(git fetch:*), Read, Grep
 ---
 
-You are starting a fresh Code session on **Blood & Grit** (`C:\Users\Cole\Desktop\BloodAndGrit`),
+You are starting a fresh Code session on **Blood & Grit** (`C:\Users\Cole\Desktop\Git\BloodAndGrit`),
 a western-horror TTRPG with two independent deliverables: **three HTML companion books**
 (built from lean Python sources) and **The Keeper's Table** (C#/.NET 8 WinForms desktop app).
 Do NOT make any edits yet — this is orientation only. Work through these steps, then brief me.
