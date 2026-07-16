@@ -422,7 +422,7 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 ### Files
 | File | Role |
 |---|---|
-| `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting` (lets it cross-compile on Linux, since it can't run there). |
+| `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting` (lets it cross-compile on Linux, since it can't run there). Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`, compression) so `dotnet publish` always yields a zero-dependency exe. |
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), and `Db` (loads the JSON data). |
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), Posse tab, Dice tab, persistence (autosave/autoload), demo-posse seed. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference, Session tabs. |
@@ -435,15 +435,19 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 ```bash
 # Requires the official Microsoft .NET 8 SDK (Ubuntu's apt package lacks
 # WindowsDesktop targets) — install via https://dot.net/v1/dotnet-install.sh if needed.
-cd BloodAndGritKeeper
+cd KT/source
 dotnet build -c Release
 
-# Self-contained single-file Windows exe (bundles the runtime — no install needed on the
-# target machine, ~65 MB but zero-dependency):
-dotnet publish -c Release -r win-x64 --self-contained true -o publish
+# Self-contained single-file Windows exe. The publish settings (RuntimeIdentifier=win-x64,
+# SelfContained, PublishSingleFile, compression) are BAKED INTO THE CSPROJ as of 2026-07-15,
+# so no flags are needed and a publish can never silently regress to framework-dependent:
+dotnet publish -c Release -o publish
 ```
-Deliverable = `publish/BloodAndGritKeeper.exe` + `publish/Data/` (keep them together),
-zipped with the full `source/` tree and `README.md` as `BloodAndGrit-Keepers-Table.zip`.
+Deliverable = a single **`publish/BloodAndGritKeeper.exe`** (~69 MB, runtime bundled — no
+.NET install needed on the target) + `publish/Data/` (keep them together), zipped with the
+full `source/` tree and `README.md` as `BloodAndGrit-Keepers-Table.zip`. (Because the runtime
+is self-extracted from the single file, path handling uses `AppContext.BaseDirectory` so
+`Data/` and `session.json` resolve beside the exe.)
 
 ### Known landmine: SplitContainer must not get geometry at construction time
 **Hit once, cost a full crash-on-launch on real Windows — avoid repeating.** Setting
@@ -505,6 +509,23 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 ---
 
 ## Changelog (newest first)
+
+- **Keeper's Table — self-contained single-file publish baked into the csproj (2026-07-15).**
+  Made the app's zero-.NET-dependency packaging durable and cleaner. The self-contained flags
+  used to live only on the publish *command line* (`-r win-x64 --self-contained true`), so a
+  publish that forgot them would ship framework-dependent again — which is exactly what bit the
+  very first delivery (it needed the Desktop Runtime installed). Verified the current build was
+  already self-contained, then moved the settings **into `BloodAndGritKeeper.csproj`**
+  (`RuntimeIdentifier=win-x64`, `SelfContained`, `PublishSingleFile`,
+  `IncludeNativeLibrariesForSelfExtract`, `EnableCompressionInSingleFile`) so a bare
+  `dotnet publish -c Release` can never regress. Because the app resolves every path via
+  `AppContext.BaseDirectory` (never `Assembly.Location`), single-file is safe — the deliverable
+  collapsed from **~258 files to a single 69 MB `BloodAndGritKeeper.exe` + `Data/`**. Synced the
+  same csproj into the delivered `source/` mirror, regenerated `publish/` and the delivered
+  `app/`, and rebuilt `BloodAndGrit-Keepers-Table.zip` (72 → 63 MB). Verified: build 0/0, smoke
+  1360/1360, flagless publish produces the single-file self-contained exe. No app version bump
+  (build-infrastructure only; behaviour unchanged). Done on
+  `session/2026-07-15-kt-selfcontained-csproj`.
 
 - **Infrastructure — relocated under `Desktop\Git\` (2026-07-15)** (user-requested: gather all
   local git repos into one `Git` folder on the desktop). The repo moved from
