@@ -7,7 +7,8 @@
 # so session branches (session/<date>-<topic>) are backed up to GitHub the same
 # as main. First push of a new branch sets its upstream automatically.
 
-$repo = "C:\Users\Cole\Desktop\BloodAndGrit"
+# Repo root = this script's own folder, so it survives moving the repo.
+$repo = $PSScriptRoot
 $log  = Join-Path $repo "autosync.log"
 Set-Location $repo
 
