@@ -427,7 +427,7 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), Posse tab, Dice tab, persistence (autosave/autoload), demo-posse seed. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference, Session tabs. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. |
-| `Data/creatures.json` | All 110 creatures, extracted from `bestiary.html` by a one-off Python parser (balanced-div walk + per-tag capture). Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. |
+| `Data/creatures.json` | All 110 creatures, extracted from `bestiary.html` by a one-off Python parser (balanced-div walk + per-tag capture). Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe** (`<EmbeddedResource>`), so the published build carries it inside the single file. |
 | `Data/tables.json` | The 13 Ch. XII simple tables + 9 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | (v1.2) The app's own generator expansions — new entries for all 13 simple tables + extra terrain entries per ground, in the book's voice. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. Every terrain entry here must name a real creature (the smoke suite asserts it). |
 
@@ -443,11 +443,14 @@ dotnet build -c Release
 # so no flags are needed and a publish can never silently regress to framework-dependent:
 dotnet publish -c Release -o publish
 ```
-Deliverable = a single **`publish/BloodAndGritKeeper.exe`** (~69 MB, runtime bundled — no
-.NET install needed on the target) + `publish/Data/` (keep them together), zipped with the
-full `source/` tree and `README.md` as `BloodAndGrit-Keepers-Table.zip`. (Because the runtime
-is self-extracted from the single file, path handling uses `AppContext.BaseDirectory` so
-`Data/` and `session.json` resolve beside the exe.)
+Deliverable = **just `publish/BloodAndGritKeeper.exe`** (~69 MB) — a **true single-file
+standalone**: the .NET runtime is bundled *and* the `Data/*.json` (creatures + tables) are
+**embedded in the exe** (as of 2026-07-16), so it runs on any Windows machine with **no .NET
+install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the assembly, and
+falls back to `Data/` on disk for the smoke rig / dev build (whose assemblies aren't embedded).
+The exe writes only `session.json` beside itself (via `AppContext.BaseDirectory`). Published on
+GitHub via **Releases** (`gh release …`), not committed — the binary is git-ignored. The
+`BloodAndGrit-Keepers-Table.zip` (exe + full `source/` tree + `README.md`) is the source bundle.
 
 ### Known landmine: SplitContainer must not get geometry at construction time
 **Hit once, cost a full crash-on-launch on real Windows — avoid repeating.** Setting
@@ -509,6 +512,19 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 ---
 
 ## Changelog (newest first)
+
+- **Keeper's Table — true single-file standalone (embedded data) + first GitHub Release
+  (2026-07-16).** The self-contained exe still needed its `Data/*.json` sitting in a `Data/`
+  folder beside it (`creatures.json` is mandatory — the app crashed on launch without it), so a
+  lone `.exe` download was broken. Fixed by **embedding the three JSON files into the exe**
+  (`<EmbeddedResource>` in the csproj; `Db.ReadData` now reads them from the assembly and falls
+  back to `Data/` on disk for the smoke rig / dev build). The published exe is now genuinely one
+  file — no runtime, no data folder — and writes only `session.json` beside itself. Verified:
+  build 0/0, embedded resources present + parseable (110 creatures, all tables), smoke 1360/1360,
+  flagless publish emits exe-only (no `Data/`). Refreshed `publish/` + delivered `app/`, rebuilt
+  the zip. **Published the exe as a GitHub Release** (tag `v1.2.2`) since binaries are git-ignored
+  and don't belong in the repo tree — this is why the user saw no `.exe` on GitHub before. Done on
+  `session/2026-07-16-kt-embed-data-standalone`.
 
 - **Keeper's Table — self-contained single-file publish baked into the csproj (2026-07-15).**
   Made the app's zero-.NET-dependency packaging durable and cleaner. The self-contained flags
