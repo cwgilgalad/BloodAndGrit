@@ -225,22 +225,38 @@ public static class Db
 
     public static void Load()
     {
-        string dir = Path.Combine(AppContext.BaseDirectory, "Data");
         var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        Creatures = JsonSerializer.Deserialize<List<Creature>>(
-            File.ReadAllText(Path.Combine(dir, "creatures.json")), opts) ?? new();
+        Creatures = JsonSerializer.Deserialize<List<Creature>>(ReadData("creatures.json"), opts) ?? new();
 
         Simple = new(); Terrain = new();
         // tables.json is extracted verbatim from the books and may be regenerated wholesale;
         // tables_extra.json carries the app's own additions, so a re-extraction can't eat them.
-        MergeTables(Path.Combine(dir, "tables.json"));
-        MergeTables(Path.Combine(dir, "tables_extra.json"));
+        MergeTables(ReadData("tables.json"));
+        MergeTables(ReadData("tables_extra.json"));
     }
 
-    static void MergeTables(string path)
+    // The JSON data is EMBEDDED in the app assembly so the published exe is a TRUE single-file
+    // standalone (one .exe, no Data/ folder needed beside it). Falls back to Data/ on disk for
+    // the dev build and the smoke rig, whose assemblies don't carry the embedded copies.
+    static string ReadData(string fileName)
     {
-        if (!File.Exists(path)) return;
-        using var doc = JsonDocument.Parse(File.ReadAllText(path));
+        var asm = typeof(Db).Assembly;
+        var resName = System.Array.Find(asm.GetManifestResourceNames(),
+            n => n.EndsWith(fileName, StringComparison.OrdinalIgnoreCase));
+        if (resName != null)
+        {
+            using var s = asm.GetManifestResourceStream(resName);
+            using var r = new StreamReader(s);
+            return r.ReadToEnd();
+        }
+        string path = Path.Combine(AppContext.BaseDirectory, "Data", fileName);
+        return File.Exists(path) ? File.ReadAllText(path) : null;
+    }
+
+    static void MergeTables(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return;
+        using var doc = JsonDocument.Parse(json);
         foreach (var prop in doc.RootElement.EnumerateObject())
         {
             if (prop.Name == "terrain")
