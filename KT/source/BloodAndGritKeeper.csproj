@@ -15,8 +15,7 @@
     <!-- Ship as a self-contained, single-file Windows exe so the target machine needs NO
          .NET install (the runtime is bundled). These live in the project (not just the
          publish command line) so a publish can never silently regress to framework-dependent.
-         Path handling uses AppContext.BaseDirectory, so Data/ + session.json resolve beside
-         the single-file exe. -->
+         Path handling uses AppContext.BaseDirectory, so session.json resolves beside the exe. -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
@@ -25,15 +24,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Data\creatures.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\tables.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\tables_extra.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <!-- Embedded (not copied) so the published exe is a TRUE single-file standalone: one .exe,
+         no Data/ folder required beside it. Db.ReadData loads these from the assembly, and
+         falls back to Data/ on disk for the smoke rig / dev build. -->
+    <EmbeddedResource Include="Data\creatures.json" />
+    <EmbeddedResource Include="Data\tables.json" />
+    <EmbeddedResource Include="Data\tables_extra.json" />
   </ItemGroup>
 
 </Project>
