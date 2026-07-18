@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-The Keeper's Table app v1.3.0 (self-contained, crash-hardened, Authenticode-signed).**
+The Keeper's Table app v1.4.0 (self-contained, crash-hardened, Authenticode-signed).**
 
 **Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
 book change that touches it** — status-bar/README version strings every time the books bump,
@@ -366,7 +366,7 @@ its Tier in levels**):
 
 ---
 
-## The Keeper's Table (v1.3.0) — the C# desktop app
+## The Keeper's Table (v1.4.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -386,11 +386,13 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread
   Checks with the real Nerve-loss ladder, New Session reset, **Rest ▾ (long rest — restore
   Blood & Nerve to full, whole posse or selected soul)**, send-to-Tracker.
-- **Dice** — expression roller (`2d6+3`, `1d8+1d6+2`), quick dice, a d20 four-degrees
-  checker, shared roll/event log, and (v1.2) a **dice tray** above the log: every roll's
-  dice tumble (owner-drawn, 40 ms timer, ~half a second) and settle on the true per-die
-  results from `Rules.RollExprFull` — best face rings verdigris, a 1 rings blood-red; shows
-  up to 8 dice, "+N more" beyond that.
+- **Dice** — expression roller (`2d6+3`, `1d8+1d6+2`) with a (v1.4) **builder keypad**:
+  `+d4`…`+d100` stack dice (same die clicked again bumps the count), ＋/−/digits build the
+  modifier, ⌫/C edit — pure logic in `Rules.ExprAddDie`/`ExprAppend` (smoke-tested). Plus
+  quick dice, a d20 four-degrees checker, shared roll/event log, and (v1.2) a **dice
+  tray** above the log: every roll's dice tumble (owner-drawn, 40 ms timer, ~half a
+  second) and settle on the true per-die results from `Rules.RollExprFull` — best face
+  rings verdigris, a 1 rings blood-red; shows up to 8 dice, "+N more" beyond that.
 - **Bestiary** — all **110 creatures**, machine-extracted from the rendered Bestiary HTML
   (so lore/stats/witness quotes/keeper notes are word-for-word faithful to the book).
   Search, tier/chapter filters, one click to Encounter or Tracker. **Double-click a creature
@@ -426,11 +428,14 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   via `Data/tables_extra.json` (merged at load by `Db.MergeTables`; kept separate so a book
   re-extraction can never clobber the app-side additions; all new terrain entries reference
   real creatures, smoke-tested).
-- **Reference** — expanded in v1.2 to a full mid-scene crib: four degrees, the DC ladder
-  (Trivial 5 … Nigh-Impossible 30), a turn in the Iron Code (Beats, MAP, Fatal die),
-  Threat-by-Tier, budget, Blood/Dying/Grievous Wounds + the d6 Lasting Injury table,
-  the complete Appendix-B Conditions table, Nerve/Dread, Recovering Nerve, Mark, Taint,
-  the Sign DC formula, and Grit — all taken faithfully from the books.
+- **Reference** — rebuilt in v1.4 as an **11-leaf paged Keeper's screen** (◀ ▶ buttons or
+  Left/Right arrows — captured in `ProcessCmdKey` so focus doesn't matter; the deck wraps).
+  Each leaf is monospace tables with Blood-red header bands (`RTbl` helper; last column
+  word-wraps): four degrees + DC ladder, Iron Code, wounds + Lasting Injuries, the full
+  Appendix-B Conditions, Nerve/Dread + recovery, Mark & Taint, Signs & Grit, the Long
+  Odds, **arms**, **goods & printed prices**, and skills/saves/abilities. The arms, goods,
+  signs, and skills leaves render live from `Data/chargen.json` so they can't drift.
+  All rules text taken faithfully from the books, as before.
 - **Session** — free-form Keeper's notes + named 4/6/8-segment progress clocks. Autosaves
   to `session.json` beside the exe on exit **and every 5 minutes**; reloads on launch. First
   run seeds the Appendix D pregens so it's useful immediately. v1.2: a **Stamp the date**
@@ -443,9 +448,11 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 |---|---|
 | `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting` (lets it cross-compile on Linux, since it can't run there). Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`, compression) so `dotnet publish` always yields a zero-dependency exe. |
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), and `Db` (loads the JSON data). |
-| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), Posse tab, Dice tab, persistence (autosave/autoload), demo-posse seed. |
-| **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference, Session tabs. |
+| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed. |
+| **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
+| **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. |
+| `app.ico` / `Assets/emblem.png` | (v1.4) The cover emblem as a multi-size Windows icon (full emblem 256/128/64/48, skull-crop 32/24/16 — regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded; `app.ico` is also the csproj `<ApplicationIcon>` (exe file icon). |
 | `Data/creatures.json` | All 110 creatures, extracted from `bestiary.html` by a one-off Python parser (balanced-div walk + per-tag capture). Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe** (`<EmbeddedResource>`), so the published build carries it inside the single file. |
 | `Data/tables.json` | The 13 Ch. XII simple tables + 9 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | (v1.2) The app's own generator expansions — new entries for all 13 simple tables + extra terrain entries per ground, in the book's voice. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. Every terrain entry here must name a real creature (the smoke suite asserts it). |

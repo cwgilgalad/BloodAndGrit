@@ -8,6 +8,54 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Table v1.4.0 — menu bar, dice keypad, Reference deck, real icons, watermark,
+  keyboard pass (2026-07-18).** Two user request batches in one session:
+  - **Menu bar** (`Menus.cs`, new): **File** — Save session (Ctrl+S), Save session as…
+    (Ctrl+Shift+S), Load session… (Ctrl+O; writes `session-backup.json` beside the exe
+    before replacing the table, and validates the file before asking), Exit. **View** —
+    all nine tabs with their Ctrl+N shortcuts shown. **Help** — *The five-minute lesson*
+    (F1; a modeless, zoomable in-app walkthrough of all nine tabs, saving, and the
+    session rhythm), *Keyboard shortcuts*, and *About* (emblem, app + book versions).
+    Persistence refactored into shared `Snapshot()`/`ApplySession()` so autosave,
+    save-as, load, and startup auto-load all ride one code path.
+  - **Dice-tab expression keypad**: `+d4`…`+d100` buttons build the expression (clicking
+    the same die stacks its count — d6 → 2d6 → 3d6), ＋/−/digits build the modifier,
+    ⌫/C edit it; operators never double up. Logic lives in `Rules.ExprAddDie`/`ExprAppend`
+    (pure, in `Core.cs`) with 63 new smoke asserts including builds-always-parse sweeps.
+  - **Reference tab rebuilt as an 11-leaf Keeper's screen**, paged with ◀ ▶ or Left/Right
+    (the arrow keys are captured in `ProcessCmdKey`, so they work regardless of focus;
+    the deck wraps around). Every leaf is real tables (monospace, Blood-red header bands,
+    last-column word-wrap): the Roll & DC ladder · Iron Code · wounds & Lasting Injuries ·
+    Conditions · Nerve & Dread (+ recovery) · Mark & Taint · Signs & Grit · the Long
+    Odds · **Arms of the Frontier** · **Goods & Provisions** · skills/saves/abilities.
+    The arms, goods, signs, and skills leaves render live from `Data/chargen.json` —
+    the printed prices and dice can never drift from the book. (RichTextBox landmine
+    documented in `RTbl`: selection formatting must be re-asserted before *every*
+    append or later lines silently fall back to the proportional default and the
+    columns shear.)
+  - **Keyboard pass** (20-year-UX discretion): Ctrl+D/Ctrl+H damage/heal on Posse *and*
+    Tracker (scoped to the active tab, suppressed while a grid cell is mid-edit),
+    Ctrl+I initiative + Ctrl+R next round on the Tracker, Ctrl+F to the Bestiary search,
+    Enter pops out the selected creature. Deliberately NOT keyed: destructive clears
+    (stay click-and-confirm) and generator browse buttons (Tab+Space serves them).
+    Tooltips name their shortcuts; the Help shortcut card covers all of it.
+  - **Real icons**: new multi-size `app.ico` built from the cover emblem (full emblem at
+    256/128/64/48, a skull-tight crop at 32/24/16 so the small sizes stay readable) —
+    `<ApplicationIcon>` gives the exe its Explorer/desktop icon, and the embedded copy
+    feeds every window title bar (main, creature pop-outs, lesson/shortcuts). The small
+    fixed dialogs drop the stock icon instead (`ShowIcon=false`). A desktop shortcut
+    **"The Keeper's Table"** now points at the delivered exe.
+  - **Watermark**: the emblem, ghost-faint (≈5% alpha), in the dead space bottom-right of
+    the busier panes (Posse/Encounter/Tracker grids + empty-state hints, Dice and
+    Generators button panels, Session clocks, New Soul hint). It sizes itself to the free
+    space and vanishes entirely when content comes within reach — never behind rows or
+    text.
+  - Verified: build 0/0; smoke **1,960/0** (63 new builder asserts); launched and
+    screenshot-verified (menu bar, icons, watermark restraint, keypad wiring via the
+    smoke-tested pure functions, Reference paging by arrow key including wrap-around,
+    Ctrl+R/Ctrl+I on the Tracker); published self-contained exe signed **Valid**
+    (same CN=Cole Williams cert). Branch `session/2026-07-18-kt-menus-icon-ux`.
+
 - **Keeper's Table v1.3.0 — New Soul character generator, padding/UX pass, clear-everywhere,
   signed exe (2026-07-18).** Five user requests in one session:
   - **New Soul tab (9th tab, Ctrl+1–9)** — a whole random character sheet, strictly

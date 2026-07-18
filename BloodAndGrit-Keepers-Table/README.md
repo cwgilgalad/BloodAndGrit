@@ -4,7 +4,7 @@ A desktop utility for running **Blood & Grit** at the table. Built in C# (.NET 8
 Windows Forms), with the complete Bestiary and all the Keeper's rollable tables baked in,
 extracted directly from the books (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.3.0.**
+**App version 1.4.0.**
 
 ---
 
@@ -49,10 +49,12 @@ horror's tier ladder (1 / 1d4 / 1d6 / 1d10, doubled on a critical failure), **Ne
 Session** (refill Nerve, reset Grit) and **Rest ▾** (a long rest — Blood *and* Nerve to
 full, whole posse or one soul).
 
-**Dice** — an expression roller (`2d6+3`, `1d8+1d6+2`…), quick-dice buttons, and a
-d20 **four-degrees check**, with a running roll log shared across the whole app — and a
-**dice tray** above the log where every roll tumbles and lands on its true faces (best
-face rings green, a 1 rings red).
+**Dice** — an expression roller (`2d6+3`, `1d8+1d6+2`…) with a **build-it-by-button
+keypad** *(v1.4)*: `+d4`…`+d100` add dice (clicking the same die stacks it — d6, 2d6,
+3d6), and ＋/−/digit keys build the modifier, so no typing is needed at the table. Plus
+quick-dice buttons that roll one die instantly, a d20 **four-degrees check**, a running
+roll log shared across the whole app — and a **dice tray** above the log where every
+roll tumbles and lands on its true faces (best face rings green, a 1 rings red).
 
 **Bestiary** — all **110 creatures**, searchable by name or Found-text, filterable by
 tier and chapter, with the full book entry displayed. **Double-click any creature to pop
@@ -98,12 +100,16 @@ prices, and the Four Questions. Every generated sheet is re-validated against
 directly. The rules data is transcribed from the Player's Book; the smoke suite
 generates and rule-checks hundreds of sheets per run.
 
-**Reference** — the rules that matter mid-scene: the four degrees, the DC ladder, a
-turn in the Iron Code (Beats, MAP, crits), the full Threat-by-Tier benchmark table, the
-encounter budget, Blood/Dying/Grievous Wounds with the Lasting Injury table, the
-complete **Conditions table from Appendix B**, the Nerve/Dread ladder and every way to
-recover Nerve, the Mark's six steps, the Taint clock (DCs 13/16/20), the Sign DC
-formula, and Grit.
+**Reference** *(rebuilt in v1.4)* — a **Keeper's screen in eleven leaves**, paged with
+the ◀ ▶ buttons or the Left/Right arrow keys, every leaf formatted as proper tables:
+the four degrees and the DC ladder · a turn in the Iron Code · Blood/Dying/Grievous
+Wounds with the Lasting Injury table · the complete **Conditions table from Appendix
+B** · the Nerve/Dread ladder and every way to recover Nerve · the Mark's six steps and
+the Taint clock (DCs 13/16/20) · the eight Signs with costs and the Sign DC formula,
+plus Grit's five spends · the Threat-by-Tier benchmarks and the encounter budget · the
+book's **arms tables** (guns and steel, damage/cost/traits) · the **Goods & Provisions
+printed prices** · and skills, saves, and abilities. The arms, goods, signs, and skills
+leaves render live from `Data/chargen.json`, so they can never drift from the book.
 
 **Session** — the Keeper's ledger (free-form notes, with a **Stamp the date** button
 for session headers) and **threads & clocks**: named progress clocks of 4/6/8 segments —
@@ -134,9 +140,21 @@ The interface follows desktop conventions so it stays out of the way mid-session
 - **Text panes breathe** *(v1.3)*: the Bestiary reading pane, creature pop-out windows,
   Reference, and the generator output all carry a proper reading margin instead of
   pressing the first character against the window edge.
-- **Keyboard-first.** Ctrl+1–9 switches tabs; Enter rolls the dice expression and commits
-  the creature pickers.
-- **Tooltips** on every button explain what it does.
+- **A real menu bar** *(v1.4)*: **File** (Save session Ctrl+S · Save session as… ·
+  Load session… — with an automatic `session-backup.json` before any load) · **View**
+  (every tab with its shortcut) · **Help** (the **five-minute lesson** on F1, a keyboard
+  shortcuts card, and About).
+- **Keyboard-first** *(expanded in v1.4)*: Ctrl+1–9 switches tabs; Enter rolls the dice
+  expression, commits the creature pickers, and pops out the selected creature; Ctrl+D /
+  Ctrl+H damage and heal on the Posse and Tracker; Ctrl+I rolls initiative and Ctrl+R
+  advances the round; Ctrl+F jumps to the Bestiary search; Left/Right turn the Reference
+  deck. Destructive clears deliberately stay click-and-confirm.
+- **The emblem, everywhere it should be** *(v1.4)*: the steer-skull-and-rifles emblem is
+  the app's window and taskbar icon and the exe's file icon, and sits as a ghost-faint
+  watermark in the dead space of the busier tabs — drawn only when there's genuinely
+  room, never behind rows or text.
+- **Tooltips** on every button explain what it does (and name its shortcut, where one
+  exists).
 - A consistent frontier-book palette (aged paper, oxblood headers, gold accents) ties the
   tool to the books.
 

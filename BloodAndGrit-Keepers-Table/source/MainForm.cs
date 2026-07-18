@@ -13,6 +13,7 @@ public partial class MainForm : Form
     TextBox notesBox;
     ListBox rollLog;
     int round = 1;
+    TabControl tabsCtl;
 
     // ---- shared theme (frontier-book palette) ----
     public static readonly Color Paper   = Color.FromArgb(247, 242, 228);
@@ -24,9 +25,12 @@ public partial class MainForm : Form
     public static readonly Color FoeRow  = Color.FromArgb(250, 250, 247);
     public static readonly Color DownRow = Color.FromArgb(248, 224, 224);
 
+    internal const string AppVersion = "1.4.0";
+
     public MainForm()
     {
         Text = "Blood & Grit — The Keeper's Table";
+        if (AppIcon != null) Icon = AppIcon;      // the emblem, not the stock-Windows square
         // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
         // old fixed 1280×820 put the bottom row of buttons below the taskbar, unreachable.
         var work = Screen.PrimaryScreen.WorkingArea;
@@ -39,6 +43,7 @@ public partial class MainForm : Form
         KeyPreview = true;
 
         var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(14, 6) };
+        tabsCtl = tabs;
         tabs.TabPages.Add(BuildPosseTab());
         tabs.TabPages.Add(BuildDiceTab());
         tabs.TabPages.Add(BuildBestiaryTab());
@@ -50,11 +55,35 @@ public partial class MainForm : Form
         tabs.TabPages.Add(BuildSessionTab());
         Controls.Add(tabs);
 
-        // Ctrl+number jumps to a tab (keyboard-first, like the market tools)
+        var menu = BuildMenu(tabs);
+        MainMenuStrip = menu;
+        Controls.Add(menu);                       // added after the fill control so it docks above it
+
+        // Ctrl+number jumps to a tab (keyboard-first, like the market tools), and each
+        // busy tab gets table-speed shortcuts for its most-hammered buttons. Deliberately
+        // NOT keyed: destructive clears (a confirm click should stay a deliberate act) and
+        // browse-y generator buttons (Tab+Space already serves them).
         KeyDown += (s, e) =>
         {
             if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
-            { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; }
+            { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; return; }
+            if (!e.Control || e.Alt || e.Shift) return;
+            void Did() { e.Handled = true; e.SuppressKeyPress = true; }
+            string page = tabs.SelectedTab?.Text;
+            if (page == "Posse" && posseGrid?.IsCurrentCellInEditMode != true)
+            {
+                if (e.KeyCode == Keys.D) { AdjustPC(-1); Did(); }
+                else if (e.KeyCode == Keys.H) { AdjustPC(+1); Did(); }
+            }
+            else if (page == "Tracker" && trkGrid?.IsCurrentCellInEditMode != true)
+            {
+                if (e.KeyCode == Keys.D) { AdjustCombatant(-1); Did(); }
+                else if (e.KeyCode == Keys.H) { AdjustCombatant(+1); Did(); }
+                else if (e.KeyCode == Keys.I) { RollInitiative(); Did(); }
+                else if (e.KeyCode == Keys.R) { NextRound(); Did(); }
+            }
+            else if (page == "Bestiary" && e.KeyCode == Keys.F)
+            { beastSearch.Focus(); beastSearch.SelectAll(); Did(); }
         };
 
         var status = new StatusStrip { BackColor = Paper };
@@ -63,7 +92,7 @@ public partial class MainForm : Form
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
-        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–8 to switch tabs · state auto-saves on exit") { ForeColor = Gold });
+        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–9 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
         Controls.Add(status);
 
         TryAutoLoad();
@@ -89,6 +118,19 @@ public partial class MainForm : Form
         var saveTimer = new System.Windows.Forms.Timer { Interval = 5 * 60 * 1000 };
         saveTimer.Tick += (s, e) => AutoSave();
         saveTimer.Start();
+    }
+
+    // Left/Right turn the Reference deck no matter which control holds focus — arrow
+    // keys are normally eaten as focus-navigation before KeyDown ever sees them. The
+    // Reference tab has no text inputs, so stealing them there costs nothing.
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (tabsCtl?.SelectedTab == referencePage && (keyData == Keys.Left || keyData == Keys.Right))
+        {
+            RefShow(refPage + (keyData == Keys.Right ? 1 : -1));
+            return true;
+        }
+        return base.ProcessCmdKey(ref msg, keyData);
     }
 
     // ---------------------------------------------------------- shared helpers
@@ -154,6 +196,98 @@ public partial class MainForm : Form
         host.Controls.Add(c);
         return host;
     }
+
+    // ---- the emblem (embedded in the exe) as window icon and watermark ----
+    static Image _emblem;
+    static bool _emblemTried;
+    internal static Image Emblem
+    {
+        get
+        {
+            if (!_emblemTried)
+            {
+                _emblemTried = true;
+                try
+                {
+                    var asm = typeof(MainForm).Assembly;
+                    var name = Array.Find(asm.GetManifestResourceNames(),
+                        n => n.EndsWith("emblem.png", StringComparison.OrdinalIgnoreCase));
+                    if (name != null)
+                    { using var s = asm.GetManifestResourceStream(name); _emblem = Image.FromStream(s); }
+                }
+                catch { /* purely cosmetic — never let branding take the app down */ }
+            }
+            return _emblem;
+        }
+    }
+
+    static Icon _appIcon;
+    static bool _appIconTried;
+    internal static Icon AppIcon
+    {
+        get
+        {
+            if (!_appIconTried)
+            {
+                _appIconTried = true;
+                try
+                {
+                    var asm = typeof(MainForm).Assembly;
+                    var name = Array.Find(asm.GetManifestResourceNames(),
+                        n => n.EndsWith("app.ico", StringComparison.OrdinalIgnoreCase));
+                    if (name != null)
+                    { using var s = asm.GetManifestResourceStream(name); _appIcon = new Icon(s); }
+                }
+                catch { }
+            }
+            return _appIcon;
+        }
+    }
+
+    static readonly System.Drawing.Imaging.ImageAttributes WmAttr = MakeWmAttr();
+    static System.Drawing.Imaging.ImageAttributes MakeWmAttr()
+    {
+        var a = new System.Drawing.Imaging.ImageAttributes();
+        a.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix { Matrix33 = 0.055f });   // ghost-faint
+        return a;
+    }
+
+    /// <summary>
+    /// Paints the emblem, ghost-faint, in the dead space at the bottom-right of a pane.
+    /// usedHeight reports how far real content reaches; the emblem draws only when the
+    /// space left below can hold it with generous margin, so it never sits behind rows,
+    /// text, or controls — panes that fill up simply don't show it.
+    /// </summary>
+    static void Watermark(Control host, Func<int> usedHeight)
+    {
+        host.Paint += (s, e) =>
+        {
+            var img = Emblem; if (img == null) return;
+            int cw = host.ClientSize.Width, ch = host.ClientSize.Height;
+            int free = ch - usedHeight();
+            // scale to what the dead space can hold — full size in a big empty pane,
+            // smaller where room is tighter, gone entirely below a dignified minimum
+            int w = Math.Min(Math.Min(300, cw - 56), (free - 44) * img.Width / img.Height);
+            if (w < 150) return;
+            int h = w * img.Height / img.Width;
+            var r = new Rectangle(cw - w - 26, ch - h - 20, w, h);
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            e.Graphics.DrawImage(img, r, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, WmAttr);
+        };
+        host.Resize += (s, e) => host.Invalidate();
+    }
+
+    // content extent of a FlowLayoutPanel (or any panel): the lowest control edge
+    static int FlowBottom(Control c)
+        => c.Controls.Cast<Control>().Select(x => x.Bottom).DefaultIfEmpty(0).Max();
+
+    // content extent of a grid: header plus every visible row
+    static int GridBottom(DataGridView g)
+        => g.ColumnHeadersHeight + g.Rows.GetRowsHeight(DataGridViewElementStates.Visible);
+
+    // content extent of a centered hint label: the bottom edge of its centered text block
+    static int HintBottom(Label l)
+        => (l.Height + TextRenderer.MeasureText(l.Text, l.Font).Height) / 2;
 
     /// <summary>
     /// SplitContainer whose minimum panel sizes and splitter position are applied only
@@ -295,8 +429,8 @@ public partial class MainForm : Form
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(adjAmount, "How much Blood the Damage/Heal buttons apply");
         bar.Controls.Add(adjAmount);
-        bar.Controls.Add(Btn("Damage", (s, e) => AdjustPC(-1), 80, "Subtract the Amount from the selected soul's Blood"));
-        bar.Controls.Add(Btn("Heal", (s, e) => AdjustPC(+1), 70, "Add the Amount to the selected soul's Blood"));
+        bar.Controls.Add(Btn("Damage", (s, e) => AdjustPC(-1), 80, "Subtract the Amount from the selected soul's Blood (Ctrl+D)"));
+        bar.Controls.Add(Btn("Heal", (s, e) => AdjustPC(+1), 70, "Add the Amount to the selected soul's Blood (Ctrl+H)"));
 
         bar.Controls.Add(Btn("Spend Grit", (s, e) =>
         {
@@ -348,6 +482,7 @@ public partial class MainForm : Form
 
         page.Controls.Add(posseGrid);
         page.Controls.Add(bar);
+        Watermark(posseGrid, () => GridBottom(posseGrid));
         return page;
     }
 
@@ -526,7 +661,30 @@ public partial class MainForm : Form
         exprRow.Controls.Add(Btn("Roll", (s, e) => RollExprBox(), 80, "Roll the expression (or press Enter)"));
         left.Controls.Add(exprRow);
 
-        left.Controls.Add(Heading("Quick dice"));
+        // build the expression by button: dice stack (d6 → 2d6 → 3d6), digits and
+        // ＋/− make the modifier — no typing needed at the table
+        var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
+        foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
+        {
+            int sides = d;
+            dicePad.Controls.Add(Btn("+d" + sides, (s, e) => ExprAddDie(sides), 54,
+                $"Add a d{sides} to the expression — click again for another"));
+        }
+        left.Controls.Add(dicePad);
+        var opsPad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
+        opsPad.Controls.Add(Btn("＋", (s, e) => ExprAppend("+"), 40, "Plus"));
+        opsPad.Controls.Add(Btn("−", (s, e) => ExprAppend("-"), 40, "Minus"));
+        foreach (int n in new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 })
+        {
+            int digit = n;
+            opsPad.Controls.Add(Btn(digit.ToString(), (s, e) => ExprAppend(digit.ToString()), 40));
+        }
+        opsPad.Controls.Add(Btn("⌫", (s, e) =>
+        { if (exprBox.TextLength > 0) exprBox.Text = exprBox.Text[..^1]; ExprFocusEnd(); }, 40, "Backspace"));
+        opsPad.Controls.Add(Btn("C", (s, e) => { exprBox.Clear(); ExprFocusEnd(); }, 40, "Clear the expression"));
+        left.Controls.Add(opsPad);
+
+        left.Controls.Add(Heading("Quick dice — roll one now"));
         var quick = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
             quick.Controls.Add(Btn("d" + d, (s, e) =>
@@ -579,7 +737,27 @@ public partial class MainForm : Form
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(right);
         page.Controls.Add(split);
+        Watermark(left, () => FlowBottom(left));
         return page;
+    }
+
+    void ExprFocusEnd()
+    {
+        exprBox.Focus();
+        exprBox.SelectionStart = exprBox.TextLength;
+    }
+
+    // the builder logic itself lives in Rules (pure, smoke-tested); these just wire the box
+    void ExprAddDie(int sides)
+    {
+        exprBox.Text = Rules.ExprAddDie(exprBox.Text, sides);
+        ExprFocusEnd();
+    }
+
+    void ExprAppend(string s)
+    {
+        exprBox.Text = Rules.ExprAppend(exprBox.Text, s);
+        ExprFocusEnd();
     }
 
     void RollExprBox()
@@ -597,20 +775,39 @@ public partial class MainForm : Form
     // ---------------------------------------------------------- persistence
     string SavePath => Path.Combine(AppContext.BaseDirectory, "session.json");
 
+    GameSession Snapshot() => new()
+    {
+        Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? "",
+        EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
+        PartyLevelHint = (int)(encLevel?.Value ?? 2),
+        Tracker = tracker.ToList(), Round = round
+    };
+
     internal void AutoSave()
     {
         try
         {
-            var s = new GameSession
-            {
-                Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? "",
-                EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
-                PartyLevelHint = (int)(encLevel?.Value ?? 2),
-                Tracker = tracker.ToList(), Round = round
-            };
-            File.WriteAllText(SavePath, JsonSerializer.Serialize(s, new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(SavePath, JsonSerializer.Serialize(Snapshot(), new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { /* never block closing */ }
+    }
+
+    // Replace the whole table with a saved session — the shared road for the startup
+    // auto-load and File → Load session.
+    void ApplySession(GameSession s)
+    {
+        party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear();
+        foreach (var p in s.Party ?? new()) party.Add(p);
+        foreach (var c in s.Clocks ?? new()) clocks.Add(c);
+        if (notesBox != null) notesBox.Text = s.Notes ?? "";
+        foreach (var n in s.EncounterCreatures ?? new())
+        { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
+        if (encLevel != null && s.PartyLevelHint >= 1) encLevel.Value = Math.Clamp(s.PartyLevelHint, 1, 10);
+        foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
+        round = Math.Max(1, s.Round);
+        if (roundLbl != null) roundLbl.Text = $"Round {round}";
+        RefreshClocks(); RefreshEncounter();
+        posseGrid?.Refresh(); trkGrid?.Refresh();
     }
 
     void TryAutoLoad()
@@ -620,16 +817,7 @@ public partial class MainForm : Form
             if (!File.Exists(SavePath)) { SeedDemo(); return; }
             var s = JsonSerializer.Deserialize<GameSession>(File.ReadAllText(SavePath));
             if (s == null || s.Party.Count == 0) { SeedDemo(); return; }
-            foreach (var p in s.Party) party.Add(p);
-            foreach (var c in s.Clocks) clocks.Add(c);
-            if (notesBox != null) notesBox.Text = s.Notes;
-            foreach (var n in s.EncounterCreatures)
-            { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
-            if (encLevel != null) encLevel.Value = Math.Clamp(s.PartyLevelHint, 1, 10);
-            foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
-            round = Math.Max(1, s.Round);
-            if (roundLbl != null) roundLbl.Text = $"Round {round}";
-            RefreshClocks(); RefreshEncounter();
+            ApplySession(s);
         }
         catch { if (party.Count == 0) SeedDemo(); }
     }
