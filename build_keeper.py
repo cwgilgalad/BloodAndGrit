@@ -109,6 +109,12 @@ CH1 = f"""<!-- I -->
   <h1 class="chapter">I. The Keeper's Chair</h1>
   <p class="chapter-sub">What you are for, and the bargain you make with the table.</p>
   <div class="divider"></div>
+  <div class="narr">A word before the work, from one host to another. Your players sat down for a western
+  &mdash; give them one. Let the first night be cattle prices and bad coffee and a gun that means exactly
+  what a gun means. The dark in this game earns nothing by arriving early; it earns everything by
+  arriving <em>eventually</em>, through a door the players propped open themselves on some ordinary
+  afternoon. You are not the monster's advocate. You are the ordinary evening the monster interrupts
+  &mdash; and the longer that evening stays believably ordinary, the further down it can afterward go.</div>
   <p class="dropcap lead">Every other soul at the table plays one person trying to last another day. You play
   everything else &mdash; the town and the trail, the weather and the wolves, the kindly stranger and the thing
   wearing his face. More than that, you play the <strong>country itself</strong>, which in this game is old, and
@@ -734,6 +740,11 @@ CH6 = f"""<!-- VI -->
   <h1 class="chapter">VI. Cursed Ground, Hazards &amp; Bad Medicine</h1>
   <p class="chapter-sub">The dangers that have no eyes to shoot for.</p>
   <div class="divider"></div>
+  <div class="narr">Mark this chapter as the place your campaign quietly changes its nature. Up to here the
+  players have fought things &mdash; and a thing that can be fought, however terrible, is still a western.
+  From here on, some of what is wrong has no eyes to shoot for and no Blood to spend, and the game the
+  players thought they were playing begins, by honest degrees, to be the other one. Do not announce it.
+  Let them discover that the revolver has stopped being the answer, one unanswered shot at a time.</div>
   <p class="dropcap lead">Not every threat in the country has a Blood total. Some of it is the ground itself, the
   weather, the long thirst, and the slow poison of places where the dark has soaked in. These hazards are how you
   threaten a party between monsters &mdash; and how you make a haunted place feel haunted before anything with teeth
@@ -1671,6 +1682,11 @@ CH13 = f"""<!-- XIII -->
   <h1 class="chapter">XIII. Perdition Basin</h1>
   <p class="chapter-sub">One county, drawn whole and keyed &mdash; the worked example of a Haunted Year.</p>
   <div class="divider"></div>
+  <div class="narr">Submitted for your consideration, then: one county, surveyed and staked, whole enough
+  to hold a year. It begins as every good lie in this country begins &mdash; with the truth. A river, a
+  bank, a stage road, a marshal, cattle at fair prices. Nothing in Perdition Basin will read as anything
+  but a western until the third or fourth night, and that is its design and its lesson in one: the
+  slow burn is not a trick you play <em>on</em> the county. It is what the county is.</div>
   <p class="dropcap lead">Everything before this chapter handed you parts: the engine, the monsters, the craft, two finished
   nights, and the frame for stringing nights into a year. This chapter spends all of it in one place. <strong>Perdition
   Basin</strong> is a whole county &mdash; mapped, keyed, and built so you can open this book and run. It is the home

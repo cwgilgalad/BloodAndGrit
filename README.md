@@ -24,7 +24,13 @@ python build_bestiary.py               # reads blood-and-grit.html → bestiary.
 python measure_index.py                 # Player's Book: parity/clip/anchors + re-patch index statics
 python measure_book.py keeper-handbook.html
 python measure_book.py bestiary.html
+python audit_whitespace.py <book.html>  # optional: list pages with large bottom gaps
 ```
+
+**Keeper's Table app sync:** whenever Bestiary creature content changes, re-extract the
+app's data with `python extract_creatures.py bestiary.html KT/source/Data/creatures.json`
+(diff against the previous JSON first), and keep the app's status-bar/README version
+strings current with the books. See `CLAUDE.md` for the full standing rule.
 
 ## What's what
 

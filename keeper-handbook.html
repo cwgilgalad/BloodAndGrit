@@ -128,6 +128,8 @@
     font-size:14px; color:var(--gold-d); font-variant:small-caps; letter-spacing:.05em; }
   @media print{ .plate img{ box-shadow:none; } }
 
+  .narr{ margin:16px 26px; font-style:italic; color:var(--ink-soft); line-height:1.55; }
+  .narr::before{ content:"~"; display:block; text-align:center; font-style:normal; color:var(--rule); margin-bottom:6px; }
   .sb-cont{ font-style:italic; font-weight:400; color:var(--ink-soft); font-size:12px; letter-spacing:0; }
   .statline{font-style:italic; color:var(--ink-soft); margin:.1em 0 .6em; font-size:16.5px;}
   .pageno{text-align:center; color:var(--blood-d); font-size:13px; margin-top:24px; letter-spacing:.3em;}
@@ -448,6 +450,12 @@ body{ background:#525659; }
   <p class="chapter-sub">What you are for, and the bargain you make with the table.</p>
   <div class="divider"></div>
   <div class="quote">The players brought the heroes. You brought the country &mdash; and it was here first, and it will be here when the last of them is a name cut in a boot-hill board.<span class="src">— N. Ashby</span></div>
+  <div class="narr">A word before the work, from one host to another. Your players sat down for a western
+  &mdash; give them one. Let the first night be cattle prices and bad coffee and a gun that means exactly
+  what a gun means. The dark in this game earns nothing by arriving early; it earns everything by
+  arriving <em>eventually</em>, through a door the players propped open themselves on some ordinary
+  afternoon. You are not the monster's advocate. You are the ordinary evening the monster interrupts
+  &mdash; and the longer that evening stays believably ordinary, the further down it can afterward go.</div>
   <p class="dropcap lead">Every other soul at the table plays one person trying to last another day. You play
   everything else &mdash; the town and the trail, the weather and the wolves, the kindly stranger and the thing
   wearing his face. More than that, you play the <strong>country itself</strong>, which in this game is old, and
@@ -1057,6 +1065,11 @@ body{ background:#525659; }
   <p class="chapter-sub">The dangers that have no eyes to shoot for.</p>
   <div class="divider"></div>
   <div class="quote">The ground remembers what was done on it. Tell your players so early, and mean it, and they will come to fear the dirt itself.<span class="src">— Rev. A. Jensen</span></div>
+  <div class="narr">Mark this chapter as the place your campaign quietly changes its nature. Up to here the
+  players have fought things &mdash; and a thing that can be fought, however terrible, is still a western.
+  From here on, some of what is wrong has no eyes to shoot for and no Blood to spend, and the game the
+  players thought they were playing begins, by honest degrees, to be the other one. Do not announce it.
+  Let them discover that the revolver has stopped being the answer, one unanswered shot at a time.</div>
   <p class="dropcap lead">Not every threat in the country has a Blood total. Some of it is the ground itself, the
   weather, the long thirst, and the slow poison of places where the dark has soaked in. These hazards are how you
   threaten a party between monsters &mdash; and how you make a haunted place feel haunted before anything with teeth
@@ -1868,6 +1881,11 @@ body{ background:#525659; }
   <p class="chapter-sub">One county, drawn whole and keyed &mdash; the worked example of a Haunted Year.</p>
   <div class="divider"></div>
   <div class="quote">I have mapped every well in this country and named every town. It is the wells I no longer sleep for. A town is only people. A well is a door, and someone has been leaving them open.<span class="src">— from the field-books of N. Ashby, naturalist</span></div>
+  <div class="narr">Submitted for your consideration, then: one county, surveyed and staked, whole enough
+  to hold a year. It begins as every good lie in this country begins &mdash; with the truth. A river, a
+  bank, a stage road, a marshal, cattle at fair prices. Nothing in Perdition Basin will read as anything
+  but a western until the third or fourth night, and that is its design and its lesson in one: the
+  slow burn is not a trick you play <em>on</em> the county. It is what the county is.</div>
   <p class="dropcap lead">Everything before this chapter handed you parts: the engine, the monsters, the craft, two finished
   nights, and the frame for stringing nights into a year. This chapter spends all of it in one place. <strong>Perdition
   Basin</strong> is a whole county &mdash; mapped, keyed, and built so you can open this book and run. It is the home
@@ -2452,6 +2470,7 @@ body{ background:#525659; }
     function isParaLike(b){
       if(b.tagName==='P') return true;
       if(b.tagName==='DIV' && b.classList && b.classList.contains('keeper-note')) return true;
+      if(b.tagName==='DIV' && b.classList && (b.classList.contains('quote')||b.classList.contains('narr'))) return true;
       return false;
     }
 

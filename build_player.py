@@ -151,6 +151,8 @@ SRC = r"""<!DOCTYPE html>
     font-size:14px; color:var(--gold-d); font-variant:small-caps; letter-spacing:.05em; }
   @media print{ .plate img{ box-shadow:none; } }
 
+  .narr{ margin:16px 26px; font-style:italic; color:var(--ink-soft); line-height:1.55; }
+  .narr::before{ content:"~"; display:block; text-align:center; font-style:normal; color:var(--rule); margin-bottom:6px; }
   .sb-cont{ font-style:italic; font-weight:400; color:var(--ink-soft); font-size:12px; letter-spacing:0; }
   .statline{font-style:italic; color:var(--ink-soft); margin:.1em 0 .6em; font-size:16.5px;}
   .pageno{text-align:center; color:var(--blood-d); font-size:13px; margin-top:24px; letter-spacing:.3em;}
@@ -378,20 +380,45 @@ body{ background:#525659; }
   <h1 class="chapter">I. The Country</h1>
   <p class="chapter-sub">What manner of world this is, and what waits beneath it.</p>
   <div class="divider"></div>
-  <p class="dropcap lead">They will tell you the frontier is empty. They are wrong, and the wrongness of it is
-  the whole of this game. The land between the last church and the first ocean is not empty —
-  it is occupied. Something kept these plains before the buffalo, before the first peoples,
-  before the word for hunger had a mouth to say it. The settlers call the silence peace. It is
-  not peace. It is patience.</p>
-  <p><em>Blood and Grit</em> is a game of the American West as it might have been dreamt by a fevered
-  preacher — the mud and the marrow of it true to life, the weather honest, the work brutal, and
-  underneath it all a vein of cold that runs deeper than any well. You will play ordinary, desperate
-  people: drovers and widows, deserters and physicians, gun-hands and gamblers, all of them out of
-  money, out of country, or out of options. The horror is not that monsters exist. The horror is that
-  the world was never arranged for your comfort, and has only now begun to show you so.</p>
+  <p class="dropcap lead">Come west. The handbills say it plain: land for the breaking, silver for the digging,
+  cattle for the driving, and room — room past counting, under a sky so wide it makes a man feel newly
+  made. This is a game of that country and the people who dare it: drovers and widows, deserters and
+  physicians, gun-hands and gamblers, ordinary souls out of money, out of luck, or out of options,
+  riding into the biggest country there is to win something back from it.</p>
+  <p><em>Blood and Grit</em> is a game of the American West — the mud and the marrow of it true to life,
+  the weather honest, the work brutal, the coffee worse. You will keep your powder dry and your horse
+  fed. You will learn what a winter costs, and what a bank costs, and which of the two is the more
+  honest robbery. And now and again, at the far edge of the firelight, you may notice — as the people
+  of that country have noticed for a very long time — that the silence out on the long grass is not
+  quite the silence of empty land.</p>
+
+  <h2>The Look of the World</h2>
+  <p>Day is for labor and for travel — long, hot, dangerous, and mostly mundane. Men die of infected
+  scratches and bad water far more often than of anything stranger. The work is cattle and rail and
+  rock, the pay is thin, and the law is wherever the nearest honest man happens to be standing.</p>
+  <p>But the Territories are a patchwork of failing things. Cattle towns swollen on credit and gone to rot
+  when the railroad chose another valley. Mining camps that dug too deep and woke too much. Missions
+  where the bells still ring at dusk though no hand pulls the rope. Homesteads sunk to their windowsills
+  in dust, the families inside listening to something walk the roof at night and telling the children
+  it is only the wind. The sun goes down early behind the ranges, and the nights are very long, and it
+  is in the night that the country remembers itself.</p>
+  <h3 id="ix-1885">When This Is — the Year of 1885</h3>
+  <p>The default frame is the mid-1880s, a closing door of a decade. The great buffalo herds are all
+  but slaughtered off; the open range is being strung with wire; the railroads have stitched the
+  continent and unstitched a hundred ways of living. The Indian Wars are mostly behind, their ending
+  bitter — the nations of the Plains and the desert forced onto reservations whose borders shrink each
+  treaty. Geronimo is still at large in the Sierra Madre; he will surrender the next year. The country
+  is being made <em>modern</em>, and modernity here means barbed wire, the company store, the boarding
+  school, and the surveyor's chain. Set your stories against this, and the horror beneath will have
+  something true to grow from.</p>
 
   <h2 id="ix-truths">The Three Truths</h2>
-  <p>Everything in this book grows from three plain ideas. Hold them in mind and the rest will follow.</p>
+  <p>And here, before you go a page further, the truth the handbills leave out. They will tell you the
+  frontier is empty. They are wrong, and the wrongness of it is the whole of this game. The land between
+  the last church and the first ocean is not empty — it is <em>occupied</em>. The horror of this game is
+  not that monsters exist. The horror is that the world was never arranged for your comfort, and has
+  only now begun to show you so. Everything in this book grows from three plain ideas. Hold them in
+  mind and the rest will follow.</p>
   <ul class="dash">
     <li><strong>Knowing costs.</strong> The more you understand of what moves beneath the dust, the more it understands of you. Wisdom in this country is a wound that does not close.</li>
     <li><strong>Survival is the victory.</strong> There is no saving the world here, no chosen one, no last battle that sets things right. There is only the next winter, the next town, the next morning you wake up still yourself.</li>
@@ -404,25 +431,6 @@ body{ background:#525659; }
     and neither, after a season out here, will you."
     <span class="src">— marginalia, the Almanac of the Bitterroot Survey</span>
   </div>
-
-  <h2>The Look of the World</h2>
-  <p>The Territories are a patchwork of failing things. Cattle towns swollen on credit and gone to rot
-  when the railroad chose another valley. Mining camps that dug too deep and woke too much. Missions
-  where the bells still ring at dusk though no hand pulls the rope. Homesteads sunk to their windowsills
-  in dust, the families inside listening to something walk the roof at night and telling the children
-  it is only the wind.</p>
-  <p>Day is for labor and for travel — long, hot, dangerous, and mostly mundane. Men die of infected
-  scratches and bad water far more often than of the uncanny. But the sun goes down early behind the
-  ranges, and the nights are very long, and it is in the night that the country remembers itself.</p>
-  <h3 id="ix-1885">When This Is — the Year of 1885</h3>
-  <p>The default frame is the mid-1880s, a closing door of a decade. The great buffalo herds are all
-  but slaughtered off; the open range is being strung with wire; the railroads have stitched the
-  continent and unstitched a hundred ways of living. The Indian Wars are mostly behind, their ending
-  bitter — the nations of the Plains and the desert forced onto reservations whose borders shrink each
-  treaty. Geronimo is still at large in the Sierra Madre; he will surrender the next year. The country
-  is being made <em>modern</em>, and modernity here means barbed wire, the company store, the boarding
-  school, and the surveyor's chain. Set your stories against this, and the horror beneath will have
-  something true to grow from.</p>
 
   <div class="box">
     <h3 id="ix-tone">On Tone — for Everyone at the Table</h3>
@@ -1798,6 +1806,12 @@ body{ background:#525659; }
   <h1 class="chapter">VII. Callings of the Old Dark</h1>
   <p class="chapter-sub">Four roads into the Old Dark — by pact, by craft, by deceit, and by devotion.</p>
   <div class="divider"></div>
+  <div class="narr">You have come a fair way into this almanac, reader — through the honest chapters, the
+  wages and the weather and the workaday iron. Notice, if you would, how naturally you turned this page.
+  That is how it happens out there, too: one door at a time, each opening easily off the last, until a
+  soul looks up from its reading and finds the light has changed. The pages from here forward concern
+  the things the handbills do not mention. It is not too late to close the book. It has never yet been
+  too late for anyone, at this particular page.</div>
   <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one — the <strong>Old Dark</strong>: the deep strata of buried gods, drowned hungers, and patient things that were ancient when the first peoples were young. It does not love you and it does not hate you; it lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it is an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf — and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has simply fallen in love with one of the things below, and serves it gladly, body and soul.</p>
   <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th — the shape of the bargain, the craft, the lie, or the devotion. Hexer and Dark Cultist begin Marked and walk the track quickly — the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead.</p>
   <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried was not a wolf, and it was not Abner. Salt the grave. Do not mark it.&rdquo;
@@ -3094,6 +3108,10 @@ body{ background:#525659; }
   <h1 class="chapter">XII. Nerve &amp; the Uncanny</h1>
   <p class="chapter-sub">The mind's slow accounting, and the long road of the Mark.</p>
   <div class="divider"></div>
+  <div class="narr">Set down, for a moment, what you were told in the first chapter, and hear the rest of
+  it. Something kept these plains before the buffalo, before the first peoples, before the word for
+  hunger had a mouth to say it. The settlers call the silence peace. It is not peace. It is patience —
+  and this chapter is the accounting of what that patience does to the souls who finally hear it.</div>
   <p class="dropcap lead">This is the heart of the game. A body can be doctored; a mind, once it has seen too far past the
   edge of the ordinary world, does not mend so cleanly. <strong>Nerve</strong> measures how much horror your character can
   carry before something in them gives way. The <strong>Mark</strong> measures how much of them the dark has already
@@ -3625,6 +3643,15 @@ body{ background:#525659; }
   </ul>
   <p class="note">A place to start, and no more than that. Everything here is true as far as a rider knows it &mdash; which
   in this country is never quite far enough.</p>
+
+  <div class="narr">And that concludes the matter of the country. You came to these pages, most likely,
+  for a game about the West &mdash; and you have one: the cattle and the coin are real, the winters are
+  honest, and the dice fall fair. But you have read this far, and so you know now what the first chapter
+  only whispered. The almanac is therefore offered &mdash; as the survey men say &mdash; for your
+  consideration. Keep your fire lit. Keep your accounts square. And if some evening on the long grass you
+  find that the silence has a texture to it, you will not need this book to tell you what you have found.
+  You will only need to decide, as every soul in these pages once decided, how much of yourself you are
+  willing to trade to be believed.</div>
 </section>
 
 <section class="page" id="ledger">
@@ -3780,7 +3807,7 @@ body{ background:#525659; }
     <li><a href="#ix-demoralize">Demoralize</a><span class="pg">97</span></li>
     <li><a href="#ix-difficulty">Difficulty Classes</a><span class="pg">11</span></li>
     <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">130</span></li>
-    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">137</span></li>
+    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">138</span></li>
     <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">34</span></li>
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">22</span></li>
     <li class="ix-hd">E</li>
@@ -3790,8 +3817,8 @@ body{ background:#525659; }
     <li><a href="#advancement">Experience &amp; levels</a><span class="pg">149</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">22</span></li>
-    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">81</span></li>
-    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">89</span></li>
+    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">82</span></li>
+    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">90</span></li>
     <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">102</span></li>
     <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">110</span></li>
     <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">128</span></li>
@@ -3821,7 +3848,7 @@ body{ background:#525659; }
     <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">102</span></li>
     <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">112</span></li>
     <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">104</span></li>
-    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">85</span></li>
+    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">86</span></li>
     <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">145</span></li>
     <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">21</span></li>
     <li><a href="#ix-o-homesteader">Homesteader, the (Origin)</a><span class="pg">24</span></li>
@@ -3858,8 +3885,8 @@ body{ background:#525659; }
     <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">113</span></li>
     <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">130</span></li>
     <li class="ix-hd">N</li>
-    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">137</span></li>
-    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">139</span></li>
+    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">138</span></li>
+    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">140</span></li>
     <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">136</span></li>
     <li class="ix-hd">O</li>
     <li><a href="#ix-offguard">Off-Guard</a><span class="pg">132</span></li>
@@ -3919,10 +3946,10 @@ body{ background:#525659; }
     <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">103</span></li>
     <li class="ix-hd">T</li>
     <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">141</span></li>
-    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">142</span></li>
+    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">143</span></li>
     <li><a href="#ix-take-time">Take 10 / Take 20</a><span class="pg">12</span></li>
     <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">145</span></li>
-    <li><a href="#ix-truths">Three Truths, the</a><span class="pg">7</span></li>
+    <li><a href="#ix-truths">Three Truths, the</a><span class="pg">8</span></li>
     <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">102</span></li>
     <li><a href="#ix-tone">Tone, on</a><span class="pg">9</span></li>
     <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">112</span></li>
@@ -4161,6 +4188,7 @@ body{ background:#525659; }
     function isParaLike(b){
       if(b.tagName==='P') return true;
       if(b.tagName==='DIV' && b.classList && b.classList.contains('keeper-note')) return true;
+      if(b.tagName==='DIV' && b.classList && (b.classList.contains('quote')||b.classList.contains('narr'))) return true;
       return false;
     }
 
