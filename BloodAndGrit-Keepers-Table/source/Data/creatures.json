@@ -782,9 +782,9 @@
   "special": "The Word. Once a round the prophet's sermon forces a Will save (DC 16) or Frightened 2 and unwilling to harm him; the flock fights without fear of death.",
   "dread": "prophet DC 16, 1d6",
   "puttingItDown": "The flock breaks if the prophet falls; the prophet has bargained his death away \u2014 find and break the token that holds it.",
-  "mark": "",
+  "mark": "A soul that heeds the Word willingly, or takes the prophet's bargain, gains +1 Mark.",
   "lore": [
-   "Out where the churches are far apart and the nights are long, a charismatic man with the wrong book and the right voice can gather a congregation that should have known better. The Hollow Prophet was a person once \u2014 a preacher, a prospector, a stranger who came to town with a light in his eye \u2014 until he gave himself over to something that fills him now and speaks through him. His flock are ordinary folk: neighbors, farmers, a sheriff's own deputy, hollowed out one sermon at a time until they fear nothing, doubt nothing, and will die smiling for him.",
+   "Out where the churches are far apart and the nights are long, a charismatic man with the wrong book and the right voice can gather a congregation that should have known better. The Hollow Prophet was a person once \u2014 a preacher, a prospector, a stranger who came to town with a light in his eye. Then he gave himself over, and what fills him now speaks through him. His flock are ordinary folk: neighbors, farmers, a sheriff's own deputy, hollowed out one sermon at a time until they fear nothing, doubt nothing, and will die smiling for him.",
    "He has bargained his own death away and keeps it somewhere safe \u2014 a token, a buried thing, a heart kept in a box \u2014 so that bullets pass through him like he's already a ghost. His Word is a weapon: a sermon that turns a brave soul's own hands against itself, that makes the faithful unkillable in spirit if not in body. The flock breaks only when he falls, and he falls only when the thing that holds his death is found and broken."
   ],
   "found": "An isolated congregation \u2014 a remote chapel, a mining camp, a town the railroad forgot. The flock looks normal at first; the wrongness is in what they all believe, and what they've all agreed not to see.",
@@ -804,7 +804,7 @@
   "special": "Of one mind. Ordinary folk hollowed and joined by a thing they carry and worship; they do not break, bargain, or stop.",
   "dread": "DC 16, 1d6 (the wrongness of the crowd)",
   "puttingItDown": "Take or destroy the idol at the heart of the flock and the people, those still people, fall down weeping.",
-  "mark": "",
+  "mark": "Looking upon the idol as they do is +1 Mark.",
   "lore": [
    "A whole town looked at the wrong thing for too long, and now they are of one mind, and the mind is not theirs. The Flock of the Open Eye are ordinary folk \u2014 the storekeeper, the schoolmarm, the children \u2014 hollowed out and joined together by an idol they carry and worship, a thing that looked back when they looked at it. They press in close, unafraid, smiling, armed with whatever a town has to hand: farm tools, old guns, kitchen knives.",
    "They do not break. They do not bargain. They do not stop. You cannot reason with a crowd that shares one will and feels no fear, and the wrongness of all those familiar smiling faces moving together is its own kind of Dread. But they are still people, underneath, trapped in there \u2014 and the idol at the heart of the flock is the binding. Take it, break it, and the people who are still people fall down weeping, suddenly themselves, suddenly aware of what they've become."
@@ -826,7 +826,7 @@
   "special": "On credit. Everything he does, the dark does for him, and the bill comes in his own slow ruin; he is more dangerous cornered, having less left to lose.",
   "dread": "DC 13, 1d4",
   "puttingItDown": "Take or break his charms and bag of tricks and he is just a frightened, marked man; salt unworks his signs.",
-  "mark": "",
+  "mark": "Striking a bargain with what backs him is +1 Mark.",
   "lore": [
    "The Hexer is what the Witch's power looks like in a smaller, sadder, more dangerous man. He has no Craft of his own \u2014 he buys it, all of it, on credit, from something that keeps a very exact account. Every curse he throws, every charm he works, the dark does for him, and the bill comes due in his own slow ruin: his health, his years, his soul, paid out a piece at a time until there's nothing left but a marked and frightened man with a bag of borrowed tricks.",
    "That ruin is what makes him dangerous. He knows what he's spending and where it ends, and a man with nothing left to lose and a line of credit to the dark will do desperate, ugly things. Take away his charms and his bag of tricks and the borrowed power goes with them, leaving just the wretch underneath."
@@ -892,7 +892,7 @@
   "special": "Half-turned. A starving man who crossed the line and is becoming something colder; kill him soon or meet the Wendigo proper by spring.",
   "dread": "DC 13, 1d4",
   "puttingItDown": "Fire and iron; a bullet now is a mercy and a wisdom both, for what he is becoming.",
-  "mark": "",
+  "mark": "Sharing his meal, even unknowing, risks +1 Mark.",
   "lore": [
    "The winters out here can starve a man down to a choice no man should ever face, and some men make the wrong one. The Wendigo-Touched ate what he must not \u2014 in a snowbound cabin, a stranded wagon, a played-out mining camp where the food ran out before the snow did \u2014 and the eating started something in him that won't stop. He is half-turned: still mostly a man, but cold now, fast, and gripped by a hunger that grows with every kill and points always in one direction.",
    "He is what the Wendigo proper grows from. Catch him now, in this half-state, and he can still be stopped with fire and iron \u2014 and a bullet is a mercy as much as a defense, because the thing he's becoming by spring is something this book has a much worse entry for. Let him go, let him feed, and you'll meet the finished article in the deep snow, and wish you'd ended it while it still had a human face."
@@ -914,7 +914,7 @@
   "special": "Familiar-bound. Her power is doubled while her familiar lives, and she feels what it feels; harm the one to weaken the other.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "Her true name spoken, her heart-charm found and broken, or her familiar killed; cold iron foils her workings.",
-  "mark": "",
+  "mark": "Bargaining with her, or working a hex at her teaching, is +1 Mark.",
   "lore": [
    "She might have been born to it or come to it desperate; she might be the cackling crone of the stories or a respectable widow three farms over whom no one suspects. The Witch works the Craft \u2014 the hexing touch, the Evil Eye that withers a man's strength, the lingering curse that follows a victim home and ruins his luck, his health, his marriage, his crops. She is patient and she is subtle and she does not forget a slight.",
    "Her power runs through her familiar \u2014 the cat, the crow, the toad, the strange tame thing that's always near her \u2014 and while it lives, her strength is doubled and she feels what it feels. Kill the familiar and you halve the Witch. The old protections hold against her: cold iron foils her workings, her true name spoken aloud binds her, and somewhere she keeps a heart-charm that holds her life, which is the surest way to end her for good."
@@ -936,7 +936,7 @@
   "special": "Night-flight. She rides the dark as a giant owl and lands as a woman; she preys on travelers and the newborn, and knows when she is spoken of.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "Salt, prayer, and the sign against the eye ground her; named in her true form, by daylight, she cannot fly \u2014 or flee.",
-  "mark": "",
+  "mark": "Seeking her favor is +1 Mark.",
   "lore": [
    "She flies the night roads as a great owl, vast and silent, and lands as a woman where no one is watching. The Bruja is an old terror of the borderlands \u2014 a witch who preys on travelers caught out after dark and, worst of all, on the newborn, slipping into a house where a baby has just come and taking what she came for. She knows when she is spoken of, so the people who fear her speak of her carefully, and never by the open window.",
    "The wards against her are old and specific: salt, prayer, the sign made against the evil eye. They ground her, break her flight, pin her to her woman's shape. And there is a deeper truth \u2014 named in her true form, in daylight, she cannot take wing, cannot flee, cannot become the owl and vanish into the dark. Catch her as what she is, when the sun is up, and she's trapped on the ground with the rest of us."
@@ -964,7 +964,7 @@
    "He knows his terms better than anyone, and he's built a life on them. He'll provoke the fair fight he can't lose, walk into ambushes smiling, let a whole posse empty their guns into him just to watch their faces. The only way past him is the one way he's spent years getting good at \u2014 and he is very, very fast."
   ],
   "found": "The streets and saloons of the gun-towns, anywhere reputation is currency and a fast draw settles accounts. He goes where the fighting is, because the fight is the only thing that can end him, and he's not afraid of it.",
-  "keeperNote": "The Deathless Gun is the book's great showdown, and its whole point is that the party can't cheat . Every clever trick they've learned \u2014 ambush, numbers, poison, dynamite \u2014 fails against his terms, and you should let them try and fail once so the rule lands. The only path is the one he's mastered: a fair, open, one-on-one draw. This forces a fantastic dramatic question \u2014 who faces him, and are they fast enough? Build to it: let his reputation precede him, let the party watch him survive something that should have killed him, let the dread of the inevitable showdown build. Make the duel itself a real moment \u2014 the empty street, the held breath, the single exchange. It's a rare creature that turns the genre's central iconography (the quick-draw duel) into the only viable tactic. Reward the gunslinger character's whole build with this. And if they win, let it be earned, and close.",
+  "keeperNote": "The Deathless Gun is the book's great showdown, and its whole point is that the party can't cheat . Every clever trick they've learned \u2014 ambush, numbers, poison, dynamite \u2014 fails against his terms, and you should let them try and fail once so the rule lands. The only path is the one he's mastered: a fair, open, one-on-one draw. This forces the dramatic question \u2014 who faces him, and are they fast enough? Build to it: let his reputation precede him, let the party watch him survive something that should have killed him, let the dread of the inevitable showdown build. Make the duel itself a real moment \u2014 the empty street, the held breath, the single exchange. It's a rare creature that turns the genre's central iconography (the quick-draw duel) into the only viable tactic. Reward the gunslinger character's whole build with this. And if they win, let it be earned, and close.",
   "witness": ""
  },
  {
@@ -986,7 +986,7 @@
    "Within his town his word is iron law \u2014 his sentence carries a weight that makes the bravest soul quail, his gavel-crack stuns like a thunderclap. He cannot be argued with by ordinary means, because in his own mind he is simply doing his duty, as he always did. The wrong he died hiding is the crack in the bench: prove it, win a true verdict against him, and the false majesty of his court comes down."
   ],
   "found": "The abandoned courthouse and gallows-square of a dead or dying town, the seat of his old jurisdiction. He's bound to his bench; leave the town and you leave him, but the town usually holds something the party needs.",
-  "keeperNote": "The Hanging Judge is a courtroom drama with a noose, and the way to beat him is to play the trial, not the fight. His numbers make a straight brawl punishing, and morally he believes he's righteous, so you can't just shoot your way out of his jurisdiction. The keys are in the entry: win a true verdict against him (prove the wrong he died concealing \u2014 the innocent man he knowingly hanged) or destroy the instruments of his false court (break the gallows, burn the bench). Build the scenario as an investigation into his old cases: who did he hang wrongly, where's the evidence, what's the truth he's been holding court to avoid? Then stage a confrontation where the party turns his own ritual against him \u2014 puts him on trial. It's a fantastic set-piece for a party that likes to think, and a sharp comment on frontier justice. Let them win by being right, not just by being armed.",
+  "keeperNote": "The Hanging Judge is a courtroom drama with a noose, and the way to beat him is to play the trial, not the fight. His numbers make a straight brawl punishing, and morally he believes he's righteous, so you can't just shoot your way out of his jurisdiction. The keys are in the entry: win a true verdict against him (prove the wrong he died concealing \u2014 the innocent man he knowingly hanged) or destroy the instruments of his false court (break the gallows, burn the bench). Build the scenario as an investigation into his old cases: who did he hang wrongly, where's the evidence, what's the truth he's been holding court to avoid? Then stage a confrontation where the party turns his own ritual against him \u2014 puts him on trial. It's a set-piece for a party that likes to think, and a sharp comment on frontier justice. Let them win by being right, not just by being armed.",
   "witness": ""
  },
  {
@@ -1046,7 +1046,7 @@
   "special": "Your name in his book. Once he has it, he cannot be refused, outrun, or barred; he comes at the appointed hour to collect what was promised the Old Dark.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "Pay the debt, trick him into a worse one, or strike his name from the ledger he carries \u2014 the gun does nothing.",
-  "mark": "",
+  "mark": "Any dealing that puts your name in his book is +1 Mark or more.",
   "lore": [
    "Every bargain with the dark has terms, and someone has to collect. The Tallyman is that someone \u2014 an unhurried, patient figure in a dark coat with a ledger under his arm, who comes at the appointed hour for the debt that was promised. He does not threaten and he does not hurry, because he does not need to. Once your name is in his book he cannot be refused, outrun, locked out, or shot; he simply arrives, at the time agreed, and collects.",
    "His reckoning ignores armor and never misses one who owes. The gun does nothing \u2014 you cannot kill a debt. The only ways past him are the ways of any creditor: pay what's owed, trick him into accepting a worse bargain, or get your name struck from the ledger he carries. And the surest way never to face him is the simplest: never put your name in his book at all, however good the deal sounds at the time."
@@ -1114,11 +1114,11 @@
   "puttingItDown": "Fire ends them; keep eyes on them till the flames take hold, and do not, ever, count them wrong.",
   "mark": "",
   "lore": [
-   "Someone made dolls, and made them too well, and put something into them \u2014 grief, spite, the small souls of children who died \u2014 until the dolls woke up. The Dollmaker's Children are painted, jointed, doll-sized things that move only when no one is watching. Under a steady eye they are perfectly, innocently still. The instant that eye blinks or turns away, they rush \u2014 needles and little knives, a swarm of small spiteful hands \u2014 and freeze again before anyone can be sure they moved at all.",
+   "Someone made dolls, and made them too well, and put something into them \u2014 grief, spite, the small souls of children who died. The dolls woke. The Dollmaker's Children are painted, jointed, doll-sized things that move only when no one is watching. Under a steady eye they are perfectly, innocently still. The instant that eye blinks or turns away, they rush \u2014 needles and little knives, a swarm of small spiteful hands \u2014 and freeze again before anyone can be sure they moved at all.",
    "The whole horror of them is the watching. You cannot look at all of them at once. You cannot blink in unison. And you must never, ever count them wrong, because if there are more of them than you thought, one is already behind you, and it has all the time it needs the moment you look away."
   ],
   "found": "A nursery, a toy-shop, the workshop or home of the dollmaker who made them. They cluster where children were \u2014 or where children were lost \u2014 and they spread, doll by doll, through the houses of a town.",
-  "keeperNote": "The Dollmaker's Children turn attention into a resource the party has to manage, which makes for uniquely tense play. They only move when unobserved, so the table is forced to think about who's watching what, who's turning their back, what happens when the lantern swings away. Run the dread of glimpsed movement, the doll that's closer than it was, the miscount. Mechanically they're fragile and fire ends them \u2014 but the catch is you have to keep eyes on them until the flames actually take, and they're a swarm, so you can't watch them all. Stage it in a confined, doll-filled space (a nursery, a workshop) where there are always more than the party can cover. The 'never count them wrong' line is a perfect way to plant dread \u2014 have the count come out different twice. It's a fantastic set-piece for a tense, claustrophobic scene, and a creature that punishes panic and rewards discipline, teamwork, and a cool head. Pair with the tragedy of why the dolls woke for emotional weight.",
+  "keeperNote": "The Dollmaker's Children turn attention into a resource the party has to manage, which makes for uniquely tense play. They only move when unobserved, so the table is forced to think about who's watching what, who's turning their back, what happens when the lantern swings away. Run the dread of glimpsed movement, the doll that's closer than it was, the miscount. Mechanically they're fragile and fire ends them \u2014 but the catch is you have to keep eyes on them until the flames actually take, and they're a swarm, so you can't watch them all. Stage it in a confined, doll-filled space (a nursery, a workshop) where there are always more than the party can cover. The 'never count them wrong' line is a perfect way to plant dread \u2014 have the count come out different twice. It's a set-piece for a tense, claustrophobic scene, and a creature that punishes panic and rewards discipline, teamwork, and a cool head. Pair with the tragedy of why the dolls woke for emotional weight.",
   "witness": ""
  },
  {
@@ -1250,7 +1250,7 @@
    "It can only act where there's a reflection to hold it. A room with every mirror broken or covered, every basin emptied, every window dark, is a room it cannot enter. Somewhere there's the mirror it calls home, the one it came through first \u2014 shatter that, and you cut it off from this side for good."
   ],
   "found": "Anywhere there are mirrors and still water \u2014 a house full of looking-glasses, a town's barber-shop and parlors, a still pond. It has a home mirror it favors and spreads its reach through every reflection nearby.",
-  "keeperNote": "The Mirror-Dweller makes every reflective surface a door, which is a wonderfully paranoid mechanic to run. The party learns to fear mirrors, dark windows, still water, the polished surface of a gun \u2014 anywhere it can reach through or wear a stolen face back at them. The defensive rule is concrete and tactical: break or cover every reflection and it can't enter; a reflection-free room is a safe room. The win is finding and shattering its home mirror. The replacement horror gives it teeth beyond combat \u2014 if it takes someone, an impostor wearing their face is now loose, which can fuel a whole paranoid scenario (which of us is real?). Run the dread of the reflection that moves wrong, the face in the glass that smiles when you don't. It rewards a party that thinks about their environment and covers their mirrors, and punishes the one that walks past a looking-glass without a second thought. A gothic, claustrophobic favorite, and a great pairing with the Skin-Walker for a campaign about impostors and stolen identities.",
+  "keeperNote": "The Mirror-Dweller makes every reflective surface a door, which makes every glass in the house a thing to watch. The party learns to fear mirrors, dark windows, still water, the polished surface of a gun \u2014 anywhere it can reach through or wear a stolen face back at them. The defensive rule is concrete and tactical: break or cover every reflection and it can't enter; a reflection-free room is a safe room. The win is finding and shattering its home mirror. The replacement horror gives it teeth beyond combat \u2014 if it takes someone, an impostor wearing their face is now loose, which can fuel a whole paranoid scenario (which of us is real?). Run the dread of the reflection that moves wrong, the face in the glass that smiles when you don't. It rewards a party that thinks about their environment and covers their mirrors, and punishes the one that walks past a looking-glass without a second thought. A gothic, claustrophobic favorite, and a great pairing with the Skin-Walker for a campaign about impostors and stolen identities.",
   "witness": ""
  },
  {
@@ -1288,7 +1288,7 @@
   "special": "The deal. He waits where roads cross at midnight and offers exactly what you want for exactly what you cannot spare; refusing is safe, dealing is not.",
   "dread": "DC 20, 1d10",
   "puttingItDown": "You do not beat him with force. Refuse the deal, or bind him to terms he did not foresee \u2014 and never speak your true name.",
-  "mark": "",
+  "mark": "Any bargain struck is +1 Mark at the very least, and the start of a long road down.",
   "lore": [
    "Come to a crossroads at midnight with a need too big to fill honestly, and he'll be there \u2014 though you came alone, and the road was empty a moment ago. The Crossroads Man is patient, courteous, and terribly accommodating. He offers exactly what you want most: the fast gun, the cure for the dying child, the gold, the love, the second chance. The price is always something you think you can spare, and it never is.",
    "He has no need of hands and rarely shows force, because he doesn't have to \u2014 refusing him is perfectly safe, and dealing with him is the only danger. But cross him, break a bargain, or try to cheat the terms, and the road itself turns on you. The only ways past him are to walk away from the deal, or to be cleverer than he is and bind him to terms he didn't see coming. And whatever you do, you never, ever tell him your true name."
@@ -1420,7 +1420,7 @@
   "special": "Not yet whole. A man lately turned, still half himself, still nameable \u2014 and for a little while yet, still possible to save.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "Fire and iron put it down; faster, a true name and a held warmth may yet call the man back from it \u2014 once.",
-  "mark": "",
+  "mark": "As the Wendigo.",
   "lore": [
    "Between the man and the monster there is a window, and the Hunger That Walks lives in it. This is a wendigo new-made \u2014 a soul lately turned, the cold not yet finished with him, still half the person he was and still answering, for a little while, to the name he was given at birth. He is fast and frost-clawed and the cold deepens around him, but he is not yet the towering thing of the deep storm. He is a man losing the fight, and not quite lost.",
    "And because he is not yet whole, he can still \u2014 for a little while, and only once \u2014 be called back. Fire and iron will put him down like any of the cold things. But a true name spoken with love, a warmth held out and not withdrawn, may yet reach the man still drowning inside the hunger and pull him back to himself. The window is narrow. It closes fast. But it is there, and a party that knows it is there has a choice the deep-winter Wendigo never offers."
@@ -1510,7 +1510,7 @@
   "puttingItDown": "You do not fell it \u2014 you flee it, lead it astray, or lull it back to its long sleep. Do not wake it again.",
   "mark": "",
   "lore": [
-   "There are mountains that are not only mountains. The Stone Giant is a thing of the high rock, old beyond the reckoning of men, that sleeps for ages as a ridge or a crag or a tor \u2014 until something wakes it. A mine driven too deep, a charge set wrong, a greed that dug where it should have left the rock alone, and the mountain stirs, and stands, and steps, and the ground shakes with every footfall. It is slow. It is also utterly unstoppable, and nothing the frontier owns will so much as scar it.",
+   "There are mountains that are not only mountains. The Stone Giant is a thing of the high rock, old beyond the reckoning of men, that sleeps for ages as a ridge or a crag or a tor. A mine driven too deep, a charge set wrong, a greed that dug where it should have left the rock alone \u2014 and the mountain stirs, and stands, and steps, and the ground shakes with every footfall. It is slow. It is also utterly unstoppable, and nothing the frontier owns will so much as scar it.",
    "You do not fell a mountain. The whole question, once it's roused, is how to survive it and how to put it back to sleep \u2014 to flee it, to lead it astray over ground that doesn't matter, to lull it back into the long dreamless rest it was woken from. And then, the hard part, the part men never seem to learn: to leave it alone, and never, ever wake it again."
   ],
   "found": "The high mountains and ancient rock, where it sleeps disguised as the landscape itself. It wakes only when disturbed \u2014 by deep mining, by disrupted ground, by some greed or folly that won't let the old rock lie.",
@@ -1520,7 +1520,7 @@
  {
   "name": "The Wendigo",
   "chapter": "The Wild & the Weather",
-  "tierText": "Tier IV \u00b7 the hunger that walks",
+  "tierText": "Tier IV \u00b7 the deep winter given a body",
   "tier": 4,
   "defense": "20",
   "blood": "72",
@@ -1529,8 +1529,8 @@
   "attacks": "antler and claw +13 (2d8+6, two a round); a crit carries a soul off into the white",
   "special": "Killing cold & the call. A blizzard rides with it; any who have eaten the dead or starved past reason hear it call by name (Will DC 18 nightly or walk to it).",
   "dread": "DC 20, 1d10",
-  "puttingItDown": "Cold cannot touch it \u2014 only fire and an iron heart. Cut out its frozen heart and burn it to ash.",
-  "mark": "",
+  "puttingItDown": "Cold cannot touch it \u2014 only fire, and the nerve to use it close. Cut out its frozen heart and burn it to ash.",
+  "mark": "Answering the hunger willingly is +1 Mark and the Wendigo's notice forever.",
   "lore": [
    "It is the hunger of the deep winter given a body, and the body is wrong \u2014 gaunt past starvation, antlered, frost-rimed, taller than a man and faster than a horse, with a hunger that the eating of whole homesteads will not fill. The Wendigo is what the starved and the cannibal become when the cold and the appetite finish their work, and a blizzard rides with it wherever it goes, so that the storm and the monster arrive together and no one can tell where one ends.",
    "Worst of all is the call. Any soul who has eaten the dead, or starved past the edge of reason, hears the Wendigo speak their name on the wind, night after night, calling them out into the white to join it. The cold cannot harm it \u2014 it is the cold \u2014 and only fire touches it, and only the burning of its frozen heart ends it. Until then it walks, and calls, and feeds, and the winter walks with it."
@@ -1574,7 +1574,7 @@
   "special": "One body of many. A whole congregation given over and melded into a single crawling mass around the relic they could not stop touching.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "The relic at its heart is the binding; take it, break it, or burn it, and the mass comes apart into its poor dead.",
-  "mark": "",
+  "mark": "Touching the relic is +1 Mark.",
   "lore": [
    "They were a congregation once \u2014 a church, a commune, a tent-revival full of the faithful \u2014 and they found a relic, or were given one, and they could not stop touching it. One by one they melded to it and to each other, flesh fusing to flesh around the thing at the center, until the whole congregation became a single crawling mass of a hundred hands and mouths, dragging itself across the country and pulling in every soul it can reach to add to itself.",
    "It is slow but it is tireless, and it grows with each person it takes. The hands reach and grab and draw you in toward the heaving center, and if they pull you in, you become another part of it. But the relic at its heart is the binding that holds the whole horror together \u2014 take it, break it, burn it \u2014 and the mass comes apart at last into what it always was underneath: a great many poor dead people, finally released, finally still."
@@ -1618,13 +1618,13 @@
   "special": "It only talks. A person or thing hollowed to carry a voice from outside; the words are true, and that is the harm of them.",
   "dread": "DC 16, 1d6",
   "puttingItDown": "Silence it \u2014 deafen yourself, gag or end the vessel \u2014 and do not, whatever it promises, listen for the rest.",
-  "mark": "",
+  "mark": "Heeding what it says is +1 Mark.",
   "lore": [
    "Something out beyond the veil has things it wants said, and it needs a mouth to say them. The Whisperer's Mouth is a person \u2014 or what's left of one \u2014 hollowed out and made into a vessel for a voice from outside. It does nothing but talk. It raises no hand, makes no attack. And it is one of the most dangerous things in this book, because the words it speaks are true , and that truth is the harm of them: secrets that unmake you to know, answers to questions you should never have asked, the shape of things the mind is not built to hold.",
    "Hear it long enough and you lose the thread of your own mind, unspooling as the true and terrible words wind into you. The only defense is silence \u2014 stop your ears, gag the vessel, end it if you must \u2014 and the discipline never to listen for the rest, no matter what it promises to tell you, no matter how badly you want to know."
   ],
   "found": "Wherever a Patron wants a message delivered \u2014 the vessel may be a captured person, a corpse, a cultist who volunteered, set in a place the Patron means to influence. It speaks to whoever comes within earshot.",
-  "keeperNote": "The Whisperer's Mouth weaponizes knowledge and curiosity, and it's a fight the party wins by refusing to engage . It has no attack but speech, and the speech is true \u2014 which is exactly why it's deadly. The mechanical pressure is the per-round Will save for anyone who keeps listening, eroding their mind. The defenses are about silence and discipline: deafen yourself, gag or destroy the vessel, and crucially, don't listen for more even though it offers true and tantalizing answers. The horror is the temptation \u2014 it knows things, real things, things the party desperately wants to know (about the plot, about their pasts, about the dark itself), and listening is how it kills you. The Mark warning is sharp: heeding what it says corrupts. Run the agonizing pull of forbidden truth, and reward the player who has the discipline to clap their hands over their ears and cut the vessel's throat rather than hear one more sentence. It's a brilliant test of a party's restraint and a pure distillation of cosmic horror's central idea: some knowledge costs you the mind that holds it.",
+  "keeperNote": "The Whisperer's Mouth weaponizes knowledge and curiosity, and it's a fight the party wins by refusing to engage . It has no attack but speech, and the speech is true \u2014 which is exactly why it's deadly. The mechanical pressure is the per-round Will save for anyone who keeps listening, eroding their mind. The defenses are about silence and discipline: deafen yourself, gag or destroy the vessel, and crucially, don't listen for more even though it offers true and tantalizing answers. The horror is the temptation \u2014 it knows things, real things, things the party desperately wants to know (about the plot, about their pasts, about the dark itself), and listening is how it kills you. The Mark warning is sharp: heeding what it says corrupts. Run the agonizing pull of forbidden truth, and reward the player who has the discipline to clap their hands over their ears and cut the vessel's throat rather than hear one more sentence. It's a test of a party's restraint and a pure distillation of cosmic horror's central idea: some knowledge costs you the mind that holds it.",
   "witness": ""
  },
  {
@@ -1646,7 +1646,7 @@
    "You can sever the tongue. That buys escape, that ends the immediate danger \u2014 but the tongue grows back, and the thing it belongs to cannot be killed from up here, not with anything men own, because most of it is somewhere you cannot reach and do not want to. The only wisdom is to take the warning the tongue gives, leave the place, seal it behind you, and never, ever dig down toward the rest of it."
   ],
   "found": "Above the buried body of something vast and old \u2014 a particular patch of ground, a cave, a sinkhole, a dig that went too deep. The tongue lashes up from there; the rest of it is below, and best left there.",
-  "keeperNote": "The Devourer's Tongue is a masterclass in implied scale \u2014 the party fights an appendage and is meant to understand, with dread, that it's only a piece of something far larger and still sleeping below. The tongue can be severed (which buys escape) but regrows, and the thing itself can't be killed from the surface, so the only victory is restraint: take the warning, leave, seal the place, don't dig toward the rest. That's the whole point \u2014 the heroic act is not pursuing it, recognizing that some things are too big to fight and the smart move is to wall them off and walk away. Run the dread of the reaching tongue and the slowly dawning horror of how large the thing it belongs to must be \u2014 the ground that shifts, the sense of something vast listening from below. Resist any urge to let the party 'win' by digging down to the source; the source is unkillable and the descent is suicide. Use it to teach the chapter's hardest lesson \u2014 that wisdom sometimes means leaving the monster alive and sealed rather than dying to prove you could face it \u2014 and to seed a vast, sleeping threat the campaign need never fully reveal. The best Devourer is the one the party walks away from, looking back over their shoulders.",
+  "keeperNote": "The Devourer's Tongue is built on implied scale \u2014 the party fights an appendage and is meant to understand, with dread, that it's only a piece of something far larger and still sleeping below. The tongue can be severed (which buys escape) but regrows, and the thing itself can't be killed from the surface, so the only victory is restraint: take the warning, leave, seal the place, don't dig toward the rest. That's the whole point \u2014 the heroic act is not pursuing it, recognizing that some things are too big to fight and the smart move is to wall them off and walk away. Run the dread of the reaching tongue and the slowly dawning horror of how large the thing it belongs to must be \u2014 the ground that shifts, the sense of something vast listening from below. Resist any urge to let the party 'win' by digging down to the source; the source is unkillable and the descent is suicide. Use it to teach the chapter's hardest lesson \u2014 that wisdom sometimes means leaving the monster alive and sealed rather than dying to prove you could face it \u2014 and to seed a vast, sleeping threat the campaign need never fully reveal. The best Devourer is the one the party walks away from, looking back over their shoulders.",
   "witness": ""
  },
  {
@@ -1668,7 +1668,7 @@
    "You cannot kill it. It is not the disaster, only its herald, and it cuts down the stragglers and the messengers who fall behind \u2014 the ones who might have carried warning, the ones who might have outrun the ruin to alert the town ahead. The only thing to be done is to beat it: outrace it to carry word ahead of the catastrophe, or find a way to turn aside the ruin it heralds before the Rider's road runs out and the disaster arrives."
   ],
   "found": "On the road ahead of an oncoming catastrophe, always one step in front of the ruin it heralds. It rides toward whatever place disaster is coming for; outpacing it means outpacing the disaster.",
-  "keeperNote": "The Faceless Rider turns a catastrophe into a race, and that's its whole brilliant design. It can't be killed \u2014 it's the herald, not the disaster \u2014 and it hunts the messengers and stragglers specifically to stop warning from outrunning ruin. So the encounter becomes a desperate ride: beat the Rider to the threatened town to raise the alarm and evacuate, or find and turn aside the disaster it heralds before it lands. Run it as a chase with mounting stakes \u2014 the Rider always just ahead, cutting down anyone who falls behind, the ruin gaining behind them . The drama is the clock and the cost: who rides hard enough, who might fall behind to the scythe of cold, can word reach the town in time? It pairs with the Pallid Herald and the Mourner as the book's harbingers (this one the most kinetic of the three). Use it to frame an entire disaster scenario as a race against time, to give a flood or fire or plague a terrifying avatar, and to let the party be heroes not by fighting but by outrunning doom to warn the doomed . The Rider can't be beaten in combat \u2014 only beaten to the finish line.",
+  "keeperNote": "The Faceless Rider turns a catastrophe into a race, and that's its whole design. It can't be killed \u2014 it's the herald, not the disaster \u2014 and it hunts the messengers and stragglers specifically to stop warning from outrunning ruin. So the encounter becomes a desperate ride: beat the Rider to the threatened town to raise the alarm and evacuate, or find and turn aside the disaster it heralds before it lands. Run it as a chase with mounting stakes \u2014 the Rider always just ahead, cutting down anyone who falls behind, the ruin gaining behind them . The drama is the clock and the cost: who rides hard enough, who might fall behind to the scythe of cold, can word reach the town in time? It pairs with the Pallid Herald and the Mourner as the book's harbingers (this one the most kinetic of the three). Use it to frame an entire disaster scenario as a race against time, to give a flood or fire or plague a terrifying avatar, and to let the party be heroes not by fighting but by outrunning doom to warn the doomed . The Rider can't be beaten in combat \u2014 only beaten to the finish line.",
   "witness": ""
  },
  {
@@ -1706,13 +1706,13 @@
   "special": "An announcement. It arrives to tell a place that its end is coming; where it has spoken, the Old Dark follows within the season.",
   "dread": "DC 20, 1d10",
   "puttingItDown": "Driving it off only delays its master; the true answer is to undo whatever drew its master's eye in the first place.",
-  "mark": "",
+  "mark": "Hearing its message in full is +1 Mark.",
   "lore": [
    "It drifts into town like a fog with a shape inside it, pale and cold and draining the color from everything it passes, and it has come to deliver a message: that this place has been noticed, that its end is coming, that the Old Dark has turned its attention here and will arrive within the season. The Pallid Herald is an announcement made flesh, and its very message is a curse \u2014 to hear it in full is to be marked, to be part of the ending it foretells.",
    "Driving it off is easy enough and accomplishes nothing; it is only the messenger, and killing the messenger does not unsend the message. Its master's eye is already on the town, and the Herald's coming means the clock has already started. The only real answer is to find out why \u2014 what did this place do, what drew the deep dark's attention, what bargain or rite or buried wrong invited the worse thing the Herald announces \u2014 and undo it before the season turns."
   ],
   "found": "A town or settlement that has drawn the Old Dark's attention \u2014 usually through a rite, a bargain, a buried wrong, or simple bad luck. The Herald arrives first; the worse thing follows within the season.",
-  "keeperNote": "The Pallid Herald is a harbinger and a deadline, and its purpose is to start a clock. When it arrives and delivers its message, you've told the party that something far worse is coming and given them a season to prevent it. Driving off the Herald itself is a trap \u2014 it's just the messenger, and its master's attention is already fixed. The real work is investigation: why has the deep dark noticed this place, and how do you make it stop noticing? Build the scenario around uncovering and undoing the cause (the rite performed, the bargain struck, the wrong buried) before the worse thing arrives. The Mark warning \u2014 hearing the full message corrupts \u2014 means even receiving the warning has a cost. Run the Herald's coming as creeping dread: the color draining from the world, the cold, the sense of a countdown beginning. It's a fantastic scenario-opener that hands the party a mystery, a deadline, and high stakes all at once, and it sets up a back-half confrontation with whatever the Herald announced. Use it to make the party feel time pressing on them, and to frame a whole adventure as a race to un-draw the eye of something vast before it finishes turning toward them.",
+  "keeperNote": "The Pallid Herald is a harbinger and a deadline, and its purpose is to start a clock. When it arrives and delivers its message, you've told the party that something far worse is coming and given them a season to prevent it. Driving off the Herald itself is a trap \u2014 it's just the messenger, and its master's attention is already fixed. The real work is investigation: why has the deep dark noticed this place, and how do you make it stop noticing? Build the scenario around uncovering and undoing the cause (the rite performed, the bargain struck, the wrong buried) before the worse thing arrives. The Mark warning \u2014 hearing the full message corrupts \u2014 means even receiving the warning has a cost. Run the Herald's coming as creeping dread: the color draining from the world, the cold, the sense of a countdown beginning. It's a scenario-opener that hands the party a mystery, a deadline, and high stakes all at once, and it sets up a back-half confrontation with whatever the Herald announced. Use it to make the party feel time pressing on them, and to frame a whole adventure as a race to un-draw the eye of something vast before it finishes turning toward them.",
   "witness": ""
  },
  {
@@ -1728,13 +1728,13 @@
   "special": "An idea, embodied. A belief grown so dark and so believed that it took a shape; killing the body does not kill the belief.",
   "dread": "DC 20, 1d10",
   "puttingItDown": "Unmake the idea \u2014 prove the lie at its center, break its hold on the faithful \u2014 and the flesh has nothing left to hold it together.",
-  "mark": "",
+  "mark": "Speaking its creed aloud, even to refute it, risks +1 Mark.",
   "lore": [
    "A belief can grow so dark, and be believed so hard by so many, that it stops being merely an idea and takes on a body of its own. The Sermon Made Flesh is a doctrine incarnate \u2014 a creed walking around in a shape, preaching itself, its Word a weapon that converts the very people it strikes, folding the slain into its growing choir. It is not a person who believes a thing; it is the thing itself, the belief, given hands and a voice and a terrible momentum.",
    "You cannot kill an idea by shooting the body it wears \u2014 the belief just finds new flesh, new mouths, new believers. The only way to end it is to unmake the idea itself: prove the lie at its center, break its hold on the faithful, show the doctrine to be the falsehood it is. Do that, and the flesh has nothing left to hold it together, and the Sermon Made Flesh comes apart for want of anyone left to believe it."
   ],
   "found": "Wherever a dark doctrine has taken deep root \u2014 a corrupted church, a fanatical movement, a town that gave itself over to a terrible creed. It manifests where belief in it is strongest and preaches to spread.",
-  "keeperNote": "The Sermon Made Flesh is a war of ideas dressed as a monster, and it can't be won with bullets. Its Word converts those it strikes (and the slain become its choir), so a straight fight only feeds it \u2014 every casualty joins the other side. The win is unmaking the idea : prove the lie at the doctrine's center, break its hold on the faithful, expose the falsehood that gives it power. So the encounter is really a battle for belief \u2014 an investigation into the creed's lie, a confrontation that's argued and proven as much as fought, a effort to deconvert the faithful out from under it. The Mark warning is sharp and clever: even speaking its creed aloud to refute it risks corruption, so the party must fight the idea without being infected by it. Run the dread of a belief that walks and preaches and grows, of friends or townsfolk converting mid-fight. Use it to explore fanaticism, dangerous ideas, and the way a creed can outlive any believer. It pairs with the Flock of the Open Eye and the Hollow Prophet as the book's studies of belief weaponized. The lesson: some enemies are ideas, and you beat an idea by proving it false, not by killing the mouth that speaks it.",
+  "keeperNote": "The Sermon Made Flesh is a war of ideas dressed as a monster, and it can't be won with bullets. Its Word converts those it strikes (and the slain become its choir), so a straight fight only feeds it \u2014 every casualty joins the other side. The win is unmaking the idea : prove the lie at the doctrine's center, break its hold on the faithful, expose the falsehood that gives it power. So the encounter is really a battle for belief \u2014 an investigation into the creed's lie, a confrontation that's argued and proven as much as fought, a effort to deconvert the faithful out from under it. The Mark warning is sharp: even speaking its creed aloud to refute it risks corruption, so the party must fight the idea without being infected by it. Run the dread of a belief that walks and preaches and grows, of friends or townsfolk converting mid-fight. Use it to explore fanaticism, dangerous ideas, and the way a creed can outlive any believer. It pairs with the Flock of the Open Eye and the Hollow Prophet as the book's studies of belief weaponized. The lesson: some enemies are ideas, and you beat an idea by proving it false, not by killing the mouth that speaks it.",
   "witness": ""
  },
  {
@@ -1750,7 +1750,7 @@
   "special": "Not meant for here. Lead and steel close like water around it; to behold it fully is the DC-25 sight.",
   "dread": "DC 20 glimpsed, DC 25 beheld; 1d10 (+Affliction if beheld)",
   "puttingItDown": "You do not kill it \u2014 you close the door: break the rite, cleanse the ground, end the bargain that thinned the veil.",
-  "mark": "",
+  "mark": "Any plea or working aimed at it or its Patron is +1 Mark at least.",
   "lore": [
    "It is a hand reaching through from somewhere that is not anywhere, the local instrument of a Patron \u2014 one of the vast, indifferent things that wait outside the world and occasionally extend a piece of themselves into it. The Servant of the Deep Dark does not belong here, and the world knows it: the geometry of the thing is wrong, its limbs reach from angles that aren't there, and it is never quite where the eye says it is, so that lead and steel close around it like water around a stone and find nothing to break.",
    "To glimpse it is bad. To behold it fully \u2014 to let the eye actually resolve what it's looking at \u2014 is to risk the mind coming apart. And it is always nearer than it was, drawn through by some rite, some bargain, some thinning of the veil that a fool or a desperate man performed. You do not kill a reaching hand. You close the door it reached through, and you pray the rest of the thing doesn't notice the door is gone."
@@ -1794,7 +1794,7 @@
   "special": "It only looks. Older than the country, older than the dark, it opens somewhere in the night sky and notices you; nothing the living own can wound a thing so far and so vast.",
   "dread": "DC 25, 1d10 + Affliction (each scene under its regard)",
   "puttingItDown": "Close the sky \u2014 end the rite, the alignment, the open door that let its gaze fall here \u2014 and pray it forgets the small bright thing it saw.",
-  "mark": "",
+  "mark": "To seek its gaze, or speak to it, is +2 Mark and the beginning of the end of you.",
   "lore": [
    "It is the oldest thing this book knows, older than the country, older than the dark, and it does only one thing: it looks. Somewhere in the night sky it opens \u2014 a regard, an attention, an eye between the stars \u2014 and it notices you, and the noticing is the whole of the harm. To be seen by the Eye Between Stars is to be held against a truth too vast for the mind to survive, to feel a gaze fall on you from a distance and an age that makes the whole of the living world a small bright mote, and to come apart inside under the weight of being regarded by it.",
    "Nothing the living own can touch it. It is too far, too vast, too old, and it does not move and does not reach \u2014 it only watches, and being watched is enough. The only thing to be done is to close the sky: end the rite, break the alignment, shut the door that drew its gaze down to this small world in the first place \u2014 and then to pray, with everything left in you, that the eye between the stars forgets the small bright thing it briefly saw, before it decides to look a little closer."
@@ -1838,7 +1838,7 @@
   "special": "It eats the record. Those it unmakes vanish from memory, from paper, from the world; the party may not recall who they came in with.",
   "dread": "DC 25, 1d10 + Affliction",
   "puttingItDown": "Write everything down and trust the writing over your own mind; it can be bound only to a thing it cannot unmake \u2014 a true name, a holy anchor \u2014 never killed.",
-  "mark": "",
+  "mark": "To bargain with it to restore one unmade is +2 Mark.",
   "lore": [
    "It does not kill. It unmakes . Where the Unmade touches, a thing stops having ever been \u2014 not dead, but erased, gone from memory and from paper and from the world as if it had never existed at all. It drifts, unhurried, certain, and the people it takes don't leave bodies or graves or grieving friends, because no one remembers there was ever anyone to grieve. The party that walks in five strong may walk out four, and not one of them able to say who the fifth was, or that there ever was a fifth.",
    "You cannot kill a thing that erases. The only defenses are desperate: write everything down, every name and face and fact, and trust the writing over your own unraveling memory, because the page may remember what the mind has lost. And it can be bound \u2014 never killed, only bound \u2014 to a thing it cannot unmake: a true name spoken with enough power, a holy anchor old enough to predate it. Bargaining with it to restore even one of the unmade is a deeper damnation than letting them stay gone."
@@ -1860,7 +1860,7 @@
   "special": "Not a creature. A tear where something pushed through; things crawl out of it, and it widens while it is open.",
   "dread": "DC 25, 1d10 + Affliction",
   "puttingItDown": "Sew it shut: undo the rite that tore it, restore what was sacrificed, or close it with a willing life given right \u2014 nothing less will hold.",
-  "mark": "",
+  "mark": "Working near it, or feeding it, is +1 Mark or more.",
   "lore": [
    "It is not a creature at all. It is a hole \u2014 a tear in the fabric of the world where something pushed through from the other side and left the veil ripped open behind it. Near the Wound in the World, reality simply fails: flesh comes apart, distance stops meaning anything, time runs wrong or stops or doubles back. Things crawl out of it, drawn or birthed or vomited from whatever is on the far side, and the tear widens the longer it stays open, the hole in everything growing toward the day it can't be closed at all.",
    "You cannot fight a hole. You can only sew it shut, and that costs. Undo the rite that tore it open. Restore what was sacrificed to make it. Or close it the old, terrible way \u2014 with a willing life, given right, in full knowledge of what it buys. Nothing less will hold the wound closed, and the longer the party waits, the higher the price climbs, and the more of the far side bleeds through into here."
@@ -1941,7 +1941,7 @@
   "blood": "8",
   "speed": "slow; strikes a blur",
   "saves": "Fort +5, Ref +7, Will +0",
-  "attacks": "bite +6 (1d4 plus venom: Fort save or 1d6 and sickened a day)",
+  "attacks": "bite +6 (1d4 plus venom: Fort DC 13 or 1d6 and sickened a day)",
   "special": "Venom. It would as soon be left alone and rattles to say so; step wrong and it answers from arm's length before the eye can follow.",
   "dread": "\u2014",
   "puttingItDown": "Watch the ground and the warm rocks. A hoe, a heel, or a load of shot \u2014 and carry a remedy for the bitten.",
@@ -2319,7 +2319,7 @@
   "blood": "100",
   "speed": "fast; burrows",
   "saves": "Fort +18, Ref +13, Will +9",
-  "attacks": "bite +17 (3d8+8 plus venom: Fort save or 2d6 and weakened)",
+  "attacks": "bite +17 (3d8+8 plus venom: Fort DC 18 or 2d6 and weakened)",
   "special": "Long as a fence-line, thick as a barrel. Strikes from the dust with the reach of a tall man and more; its venom answers to no remedy the frontier carries.",
   "dread": "\u2014",
   "puttingItDown": "Keep to high rock and open ground where you can see it come. The head must be taken \u2014 and getting close enough is the whole of the danger.",

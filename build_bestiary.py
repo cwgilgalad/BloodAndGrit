@@ -41,13 +41,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.13 -->", "<!-- Blood & Grit — The Bestiary · Version 2.5 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.13)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.5)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.14 -->", "<!-- Blood & Grit — The Bestiary · Version 2.6 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.14)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.6)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.13</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.5</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.14</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.6</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.13 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.5 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.14 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.6 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -176,6 +176,11 @@ HOWTO = f"""<!-- I -->
   <p class="chapter-sub">The shape of an entry, and how to bend it.</p>
   <div class="divider"></div>
   {quote("Every monster is a sum and a secret. The sum you can read off the page. The secret you have to bleed for.", "from the field-books of N. Ashby")}
+  <div class="narr">Approach this volume as you would any honest field-book: species, habitat, sign, and
+  season. The early chapters catalogue dangers a rifle understands, and a careful outfit may ride years
+  and meet nothing worse. But the reader will notice the catalogue is arranged in a particular order,
+  and that the order is not alphabetical. It is the order in which a soul out in that country comes to
+  meet these things &mdash; which is to say, it is a road, and the road runs downhill.</div>
   <p class="dropcap lead">Each creature here is built on the same bones as a player's character, so you can run it
   without a second system in your head. Below is what every line means; after that, the country.</p>
   <div class="box">
@@ -865,6 +870,11 @@ SPIRITS = f"""<!-- V -->
   <p class="chapter-sub">The dead that left no body, and the places that keep them.</p>
   <div class="divider"></div>
   {quote("A house remembers what was done in it, same as a man. Only a house can't ever leave, and can't ever forgive.", "J. Halloran")}
+  <div class="narr">You may have noticed that somewhere in the last hundred entries, the remedies stopped
+  mentioning the rifle. That was not an oversight. From this chapter forward the catalogue concerns what
+  is left when the body is subtracted &mdash; the grief, the grudge, the place itself gone wrong &mdash;
+  and the tools that answer it are older and cost more. A reader who has come this far in a single
+  sitting is advised to look up from the page a moment, and confirm the hour, and the room.</div>
   <p class="dropcap lead">You cannot always shoot a haunting. These are answered with salt and truth and the right words
   said over the right ground &mdash; and they punish a party that reaches for the gun first.</p>
   <p class="note"> <strong>Signs of the kind:</strong> a cold with no draft to carry it, a sound with no mouth to make it, a latch that will not hold, and one room always colder than the next.</p>
@@ -1161,6 +1171,11 @@ OLD = f"""<!-- VII -->
   <p class="chapter-sub">The things that were never men, and never meant for here.</p>
   <div class="divider"></div>
   {quote("Do not read the part that comes after this. I am leaving it in only so you will know I was warned, and went on.", "sealed testimony, Calvary Wells")}
+  <div class="narr">Here the field-book runs out of field. What follows was never a man, was never a
+  beast, and was never made by the country &mdash; the country only holds the door. The compiler offers
+  no advice for this chapter, because there is none to offer: there is only the knowing, and the price
+  of the knowing, which you have been paying a page at a time since you first opened this book. Turn
+  the page or do not. It has already noticed you reading.</div>
   <p class="dropcap lead">These are the deep things &mdash; the Patrons and their reaching hands, the wrong that comes from
   outside the world. You rarely kill them. You close the door, and you hope it stays closed.</p>
   <p class="note"> <strong>Signs of the kind:</strong> angles that will not add up, dreams shared between strangers, a word everyone has lately begun to use that no one taught them, and a wrongness the eye keeps sliding off of.</p>

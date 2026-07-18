@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.13 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.5 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.13)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.5)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.14 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.6 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.14)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.6)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.13</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.5</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.14</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.6</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.13 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.5 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.14 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.6 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -109,6 +109,12 @@ CH1 = f"""<!-- I -->
   <h1 class="chapter">I. The Keeper's Chair</h1>
   <p class="chapter-sub">What you are for, and the bargain you make with the table.</p>
   <div class="divider"></div>
+  <div class="narr">A word before the work, from one host to another. Your players sat down for a western
+  &mdash; give them one. Let the first night be cattle prices and bad coffee and a gun that means exactly
+  what a gun means. The dark in this game earns nothing by arriving early; it earns everything by
+  arriving <em>eventually</em>, through a door the players propped open themselves on some ordinary
+  afternoon. You are not the monster's advocate. You are the ordinary evening the monster interrupts
+  &mdash; and the longer that evening stays believably ordinary, the further down it can afterward go.</div>
   <p class="dropcap lead">Every other soul at the table plays one person trying to last another day. You play
   everything else &mdash; the town and the trail, the weather and the wolves, the kindly stranger and the thing
   wearing his face. More than that, you play the <strong>country itself</strong>, which in this game is old, and
@@ -734,6 +740,11 @@ CH6 = f"""<!-- VI -->
   <h1 class="chapter">VI. Cursed Ground, Hazards &amp; Bad Medicine</h1>
   <p class="chapter-sub">The dangers that have no eyes to shoot for.</p>
   <div class="divider"></div>
+  <div class="narr">Mark this chapter as the place your campaign quietly changes its nature. Up to here the
+  players have fought things &mdash; and a thing that can be fought, however terrible, is still a western.
+  From here on, some of what is wrong has no eyes to shoot for and no Blood to spend, and the game the
+  players thought they were playing begins, by honest degrees, to be the other one. Do not announce it.
+  Let them discover that the revolver has stopped being the answer, one unanswered shot at a time.</div>
   <p class="dropcap lead">Not every threat in the country has a Blood total. Some of it is the ground itself, the
   weather, the long thirst, and the slow poison of places where the dark has soaked in. These hazards are how you
   threaten a party between monsters &mdash; and how you make a haunted place feel haunted before anything with teeth
@@ -879,6 +890,71 @@ CH7 = f"""<!-- VII -->
   (Ch. III) &mdash; never a flat "no," which only makes the dark boring, but never a free "yes" either. The best
   bargains solve the immediate problem and plant the next one. A player who took the deal to save a friend, and would
   take it again, is exactly where the game wants them: one step further down a road they chose.</p>
+
+  <h2 id="patrons-table">The Patrons at the Table</h2>
+  <p>The Player's Book names six Patrons (Ch. VII) and wisely tells no more than a drifter's rumor of each. Here is
+  the rest &mdash; how each one actually comes at a table of players, and when. Thirty years behind a screen teaches
+  one thing above all others about devils: an offer made on schedule is a mechanic, and an offer made at the exact
+  wrong moment is a memory the table keeps for years. A Patron never simply appears. Each waits at a different door,
+  and the players open every one of those doors themselves.</p>
+
+  <h3>The Devourer &mdash; the door of want</h3>
+  <p>It comes when the body is failing: the snowed-in pass, the tainted well, the wound going bad three days' ride
+  from help. It has no voice and needs none &mdash; its offer arrives as meat. Game where no game should be, strength
+  flooding into a starving frame, and only afterward the understanding of what was traded. Make the offer only after
+  the players have said out loud what they might be willing to do to survive, and never a moment sooner &mdash;
+  otherwise it is you tempting them, and not the country. Its progress shows at every camp thereafter: the served one
+  eats first, eats most, and stops asking what the meat is. Let the other players notice before the one who took it does.</p>
+
+  <h3>The Whisperer &mdash; the door of the question</h3>
+  <p>It waits on curiosity, and its moment is the fact the players cannot reach: the name three sessions hunted, the
+  hour the train passes, what is really under the church. It answers questions no one has asked aloud &mdash; a
+  certainty arriving at the edge of sleep, sourceless and correct. The craft here is discipline: everything it says
+  must be true, every time, or it dies as a horror at your table. Its price rides inside the gift &mdash; each answer
+  carries one more truth the asker did not want and cannot now unknow. It is the Patron for the party's thinker, and
+  it will find the one soul at your table who cannot leave a locked box alone.</p>
+
+  <h3>The Cold Deep &mdash; the door of hurt</h3>
+  <p>It comes to the grieving and the broken, and never during the horror &mdash; after. The shaking hour past
+  midnight when it is over; the day after the funeral; the first camp after a soul has Broken at 0 Nerve. It does not
+  offer power. It offers relief &mdash; an end to the shaking &mdash; and relief is the hardest offer a player ever
+  refuses on behalf of a hurting character. Its price is paid in subtraction, and you should run it that way: the
+  character stops flinching, then stops weeping, then stops laughing. Roll no dice for any of it. Just let the table
+  watch a friend go quiet.</p>
+
+  <h3>The Long Trail &mdash; the door of the grave</h3>
+  <p>It bargains exactly once, and its circumstance is a death &mdash; there at the table, with the body still warm
+  and the players still silent. That is the hour the rider is on the ridge. One offer, in plain terms, no haggling;
+  refused, it touches its hat brim and is gone, and it does not come back for that soul. Never offer twice &mdash;
+  scarcity is the whole of its power, and the table must learn the refusal was real. If the deal is taken, remember
+  that those it carries back come back a little wrong, and that the door it opened stays ajar: the returned soul sees
+  the dusk rider now on every far ridge, and knows who it is waiting for.</p>
+
+  <h3>The Thing Beneath the Mountain &mdash; the door of the strike</h3>
+  <p>The one Patron that pays first and bargains after. Its circumstance is prosperity: the vein too rich for the
+  ground it sits in, the claim sold suspiciously cheap, the town growing faster than any honest town grows. It seldom
+  addresses the players at all &mdash; it works through the diggings and the money, and every dollar out of that
+  ground is a signature on its paper. Run it as economics before you run it as horror: the players profit, the town
+  booms, and only slowly does the arithmetic of what is waking underneath come due. It corrupts towns, not souls,
+  and lets the town do the rest to the players.</p>
+
+  <h3>The Red Sermon &mdash; the door of the flock</h3>
+  <p>It rarely wants the players. It wants the crowd around them, and so it comes at the table sideways &mdash;
+  through the revival tent, the new church, the charity that is feeding the hungry and filling the pews. Its moment
+  is the moment your players begin to love a congregation, a town, a good man in a pulpit. What it offers a soul is
+  legitimate success &mdash; full pews, a town's love, a gospel that visibly works &mdash; which is why it is the
+  Patron that catches Preachers and Prophets who set out meaning well. Fight it as a rival for people, not a monster
+  in the dark: every session the players spend elsewhere, it gains a family, a deacon, a street. The horror is
+  arithmetic, and the players can read it in the faces at the church socials.</p>
+
+  <div class="keeper-note"><span class="kn-tag">The veteran's rules</span>Four rules carry all six. A Patron makes
+  its offer at the moment of weakness it owns and not before &mdash; hold the offer you have planned until the door
+  is truly open, even if that takes a season. It almost never speaks in its own voice; it prefers heralds, dreams,
+  signs, meat, money, and paperwork, and it is the more frightening for the indirection. One waking Patron is a
+  campaign; two is a muddle &mdash; keep the others as rumors at the edge of the map. And the answer must always
+  genuinely be allowed to be no. The Mark means something only because the player chose it &mdash; and a table that
+  turns a Patron down flat has just told you, precisely, what they hold dearest. The dark was listening, and so
+  were you.</div>
 
   <h2>Carrying the Marked</h2>
   <div class="keeper-note"><span class="kn-tag">The long fall</span>A Marked character is a slow tragedy you are
@@ -1606,6 +1682,11 @@ CH13 = f"""<!-- XIII -->
   <h1 class="chapter">XIII. Perdition Basin</h1>
   <p class="chapter-sub">One county, drawn whole and keyed &mdash; the worked example of a Haunted Year.</p>
   <div class="divider"></div>
+  <div class="narr">Submitted for your consideration, then: one county, surveyed and staked, whole enough
+  to hold a year. It begins as every good lie in this country begins &mdash; with the truth. A river, a
+  bank, a stage road, a marshal, cattle at fair prices. Nothing in Perdition Basin will read as anything
+  but a western until the third or fourth night, and that is its design and its lesson in one: the
+  slow burn is not a trick you play <em>on</em> the county. It is what the county is.</div>
   <p class="dropcap lead">Everything before this chapter handed you parts: the engine, the monsters, the craft, two finished
   nights, and the frame for stringing nights into a year. This chapter spends all of it in one place. <strong>Perdition
   Basin</strong> is a whole county &mdash; mapped, keyed, and built so you can open this book and run. It is the home
@@ -1839,6 +1920,7 @@ KEEP_INDEX = [
     ("When players dabble", "hazards"), ("Plain hazards of a hard country", "hazards"),
     ("Rewards &amp; Reckonings", "rewards"), ("Advancement (Keeper's side)", "rewards"),
     ("Grit (running)", "rewards"), ("Carrying the Marked", "rewards"),
+    ("The Patrons at the table", "patrons-table"), ("The Dark's Wages", "rewards"),
     ("The Cast", "cast"), ("An NPC in three lines", "cast"),
     ("Reaction &amp; morale", "cast"), ("Folk of the frontier", "cast"),
     ("The town as a character", "cast"), ("Factions", "cast"),

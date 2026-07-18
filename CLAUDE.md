@@ -3,8 +3,15 @@
 Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
-**Current versions: Player's Book v2.13 · Keeper's Book v2.5 · Bestiary v2.5 ·
-The Keeper's Table app v1.2.2 (self-contained, crash-hardened build).**
+**Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
+The Keeper's Table app v1.2.3 (self-contained, crash-hardened build).**
+
+**Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
+book change that touches it** — status-bar/README version strings every time the books bump,
+`Data/creatures.json` re-extracted whenever Bestiary creature content changes (extractor
+lives in the repo as `extract_creatures.py` — verify with a diff against the previous JSON),
+and the Reference tab whenever a rule it quotes changes. Then build, smoke, publish,
+re-mirror `BloodAndGrit-Keepers-Table/`, and rezip.
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
@@ -51,14 +58,12 @@ tools — documented in their own sections below.
   (build 0/0, smoke suite green, books measure clean — or, for doc edits, simply read back
   correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
   changes go bad, abandon the branch — `main` stays clean.
-- **The Keeper's Table app is built and tested blind.** Claude's environment is Linux, so
-  C# builds compile and run headless logic tests successfully there, but nobody can see the
-  actual WinForms window render before I do. Real UI/layout bugs (like a bad SplitContainer
-  crash we hit once — see Changelog) only surface when I actually run it on Windows. If
-  something looks or crashes wrong, paste the `startup-error.txt` it writes, or describe
-  what's on screen, and Claude will fix it blind again. Running Claude Code CLI natively on
-  my Windows laptop would let Claude actually launch and see the app — worth doing for any
-  serious UI work on it.
+- **The Keeper's Table app now builds natively on this Windows laptop** (verified
+  2026-07-18: .NET SDK 9 is installed; `dotnet build` / `dotnet publish` / the smoke suite
+  all run locally, and the WinForms window can actually be launched here). The old
+  "built and tested blind on Linux" caveat is history — but the SplitContainer landmine
+  note in the app section still applies. If a crash does slip through, the app writes
+  `startup-error.txt` beside the exe.
 
 ---
 
@@ -69,9 +74,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.13 | 168 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.5 | 84 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.5 | 131 | none (110 creatures) |
+| The Player's Book | v2.14 | 170 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.6 | 88 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.6 | 131 | none (110 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -132,6 +137,8 @@ Each book's cheapest editable form is **bolded**.
 | `add_index.py` | One-shot that baked the v2.9 Index into `player-src.html` (anchor ids, index section, TOC line, `.ix` CSS, version cascade). Guarded against re-running, but **do not re-run** anyway. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
+| `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
+| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html KT/source/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
 
@@ -359,7 +366,7 @@ its Tier in levels**):
 
 ---
 
-## The Keeper's Table (v1.2) — the C# desktop app
+## The Keeper's Table (v1.2.3) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -513,6 +520,55 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 
 ## Changelog (newest first)
 
+- **Player v2.14 / Keeper v2.6 / Bestiary v2.6 + app v1.2.3 — content expansion, Serling
+  slow-burn pass, whitespace audit, and the app brought in sync (2026-07-18).** Four jobs in
+  one session (all user-requested):
+  - **Keeper's Table app synced — and a standing rule made of it** ("sync up the app and
+    continue to do so"). Reference tab's DC ladder updated to the unified seven-step ladder;
+    status bar + README to the current book versions; app version 1.2.2 → **1.2.3**.
+    `Data/creatures.json` re-extracted from the current Bestiary with a new repo tool,
+    **`extract_creatures.py`** — proven faithful by first re-extracting the *old* HTML and
+    diffing against the shipped JSON (0 content diffs), which also revealed and fixed a
+    latent gap: the original extraction had dropped the statblock **Mark** line, so 18
+    creatures' Mark entries were empty in the app; they're populated now (the Bestiary popout
+    already rendered the field). Built + smoke suite **1360/0 locally on Windows** (SDK 9),
+    published, deliverable folder re-mirrored, zip rebuilt (63 MB). The standing rule is at
+    the top of this doc.
+  - **"The Patrons at the Table"** — new Keeper's Book section after The Dark's Wages: a
+    veteran-Keeper essay per Patron on how and *when* each approaches players (each waits at
+    a different door — want, the question, hurt, the grave, the strike, the flock), plus a
+    "veteran's rules" closing note (offer only at the owned moment of weakness, speak through
+    intermediaries, one waking Patron per campaign, no must always be a real answer). Indexed.
+  - **Items** (Player's Book Ch. X): six new Uncommon Goods (camera & wet-plate kit,
+    lead-lined coffin, Pinkerton file on a name, blasting machine & wire, galvanic battery,
+    surveyor's transit — first three with mechanical notes); three new lesser relics
+    (Coyote's Tooth, Widow's Locket, Church-Door Nail); four new artifacts (the Padre's
+    Lantern, the Bone Fiddle, the Meridian Chain, the Ferryman's Dollar). All seven
+    relics/artifacts added to the Index.
+  - **Serling slow-burn tone pass across all three books** ("modify them as if you were Rod
+    Serling… starts out feeling like a typical TTRPG about westerns"). Ch. I restructured to
+    enact the descent: it now opens as a straight handbill western and closes with the turn
+    (The Three Truths + the survey quote moved to chapter end); the cosmic thesis lines were
+    split — "the land is occupied" stays as Ch. I's closing reveal, "it is not peace, it is
+    patience" relocated to the Ch. XII narrator block where it lands hardest. A new
+    **narrator thread ("the Compiler")** — `.narr` styled blocks, italic with a tilde mark —
+    escalates at act boundaries: Player Ch. VII (the threshold), Ch. XII (the reveal), end of
+    App. E (the "for your consideration" sign-off); Keeper Ch. I (host-to-host: let the first
+    night stay a western), Ch. VI (the campaign quietly changes its nature), Ch. XIII
+    ("Submitted for your consideration: one county…"); Bestiary Ch. I (the field-book road
+    runs downhill), Ch. V (the remedies stopped mentioning the rifle), Ch. VII ("It has
+    already noticed you reading"). No rules text touched.
+  - **Whitespace audit** (user granted permission to break tables): new repo tool
+    **`audit_whitespace.py`** measures every rendered page's bottom gap and names the block
+    that moved. Findings: tables/lists/boxes/statblocks already split; the big gaps are
+    deliberate chapter-start page breaks and orphan control (left alone — breaking those
+    *would* hurt readability). The real fix: **`.quote` and `.narr` blocks are now
+    word-splittable** like paragraphs (shell `isParaLike`), which closed the genuine
+    mid-flow gaps (Bestiary flagged pages 11 → 8; the survivors are all intentional breaks).
+  Final state: Player **v2.14, 170 pp** · Keeper **v2.6, 88 pp** · Bestiary **v2.6, 131 pp**,
+  all render-verified (parity, zero clip, zero h-scroll, anchors resolve, idempotent);
+  versioned copies rotated (kept three per book; v2.11/v2.3/v2.3 removed).
+
 - **Build-system reconciliation — one builder per book (2026-07-18)** (user-requested: "the
   Player's Handbook is not built the same way as the other two … reconcile it, and combine the
   two Bestiary py builders into one"). All three books now follow the same pattern — **each
@@ -568,10 +624,9 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
     in two halves.
   All three books rebuilt and render-verified (Player 168 pp — one page over v2.12 from the
   added lines; Keeper 84; Bestiary 131; parity, zero true-scale clip, zero h-scroll, all
-  anchors resolve, idempotent builds; 204 Player index statics re-patched). **Known follow-up:**
-  the Keeper's Table app's Reference tab still shows the old five-step DC ladder and its status
-  bar the old book versions — the app was out of scope for this pass (Cole scoped it to the
-  .html/.py files) and needs a matching touch-up next time the app is opened.
+  anchors resolve, idempotent builds; 204 Player index statics re-patched). *(The Keeper's
+  Table follow-up flagged here — stale Reference-tab DC ladder and status-bar versions — was
+  done on 2026-07-18; see the app-sync entry above.)*
 
 - **Keeper's Table — true single-file standalone (embedded data) + first GitHub Release
   (2026-07-16).** The self-contained exe still needed its `Data/*.json` sitting in a `Data/`
@@ -917,5 +972,5 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   pregens. Keeper: Ch. XII rollable tables (and Ch. XI Keeper's Year). Bestiary: The Grounds
   + Building Your Own Dead appendices, plus the creature-lore expansion to all 110 entries.
 
-*Current as of the July 2026 sessions. Versions: **Player's Book v2.12 · Keeper's Book v2.4 ·
-Bestiary v2.4 · The Keeper's Table app v1.2.2 (self-contained, crash-hardened).***
+*Current as of the July 2026 sessions. Versions: **Player's Book v2.14 · Keeper's Book v2.6 ·
+Bestiary v2.6 · The Keeper's Table app v1.2.3 (self-contained, crash-hardened).***
