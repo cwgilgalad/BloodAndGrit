@@ -595,7 +595,7 @@ public partial class MainForm
         T("A natural 20 steps the result up one degree; a natural 1 steps it down one.\n");
 
         H("Setting a DC");
-        T("Trivial 5 · Easy 10 · Moderate 15 · Hard 20 · Formidable 25 · Nigh-Impossible 30.\n");
+        T("Trivial 10 · Easy 13 · Average 15 · Hard 18 · Very Hard 20 · Punishing 25 · Beyond 30.\n");
 
         H("A Turn in the Iron Code");
         T("Initiative is a Notice check. Each turn is three Beats: Strike, Stride, Aim/Brace, Interact, Reload, Take Cover. A Strike is d20 + attack proficiency + DEX/STR against Defense. Multiple Attack Penalty −5/−10 (Agile weapons −4/−8). A critical hit applies the weapon's Fatal die.\n");
