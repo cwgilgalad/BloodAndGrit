@@ -203,6 +203,31 @@ public static class Rules
         return (total, string.Join(" ", bits), dice);
     }
 
+    /// The Dice tab's expression-builder buttons. Clicking a die whose kind already ends
+    /// the expression bumps its count ("2d6", not "1d6+1d6"); anything else joins with a +.
+    public static string ExprAddDie(string expr, int sides)
+    {
+        string t = (expr ?? "").Trim();
+        var m = System.Text.RegularExpressions.Regex.Match(t, @"^(.*?)(\d*)d" + sides + "$");
+        if (m.Success)
+        {
+            int n = m.Groups[2].Value.Length == 0 ? 1 : int.Parse(m.Groups[2].Value);
+            return m.Groups[1].Value + (n + 1) + "d" + sides;
+        }
+        if (t.Length == 0) return "1d" + sides;
+        if (t.EndsWith("+") || t.EndsWith("-")) return t + "1d" + sides;
+        return t + "+1d" + sides;
+    }
+
+    /// Digits and operators for the same buttons; a second operator click replaces the
+    /// first, so the box can never hold "2d6+-".
+    public static string ExprAppend(string expr, string tok)
+    {
+        string t = expr ?? "";
+        if ((tok == "+" || tok == "-") && (t.EndsWith("+") || t.EndsWith("-"))) t = t[..^1];
+        return t + tok;
+    }
+
     /// Encounter cost of a creature vs the party: even=4, mook=1, standout=8.
     /// Party tier = ceil(level/2). A creature 2+ tiers above the party trips the safe-table rule.
     public static (int cost, string role, bool spoor) Cost(int creatureTier, int partyLevel)

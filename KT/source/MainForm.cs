@@ -13,6 +13,7 @@ public partial class MainForm : Form
     TextBox notesBox;
     ListBox rollLog;
     int round = 1;
+    TabControl tabsCtl;
 
     // ---- shared theme (frontier-book palette) ----
     public static readonly Color Paper   = Color.FromArgb(247, 242, 228);
@@ -42,6 +43,7 @@ public partial class MainForm : Form
         KeyPreview = true;
 
         var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(14, 6) };
+        tabsCtl = tabs;
         tabs.TabPages.Add(BuildPosseTab());
         tabs.TabPages.Add(BuildDiceTab());
         tabs.TabPages.Add(BuildBestiaryTab());
@@ -57,11 +59,31 @@ public partial class MainForm : Form
         MainMenuStrip = menu;
         Controls.Add(menu);                       // added after the fill control so it docks above it
 
-        // Ctrl+number jumps to a tab (keyboard-first, like the market tools)
+        // Ctrl+number jumps to a tab (keyboard-first, like the market tools), and each
+        // busy tab gets table-speed shortcuts for its most-hammered buttons. Deliberately
+        // NOT keyed: destructive clears (a confirm click should stay a deliberate act) and
+        // browse-y generator buttons (Tab+Space already serves them).
         KeyDown += (s, e) =>
         {
             if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
-            { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; }
+            { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; return; }
+            if (!e.Control || e.Alt || e.Shift) return;
+            void Did() { e.Handled = true; e.SuppressKeyPress = true; }
+            string page = tabs.SelectedTab?.Text;
+            if (page == "Posse" && posseGrid?.IsCurrentCellInEditMode != true)
+            {
+                if (e.KeyCode == Keys.D) { AdjustPC(-1); Did(); }
+                else if (e.KeyCode == Keys.H) { AdjustPC(+1); Did(); }
+            }
+            else if (page == "Tracker" && trkGrid?.IsCurrentCellInEditMode != true)
+            {
+                if (e.KeyCode == Keys.D) { AdjustCombatant(-1); Did(); }
+                else if (e.KeyCode == Keys.H) { AdjustCombatant(+1); Did(); }
+                else if (e.KeyCode == Keys.I) { RollInitiative(); Did(); }
+                else if (e.KeyCode == Keys.R) { NextRound(); Did(); }
+            }
+            else if (page == "Bestiary" && e.KeyCode == Keys.F)
+            { beastSearch.Focus(); beastSearch.SelectAll(); Did(); }
         };
 
         var status = new StatusStrip { BackColor = Paper };
@@ -96,6 +118,19 @@ public partial class MainForm : Form
         var saveTimer = new System.Windows.Forms.Timer { Interval = 5 * 60 * 1000 };
         saveTimer.Tick += (s, e) => AutoSave();
         saveTimer.Start();
+    }
+
+    // Left/Right turn the Reference deck no matter which control holds focus — arrow
+    // keys are normally eaten as focus-navigation before KeyDown ever sees them. The
+    // Reference tab has no text inputs, so stealing them there costs nothing.
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (tabsCtl?.SelectedTab == referencePage && (keyData == Keys.Left || keyData == Keys.Right))
+        {
+            RefShow(refPage + (keyData == Keys.Right ? 1 : -1));
+            return true;
+        }
+        return base.ProcessCmdKey(ref msg, keyData);
     }
 
     // ---------------------------------------------------------- shared helpers
@@ -394,8 +429,8 @@ public partial class MainForm : Form
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(adjAmount, "How much Blood the Damage/Heal buttons apply");
         bar.Controls.Add(adjAmount);
-        bar.Controls.Add(Btn("Damage", (s, e) => AdjustPC(-1), 80, "Subtract the Amount from the selected soul's Blood"));
-        bar.Controls.Add(Btn("Heal", (s, e) => AdjustPC(+1), 70, "Add the Amount to the selected soul's Blood"));
+        bar.Controls.Add(Btn("Damage", (s, e) => AdjustPC(-1), 80, "Subtract the Amount from the selected soul's Blood (Ctrl+D)"));
+        bar.Controls.Add(Btn("Heal", (s, e) => AdjustPC(+1), 70, "Add the Amount to the selected soul's Blood (Ctrl+H)"));
 
         bar.Controls.Add(Btn("Spend Grit", (s, e) =>
         {
