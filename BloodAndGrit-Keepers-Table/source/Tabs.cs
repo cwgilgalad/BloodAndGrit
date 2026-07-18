@@ -54,6 +54,14 @@ public partial class MainForm
         Tip.SetToolTip(beastQty, "How many copies → Tracker drops at once");
         filters.Controls.Add(beastQty);
         filters.Controls.Add(Btn("→ Tracker", (s, e) => { if (beastList.SelectedItem is Creature c) AddCreatureToTracker(c, (int)beastQty.Value); }, 95, "Drop this many onto the battlefield"));
+        // the pop-out lived only behind a double-click and its tooltip; a visible button
+        // makes the feature discoverable without the mouse hovering in the right place
+        filters.Controls.Add(Btn("⧉ Pop out", (s, e) => { if (beastList.SelectedItem is Creature c) ShowCreatureCard(c); }, 90,
+            "Open this creature in its own window (or double-click it in the list)"));
+        filters.Controls.Add(Btn("Reset", (s, e) =>
+        {
+            beastSearch.Text = ""; beastTier.SelectedIndex = 0; beastChapter.SelectedIndex = 0; beastQty.Value = 1;
+        }, 65, "Clear the search and filters — the whole Bestiary again"));
         beastCount = Lbl("");
         filters.Controls.Add(beastCount);
 
@@ -65,10 +73,10 @@ public partial class MainForm
         Tip.SetToolTip(beastList, "Double-click a creature to open it in its own window");
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
-        beastView = new RichTextBox { Dock = DockStyle.Fill, ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
 
         split.Panel1.Controls.Add(leftPanel);
-        split.Panel2.Controls.Add(beastView);
+        split.Panel2.Controls.Add(Pad(beastView, 14));
         page.Controls.Add(split);
         FilterBeasts();
         return page;
@@ -378,12 +386,12 @@ public partial class MainForm
             MinimumSize = new Size(340, 300), StartPosition = FormStartPosition.Manual,
             Location = new Point(Math.Max(0, Right - 540 - cascade), Top + 80 + cascade)
         };
-        var rtf = new RichTextBox { Dock = DockStyle.Fill, ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
         bar.Controls.Add(Btn("→ Tracker", (s, e) => AddCreatureToTracker(c), 95, "Drop one onto the battlefield"));
-        win.Controls.Add(rtf);
+        win.Controls.Add(Pad(rtf, 16));                  // the words stay off the window edge
         win.Controls.Add(bar);
         RenderCreature(rtf, c);
         beastWindows[c.name] = win;
@@ -568,9 +576,9 @@ public partial class MainForm
         left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112));
         left.Controls.Add(Btn("Clear", (s, e) => genOut.Clear(), 112));
 
-        genOut = new RichTextBox { Dock = DockStyle.Fill, ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
         split.Panel1.Controls.Add(left);
-        split.Panel2.Controls.Add(genOut);
+        split.Panel2.Controls.Add(Pad(genOut, 12));
         page.Controls.Add(split);
         return page;
     }
@@ -585,7 +593,7 @@ public partial class MainForm
     TabPage BuildReferenceTab()
     {
         var page = new TabPage("Reference") { BackColor = Paper };
-        var rtf = new RichTextBox { Dock = DockStyle.Fill, ReadOnly = true, BackColor = Paper, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None, Padding = new Padding(10) };
+        var rtf = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None };
         void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 12.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void T(string s) { rtf.SelectionFont = new Font("Segoe UI", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
         void M(string s) { rtf.SelectionFont = new Font("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
@@ -656,7 +664,7 @@ public partial class MainForm
         H("Grit");
         T("Three per soul, refreshed each session. Spend one, after seeing the result, to add 1d6 to a roll just made, re-roll a failed check, refuse to fall at 0 Blood for one more round, shrug a fright until the end of your next turn, or soften a critical failure to an ordinary failure. The Keeper may award a point mid-session for a deed of true courage.");
 
-        page.Controls.Add(rtf);
+        page.Controls.Add(Pad(rtf, 14));
         return page;
     }
 
@@ -677,6 +685,12 @@ public partial class MainForm
                 $"—  {DateTime.Now:MMMM d, yyyy}  —" + Environment.NewLine);
             notesBox.Focus();
         }, 115, "Drop a dated session header into the ledger"));
+        nbar.Controls.Add(Btn("Clear ledger", (s, e) =>
+        {
+            if (notesBox.TextLength == 0) { Log("The ledger is already blank."); return; }
+            if (Confirm("Clear the whole ledger? The written record is wiped for a fresh start."))
+            { notesBox.Clear(); Log("The ledger is wiped clean."); }
+        }, 100, "Wipe the written record and start fresh"));
         notesGroup.Controls.Add(notesBox);
         notesGroup.Controls.Add(nbar);
 
@@ -684,6 +698,12 @@ public partial class MainForm
         var cbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110));
         cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90));
+        cbar.Controls.Add(Btn("Clear threads", (s, e) =>
+        {
+            if (clocks.Count == 0) { Log("No threads to clear."); return; }
+            if (Confirm($"Clear all {clocks.Count} thread(s) and their clocks for a fresh start?"))
+            { clocks.Clear(); RefreshClocks(); Log("All threads cleared — the board is clean."); }
+        }, 105, "Delete every thread and clock at once"));
         var clockHint = new Label
         {
             Dock = DockStyle.Top, Height = 36, ForeColor = Gold,

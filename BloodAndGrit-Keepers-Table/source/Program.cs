@@ -19,6 +19,7 @@ static class Program
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             ApplicationConfiguration.Initialize();
             Db.Load();
+            CharGen.Load();
             Application.Run(new MainForm());
         }
         catch (Exception ex)

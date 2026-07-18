@@ -238,6 +238,8 @@ public static class Db
     // The JSON data is EMBEDDED in the app assembly so the published exe is a TRUE single-file
     // standalone (one .exe, no Data/ folder needed beside it). Falls back to Data/ on disk for
     // the dev build and the smoke rig, whose assemblies don't carry the embedded copies.
+    public static string ReadDataFile(string fileName) => ReadData(fileName);
+
     static string ReadData(string fileName)
     {
         var asm = typeof(Db).Assembly;

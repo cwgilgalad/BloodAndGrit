@@ -4,7 +4,7 @@ A desktop utility for running **Blood & Grit** at the table. Built in C# (.NET 8
 Windows Forms), with the complete Bestiary and all the Keeper's rollable tables baked in,
 extracted directly from the books (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.2.3.**
+**App version 1.3.0.**
 
 ---
 
@@ -17,11 +17,14 @@ bundled inside the app folder.
    **Unblock** → OK. (Windows tags downloaded files, and SmartScreen can silently refuse
    to launch a blocked exe — this clears it.)
 2. Extract the whole zip anywhere.
-3. Open the `app/` folder and double-click **`BloodAndGritKeeper.exe`**.
-   Keep the exe together with its DLLs and the `Data/` folder — don't copy the exe out alone.
+3. Open the `app/` folder and double-click **`BloodAndGritKeeper.exe`**. The exe is a
+   genuine single file — runtime and data are embedded — so it can travel alone.
 
-If Windows shows a blue SmartScreen panel, click **More info → Run anyway** (the app is
-unsigned, which is normal for a homemade tool).
+Since v1.3.0 the exe is **Authenticode-signed by Cole Williams** (see `source/sign.ps1`),
+with full version metadata, so it no longer reads as an anonymous unsigned binary. On this
+household's machines the certificate is installed and trusted; on a new machine Windows
+may still show SmartScreen once (the certificate is self-issued, not from a paid CA) —
+click **More info → Run anyway**, and note the publisher now reads *Cole Williams*.
 
 **If it still won't start**, the app writes a `startup-error.txt` beside the exe (or in
 `%TEMP%\BloodAndGrit-startup-error.txt`) describing exactly what went wrong — send me its
@@ -37,7 +40,7 @@ Your table state auto-saves to `session.json` beside the exe on exit **and every
 minutes**, and reloads on launch. First launch seeds the ready-made posse from the
 Player's Book Appendix D so everything is usable immediately.
 
-## The eight tabs
+## The nine tabs
 
 **Posse** — the party sheet. Every soul's Blood, Defense, saves, Nerve, Grit, Mark
 (0–6), and Taint (0–4), all editable in place. One-click Damage/Heal, Spend Grit,
@@ -81,6 +84,20 @@ It villain picker), with the safe-table rule applied automatically against your 
 level. v1.2 expands every one of these tables with new results in the book's voice
 (`Data/tables_extra.json`).
 
+**New Soul** *(new in v1.3)* — a complete random character sheet at the press of a
+button, built strictly by the book: Chapter III's eight steps end to end. Pick a level
+(1–10), an ability method (the Honest Array or the 4d6-drop-lowest Gamble), and — if you
+care to — a Calling and Origin, or leave both on Random. The sheet carries abilities and
+modifiers, Blood/Defense/saves/Nerve/Grit reckoned exactly as Chapter III says, trained
+skills (Calling number + WIT, Origin grants included), features by level with their
+3rd-level Trade/School/Oath/Bargain, legal Edges (prerequisites honored, the Gunhand's
+bonus combat Edges included), Signs for the Old Dark (never for Faith), the Mark where
+the book imposes it, starting coin rolled on the Calling's dice and spent at printed
+prices, and the Four Questions. Every generated sheet is re-validated against
+`Data/chargen.json` before it is shown, and **→ Posse** seats the new soul at the table
+directly. The rules data is transcribed from the Player's Book; the smoke suite
+generates and rule-checks hundreds of sheets per run.
+
 **Reference** — the rules that matter mid-scene: the four degrees, the DC ladder, a
 turn in the Iron Code (Beats, MAP, crits), the full Threat-by-Tier benchmark table, the
 encounter budget, Blood/Dying/Grievous Wounds with the Lasting Injury table, the
@@ -111,7 +128,13 @@ The interface follows desktop conventions so it stays out of the way mid-session
   legal range (Mark 0–6, Taint 0–4, Grit 0–9, Blood/Nerve never negative).
 - **Confirmations on destructive actions** — removing a soul, clearing the field or the
   encounter, deleting a thread.
-- **Keyboard-first.** Ctrl+1–8 switches tabs; Enter rolls the dice expression and commits
+- **A fresh start everywhere** *(v1.3)*: every roster and record has its own clear —
+  Clear posse, Clear field, New fight, Clear (encounter), Clear log, Clear (generators),
+  Clear (sheet), Clear ledger, Clear threads — each confirmed before anything is lost.
+- **Text panes breathe** *(v1.3)*: the Bestiary reading pane, creature pop-out windows,
+  Reference, and the generator output all carry a proper reading margin instead of
+  pressing the first character against the window edge.
+- **Keyboard-first.** Ctrl+1–9 switches tabs; Enter rolls the dice expression and commits
   the creature pickers.
 - **Tooltips** on every button explain what it does.
 - A consistent frontier-book palette (aged paper, oxblood headers, gold accents) ties the
