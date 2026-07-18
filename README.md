@@ -1,20 +1,21 @@
 # Blood & Grit — book sources
 
 Three companion books share one HTML engine (cover + client-side paginator + print CSS).
-Edit the lean sources, then run the build scripts. See `CLAUDE.md` for the full handoff doc
-(version table, structure, verification standards, changelog).
+**Each book is one builder script that carries its own content** — edit the builder, run it.
+See `CLAUDE.md` for the full handoff doc (version table, structure, verification standards,
+changelog).
 
 ## Build (Windows: real Python 3.12 + `pip install playwright` + Edge)
 
 ```bash
-# Player's Book  → edit player-src.html, then:
-python build_player.py                 # → blood-and-grit.html (self-contained shell)
+# Player's Book  → edit the SRC string in build_player.py, then:
+python build_player.py                 # → blood-and-grit.html (the shared shell — build this first)
 
 # Keeper's Book  → edit build_keeper.py, then:
-cp blood-and-grit.html keeper-handbook.html && python build_keeper.py
+python build_keeper.py                 # reads blood-and-grit.html → keeper-handbook.html
 
-# Bestiary       → edit build_bestiary.py (and/or bestiary_extra.py), then:
-cp blood-and-grit.html bestiary.html && python build_bestiary.py
+# Bestiary       → edit build_bestiary.py (creatures included), then:
+python build_bestiary.py               # reads blood-and-grit.html → bestiary.html
 ```
 
 ## Verify (headless Edge)
@@ -27,8 +28,12 @@ python measure_book.py bestiary.html
 
 ## What's what
 
-- `player-src.html` — Player's Book lean source (edit this).
-- `build_keeper.py` / `build_bestiary.py` / `bestiary_extra.py` — the other two books' content + builders.
+- `build_player.py` — Player's Book: the full book HTML lives in its `SRC` string (edit there),
+  plus the asset-inlining build. `measure_index.py` patches index statics into `SRC` directly.
+- `build_keeper.py` — Keeper's Book content + builder.
+- `build_bestiary.py` — Bestiary content + builder, including the 25 ordinary beasts, the
+  tier/name sorter, and the generated Roll-by-Tier appendix (formerly `bestiary_extra.py`).
+  To add a creature, edit this one file.
 - `nav_tools.py` — generates the detailed two-level Contents and the indexes for all three books.
 - `perdition_map.py` — draws the Perdition Basin map (player + Keeper layers) as inline SVG;
   `python perdition_map.py both` writes `_map_preview.html`.

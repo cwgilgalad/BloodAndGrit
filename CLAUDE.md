@@ -3,14 +3,16 @@
 Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
-**Current versions: Player's Book v2.12 · Keeper's Book v2.4 · Bestiary v2.4 ·
+**Current versions: Player's Book v2.13 · Keeper's Book v2.5 · Bestiary v2.5 ·
 The Keeper's Table app v1.2.2 (self-contained, crash-hardened build).**
 
-*(The 2026-07-11 "feathering" paginator divergence is resolved: the multi-pass
-feathering engine now lives in `player-src.html`'s script block, and `pag_patch.py`
-detects it and no-ops — its old anchors remain as a fallback for old shells. A rebuild
-from sources reproduces the delivered books; verified byte-identical against the
-delivered v2.11 before any new edits were made.)*
+*(Build architecture as of 2026-07-18: **one builder per book, content inside the
+builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
+`SRC` string (the old `player-src.html` is retired), `build_bestiary.py` absorbed
+`bestiary_extra.py`, and the Keeper/Bestiary builders read `blood-and-grit.html`
+directly (no more manual `cp` step). The conversion was verified byte-identical for
+all three books. The multi-pass feathering paginator lives in the Player `SRC`'s
+script block, and `pag_patch.py` detects it and no-ops.)*
 *(Keep this doc updated with every change — see the Changelog at the bottom.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
@@ -67,9 +69,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.12 | 167 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.4 | 84 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.4 | 131 | none (110 creatures) |
+| The Player's Book | v2.13 | 168 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.5 | 84 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.5 | 131 | none (110 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -119,12 +121,10 @@ Each book's cheapest editable form is **bolded**.
 
 | File | Role |
 |---|---|
-| **`player-src.html`** | Player's Book — edit this (~309 KB lean text; any images would be `src="assets/…"` refs, not base64). Currently references only the cover emblem. |
+| **`build_player.py`** | Player's Book — edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64 — currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images. **`img20.png`** is the cover emblem (transparent bg + transparent lever holes) — the only asset currently used. `img01.png` (old parchment texture) and `img02–img19` (old Player plates) are present but **unused**; keep them only if you might restore plates. |
-| `build_player.py` | Re-inlines any `assets/imgNN.ext` **referenced in the source** → the self-contained `blood-and-grit.html`. It discovers images by regex on the source, so it automatically inlines new refs and skips unreferenced ones (round-trips byte-identical / idempotent). |
-| **`build_keeper.py`** | Keeper's Book — edit this (chapter prose lives inside as HTML strings). Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Also holds the Player-version cascade tuples. |
-| **`bestiary_extra.py`** | Required by `build_bestiary.py`. Holds the 25 ordinary-beast stat blocks + their field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). |
+| **`build_keeper.py`** | Keeper's Book — edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
+| **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
 | **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). |
@@ -143,17 +143,17 @@ The per-book source files are interdependent (they need the shell + helper modul
 ## How to make a change (per book)
 
 ```bash
-# Player's Book → edit player-src.html, then:
-python3 build_player.py                  # → blood-and-grit.html (self-contained shell)
+# Player's Book → edit the SRC string in build_player.py, then:
+python build_player.py                  # → blood-and-grit.html (the shared shell — build first)
 
 # Keeper's Book → edit build_keeper.py, then:
-cp blood-and-grit.html keeper-handbook.html && python3 build_keeper.py
+python build_keeper.py                  # reads blood-and-grit.html → keeper-handbook.html
 
-# Bestiary → edit build_bestiary.py (and/or bestiary_extra.py), then:
-cp blood-and-grit.html bestiary.html && python3 build_bestiary.py
+# Bestiary → edit build_bestiary.py (creatures included), then:
+python build_bestiary.py                # reads blood-and-grit.html → bestiary.html
 
 # PDFs of all three — ONLY when I explicitly ask:
-python3 make_pdf.py
+python make_pdf.py
 ```
 
 After any content change: **re-measure and patch the contents page numbers** (adding/cutting
@@ -163,12 +163,12 @@ version on the cover**, and **update this doc's version table + Changelog.**
 ### The version cascade (important, easy to miss)
 `build_keeper.py` and `build_bestiary.py` splice each book's own cover onto the Player shell
 by **string-replacing the Player's version strings** with their own. Those match strings are
-hard-coded (currently "…Version 2.8…" / "…v2.8…", four per script).
+hard-coded (currently "…Version 2.13…" / "…v2.13…", four per script).
 
 **Any time you bump the Player's Book version, you must also update those match strings in
 both build scripts** — e.g.:
 ```bash
-sed -i 's/v2.8/v2.9/g; s/Version 2.8/Version 2.9/g' player-src.html build_keeper.py build_bestiary.py
+sed -i 's/v2.13/v2.14/g; s/Version 2.13/Version 2.14/g' build_player.py build_keeper.py build_bestiary.py
 ```
 — or the Keeper/Bestiary covers will silently keep the Player's version. Bumping only the
 Keeper or only the Bestiary needs no cascade (their version strings are only on the *right*
@@ -212,7 +212,7 @@ Regenerating overwrites the three PDFs in place.)*
 
 ---
 
-## The Player's Book (v2.12) — structure
+## The Player's Book (v2.13) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -251,7 +251,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.4) — structure
+## The Keeper's Book (v2.5) — structure
 
 Chapters I–XIII plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -280,7 +280,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.4) — structure & conventions
+## The Bestiary (v2.5) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **110 creatures** by name (from every `<p class="cr-name">`,
@@ -512,6 +512,66 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
 ---
 
 ## Changelog (newest first)
+
+- **Build-system reconciliation — one builder per book (2026-07-18)** (user-requested: "the
+  Player's Handbook is not built the same way as the other two … reconcile it, and combine the
+  two Bestiary py builders into one"). All three books now follow the same pattern — **each
+  book is a single `build_<book>.py` that carries its own content and runs standalone**:
+  - `build_player.py` now embeds the entire Player's Book HTML as a raw string `SRC` (edit the
+    book there); **`player-src.html` is retired** (deleted from the tree; full history in git).
+  - `bestiary_extra.py` was **merged verbatim into `build_bestiary.py`** (ordinary beasts,
+    `LIVING_LORE`, `sort_sections`, `gen_appendix`) and deleted — adding a creature now means
+    editing that one file.
+  - `build_keeper.py` and `build_bestiary.py` **read `blood-and-grit.html` directly** — the
+    manual `cp blood-and-grit.html <target> &&` step is gone; each book builds with just
+    `python build_<book>.py` (player first, since it produces the shared shell).
+  - `measure_index.py` now patches the static Index page numbers into `build_player.py`'s
+    `SRC` (same regexes, new target file); README, session-start command, and this doc updated.
+  **Integrity proof:** every step was verified byte-identical — the converted `build_player.py`
+  reproduces `blood-and-grit.html` md5-exact, and the rewired/merged Keeper and Bestiary builds
+  reproduce their books md5-exact; `measure_index.py` re-run green end-to-end (168 pp, parity,
+  zero true-scale clip, zero h-scroll, idempotent). No book content changed in this step.
+
+- **Player v2.13 / Keeper v2.5 / Bestiary v2.5 — Editorial pass, 19 of 20 findings applied
+  (2026-07-17/18).** A cover-to-cover editorial read of all three books produced 20 proposed
+  changes, reviewed by Cole in an approve/deny artifact; 19 approved, R3 denied-with-note
+  (recorded in `editorial-denials.md`). Applied:
+  - **Rules (7).** The two books taught **different DC ladders** — the Player's Book now
+    carries the Keeper's finer ladder everywhere (Trivial 10 · Easy 13 · Average 15 · Hard 18 ·
+    Very Hard 20 · Punishing 25 · Beyond 30; Ch. II table re-pitched, Appendix C, and the Ch. X
+    surgery DC relabeled). The **attack-formula contradiction** ("level + weapon rank" vs the
+    Calling tables) resolved in the tables' favor in Ch. II / III / V / XI — attack *and save*
+    proficiencies are now read straight from the Calling tables, the +2/+4/+6 rank formula
+    applies to skills (the artifact's R2 text said "skills and saves"; the tables show saves on
+    their own track, so the installed wording keeps tables authoritative for both). **Ability
+    boost timing** unified to one point at **5th and 10th** in Ch. IX and Ch. XIV (per Cole's
+    R3 note — the denied proposal had been 4th/8th). Cap-and-ball reload standardized to
+    **three rounds** (Ch. XI now matches Ch. X). Both **Grit quick references** completed to
+    all five uses (Appendix C + Keeper's Screen). **Venom save DCs** added (Rattlesnake Fort
+    DC 13, Great Serpent Fort DC 18). Ch. XII Afflictions prose now points at the Keeper's
+    full table.
+  - **Prices (5).** Duplicate-row drift fixed: fine saddle horse $90+ both tables, mule $30,
+    saddle scabbard $4, bedroll & tarp $2; the Camp & Trail "Saddlebags / panniers" row is now
+    "Panniers (pair)" so it's honestly a different good from the $3 Tack saddlebags.
+  - **Names (4).** Prospector Edge renamed **"Laid By"** (was a collision with the Pay Dirt
+    class feature); the Wendigo's subtitle is now **"the deep winter given a body"** (its old
+    subtitle was the Tier III entry's name); its Putting-It-Down line no longer puns on "iron
+    heart"; the orphaned PF2E term "fortune bonus" removed from Stack the Odds.
+  - **Magnitudes (6 in one).** Vague bonuses given numbers: Herb-Lore +2, Mend the Body 2d8
+    per further point, Draw Out the Sickness +4 / 3 Vital Breath to cure, Call Back the Breath
+    half maximum Vital Breath (rounded up), Hard Ride +10 ft, Honeyed Word +3.
+  - **Style (3).** Three "was X once — until Y" origin pivots rewritten (Hollow Prophet,
+    Dollmaker's Children, Stone Giant) to thin the Bestiary's densest formula cluster; nine
+    self-praise adjectives stripped from How-to-Play notes ("brilliant"/"fantastic"/
+    "masterclass"); the Prospector's two J. Halloran epigraphs differentiated (first byline
+    now "testimony given at the Widow's Comfort inquest") so the bookend reads as one story
+    in two halves.
+  All three books rebuilt and render-verified (Player 168 pp — one page over v2.12 from the
+  added lines; Keeper 84; Bestiary 131; parity, zero true-scale clip, zero h-scroll, all
+  anchors resolve, idempotent builds; 204 Player index statics re-patched). **Known follow-up:**
+  the Keeper's Table app's Reference tab still shows the old five-step DC ladder and its status
+  bar the old book versions — the app was out of scope for this pass (Cole scoped it to the
+  .html/.py files) and needs a matching touch-up next time the app is opened.
 
 - **Keeper's Table — true single-file standalone (embedded data) + first GitHub Release
   (2026-07-16).** The self-contained exe still needed its `Data/*.json` sitting in a `Data/`

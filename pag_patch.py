@@ -138,7 +138,7 @@ _CSS = '  /*sbcont*/ .sb-cont{ font-style:italic; font-weight:400; color:var(--i
 def patch_paginator(s):
     # Since the v2.11/v2.3 feathering paginator (2026-07-11), the shared shell
     # script carries splitContainer / creature / statblock splitting natively,
-    # and the .sb-cont CSS lives in player-src.html — this patch is a no-op.
+    # and the .sb-cont CSS lives in build_player.py — this patch is a no-op.
     # The guards keep the old behavior available if an old shell ever comes back.
     if 'FEATHER_MAX' in s and 'splitContainer' in s:
         assert '.sb-cont' in s, "feathering shell is missing the .sb-cont CSS"

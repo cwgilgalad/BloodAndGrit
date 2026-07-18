@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Render the built Player's Book headlessly (Edge), verify layout, and patch
-the static index/TOC page numbers in player-src.html from the rendered truth.
+the static index/TOC page numbers in build_player.py's embedded SRC from the
+rendered truth.
 
 Usage: python measure_index.py            (measure + verify + patch + rebuild + recheck)
 """
@@ -65,7 +66,7 @@ assert not untoc, f"unresolved detailed-TOC anchors: {untoc[:8]}"
 print(f"detailed TOC: {len(desk['toc2'])} lines, all anchors resolved")
 
 # ---- verify the source's simple-TOC chapter statics vs rendered detailed TOC ----
-src = open("player-src.html", encoding="utf-8").read()
+src = open("build_player.py", encoding="utf-8").read()
 toc2map = {e["a"]: e["pg"] for e in desk["toc2"]}
 for m in re.finditer(r'<li><a href="(#[\w-]+)">[^<]*</a><span class="pg">(\d+)</span></li>', src):
     href, stat = m.group(1), m.group(2)
@@ -84,7 +85,7 @@ src = src[:iu] + block2 + src[ie:]
 tocpg = next(e["pg"] for e in desk["toc2"] if e["a"] == "#index")
 src = re.sub(r'(<a href="#index">Index</a><span class="pg">)\d+(</span>)',
              rf"\g<1>{tocpg}\g<2>", src, count=1)
-open("player-src.html", "w", encoding="utf-8", newline="").write(src)
+open("build_player.py", "w", encoding="utf-8", newline="").write(src)
 
 # ---- rebuild, idempotency, recheck ----
 build(); h1 = md5("blood-and-grit.html")

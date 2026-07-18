@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-# Assemble the Keeper's Book body and splice it into the cloned shell.
+# Assemble the Keeper's Book body and splice it into the Player-shell build.
+# Reads blood-and-grit.html (run build_player.py first), writes keeper-handbook.html.
 import re
 
-H = open("keeper-handbook.html", encoding="utf-8").read()
+H = open("blood-and-grit.html", encoding="utf-8").read()
 
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
