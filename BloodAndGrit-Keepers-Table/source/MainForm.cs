@@ -27,7 +27,11 @@ public partial class MainForm : Form
     public MainForm()
     {
         Text = "Blood & Grit — The Keeper's Table";
-        Width = 1280; Height = 820;
+        // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
+        // old fixed 1280×820 put the bottom row of buttons below the taskbar, unreachable.
+        var work = Screen.PrimaryScreen.WorkingArea;
+        Width = Math.Min(1280, work.Width);
+        Height = Math.Min(820, work.Height);
         MinimumSize = new Size(1040, 640);
         StartPosition = FormStartPosition.CenterScreen;
         Font = new Font("Segoe UI", 9.5f);
@@ -41,6 +45,7 @@ public partial class MainForm : Form
         tabs.TabPages.Add(BuildEncounterTab());
         tabs.TabPages.Add(BuildTrackerTab());
         tabs.TabPages.Add(BuildGeneratorsTab());
+        tabs.TabPages.Add(BuildSoulTab());
         tabs.TabPages.Add(BuildReferenceTab());
         tabs.TabPages.Add(BuildSessionTab());
         Controls.Add(tabs);
@@ -48,7 +53,7 @@ public partial class MainForm : Form
         // Ctrl+number jumps to a tab (keyboard-first, like the market tools)
         KeyDown += (s, e) =>
         {
-            if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D8)
+            if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
             { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; }
         };
 
@@ -135,6 +140,20 @@ public partial class MainForm : Form
 
     static Label Heading(string t) => new()
     { Text = t, AutoSize = true, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 0, 2) };
+
+    /// <summary>
+    /// Breathing room for text panes. WinForms RichTextBox/ListBox ignore their own Padding
+    /// property entirely, so docked read-panes used to press their first character straight
+    /// against the window edge. Wrapping the control in a padded host panel is the reliable
+    /// fix; the host takes the control's own back color so the margin reads as part of the page.
+    /// </summary>
+    static Panel Pad(Control c, int all)
+    {
+        var host = new Panel { Dock = DockStyle.Fill, Padding = new Padding(all), BackColor = c.BackColor };
+        c.Dock = DockStyle.Fill;
+        host.Controls.Add(c);
+        return host;
+    }
 
     /// <summary>
     /// SplitContainer whose minimum panel sizes and splitter position are applied only
@@ -319,6 +338,13 @@ public partial class MainForm : Form
             ("Whole posse — heal to full", (s, e) => RestPosse()),
             ("Selected soul — heal to full", (s, e) => RestSoul(SelectedPC()))));
         bar.Controls.Add(Btn("Send posse → Tracker", (s, e) => PartyToTracker(), 155, "Put the whole posse onto the combat tracker"));
+        bar.Controls.Add(Btn("Clear posse", (s, e) =>
+        {
+            if (party.Count == 0) { Log("The posse is already empty."); return; }
+            if (!Confirm($"Clear the whole posse? Removes all {party.Count} soul(s) for a fresh start.")) return;
+            party.Clear();
+            Log("The posse is cleared — a fresh start.");
+        }, 100, "Remove every soul and start fresh"));
 
         page.Controls.Add(posseGrid);
         page.Controls.Add(bar);
@@ -529,7 +555,7 @@ public partial class MainForm : Form
         left.Controls.Add(Lbl("Miss by 10 (or nat 1) → critical failure."));
 
         rollLog = new ListBox { Dock = DockStyle.Fill, Font = new Font("Consolas", 9.5f), HorizontalScrollbar = true, BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
-        var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(6) };
+        var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
         var logHead = new Label { Text = "  Roll && event log", Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
         diceTray = new DiceTray { Dock = DockStyle.Top, Height = 84, BackColor = Color.FromArgb(243, 237, 221) };

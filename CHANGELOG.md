@@ -8,6 +8,48 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Table v1.3.0 — New Soul character generator, padding/UX pass, clear-everywhere,
+  signed exe (2026-07-18).** Five user requests in one session:
+  - **New Soul tab (9th tab, Ctrl+1–9)** — a whole random character sheet, strictly
+    conformant to the books: Ch. III's eight steps at any level 1–10, both ability methods,
+    all 17 Callings × 10 Origins with every cross-constraint enforced (Faith may not take
+    the Gambler origin or work Signs; Hedge Magic barred to Faith *and* to the four
+    sign-working Callings per its own "you are not a Hexer" text; Hexer/Dark Cultist/Came
+    Back Wrong Marks; the Dark Cultist's Patron named at 3rd as the book says, not at 1st;
+    Gunhand's Edge bonus combat picks; Edges' ability/edge/skill prerequisites; 3rd-level
+    subpaths; per-level Blood rolls; coin rolled on the Ch. X dice and spent only at
+    printed prices). Rules data transcribed into `Data/chargen.json` (embedded like the
+    rest); `CharGen.Validate` re-derives every figure independently and the smoke suite
+    generates + validates ~370 sheets per run (all callings × levels × methods + random
+    sweep + Appendix-D-style spot checks). Sheet renders in the pregens' format, four
+    questions and Compass included; **→ Posse** seats the soul directly.
+  - **Padding/UX pass** (user: words against the window edge don't conform to good UX).
+    WinForms RichTextBoxes ignore their own `Padding`, so every text pane was flush to the
+    chrome. New `Pad()` host-panel helper wraps the Bestiary reading pane (14px), the
+    creature pop-out windows (16px), Reference (14px), Generators output (12px), the New
+    Soul sheet (16px), and the Dice log panel (10px).
+  - **A fresh start everywhere** (user request): every roster/record now has a confirmed
+    clear — new "Clear posse", "Clear ledger", "Clear threads", Bestiary filter "Reset",
+    New Soul "Clear", joining the existing Encounter/Tracker/Dice/Generators clears.
+  - **Expert UX evaluation** (user request) with two fixes applied: the fixed 1280×820
+    startup size exceeded this laptop's 1366×768 working area and clipped the bottom
+    button row — now clamped to `Screen.WorkingArea`; and the creature pop-out was
+    discoverable only via double-click + tooltip — a visible "⧉ Pop out" button now sits
+    on the Bestiary bar. Remaining recommendations recorded in the session notes.
+  - **Signed, metadata-complete exe** (user: Windows/firewall/Cortex warnings). New
+    `KT/source/sign.ps1` creates/reuses a self-signed **CN=Cole Williams** code-signing
+    certificate (10-year, reused across releases so the publisher identity is stable),
+    installs it to this machine's LocalMachine Root + TrustedPublisher, signs with SHA-256
+    + RFC3161 timestamp, and refuses success unless `Get-AuthenticodeSignature` reports
+    Valid. csproj now carries honest metadata (Company/Product/Description/Copyright,
+    v1.3.0). Published exe signs Valid and launch-checks clean. (SmartScreen on *other*
+    machines still needs a CA cert or reputation — documented in sign.ps1 and README.)
+  - Verified: build 0/0; smoke **1,897/0 × 5 consecutive runs**; app launched, all nine
+    tabs + generated sheet + padded pop-out screenshot-verified; deliverable re-mirrored
+    (stale duplicate root exe dropped) and re-zipped (63.4 MB). Released as GitHub Release
+    `keepers-table-v1.3.0` with the signed exe as the release asset (binaries stay out of
+    the tree). Branch `session/2026-07-18-kt-padding-chargen`.
+
 - **2026-07-18 — Tracking standardized across all Desktop\Git repos (infrastructure).**
   Changelog moved from CLAUDE.md into this file; current versions tagged (`players-v2.14`,
   `keepers-v2.6`, `bestiary-v2.6` at the books commit, `keepers-table-v1.2.3` at the app-sync

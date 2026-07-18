@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-The Keeper's Table app v1.2.3 (self-contained, crash-hardened build).**
+The Keeper's Table app v1.3.0 (self-contained, crash-hardened, Authenticode-signed).**
 
 **Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
 book change that touches it** — status-bar/README version strings every time the books bump,
@@ -366,7 +366,7 @@ its Tier in levels**):
 
 ---
 
-## The Keeper's Table (v1.2.3) — the C# desktop app
+## The Keeper's Table (v1.3.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -381,7 +381,7 @@ then zipped to `BloodAndGrit-Keepers-Table.zip`. (History note: as of 2026-07-10
 had silently diverged — `KT/source` carried post-delivery work the zip never got. They're now
 reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 
-### What it does — eight tabs
+### What it does — nine tabs
 - **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
   inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread
   Checks with the real Nerve-loss ladder, New Session reset, **Rest ▾ (long rest — restore
@@ -408,6 +408,18 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   combatant from Appendix B's list), New fight (clear foes, keep the posse, back to Round 1),
   and Clear field (full wipe).** Foes arrive three ways: the Bestiary `× N` → Tracker, the
   v1.2 **Foe type-ahead box (× N) directly on the Tracker bar**, or ＋ Add by hand.
+- **New Soul** *(v1.3)* — a strictly-by-the-book random character generator: Ch. III's
+  eight steps end to end at any level 1–10, both ability methods (Honest Array /
+  4d6-drop-lowest), all 17 Callings and 10 Origins with their cross-constraints honored
+  (no Gambler origin for Faith, no Hedge Magic for Faith or for sign-working Callings,
+  Marks where imposed, Gunhand's bonus combat Edges, 3rd-level Trades/Schools/Oaths/
+  Bargains/Devotions, Signs for the Old Dark only, coin rolled on the Ch. X dice and
+  spent at printed prices). Rules data lives in **`Data/chargen.json`** — transcribed
+  from the Player's Book (regenerate/update it when Ch. III–IV, VIII–X, XIII–XIV
+  change). `CharGen.Generate` builds, `CharGen.Validate` independently re-derives every
+  number and returns violations (shown in-app if ever non-empty); the smoke suite
+  generates and validates hundreds of sheets per run. **→ Posse** seats the result
+  directly at the table.
 - **Generators** — every Ch. XII rollable table (town/NPC/rumor/trail/plunder/omen) plus
   all nine Grounds terrain tables and the Hand Behind It villain picker, safe-table rule
   applied automatically. v1.2: **every table expanded** with new results in the book's voice

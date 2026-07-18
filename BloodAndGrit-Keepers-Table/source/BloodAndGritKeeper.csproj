@@ -10,7 +10,17 @@
     <AssemblyName>BloodAndGritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.2.3</Version>
+    <Version>1.3.0</Version>
+
+    <!-- Honest assembly metadata: unsigned exes with blank publisher/description fields are
+         exactly what AV heuristics flag first. Filled in alongside Authenticode signing
+         (sign.ps1) to keep Windows/Defender/Cortex warnings down on the published build. -->
+    <Company>Cole Williams</Company>
+    <Authors>Cole Williams</Authors>
+    <Product>Blood &amp; Grit — The Keeper's Table</Product>
+    <AssemblyTitle>Blood &amp; Grit — The Keeper's Table</AssemblyTitle>
+    <Description>Keeper's companion app for the Blood &amp; Grit tabletop RPG: posse, dice, bestiary, encounters, tracker, generators, character maker, reference, and session notes.</Description>
+    <Copyright>© 2026 Cole Williams</Copyright>
 
     <!-- Ship as a self-contained, single-file Windows exe so the target machine needs NO
          .NET install (the runtime is bundled). These live in the project (not just the
@@ -30,6 +40,7 @@
     <EmbeddedResource Include="Data\creatures.json" />
     <EmbeddedResource Include="Data\tables.json" />
     <EmbeddedResource Include="Data\tables_extra.json" />
+    <EmbeddedResource Include="Data\chargen.json" />
   </ItemGroup>
 
 </Project>
