@@ -223,6 +223,8 @@ public partial class MainForm
         hint.BringToFront();
         hint.Visible = encounter.Count == 0;
         encounter.ListChanged += (s, e) => hint.Visible = encounter.Count == 0;
+        Watermark(encGrid, () => GridBottom(encGrid));
+        Watermark(hint, () => HintBottom(hint));
 
         RefreshEncounter();
         return page;
@@ -366,6 +368,8 @@ public partial class MainForm
         hint.BringToFront();
         hint.Visible = tracker.Count == 0;
         tracker.ListChanged += (s, e) => hint.Visible = tracker.Count == 0;
+        Watermark(trkGrid, () => GridBottom(trkGrid));
+        Watermark(hint, () => HintBottom(hint));
         return page;
     }
 
@@ -386,6 +390,7 @@ public partial class MainForm
             MinimumSize = new Size(340, 300), StartPosition = FormStartPosition.Manual,
             Location = new Point(Math.Max(0, Right - 540 - cascade), Top + 80 + cascade)
         };
+        if (AppIcon != null) win.Icon = AppIcon;
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
@@ -437,7 +442,7 @@ public partial class MainForm
     // Bestiary. Blood/Defense by hand; the PC flag just tints the row green like the posse.
     void AddCustomCombatant()
     {
-        using var f = new Form { Width = 350, Height = 258, Text = "Add combatant", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, BackColor = Paper };
+        using var f = new Form { Width = 350, Height = 258, Text = "Add combatant", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 16, Top = 18, Width = 80, Text = "Name:" };
         var name = new TextBox { Left = 104, Top = 15, Width = 210, Text = "Bandit" };
         var l2 = new Label { Left = 16, Top = 54, Width = 80, Text = "Blood:" };
@@ -580,6 +585,7 @@ public partial class MainForm
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(Pad(genOut, 12));
         page.Controls.Add(split);
+        Watermark(left, () => FlowBottom(left));
         return page;
     }
 
@@ -718,12 +724,13 @@ public partial class MainForm
         split.Panel1.Controls.Add(notesGroup);
         split.Panel2.Controls.Add(clocksGroup);
         page.Controls.Add(split);
+        Watermark(clockPanel, () => FlowBottom(clockPanel));
         return page;
     }
 
     void NewThread()
     {
-        using var f = new Form { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, BackColor = Paper };
+        using var f = new Form { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 14, Top = 14, Width = 320, Text = "Name the trouble (type your own, or pick a pattern):" };
         var name = new ComboBox { Left = 14, Top = 38, Width = 320, DropDownStyle = ComboBoxStyle.DropDown };
         name.Items.AddRange(new object[]
@@ -756,7 +763,7 @@ public partial class MainForm
 
     void RenameThread(CampaignClock c)
     {
-        using var f = new Form { Width = 360, Height = 160, Text = "Rename thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, BackColor = Paper };
+        using var f = new Form { Width = 360, Height = 160, Text = "Rename thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 14, Top = 14, Width = 320, Text = "Thread name:" };
         var name = new TextBox { Left = 14, Top = 38, Width = 320, Text = c.Name };
         var ok = new Button { Text = "Rename", Left = 148, Top = 78, Width = 90, DialogResult = DialogResult.OK };

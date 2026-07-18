@@ -42,6 +42,30 @@ for (int i = 0; i < 100; i++)
 T("full: negative dice sign", Rules.RollExprFull("1d6-1d4").dice.Count(d => d.sign == -1) == 1);
 T("full: garbage gives no dice", Rules.RollExprFull("banana").dice.Count == 0);
 
+// ---- The Dice tab's expression-builder buttons (pure logic behind +d6 / ＋ / digits) ----
+T("builder: empty + d6",          Rules.ExprAddDie("", 6) == "1d6");
+T("builder: d6 again stacks",     Rules.ExprAddDie("1d6", 6) == "2d6");
+T("builder: bare d6 stacks",      Rules.ExprAddDie("d6", 6) == "2d6");
+T("builder: stack keeps prefix",  Rules.ExprAddDie("1d8+2d6", 6) == "1d8+3d6");
+T("builder: different die joins", Rules.ExprAddDie("1d20", 6) == "1d20+1d6");
+T("builder: d10 does not eat d100",  Rules.ExprAddDie("1d100", 10) == "1d100+1d10");
+T("builder: d100 does not eat d10",  Rules.ExprAddDie("1d10", 100) == "1d10+1d100");
+T("builder: after operator no extra +", Rules.ExprAddDie("2d6+", 8) == "2d6+1d8");
+T("builder: after modifier joins",      Rules.ExprAddDie("2d6+3", 6) == "2d6+3+1d6");
+T("builder: append digit",        Rules.ExprAppend("2d6+", "3") == "2d6+3");
+T("builder: append operator",     Rules.ExprAppend("2d6", "+") == "2d6+");
+T("builder: operator replaces operator", Rules.ExprAppend("2d6+", "-") == "2d6-");
+T("builder: null-safe",           Rules.ExprAddDie(null, 6) == "1d6" && Rules.ExprAppend(null, "+") == "+");
+for (int i = 0; i < 50; i++)
+{
+    // whatever the buttons build must parse and roll cleanly
+    string e = "";
+    e = Rules.ExprAddDie(e, 6); e = Rules.ExprAddDie(e, 6); e = Rules.ExprAddDie(e, 8);
+    e = Rules.ExprAppend(e, "+"); e = Rules.ExprAppend(e, "3");
+    var (bt, bb, bd) = Rules.RollExprFull(e);
+    T("builder output rolls", bb != "could not parse" && bd.Count == 3 && bt >= 6 && bt <= 23);
+}
+
 // ---- Data loads, extra tables merge, terrain entries resolve to real creatures ----
 Db.Load();
 T("110 creatures", Db.Creatures.Count == 110);
