@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-# Assemble the Keeper's Book body and splice it into the cloned shell.
+# Assemble the Keeper's Book body and splice it into the Player-shell build.
+# Reads blood-and-grit.html (run build_player.py first), writes keeper-handbook.html.
 import re
 
-H = open("keeper-handbook.html", encoding="utf-8").read()
+H = open("blood-and-grit.html", encoding="utf-8").read()
 
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
@@ -31,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.12 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.4 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.12)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.4)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.13 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.5 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.13)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.5)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.12</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.4</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.13</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.5</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.12 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.4 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.13 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.5 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -1165,7 +1166,7 @@ APX = f"""<!-- APPENDIX -->
 
     <h3>Grit</h3>
     <p>3 per character per session; award more for courage, character, or a line that stops the table. Spent to
-    reroll, steady a fright, or claw back from Dying.</p>
+    add 1d6, reroll, steady a fright, stay on your feet at 0 Blood, or soften a critical failure.</p>
   </div>
 
   <div class="twocol">

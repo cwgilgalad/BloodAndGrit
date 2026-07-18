@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — The Bestiary" on the shared engine (clone of the Player's Book shell).
+# Build "Blood & Grit — The Bestiary" on the shared engine (the Player's Book shell).
+# Reads blood-and-grit.html (run build_player.py first), writes bestiary.html.
 import re
 
-H = open("bestiary.html", encoding="utf-8").read()
+H = open("blood-and-grit.html", encoding="utf-8").read()
 
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
@@ -40,13 +41,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.12 -->", "<!-- Blood & Grit — The Bestiary · Version 2.4 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.12)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.4)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.13 -->", "<!-- Blood & Grit — The Bestiary · Version 2.5 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.13)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.5)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.12</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.4</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.13</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.5</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.12 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.4 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.13 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.5 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -699,7 +700,7 @@ MEN = f"""<!-- IV -->
        "The flock breaks if the prophet falls; the prophet has bargained his death away &mdash; find and break the token that holds it.",
        mark="A soul that heeds the Word willingly, or takes the prophet's bargain, gains +1 Mark."),
     lore=[
-      "Out where the churches are far apart and the nights are long, a charismatic man with the wrong book and the right voice can gather a congregation that should have known better. The Hollow Prophet was a person once &mdash; a preacher, a prospector, a stranger who came to town with a light in his eye &mdash; until he gave himself over to something that fills him now and speaks through him. His flock are ordinary folk: neighbors, farmers, a sheriff's own deputy, hollowed out one sermon at a time until they fear nothing, doubt nothing, and will die smiling for him.",
+      "Out where the churches are far apart and the nights are long, a charismatic man with the wrong book and the right voice can gather a congregation that should have known better. The Hollow Prophet was a person once &mdash; a preacher, a prospector, a stranger who came to town with a light in his eye. Then he gave himself over, and what fills him now speaks through him. His flock are ordinary folk: neighbors, farmers, a sheriff's own deputy, hollowed out one sermon at a time until they fear nothing, doubt nothing, and will die smiling for him.",
       "He has bargained his own death away and keeps it somewhere safe &mdash; a token, a buried thing, a heart kept in a box &mdash; so that bullets pass through him like he's already a ghost. His Word is a weapon: a sermon that turns a brave soul's own hands against itself, that makes the faithful unkillable in spirit if not in body. The flock breaks only when he falls, and he falls only when the thing that holds his death is found and broken."],
     found="An isolated congregation &mdash; a remote chapel, a mining camp, a town the railroad forgot. The flock looks normal at first; the wrongness is in what they all believe, and what they've all agreed not to see.",
     keeper="This dual entry is a whole scenario in a box: a cult, its leader, and the bargain that protects him. Run the flock as the immediate threat &mdash; fearless, numerous, armed with farm tools and old rifles &mdash; and the prophet as the puzzle behind them. His sermon (the Will-save Frightened effect) makes a frontal assault costly and can turn party members against each other or freeze them mid-fight. Killing his body does nothing; the win is finding the token that holds his bargained-away death. Build the investigation: where does he keep it, who knows, what will the flock do to protect it? The Mark warning matters &mdash; a player tempted by the Word, or by the prophet's own offer, courts corruption. Use the flock to show how ordinary people get hollowed out, and the prophet to show what's doing the hollowing. The best version makes the party realize, too late, how many 'normal' townsfolk were already his.")}
@@ -740,7 +741,7 @@ MEN = f"""<!-- IV -->
       "He was the law in his town, judge and jury and gallows all in one, and he hanged a great many men &mdash; some guilty, some guilty only of being inconvenient, and at least one whose innocence he knew and buried along with the body. He died still on the bench, and death did not retire him. The Hanging Judge holds court still, in the ruin of his courthouse, and any soul who wanders into his jurisdiction is hauled before him, tried, sentenced, and hanged with the cold ceremony of a man who never once doubted himself.",
       "Within his town his word is iron law &mdash; his sentence carries a weight that makes the bravest soul quail, his gavel-crack stuns like a thunderclap. He cannot be argued with by ordinary means, because in his own mind he is simply doing his duty, as he always did. The wrong he died hiding is the crack in the bench: prove it, win a true verdict against him, and the false majesty of his court comes down."],
     found="The abandoned courthouse and gallows-square of a dead or dying town, the seat of his old jurisdiction. He's bound to his bench; leave the town and you leave him, but the town usually holds something the party needs.",
-    keeper="The Hanging Judge is a courtroom drama with a noose, and the way to beat him is to play the trial, not the fight. His numbers make a straight brawl punishing, and morally he believes he's righteous, so you can't just shoot your way out of his jurisdiction. The keys are in the entry: win a true verdict against him (prove the wrong he died concealing &mdash; the innocent man he knowingly hanged) or destroy the instruments of his false court (break the gallows, burn the bench). Build the scenario as an investigation into his old cases: who did he hang wrongly, where's the evidence, what's the truth he's been holding court to avoid? Then stage a confrontation where the party turns his own ritual against him &mdash; puts <em>him</em> on trial. It's a fantastic set-piece for a party that likes to think, and a sharp comment on frontier justice. Let them win by being right, not just by being armed.")}
+    keeper="The Hanging Judge is a courtroom drama with a noose, and the way to beat him is to play the trial, not the fight. His numbers make a straight brawl punishing, and morally he believes he's righteous, so you can't just shoot your way out of his jurisdiction. The keys are in the entry: win a true verdict against him (prove the wrong he died concealing &mdash; the innocent man he knowingly hanged) or destroy the instruments of his false court (break the gallows, burn the bench). Build the scenario as an investigation into his old cases: who did he hang wrongly, where's the evidence, what's the truth he's been holding court to avoid? Then stage a confrontation where the party turns his own ritual against him &mdash; puts <em>him</em> on trial. It's a set-piece for a party that likes to think, and a sharp comment on frontier justice. Let them win by being right, not just by being armed.")}
 
   {creature(
     sb("The Resurrectionist", "Tier II &middot; the grave-robber gone wrong", 14, 24, "normal", "+6", "+5", "+7",
@@ -802,7 +803,7 @@ MEN = f"""<!-- IV -->
       "He was good with a gun &mdash; maybe the best in three territories &mdash; but good wasn't enough, or wasn't safe enough, and he made a bargain to be sure. The Deathless Gun cannot be killed wrong. Ambush him and the bullets find nothing vital. Poison him and he shrugs it off. Send ten men and watch the wounds close as fast as they open. The terms of his bargain are precise and cruel: he can only die one way, outdrawn in a fair fight, one on one, in the open, with no trick and no edge.",
       "He knows his terms better than anyone, and he's built a life on them. He'll provoke the fair fight he can't lose, walk into ambushes smiling, let a whole posse empty their guns into him just to watch their faces. The only way past him is the one way he's spent years getting good at &mdash; and he is very, very fast."],
     found="The streets and saloons of the gun-towns, anywhere reputation is currency and a fast draw settles accounts. He goes where the fighting is, because the fight is the only thing that can end him, and he's not afraid of it.",
-    keeper="The Deathless Gun is the book's great showdown, and its whole point is that the party <em>can't cheat</em>. Every clever trick they've learned &mdash; ambush, numbers, poison, dynamite &mdash; fails against his terms, and you should let them try and fail once so the rule lands. The only path is the one he's mastered: a fair, open, one-on-one draw. This forces a fantastic dramatic question &mdash; <em>who</em> faces him, and are they fast enough? Build to it: let his reputation precede him, let the party watch him survive something that should have killed him, let the dread of the inevitable showdown build. Make the duel itself a real moment &mdash; the empty street, the held breath, the single exchange. It's a rare creature that turns the genre's central iconography (the quick-draw duel) into the only viable tactic. Reward the gunslinger character's whole build with this. And if they win, let it be earned, and close.")}
+    keeper="The Deathless Gun is the book's great showdown, and its whole point is that the party <em>can't cheat</em>. Every clever trick they've learned &mdash; ambush, numbers, poison, dynamite &mdash; fails against his terms, and you should let them try and fail once so the rule lands. The only path is the one he's mastered: a fair, open, one-on-one draw. This forces the dramatic question &mdash; <em>who</em> faces him, and are they fast enough? Build to it: let his reputation precede him, let the party watch him survive something that should have killed him, let the dread of the inevitable showdown build. Make the duel itself a real moment &mdash; the empty street, the held breath, the single exchange. It's a rare creature that turns the genre's central iconography (the quick-draw duel) into the only viable tactic. Reward the gunslinger character's whole build with this. And if they win, let it be earned, and close.")}
 
   {creature(
     sb("The Possessed", "Tier II &middot; a soul with a rider", "12 (host)", 22, "normal", "+5", "+6", "+9",
@@ -936,10 +937,10 @@ SPIRITS = f"""<!-- V -->
        "DC 13, 1d4",
        "Fire ends them; keep eyes on them till the flames take hold, and do not, ever, count them wrong."),
     lore=[
-      "Someone made dolls, and made them too well, and put something into them &mdash; grief, spite, the small souls of children who died &mdash; until the dolls woke up. The Dollmaker's Children are painted, jointed, doll-sized things that move only when no one is watching. Under a steady eye they are perfectly, innocently still. The instant that eye blinks or turns away, they rush &mdash; needles and little knives, a swarm of small spiteful hands &mdash; and freeze again before anyone can be sure they moved at all.",
+      "Someone made dolls, and made them too well, and put something into them &mdash; grief, spite, the small souls of children who died. The dolls woke. The Dollmaker's Children are painted, jointed, doll-sized things that move only when no one is watching. Under a steady eye they are perfectly, innocently still. The instant that eye blinks or turns away, they rush &mdash; needles and little knives, a swarm of small spiteful hands &mdash; and freeze again before anyone can be sure they moved at all.",
       "The whole horror of them is the watching. You cannot look at all of them at once. You cannot blink in unison. And you must never, ever count them wrong, because if there are more of them than you thought, one is already behind you, and it has all the time it needs the moment you look away."],
     found="A nursery, a toy-shop, the workshop or home of the dollmaker who made them. They cluster where children were &mdash; or where children were lost &mdash; and they spread, doll by doll, through the houses of a town.",
-    keeper="The Dollmaker's Children turn <em>attention</em> into a resource the party has to manage, which makes for uniquely tense play. They only move when unobserved, so the table is forced to think about who's watching what, who's turning their back, what happens when the lantern swings away. Run the dread of glimpsed movement, the doll that's closer than it was, the miscount. Mechanically they're fragile and fire ends them &mdash; but the catch is you have to keep eyes on them until the flames actually take, and they're a swarm, so you can't watch them all. Stage it in a confined, doll-filled space (a nursery, a workshop) where there are always more than the party can cover. The 'never count them wrong' line is a perfect way to plant dread &mdash; have the count come out different twice. It's a fantastic set-piece for a tense, claustrophobic scene, and a creature that punishes panic and rewards discipline, teamwork, and a cool head. Pair with the tragedy of <em>why</em> the dolls woke for emotional weight.")}
+    keeper="The Dollmaker's Children turn <em>attention</em> into a resource the party has to manage, which makes for uniquely tense play. They only move when unobserved, so the table is forced to think about who's watching what, who's turning their back, what happens when the lantern swings away. Run the dread of glimpsed movement, the doll that's closer than it was, the miscount. Mechanically they're fragile and fire ends them &mdash; but the catch is you have to keep eyes on them until the flames actually take, and they're a swarm, so you can't watch them all. Stage it in a confined, doll-filled space (a nursery, a workshop) where there are always more than the party can cover. The 'never count them wrong' line is a perfect way to plant dread &mdash; have the count come out different twice. It's a set-piece for a tense, claustrophobic scene, and a creature that punishes panic and rewards discipline, teamwork, and a cool head. Pair with the tragedy of <em>why</em> the dolls woke for emotional weight.")}
 
   {creature(
     sb("The Mirror-Dweller", "Tier III &middot; the thing in the glass", 16, 36, "through any reflection", "+9", "+9", "+11",
@@ -951,7 +952,7 @@ SPIRITS = f"""<!-- V -->
       "It lives behind the silver, in the world that mirrors show and still water holds, and it has been watching you through every reflective surface you've ever passed. The Mirror-Dweller reaches through the glass &mdash; a cold arm out of a mirror, a hand from the surface of a well &mdash; to seize a soul and drag it through to the other side. And what it pulls in, it replaces: it climbs out wearing your face, your reflection made flesh, and walks away into your life while you scream from behind the silver where no one can hear.",
       "It can only act where there's a reflection to hold it. A room with every mirror broken or covered, every basin emptied, every window dark, is a room it cannot enter. Somewhere there's the mirror it calls home, the one it came through first &mdash; shatter that, and you cut it off from this side for good."],
     found="Anywhere there are mirrors and still water &mdash; a house full of looking-glasses, a town's barber-shop and parlors, a still pond. It has a home mirror it favors and spreads its reach through every reflection nearby.",
-    keeper="The Mirror-Dweller makes every reflective surface a door, which is a wonderfully paranoid mechanic to run. The party learns to fear mirrors, dark windows, still water, the polished surface of a gun &mdash; anywhere it can reach through or wear a stolen face back at them. The defensive rule is concrete and tactical: break or cover every reflection and it can't enter; a reflection-free room is a safe room. The win is finding and shattering its home mirror. The replacement horror gives it teeth beyond combat &mdash; if it takes someone, an impostor wearing their face is now loose, which can fuel a whole paranoid scenario (which of us is real?). Run the dread of the reflection that moves wrong, the face in the glass that smiles when you don't. It rewards a party that thinks about their environment and covers their mirrors, and punishes the one that walks past a looking-glass without a second thought. A gothic, claustrophobic favorite, and a great pairing with the Skin-Walker for a campaign about impostors and stolen identities.")}
+    keeper="The Mirror-Dweller makes every reflective surface a door, which makes every glass in the house a thing to watch. The party learns to fear mirrors, dark windows, still water, the polished surface of a gun &mdash; anywhere it can reach through or wear a stolen face back at them. The defensive rule is concrete and tactical: break or cover every reflection and it can't enter; a reflection-free room is a safe room. The win is finding and shattering its home mirror. The replacement horror gives it teeth beyond combat &mdash; if it takes someone, an impostor wearing their face is now loose, which can fuel a whole paranoid scenario (which of us is real?). Run the dread of the reflection that moves wrong, the face in the glass that smiles when you don't. It rewards a party that thinks about their environment and covers their mirrors, and punishes the one that walks past a looking-glass without a second thought. A gothic, claustrophobic favorite, and a great pairing with the Skin-Walker for a campaign about impostors and stolen identities.")}
 
   {creature(
     sb("The Hangman's Echo", "Tier II &middot; a death that replays", "&mdash;", 22, "fixed to the gallows-ground", "+7", "+6", "+9",
@@ -1028,11 +1029,11 @@ WILD = f"""<!-- VI -->
   <p class="note"> <strong>Signs of the kind:</strong> weather that comes too fast or will not move on, a heat or a cold the season does not own, water that recedes as you near it, and a stillness with no birds in it.</p>
 
   {creature(
-    sb("The Wendigo", "Tier IV &middot; the hunger that walks", 20, 72, "very fast; the storm moves with it", "+15", "+13", "+9",
+    sb("The Wendigo", "Tier IV &middot; the deep winter given a body", 20, 72, "very fast; the storm moves with it", "+15", "+13", "+9",
        "antler and claw +13 (2d8+6, two a round); a crit carries a soul off into the white",
        "<strong>Killing cold &amp; the call.</strong> A blizzard rides with it; any who have eaten the dead or starved past reason hear it call by name (Will DC 18 nightly or walk to it).",
        "DC 20, 1d10",
-       "Cold cannot touch it &mdash; only fire and an iron heart. Cut out its frozen heart and burn it to ash.",
+       "Cold cannot touch it &mdash; only fire, and the nerve to use it close. Cut out its frozen heart and burn it to ash.",
        mark="Answering the hunger willingly is +1 Mark and the Wendigo's notice forever."),
     lore=[
       "It is the hunger of the deep winter given a body, and the body is wrong &mdash; gaunt past starvation, antlered, frost-rimed, taller than a man and faster than a horse, with a hunger that the eating of whole homesteads will not fill. The Wendigo is what the starved and the cannibal become when the cold and the appetite finish their work, and a blizzard rides with it wherever it goes, so that the storm and the monster arrive together and no one can tell where one ends.",
@@ -1121,7 +1122,7 @@ WILD = f"""<!-- VI -->
        "DC 20, 1d10",
        "You do not fell it &mdash; you flee it, lead it astray, or lull it back to its long sleep. Do not wake it again."),
     lore=[
-      "There are mountains that are not only mountains. The Stone Giant is a thing of the high rock, old beyond the reckoning of men, that sleeps for ages as a ridge or a crag or a tor &mdash; until something wakes it. A mine driven too deep, a charge set wrong, a greed that dug where it should have left the rock alone, and the mountain stirs, and stands, and steps, and the ground shakes with every footfall. It is slow. It is also utterly unstoppable, and nothing the frontier owns will so much as scar it.",
+      "There are mountains that are not only mountains. The Stone Giant is a thing of the high rock, old beyond the reckoning of men, that sleeps for ages as a ridge or a crag or a tor. A mine driven too deep, a charge set wrong, a greed that dug where it should have left the rock alone &mdash; and the mountain stirs, and stands, and steps, and the ground shakes with every footfall. It is slow. It is also utterly unstoppable, and nothing the frontier owns will so much as scar it.",
       "You do not fell a mountain. The whole question, once it's roused, is how to survive it and how to put it back to sleep &mdash; to flee it, to lead it astray over ground that doesn't matter, to lull it back into the long dreamless rest it was woken from. And then, the hard part, the part men never seem to learn: to leave it alone, and never, ever wake it again."],
     found="The high mountains and ancient rock, where it sleeps disguised as the landscape itself. It wakes only when disturbed &mdash; by deep mining, by disrupted ground, by some greed or folly that won't let the old rock lie.",
     keeper="The Stone Giant is the book's lesson that some things are too old and too vast to fight, only to survive and to let lie. Its numbers and unstoppability make combat a non-starter &mdash; you cannot fell a mountain &mdash; so the encounter is about flight, misdirection, and the deeper goal of lulling it back to sleep. Run it slow and apocalyptic: each step shakes the ground, each granite fist flattens what it hits, and the party's cleverness (leading it astray, finding what will quiet it) matters far more than their guns. The framing is pointed &mdash; it was woken by greed or folly (a mine driven too deep, ground disrupted), which ties it to the cost of how men use the country. Build the scenario around what woke it and what will quiet it, and let the resolution be restoration and restraint rather than victory. It pairs thematically with the Thunderbird (another ancient thing not meant to be killed) as the chapter's reminders of the party's smallness. Use it to humble, to awe, and to teach that the oldest monster is the country itself, and the wisest course is sometimes to put a thing back to sleep and walk very quietly away.")}
@@ -1188,7 +1189,7 @@ OLD = f"""<!-- VII -->
       "Something out beyond the veil has things it wants said, and it needs a mouth to say them. The Whisperer's Mouth is a person &mdash; or what's left of one &mdash; hollowed out and made into a vessel for a voice from outside. It does nothing but talk. It raises no hand, makes no attack. And it is one of the most dangerous things in this book, because the words it speaks are <em>true</em>, and that truth is the harm of them: secrets that unmake you to know, answers to questions you should never have asked, the shape of things the mind is not built to hold.",
       "Hear it long enough and you lose the thread of your own mind, unspooling as the true and terrible words wind into you. The only defense is silence &mdash; stop your ears, gag the vessel, end it if you must &mdash; and the discipline never to listen for the rest, no matter what it promises to tell you, no matter how badly you want to know."],
     found="Wherever a Patron wants a message delivered &mdash; the vessel may be a captured person, a corpse, a cultist who volunteered, set in a place the Patron means to influence. It speaks to whoever comes within earshot.",
-    keeper="The Whisperer's Mouth weaponizes knowledge and curiosity, and it's a fight the party wins by <em>refusing to engage</em>. It has no attack but speech, and the speech is true &mdash; which is exactly why it's deadly. The mechanical pressure is the per-round Will save for anyone who keeps listening, eroding their mind. The defenses are about silence and discipline: deafen yourself, gag or destroy the vessel, and crucially, don't listen for more even though it offers true and tantalizing answers. The horror is the temptation &mdash; it knows things, real things, things the party desperately wants to know (about the plot, about their pasts, about the dark itself), and listening is how it kills you. The Mark warning is sharp: heeding what it says corrupts. Run the agonizing pull of forbidden truth, and reward the player who has the discipline to clap their hands over their ears and cut the vessel's throat rather than hear one more sentence. It's a brilliant test of a party's restraint and a pure distillation of cosmic horror's central idea: some knowledge costs you the mind that holds it.")}
+    keeper="The Whisperer's Mouth weaponizes knowledge and curiosity, and it's a fight the party wins by <em>refusing to engage</em>. It has no attack but speech, and the speech is true &mdash; which is exactly why it's deadly. The mechanical pressure is the per-round Will save for anyone who keeps listening, eroding their mind. The defenses are about silence and discipline: deafen yourself, gag or destroy the vessel, and crucially, don't listen for more even though it offers true and tantalizing answers. The horror is the temptation &mdash; it knows things, real things, things the party desperately wants to know (about the plot, about their pasts, about the dark itself), and listening is how it kills you. The Mark warning is sharp: heeding what it says corrupts. Run the agonizing pull of forbidden truth, and reward the player who has the discipline to clap their hands over their ears and cut the vessel's throat rather than hear one more sentence. It's a test of a party's restraint and a pure distillation of cosmic horror's central idea: some knowledge costs you the mind that holds it.")}
 
   {creature(
     sb("The Star-Spawn", "Tier V &middot; the thing that fell", 23, 110, "crawls; flies wrong", "+19", "+15", "+19",
@@ -1225,7 +1226,7 @@ OLD = f"""<!-- VII -->
       "It drifts into town like a fog with a shape inside it, pale and cold and draining the color from everything it passes, and it has come to deliver a message: that this place has been noticed, that its end is coming, that the Old Dark has turned its attention here and will arrive within the season. The Pallid Herald is an announcement made flesh, and its very message is a curse &mdash; to hear it in full is to be marked, to be part of the ending it foretells.",
       "Driving it off is easy enough and accomplishes nothing; it is only the messenger, and killing the messenger does not unsend the message. Its master's eye is already on the town, and the Herald's coming means the clock has already started. The only real answer is to find out <em>why</em> &mdash; what did this place do, what drew the deep dark's attention, what bargain or rite or buried wrong invited the worse thing the Herald announces &mdash; and undo it before the season turns."],
     found="A town or settlement that has drawn the Old Dark's attention &mdash; usually through a rite, a bargain, a buried wrong, or simple bad luck. The Herald arrives first; the worse thing follows within the season.",
-    keeper="The Pallid Herald is a harbinger and a deadline, and its purpose is to start a clock. When it arrives and delivers its message, you've told the party that something far worse is coming and given them a season to prevent it. Driving off the Herald itself is a trap &mdash; it's just the messenger, and its master's attention is already fixed. The real work is investigation: <em>why</em> has the deep dark noticed this place, and how do you make it stop noticing? Build the scenario around uncovering and undoing the cause (the rite performed, the bargain struck, the wrong buried) before the worse thing arrives. The Mark warning &mdash; hearing the full message corrupts &mdash; means even receiving the warning has a cost. Run the Herald's coming as creeping dread: the color draining from the world, the cold, the sense of a countdown beginning. It's a fantastic scenario-opener that hands the party a mystery, a deadline, and high stakes all at once, and it sets up a back-half confrontation with whatever the Herald announced. Use it to make the party feel time pressing on them, and to frame a whole adventure as a race to un-draw the eye of something vast before it finishes turning toward them.")}
+    keeper="The Pallid Herald is a harbinger and a deadline, and its purpose is to start a clock. When it arrives and delivers its message, you've told the party that something far worse is coming and given them a season to prevent it. Driving off the Herald itself is a trap &mdash; it's just the messenger, and its master's attention is already fixed. The real work is investigation: <em>why</em> has the deep dark noticed this place, and how do you make it stop noticing? Build the scenario around uncovering and undoing the cause (the rite performed, the bargain struck, the wrong buried) before the worse thing arrives. The Mark warning &mdash; hearing the full message corrupts &mdash; means even receiving the warning has a cost. Run the Herald's coming as creeping dread: the color draining from the world, the cold, the sense of a countdown beginning. It's a scenario-opener that hands the party a mystery, a deadline, and high stakes all at once, and it sets up a back-half confrontation with whatever the Herald announced. Use it to make the party feel time pressing on them, and to frame a whole adventure as a race to un-draw the eye of something vast before it finishes turning toward them.")}
 
   {creature(
     sb("The Crawling Congregation", "Tier III &middot; the faithful, fused", 16, 44, "slow; tireless", "+11", "+4", "+9",
@@ -1263,7 +1264,7 @@ OLD = f"""<!-- VII -->
       "It rides ahead of the ruin, faceless under its hat, always just ahead on the road no matter how fast you ride, and where it passes, disaster comes behind it &mdash; the flood, the fire, the plague, the war, the catastrophe that's already coming and cannot now be stopped. The Faceless Rider is the outrider of ruin, and to see it on the road ahead of you is to know that something terrible is bearing down on wherever it's headed.",
       "You cannot kill it. It is not the disaster, only its herald, and it cuts down the stragglers and the messengers who fall behind &mdash; the ones who might have carried warning, the ones who might have outrun the ruin to alert the town ahead. The only thing to be done is to beat it: outrace it to carry word ahead of the catastrophe, or find a way to turn aside the ruin it heralds before the Rider's road runs out and the disaster arrives."],
     found="On the road ahead of an oncoming catastrophe, always one step in front of the ruin it heralds. It rides toward whatever place disaster is coming for; outpacing it means outpacing the disaster.",
-    keeper="The Faceless Rider turns a catastrophe into a race, and that's its whole brilliant design. It can't be killed &mdash; it's the herald, not the disaster &mdash; and it hunts the messengers and stragglers specifically to stop warning from outrunning ruin. So the encounter becomes a desperate ride: beat the Rider to the threatened town to raise the alarm and evacuate, or find and turn aside the disaster it heralds before it lands. Run it as a chase with mounting stakes &mdash; the Rider always just ahead, cutting down anyone who falls behind, the ruin gaining behind <em>them</em>. The drama is the clock and the cost: who rides hard enough, who might fall behind to the scythe of cold, can word reach the town in time? It pairs with the Pallid Herald and the Mourner as the book's harbingers (this one the most kinetic of the three). Use it to frame an entire disaster scenario as a race against time, to give a flood or fire or plague a terrifying avatar, and to let the party be heroes not by fighting but by <em>outrunning doom to warn the doomed</em>. The Rider can't be beaten in combat &mdash; only beaten to the finish line.")}
+    keeper="The Faceless Rider turns a catastrophe into a race, and that's its whole design. It can't be killed &mdash; it's the herald, not the disaster &mdash; and it hunts the messengers and stragglers specifically to stop warning from outrunning ruin. So the encounter becomes a desperate ride: beat the Rider to the threatened town to raise the alarm and evacuate, or find and turn aside the disaster it heralds before it lands. Run it as a chase with mounting stakes &mdash; the Rider always just ahead, cutting down anyone who falls behind, the ruin gaining behind <em>them</em>. The drama is the clock and the cost: who rides hard enough, who might fall behind to the scythe of cold, can word reach the town in time? It pairs with the Pallid Herald and the Mourner as the book's harbingers (this one the most kinetic of the three). Use it to frame an entire disaster scenario as a race against time, to give a flood or fire or plague a terrifying avatar, and to let the party be heroes not by fighting but by <em>outrunning doom to warn the doomed</em>. The Rider can't be beaten in combat &mdash; only beaten to the finish line.")}
 
   {creature(
     sb("The Thing in the Well", "Tier III &middot; what answers when you draw", 15, 40, "in the deep water", "+11", "+7", "+11",
@@ -1288,7 +1289,7 @@ OLD = f"""<!-- VII -->
       "A belief can grow so dark, and be believed so hard by so many, that it stops being merely an idea and takes on a body of its own. The Sermon Made Flesh is a doctrine incarnate &mdash; a creed walking around in a shape, preaching itself, its Word a weapon that converts the very people it strikes, folding the slain into its growing choir. It is not a person who believes a thing; it is the thing itself, the belief, given hands and a voice and a terrible momentum.",
       "You cannot kill an idea by shooting the body it wears &mdash; the belief just finds new flesh, new mouths, new believers. The only way to end it is to unmake the idea itself: prove the lie at its center, break its hold on the faithful, show the doctrine to be the falsehood it is. Do that, and the flesh has nothing left to hold it together, and the Sermon Made Flesh comes apart for want of anyone left to believe it."],
     found="Wherever a dark doctrine has taken deep root &mdash; a corrupted church, a fanatical movement, a town that gave itself over to a terrible creed. It manifests where belief in it is strongest and preaches to spread.",
-    keeper="The Sermon Made Flesh is a war of ideas dressed as a monster, and it can't be won with bullets. Its Word converts those it strikes (and the slain become its choir), so a straight fight only feeds it &mdash; every casualty joins the other side. The win is unmaking the <em>idea</em>: prove the lie at the doctrine's center, break its hold on the faithful, expose the falsehood that gives it power. So the encounter is really a battle for belief &mdash; an investigation into the creed's lie, a confrontation that's argued and proven as much as fought, a effort to deconvert the faithful out from under it. The Mark warning is sharp and clever: even speaking its creed aloud to refute it risks corruption, so the party must fight the idea without being infected by it. Run the dread of a belief that walks and preaches and grows, of friends or townsfolk converting mid-fight. Use it to explore fanaticism, dangerous ideas, and the way a creed can outlive any believer. It pairs with the Flock of the Open Eye and the Hollow Prophet as the book's studies of belief weaponized. The lesson: some enemies are ideas, and you beat an idea by proving it false, not by killing the mouth that speaks it.")}
+    keeper="The Sermon Made Flesh is a war of ideas dressed as a monster, and it can't be won with bullets. Its Word converts those it strikes (and the slain become its choir), so a straight fight only feeds it &mdash; every casualty joins the other side. The win is unmaking the <em>idea</em>: prove the lie at the doctrine's center, break its hold on the faithful, expose the falsehood that gives it power. So the encounter is really a battle for belief &mdash; an investigation into the creed's lie, a confrontation that's argued and proven as much as fought, a effort to deconvert the faithful out from under it. The Mark warning is sharp: even speaking its creed aloud to refute it risks corruption, so the party must fight the idea without being infected by it. Run the dread of a belief that walks and preaches and grows, of friends or townsfolk converting mid-fight. Use it to explore fanaticism, dangerous ideas, and the way a creed can outlive any believer. It pairs with the Flock of the Open Eye and the Hollow Prophet as the book's studies of belief weaponized. The lesson: some enemies are ideas, and you beat an idea by proving it false, not by killing the mouth that speaks it.")}
 
   {creature(
     sb("The Devourer's Tongue", "Tier IV &middot; one reaching part of a greater hunger", 20, 66, "lashes from below", "+15", "+11", "+10",
@@ -1300,7 +1301,7 @@ OLD = f"""<!-- VII -->
       "What lashes up out of the ground to seize a man and draw him down into a throat no one can see is not the monster. It is the monster's <em>tongue</em> &mdash; a single reaching part of something vast and buried and patient, so large that the tongue is all of it the world will ever see, the rest of it sleeping down in the deep dark beneath, listening through the part it sends up to taste the surface. You are not fighting the Devourer. You are fighting one small reaching piece of it, and the piece is enough.",
       "You can sever the tongue. That buys escape, that ends the immediate danger &mdash; but the tongue grows back, and the thing it belongs to cannot be killed from up here, not with anything men own, because most of it is somewhere you cannot reach and do not want to. The only wisdom is to take the warning the tongue gives, leave the place, seal it behind you, and never, ever dig down toward the rest of it."],
     found="Above the buried body of something vast and old &mdash; a particular patch of ground, a cave, a sinkhole, a dig that went too deep. The tongue lashes up from there; the rest of it is below, and best left there.",
-    keeper="The Devourer's Tongue is a masterclass in implied scale &mdash; the party fights an appendage and is meant to understand, with dread, that it's only a piece of something far larger and still sleeping below. The tongue can be severed (which buys escape) but regrows, and the thing itself can't be killed from the surface, so the only victory is restraint: take the warning, leave, seal the place, don't dig toward the rest. That's the whole point &mdash; the heroic act is <em>not</em> pursuing it, recognizing that some things are too big to fight and the smart move is to wall them off and walk away. Run the dread of the reaching tongue and the slowly dawning horror of how large the thing it belongs to must be &mdash; the ground that shifts, the sense of something vast listening from below. Resist any urge to let the party 'win' by digging down to the source; the source is unkillable and the descent is suicide. Use it to teach the chapter's hardest lesson &mdash; that wisdom sometimes means leaving the monster alive and sealed rather than dying to prove you could face it &mdash; and to seed a vast, sleeping threat the campaign need never fully reveal. The best Devourer is the one the party walks away from, looking back over their shoulders.")}
+    keeper="The Devourer's Tongue is built on implied scale &mdash; the party fights an appendage and is meant to understand, with dread, that it's only a piece of something far larger and still sleeping below. The tongue can be severed (which buys escape) but regrows, and the thing itself can't be killed from the surface, so the only victory is restraint: take the warning, leave, seal the place, don't dig toward the rest. That's the whole point &mdash; the heroic act is <em>not</em> pursuing it, recognizing that some things are too big to fight and the smart move is to wall them off and walk away. Run the dread of the reaching tongue and the slowly dawning horror of how large the thing it belongs to must be &mdash; the ground that shifts, the sense of something vast listening from below. Resist any urge to let the party 'win' by digging down to the source; the source is unkillable and the descent is suicide. Use it to teach the chapter's hardest lesson &mdash; that wisdom sometimes means leaving the monster alive and sealed rather than dying to prove you could face it &mdash; and to seed a vast, sleeping threat the campaign need never fully reveal. The best Devourer is the one the party walks away from, looking back over their shoulders.")}
 
   {creature(
     sb("The Cold Deep's Child", "Tier III &middot; spawn of a drowned god", 16, 42, "swim fast; crawls", "+11", "+9", "+9",
@@ -1557,7 +1558,359 @@ BUILD = f"""<!-- BUILD -->
 </section>
 """
 
-from bestiary_extra import build_living, sort_sections, gen_appendix
+# ===========================================================================
+# The 25 ordinary beasts, the per-section tier/name sorter, and the generated
+# Roll-by-Tier appendix (formerly bestiary_extra.py, merged 2026-07-18).
+# ===========================================================================
+# Bestiary additions: 25 ordinary (natural) beasts as a new section, plus a
+# build-time pass that sorts every creature section by (tier asc, name asc) and
+# regenerates the appendix index from the actual stat blocks (so it never drifts).
+import re
+from collections import defaultdict
+
+ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
+
+
+def primary_tier(tier_str):
+    head = tier_str.split("&middot;")[0]
+    romans = re.findall(r'\b(I|II|III|IV|V)\b', head)
+    return ROMAN[romans[0]] if romans else 9
+
+
+def name_key(name_html):
+    t = re.sub(r'<[^>]+>', '', name_html)
+    t = (t.replace('&amp;', '&').replace('&mdash;', '-')
+           .replace('&ndash;', '-').replace('&rsquo;', "'").replace('&middot;', ' '))
+    t = re.sub(r"^(the|a|an)\s+", "", t.strip(), flags=re.I)
+    return t.lower()
+
+
+def _spans_for_marker(s, marker):
+    """Return (start,end) spans of top-level divs opened by `marker` (depth-matched)."""
+    spans = []
+    i = 0
+    while True:
+        st = s.find(marker, i)
+        if st == -1:
+            break
+        depth = 0
+        j = st
+        while j < len(s):
+            if s.startswith('<div', j):
+                depth += 1
+                j += 4
+            elif s.startswith('</div>', j):
+                depth -= 1
+                j += 6
+                if depth == 0:
+                    break
+            else:
+                j += 1
+        spans.append((st, j))
+        i = j
+    return spans
+
+
+def extract_statblocks(s):
+    """Return (start,end) spans of each creature unit, depth-matched.
+
+    A creature unit is a top-level <div class="creature"> wrapper when present
+    (it carries the lore + stat block + keeper note as one sortable unit); the
+    function falls back to bare <div class="statblock"> for any creature that
+    has not yet been wrapped. The two never overlap because a wrapped stat block
+    lives *inside* its wrapper, so we exclude bare blocks that fall within a
+    wrapper's span.
+    """
+    wrappers = _spans_for_marker(s, '<div class="creature">')
+    bare = _spans_for_marker(s, '<div class="statblock">')
+
+    def inside_wrapper(st):
+        return any(w0 <= st < w1 for (w0, w1) in wrappers)
+
+    spans = list(wrappers) + [(st, en) for (st, en) in bare if not inside_wrapper(st)]
+    spans.sort()
+    return spans
+
+
+def sort_sections(body, ids):
+    for sid in ids:
+        m = re.search(r'(<section class="page" id="' + sid + r'">)(.*?)(</section>)', body, re.S)
+        if not m:
+            continue
+        inner = m.group(2)
+        spans = extract_statblocks(inner)
+        if not spans:
+            continue
+        first, last = spans[0][0], spans[-1][1]
+        prefix, middle, suffix = inner[:first], inner[first:last], inner[last:]
+        items, leftover = [], middle
+        for (st, en) in spans:
+            blk = inner[st:en]
+            leftover = leftover.replace(blk, "", 1)
+            tier = re.search(r'<span class="sb-tier">(.*?)</span>', blk, re.S).group(1)
+            name = re.search(r'<span class="sb-name">(.*?)</span>', blk, re.S).group(1)
+            items.append((primary_tier(tier), name_key(name), blk))
+        assert leftover.strip() == "", f"section {sid}: non-statblock content between creatures: {leftover.strip()[:80]!r}"
+        items.sort(key=lambda x: (x[0], x[1]))
+        new_inner = prefix + "\n  ".join(b for *_, b in items) + suffix
+        body = body[:m.start()] + m.group(1) + new_inner + m.group(3) + body[m.end():]
+    return body
+
+
+def gen_appendix(body, ids):
+    tiers = defaultdict(list)
+    for sid in ids:
+        m = re.search(r'<section class="page" id="' + sid + r'">(.*?)</section>', body, re.S)
+        if not m:
+            continue
+        inner = m.group(1)
+        for (st, en) in extract_statblocks(inner):
+            blk = inner[st:en]
+            tier_str = re.search(r'<span class="sb-tier">(.*?)</span>', blk, re.S).group(1)
+            name = re.search(r'<span class="sb-name">(.*?)</span>', blk, re.S).group(1)
+            head = tier_str.split("&middot;")[0]
+            romans = re.findall(r'\b(I|II|III|IV|V)\b', head)
+            if not romans:
+                continue
+            if '/' in head:  # dual stat block (e.g. flock / prophet): list in each tier
+                for r in dict.fromkeys(romans):
+                    tiers[ROMAN[r]].append(name)
+            else:            # single or range: place at its lowest (first) tier
+                tiers[ROMAN[romans[0]]].append(name)
+    sub = {1: "(1st&ndash;2nd lvl)", 2: "(~4th lvl)", 3: "(~6th lvl)",
+           4: "(~8th lvl)", 5: "(~10th lvl &amp; beyond)"}
+    lbl = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
+    rows = []
+    for t in (1, 2, 3, 4, 5):
+        names = sorted(dict.fromkeys(tiers[t]), key=name_key)
+        rows.append(f'      <tr><td><strong>{lbl[t]}</strong> <span class="sub">{sub[t]}</span></td>'
+                    f'<td>{", ".join(names)}</td></tr>')
+    new_tbody = "<tbody>\n" + "\n".join(rows) + "\n    </tbody>"
+    m = re.search(r'(<section class="page" id="index">.*?)<tbody>.*?</tbody>(.*?</section>)', body, re.S)
+    return body[:m.start()] + m.group(1) + new_tbody + m.group(2) + body[m.end():]
+
+
+# ---- 25 ordinary beasts, 5 per tier. sb signature:
+# (name, tier, defense, blood, speed, fort, ref, will, attacks, special, dread, down)
+N = "&mdash;"
+LIVING_CREATURES = [
+    # ---- Tier I ----
+    ("The Coyote", "Tier I &middot; the trickster of the waking world", 14, 10, "very fast", "+5", "+8", "+2",
+     "bite +5 (1d6+1)",
+     "<strong>Wary and clever.</strong> Hunts the lone and the weak; a few will harry but rarely commit, and all break for the dark the moment a gun speaks true.",
+     N, "It is a coyote. A shot, a shout, or a fire turns it; only hunger or madness makes one truly press a man."),
+    ("The Rattlesnake", "Tier I &middot; the coil in the dust", 13, 8, "slow; strikes a blur", "+5", "+7", "+0",
+     "bite +6 (1d4 plus venom: Fort DC 13 or 1d6 and sickened a day)",
+     "<strong>Venom.</strong> It would as soon be left alone and rattles to say so; step wrong and it answers from arm's length before the eye can follow.",
+     N, "Watch the ground and the warm rocks. A hoe, a heel, or a load of shot &mdash; and carry a remedy for the bitten."),
+    ("The Badger", "Tier I &middot; a low temper in a hole", 14, 12, "slow; burrows", "+7", "+4", "+1",
+     "claws &amp; bite +5 (1d6+2)",
+     "<strong>Will not quit.</strong> Cornered or dug at, it fights with a fury far past its size and does not flee, yield, or learn fear.",
+     N, "Leave it be and it leaves you. If it must die it will make you spend for it &mdash; many guns, or none."),
+    ("The Bobcat", "Tier I &middot; the small cat that waits above", 15, 9, "fast; leaps; climbs", "+5", "+8", "+2",
+     "claws +5 (1d6+1, rake)",
+     "<strong>Ambush.</strong> Drops from a ledge or a limb onto the straggler; the first strike from hiding lands with a vengeance, and then it is simply gone.",
+     N, "It rarely presses a fight it cannot win; one hard answer and it quits the field."),
+    ("The Stray Pack", "Tier I &middot; dogs gone back to the wild", 13, 12, "fast", "+6", "+6", "+2",
+     "bite +4 (1d6+1, drag down)",
+     "<strong>Pack.</strong> Surrounds a lone traveler and pulls him down by weight and number; bolder than wolves, for they have lost their fear of men.",
+     N, "Drop the boldest and the rest remember they are only dogs; fire and a raised voice scatter them."),
+    # ---- Tier II ----
+    ("The Gray Wolf", "Tier II &middot; the hunter of the long winter", 15, 20, "very fast", "+8", "+8", "+3",
+     "bite +6 (1d8+3, trip)",
+     "<strong>Pack hunter.</strong> Harries, hamstrings, and waits; a lone wolf weighs the odds and slips away, but a pack in a hard winter does not.",
+     N, "Fire and a steady gun earn its respect; break the pack's nerve and the rest follow the leader off into the trees."),
+    ("The Mountain Lion", "Tier II &middot; the cat you never see", 17, 18, "very fast; leaps far", "+7", "+9", "+3",
+     "pounce +6 (1d8+3, knocks prone, then rake)",
+     "<strong>Silent ambush.</strong> Takes the last man in line from above or behind, drops him, and is at his throat before the others can turn.",
+     N, "Stay together and watch the high rocks. It hunts the straggler; deny it one and it goes hungry."),
+    ("The Wild Boar", "Tier II &middot; the razorback out of the bottoms", 16, 26, "fast", "+9", "+5", "+2",
+     "tusks +6 (1d8+3, gore)",
+     "<strong>Charge.</strong> Comes head-down and does not feel the first wound; a hide like a plank turns light shot, and a temper that turns toward the gun, not from it.",
+     N, "A tree, a high seat, or a heavy ball square in the shoulder. Do not let it close, and do not wound it by halves."),
+    ("The Black Bear", "Tier II &middot; the raider of the camp", 15, 24, "fast; climbs", "+8", "+5", "+3",
+     "claws +6 (1d8+3)",
+     "<strong>Mostly wants your supper.</strong> Bluster and noise usually turn it &mdash; unless it is cornered, starving, or a sow with you between her and the cubs, and then it is all teeth.",
+     N, "Make yourself big and loud and it likely quits. Never step between sow and cub; that bear has no quit in it."),
+    ("The Range Bull", "Tier II &middot; a ton of bad temper", 14, 28, "fast in a charge", "+9", "+4", "+2",
+     "horns +6 (1d8+4, toss)",
+     "<strong>Charge and trample.</strong> A longhorn that has decided he hates you; gores, tosses, and comes around for another pass while you are still in the dirt.",
+     N, "The fence, the gate, a fast horse, or a red rag thrown wide &mdash; or drop him where he stands, which is a great deal of dropping."),
+    # ---- Tier III ----
+    ("The Grizzly Bear", "Tier III &middot; the lord of the high country", 17, 44, "fast (briefly, faster than a horse)", "+11", "+5", "+4",
+     "claws +9 (2d6+4; a hit rakes with both)",
+     "<strong>Takes the lead and keeps coming.</strong> Shrugs off the first solid wound, runs down a fleeing man over short ground, and does not stop for pain.",
+     N, "It takes more lead than seems possible &mdash; aim true behind the shoulder. A tree is no help; a grizzly will simply wait you out."),
+    ("The Bison Bull", "Tier III &middot; a hill of muscle and horn", 16, 48, "very fast in a straight line", "+13", "+4", "+4",
+     "horns &amp; trample +9 (2d6+5)",
+     "<strong>Unstoppable in a line.</strong> A ton and a half at a dead run; it neither swerves nor tires before you do.",
+     N, "A big-bore rifle behind the shoulder &mdash; or simply not be where it is going. Turning it is easier than killing it."),
+    ("The Bull Gator", "Tier III &middot; the log that was not a log", 18, 42, "slow on land; fast in water", "+11", "+6", "+4",
+     "bite +9 (2d6+4, grab and roll under)",
+     "<strong>Death roll.</strong> Explodes from the shallows, clamps on, and rolls to drown and dismember; on its own water, nothing the frontier owns can hold it.",
+     N, "Stay back from the cut bank and the still water. The eye and the soft of the throat &mdash; and never wade where one might wait."),
+    ("The Wolf Pack", "Tier III &middot; the winter pack, of one mind", 16, 40, "very fast", "+10", "+9", "+4",
+     "bite +9 (2d6+4, all who stand close)",
+     "<strong>Run as one (a swarm).</strong> A single pool of Blood and a single will; it surrounds, drags down, and thins as it bleeds rather than dropping man by man.",
+     N, "You cannot kill a pack a wolf at a time. Fire, high ground, and breaking their nerve &mdash; take the leader and the rest may scatter."),
+    ("The Bull Moose", "Tier III &middot; a thousand pounds in a foul mood", 16, 46, "fast", "+12", "+5", "+3",
+     "antlers &amp; hooves +9 (2d6+4, trample)",
+     "<strong>Fears nothing in the rut.</strong> Charges horse, man, or locomotive without a second thought; enormous, untroubled by a wound, and quick for its size.",
+     N, "Give it the road and the right of way. It tires of you sooner than you tire of it &mdash; if you live the first charge."),
+    # ---- Tier IV ----
+    ("The Great Bear", "Tier IV &middot; the man-killer of legend", 20, 72, "fast", "+15", "+8", "+8",
+     "claws &amp; bite +13 (2d8+6; the hit rakes twice)",
+     "<strong>Has learned men.</strong> Wears the scars of every gun that failed to stop it; a wound only makes it worse, and it has killed enough hunters to be careful, and cruel.",
+     N, "It has survived a dozen hunts. It takes a small army or one perfect shot; men have spent their whole lives, and their lives, on less."),
+    ("The Stampede", "Tier IV &middot; the herd, run as a wall", 18, 70, "very fast", "+15", "+6", "+6",
+     "trample +13 (2d8+6, everything in the lane)",
+     "<strong>Not a fight &mdash; a flood.</strong> A moving wall of the herd that cannot be reasoned with or fought, only outrun, turned, or survived; it fills the draw and takes all within it.",
+     N, "You do not kill a stampede. Ride out of the lane, gain high ground, or turn the lead with fire &mdash; and pray the ground is not a box canyon."),
+    ("The Man-Eater", "Tier IV &middot; the cat that learned to hunt men", 20, 64, "very fast; leaps", "+13", "+13", "+7",
+     "pounce +13 (2d8+6, drops and pins)",
+     "<strong>Hunts you in turn.</strong> Takes the sentry and the straggler by night, patient and learned; never seen until it strikes, and it never strikes a fair fight.",
+     N, "It must be hunted as it hunts &mdash; with bait, patience, and an iron nerve. Stand watch in pairs, and never sleep where it can come from above."),
+    ("The Old Tusker", "Tier IV &middot; the boar that breaks the dogs", 19, 74, "fast", "+15", "+7", "+6",
+     "tusks +13 (2d8+6, gore and throw)",
+     "<strong>A hide like a plank, a temper like the devil.</strong> Has broken dogs, horses, and the men on them; charges clean through what would stop anything smaller and comes back for the rest.",
+     N, "Men hunt it for years and bury friends doing it. A tree, a wall, and a heavy enough ball &mdash; and never on foot in the open."),
+    ("The Pale Stallion", "Tier IV &middot; the wild horse no man rides", 20, 66, "very fast", "+13", "+13", "+8",
+     "hooves &amp; teeth +13 (2d8+6, strike and trample)",
+     "<strong>Suffers no rider.</strong> Leads its band and kills to keep it; strikes with hooves and teeth, runs men down, and is as cunning as any outlaw and twice as proud.",
+     N, "It cannot be broken, only outlasted or shot, and many a wrangler has died learning which. Cut it from the band first, if you can."),
+    # ---- Tier V ----
+    ("The Mountain That Walks", "Tier V &middot; the primeval bear of the old tales", 23, 112, "fast", "+19", "+11", "+11",
+     "claws &amp; bite +17 (3d8+8; rakes twice and seizes)",
+     "<strong>Bigger than a bear has the right to be.</strong> The high-country legend made flesh; it takes wounds the way a hillside takes rain, and has outlived every hunter ever sent for it.",
+     N, "A thing out of the grandfather-tales. It will take everything you brought and everything you are &mdash; and may yet walk away."),
+    ("The White Bison", "Tier V &middot; the great pale buffalo, omen and terror", 22, 108, "very fast", "+19", "+11", "+12",
+     "horns &amp; trample +17 (3d8+8)",
+     "<strong>Sacred and cursed both.</strong> Huge beyond reason; the people count it holy and the hunters count it doom, and the herd follows where it leads &mdash; a thousand head at its back.",
+     N, "Many will tell you it must not be killed at all. If you must, it is a mountain of muscle and wrath, and the herd behind it is the rest of your trouble."),
+    ("The Great Serpent", "Tier V &middot; the snake grown long as a wagon-train", 21, 100, "fast; burrows", "+18", "+13", "+9",
+     "bite +17 (3d8+8 plus venom: Fort DC 18 or 2d6 and weakened)",
+     "<strong>Long as a fence-line, thick as a barrel.</strong> Strikes from the dust with the reach of a tall man and more; its venom answers to no remedy the frontier carries.",
+     N, "Keep to high rock and open ground where you can see it come. The head must be taken &mdash; and getting close enough is the whole of the danger."),
+    ("The Carcajou", "Tier V &middot; the devil-bear of the north woods", 22, 104, "fast; climbs; tireless", "+18", "+12", "+10",
+     "claws &amp; bite +17 (3d8+8; never lets go)",
+     "<strong>The wolverine of legend, grown vast.</strong> Drives bears off their kills, fears nothing that lives, and pursues a grudge for days without rest or quit.",
+     N, "It does not stop and it does not tire. You cannot outlast it; you must end it all at once, or keep moving until one of you is dead."),
+    ("The Old Man of the Swamp", "Tier V &middot; the gator that owns the bayou", 23, 110, "slow on land; fast in black water", "+19", "+10", "+10",
+     "bite +17 (3d8+8, takes a horse under whole)",
+     "<strong>Older than the parish.</strong> Longer than a flatboat and patient as the tide; it takes a man or a mount under without a ripple, and the water is all its own.",
+     N, "The black water is its kingdom and your grave. Draw it onto dry land or never face it at all; in the water you will simply be gone."),
+]
+
+
+def build_living(sb, runhead, quote, creature):
+    blocks_list = []
+    for c in LIVING_CREATURES:
+        stat = sb(*c)
+        lore, found = LIVING_LORE.get(c[0], ("", ""))
+        if lore:
+            blocks_list.append(creature(stat, lore=lore, found=found, keeper="", kn_tag=""))
+        else:
+            blocks_list.append(stat)
+    blocks = "\n  ".join(blocks_list)
+    return f'''<!-- VIII -->
+<section class="page" id="living">
+  {runhead('VIII. Beasts of the Living World')}
+  <h1 class="chapter">VIII. Beasts of the Living World</h1>
+  <p class="chapter-sub">The honest dangers &mdash; flesh, blood, tooth, and no curse at all.</p>
+  <div class="divider"></div>
+  {quote("Folk ask me which of the territory's animals are the dangerous ones. I tell them: the hungry ones, and the ones you have cornered. That is the whole of the list.", "from the field-books of N. Ashby")}
+  <p class="dropcap lead">Not everything that kills a man on the frontier came back from a grave or down from the stars. The country is full of plain animals that will end you for plain reasons &mdash; hunger, fear, a calf to guard, a trail you had no business riding &mdash; and between them they bury more men than all the horrors in this book combined.</p>
+  <p class="note"> <strong>Signs of the kind:</strong> tracks in the mud and scat on the trail, a kill cached under brush, the birds gone quiet at the treeline, stock that will not settle &mdash; the plain sign any frontiersman learns to read, or dies not reading.</p>
+  <div class="keeper-note"><span class="kn-tag">No Nerve, no Mark</span>These beasts cost the party <em>no Nerve</em> &mdash; there is no Dread Check against an honest animal, and their <strong>Dread</strong> line is marked &ldquo;&mdash;&rdquo; to say so. Nor do they ever move the Mark. Run them straight off the numbers. Their place in this book is to make the country real, to bloody a party grown careless &mdash; and to set the moment a thing that looks like an ordinary wolf turns its head, and its eyes are wrong.</div>
+  {blocks}
+</section>
+'''
+
+
+# ---- Field-guide lore for the ordinary beasts. Honest animals get a concise
+# treatment (one descriptive paragraph + a 'Found' line); their how-to-fight
+# already lives in the stat block's Special and Putting-It-Down lines, and the
+# section keeper-note covers the no-Nerve/no-Mark rule, so no per-beast keeper
+# note is added. Keyed by the creature's name (LIVING_CREATURES[n][0]).
+LIVING_LORE = {
+  "The Coyote": (
+    "The trickster of the waking world, and mostly a coward with a clever face. A coyote wants the easy meal &mdash; the lame calf, the unguarded chickens, the carcass already cooling &mdash; and it weighs every risk with a gambler's care. A few may shadow a lone traveler, yipping in the dark to unsettle him, but they rarely commit, and the speech of a gun sends them flowing back into the brush like water. Only hunger past reason, or the froth of madness, makes one truly press a man.",
+    "Open range, brush country, and the edges of every settlement; wherever there's carrion, stock, or scraps. Heard far more than seen, especially at dusk and the small hours."),
+  "The Rattlesnake": (
+    "The coil in the dust, and the most honest killer on this list &mdash; it tells you plainly to leave it be, and only answers when you don't. It would far rather not waste its venom on a thing too big to eat, and the dry buzz of its rattle is a courtesy, a warning given before the strike. But step wrong in the warm rocks, reach a hand where you can't see, and it answers from arm's length faster than the eye can follow, and the venom it spends will cost you a bad day or a worse week.",
+    "Sun-warmed rocks, woodpiles, brush, and the shade under any ledge in dry country. Most dangerous in the cool of morning and evening when it lies out, and at any time a careless hand or boot finds it first."),
+  "The Badger": (
+    "A low temper in a hole, and pound for pound about the meanest thing the honest country has to offer. The badger asks only to be left alone in its diggings, and grants the same courtesy in return &mdash; but corner it, dig at it, press it where it cannot flee, and it fights with a berserk fury far past its size, all claw and muscle and a refusal to quit that no wound seems to teach. It does not flee, does not yield, and does not learn fear.",
+    "The open grasslands and dry country where it digs, riddling a hillside or a pasture with burrows. Encountered when something disturbs its den &mdash; a horse's leg in a hole, a dog gone to ground after it, a careless boot."),
+  "The Bobcat": (
+    "The small cat that waits above, patient and silent and gone before you've finished flinching. A bobcat hunts the straggler and the small &mdash; it drops from a ledge or a low limb onto whatever passes beneath, and its first strike from hiding lands with a startling vengeance for so modest a creature. But it has a cat's clear sense of a losing fight, and one hard answer usually convinces it the meal isn't worth the trouble.",
+    "Rocky country, broken timber, and brushy draws where it can climb and lie up unseen. It favors the high ground and the ambush; watch the ledges and the low branches along a narrow trail."),
+  "The Stray Pack": (
+    "Dogs gone back to the wild, and the sadder and more dangerous for once having known the hearth. A stray pack has lost a dog's fear of men but kept a dog's boldness and a dog's understanding of them, which is a poor combination to meet on a lonely road. They surround a lone traveler and pull him down by weight and number, snapping and dragging, bolder than wolves because they remember that men are not gods after all.",
+    "The margins of failed homesteads, ghost camps, and any place men have come and gone and left their dogs behind. They work the lonely roads and the edges of struggling settlements, especially in hard seasons."),
+  "The Gray Wolf": (
+    "The hunter of the long winter, and a creature of pure, patient calculation. A lone wolf weighs the odds coldly and slips away from a fair fight nearly every time; it is the pack in a hard winter, hungry and coordinated, that buries men. They harry, they hamstring, they wait, testing a quarry's strength and nerve before they ever commit, and they commit only when the arithmetic favors them.",
+    "The deep timber, the high country, and the open winter range. A pack hunts a wide territory and follows game and weakness; the danger climbs with the snow and the lean months."),
+  "The Mountain Lion": (
+    "The cat you never see, until the last man in the line is simply gone. A cougar is the perfect ambush &mdash; it takes its prey from above or behind, drops it, and is at the throat before the rest of the party can turn at the sound. It hunts the straggler, the lone rider, the one who wandered from the fire, and it almost never strikes a fight it hasn't already won by surprise.",
+    "Rocky, broken country and timbered slopes with high ground to stalk from. It haunts the game trails and the narrow passes; watch the rocks and the ledges above, and never let the line straggle out."),
+  "The Wild Boar": (
+    "The razorback out of the bottoms, all bad temper and worse hide. A wild boar comes head-down and does not feel the first wound, or the second; a hide like a plank turns light shot, and a temper that turns toward the gun rather than away from it makes it the rare animal that will charge a man who's already firing. Get it angry by halves and you've made a bad problem worse.",
+    "The brushy bottoms, swamps, and thickets where it roots and wallows. Most dangerous in close cover where it can charge before you've a clear shot, and worst when wounded, cornered, or guarding young."),
+  "The Black Bear": (
+    "The raider of the camp, and mostly a thief rather than a killer &mdash; which is no comfort if you're between it and what it wants. A black bear usually wants your supper, not your life, and bluster and noise will turn most of them. But corner one, starve one, or step between a sow and her cubs, and the genial robber becomes all teeth and terrible speed, and there is no quit in a frightened or furious bear.",
+    "Timber and brush country near food &mdash; berry patches, salmon runs, and especially the careless camp or the unsecured larder. Bold around settlements that have taught it men mean easy meals."),
+  "The Range Bull": (
+    "A ton of bad temper on four legs, and a reminder that not every deadly animal is a predator. A longhorn that has decided he hates you will gore, toss, and come around for another pass while you're still picking yourself out of the dirt, and there is a great deal of him to stop. He is slow to anger and unstoppable once roused, and a fence is worth more than a gun.",
+    "The open range and the holding pens, anywhere cattle run half-wild. Most dangerous in the press of a herd, guarding cows, or simply in a foul mood with a rider who got too close."),
+  "The Grizzly Bear": (
+    "The lord of the high country, and the animal that has ended more confident hunters than any other on this list. A grizzly takes the lead and keeps coming &mdash; it shrugs off the first solid wound, runs down a fleeing man over short ground faster than a horse, and does not stop for pain. It takes more lead than seems possible, and a tree is no help, for a grizzly will simply wait you out.",
+    "The high mountains, the open slopes, and the river bottoms in salmon season. It ranges widely and fears nothing; encountered on its own terms, which are always bad ones for a man on foot."),
+  "The Bison Bull": (
+    "A hill of muscle and horn, and unstoppable in a straight line. A ton and a half at a dead run neither swerves nor tires before you do; a bison bull in a temper or a stampede is less an animal to fight than a force to be elsewhere from. Turning one is easier than killing it, and not being in its path is easier than either.",
+    "The open plains and grasslands where the great herds run. Most dangerous in the bull's rutting temper or the blind momentum of a moving herd; the lone old bull cut from the herd is a cussed and dangerous thing."),
+  "The Bull Gator": (
+    "The log that was not a log, and the undisputed master of its own black water. A bull gator explodes from the shallows, clamps on, and rolls to drown and dismember &mdash; on its own water, nothing the frontier owns can hold it. On land it is slow and beatable; in the water it is simply death with teeth, and the cut bank and the still pool are its kingdom.",
+    "The swamps, bayous, slow rivers, and still backwaters of the hot country. Lies up along cut banks and in the murk; never wade or water stock where one might wait."),
+  "The Wolf Pack": (
+    "The winter pack run as one mind &mdash; not several wolves but a single will with many mouths, a swarm of fang and patience. It surrounds, drags down, and thins as it bleeds rather than dropping man by man; you cannot kill a pack a wolf at a time. Fire, high ground, and breaking their nerve are the only answers, and taking the leader may scatter the rest &mdash; or may not, in a hard enough winter.",
+    "The deep winter range and the high lonesome country, far from help. The pack follows game and weakness across a wide territory; the threat is greatest in the lean cold months when hunger overrides caution."),
+  "The Bull Moose": (
+    "A thousand pounds in a foul mood, and afraid of nothing in the rut. A bull moose will charge a horse, a man, or a locomotive without a second thought, enormous and untroubled by a wound and far quicker than its bulk suggests. Give it the road and the right of way; it tires of you sooner than you tire of it, if you live the first charge.",
+    "The northern timber, the willow bottoms, and the marshy lakeshores. Most dangerous in the autumn rut and when a cow defends her calf; a moose on the trail is a thing to wait out, not push past."),
+  "The Great Bear": (
+    "The man-killer of legend, a grizzly grown old and cunning and cruel on the failures of every hunter sent against it. It wears the scars of a dozen guns that did not stop it, and a wound only makes it worse; it has killed enough men to have learned them, to be careful and patient and savage all at once. Men have spent their whole lives, and their lives, hunting one.",
+    "The deep wild high country, far from any help, where a legendary bear has reigned long enough to earn a name and a body count. It knows men and their tricks, and it does not make the mistakes a younger bear would."),
+  "The Stampede": (
+    "Not a fight but a flood &mdash; the herd run as a moving wall, a thing that cannot be reasoned with or fought, only outrun, turned, or survived. A stampede fills the draw and takes everything in the lane, a thousand head of blind panic and pounding hooves, and the only counsel is to ride out of its path, gain high ground, or turn the lead with fire and pray the ground ahead is not a box canyon.",
+    "The open range and the trail-drive country, anywhere a great herd can be spooked by lightning, a gunshot, a cut bank in the dark. The terrain decides whether a stampede is a danger or a death sentence."),
+  "The Man-Eater": (
+    "The cat that learned to hunt men, and now hunts you in turn. A cougar or other great cat that has acquired the taste takes the sentry and the straggler by night, patient and learned, never seen until it strikes and never striking a fair fight. It must be hunted as it hunts &mdash; with bait, patience, and an iron nerve &mdash; for it has all three and the dark besides.",
+    "The country around a settlement, camp, or trail where a great cat has turned to taking men. It works by night and from above; stand watch in pairs, and never sleep where something can come from the rocks overhead."),
+  "The Old Tusker": (
+    "The boar that breaks the dogs, a wild hog grown old and vast and malicious, with a hide like a plank and a temper like the devil. It has broken dogs, horses, and the men on them, and charges clean through what would stop anything smaller before coming back for the rest. Men hunt it for years and bury friends doing it.",
+    "The deep brush and bad bottoms where an old boar has ranged long enough to grow huge and hateful. Most dangerous in close cover and never to be faced on foot in the open; a tree and a heavy ball, or nothing."),
+  "The Pale Stallion": (
+    "The wild horse no man rides, and kills to keep it so. A great wild stallion leads its band and suffers no rider and no rival &mdash; it strikes with hooves and teeth, runs men down, and is as cunning as any outlaw and twice as proud. It cannot be broken, only outlasted or shot, and many a wrangler has died learning which.",
+    "The open range and the high desert where the wild bands run. Encountered guarding its mares or running off a rival; cut it from the band first, if you can, for in the band's midst it is the least of your troubles and the worst."),
+  "The Mountain That Walks": (
+    "The primeval bear of the old tales, the high-country legend made flesh &mdash; bigger than a bear has any right to be, and older. It takes wounds the way a hillside takes rain and has outlived every hunter ever sent for it; a thing out of the grandfather-stories that will take everything you brought and everything you are, and may yet walk away unbothered.",
+    "The deepest, highest, least-traveled country, where a thing can grow vast and ancient with no man left alive who's seen it twice. A legend with a territory; you do not find it so much as trespass on it."),
+  "The White Bison": (
+    "The great pale buffalo, omen and terror both, sacred to some and doom to others. Huge beyond reason, it leads a herd a thousand head strong wherever it goes; the people count it holy and the hunters count it cursed, and many will tell you it must not be killed at all. If you must, it is a mountain of muscle and wrath, and the herd at its back is the rest of your trouble.",
+    "The great plains where the herds run, moving at the head of its following. As much a sign as a creature; where the white bison walks, men's beliefs and fears walk with it, and that is half its danger."),
+  "The Great Serpent": (
+    "The snake grown long as a wagon-train and thick as a barrel, a thing that strikes from the dust with the reach of a tall man and more. Its venom answers to no remedy the frontier carries, and getting close enough to take its head &mdash; which is the only way to end it &mdash; is the whole of the danger. Keep to high rock and open ground where you can see it come.",
+    "The badlands, the rocky desert, and the broken sun-baked country where a serpent can grow monstrous and burrow deep. It lies up in the rocks and the dust; the warm hours bring it out to hunt."),
+  "The Carcajou": (
+    "The devil-bear of the north woods, the wolverine of legend grown vast and tireless and full of grudge. It drives bears off their kills, fears nothing that lives, and pursues a wrong for days without rest or quit. It does not stop and it does not tire; you cannot outlast it, and must end it all at once or keep moving until one of you is dead.",
+    "The deep northern timber and the high cold country, ranging a vast territory with relentless appetite. It follows a trail or a grudge tirelessly; once it has fixed on a party or a trapline, it does not simply wander off."),
+  "The Old Man of the Swamp": (
+    "The gator that owns the bayou, older than the parish and longer than a flatboat, patient as the tide. It takes a man or a mount under without a ripple, and the black water is all its own; draw it onto dry land or never face it at all, for in the water you will simply be gone. The swamp is its kingdom and your grave.",
+    "The deepest, oldest black water of the great swamps and bayous, where a gator has reigned long enough to grow legendary. It knows every channel and cut bank of its domain; on its own water, it is undefeated and undefeatable."),
+}
+
+
 LIVING = build_living(sb, runhead, quote, creature)
 BODY = CONTENTS + HOWTO + DEAD + BEASTS + MEN + SPIRITS + WILD + OLD + LIVING + INDEX + GROUNDS + BUILD
 _CSEC = ["dead", "beasts", "men", "spirits", "wild", "olddark", "living"]
