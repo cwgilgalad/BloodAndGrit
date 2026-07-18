@@ -248,15 +248,15 @@ public partial class MainForm : Form
     static System.Drawing.Imaging.ImageAttributes MakeWmAttr()
     {
         var a = new System.Drawing.Imaging.ImageAttributes();
-        a.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix { Matrix33 = 0.055f });   // ghost-faint
+        a.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix { Matrix33 = 0.15f });   // ghost-faint
         return a;
     }
 
     /// <summary>
-    /// Paints the emblem, ghost-faint, in the dead space at the bottom-right of a pane.
-    /// usedHeight reports how far real content reaches; the emblem draws only when the
-    /// space left below can hold it with generous margin, so it never sits behind rows,
-    /// text, or controls — panes that fill up simply don't show it.
+    /// Paints the emblem, ghost-faint, centered in the bottom half of a pane.
+    /// usedHeight reports how far real content reaches; the emblem's zone starts at
+    /// the pane's midline or below the content, whichever is lower, so it never sits
+    /// behind rows, text, or controls — panes that fill up simply don't show it.
     /// </summary>
     static void Watermark(Control host, Func<int> usedHeight)
     {
@@ -264,13 +264,14 @@ public partial class MainForm : Form
         {
             var img = Emblem; if (img == null) return;
             int cw = host.ClientSize.Width, ch = host.ClientSize.Height;
-            int free = ch - usedHeight();
-            // scale to what the dead space can hold — full size in a big empty pane,
+            int top = Math.Max(ch / 2, usedHeight() + 22);
+            int freeH = ch - top;
+            // scale to what the zone can hold — full size in a big empty pane,
             // smaller where room is tighter, gone entirely below a dignified minimum
-            int w = Math.Min(Math.Min(300, cw - 56), (free - 44) * img.Width / img.Height);
+            int w = Math.Min(Math.Min(330, cw - 56), (freeH - 24) * img.Width / img.Height);
             if (w < 150) return;
             int h = w * img.Height / img.Width;
-            var r = new Rectangle(cw - w - 26, ch - h - 20, w, h);
+            var r = new Rectangle((cw - w) / 2, top + (freeH - h) / 2, w, h);
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.DrawImage(img, r, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, WmAttr);
         };
