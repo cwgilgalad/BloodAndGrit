@@ -35,7 +35,7 @@ public partial class MainForm
         filters.Controls.Add(Lbl("Search:"));
         beastSearch = new TextBox { Width = 180 };
         beastSearch.TextChanged += (s, e) => FilterBeasts();
-        Tip.SetToolTip(beastSearch, "Filter by name or where it's found");
+        Tip.SetToolTip(beastSearch, "Filter by name or where it's found (Ctrl+F jumps here)");
         filters.Controls.Add(beastSearch);
         beastTier = new ComboBox { Width = 90, DropDownStyle = ComboBoxStyle.DropDownList };
         beastTier.Items.AddRange(new object[] { "Any tier", "Tier I", "Tier II", "Tier III", "Tier IV", "Tier V" });
@@ -70,7 +70,12 @@ public partial class MainForm
         // double-click pops the creature out into its own window — maximize it, grow the
         // text, keep several open side by side
         beastList.DoubleClick += (s, e) => { if (beastList.SelectedItem is Creature c) ShowCreatureCard(c); };
-        Tip.SetToolTip(beastList, "Double-click a creature to open it in its own window");
+        beastList.KeyDown += (s, e) =>
+        {
+            if (e.KeyCode == Keys.Enter && beastList.SelectedItem is Creature c)
+            { ShowCreatureCard(c); e.Handled = true; e.SuppressKeyPress = true; }
+        };
+        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window");
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
@@ -279,7 +284,7 @@ public partial class MainForm
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         roundLbl = new Label { Text = "Round 1", Font = new Font("Segoe UI", 12f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 12, 0), AutoSize = true };
         bar.Controls.Add(roundLbl);
-        bar.Controls.Add(Btn("Roll initiative", (s, e) => { foreach (var c in tracker) c.Init = Rules.Rng.Next(1, 21); SortTracker(TrkSort.InitDesc); Log("Initiative rolled for the field."); }, 110, "Roll a d20 for every combatant and sort by it"));
+        bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110, "Roll a d20 for every combatant and sort by it (Ctrl+I)"));
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
             ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
             ("Initiative — low to high", (s, e) => SortTracker(TrkSort.InitAsc)),
@@ -289,12 +294,12 @@ public partial class MainForm
             ("-", null),
             ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
             ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
-        bar.Controls.Add(Btn("Next round ▸", (s, e) => { round++; roundLbl.Text = $"Round {round}"; Log($"— Round {round} —"); }, 100));
+        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100, "Step to the next round (Ctrl+R)"));
         bar.Controls.Add(Lbl("  Amt:"));
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
         bar.Controls.Add(trkAmount);
-        bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80));
-        bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65));
+        bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80, "Subtract the Amt from the selected combatant (Ctrl+D)"));
+        bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65, "Add the Amt to the selected combatant (Ctrl+H)"));
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
         bar.Controls.Add(Lbl("Foe:"));
@@ -402,6 +407,20 @@ public partial class MainForm
         beastWindows[c.name] = win;
         win.FormClosed += (s, e) => beastWindows.Remove(c.name);
         win.Show(this);
+    }
+
+    void RollInitiative()
+    {
+        foreach (var c in tracker) c.Init = Rules.Rng.Next(1, 21);
+        SortTracker(TrkSort.InitDesc);
+        Log("Initiative rolled for the field.");
+    }
+
+    void NextRound()
+    {
+        round++;
+        roundLbl.Text = $"Round {round}";
+        Log($"— Round {round} —");
     }
 
     TrkSort trkSort = TrkSort.InitDesc;
@@ -596,82 +615,320 @@ public partial class MainForm
     }
 
     // ============================================================ REFERENCE TAB
+    // A Keeper's screen the veteran way: one topic per leaf, dense tables, and the whole
+    // deck turned with ◀ ▶ or the Left/Right arrow keys. Arms, goods, signs, and skills
+    // render live from the chargen data (transcribed from the Player's Book), so the
+    // printed prices and dice here can never drift from the book.
+    TabPage referencePage;
+    RichTextBox refView;
+    Label refTitle, refCount;
+    int refPage;
+    (string title, Action<RichTextBox> render)[] refDeck;
+
+    static readonly Font RefMono  = new("Consolas", 9.5f);
+    static readonly Font RefMonoB = new("Consolas", 9.5f, FontStyle.Bold);
+    static readonly Font RefBody  = new("Segoe UI", 10f);
+    static readonly Font RefItal  = new("Segoe UI", 9.7f, FontStyle.Italic);
+    static readonly Font RefHead  = new("Segoe UI", 12.5f, FontStyle.Bold);
+
+    static void RH(RichTextBox r, string s) { r.SelectionFont = RefHead; r.SelectionColor = Blood; r.AppendText(s + "\n"); }
+    static void RT(RichTextBox r, string s) { r.SelectionFont = RefBody; r.SelectionColor = Ink; r.AppendText(s + "\n\n"); }
+    static void RI(RichTextBox r, string s) { r.SelectionFont = RefItal; r.SelectionColor = Gold; r.AppendText(s + "\n\n"); }
+
+    static List<string> RWrap(string s, int width)
+    {
+        var lines = new List<string>(); string cur = "";
+        foreach (var wd in (s ?? "").Split(' '))
+        {
+            if (cur.Length == 0) cur = wd;
+            else if (cur.Length + 1 + wd.Length <= width) cur += " " + wd;
+            else { lines.Add(cur); cur = wd; }
+        }
+        lines.Add(cur);
+        return lines;
+    }
+
+    // A monospace table with a Blood-red header band; only the LAST column wraps, with
+    // continuation lines under itself, so alignment survives long rules text.
+    // RichTextBox quirk: selection formatting must be re-asserted before EVERY append —
+    // set once before a loop, later lines silently fall back to the control's default
+    // proportional font and the columns shear.
+    static void RTbl(RichTextBox r, int[] w, string[] head, IEnumerable<string[]> rows)
+    {
+        int last = w.Length - 1;
+        string Row(IReadOnlyList<string> cells) =>
+            " " + string.Join("  ", cells.Select((c, i) => (c ?? "").PadRight(w[i]))) + " ";
+        void Line(string txt, Font f, Color fore, bool band)
+        {
+            r.SelectionStart = r.TextLength; r.SelectionLength = 0;
+            r.SelectionFont = f; r.SelectionColor = fore;
+            r.SelectionBackColor = band ? Blood : r.BackColor;
+            r.AppendText(txt);
+        }
+        Line(Row(head), RefMonoB, Paper, true);
+        Line("\n", RefMono, Ink, false);
+        foreach (var row in rows)
+        {
+            var chunks = RWrap(row[last], w[last]);
+            for (int li = 0; li < chunks.Count; li++)
+                Line(Row(row.Select((c, i) => i == last ? chunks[li] : (li == 0 ? c : "")).ToArray()) + "\n",
+                     RefMono, Ink, false);
+        }
+        Line("\n", RefMono, Ink, false);
+    }
+    static void RTbl(RichTextBox r, int[] w, string[] head, params string[][] rows)
+        => RTbl(r, w, head, (IEnumerable<string[]>)rows);
+
     TabPage BuildReferenceTab()
     {
-        var page = new TabPage("Reference") { BackColor = Paper };
-        var rtf = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None };
-        void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 12.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
-        void T(string s) { rtf.SelectionFont = new Font("Segoe UI", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
-        void M(string s) { rtf.SelectionFont = new Font("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
+        referencePage = new TabPage("Reference") { BackColor = Paper };
 
-        H("The Four Degrees");
-        T("Beat the DC: success. Beat it by 10: critical success. Miss: failure. Miss by 10: critical failure.");
-        T("A natural 20 steps the result up one degree; a natural 1 steps it down one.\n");
+        var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
+        bar.Controls.Add(Btn("◀", (s, e) => RefShow(refPage - 1), 44, "Previous leaf (or press Left)"));
+        bar.Controls.Add(Btn("▶", (s, e) => RefShow(refPage + 1), 44, "Next leaf (or press Right)"));
+        refTitle = new Label { AutoSize = true, UseMnemonic = false, Font = new Font("Segoe UI", 11.5f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(10, 9, 0, 0) };
+        bar.Controls.Add(refTitle);
+        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = Gold, Padding = new Padding(12, 11, 0, 0) };
+        bar.Controls.Add(refCount);
 
-        H("Setting a DC");
-        T("Trivial 10 · Easy 13 · Average 15 · Hard 18 · Very Hard 20 · Punishing 25 · Beyond 30.\n");
+        refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
 
-        H("A Turn in the Iron Code");
-        T("Initiative is a Notice check. Each turn is three Beats: Strike, Stride, Aim/Brace, Interact, Reload, Take Cover. A Strike is d20 + attack proficiency + DEX/STR against Defense. Multiple Attack Penalty −5/−10 (Agile weapons −4/−8). A critical hit applies the weapon's Fatal die.\n");
-
-        H("Threat by Tier");
-        T("A creature is a fair, hard fight for a party of twice its Tier in levels.");
-        M("Tier   Defense  Attack  Blood   Saves(hi/lo)  Damage    Dread DC");
-        for (int i = 0; i < 5; i++)
+        refDeck = new (string, Action<RichTextBox>)[]
         {
-            var r = Rules.TierRow[i];
-            M($"  {Rules.Roman(i + 1),-4} {r.def,6} {("+" + r.atk),7} {r.blood,6}    +{r.hi} / +{r.lo,-5} {r.dmg,-8} {r.dread}");
+            ("The Roll",                  RefLeafRoll),
+            ("A Turn in the Iron Code",   RefLeafIronCode),
+            ("Blood, Wounds & Healing",   RefLeafWounds),
+            ("Conditions",                RefLeafConditions),
+            ("Nerve & Dread",             RefLeafNerve),
+            ("The Mark & the Taint",      RefLeafMarkTaint),
+            ("Signs & Grit",              RefLeafSignsGrit),
+            ("The Long Odds",             RefLeafLongOdds),
+            ("Arms of the Frontier",      RefLeafArms),
+            ("Goods & Provisions",        RefLeafGoods),
+            ("Skills, Saves & Abilities", RefLeafSkills),
+        };
+
+        referencePage.Controls.Add(Pad(refView, 14));
+        referencePage.Controls.Add(bar);
+        RefShow(0);
+        return referencePage;
+    }
+
+    void RefShow(int i)
+    {
+        int n = refDeck.Length;
+        refPage = ((i % n) + n) % n;                        // the deck wraps around
+        refTitle.Text = refDeck[refPage].title;
+        refCount.Text = $"leaf {refPage + 1} of {n}  ·  ◀ ▶ or the Left / Right keys turn the deck";
+        refView.Clear();
+        refDeck[refPage].render(refView);
+        refView.SelectionStart = 0; refView.ScrollToCaret();
+    }
+
+    // ---- the leaves ----
+    void RefLeafRoll(RichTextBox r)
+    {
+        RH(r, "The Four Degrees");
+        RTbl(r, new[] { 17, 62 }, new[] { "Degree", "How it happens" },
+            new[] { "CRITICAL SUCCESS", "Beat the DC by 10 — or a natural 20 steps the result up one degree" },
+            new[] { "Success",          "Meet or beat the DC" },
+            new[] { "Failure",          "Miss the DC" },
+            new[] { "CRITICAL FAILURE", "Miss by 10 — or a natural 1 steps the result down one degree" });
+
+        RH(r, "Setting a DC");
+        RTbl(r, new[] { 4, 60 }, new[] { "DC", "The task" },
+            new[] { "10", "Trivial" },
+            new[] { "13", "Easy" },
+            new[] { "15", "Average" },
+            new[] { "18", "Hard" },
+            new[] { "20", "Very Hard" },
+            new[] { "25", "Punishing" },
+            new[] { "30", "Beyond" });
+        RI(r, "The Keeper calls for a roll only when failure is interesting. Everything else just happens.");
+    }
+
+    void RefLeafIronCode(RichTextBox r)
+    {
+        RH(r, "A Turn in the Iron Code");
+        RTbl(r, new[] { 16, 66 }, new[] { "Element", "The rule" },
+            new[] { "Initiative",   "A Notice check" },
+            new[] { "The turn",     "Three Beats, spent as you like" },
+            new[] { "A Beat",       "Strike · Stride · Aim/Brace · Interact · Reload · Take Cover" },
+            new[] { "A Strike",     "d20 + attack proficiency + DEX/STR against Defense" },
+            new[] { "More attacks", "Multiple Attack Penalty −5 / −10 (Agile weapons −4 / −8)" },
+            new[] { "A critical hit", "Applies the weapon's Fatal die" });
+    }
+
+    void RefLeafWounds(RichTextBox r)
+    {
+        RH(r, "Blood, Dying & Grievous Wounds");
+        RTbl(r, new[] { 16, 66 }, new[] { "State", "The rule" },
+            new[] { "0 Blood",      "Dying and Bleeding; unconscious" },
+            new[] { "Death",        "Comes at −CON" },
+            new[] { "A terrible blow", "One hit for half maximum Blood or more, or any critical hit → Fortitude save DC 15 (higher for terrible weapons) or take a Lasting Injury" });
+
+        RH(r, "Lasting Injuries");
+        RTbl(r, new[] { 3, 60 }, new[] { "d6", "Injury" },
+            new[] { "1", "Bloody Gash" },
+            new[] { "2", "Cracked Ribs" },
+            new[] { "3", "Maimed Hand" },
+            new[] { "4", "Lamed Leg" },
+            new[] { "5", "Ruined Eye or Ear" },
+            new[] { "6", "Gut-Shot" });
+        RT(r, "Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard.");
+
+        RH(r, "Nonlethal");
+        RT(r, "Declare before the roll that you strike nonlethally; fists and a club do so by default; most other arms " +
+              "take −2 to pull the blow. A foe at 0 Blood that way is senseless, not dead.");
+    }
+
+    void RefLeafConditions(RichTextBox r)
+    {
+        RH(r, "Conditions  (Appendix B)");
+        RTbl(r, new[] { 11, 68 }, new[] { "Condition", "Effect" },
+            new[] { "Bleeding",  "Lose 1 Blood each round until stabilized" },
+            new[] { "Blinded",   "−4 Defense, −4 most actions, lose DEX to Defense, half Speed" },
+            new[] { "Clumsy",    "−2 on DEX-based Strikes, checks, and Defense" },
+            new[] { "Drained",   "−2 on Fortitude and CON checks; lose Blood equal to your level, until recovered" },
+            new[] { "Dying",     "At 0 Blood; unconscious and Bleeding toward −CON and death" },
+            new[] { "Fatigued",  "−2 on checks and saves; cannot Aim or run; rest to shed it" },
+            new[] { "Frightened","−1 (or worse) on everything; lessens one step each turn" },
+            new[] { "Grabbed",   "Held fast; Off-Guard; −4 DEX; a check to break free" },
+            new[] { "Lost",      "Mark 6; the character passes into the Keeper's hands" },
+            new[] { "Marked",    "Stepped along the Mark track (see The Mark & the Taint leaf)" },
+            new[] { "Off-Guard", "−2 Defense; unaware, flanked, sprawled, or caught unready" },
+            new[] { "Prone",     "−4 to melee; +4 to others' ranged against you; rising costs a Beat" },
+            new[] { "Sickened",  "−2 on Strikes, damage, checks, and saves; nausea" },
+            new[] { "Slowed",    "Lose one Beat each turn while it lasts; may still defend" },
+            new[] { "Stunned",   "Drop what you hold; lose all Beats this round; −2 Defense" });
+        RI(r, "Tag any of these onto a combatant from the Tracker's ＋ Condition ▾ menu.");
+    }
+
+    void RefLeafNerve(RichTextBox r)
+    {
+        RH(r, "Nerve & Dread");
+        RT(r, "Nerve = RES score + level. A Dread Check is a Will save against the horror's Dread DC. On a failure, " +
+              "Nerve is lost by the horror's Tier; a critical failure doubles it. At 0 Nerve a soul Breaks.");
+        RTbl(r, new[] { 6, 40 }, new[] { "Tier", "Nerve lost on a failure" },
+            new[] { "I",    "1" },
+            new[] { "II",   "1d4" },
+            new[] { "III",  "1d6" },
+            new[] { "IV–V", "1d10" });
+        RI(r, "Familiarity is the death of dread — the same sight costs nothing the second time.");
+
+        RH(r, "Recovering Nerve");
+        RTbl(r, new[] { 44, 30 }, new[] { "The remedy", "It restores" },
+            new[] { "Confession, spoken plainly to a listener",  "1d6" },
+            new[] { "A full night unmolested in genuine safety", "1d6" },
+            new[] { "A week of true peace",                      "All of it" },
+            new[] { "A sermon, a Sawbones' reason, a grim joke, or a point of Grit", "A measure of steadiness" },
+            new[] { "Whiskey — steadies the hand now",           "1d4, but courts a vice and its Fortitude saves" });
+    }
+
+    void RefLeafMarkTaint(RichTextBox r)
+    {
+        RH(r, "The Mark  (six steps)");
+        RT(r, "The Mark moves only when a soul CHOOSES the dark — a bargain, a rite, a heeding. Never for a bad roll, " +
+              "never for merely being wounded. At the sixth step, the country keeps what it was promised.");
+
+        RH(r, "The Taint of the Land  (four steps)");
+        RT(r, "For every three days on cursed ground: a Fortitude save (the body first), then Will once it reaches " +
+              "the mind. Wards ease it; sanctification or leaving sheds it.");
+        RTbl(r, new[] { 16, 30 }, new[] { "The ground", "Save DC" },
+            new[] { "Uneasy ground",  "13" },
+            new[] { "Wronged ground", "16" },
+            new[] { "The old places", "20" });
+    }
+
+    void RefLeafSignsGrit(RichTextBox r)
+    {
+        RH(r, "Signs & the Sign DC");
+        RT(r, "Where a Sign forces a save, the DC is the worker's Sign DC = 10 + half their level + RES modifier. " +
+              "A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier — no level added.");
+        if (CharGen.D?.signs?.Count > 0)
+            RTbl(r, new[] { 17, 20, 48 }, new[] { "Sign", "Cost", "The working" },
+                CharGen.D.signs.Select(sg => new[] { sg.name, sg.cost ?? "—", sg.desc ?? "" }));
+
+        RH(r, "Grit");
+        RT(r, "Three per soul, refreshed each session. Spend one AFTER seeing the result:");
+        RTbl(r, new[] { 60 }, new[] { "Spend one Grit to…" },
+            new[] { "Add 1d6 to a roll just made" },
+            new[] { "Re-roll a failed check" },
+            new[] { "Refuse to fall at 0 Blood for one more round" },
+            new[] { "Shrug a fright until the end of your next turn" },
+            new[] { "Soften a critical failure to an ordinary failure" });
+        RI(r, "The Keeper may award a point mid-session for a deed of true courage.");
+    }
+
+    void RefLeafLongOdds(RichTextBox r)
+    {
+        RH(r, "Threat by Tier");
+        RT(r, "A creature is a fair, hard fight for a party of twice its Tier in levels.");
+        RTbl(r, new[] { 5, 7, 6, 5, 12, 6, 8 },
+            new[] { "Tier", "Defense", "Attack", "Blood", "Saves hi/lo", "Damage", "Dread DC" },
+            Enumerable.Range(0, 5).Select(i =>
+            {
+                var t = Rules.TierRow[i];
+                return new[] { Rules.Roman(i + 1), t.def.ToString(), "+" + t.atk, t.blood.ToString(),
+                               $"+{t.hi} / +{t.lo}", t.dmg, t.dread };
+            }));
+
+        RH(r, "The Encounter Budget");
+        RTbl(r, new[] { 34, 6 }, new[] { "The fight", "Cost" },
+            new[] { "The budget, per player character", "4" },
+            new[] { "An even-Tier foe",                 "4" },
+            new[] { "A mook (a Tier or two down)",      "1" },
+            new[] { "A standout (a Tier up)",           "8" });
+        RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
+        RI(r, "The safe-table rule: a horror two or more Tiers over the posse arrives as sign and spoor, not in the flesh.");
+    }
+
+    void RefLeafArms(RichTextBox r)
+    {
+        var guns  = CharGen.D?.weapons?.Where(w => w.kind == "gun").ToList();
+        var steel = CharGen.D?.weapons?.Where(w => w.kind != "gun").ToList();
+        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : "—";
+        RH(r, "Guns");
+        if (guns?.Count > 0)
+            RTbl(r, new[] { 23, 7, 5, 42 }, new[] { "Arm", "Damage", "Cost", "Traits" },
+                guns.Select(w => new[] { w.name, w.dmg, Cost(w.cost), w.traits ?? "" }));
+        RH(r, "Steel & Wood");
+        if (steel?.Count > 0)
+            RTbl(r, new[] { 23, 7, 5, 42 }, new[] { "Arm", "Damage", "Cost", "Traits" },
+                steel.Select(w => new[] { w.name, w.dmg, Cost(w.cost), w.traits ?? "" }));
+        RI(r, "Prices as printed in Goods & Provisions (Ch. X). A critical hit applies the Fatal die.");
+    }
+
+    void RefLeafGoods(RichTextBox r)
+    {
+        RH(r, "Goods & Provisions  (Ch. X printed prices)");
+        var gear = CharGen.D?.gearPrices;
+        if (gear?.Count > 0)
+        {
+            string Price(double v) => v < 1 ? $"{v * 100:0}¢" : "$" + v.ToString("0.##");
+            RTbl(r, new[] { 34, 8 }, new[] { "The goods", "Price" },
+                gear.Select(kv => new[]
+                {
+                    System.Text.RegularExpressions.Regex.Replace(kv.Key, @"\s*\([^()]*\)$", ""),
+                    Price(kv.Value)
+                }));
         }
-        T("");
-        H("The Encounter Budget");
-        T("4 points per player character. An even-Tier foe costs 4; a mook (a Tier or two down) costs 1; a standout (a Tier up) costs 8. Spend the budget and the fight is fair; overspend and you had better mean it.\n");
+        RI(r, "The general store carries what the country allows. The rest is barter, luck, and the road.");
+    }
 
-        H("Blood, Dying & Grievous Wounds");
-        T("At 0 Blood a soul is Dying and Bleeding; death comes at −CON. A single blow for half maximum Blood or more, or any critical hit, forces a Fortitude save (DC 15, higher for terrible weapons) or a Lasting Injury:");
-        M("  d6   1 Bloody Gash · 2 Cracked Ribs · 3 Maimed Hand");
-        M("       4 Lamed Leg · 5 Ruined Eye or Ear · 6 Gut-Shot");
-        T("Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard. Nonlethal: declare before the roll that you strike nonlethally; fists and a club do so by default; most other arms take −2 to pull the blow. A foe at 0 Blood that way is senseless, not dead.\n");
-
-        H("Conditions  (Appendix B)");
-        M("Bleeding    Lose 1 Blood each round until stabilized");
-        M("Blinded     −4 Defense, −4 most actions, lose DEX to Defense, half Speed");
-        M("Clumsy      −2 on DEX-based Strikes, checks, and Defense");
-        M("Drained     −2 on Fortitude and CON checks; lose Blood equal to");
-        M("            your level, until recovered");
-        M("Dying       At 0 Blood; unconscious and Bleeding toward −CON and death");
-        M("Fatigued    −2 on checks and saves; cannot Aim or run; rest to shed it");
-        M("Frightened  −1 (or worse) on everything; lessens one step each turn");
-        M("Grabbed     Held fast; Off-Guard; −4 DEX; a check to break free");
-        M("Lost        Mark 6; the character passes into the Keeper's hands");
-        M("Marked      Stepped along the Mark track (see The Mark, below)");
-        M("Off-Guard   −2 Defense; unaware, flanked, sprawled, or caught unready");
-        M("Prone       −4 to melee; +4 to others' ranged against you;");
-        M("            rising costs a Beat");
-        M("Sickened    −2 on Strikes, damage, checks, and saves; nausea");
-        M("Slowed      Lose one Beat each turn while it lasts; may still defend");
-        M("Stunned     Drop what you hold; lose all Beats this round; −2 Defense");
-        T("");
-
-        H("Nerve & Dread");
-        T("Nerve = RES score + level. A Dread Check is a Will save against the horror's Dread DC. On a failure, Nerve is lost by the horror's Tier: 1 (I), 1d4 (II), 1d6 (III), 1d10 (IV–V). A critical failure doubles it. At 0 Nerve a soul Breaks. Familiarity is the death of dread — the same sight costs nothing the second time.\n");
-
-        H("Recovering Nerve");
-        T("Confession, spoken plainly to someone who listens: 1d6. A full night unmolested in genuine safety: 1d6 — a week of true peace restores all of it. A Preacher's sermon, a Sawbones' reason, a comrade's grim joke, or a point of Grit can each buy back a measure of steadiness. Whiskey steadies the hand now (1d4) but courts a vice and the Fortitude saves that come with it.\n");
-
-        H("The Mark  (six steps)");
-        T("The Mark moves only when a soul CHOOSES the dark — a bargain, a rite, a heeding. Never for a bad roll, never for merely being wounded. At the sixth step, the country keeps what it was promised.\n");
-
-        H("The Taint of the Land  (four steps)");
-        T("For every three days on cursed ground: a Fortitude save (the body first), then Will once it reaches the mind. DC 13 for uneasy ground, 16 for wronged ground, 20 for the old places. Wards ease it; sanctification or leaving sheds it.\n");
-
-        H("Signs & the Sign DC");
-        T("Where a Sign forces a save, the DC is the worker's Sign DC = 10 + half their level + RES modifier. A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier — no level added.\n");
-
-        H("Grit");
-        T("Three per soul, refreshed each session. Spend one, after seeing the result, to add 1d6 to a roll just made, re-roll a failed check, refuse to fall at 0 Blood for one more round, shrug a fright until the end of your next turn, or soften a critical failure to an ordinary failure. The Keeper may award a point mid-session for a deed of true courage.");
-
-        page.Controls.Add(Pad(rtf, 14));
-        return page;
+    void RefLeafSkills(RichTextBox r)
+    {
+        RH(r, "Abilities");
+        RT(r, "STR · DEX · CON · WIT (Wits) · RES (Resolve) · PRE (Presence).  Modifier = (score − 10) / 2.");
+        RH(r, "Saves");
+        RTbl(r, new[] { 10, 30 }, new[] { "Save", "Ability" },
+            new[] { "Fortitude", "CON" },
+            new[] { "Reflex",    "DEX" },
+            new[] { "Will",      "RES" });
+        RH(r, "Skills");
+        if (CharGen.D?.skills?.Count > 0)
+            RTbl(r, new[] { 17, 10 }, new[] { "Skill", "Ability" },
+                CharGen.D.skills.Select(sk => new[] { sk.name, sk.ability }));
     }
 
     // ============================================================ SESSION TAB

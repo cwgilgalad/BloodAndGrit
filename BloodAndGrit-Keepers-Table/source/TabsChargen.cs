@@ -66,6 +66,7 @@ public partial class MainForm
         page.Controls.Add(bar);
         hint.BringToFront();
         soulOut.TextChanged += (s, e) => hint.Visible = soulOut.TextLength == 0;
+        Watermark(hint, () => HintBottom(hint));
         return page;
     }
 
