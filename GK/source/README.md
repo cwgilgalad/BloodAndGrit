@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.5.0.**
+**App version 1.6.0.**
 
 ---
 
@@ -62,7 +62,11 @@ that roll one die instantly, a d20 **four-degrees check**, a running roll log sh
 across the whole app — and a **dice tray** above the log where every roll tumbles and
 lands on its true faces. *(v1.5)* **Every die wears its own color** — green d4, blue d6,
 orange d8, white d10, yellow d12, red d20, purple d100 — on the buttons and in the tray
-alike; a best face rings gold, a 1 rings black.
+alike; a best face rings gold, a 1 rings black. *(v1.6)* **The log itself is
+color-coded**: a critical success rings gold and bold, a critical failure rings
+near-black and bold, a plain success is verdigris green, a plain failure is rust, and
+any other roll gets a neutral steel-blue tag — so a result reads at a glance instead of
+by squinting at the words.
 
 **Bestiary** — all **110 creatures**, searchable by name or Found-text, filterable by
 tier and chapter, with the full book entry displayed. **Double-click any creature to pop
@@ -94,7 +98,13 @@ face in four, bar-talk rumors, trail events by day and night, plunder, and wrong
 omens — plus the Grounds terrain encounter tables (all nine, including the Hand Behind
 It villain picker), with the safe-table rule applied automatically against your party
 level, and every table expanded with new results in the book's voice
-(`Data/tables_extra.json`).
+(`Data/tables_extra.json`). *(v1.6)* **The single-roll tables grew further** — a dozen
+or more new rumors, trail events, finds, and omens apiece — and the Grounds tables
+picked up every ordinary beast from the Bestiary that wasn't already on a terrain table
+(badger, bobcat, coyote, black bear, gray wolf, mountain lion, wild boar, bison bull,
+grizzly bear, old tusker, stampede), so a re-roll turns up something new far more often.
+Also *(v1.6)*: **The Hand Behind It** — the villain picker — left the terrain dropdown
+(where it read like a stray creature) and got its own button under the terrain roller.
 
 **Map** *(new in v1.5)* — **Trail Maps, a drafting table for frontier surveys.** Set the
 ground (the Bestiary's nine Grounds), the scale (a single gunfight up to weeks of
@@ -106,6 +116,17 @@ next session. The **Keeper's layer** adds the secrets in red — old blood in th
 something buried, sign of the beast — leave it off before showing players. Export as
 **SVG** (file or clipboard) or a **one-page landscape-Letter PDF**; the on-screen
 drawing, the SVG, and the PDF all replay the same primitives, so they always match.
+
+*(v1.6)* The survey became a **battle board**. **Zoom & pan**: roll the mouse wheel
+over the map to zoom at the cursor (up to 8×), drag empty ground to pan, and 🔍＋ / 🔍− /
+**Fit** live on the bar; the view never leaks into exports. **Tactical markers**:
+**＋ Marker ▾** drops a posse soul (green), an NPC (gold), or a creature (red) at the
+center of your view; **Tracker → Map** puts everyone on the tracker onto the field in
+two columns — posse west, trouble east — skipping anyone already standing; **drag** a
+marker to move it (each completed drag is one undo step); **right-click** a marker to
+rename or remove it; **Clear markers** asks first. Markers ride in `session.json` and
+hold their ground across restarts and even fresh map seeds — they're your fight, not
+the map's.
 
 **New Soul** *(overhauled in v1.5)* — a complete character at any level 1–10, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
@@ -133,7 +154,9 @@ proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
 Every sheet is validated against `Data/chargen.json` before it's shown. **→ Posse**
 seats the soul at the table — the full sheet rides along into `session.json`, so their
 Ledger window keeps everything forever. **Copy sheet** takes the text anywhere, and
-*(v1.5)* **Save PDF…** writes a printable Letter sheet.
+*(v1.5)* **Save PDF…** writes a printable Letter sheet. *(v1.6)* The given-name pools
+(and the vice/lost/seen/moving flavor tables) nearly doubled, so generated and
+wizard-built souls repeat far less across a long campaign.
 
 **Reference** — a **Keeper's screen in eleven leaves**, paged with the ◀ ▶ buttons or
 the Left/Right arrow keys, every leaf formatted as proper tables: the four degrees and
@@ -158,6 +181,11 @@ turns. Everything persists between sessions.
 
 The interface follows desktop conventions so it stays out of the way mid-session:
 
+- **Universal Undo/Redo** *(new in v1.6)*: **Edit ▸ Undo / Redo** (Ctrl+Z / Ctrl+Y), also
+  pinned as buttons in the status bar so they're reachable from any tab. Covers the
+  posse, tracker, encounter builder, and campaign threads/clocks — any add, remove, or
+  edit to any of them is one step back. Session notes keep the textbox's own native
+  undo instead (snapshotting every keystroke would flood the stack).
 - **No pop-up prompts for numbers.** Damage, healing, and Dread DC/Tier use inline
   spinners on each tab's action bar — set the amount once, then click.
 - **Read-the-table-at-a-glance colouring.** On the Posse sheet, Blood and Nerve cells turn
@@ -189,7 +217,10 @@ The interface follows desktop conventions so it stays out of the way mid-session
 - **The emblem, everywhere it should be**: the steer-skull-and-rifles emblem is
   the app's window and taskbar icon and the exe's file icon, and sits as a ghost-faint
   watermark in the dead space of the busier tabs — drawn only when there's genuinely
-  room, never behind rows or text.
+  room, never behind rows or text. *(v1.6)* It's no longer confined to the bottom half
+  of the pane: it centers in whatever background space is actually free and scales with
+  the window, so it reads as a real watermark on a big screen instead of a fixed-size
+  sticker.
 - **Tooltips** on every button explain what it does (and name its shortcut, where one
   exists).
 - A consistent frontier-book palette (aged paper, oxblood headers, gold accents) ties the

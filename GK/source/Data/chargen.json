@@ -3890,8 +3890,8 @@
  ],
  "flavor": {
   "genders": ["Woman", "Man"],
-  "givenWomen": ["Lucinda", "Beulah", "Nora", "Dorothea", "Prudence", "Flora", "Salome", "Hattie", "Una", "Josephine", "Temperance", "Delphine", "Mercy", "Odessa", "Ruby", "Lavinia"],
-  "givenMen": ["Amos", "Merritt", "Cassius", "Obadiah", "Ezekiel", "Roscoe", "Gideon", "Thaddeus", "Isaiah", "Wilbur", "Cyrus", "Absalom", "Ephraim", "Silas", "Cornelius", "August"],
+  "givenWomen": ["Lucinda", "Beulah", "Nora", "Dorothea", "Prudence", "Flora", "Salome", "Hattie", "Una", "Josephine", "Temperance", "Delphine", "Mercy", "Odessa", "Ruby", "Lavinia", "Adelaide", "Vesta", "Winnifred", "Zilpha", "Cordelia", "Araminta", "Sibyl", "Verona", "Clementine", "Eulalie", "Rhoda", "Seraphina", "Idella", "Permelia"],
+  "givenMen": ["Amos", "Merritt", "Cassius", "Obadiah", "Ezekiel", "Roscoe", "Gideon", "Thaddeus", "Isaiah", "Wilbur", "Cyrus", "Absalom", "Ephraim", "Silas", "Cornelius", "August", "Elias", "Jedediah", "Tobias", "Lucius", "Barnabas", "Increase", "Zebulon", "Hosea", "Nathaniel", "Ambrose", "Reuben", "Malachi", "Solomon", "Virgil"],
   "compass": [
    {
     "name": "Lawful Good — the Marshal's Heart",
@@ -3940,7 +3940,17 @@
    "the bargains; they keep working",
    "a temper like dry powder",
    "other people's secrets",
-   "the needle of the far horizon"
+   "the needle of the far horizon",
+   "tobacco, chewed to keep the hands busy",
+   "a grudge, fed and watered like stock",
+   "debts he means to settle, someday",
+   "the sound of his own voice, preaching or not",
+   "cheating, only ever a little",
+   "a fondness for other folks' ruin",
+   "sleep, and what waits in it",
+   "the whip hand, used more than it's needed",
+   "a promise, easy given, hard kept",
+   "the dice, loaded or not"
   ],
   "lost": [
    "the land, to a bank with better lawyers",
@@ -3950,7 +3960,15 @@
    "a partner, on a trail that went quiet",
    "the faith that used to fit like a coat",
    "a child, and the grave is a week's ride east",
-   "everything but the horse"
+   "everything but the horse",
+   "a hand, to a thresher that didn't care whose it was",
+   "the ranch, to three bad seasons running",
+   "a brother, to the same coin flip that spared him",
+   "the voice for singing, one cold night on watch",
+   "a wife, to a sickness with no cure and no name",
+   "the taste for whiskey, and most everything after",
+   "a son, to a war that ended before he came home",
+   "the house, burned for the insurance or the spite, nobody ever said which"
   ],
   "seen": [
    "lights over the dry lake that walked against the wind",
@@ -3960,7 +3978,15 @@
    "tracks that started nowhere and ended at a wall",
    "a preacher's shadow that knelt when he did not",
    "the well that answers, if you ask it twice",
-   "what the winter left on the pass, arranged neatly"
+   "what the winter left on the pass, arranged neatly",
+   "a rider who cast two shadows, going different ways",
+   "cattle standing dead on their feet, still grazing",
+   "a photograph that develops a stranger every time",
+   "the same star fall twice in one night, same spot",
+   "a baptism where the water pulled back from the preacher's hand",
+   "footprints in the dust that walked backward out of a locked room",
+   "a wedding party, all in black, none of them speaking",
+   "the moon rise twice, an hour apart"
   ],
   "moving": [
    "a debt that gathers interest in more than money",
@@ -3970,7 +3996,15 @@
    "a promise made over a grave",
    "the thing that burned the church went west",
    "a sister who stopped writing back",
-   "the only map to the claim, memorized and burned"
+   "the only map to the claim, memorized and burned",
+   "a bounty that keeps climbing no matter who's collecting",
+   "a curse passed hand to hand like a bad coin",
+   "kin looking for kin who don't want finding",
+   "a Pinkerton who asks about the wrong grave",
+   "a debt owed to something that isn't a bank",
+   "a wanted poster with the wrong face and the right name",
+   "the last letter a dead man wrote, still being delivered",
+   "a claim jumper two towns back and closing"
   ]
  }
 }

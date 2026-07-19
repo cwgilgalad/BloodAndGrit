@@ -28,6 +28,14 @@ public partial class MainForm
         file.DropDownItems.Add(Item("E&xit", (s, e) => Close(), shortcutText: "Alt+F4"));
         menu.Items.Add(file);
 
+        var edit = new ToolStripMenuItem("&Edit");
+        undoMenuItem = Item("&Undo", (s, e) => Undo(), Keys.Control | Keys.Z);
+        redoMenuItem = Item("&Redo", (s, e) => Redo(), Keys.Control | Keys.Y);
+        undoMenuItem.Enabled = false; redoMenuItem.Enabled = false;
+        edit.DropDownItems.Add(undoMenuItem);
+        edit.DropDownItems.Add(redoMenuItem);
+        menu.Items.Add(edit);
+
         // one entry per tab, so the Ctrl+number shortcuts are discoverable
         var view = new ToolStripMenuItem("&View");
         for (int i = 0; i < tabs.TabPages.Count; i++)
@@ -54,7 +62,7 @@ public partial class MainForm
         using var d = new SaveFileDialog
         {
             Title = "Save the session",
-            Filter = "Keeper's Table session (*.json)|*.json|All files (*.*)|*.*",
+            Filter = "GritKeeper session (*.json)|*.json|All files (*.*)|*.*",
             FileName = $"blood-and-grit-session-{DateTime.Now:yyyy-MM-dd}.json"
         };
         if (d.ShowDialog(this) != DialogResult.OK) return;
@@ -75,7 +83,7 @@ public partial class MainForm
         using var d = new OpenFileDialog
         {
             Title = "Load a session",
-            Filter = "Keeper's Table session (*.json)|*.json|All files (*.*)|*.*"
+            Filter = "GritKeeper session (*.json)|*.json|All files (*.*)|*.*"
         };
         if (d.ShowDialog(this) != DialogResult.OK) return;
         GameSession s;
@@ -86,7 +94,7 @@ public partial class MainForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show("That file doesn't read as a Keeper's Table session.\r\n\r\n" + ex.Message,
+            MessageBox.Show("That file doesn't read as a GritKeeper session.\r\n\r\n" + ex.Message,
                 "Blood & Grit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }

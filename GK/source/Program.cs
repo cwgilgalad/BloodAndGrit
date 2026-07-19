@@ -41,7 +41,7 @@ static class Program
                 "That action hit a snag:\r\n\r\n" + ex?.Message +
                 "\r\n\r\nThe table is unharmed — you can keep playing.\r\n" +
                 "(Details in %TEMP%\\BloodAndGrit-last-error.txt.)",
-                "Blood & Grit — The Keeper's Table",
+                "Blood & Grit — GritKeeper",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         catch { }
@@ -57,7 +57,7 @@ static class Program
         }
         catch { }
         string report =
-            "Blood & Grit — The Keeper's Table: startup/runtime error\r\n" +
+            "Blood & Grit — GritKeeper: startup/runtime error\r\n" +
             $"Time: {DateTime.Now}\r\n" +
             $"BaseDirectory: {AppContext.BaseDirectory}\r\n" +
             $"CurrentDirectory: {Environment.CurrentDirectory}\r\n" +
@@ -78,9 +78,9 @@ static class Program
         try
         {
             MessageBox.Show(
-                "The Keeper's Table hit a snag and had to stop.\r\n\r\n" +
+                "GritKeeper hit a snag and had to stop.\r\n\r\n" +
                 ex?.Message + "\r\n\r\nA full report was written to:\r\n" + path,
-                "Blood & Grit — The Keeper's Table",
+                "Blood & Grit — GritKeeper",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         catch { /* headless — nothing more we can do */ }

@@ -112,6 +112,17 @@ public class CampaignClock : INotifyPropertyChanged
     public int Segments { get => _segments; set { _segments = value; On(); } }
 }
 
+// A tactical marker the Keeper drops on the Trail Map — a posse soul, an NPC, or a
+// creature, dragged into position. Coordinates are in map-model space (MapModel.W/H),
+// so markers hold their ground when the panel resizes. Rides in session.json.
+public class MapMarker
+{
+    public string Label { get; set; } = "";
+    public string Kind { get; set; } = "creature";   // "posse" | "npc" | "creature" — sets the color
+    public float X { get; set; }
+    public float Y { get; set; }
+}
+
 public class GameSession
 {
     public List<PartyMember> Party { get; set; } = new();
@@ -121,6 +132,7 @@ public class GameSession
     public int PartyLevelHint { get; set; } = 2;
     public List<Combatant> Tracker { get; set; } = new();
     public int Round { get; set; } = 1;
+    public List<MapMarker> MapMarkers { get; set; } = new();
 }
 
 // ============================================================ RULES & DICE

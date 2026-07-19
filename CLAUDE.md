@@ -1,18 +1,18 @@
 # Blood & Grit — Project Handoff & Preferences
 
-Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
+Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-GritKeeper app v1.5.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.6.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
-**Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
+**Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
 book change that touches it** — status-bar/README version strings every time the books bump,
 `Data/creatures.json` re-extracted whenever Bestiary creature content changes (extractor
 lives in the repo as `extract_creatures.py` — verify with a diff against the previous JSON),
 and the Reference tab whenever a rule it quotes changes. Then build, smoke, publish,
-re-mirror `BloodAndGrit-Keepers-Table/`, and rezip.
+re-mirror `GritKeeper/`, and rezip.
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
@@ -24,7 +24,7 @@ script block, and `pag_patch.py` detects it and no-ops.)*
 *(Keep this doc updated with every change — see CHANGELOG.md.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
-scripts) and **The Keeper's Table** (a C#/.NET 8 WinForms desktop app for running the game
+scripts) and **GritKeeper** (a C#/.NET 8 WinForms desktop app for running the game
 at the table). They're independent deliverables — different source trees, different build
 tools — documented in their own sections below.
 
@@ -59,7 +59,7 @@ tools — documented in their own sections below.
   (build 0/0, smoke suite green, books measure clean — or, for doc edits, simply read back
   correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
   changes go bad, abandon the branch — `main` stays clean.
-- **The Keeper's Table app now builds natively on this Windows laptop** (verified
+- **The GritKeeper app now builds natively on this Windows laptop** (verified
   2026-07-18: .NET SDK 9 is installed; `dotnet build` / `dotnet publish` / the smoke suite
   all run locally, and the WinForms window can actually be launched here). The old
   "built and tested blind on Linux" caveat is history — but the SplitContainer landmine
@@ -139,7 +139,7 @@ Each book's cheapest editable form is **bolded**.
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
-| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html KT/source/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
+| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/source/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
 
@@ -367,24 +367,37 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.5.0) — the C# desktop app
+## GritKeeper (v1.6.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
 **Renamed from "The Keeper's Table" to GritKeeper in v1.5.0** — exe `GritKeeper.exe`,
 product/title/About/README all updated; the **internal namespace stays
-`BloodAndGritKeeper`** (deliberately — embedded-resource names derive from it, and the
-delivered folder/zip keep their `BloodAndGrit-Keepers-Table` names for continuity).
+`BloodAndGritKeeper`** (deliberately — embedded-resource names derive from it). As of
+2026-07-19 (v1.6.0) the folders match the name too: working tree **`GK/`** (was `KT/`),
+delivered folder **`GritKeeper/`**, zip **`GritKeeper.zip`** (were
+`BloodAndGrit-Keepers-Table`). The last "Keeper's Table" strings inside the app (session
+file-dialog filters, crash-report captions) were also renamed in v1.6.0.
 
 ### Source-tree layout (IMPORTANT — read before editing the app)
-There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`KT/`**:
-`KT/source/` (the `.cs`, `.csproj`, `Data/`), `KT/smoke/` (the headless logic-test project),
-and `KT/source/publish/` (the self-contained build output). **Edit `KT/source`, build/test in
-`KT/`.** The `BloodAndGrit-Keepers-Table/` folder is the *packaged deliverable* — its `source/`
-mirrors `KT/source` and its `app/` holds the published build; it is regenerated from `KT/` and
-then zipped to `BloodAndGrit-Keepers-Table.zip`. (History note: as of 2026-07-10 these two trees
-had silently diverged — `KT/source` carried post-delivery work the zip never got. They're now
-reconciled; `KT/source` won. Don't edit the delivered folder directly.)
+There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`GK/`**:
+`GK/source/` (the `.cs`, `.csproj`, `Data/`), `GK/smoke/` (the headless logic-test project),
+and `GK/source/publish/` (the self-contained build output). **Edit `GK/source`, build/test in
+`GK/`.** The `GritKeeper/` folder is the *packaged deliverable* — its `source/`
+mirrors `GK/source` and its `app/` holds the published build; it is regenerated from `GK/` and
+then zipped to `GritKeeper.zip`. (History note: as of 2026-07-10 these two trees
+had silently diverged — `GK/source` carried post-delivery work the zip never got. They're now
+reconciled; `GK/source` won. Don't edit the delivered folder directly.)
+
+### Universal Undo/Redo (v1.6)
+Snapshot-based, over the same `GameSession` shape File → Save/Load already uses:
+`party`/`tracker`/`encounter`/`clocks` (the four `BindingList`s) each push a JSON
+snapshot onto an undo stack on any `ListChanged` (add/remove/edit), capped at 50 deep;
+`Undo`/`Redo` restore via `ApplySession`, which now suppresses re-capture during its own
+bulk rebuild so a restore is one step, not N. Reachable from **Edit ▸ Undo/Redo**
+(Ctrl+Z/Ctrl+Y) or matching buttons pinned in the status bar, so it's live no matter
+which tab is open. Session notes deliberately aren't captured — the textbox's own native
+undo covers it, since snapshotting every keystroke would flood the stack.
 
 ### What it does — ten tabs
 - **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
@@ -402,7 +415,12 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   second) and settle on the true per-die results from `Rules.RollExprFull`; shows up to
   8 dice, "+N more" beyond that. v1.5: **every die wears its color** (user-specified:
   d4 green · d6 blue · d8 orange · d10 white · d12 yellow · d20 red · d100 purple) on
-  buttons (`DieBtn`) and tray faces — best face rings gold, a 1 rings near-black.
+  buttons (`DieBtn`) and tray faces — best face rings gold, a 1 rings near-black. v1.6:
+  the roll log itself is **color-coded** (owner-drawn `ListBox`, `StyleRollLog`) — a
+  four-degrees result is graded by its degree word (crit success gold bold, crit failure
+  near-black bold, success verdigris, failure rust), a bare quick-die line by whether it
+  landed on its max/min face, any other roll (`ROLL <expr>`) gets a neutral steel-blue
+  tag, and plain event lines (posse/tracker/session) stay the default ink.
 - **Bestiary** — all **110 creatures**, machine-extracted from the rendered Bestiary HTML
   (so lore/stats/witness quotes/keeper notes are word-for-word faithful to the book).
   Search, tier/chapter filters, one click to Encounter or Tracker. **Double-click a creature
@@ -425,7 +443,15 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
   back), Ctrl+G for a fresh one. Exports: SVG (file/clipboard) and one-page
   landscape-Letter **PDF** — the GDI preview, the SVG, and the PDF all replay the same
-  primitive list (`MapGen.Generate` → `Prim[]`), so they always match.
+  primitive list (`MapGen.Generate` → `Prim[]`), so they always match. v1.6: **zoom &
+  pan** (mouse wheel zooms at the cursor 1×–8×, drag empty ground to pan, 🔍＋/🔍−/Fit
+  buttons; view state only, never exported) and **tactical markers** — ＋ Marker ▾ drops
+  a posse soul (green), NPC (gold), or creature (red) at the view center, **Tracker →
+  Map** columns the whole tracker onto the field (posse west, foes east; skips labels
+  already standing), markers **drag** into position (one undo step per drag), right-click
+  renames/removes, Clear markers confirms. Markers live in map-model coords in
+  `session.json` (`GameSession.MapMarkers`, `MapMarker` in Core.cs) and survive reseeds —
+  they're session state, deliberately not part of the deterministic map.
 - **New Soul** *(v1.3; overhauled v1.5)* — a strictly-by-the-book character maker: Ch. III's
   eight steps end to end at any level 1–10, both ability methods (Honest Array /
   4d6-drop-lowest), all 17 Callings and 10 Origins with their cross-constraints honored
@@ -445,12 +471,23 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   unanswered choice), **✎ Tweak** (edit anything; re-validated, never blocked —
   `HandTweaked` flag renders as a Ledger notice), **Save PDF…** (`Pdf.TextSheet`), and
   the full sheet rides into the posse via `PartyMember.Sheet` (persists in session.json).
+  v1.6: the `chargen.json` flavor pools (`givenWomen`/`givenMen`/`vices`/`lost`/`seen`/
+  `moving`) nearly doubled (16→30 names each, 8–10→16–20 flavor lines each), so generated
+  and wizard-built souls repeat far less over a long campaign.
 - **Generators** — every Ch. XII rollable table (town/NPC/rumor/trail/plunder/omen) plus
   all nine Grounds terrain tables and the Hand Behind It villain picker, safe-table rule
   applied automatically. v1.2: **every table expanded** with new results in the book's voice
   via `Data/tables_extra.json` (merged at load by `Db.MergeTables`; kept separate so a book
   re-extraction can never clobber the app-side additions; all new terrain entries reference
-  real creatures, smoke-tested).
+  real creatures, smoke-tested). v1.6: the single-roll tables (rumors/trail/plunder/omens
+  — the ones without the town/face generators' combinatorial multi-roll structure) grew by
+  10–12 entries apiece, and the Grounds terrain tables picked up every ordinary Bestiary
+  beast that wasn't already cited anywhere (badger, bobcat, coyote, black bear, gray wolf,
+  mountain lion, wild boar, bison bull, grizzly bear, old tusker, stampede — the White
+  Bison stays off every table on purpose, per its Ch. XII "gone quiet" rumor). Also
+  v1.6: **"The Hand Behind It" left the Grounds dropdown** — it's the villain picker,
+  not a terrain, and read like a stray creature there (user-reported); it now has its
+  own button under the terrain roller, same safe-table logic.
 - **Reference** — rebuilt in v1.4 as an **11-leaf paged Keeper's screen** (◀ ▶ buttons or
   Left/Right arrows — captured in `ProcessCmdKey` so focus doesn't matter; the deck wraps).
   Each leaf is monospace tables with Blood-red header bands (`RTbl` helper; last column
@@ -471,7 +508,7 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 |---|---|
 | `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting` (lets it cross-compile on Linux, since it can't run there). Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`, compression) so `dotnet publish` always yields a zero-dependency exe. |
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), and `Db` (loads the JSON data). |
-| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed. |
+| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4; reworked v1.6 to center in whatever background space is free and scale with the window instead of being confined to a pane's bottom half), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad + v1.6's `StyleRollLog` color-coded log), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed, and (v1.6) the universal undo/redo engine (`CaptureUndo`/`Undo`/`Redo`). |
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
 | **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
@@ -491,7 +528,7 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 ```bash
 # Requires the official Microsoft .NET 8 SDK (Ubuntu's apt package lacks
 # WindowsDesktop targets) — install via https://dot.net/v1/dotnet-install.sh if needed.
-cd KT/source
+cd GK/source
 dotnet build -c Release
 
 # Self-contained single-file Windows exe. The publish settings (RuntimeIdentifier=win-x64,
@@ -506,7 +543,7 @@ install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the
 falls back to `Data/` on disk for the smoke rig / dev build (whose assemblies aren't embedded).
 The exe writes only `session.json` beside itself (via `AppContext.BaseDirectory`). Published on
 GitHub via **Releases** (`gh release …`), not committed — the binary is git-ignored. The
-`BloodAndGrit-Keepers-Table.zip` (exe + full `source/` tree + `README.md`) is the source bundle.
+`GritKeeper.zip` (exe + full `source/` tree + `README.md`) is the source bundle.
 
 ### Known landmine: SplitContainer must not get geometry at construction time
 **Hit once, cost a full crash-on-launch on real Windows — avoid repeating.** Setting
@@ -537,8 +574,9 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently 2322/2322 passing — re-run after any `Core.cs`/`CharGen.cs`/data
-  change.
+  validation). Currently 2333/2333 passing (grew from 2322 in v1.6 — every new
+  terrain-table entry gets its own real-creature-name assertion) — re-run after any
+  `Core.cs`/`CharGen.cs`/data change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is
   published self-contained and unaffected).

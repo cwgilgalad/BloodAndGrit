@@ -1,6 +1,6 @@
 # Blood & Grit — Project Handoff & Preferences
 
-Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table.zip`) into
+Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.12 · Keeper's Book v2.4 · Bestiary v2.4 ·
@@ -14,7 +14,7 @@ delivered v2.11 before any new edits were made.)*
 *(Keep this doc updated with every change — see the Changelog at the bottom.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
-scripts) and **The Keeper's Table** (a C#/.NET 8 WinForms desktop app for running the game
+scripts) and **GritKeeper** (a C#/.NET 8 WinForms desktop app for running the game
 at the table). They're independent deliverables — different source trees, different build
 tools — documented in their own sections below.
 
@@ -365,14 +365,14 @@ A standalone Keeper-facing utility for running games at the table, built in **C#
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
 
 ### Source-tree layout (IMPORTANT — read before editing the app)
-There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`KT/`**:
-`KT/source/` (the `.cs`, `.csproj`, `Data/`), `KT/smoke/` (the headless logic-test project),
-and `KT/source/publish/` (the self-contained build output). **Edit `KT/source`, build/test in
-`KT/`.** The `BloodAndGrit-Keepers-Table/` folder is the *packaged deliverable* — its `source/`
-mirrors `KT/source` and its `app/` holds the published build; it is regenerated from `KT/` and
-then zipped to `BloodAndGrit-Keepers-Table.zip`. (History note: as of 2026-07-10 these two trees
-had silently diverged — `KT/source` carried post-delivery work the zip never got. They're now
-reconciled; `KT/source` won. Don't edit the delivered folder directly.)
+There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`GK/`**:
+`GK/source/` (the `.cs`, `.csproj`, `Data/`), `GK/smoke/` (the headless logic-test project),
+and `GK/source/publish/` (the self-contained build output). **Edit `GK/source`, build/test in
+`GK/`.** The `GritKeeper/` folder is the *packaged deliverable* — its `source/`
+mirrors `GK/source` and its `app/` holds the published build; it is regenerated from `GK/` and
+then zipped to `GritKeeper.zip`. (History note: as of 2026-07-10 these two trees
+had silently diverged — `GK/source` carried post-delivery work the zip never got. They're now
+reconciled; `GK/source` won. Don't edit the delivered folder directly.)
 
 ### What it does — eight tabs
 - **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
@@ -443,7 +443,7 @@ dotnet build -c Release
 dotnet publish -c Release -r win-x64 --self-contained true -o publish
 ```
 Deliverable = `publish/BloodAndGritKeeper.exe` + `publish/Data/` (keep them together),
-zipped with the full `source/` tree and `README.md` as `BloodAndGrit-Keepers-Table.zip`.
+zipped with the full `source/` tree and `README.md` as `GritKeeper.zip`.
 
 ### Known landmine: SplitContainer must not get geometry at construction time
 **Hit once, cost a full crash-on-launch on real Windows — avoid repeating.** Setting
@@ -588,7 +588,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   made on the laptop reach GitHub within half an hour with no manual step. `.gitignore`
   excludes regenerated build output, the ~160 MB delivered `app/` folder, the deliverable
   zip, and per-table runtime state (`session.json`); the lean sources, build scripts, books,
-  and `KT/source` + `KT/smoke` are all tracked.
+  and `GK/source` + `GK/smoke` are all tracked.
 
 - **Keeper's Table v1.2 — Seven-tab feature pass** (the user's own wishlist: dice animation,
   bestiary pop-outs, a comprehensible Encounter tab, tracker foe dropdown, bigger generators,
@@ -629,9 +629,9 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
     v2.9/v2.1), csproj `Version` 1.2.0, README rewritten for v1.2, smoke rig now loads
     `Data/` and rolls forward to the machine's .NET 9 runtime (`RollForward` — test rig
     only). **Note:** the delivered zip is fully v1.2; the unzipped
-    `BloodAndGrit-Keepers-Table\app\` folder was still running v1.1 during the session, so
-    a background waiter syncs it from `KT/source/publish` the moment that instance closes —
-    if it didn't get the chance, re-copy `KT/source/publish\*` over `app\` by hand.
+    `GritKeeper\app\` folder was still running v1.1 during the session, so
+    a background waiter syncs it from `GK/source/publish` the moment that instance closes —
+    if it didn't get the chance, re-copy `GK/source/publish\*` over `app\` by hand.
 
 - **Player v2.10 / Keeper v2.2 / Bestiary v2.2 — Navigation + the sample county.** Three things,
   all built and render-verified on the Windows/Edge toolchain (`measure_book.py`, new general
@@ -689,8 +689,8 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
     helper in `MainForm.cs` (a "-" label → separator) backs Sort, Condition, and Rest. The
     Tracker toolbar is now two rows (`SetFlowBreak`). Also fixed a stale status-bar string
     (Player's Book v2.8 → v2.9). **Discovered and reconciled a two-source-tree divergence** — see
-    the Keeper's Table "Source-tree layout" note above; `KT/source` is now the single master and
-    the delivered `BloodAndGrit-Keepers-Table/` + zip were regenerated from it (so the shipped
+    the Keeper's Table "Source-tree layout" note above; `GK/source` is now the single master and
+    the delivered `GritKeeper/` + zip were regenerated from it (so the shipped
     build now also finally carries last session's uncommitted autosave-timer and two-tier
     crash-recovery work). Republished self-contained (win-x64, ~67 MB zip); published exe
     confirmed to launch standalone with no `startup-error.txt`.
