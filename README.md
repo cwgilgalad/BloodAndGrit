@@ -28,7 +28,7 @@ python audit_whitespace.py <book.html>  # optional: list pages with large bottom
 ```
 
 **Keeper's Table app sync:** whenever Bestiary creature content changes, re-extract the
-app's data with `python extract_creatures.py bestiary.html KT/source/Data/creatures.json`
+app's data with `python extract_creatures.py bestiary.html GK/source/Data/creatures.json`
 (diff against the previous JSON first), and keep the app's status-bar/README version
 strings current with the books. See `CLAUDE.md` for the full standing rule.
 

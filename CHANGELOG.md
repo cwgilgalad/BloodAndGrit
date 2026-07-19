@@ -40,6 +40,36 @@ Desktop\Git repos.)
     black bear, gray wolf, mountain lion, wild boar, bison bull, grizzly bear, old
     tusker, stampede — the Tier V White Bison stays off every table on purpose, per its
     Ch. XII "gone quiet" rumor).
+  - **Map tab: tactical markers + zoom & pan (same session, user-requested).**
+    ＋ Marker ▾ drops a posse soul (green) / NPC (gold) / creature (red) at the view
+    center; **Tracker → Map** columns the whole tracker onto the field (posse west,
+    trouble east, skips names already standing); markers drag into position (one undo
+    step per completed drag), right-click renames or removes, Clear markers confirms.
+    Markers live in map-model coordinates in `session.json` (`GameSession.MapMarkers`)
+    so they survive restarts AND reseeds — session state, deliberately not part of the
+    deterministic map. Zoom: mouse wheel at the cursor (1×–8×), drag empty ground to
+    pan, 🔍＋/🔍−/Fit buttons; view state only, never in exports.
+  - **Generators: "The Hand Behind It" left the Grounds dropdown (user-reported).**
+    It's the villain picker, not a terrain — listed among the grounds it read like a
+    stray creature. Now its own button under the terrain roller, same safe-table check.
+  - **Expert-review pass on the session's own code, three real defects fixed before
+    merge:** (1) the color-coded log's owner-draw handler disposed the ListBox's own
+    Font on every non-bold line (worked only by TextRenderer's handle cache — latent
+    crash); a cached bold variant now lives as long as the log. (2) Undo captured once
+    per ListChanged event, so one click (Damage → posse edit + tracker mirror) made two
+    steps with a desynced middle, and New Session flooded 2×posse-size steps; captures
+    now coalesce via BeginInvoke — one user action, one undo step, always a consistent
+    snapshot. (3) The Ctrl+Z/Ctrl+Y menu shortcuts intercepted the keys before any
+    focused TextBox saw them, so typing in Session notes + Ctrl+Z would yank the whole
+    table instead of undoing typing; Undo/Redo now route to the focused text field's
+    native undo first, and no-op while a grid cell editor is open. Plus two smaller
+    ones: owner-drawn ListBoxes don't auto-compute HorizontalExtent (long log lines
+    couldn't h-scroll — now measured in Log()), and StatusStrip tooltips needed
+    ShowItemToolTips.
+  - **The name finished its move (user-requested):** working tree `KT/` → **`GK/`**,
+    delivered folder `BloodAndGrit-Keepers-Table/` → **`GritKeeper/`**, zip →
+    **`GritKeeper.zip`** — plus the last in-app "Keeper's Table" strings (session
+    file-dialog filters, crash-report captions) → GritKeeper.
   - Smoke suite grew from 2322 to 2333 asserts (one per new terrain entry's
     real-creature-name check); all passing. Published, signed, mirrored to the
     deliverable, and rezipped.

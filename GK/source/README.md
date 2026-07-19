@@ -103,6 +103,8 @@ or more new rumors, trail events, finds, and omens apiece — and the Grounds ta
 picked up every ordinary beast from the Bestiary that wasn't already on a terrain table
 (badger, bobcat, coyote, black bear, gray wolf, mountain lion, wild boar, bison bull,
 grizzly bear, old tusker, stampede), so a re-roll turns up something new far more often.
+Also *(v1.6)*: **The Hand Behind It** — the villain picker — left the terrain dropdown
+(where it read like a stray creature) and got its own button under the terrain roller.
 
 **Map** *(new in v1.5)* — **Trail Maps, a drafting table for frontier surveys.** Set the
 ground (the Bestiary's nine Grounds), the scale (a single gunfight up to weeks of
@@ -114,6 +116,17 @@ next session. The **Keeper's layer** adds the secrets in red — old blood in th
 something buried, sign of the beast — leave it off before showing players. Export as
 **SVG** (file or clipboard) or a **one-page landscape-Letter PDF**; the on-screen
 drawing, the SVG, and the PDF all replay the same primitives, so they always match.
+
+*(v1.6)* The survey became a **battle board**. **Zoom & pan**: roll the mouse wheel
+over the map to zoom at the cursor (up to 8×), drag empty ground to pan, and 🔍＋ / 🔍− /
+**Fit** live on the bar; the view never leaks into exports. **Tactical markers**:
+**＋ Marker ▾** drops a posse soul (green), an NPC (gold), or a creature (red) at the
+center of your view; **Tracker → Map** puts everyone on the tracker onto the field in
+two columns — posse west, trouble east — skipping anyone already standing; **drag** a
+marker to move it (each completed drag is one undo step); **right-click** a marker to
+rename or remove it; **Clear markers** asks first. Markers ride in `session.json` and
+hold their ground across restarts and even fresh map seeds — they're your fight, not
+the map's.
 
 **New Soul** *(overhauled in v1.5)* — a complete character at any level 1–10, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
