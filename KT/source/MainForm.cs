@@ -385,6 +385,14 @@ public partial class MainForm : Form
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
         Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
         Col("Mark", "Mark", 48); Col("Taint", "Taint", 48); Col("Notes", "Notes", 150);
+        // far-right Ledger button — one click to the soul's character sheet
+        posseGrid.Columns.Add(new DataGridViewButtonColumn
+        { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
+        posseGrid.CellContentClick += (s, e) =>
+        {
+            if (e.RowIndex >= 0 && e.RowIndex < party.Count && posseGrid.Columns[e.ColumnIndex].Name == "ledgerBtn")
+                ShowSoulCard(party[e.RowIndex]);
+        };
         WireNumericValidation(posseGrid, new() { "Level","BloodCur","BloodMax","Defense","Fort","Ref","Will","NerveCur","NerveMax","Grit","Mark","Taint" });
 
         // current values can't outrun their maximums, whichever side of the pair was edited
@@ -623,6 +631,7 @@ public partial class MainForm : Form
 
     // ============================================================ DICE TAB
     TextBox exprBox;
+    NumericUpDown exprQty;
 
     // Every die wears its own color — buttons and the tumbling tray alike — so the
     // Keeper can tell a d8 from a d12 across the table without reading the tag.
@@ -760,14 +769,19 @@ public partial class MainForm : Form
         exprRow.Controls.Add(Btn("Roll", (s, e) => RollExprBox(), 80, "Roll the expression (or press Enter)"));
         left.Controls.Add(exprRow);
 
-        // build the expression by button: dice stack (d6 → 2d6 → 3d6), digits and
-        // ＋/− make the modifier — no typing needed at the table
-        var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
+        // build the expression by button: dice stack (d6 → 2d6 → 3d6), the × spinner
+        // adds several at once (× 4 then +d6 → 4d6), digits and ＋/− make the
+        // modifier — no typing needed at the table
+        var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(470, 0) };
+        dicePad.Controls.Add(Lbl("×"));
+        exprQty = new NumericUpDown { Minimum = 1, Maximum = 99, Value = 1, Width = 46, Margin = new Padding(0, 6, 4, 3) };
+        Tip.SetToolTip(exprQty, "How many dice each +d button adds — set 4 and click +d6 for 4d6");
+        dicePad.Controls.Add(exprQty);
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
         {
             int sides = d;
-            dicePad.Controls.Add(DieBtn("+d" + sides, sides, (s, e) => ExprAddDie(sides), 54,
-                $"Add a d{sides} to the expression — click again for another"));
+            dicePad.Controls.Add(DieBtn("+d" + sides, sides, (s, e) => ExprAddDie(sides), sides == 100 ? 64 : 54,
+                $"Add ×-many d{sides} to the expression — click again for more"));
         }
         left.Controls.Add(dicePad);
         var opsPad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
@@ -849,7 +863,7 @@ public partial class MainForm : Form
     // the builder logic itself lives in Rules (pure, smoke-tested); these just wire the box
     void ExprAddDie(int sides)
     {
-        exprBox.Text = Rules.ExprAddDie(exprBox.Text, sides);
+        exprBox.Text = Rules.ExprAddDie(exprBox.Text, sides, (int)(exprQty?.Value ?? 1));
         ExprFocusEnd();
     }
 

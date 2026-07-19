@@ -90,7 +90,8 @@ public class CgData
 // inside PartyMember.Sheet through session.json and back.
 public class CharacterSheet
 {
-    public string Name { get; set; } public string Calling { get; set; }
+    public string Name { get; set; } public string Gender { get; set; }
+    public string Calling { get; set; }
     public string Origin { get; set; } public string Compass { get; set; }
     public int Level { get; set; }
     public string Method { get; set; }                                  // "The Honest Array" | "The Gamble (rolled)"
@@ -143,6 +144,26 @@ public static class CharGen
         foreach (var e in D.flavor.GetProperty(key).EnumerateArray()) l.Add(e.GetString());
         return l;
     }
+
+    // a soul is somebody: gender rolled plainly, and the given name drawn to match.
+    // TryGetProperty keeps an older chargen.json (no gendered lists) from crashing —
+    // it falls back to the mixed NPC list and leaves gender blank.
+    static (string gender, string given) PickPerson()
+    {
+        if (D.flavor.TryGetProperty("givenWomen", out _) && D.flavor.TryGetProperty("givenMen", out _))
+        {
+            bool woman = Rules.Rng.Next(2) == 0;
+            return (woman ? "Woman" : "Man", Pick(FlavorList(woman ? "givenWomen" : "givenMen")));
+        }
+        return (null, Db.Pick("npcGiven"));
+    }
+
+    static string GivenFor(string gender) => gender switch
+    {
+        "Woman" when D.flavor.TryGetProperty("givenWomen", out _) => Pick(FlavorList("givenWomen")),
+        "Man"   when D.flavor.TryGetProperty("givenMen", out _)   => Pick(FlavorList("givenMen")),
+        _ => Db.Pick("npcGiven")
+    };
 
     public static CharacterSheet Generate(int level, bool rolled, string fixedCalling = null, string fixedOrigin = null)
     {
@@ -271,7 +292,9 @@ public static class CharGen
         s.CoinLeft = Math.Round(left, 2);
 
         // ---- Steps 1 & 8: a person, not a statline ----
-        s.Name = Db.Pick("npcGiven") + " " + Db.Pick("npcSurname");
+        var (gender, given) = PickPerson();
+        s.Gender = gender;
+        s.Name = given + " " + Db.Pick("npcSurname");
         s.Compass = WeightedCompass();
         s.Lost = Pick(FlavorList("lost")); s.Seen = Pick(FlavorList("seen"));
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
@@ -300,7 +323,7 @@ public static class CharGen
         public double? CoinRolled;                            // null → roll fresh
         public List<string> BuyWeapons = new();               // weapon names bought at printed price
         public List<string> BuyGear = new();                  // price-list names bought at printed price
-        public string Name, Compass, Lost, Seen, Vice, Moving;
+        public string Name, Gender, Compass, Lost, Seen, Vice, Moving;
     }
 
     /// Builds a sheet from the wizard's explicit choices, walking the same eight steps as
@@ -427,7 +450,9 @@ public static class CharGen
         s.CoinLeft = Math.Round(left, 2);
 
         // a person, not a statline
-        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? Db.Pick("npcGiven") + " " + Db.Pick("npcSurname") : spec.Name.Trim();
+        if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
+        else s.Gender = spec.Gender.Trim();
+        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? GivenFor(s.Gender) + " " + Db.Pick("npcSurname") : spec.Name.Trim();
         s.Compass = string.IsNullOrWhiteSpace(spec.Compass) ? WeightedCompass() : spec.Compass;
         s.Lost = string.IsNullOrWhiteSpace(spec.Lost) ? Pick(FlavorList("lost")) : spec.Lost;
         s.Seen = string.IsNullOrWhiteSpace(spec.Seen) ? Pick(FlavorList("seen")) : spec.Seen;
@@ -535,8 +560,10 @@ public static class CharGen
         }
     }
 
-    /// The flavor tables (lost / seen / vices / moving), for the wizard's pick lists.
-    public static List<string> Flavor(string key) => FlavorList(key);
+    /// The flavor tables (lost / seen / vices / moving / gendered names), for the
+    /// wizard's pick lists. Empty (never a throw) when the data file lacks the key.
+    public static List<string> Flavor(string key)
+        => D.flavor.TryGetProperty(key, out _) ? FlavorList(key) : new();
     public static List<string> CompassOptions()
     {
         var l = new List<string>();
@@ -709,7 +736,8 @@ public static class CharGen
         string M(int m) => m >= 0 ? "+" + m : "−" + (-m);
 
         sb.AppendLine($"{s.Name} — {s.Calling} · {org.name}");
-        sb.AppendLine($"Level {s.Level} · {s.Method} · {s.Compass}");
+        sb.AppendLine($"Level {s.Level}{(string.IsNullOrEmpty(s.Gender) ? "" : " · " + s.Gender.ToLowerInvariant())} · {s.Method} · {s.Compass}"
+                      + (s.HandTweaked ? " · hand-tweaked" : ""));
         sb.AppendLine();
         sb.AppendLine(string.Join(" · ", Ab.Select(a => $"{a} {s.Scores[a]} ({M(Mod(s.Scores[a]))})")));
         sb.AppendLine();

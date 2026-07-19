@@ -151,7 +151,7 @@ public static class Pdf
                  .Append($"{N(margin)} {N(y)} Td ({Esc(line)}) Tj ET\n");
             }
             c.Append($"BT /F4 8 Tf {Rgb("#8a7a5c")} rg {N(margin)} {N(margin - 18)} Td ")
-             .Append($"(Blood & Grit \\(The Keeper's Table\\)  ·  page {p + 1} of {pages.Count}) Tj ET\n");
+             .Append($"({Esc($"GritKeeper — Blood & Grit  ·  page {p + 1} of {pages.Count}")}) Tj ET\n");
 
             objs.Add(Stream(c.ToString()));
             objs.Add($"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {N(pw)} {N(ph)}] " +

@@ -24,7 +24,7 @@ public partial class MainForm
         // ---- collected choices (fields, so Back/Next never loses them) ----
         int level = 1;
         int methodIdx;                       // 0 array · 1 rolled · 2 by hand
-        string charName = "";
+        string charName = "", charGender = "";
         string calName, orgName, originChoice;
         List<int> pool = new();              // the six values to assign (array or rolled)
         readonly Dictionary<string, string> abilityPick = new();   // ability → chosen value (as string)
@@ -139,7 +139,7 @@ public partial class MainForm
                 CoinRolled = coinRolled > 0 ? coinRolled : null,
                 BuyWeapons = buyPicks.Where(n => CharGen.D.weapons.Any(w => w.name == n)).ToList(),
                 BuyGear = buyPicks.Where(n => CharGen.D.gearPrices.ContainsKey(n)).ToList(),
-                Name = charName, Compass = compass,
+                Name = charName, Gender = charGender, Compass = compass,
                 Lost = lost, Seen = seen, Vice = vice, Moving = moving
             };
             foreach (var a in AbKeys)
@@ -164,7 +164,7 @@ public partial class MainForm
         { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Padding = new Padding(2) };
 
         // ============================================== 1 · basics
-        NumericUpDown wLevel; ComboBox wMethod; TextBox wName;
+        NumericUpDown wLevel; ComboBox wMethod, wGender; TextBox wName;
         Control BuildBasics()
         {
             var col = Column();
@@ -183,8 +183,19 @@ public partial class MainForm
             row2.Controls.Add(Lbl("Name:"));
             wName = new TextBox { Width = 260, Text = charName, Margin = new Padding(3, 5, 3, 3) };
             row2.Controls.Add(wName);
-            row2.Controls.Add(Btn("🎲", (s, e) => wName.Text = Db.Pick("npcGiven") + " " + Db.Pick("npcSurname"), 40, "Deal a frontier name"));
-            row2.Controls.Add(Lbl("  (leave blank to roll one at the end)"));
+            row2.Controls.Add(Lbl("  Gender:"));
+            wGender = new ComboBox { Width = 110, DropDownStyle = ComboBoxStyle.DropDown, Text = charGender, Margin = new Padding(3, 5, 3, 3) };
+            wGender.Items.AddRange(new object[] { "Woman", "Man" });
+            row2.Controls.Add(wGender);
+            row2.Controls.Add(Btn("🎲", (s, e) =>
+            {
+                if (wGender.Text.Length == 0) wGender.Text = Rules.Rng.Next(2) == 0 ? "Woman" : "Man";
+                string table = wGender.Text == "Woman" ? "givenWomen" : wGender.Text == "Man" ? "givenMen" : null;
+                string given = table != null && CharGen.Flavor(table) is { Count: > 0 } l
+                    ? l[Rules.Rng.Next(l.Count)] : Db.Pick("npcGiven");
+                wName.Text = given + " " + Db.Pick("npcSurname");
+            }, 40, "Deal a frontier name (matched to the gender, if one is set)"));
+            row2.Controls.Add(Lbl("  (leave blank to roll at the end)"));
             col.Controls.Add(row2);
             return col;
         }
@@ -193,7 +204,7 @@ public partial class MainForm
             int newLevel = (int)wLevel.Value; int newMethod = wMethod.SelectedIndex;
             if (newLevel != level) { increasePicks.Clear(); edgePicks.Clear(); gunPicks.Clear(); signPicks.Clear(); boostPicks.Clear(); }
             if (newMethod != methodIdx) { abilityPick.Clear(); pool.Clear(); }
-            level = newLevel; methodIdx = newMethod; charName = wName.Text.Trim();
+            level = newLevel; methodIdx = newMethod; charName = wName.Text.Trim(); charGender = wGender.Text.Trim();
             return true;
         }
 

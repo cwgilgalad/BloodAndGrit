@@ -60,6 +60,7 @@ public partial class MainForm
         }, 85, "Hand-adjust the sheet — any number, any list"));
         bar.Controls.Add(Btn("→ Posse", (s, e) => SoulToPosse(), 85, "Add this soul to the Posse tab"));
         bar.Controls.Add(Btn("Copy sheet", (s, e) => { if (lastSoul != null) Clipboard.SetText(CharGen.Render(lastSoul)); }, 95, "Copy the sheet as plain text"));
+        bar.Controls.Add(Btn("Save PDF…", (s, e) => SoulSavePdf(), 90, "Save the sheet as a printable PDF"));
         bar.Controls.Add(Btn("A−", (s, e) => { if (soulLedger != null) soulLedger.Zoom -= 0.15f; }, 46, "Smaller sheet"));
         bar.Controls.Add(Btn("A＋", (s, e) => { if (soulLedger != null) soulLedger.Zoom += 0.15f; }, 46, "Larger sheet"));
         bar.Controls.Add(Btn("Clear", (s, e) => { soulLedger.Clear(); lastSoul = null; soulHint.Visible = true; }, 70, "Wipe the sheet for a fresh start"));
@@ -108,6 +109,31 @@ public partial class MainForm
         var sheet = CharGen.Generate((int)soulLevel.Value, soulMethod.SelectedIndex == 1, calling, origin);
         ShowSoul(sheet);
         Log($"New soul: {sheet.Name}, {sheet.Calling} ({sheet.Origin}), level {sheet.Level}.");
+    }
+
+    void SoulSavePdf()
+    {
+        if (lastSoul == null) { Log("Make a soul first."); return; }
+        var s = lastSoul;
+        using var d = new SaveFileDialog
+        {
+            Title = "Save the sheet as PDF",
+            Filter = "PDF (*.pdf)|*.pdf|All files (*.*)|*.*",
+            FileName = new string(s.Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray()).Trim('-') + ".pdf"
+        };
+        if (d.ShowDialog(this) != DialogResult.OK) return;
+        try
+        {
+            File.WriteAllBytes(d.FileName, Pdf.TextSheet(
+                s.Name,
+                $"{s.Calling} · {s.Origin} — level {s.Level}" + (string.IsNullOrEmpty(s.Gender) ? "" : $" · {s.Gender.ToLowerInvariant()}"),
+                CharGen.Render(s)));
+            Log($"Sheet saved: {Path.GetFileName(d.FileName)}.");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Couldn't save there:\r\n\r\n" + ex.Message, "GritKeeper", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 
     void SoulToPosse()
@@ -186,7 +212,9 @@ public partial class MainForm
         };
 
         var name = new TextBox { Text = s.Name, Margin = new Padding(3, 5, 3, 3) };
-        Wide("Name", name);
+        var gender = new ComboBox { Text = s.Gender ?? "", DropDownStyle = ComboBoxStyle.DropDown, Margin = new Padding(3, 5, 3, 3) };
+        gender.Items.AddRange(new object[] { "Woman", "Man" });
+        Pair("Name", name, "Gender", gender);
 
         var scores = new Dictionary<string, NumericUpDown>();
         string[] abs = { "STR", "DEX", "CON", "WIT", "RES", "PRE" };
@@ -268,6 +296,7 @@ public partial class MainForm
             t == null ? new() : t.Text.Split('\n').Select(x => x.Trim('\r').Trim()).Where(x => x.Length > 0).ToList();
 
         s.Name = string.IsNullOrWhiteSpace(name.Text) ? s.Name : name.Text.Trim();
+        s.Gender = gender.Text.Trim();
         foreach (var a in abs) s.Scores[a] = (int)scores[a].Value;
         s.Blood = (int)blood.Value; s.Defense = (int)defense.Value;
         s.Fort = (int)fort.Value; s.Ref = (int)reff.Value; s.Will = (int)will.Value;

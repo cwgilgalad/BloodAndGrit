@@ -333,6 +333,22 @@ public partial class MainForm
             => trkGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = prop, HeaderText = head, FillWeight = w, ReadOnly = ro });
         C("Init", "Init", 50); C("Name", "Name", 210, true); C("BloodCur", "Blood", 60);
         C("BloodMax", "/Max", 55, true); C("Defense", "Def", 50, true); C("Conditions", "Conditions", 240);
+        // far-right Ledger button — posse souls only; creatures keep their double-click
+        // stat block and ad-hoc rows have no sheet to show, so neither draws a button
+        trkGrid.Columns.Add(new DataGridViewButtonColumn
+        { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
+        bool TrkHasSheet(int i) => i >= 0 && i < tracker.Count && tracker[i].IsPC
+            && string.IsNullOrEmpty(tracker[i].Ref) && party.Any(p => p.Name == tracker[i].Name);
+        trkGrid.CellPainting += (s, e) =>
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && trkGrid.Columns[e.ColumnIndex].Name == "ledgerBtn" && !TrkHasSheet(e.RowIndex))
+            { e.PaintBackground(e.ClipBounds, true); e.Handled = true; }
+        };
+        trkGrid.CellContentClick += (s, e) =>
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && trkGrid.Columns[e.ColumnIndex].Name == "ledgerBtn" && TrkHasSheet(e.RowIndex))
+            { var p = party.FirstOrDefault(x => x.Name == tracker[e.RowIndex].Name); if (p != null) ShowSoulCard(p); }
+        };
         WireNumericValidation(trkGrid, new() { "Init", "BloodCur" });
         trkGrid.CellFormatting += (s, e) =>
         {

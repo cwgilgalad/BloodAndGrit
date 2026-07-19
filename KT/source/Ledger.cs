@@ -181,12 +181,13 @@ public sealed class LedgerView : Panel
             y += 4 * zoom;
         }
 
-        // ---- row: name / calling / level / origin ----
-        float nW = w * 0.34f, cW = w * 0.26f, lW = w * 0.10f, oW = w - nW - cW - lW - gap * 3;
+        // ---- row: name / gender / calling / level / origin ----
+        float nW = w * 0.28f, gW = w * 0.12f, cW = w * 0.21f, lW = w * 0.08f, oW = w - nW - gW - cW - lW - gap * 4;
         float rowH = FieldBox(x0, y, nW, "Name", name, valueBold: true);
-        FieldBox(x0 + nW + gap, y, cW, "Calling", calling);
-        FieldBox(x0 + nW + cW + gap * 2, y, lW, "Level", level.ToString());
-        FieldBox(x0 + nW + cW + lW + gap * 3, y, oW, "Origin", origin);
+        FieldBox(x0 + nW + gap, y, gW, "Gender", sheet?.Gender ?? "");
+        FieldBox(x0 + nW + gW + gap * 2, y, cW, "Calling", calling);
+        FieldBox(x0 + nW + gW + cW + gap * 3, y, lW, "Level", level.ToString());
+        FieldBox(x0 + nW + gW + cW + lW + gap * 4, y, oW, "Origin", origin);
         y += rowH + gap;
 
         // ---- abilities ----
