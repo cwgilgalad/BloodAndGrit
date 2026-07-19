@@ -353,10 +353,16 @@ public partial class MainForm
             if (e.KeyCode == Keys.Delete && !trkGrid.IsCurrentCellInEditMode)
             { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); e.Handled = true; }
         };
+        // double-click opens the combatant's card: foes get their Bestiary stat block,
+        // posse members get their Ledger — the same windows the source tabs open
         trkGrid.CellDoubleClick += (s, e) =>
         {
-            if (e.RowIndex >= 0 && !string.IsNullOrEmpty(tracker[e.RowIndex].Ref))
-            { var c = Db.Find(tracker[e.RowIndex].Ref); if (c != null) ShowCreatureCard(c); }
+            if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
+            var t = tracker[e.RowIndex];
+            if (!string.IsNullOrEmpty(t.Ref))
+            { var c = Db.Find(t.Ref); if (c != null) ShowCreatureCard(c); }
+            else if (t.IsPC)
+            { var p = party.FirstOrDefault(x => x.Name == t.Name); if (p != null) ShowSoulCard(p); }
         };
 
         page.Controls.Add(trkGrid);

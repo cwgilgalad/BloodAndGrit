@@ -63,6 +63,11 @@ public class PartyMember : INotifyPropertyChanged
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
 
+    // The full character sheet, when this soul came out of the New Soul tab (generated,
+    // wizard-built, or tweaked). Null for hand-entered rows; the Ledger window shows a
+    // half-filled sheet in that case. Rides along in session.json.
+    public CharacterSheet Sheet { get; set; }
+
     // Nerve = RES score + level. Only auto-recalcs when RES is set (>0); otherwise honors manual NerveMax.
     void RecalcNerve()
     {
