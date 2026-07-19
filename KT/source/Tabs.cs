@@ -620,7 +620,11 @@ public partial class MainForm
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
         left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112));
-        left.Controls.Add(Btn("Clear", (s, e) => genOut.Clear(), 112));
+        left.Controls.Add(Btn("Clear", (s, e) =>
+        {
+            if (genOut.TextLength == 0) return;
+            if (Confirm("Clear the generator output?")) genOut.Clear();
+        }, 112));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
         split.Panel1.Controls.Add(left);

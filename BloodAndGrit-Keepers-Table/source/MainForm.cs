@@ -25,7 +25,23 @@ public partial class MainForm : Form
     public static readonly Color FoeRow  = Color.FromArgb(250, 250, 247);
     public static readonly Color DownRow = Color.FromArgb(248, 224, 224);
 
-    internal const string AppVersion = "1.5.0";
+    // roll-log result colors — so a dice result jumps out from plain event lines
+    public static readonly Color RollCritGood = Color.FromArgb(150, 108, 0);   // critical success — rich gold
+    public static readonly Color RollCritBad  = Color.FromArgb(48, 12, 12);    // critical failure — near-black
+    public static readonly Color RollGood     = Verdigris;                     // plain success
+    public static readonly Color RollBad      = Color.FromArgb(150, 70, 30);   // plain failure — rust
+    public static readonly Color RollNeutral  = Color.FromArgb(52, 70, 120);   // a roll with no DC to judge it by
+
+    // ---- universal undo/redo (snapshot-based over the shared game state) ----
+    readonly List<string> undoStack = new();
+    readonly List<string> redoStack = new();
+    const int UndoDepth = 50;
+    bool suppressUndo = true;                 // true until the initial load finishes
+    string undoBaseline;
+    ToolStripMenuItem undoMenuItem, redoMenuItem;
+    ToolStripButton undoStatusBtn, redoStatusBtn;
+
+    internal const string AppVersion = "1.6.0";
 
     public MainForm()
     {
@@ -97,10 +113,29 @@ public partial class MainForm : Form
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
+        undoStatusBtn = new ToolStripButton("⟲ Undo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
+        redoStatusBtn = new ToolStripButton("⟳ Redo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
+        undoStatusBtn.Click += (s, e) => Undo();
+        redoStatusBtn.Click += (s, e) => Redo();
+        undoStatusBtn.ToolTipText = "Undo the last change (Ctrl+Z)";
+        redoStatusBtn.ToolTipText = "Redo the last undone change (Ctrl+Y)";
+        status.Items.Add(undoStatusBtn);
+        status.Items.Add(redoStatusBtn);
         status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
         Controls.Add(status);
 
+        // Universal undo/redo: any add/remove/edit to the posse, tracker, encounter, or
+        // campaign threads captures a snapshot. Session notes keep the textbox's own
+        // native per-field undo instead — snapshotting every keystroke would flood the stack.
+        party.ListChanged += (s, e) => CaptureUndo();
+        tracker.ListChanged += (s, e) => CaptureUndo();
+        encounter.ListChanged += (s, e) => CaptureUndo();
+        clocks.ListChanged += (s, e) => CaptureUndo();
+
         TryAutoLoad();
+        undoBaseline = JsonSerializer.Serialize(Snapshot());
+        suppressUndo = false;
+        RefreshUndoRedoButtons();
         FormClosing += (s, e) => AutoSave();
 
         // Complete the two-way Blood sync: a direct cell edit on the Posse grid must reach
@@ -144,6 +179,59 @@ public partial class MainForm : Form
         if (rollLog == null) return;
         rollLog.Items.Insert(0, $"[{DateTime.Now:HH:mm}] {s}");
         while (rollLog.Items.Count > 400) rollLog.Items.RemoveAt(rollLog.Items.Count - 1);
+    }
+
+    // Color-codes dice-roll results in the log so they jump out from plain event lines:
+    // a four-degrees outcome (CHECK/DREAD) is graded by its degree word, a bare die roll
+    // (quick dice) by whether it landed on its max or min face, and any other roll
+    // (ROLL <expr>) gets a neutral "this is a roll" accent. Everything else — posse,
+    // tracker, session events — stays the plain ink color.
+    static readonly System.Text.RegularExpressions.Regex DegreeRe =
+        new(@"→ (CRITICAL SUCCESS|CRITICAL FAILURE|Success|Failure)\b");
+    static readonly System.Text.RegularExpressions.Regex QuickDieRe =
+        new(@"^\[\d\d:\d\d\] d(\d+) → (\d+)$");
+    static readonly System.Text.RegularExpressions.Regex RollLineRe =
+        new(@"^\[\d\d:\d\d\] (ROLL |CHECK — |DREAD — )");
+
+    static void StyleRollLog(ListBox log)
+    {
+        log.DrawMode = DrawMode.OwnerDrawFixed;
+        log.ItemHeight = TextRenderer.MeasureText("Xg", log.Font).Height + 3;
+        log.DrawItem += (s, e) =>
+        {
+            if (e.Index < 0 || e.Index >= log.Items.Count) return;
+            string text = log.Items[e.Index].ToString() ?? "";
+            Color color = Ink;
+            bool bold = false;
+            var dm = DegreeRe.Match(text);
+            if (dm.Success)
+            {
+                switch (dm.Groups[1].Value)
+                {
+                    case "CRITICAL SUCCESS": color = RollCritGood; bold = true; break;
+                    case "CRITICAL FAILURE": color = RollCritBad; bold = true; break;
+                    case "Success": color = RollGood; break;
+                    case "Failure": color = RollBad; break;
+                }
+            }
+            else
+            {
+                var qm = QuickDieRe.Match(text);
+                if (qm.Success)
+                {
+                    int sides = int.Parse(qm.Groups[1].Value), val = int.Parse(qm.Groups[2].Value);
+                    color = val == sides ? RollCritGood : val == 1 ? RollCritBad : RollNeutral;
+                }
+                else if (RollLineRe.IsMatch(text)) color = RollNeutral;
+            }
+            e.DrawBackground();
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            using var font = bold ? new Font(e.Font, e.Font.Style | FontStyle.Bold) : e.Font;
+            TextRenderer.DrawText(e.Graphics, text, font, e.Bounds,
+                selected ? SystemColors.HighlightText : color,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+            e.DrawFocusRectangle();
+        };
     }
 
     static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
@@ -258,10 +346,12 @@ public partial class MainForm : Form
     }
 
     /// <summary>
-    /// Paints the emblem, ghost-faint, centered in the bottom half of a pane.
-    /// usedHeight reports how far real content reaches; the emblem's zone starts at
-    /// the pane's midline or below the content, whichever is lower, so it never sits
-    /// behind rows, text, or controls — panes that fill up simply don't show it.
+    /// Paints the emblem, ghost-faint, centered in whatever background space is left
+    /// once real content is accounted for. usedHeight reports how far real content
+    /// reaches; the emblem centers in the full free zone below it (not just the
+    /// bottom half), and scales with the pane's own size — bigger in a roomy window,
+    /// smaller in a tight one, gone entirely below a dignified minimum — so it never
+    /// sits behind rows, text, or controls.
     /// </summary>
     static void Watermark(Control host, Func<int> usedHeight)
     {
@@ -269,11 +359,13 @@ public partial class MainForm : Form
         {
             var img = Emblem; if (img == null) return;
             int cw = host.ClientSize.Width, ch = host.ClientSize.Height;
-            int top = Math.Max(ch / 2, usedHeight() + 22);
+            int top = usedHeight() + 22;
             int freeH = ch - top;
-            // scale to what the zone can hold — full size in a big empty pane,
-            // smaller where room is tighter, gone entirely below a dignified minimum
-            int w = Math.Min(Math.Min(330, cw - 56), (freeH - 24) * img.Width / img.Height);
+            if (freeH < 60) return;                             // no room at all below content
+            // scale with the window: as large as the free background allows, capped so a
+            // big pane doesn't let it balloon past a dignified share of the width
+            int maxW = Math.Min(cw - 56, cw * 3 / 5);
+            int w = Math.Min(maxW, (freeH - 24) * img.Width / img.Height);
             if (w < 150) return;
             int h = w * img.Height / img.Width;
             var r = new Rectangle((cw - w) / 2, top + (freeH - h) / 2, w, h);
@@ -826,6 +918,7 @@ public partial class MainForm : Form
         left.Controls.Add(Lbl("Miss by 10 (or nat 1) → critical failure."));
 
         rollLog = new ListBox { Dock = DockStyle.Fill, Font = new Font("Consolas", 9.5f), HorizontalScrollbar = true, BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        StyleRollLog(rollLog);
         var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
         var logHead = new Label { Text = "  Roll && event log", Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
@@ -844,7 +937,11 @@ public partial class MainForm : Form
 
         var logBar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 40 };
         logBar.Controls.Add(Btn("Copy log", (s, e) => { if (rollLog.Items.Count > 0) Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())); }, 90));
-        logBar.Controls.Add(Btn("Clear log", (s, e) => rollLog.Items.Clear(), 90));
+        logBar.Controls.Add(Btn("Clear log", (s, e) =>
+        {
+            if (rollLog.Items.Count == 0) return;
+            if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone.")) rollLog.Items.Clear();
+        }, 90));
         right.Controls.Add(rollLog); right.Controls.Add(diceTray); right.Controls.Add(logHead); right.Controls.Add(logBar);
 
         split.Panel1.Controls.Add(left);
@@ -909,18 +1006,70 @@ public partial class MainForm : Form
     // auto-load and File → Load session.
     void ApplySession(GameSession s)
     {
-        party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear();
-        foreach (var p in s.Party ?? new()) party.Add(p);
-        foreach (var c in s.Clocks ?? new()) clocks.Add(c);
-        if (notesBox != null) notesBox.Text = s.Notes ?? "";
-        foreach (var n in s.EncounterCreatures ?? new())
-        { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
-        if (encLevel != null && s.PartyLevelHint >= 1) encLevel.Value = Math.Clamp(s.PartyLevelHint, 1, 10);
-        foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
-        round = Math.Max(1, s.Round);
-        if (roundLbl != null) roundLbl.Text = $"Round {round}";
-        RefreshClocks(); RefreshEncounter();
-        posseGrid?.Refresh(); trkGrid?.Refresh();
+        bool prevSuppress = suppressUndo;
+        suppressUndo = true;                  // the whole-table rebuild below is one event, not N
+        try
+        {
+            party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear();
+            foreach (var p in s.Party ?? new()) party.Add(p);
+            foreach (var c in s.Clocks ?? new()) clocks.Add(c);
+            if (notesBox != null) notesBox.Text = s.Notes ?? "";
+            foreach (var n in s.EncounterCreatures ?? new())
+            { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
+            if (encLevel != null && s.PartyLevelHint >= 1) encLevel.Value = Math.Clamp(s.PartyLevelHint, 1, 10);
+            foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
+            round = Math.Max(1, s.Round);
+            if (roundLbl != null) roundLbl.Text = $"Round {round}";
+            RefreshClocks(); RefreshEncounter();
+            posseGrid?.Refresh(); trkGrid?.Refresh();
+        }
+        finally { suppressUndo = prevSuppress; }
+        undoBaseline = JsonSerializer.Serialize(Snapshot());   // re-synced whichever path called this
+    }
+
+    // ---------------------------------------------------------- universal undo/redo
+    // Snapshot-based over the same GameSession shape File → Save/Load already uses:
+    // simple, and correct-by-construction since round-tripping through JSON gives a
+    // true deep copy (the in-memory Snapshot() lists share references, which is fine
+    // for serializing but not for stashing a past state to restore later).
+    void CaptureUndo()
+    {
+        if (suppressUndo) return;
+        string now = JsonSerializer.Serialize(Snapshot());
+        if (now == undoBaseline) return;
+        undoStack.Add(undoBaseline);
+        if (undoStack.Count > UndoDepth) undoStack.RemoveAt(0);
+        undoBaseline = now;
+        redoStack.Clear();
+        RefreshUndoRedoButtons();
+    }
+
+    void Undo()
+    {
+        if (undoStack.Count == 0) return;
+        redoStack.Add(undoBaseline);
+        string target = undoStack[^1]; undoStack.RemoveAt(undoStack.Count - 1);
+        ApplySession(JsonSerializer.Deserialize<GameSession>(target));
+        Log("Undo.");
+        RefreshUndoRedoButtons();
+    }
+
+    void Redo()
+    {
+        if (redoStack.Count == 0) return;
+        undoStack.Add(undoBaseline);
+        string target = redoStack[^1]; redoStack.RemoveAt(redoStack.Count - 1);
+        ApplySession(JsonSerializer.Deserialize<GameSession>(target));
+        Log("Redo.");
+        RefreshUndoRedoButtons();
+    }
+
+    void RefreshUndoRedoButtons()
+    {
+        if (undoMenuItem != null) undoMenuItem.Enabled = undoStack.Count > 0;
+        if (redoMenuItem != null) redoMenuItem.Enabled = redoStack.Count > 0;
+        if (undoStatusBtn != null) undoStatusBtn.Enabled = undoStack.Count > 0;
+        if (redoStatusBtn != null) redoStatusBtn.Enabled = redoStack.Count > 0;
     }
 
     void TryAutoLoad()

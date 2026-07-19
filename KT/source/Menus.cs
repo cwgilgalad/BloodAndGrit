@@ -28,6 +28,14 @@ public partial class MainForm
         file.DropDownItems.Add(Item("E&xit", (s, e) => Close(), shortcutText: "Alt+F4"));
         menu.Items.Add(file);
 
+        var edit = new ToolStripMenuItem("&Edit");
+        undoMenuItem = Item("&Undo", (s, e) => Undo(), Keys.Control | Keys.Z);
+        redoMenuItem = Item("&Redo", (s, e) => Redo(), Keys.Control | Keys.Y);
+        undoMenuItem.Enabled = false; redoMenuItem.Enabled = false;
+        edit.DropDownItems.Add(undoMenuItem);
+        edit.DropDownItems.Add(redoMenuItem);
+        menu.Items.Add(edit);
+
         // one entry per tab, so the Ctrl+number shortcuts are discoverable
         var view = new ToolStripMenuItem("&View");
         for (int i = 0; i < tabs.TabPages.Count; i++)

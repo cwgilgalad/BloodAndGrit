@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-GritKeeper app v1.5.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.6.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
@@ -367,7 +367,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.5.0) — the C# desktop app
+## GritKeeper (v1.6.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -386,6 +386,16 @@ then zipped to `BloodAndGrit-Keepers-Table.zip`. (History note: as of 2026-07-10
 had silently diverged — `KT/source` carried post-delivery work the zip never got. They're now
 reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 
+### Universal Undo/Redo (v1.6)
+Snapshot-based, over the same `GameSession` shape File → Save/Load already uses:
+`party`/`tracker`/`encounter`/`clocks` (the four `BindingList`s) each push a JSON
+snapshot onto an undo stack on any `ListChanged` (add/remove/edit), capped at 50 deep;
+`Undo`/`Redo` restore via `ApplySession`, which now suppresses re-capture during its own
+bulk rebuild so a restore is one step, not N. Reachable from **Edit ▸ Undo/Redo**
+(Ctrl+Z/Ctrl+Y) or matching buttons pinned in the status bar, so it's live no matter
+which tab is open. Session notes deliberately aren't captured — the textbox's own native
+undo covers it, since snapshotting every keystroke would flood the stack.
+
 ### What it does — ten tabs
 - **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
   inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread
@@ -402,7 +412,12 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   second) and settle on the true per-die results from `Rules.RollExprFull`; shows up to
   8 dice, "+N more" beyond that. v1.5: **every die wears its color** (user-specified:
   d4 green · d6 blue · d8 orange · d10 white · d12 yellow · d20 red · d100 purple) on
-  buttons (`DieBtn`) and tray faces — best face rings gold, a 1 rings near-black.
+  buttons (`DieBtn`) and tray faces — best face rings gold, a 1 rings near-black. v1.6:
+  the roll log itself is **color-coded** (owner-drawn `ListBox`, `StyleRollLog`) — a
+  four-degrees result is graded by its degree word (crit success gold bold, crit failure
+  near-black bold, success verdigris, failure rust), a bare quick-die line by whether it
+  landed on its max/min face, any other roll (`ROLL <expr>`) gets a neutral steel-blue
+  tag, and plain event lines (posse/tracker/session) stay the default ink.
 - **Bestiary** — all **110 creatures**, machine-extracted from the rendered Bestiary HTML
   (so lore/stats/witness quotes/keeper notes are word-for-word faithful to the book).
   Search, tier/chapter filters, one click to Encounter or Tracker. **Double-click a creature
@@ -445,12 +460,20 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   unanswered choice), **✎ Tweak** (edit anything; re-validated, never blocked —
   `HandTweaked` flag renders as a Ledger notice), **Save PDF…** (`Pdf.TextSheet`), and
   the full sheet rides into the posse via `PartyMember.Sheet` (persists in session.json).
+  v1.6: the `chargen.json` flavor pools (`givenWomen`/`givenMen`/`vices`/`lost`/`seen`/
+  `moving`) nearly doubled (16→30 names each, 8–10→16–20 flavor lines each), so generated
+  and wizard-built souls repeat far less over a long campaign.
 - **Generators** — every Ch. XII rollable table (town/NPC/rumor/trail/plunder/omen) plus
   all nine Grounds terrain tables and the Hand Behind It villain picker, safe-table rule
   applied automatically. v1.2: **every table expanded** with new results in the book's voice
   via `Data/tables_extra.json` (merged at load by `Db.MergeTables`; kept separate so a book
   re-extraction can never clobber the app-side additions; all new terrain entries reference
-  real creatures, smoke-tested).
+  real creatures, smoke-tested). v1.6: the single-roll tables (rumors/trail/plunder/omens
+  — the ones without the town/face generators' combinatorial multi-roll structure) grew by
+  10–12 entries apiece, and the Grounds terrain tables picked up every ordinary Bestiary
+  beast that wasn't already cited anywhere (badger, bobcat, coyote, black bear, gray wolf,
+  mountain lion, wild boar, bison bull, grizzly bear, old tusker, stampede — the White
+  Bison stays off every table on purpose, per its Ch. XII "gone quiet" rumor).
 - **Reference** — rebuilt in v1.4 as an **11-leaf paged Keeper's screen** (◀ ▶ buttons or
   Left/Right arrows — captured in `ProcessCmdKey` so focus doesn't matter; the deck wraps).
   Each leaf is monospace tables with Blood-red header bands (`RTbl` helper; last column
@@ -471,7 +494,7 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 |---|---|
 | `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting` (lets it cross-compile on Linux, since it can't run there). Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`, compression) so `dotnet publish` always yields a zero-dependency exe. |
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), and `Db` (loads the JSON data). |
-| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed. |
+| **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4; reworked v1.6 to center in whatever background space is free and scale with the window instead of being confined to a pane's bottom half), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad + v1.6's `StyleRollLog` color-coded log), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed, and (v1.6) the universal undo/redo engine (`CaptureUndo`/`Undo`/`Redo`). |
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
 | **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
@@ -537,8 +560,9 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently 2322/2322 passing — re-run after any `Core.cs`/`CharGen.cs`/data
-  change.
+  validation). Currently 2333/2333 passing (grew from 2322 in v1.6 — every new
+  terrain-table entry gets its own real-creature-name assertion) — re-run after any
+  `Core.cs`/`CharGen.cs`/data change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is
   published self-contained and unaffected).

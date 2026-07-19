@@ -63,7 +63,12 @@ public partial class MainForm
         bar.Controls.Add(Btn("Save PDF…", (s, e) => SoulSavePdf(), 90, "Save the sheet as a printable PDF"));
         bar.Controls.Add(Btn("A−", (s, e) => { if (soulLedger != null) soulLedger.Zoom -= 0.15f; }, 46, "Smaller sheet"));
         bar.Controls.Add(Btn("A＋", (s, e) => { if (soulLedger != null) soulLedger.Zoom += 0.15f; }, 46, "Larger sheet"));
-        bar.Controls.Add(Btn("Clear", (s, e) => { soulLedger.Clear(); lastSoul = null; soulHint.Visible = true; }, 70, "Wipe the sheet for a fresh start"));
+        bar.Controls.Add(Btn("Clear", (s, e) =>
+        {
+            if (lastSoul == null) return;
+            if (!Confirm($"Clear {lastSoul.Name}'s sheet? Unsaved work is lost.")) return;
+            soulLedger.Clear(); lastSoul = null; soulHint.Visible = true;
+        }, 70, "Wipe the sheet for a fresh start"));
 
         soulLedger = new LedgerView { Dock = DockStyle.Fill };
 

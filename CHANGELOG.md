@@ -8,6 +8,42 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.6.0 — universal undo/redo, a smarter watermark, a color-coded dice
+  log, confirmations closed out everywhere, and bigger random generators (2026-07-19).**
+  A user-requested UX pass:
+  - **Universal Undo/Redo**: snapshot-based over the same `GameSession` shape File →
+    Save/Load already uses. The four `BindingList`s (`party`/`tracker`/`encounter`/
+    `clocks`) each push a JSON snapshot onto a 50-deep undo stack on any add/remove/edit;
+    `ApplySession` now suppresses re-capture during its own bulk rebuild so a restore is
+    one step, not N. Reachable via **Edit ▸ Undo/Redo** (Ctrl+Z/Ctrl+Y) and matching
+    buttons pinned in the status bar, so it's live from any tab. Session notes keep the
+    textbox's own native undo instead — snapshotting every keystroke would flood the stack.
+  - **The emblem watermark scales with the window**: previously forced into the bottom
+    half of a pane regardless of how much background space was actually free; now
+    centers in whatever's free below the real content and grows/shrinks with the pane's
+    own size, capped at a dignified share of the width.
+  - **The Dice tab's roll log is color-coded** (`StyleRollLog`, an owner-drawn
+    `ListBox`): a four-degrees result (CHECK/DREAD) is graded by its degree word —
+    critical success gold and bold, critical failure near-black and bold, a plain
+    success verdigris, a plain failure rust — a bare quick-die roll by whether it landed
+    on its max or min face, any other roll gets a neutral steel-blue tag, and plain
+    posse/tracker/session lines stay the default ink.
+  - **Confirmation dialogs closed out on the last unguarded clears**: "Clear log" (Dice),
+    "Clear" (Generators output), and "Clear" (New Soul sheet) now confirm before wiping,
+    matching every other destructive action in the app.
+  - **Random generators widened**: the `chargen.json` flavor pools (given names,
+    vices, lost/seen/moving) roughly doubled (16→30 names each); the single-roll
+    Country-in-Your-Pocket tables (rumors/trail/plunder/omens — the ones without the
+    town/face generators' combinatorial multi-roll structure) grew by 10–12 entries
+    apiece in `tables_extra.json`; and the Grounds terrain tables picked up every
+    ordinary Bestiary beast that wasn't already cited anywhere (badger, bobcat, coyote,
+    black bear, gray wolf, mountain lion, wild boar, bison bull, grizzly bear, old
+    tusker, stampede — the Tier V White Bison stays off every table on purpose, per its
+    Ch. XII "gone quiet" rumor).
+  - Smoke suite grew from 2322 to 2333 asserts (one per new terrain entry's
+    real-creature-name check); all passing. Published, signed, mirrored to the
+    deliverable, and rezipped.
+
 - **GritKeeper v1.5.0 — the app renamed, the Map tab shipped, the Ledger everywhere,
   a chargen wizard, hand-tweaks, gender, colored dice (2026-07-18/19).** The app is now
   **GritKeeper** (exe `GritKeeper.exe`, product/title/About/README updated; the internal
