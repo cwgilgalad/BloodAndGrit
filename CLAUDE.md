@@ -474,6 +474,13 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed. |
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
+| **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
+| **`TabsWizard.cs`** | (v1.5) The nine-step chargen wizard (`SoulWizard`, nested in MainForm) — collects an `AssembleSpec` for `CharGen.Assemble`. |
+| **`CharGen.cs`** | Chargen data model, `Generate` (random), `Assemble` (wizard spec, shared `ReckonNumbers`/edge-eligibility), `Validate`, text `Render`. Compiled into the smoke rig. |
+| **`Ledger.cs`** | (v1.5) `LedgerView` — the book's Ledger sheet as an owner-drawn, zoomable control — plus the per-soul pop-out windows (`ShowSoulCard`) and sheet↔member sync. |
+| **`MapGen.cs`** | (v1.5) Trail Maps generator — pure, no WinForms types (compiled into the smoke rig); emits `Prim` lists + `ToSvg`. |
+| **`TabsMap.cs`** | (v1.5) The Map tab UI + the GDI primitive replayer. |
+| **`Pdf.cs`** | (v1.5) From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. |
 | `app.ico` / `Assets/emblem.png` | (v1.4) The cover emblem as a multi-size Windows icon (full emblem 256/128/64/48, skull-crop 32/24/16 — regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded; `app.ico` is also the csproj `<ApplicationIcon>` (exe file icon). |
 | `Data/creatures.json` | All 110 creatures, extracted from `bestiary.html` by a one-off Python parser (balanced-div walk + per-tag capture). Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe** (`<EmbeddedResource>`), so the published build carries it inside the single file. |
@@ -492,7 +499,7 @@ dotnet build -c Release
 # so no flags are needed and a publish can never silently regress to framework-dependent:
 dotnet publish -c Release -o publish
 ```
-Deliverable = **just `publish/BloodAndGritKeeper.exe`** (~69 MB) — a **true single-file
+Deliverable = **just `publish/GritKeeper.exe`** (~69 MB) — a **true single-file
 standalone**: the .NET runtime is bundled *and* the `Data/*.json` (creatures + tables) are
 **embedded in the exe** (as of 2026-07-16), so it runs on any Windows machine with **no .NET
 install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the assembly, and
@@ -526,7 +533,12 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   model clamping, Nerve recompute on RES/Level change, `INotifyPropertyChanged` firing,
   serialization round-trips, and (v1.2) full data-load checks: 110 creatures parse, table
   merge counts, no duplicate entries, and **every terrain-table entry resolves to a real
-  creature by name**. Currently 1360/1360 passing — re-run after any `Core.cs`/data change.
+  creature by name**. v1.5 adds: `CharGen.Assemble` conformance sweeps (incl. junk-choice
+  fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
+  generation/SVG/PDF structural + determinism checks (the rig now also compiles
+  `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
+  validation). Currently 2322/2322 passing — re-run after any `Core.cs`/`CharGen.cs`/data
+  change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is
   published self-contained and unaffected).

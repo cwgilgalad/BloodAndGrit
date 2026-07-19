@@ -1,4 +1,4 @@
-# Authenticode-sign the published Keeper's Table exe as "Cole Williams".
+# Authenticode-sign the published GritKeeper exe as "Cole Williams".
 #
 # Why: an unsigned, unknown-publisher exe is what Windows SmartScreen, Defender, and
 # third-party agents (Cortex, firewalls) flag first. Signing + a timestamp + honest
@@ -21,7 +21,7 @@
 #
 # Usage:  .\sign.ps1 [-Path <exe>]     (defaults to the publish output)
 param(
-    [string]$Path = (Join-Path $PSScriptRoot 'bin\Release\net8.0-windows\win-x64\publish\BloodAndGritKeeper.exe')
+    [string]$Path = (Join-Path $PSScriptRoot 'bin\Release\net8.0-windows\win-x64\publish\GritKeeper.exe')
 )
 $ErrorActionPreference = 'Stop'
 if (-not (Test-Path $Path)) { throw "Not found: $Path — run 'dotnet publish -c Release' first." }

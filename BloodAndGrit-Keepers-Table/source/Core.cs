@@ -63,6 +63,11 @@ public class PartyMember : INotifyPropertyChanged
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
 
+    // The full character sheet, when this soul came out of the New Soul tab (generated,
+    // wizard-built, or tweaked). Null for hand-entered rows; the Ledger window shows a
+    // half-filled sheet in that case. Rides along in session.json.
+    public CharacterSheet Sheet { get; set; }
+
     // Nerve = RES score + level. Only auto-recalcs when RES is set (>0); otherwise honors manual NerveMax.
     void RecalcNerve()
     {
@@ -205,18 +210,20 @@ public static class Rules
 
     /// The Dice tab's expression-builder buttons. Clicking a die whose kind already ends
     /// the expression bumps its count ("2d6", not "1d6+1d6"); anything else joins with a +.
-    public static string ExprAddDie(string expr, int sides)
+    /// count lets the × spinner add several at once (count 3 on "2d6" → "5d6").
+    public static string ExprAddDie(string expr, int sides, int count = 1)
     {
+        count = Math.Clamp(count, 1, 100);
         string t = (expr ?? "").Trim();
         var m = System.Text.RegularExpressions.Regex.Match(t, @"^(.*?)(\d*)d" + sides + "$");
         if (m.Success)
         {
             int n = m.Groups[2].Value.Length == 0 ? 1 : int.Parse(m.Groups[2].Value);
-            return m.Groups[1].Value + (n + 1) + "d" + sides;
+            return m.Groups[1].Value + (n + count) + "d" + sides;
         }
-        if (t.Length == 0) return "1d" + sides;
-        if (t.EndsWith("+") || t.EndsWith("-")) return t + "1d" + sides;
-        return t + "+1d" + sides;
+        if (t.Length == 0) return count + "d" + sides;
+        if (t.EndsWith("+") || t.EndsWith("-")) return t + count + "d" + sides;
+        return t + "+" + count + "d" + sides;
     }
 
     /// Digits and operators for the same buttons; a second operator click replaces the
