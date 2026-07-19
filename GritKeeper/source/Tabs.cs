@@ -600,13 +600,11 @@ public partial class MainForm
         left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230));
 
         left.Controls.Add(Heading("The Grounds — encounters by terrain"));
-        var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
-        foreach (var k in Db.Terrain.Keys) terr.Items.Add(k);
-        terr.SelectedIndex = 0;
-        left.Controls.Add(terr);
-        left.Controls.Add(Btn("Roll on that ground", (s, e) =>
+        // "The Hand Behind It" is the villain picker, not a terrain — in the dropdown it
+        // reads like a stray creature, so it gets its own button below instead.
+        const string villainTable = "The Hand Behind It";
+        void RollGround(string t)
         {
-            var t = terr.SelectedItem.ToString();
             var list = Db.Terrain[t];
             var pick = list[Rules.Rng.Next(list.Count)];
             string extra = "";
@@ -616,7 +614,14 @@ public partial class MainForm
             if (c != null && Rules.Cost(c.tier, lvl).spoor)
                 extra = $"\n  SAFE-TABLE RULE (vs party level {lvl}): two or more Tiers over the posse — it arrives as sign and spoor, not in the flesh.";
             Gen($"{t.ToUpper()} — {pick}{extra}");
-        }, 230));
+        }
+        var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var k in Db.Terrain.Keys) if (k != villainTable) terr.Items.Add(k);
+        terr.SelectedIndex = 0;
+        left.Controls.Add(terr);
+        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230));
+        left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
+            "Who's truly behind the trouble — the villain picker, its own table in the book"));
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
         left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112));

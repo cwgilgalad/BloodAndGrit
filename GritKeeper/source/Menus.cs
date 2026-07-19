@@ -62,7 +62,7 @@ public partial class MainForm
         using var d = new SaveFileDialog
         {
             Title = "Save the session",
-            Filter = "Keeper's Table session (*.json)|*.json|All files (*.*)|*.*",
+            Filter = "GritKeeper session (*.json)|*.json|All files (*.*)|*.*",
             FileName = $"blood-and-grit-session-{DateTime.Now:yyyy-MM-dd}.json"
         };
         if (d.ShowDialog(this) != DialogResult.OK) return;
@@ -83,7 +83,7 @@ public partial class MainForm
         using var d = new OpenFileDialog
         {
             Title = "Load a session",
-            Filter = "Keeper's Table session (*.json)|*.json|All files (*.*)|*.*"
+            Filter = "GritKeeper session (*.json)|*.json|All files (*.*)|*.*"
         };
         if (d.ShowDialog(this) != DialogResult.OK) return;
         GameSession s;
@@ -94,7 +94,7 @@ public partial class MainForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show("That file doesn't read as a Keeper's Table session.\r\n\r\n" + ex.Message,
+            MessageBox.Show("That file doesn't read as a GritKeeper session.\r\n\r\n" + ex.Message,
                 "Blood & Grit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }

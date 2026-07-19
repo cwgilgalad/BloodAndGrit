@@ -107,7 +107,7 @@ public partial class MainForm : Form
             { MapDraw(true); Did(); }
         };
 
-        var status = new StatusStrip { BackColor = Paper };
+        var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
         status.Items.Add(new ToolStripStatusLabel(
             $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6")
             { ForeColor = Ink });
@@ -177,8 +177,13 @@ public partial class MainForm : Form
     void Log(string s)
     {
         if (rollLog == null) return;
-        rollLog.Items.Insert(0, $"[{DateTime.Now:HH:mm}] {s}");
+        string line = $"[{DateTime.Now:HH:mm}] {s}";
+        rollLog.Items.Insert(0, line);
         while (rollLog.Items.Count > 400) rollLog.Items.RemoveAt(rollLog.Items.Count - 1);
+        // Owner-drawn ListBoxes don't compute their own horizontal extent, so the
+        // h-scrollbar dies without this (+16 covers the bold variants running wider).
+        int w = TextRenderer.MeasureText(line, rollLog.Font).Width + 16;
+        if (w > rollLog.HorizontalExtent) rollLog.HorizontalExtent = w;
     }
 
     // Color-codes dice-roll results in the log so they jump out from plain event lines:
@@ -195,8 +200,12 @@ public partial class MainForm : Form
 
     static void StyleRollLog(ListBox log)
     {
+        // One bold variant, created once and kept for the log's lifetime. Never wrap
+        // e.Font in a using — that disposes the control's own Font out from under it.
+        var boldFont = new Font(log.Font, log.Font.Style | FontStyle.Bold);
+        log.Disposed += (s, e) => boldFont.Dispose();
         log.DrawMode = DrawMode.OwnerDrawFixed;
-        log.ItemHeight = TextRenderer.MeasureText("Xg", log.Font).Height + 3;
+        log.ItemHeight = TextRenderer.MeasureText("Xg", boldFont).Height + 3;
         log.DrawItem += (s, e) =>
         {
             if (e.Index < 0 || e.Index >= log.Items.Count) return;
@@ -226,8 +235,7 @@ public partial class MainForm : Form
             }
             e.DrawBackground();
             bool selected = (e.State & DrawItemState.Selected) != 0;
-            using var font = bold ? new Font(e.Font, e.Font.Style | FontStyle.Bold) : e.Font;
-            TextRenderer.DrawText(e.Graphics, text, font, e.Bounds,
+            TextRenderer.DrawText(e.Graphics, text, bold ? boldFont : e.Font, e.Bounds,
                 selected ? SystemColors.HighlightText : color,
                 TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
             e.DrawFocusRectangle();
@@ -990,7 +998,8 @@ public partial class MainForm : Form
         Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? "",
         EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
         PartyLevelHint = (int)(encLevel?.Value ?? 2),
-        Tracker = tracker.ToList(), Round = round
+        Tracker = tracker.ToList(), Round = round,
+        MapMarkers = mapMarkers.ToList()
     };
 
     internal void AutoSave()
@@ -1020,6 +1029,9 @@ public partial class MainForm : Form
             foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
             round = Math.Max(1, s.Round);
             if (roundLbl != null) roundLbl.Text = $"Round {round}";
+            mapMarkers.Clear();
+            mapMarkers.AddRange(s.MapMarkers ?? new());
+            mapPanel?.Invalidate();
             RefreshClocks(); RefreshEncounter();
             posseGrid?.Refresh(); trkGrid?.Refresh();
         }
@@ -1032,7 +1044,22 @@ public partial class MainForm : Form
     // simple, and correct-by-construction since round-tripping through JSON gives a
     // true deep copy (the in-memory Snapshot() lists share references, which is fine
     // for serializing but not for stashing a past state to restore later).
+    bool undoCapturePending;
+
     void CaptureUndo()
+    {
+        if (suppressUndo || undoCapturePending) return;
+        // Coalesce: one user action can fan out into several list events (a Damage
+        // click edits the posse AND mirrors to the tracker; New Session touches every
+        // soul twice; Send posse → Tracker adds N rows). Deferring the capture to
+        // after the current message settles makes each action exactly ONE undo step,
+        // and never snapshots a half-synced intermediate state.
+        if (!IsHandleCreated) { CaptureUndoNow(); return; }
+        undoCapturePending = true;
+        BeginInvoke(new Action(() => { undoCapturePending = false; CaptureUndoNow(); }));
+    }
+
+    void CaptureUndoNow()
     {
         if (suppressUndo) return;
         string now = JsonSerializer.Serialize(Snapshot());
@@ -1044,8 +1071,22 @@ public partial class MainForm : Form
         RefreshUndoRedoButtons();
     }
 
+    // Ctrl+Z pressed while typing belongs to the text field, not the table — the menu
+    // shortcut would otherwise intercept it before the field's native undo ever fires.
+    Control DeepActive()
+    {
+        Control a = ActiveControl;
+        while (a is ContainerControl cc && cc.ActiveControl != null) a = cc.ActiveControl;
+        return a;
+    }
+
+    bool GridEditing =>
+        posseGrid?.IsCurrentCellInEditMode == true || trkGrid?.IsCurrentCellInEditMode == true;
+
     void Undo()
     {
+        if (DeepActive() is TextBoxBase tb && tb.CanUndo) { tb.Undo(); return; }
+        if (GridEditing) return;                    // don't yank the table out from under a cell editor
         if (undoStack.Count == 0) return;
         redoStack.Add(undoBaseline);
         string target = undoStack[^1]; undoStack.RemoveAt(undoStack.Count - 1);
@@ -1056,6 +1097,10 @@ public partial class MainForm : Form
 
     void Redo()
     {
+        var f = DeepActive();
+        if (f is RichTextBox rtb && rtb.CanRedo) { rtb.Redo(); return; }
+        if (f is TextBoxBase) return;               // a plain TextBox has no redo; leave the typist alone
+        if (GridEditing) return;
         if (redoStack.Count == 0) return;
         undoStack.Add(undoBaseline);
         string target = redoStack[^1]; redoStack.RemoveAt(redoStack.Count - 1);
