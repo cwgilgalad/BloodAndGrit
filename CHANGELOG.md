@@ -8,6 +8,64 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.5.0 — the app renamed, the Map tab shipped, the Ledger everywhere,
+  a chargen wizard, hand-tweaks, gender, colored dice (2026-07-18/19).** The app is now
+  **GritKeeper** (exe `GritKeeper.exe`, product/title/About/README updated; the internal
+  namespace stays `BloodAndGritKeeper` so embedded-resource names and the source tree
+  hold still). One long user-request session:
+  - **Map tab finished and wired in** (the previous session's `MapGen.cs`/`TabsMap.cs`/
+    `Pdf.cs` were complete but never added to the tab strip): Trail Maps — seeded
+    procedural frontier surveys by ground/scale/hour/water, trail/rail/settlement/grid/
+    Keeper's-secrets toggles, deterministic per seed, Ctrl+G for a fresh map, export as
+    SVG (file or clipboard) or **one-page landscape-Letter PDF** (per explicit user
+    request). PDF writer proven with PyMuPDF (page count/size) and rendered visually.
+  - **The Ledger, on glass** (`Ledger.cs`, new): the Player's Book's character sheet
+    redrawn as a live WinForms control (`LedgerView`) — name/**gender**/calling/level/
+    origin row, the six abilities, reckoned numbers, the Mark's six boxes, the Four
+    Questions, all seventeen skills with proficiency ticks, edges & path, arms & gear &
+    coin. The New Soul tab now renders every sheet on it (A−/A＋ zoom), replacing the
+    plain-text view.
+  - **Soul pop-out windows**: double-click a posse member (or their far-right **Ledger
+    button**, also on the Tracker for posse souls — never for creatures or ad-hoc rows)
+    to open their Ledger in a modeless window with the exact Bestiary-card configuration:
+    one window per soul, reused, cascading, A−/A＋, → Tracker, and ✎ Tweak when a full
+    sheet exists. Members carry their whole `CharacterSheet` in `PartyMember.Sheet`
+    through `session.json` (sheet converted to auto-properties for serialization;
+    round-trip smoke-tested).
+  - **Notes expand**: double-click a truncated Posse Notes cell to read/edit the whole
+    note in a resizable dialog (Enter stays a newline; explicit Save).
+  - **Posse reorder**: ▲ ▼ move the selected soul, selection follows.
+  - **Colored dice** (user-specified palette): d4 green · d6 blue · d8 orange · d10
+    white · d12 yellow · d20 red · d100 purple — applied to the keypad and quick-dice
+    buttons (`DieBtn`, FlatStyle.Flat) and the tray's tumbling faces; best face now
+    rings gold and a 1 rings near-black (the old verdigris/blood rings vanished on
+    colored faces). Fixed the keypad's +d100 label clipping at width 54.
+  - **Dice quantity**: a × spinner on the keypad row — `Rules.ExprAddDie` takes a count
+    (× 4 then +d6 → 4d6; stacks: 2d6 + ×3 → 5d6), clamped 1–100, smoke-tested.
+  - **New Soul, three roads**: 🎲 generate (as before, now with **gender** rolled and
+    the given name drawn from gender-matched lists in `chargen.json`; Ch. III review
+    confirmed the book carries gender only in prose, so the app now records it
+    explicitly) · **🧭 Wizard** (`TabsWizard.cs`, new — nine steps: level/method/name/
+    gender, Calling, Origin, ability assignment with Suggest + 5th/10th boosts, skills +
+    increases, Edges from lists filtered by live legality, Signs/path/calling-choice,
+    coin + shopping the printed price list against a hard budget, the Four Questions;
+    every unanswered choice falls back to the book's own random draw) · **✎ Tweak**
+    (every number and list editable; sheet re-validated but never blocked — the Ledger
+    notes "hand-tweaked" instead). Wizard assembly is pure logic in
+    `CharGen.Assemble(AssembleSpec)` and re-uses the same `ReckonNumbers`/eligibility
+    code as the generator, so the two roads can't disagree.
+  - **Soul sheet → PDF**: Save PDF… on the New Soul tab writes the sheet as a printable
+    Letter PDF (`Pdf.TextSheet`, previously written but never wired; footer em-dash
+    WinAnsi bug fixed).
+  - Ten tabs now: Ctrl+0 reaches the tenth, the five-minute lesson/shortcut card/status
+    bar rewritten, View-menu shortcut labels fixed for tab 10.
+  - Verified: build 0/0; smoke **2,322/0** (Assemble conformance sweeps incl. junk-choice
+    fuzzing, gendered-name checks, sheet session round-trips, map generation/SVG/PDF
+    structural + determinism, × count builder cases); PDFs validated with PyMuPDF and
+    rendered; app driven and screenshot-verified (rename, Map, colored dice + × spinner,
+    Ledger render with gender, posse ▲▼/double-click/Ledger buttons, Tracker button
+    only on posse rows). Branch `session/2026-07-18-gritkeeper-ux`.
+
 - **Keeper's Table v1.4.0 — menu bar, dice keypad, Reference deck, real icons, watermark,
   keyboard pass (2026-07-18).** Two user request batches in one session:
   - **Menu bar** (`Menus.cs`, new): **File** — Save session (Ctrl+S), Save session as…

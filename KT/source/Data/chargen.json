@@ -3889,6 +3889,9 @@
   }
  ],
  "flavor": {
+  "genders": ["Woman", "Man"],
+  "givenWomen": ["Lucinda", "Beulah", "Nora", "Dorothea", "Prudence", "Flora", "Salome", "Hattie", "Una", "Josephine", "Temperance", "Delphine", "Mercy", "Odessa", "Ruby", "Lavinia"],
+  "givenMen": ["Amos", "Merritt", "Cassius", "Obadiah", "Ezekiel", "Roscoe", "Gideon", "Thaddeus", "Isaiah", "Wilbur", "Cyrus", "Absalom", "Ephraim", "Silas", "Cornelius", "August"],
   "compass": [
    {
     "name": "Lawful Good — the Marshal's Heart",

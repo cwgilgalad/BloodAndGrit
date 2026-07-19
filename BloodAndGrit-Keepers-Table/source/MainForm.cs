@@ -25,11 +25,11 @@ public partial class MainForm : Form
     public static readonly Color FoeRow  = Color.FromArgb(250, 250, 247);
     public static readonly Color DownRow = Color.FromArgb(248, 224, 224);
 
-    internal const string AppVersion = "1.4.0";
+    internal const string AppVersion = "1.5.0";
 
     public MainForm()
     {
-        Text = "Blood & Grit — The Keeper's Table";
+        Text = "GritKeeper — Blood & Grit";
         if (AppIcon != null) Icon = AppIcon;      // the emblem, not the stock-Windows square
         // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
         // old fixed 1280×820 put the bottom row of buttons below the taskbar, unreachable.
@@ -50,6 +50,7 @@ public partial class MainForm : Form
         tabs.TabPages.Add(BuildEncounterTab());
         tabs.TabPages.Add(BuildTrackerTab());
         tabs.TabPages.Add(BuildGeneratorsTab());
+        tabs.TabPages.Add(BuildMapTab());
         tabs.TabPages.Add(BuildSoulTab());
         tabs.TabPages.Add(BuildReferenceTab());
         tabs.TabPages.Add(BuildSessionTab());
@@ -67,6 +68,8 @@ public partial class MainForm : Form
         {
             if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
             { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; return; }
+            if (e.Control && e.KeyCode == Keys.D0 && tabs.TabPages.Count >= 10)
+            { tabs.SelectedIndex = 9; e.Handled = true; return; }
             if (!e.Control || e.Alt || e.Shift) return;
             void Did() { e.Handled = true; e.SuppressKeyPress = true; }
             string page = tabs.SelectedTab?.Text;
@@ -84,6 +87,8 @@ public partial class MainForm : Form
             }
             else if (page == "Bestiary" && e.KeyCode == Keys.F)
             { beastSearch.Focus(); beastSearch.SelectAll(); Did(); }
+            else if (page == "Map" && e.KeyCode == Keys.G)
+            { MapDraw(true); Did(); }
         };
 
         var status = new StatusStrip { BackColor = Paper };
@@ -92,7 +97,7 @@ public partial class MainForm : Form
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
-        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–9 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
+        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
         Controls.Add(status);
 
         TryAutoLoad();
@@ -248,15 +253,15 @@ public partial class MainForm : Form
     static System.Drawing.Imaging.ImageAttributes MakeWmAttr()
     {
         var a = new System.Drawing.Imaging.ImageAttributes();
-        a.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix { Matrix33 = 0.055f });   // ghost-faint
+        a.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix { Matrix33 = 0.15f });   // ghost-faint
         return a;
     }
 
     /// <summary>
-    /// Paints the emblem, ghost-faint, in the dead space at the bottom-right of a pane.
-    /// usedHeight reports how far real content reaches; the emblem draws only when the
-    /// space left below can hold it with generous margin, so it never sits behind rows,
-    /// text, or controls — panes that fill up simply don't show it.
+    /// Paints the emblem, ghost-faint, centered in the bottom half of a pane.
+    /// usedHeight reports how far real content reaches; the emblem's zone starts at
+    /// the pane's midline or below the content, whichever is lower, so it never sits
+    /// behind rows, text, or controls — panes that fill up simply don't show it.
     /// </summary>
     static void Watermark(Control host, Func<int> usedHeight)
     {
@@ -264,13 +269,14 @@ public partial class MainForm : Form
         {
             var img = Emblem; if (img == null) return;
             int cw = host.ClientSize.Width, ch = host.ClientSize.Height;
-            int free = ch - usedHeight();
-            // scale to what the dead space can hold — full size in a big empty pane,
+            int top = Math.Max(ch / 2, usedHeight() + 22);
+            int freeH = ch - top;
+            // scale to what the zone can hold — full size in a big empty pane,
             // smaller where room is tighter, gone entirely below a dignified minimum
-            int w = Math.Min(Math.Min(300, cw - 56), (free - 44) * img.Width / img.Height);
+            int w = Math.Min(Math.Min(330, cw - 56), (freeH - 24) * img.Width / img.Height);
             if (w < 150) return;
             int h = w * img.Height / img.Width;
-            var r = new Rectangle(cw - w - 26, ch - h - 20, w, h);
+            var r = new Rectangle((cw - w) / 2, top + (freeH - h) / 2, w, h);
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.DrawImage(img, r, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, WmAttr);
         };
@@ -379,6 +385,14 @@ public partial class MainForm : Form
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
         Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
         Col("Mark", "Mark", 48); Col("Taint", "Taint", 48); Col("Notes", "Notes", 150);
+        // far-right Ledger button — one click to the soul's character sheet
+        posseGrid.Columns.Add(new DataGridViewButtonColumn
+        { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
+        posseGrid.CellContentClick += (s, e) =>
+        {
+            if (e.RowIndex >= 0 && e.RowIndex < party.Count && posseGrid.Columns[e.ColumnIndex].Name == "ledgerBtn")
+                ShowSoulCard(party[e.RowIndex]);
+        };
         WireNumericValidation(posseGrid, new() { "Level","BloodCur","BloodMax","Defense","Fort","Ref","Will","NerveCur","NerveMax","Grit","Mark","Taint" });
 
         // current values can't outrun their maximums, whichever side of the pair was edited
@@ -394,6 +408,18 @@ public partial class MainForm : Form
             if (e.KeyCode == Keys.Delete && !posseGrid.IsCurrentCellInEditMode)
             { RemoveSelectedPC(); e.Handled = true; }
         };
+
+        // double-click the Notes cell to read/edit the whole note; anywhere else on the
+        // row opens the soul's Ledger in its own window (the Bestiary pop-out pattern)
+        posseGrid.CellDoubleClick += (s, e) =>
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= party.Count || e.ColumnIndex < 0) return;
+            var p = party[e.RowIndex];
+            var prop = (posseGrid.Columns[e.ColumnIndex] as DataGridViewTextBoxColumn)?.DataPropertyName;
+            if (prop == "Notes") ExpandNotes(p);
+            else ShowSoulCard(p);
+        };
+        Tip.SetToolTip(posseGrid, "Double-click a soul to open their Ledger — double-click the Notes cell to read the whole note");
 
         // colour Blood/Nerve/Mark cells by danger so the Keeper can read the table at a glance
         posseGrid.CellFormatting += (s, e) =>
@@ -424,6 +450,8 @@ public partial class MainForm : Form
 
         bar.Controls.Add(Btn("＋ Add soul", (s, e) => { party.Add(new PartyMember()); posseGrid.CurrentCell = posseGrid.Rows[party.Count - 1].Cells[0]; }, 95, "Add a blank character to the posse"));
         bar.Controls.Add(Btn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
+        bar.Controls.Add(Btn("▲", (s, e) => MovePC(-1), 38, "Move the selected soul up the list"));
+        bar.Controls.Add(Btn("▼", (s, e) => MovePC(+1), 38, "Move the selected soul down the list"));
 
         bar.Controls.Add(Lbl("  Amount:"));
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };
@@ -487,6 +515,51 @@ public partial class MainForm : Form
     }
 
     PartyMember SelectedPC() => posseGrid?.CurrentRow?.DataBoundItem as PartyMember;
+
+    // reorder the posse: swap the selected soul with its neighbor and keep it selected
+    void MovePC(int delta)
+    {
+        var p = SelectedPC();
+        if (p == null) { Log("Select a soul first."); return; }
+        int i = party.IndexOf(p), j = i + delta;
+        if (j < 0 || j >= party.Count) return;
+        int col = posseGrid.CurrentCell?.ColumnIndex ?? 0;
+        party.RaiseListChangedEvents = false;
+        party.RemoveAt(i);
+        party.Insert(j, p);
+        party.RaiseListChangedEvents = true;
+        party.ResetBindings();
+        posseGrid.CurrentCell = posseGrid.Rows[j].Cells[col];
+    }
+
+    // the Notes column shows what fits in one cell; this shows (and edits) the whole note
+    void ExpandNotes(PartyMember p)
+    {
+        using var f = new Form
+        {
+            Width = 520, Height = 380, Text = $"Notes — {p.Name}",
+            StartPosition = FormStartPosition.CenterParent, MinimizeBox = false,
+            ShowIcon = false, BackColor = Paper, MinimumSize = new Size(340, 240)
+        };
+        var box = new TextBox
+        {
+            Multiline = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical,
+            Font = new Font("Segoe UI", 10.5f), Text = p.Notes, BorderStyle = BorderStyle.None,
+            BackColor = Color.FromArgb(252, 249, 240), WordWrap = true
+        };
+        var bar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 44, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(6) };
+        var cancel = new Button { Text = "Cancel", Width = 84, Height = 30, DialogResult = DialogResult.Cancel };
+        var ok = new Button { Text = "Save", Width = 84, Height = 30, DialogResult = DialogResult.OK };
+        bar.Controls.Add(cancel); bar.Controls.Add(ok);
+        f.Controls.Add(Pad(box, 10)); f.Controls.Add(bar);
+        f.AcceptButton = null; f.CancelButton = cancel;          // Enter stays a newline in the note
+        if (f.ShowDialog(this) == DialogResult.OK && box.Text != p.Notes)
+        {
+            p.Notes = box.Text;
+            posseGrid?.Refresh();
+            Log($"{p.Name}'s notes updated.");
+        }
+    }
 
     void RemoveSelectedPC()
     {
@@ -558,6 +631,41 @@ public partial class MainForm : Form
 
     // ============================================================ DICE TAB
     TextBox exprBox;
+    NumericUpDown exprQty;
+
+    // Every die wears its own color — buttons and the tumbling tray alike — so the
+    // Keeper can tell a d8 from a d12 across the table without reading the tag.
+    static (Color face, Color text) DieCol(int sides) => sides switch
+    {
+        4   => (Color.FromArgb(72, 132, 72),  Color.White),                  // green
+        6   => (Color.FromArgb(62, 104, 158), Color.White),                  // blue
+        8   => (Color.FromArgb(214, 126, 44), Color.White),                  // orange
+        10  => (Color.FromArgb(250, 248, 242), Ink),                         // white
+        12  => (Color.FromArgb(232, 196, 62), Ink),                          // yellow
+        20  => (Color.FromArgb(172, 36, 36),  Color.White),                  // red
+        100 => (Color.FromArgb(122, 72, 152), Color.White),                  // purple
+        _   => (Color.FromArgb(252, 249, 240), Ink)
+    };
+
+    static Color Darken(Color c, double f = 0.72)
+        => Color.FromArgb((int)(c.R * f), (int)(c.G * f), (int)(c.B * f));
+
+    // a die button in its die's color (FlatStyle.Flat — the System style ignores BackColor)
+    static Button DieBtn(string text, int sides, EventHandler onClick, int w, string tip = null)
+    {
+        var (face, fore) = DieCol(sides);
+        var b = new Button
+        {
+            Text = text, Width = w, Height = 32, Margin = new Padding(3),
+            FlatStyle = FlatStyle.Flat, BackColor = face, ForeColor = fore,
+            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold), UseVisualStyleBackColor = false
+        };
+        b.FlatAppearance.BorderColor = Darken(face);
+        b.FlatAppearance.BorderSize = 1;
+        b.Click += onClick;
+        if (tip != null) Tip.SetToolTip(b, tip);
+        return b;
+    }
 
     // ---- dice animation: the dice tumble in the tray, then land on the real results ----
     sealed class DiceTray : Panel
@@ -602,31 +710,31 @@ public partial class MainForm : Form
         int shown = Math.Min(diceTray.Dice.Count, DiceShownMax);
         int size = 52, gap = 10;
         int x = Math.Max(8, (diceTray.Width - shown * (size + gap)) / 2), y = (diceTray.Height - size) / 2 - 4;
-        using var border = new Pen(Color.FromArgb(214, 202, 176), 1.5f);
-        using var face = new SolidBrush(Color.FromArgb(252, 249, 240));
         for (int i = 0; i < shown; i++)
         {
             var (sides, value, sign) = diceTray.Dice[i];
+            var (faceCol, textCol) = DieCol(sides);
             int show = diceTray.Settled ? value : Rules.Rng.Next(1, sides + 1);
             var rect = new Rectangle(x + i * (size + gap), y, size, size);
             // a little jitter while tumbling, stillness once landed
             if (!diceTray.Settled) rect.Offset(Rules.Rng.Next(-2, 3), Rules.Rng.Next(-2, 3));
             using var path = RoundedRect(rect, 9);
+            using var face = new SolidBrush(faceCol);
             g.FillPath(face, path);
+            // the faces carry the die colors now, so the verdicts ring in metal instead:
+            // best face a bright gold, a 1 near-black — both read on every face color
             Color edge = !diceTray.Settled ? Gold
-                       : show == sides ? Verdigris                        // best face
-                       : show == 1 && sides >= 6 ? Blood                  // worst face
-                       : Color.FromArgb(178, 162, 128);
-            using var pen = new Pen(edge, diceTray.Settled ? 2.2f : 1.4f);
+                       : show == sides ? Color.FromArgb(255, 208, 74)     // best face
+                       : show == 1 && sides >= 6 ? Color.FromArgb(28, 20, 14)   // worst face
+                       : Darken(faceCol);
+            using var pen = new Pen(edge, diceTray.Settled && (show == sides || (show == 1 && sides >= 6)) ? 3f : 1.6f);
             g.DrawPath(pen, path);
-            Color numCol = diceTray.Settled && show == sides ? Verdigris
-                         : diceTray.Settled && show == 1 && sides >= 6 ? Blood : Ink;
             TextRenderer.DrawText(g, show.ToString(), DieNumFont,
-                new Rectangle(rect.X, rect.Y - 4, rect.Width, rect.Height), numCol,
+                new Rectangle(rect.X, rect.Y - 4, rect.Width, rect.Height), textCol,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
             TextRenderer.DrawText(g, (sign < 0 ? "−d" : "d") + sides, DieTagFont,
-                new Rectangle(rect.X, rect.Bottom - 17, rect.Width, 15), Gold,
-                TextFormatFlags.HorizontalCenter);
+                new Rectangle(rect.X, rect.Bottom - 17, rect.Width, 15),
+                textCol, TextFormatFlags.HorizontalCenter);   // GDI text is opaque — no alpha tricks
         }
         if (diceTray.Dice.Count > shown)
             TextRenderer.DrawText(g, $"+{diceTray.Dice.Count - shown} more", DieMoreFont,
@@ -661,14 +769,19 @@ public partial class MainForm : Form
         exprRow.Controls.Add(Btn("Roll", (s, e) => RollExprBox(), 80, "Roll the expression (or press Enter)"));
         left.Controls.Add(exprRow);
 
-        // build the expression by button: dice stack (d6 → 2d6 → 3d6), digits and
-        // ＋/− make the modifier — no typing needed at the table
-        var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
+        // build the expression by button: dice stack (d6 → 2d6 → 3d6), the × spinner
+        // adds several at once (× 4 then +d6 → 4d6), digits and ＋/− make the
+        // modifier — no typing needed at the table
+        var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(470, 0) };
+        dicePad.Controls.Add(Lbl("×"));
+        exprQty = new NumericUpDown { Minimum = 1, Maximum = 99, Value = 1, Width = 46, Margin = new Padding(0, 6, 4, 3) };
+        Tip.SetToolTip(exprQty, "How many dice each +d button adds — set 4 and click +d6 for 4d6");
+        dicePad.Controls.Add(exprQty);
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
         {
             int sides = d;
-            dicePad.Controls.Add(Btn("+d" + sides, (s, e) => ExprAddDie(sides), 54,
-                $"Add a d{sides} to the expression — click again for another"));
+            dicePad.Controls.Add(DieBtn("+d" + sides, sides, (s, e) => ExprAddDie(sides), sides == 100 ? 64 : 54,
+                $"Add ×-many d{sides} to the expression — click again for more"));
         }
         left.Controls.Add(dicePad);
         var opsPad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
@@ -687,12 +800,12 @@ public partial class MainForm : Form
         left.Controls.Add(Heading("Quick dice — roll one now"));
         var quick = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
-            quick.Controls.Add(Btn("d" + d, (s, e) =>
+            quick.Controls.Add(DieBtn("d" + d, d, (s, e) =>
             {
                 int r = Rules.Rng.Next(1, d + 1);
                 AnimateDice(new() { (d, r, 1) });
                 Log($"d{d} → {r}");
-            }, 54));
+            }, 54, $"Roll one d{d} now"));
         left.Controls.Add(quick);
 
         left.Controls.Add(Heading("The d20 check — four degrees"));
@@ -750,7 +863,7 @@ public partial class MainForm : Form
     // the builder logic itself lives in Rules (pure, smoke-tested); these just wire the box
     void ExprAddDie(int sides)
     {
-        exprBox.Text = Rules.ExprAddDie(exprBox.Text, sides);
+        exprBox.Text = Rules.ExprAddDie(exprBox.Text, sides, (int)(exprQty?.Value ?? 1));
         ExprFocusEnd();
     }
 

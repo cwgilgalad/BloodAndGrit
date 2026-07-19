@@ -7,10 +7,13 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>BloodAndGritKeeper</AssemblyName>
+    <!-- The software is named GritKeeper (renamed from "The Keeper's Table", 2026-07-18).
+         The internal namespace stays BloodAndGritKeeper to keep embedded-resource names
+         and the source tree stable; only the shipped identity changed. -->
+    <AssemblyName>GritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.4.0</Version>
+    <Version>1.5.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -22,9 +25,9 @@
          (sign.ps1) to keep Windows/Defender/Cortex warnings down on the published build. -->
     <Company>Cole Williams</Company>
     <Authors>Cole Williams</Authors>
-    <Product>Blood &amp; Grit — The Keeper's Table</Product>
-    <AssemblyTitle>Blood &amp; Grit — The Keeper's Table</AssemblyTitle>
-    <Description>Keeper's companion app for the Blood &amp; Grit tabletop RPG: posse, dice, bestiary, encounters, tracker, generators, character maker, reference, and session notes.</Description>
+    <Product>GritKeeper — Blood &amp; Grit</Product>
+    <AssemblyTitle>GritKeeper — Blood &amp; Grit</AssemblyTitle>
+    <Description>GritKeeper, the Keeper's companion app for the Blood &amp; Grit tabletop RPG: posse, dice, bestiary, encounters, tracker, generators, maps, character maker, reference, and session notes.</Description>
     <Copyright>© 2026 Cole Williams</Copyright>
 
     <!-- Ship as a self-contained, single-file Windows exe so the target machine needs NO
