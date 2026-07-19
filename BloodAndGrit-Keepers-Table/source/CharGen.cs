@@ -86,31 +86,40 @@ public class CgData
 }
 
 // ============================================================ THE SHEET
+// Auto-properties (not fields) so System.Text.Json carries the whole sheet — it rides
+// inside PartyMember.Sheet through session.json and back.
 public class CharacterSheet
 {
-    public string Name, Calling, Origin, Compass;
-    public int Level;
-    public string Method;                                   // "The Honest Array" | "The Gamble (rolled)"
-    public Dictionary<string, int> Scores = new();           // final scores, gifts applied
-    public Dictionary<string, int> PreGiftScores = new();    // before origin gifts (for validation)
-    public int Blood, Defense, Fort, Ref, Will, NerveMax, Grit, Speed, Mark, Attack;
-    public List<int> BloodRolls = new();                     // per-level gains, level 1 first
-    public List<int> ConModAtLevel = new();                  // CON mod snapshot used per level
-    public Dictionary<string, int> SkillRanks = new();       // 1 trained · 2 expert · 3 master
-    public List<string> OriginSkills = new();                // granted by Origin (not counted vs the Calling's number)
-    public List<string> Edges = new();
-    public List<string> BonusCombatEdges = new();            // Gunhand's Edge picks
-    public List<string> Features = new();
-    public List<string> SignsKnown = new();
-    public string Subpath;                                   // chosen at 3rd, or null
-    public string CallingChoice;                             // Marshal reputation / Shaman aspect / Witch familiar
-    public string PoolLine;                                  // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
-    public double CoinRolled, CoinLeft;
-    public List<string> Gear = new();
-    public List<string> WeaponsCarried = new();              // "Single-Action Revolver 1d8 (Fatal d10, Misfire 1)"
-    public string Lost, Seen, Vice, Moving;
-    public List<int> AbilityBoostLevels = new();             // 5 and/or 10 if reached
-    public List<string> BoostedAbilities = new();
+    public string Name { get; set; } public string Gender { get; set; }
+    public string Calling { get; set; }
+    public string Origin { get; set; } public string Compass { get; set; }
+    public int Level { get; set; }
+    public string Method { get; set; }                                  // "The Honest Array" | "The Gamble (rolled)"
+    public Dictionary<string, int> Scores { get; set; } = new();         // final scores, gifts applied
+    public Dictionary<string, int> PreGiftScores { get; set; } = new();  // before origin gifts (for validation)
+    public int Blood { get; set; } public int Defense { get; set; }
+    public int Fort { get; set; } public int Ref { get; set; } public int Will { get; set; }
+    public int NerveMax { get; set; } public int Grit { get; set; }
+    public int Speed { get; set; } public int Mark { get; set; } public int Attack { get; set; }
+    public List<int> BloodRolls { get; set; } = new();                   // per-level gains, level 1 first
+    public List<int> ConModAtLevel { get; set; } = new();                // CON mod snapshot used per level
+    public Dictionary<string, int> SkillRanks { get; set; } = new();     // 1 trained · 2 expert · 3 master
+    public List<string> OriginSkills { get; set; } = new();              // granted by Origin (not counted vs the Calling's number)
+    public List<string> Edges { get; set; } = new();
+    public List<string> BonusCombatEdges { get; set; } = new();          // Gunhand's Edge picks
+    public List<string> Features { get; set; } = new();
+    public List<string> SignsKnown { get; set; } = new();
+    public string Subpath { get; set; }                                  // chosen at 3rd, or null
+    public string CallingChoice { get; set; }                            // Marshal reputation / Shaman aspect / Witch familiar
+    public string PoolLine { get; set; }                                 // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
+    public double CoinRolled { get; set; } public double CoinLeft { get; set; }
+    public List<string> Gear { get; set; } = new();
+    public List<string> WeaponsCarried { get; set; } = new();            // "Single-Action Revolver 1d8 (Fatal d10, Misfire 1)"
+    public string Lost { get; set; } public string Seen { get; set; }
+    public string Vice { get; set; } public string Moving { get; set; }
+    public List<int> AbilityBoostLevels { get; set; } = new();           // 5 and/or 10 if reached
+    public List<string> BoostedAbilities { get; set; } = new();
+    public bool HandTweaked { get; set; }                                // edited after generation — the book no longer vouches
 }
 
 // ============================================================ GENERATOR
@@ -135,6 +144,26 @@ public static class CharGen
         foreach (var e in D.flavor.GetProperty(key).EnumerateArray()) l.Add(e.GetString());
         return l;
     }
+
+    // a soul is somebody: gender rolled plainly, and the given name drawn to match.
+    // TryGetProperty keeps an older chargen.json (no gendered lists) from crashing —
+    // it falls back to the mixed NPC list and leaves gender blank.
+    static (string gender, string given) PickPerson()
+    {
+        if (D.flavor.TryGetProperty("givenWomen", out _) && D.flavor.TryGetProperty("givenMen", out _))
+        {
+            bool woman = Rules.Rng.Next(2) == 0;
+            return (woman ? "Woman" : "Man", Pick(FlavorList(woman ? "givenWomen" : "givenMen")));
+        }
+        return (null, Db.Pick("npcGiven"));
+    }
+
+    static string GivenFor(string gender) => gender switch
+    {
+        "Woman" when D.flavor.TryGetProperty("givenWomen", out _) => Pick(FlavorList("givenWomen")),
+        "Man"   when D.flavor.TryGetProperty("givenMen", out _)   => Pick(FlavorList("givenMen")),
+        _ => Db.Pick("npcGiven")
+    };
 
     public static CharacterSheet Generate(int level, bool rolled, string fixedCalling = null, string fixedOrigin = null)
     {
@@ -178,7 +207,6 @@ public static class CharGen
 
         // ---- the level walk: features, edges, skill increases, boosts, Blood, Signs ----
         var featureSet = new List<string>();
-        int bloodTotal = 0;
         for (int L = 1; L <= level; L++)
         {
             // ability boost first at 5/10 (Ch. IX / XIV: one point at 5th and 10th)
@@ -191,7 +219,6 @@ public static class CharGen
             int conMod = Mod(s.Scores["CON"]);
             int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;   // Ch. III: full Hit Die at 1st, roll after
             s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
-            bloodTotal += gain;
 
             foreach (var f in cal.Row(L).features)
                 if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) featureSet.Add(f);
@@ -228,28 +255,7 @@ public static class CharGen
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
         // ---- Step 6: reckon the numbers (Ch. III) ----
-        var row = cal.Row(level);
-        int rawhide = (s.Edges.Contains("Tough as Rawhide") || s.BonusCombatEdges.Contains("Tough as Rawhide")) ? level : 0;   // +1 Blood per level
-        int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * level : 0;                                                       // +2 max Nerve per level
-        s.Blood = Math.Max(1, bloodTotal + rawhide);
-        s.Defense = 10 + Mod(s.Scores["DEX"]);
-        s.Fort = row.fort + Mod(s.Scores["CON"]);
-        s.Ref = row.@ref + Mod(s.Scores["DEX"]);
-        s.Will = row.will + Mod(s.Scores["RES"]);
-        s.Attack = row.atk;
-        s.NerveMax = s.Scores["RES"] + level + stoneNerve;
-        s.Grit = 3;
-        s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0);
-        s.Mark = org.startMark + cal.startMark + (s.Edges.Contains("Touched") ? 1 : 0);
-
-        if (cal.pool != null)
-        {
-            int baseMod = Mod(s.Scores[cal.pool.formula.Substring(0, 3)]);
-            int val = cal.pool.formula.EndsWith("level") ? baseMod + level : baseMod + level / 2;
-            val = Math.Max(cal.pool.min, val);
-            string refresh = cal.pool.formula.EndsWith("level") ? "RES mod + level" : cal.pool.formula.Substring(0, 3) + " mod + half level";
-            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, refreshed each dawn)";
-        }
+        ReckonNumbers(s, cal, org);
 
         // ---- Step 7: outfit (Ch. X — coin rolled, kit granted, prices as printed) ----
         s.CoinRolled = Enumerable.Range(0, cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * cal.coin.mult;
@@ -286,10 +292,172 @@ public static class CharGen
         s.CoinLeft = Math.Round(left, 2);
 
         // ---- Steps 1 & 8: a person, not a statline ----
-        s.Name = Db.Pick("npcGiven") + " " + Db.Pick("npcSurname");
+        var (gender, given) = PickPerson();
+        s.Gender = gender;
+        s.Name = given + " " + Db.Pick("npcSurname");
         s.Compass = WeightedCompass();
         s.Lost = Pick(FlavorList("lost")); s.Seen = Pick(FlavorList("seen"));
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
+        return s;
+    }
+
+    // ============================================================ THE WIZARD'S ROAD
+    // Every choice the wizard collects. Anything left null/empty falls back to the same
+    // random draw Generate would have made, so a half-answered wizard still yields a
+    // legal sheet — and the smoke suite can prove Assemble conformant with random specs.
+    public class AssembleSpec
+    {
+        public int Level = 1;
+        public bool Rolled;                                   // ability method label
+        public string Calling, Origin;
+        public Dictionary<string, int> PreGiftScores = new(); // all six, before Origin gifts
+        public string OriginSkillChoice;                      // the Origin's either/or skill, if it has one
+        public List<string> TrainedPicks = new();             // the Calling's trained skills (Origin grants ride free)
+        public List<string> SkillIncreases = new();           // one target per increase earned (3/5/7/9), in order
+        public List<string> Edges = new();                    // one per odd level, in order
+        public List<string> BonusCombatEdges = new();         // the Gunhand's picks, one per odd level
+        public List<string> Boosts = new();                   // ability per boost level reached (5, 10)
+        public List<string> Signs = new();
+        public string Subpath;                                // at 3rd+, if the Calling has one
+        public string CallingChoice;                          // the option only; the label is added
+        public double? CoinRolled;                            // null → roll fresh
+        public List<string> BuyWeapons = new();               // weapon names bought at printed price
+        public List<string> BuyGear = new();                  // price-list names bought at printed price
+        public string Name, Gender, Compass, Lost, Seen, Vice, Moving;
+    }
+
+    /// Builds a sheet from the wizard's explicit choices, walking the same eight steps as
+    /// Generate. Choices are honored where legal; gaps are filled the way Generate would.
+    public static CharacterSheet Assemble(AssembleSpec spec)
+    {
+        int level = Math.Clamp(spec.Level, 1, 10);
+        var cal = D.callings.First(c => c.name == spec.Calling);
+        var org = D.origins.First(o => o.name == spec.Origin);
+        bool isFaith = cal.group == "Faith";
+        var s = new CharacterSheet
+        {
+            Level = level, Calling = cal.name, Origin = org.name,
+            Method = spec.Rolled ? "The Gamble (rolled)" : "The Honest Array"
+        };
+
+        foreach (var a in Ab) s.PreGiftScores[a] = spec.PreGiftScores.TryGetValue(a, out var v) ? v : 10;
+        foreach (var a in Ab) s.Scores[a] = s.PreGiftScores[a] + (org.gifts.TryGetValue(a, out var g) ? g : 0);
+
+        // trained skills: Origin grants free, then exactly the Calling's number of picks
+        s.OriginSkills.AddRange(org.trained);
+        if (org.trainedChoice.Count > 0)
+            s.OriginSkills.Add(org.trainedChoice.Contains(spec.OriginSkillChoice) ? spec.OriginSkillChoice : Pick(org.trainedChoice));
+        int trainCount = Math.Max(1, cal.trainedSkills + Mod(s.Scores["WIT"]));
+        var picks = spec.TrainedPicks.Where(sk => D.skills.Any(k => k.name == sk) && !s.OriginSkills.Contains(sk))
+                                     .Distinct().Take(trainCount).ToList();
+        foreach (var sk in cal.skillPrefs) { if (picks.Count >= trainCount) break; if (!picks.Contains(sk) && !s.OriginSkills.Contains(sk)) picks.Add(sk); }
+        var rest = D.skills.Select(k => k.name).Where(n => !picks.Contains(n) && !s.OriginSkills.Contains(n)).ToList();
+        while (picks.Count < trainCount && rest.Count > 0) { var r = Pick(rest); picks.Add(r); rest.Remove(r); }
+        foreach (var sk in picks.Concat(s.OriginSkills)) s.SkillRanks[sk] = 1;
+
+        // the level walk — boosts, Blood, features, Edges, skill increases, in book order
+        var featureSet = new List<string>();
+        int edgeIdx = 0, gunIdx = 0, incIdx = 0, boostIdx = 0;
+        for (int L = 1; L <= level; L++)
+        {
+            if (L == 5 || L == 10)
+            {
+                string ab = boostIdx < spec.Boosts.Count && Ab.Contains(spec.Boosts[boostIdx]) ? spec.Boosts[boostIdx] : cal.keyAbilities[0];
+                boostIdx++;
+                s.Scores[ab] += 1;
+                s.AbilityBoostLevels.Add(L); s.BoostedAbilities.Add(ab);
+            }
+            int conMod = Mod(s.Scores["CON"]);
+            int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;
+            s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
+
+            foreach (var f in cal.Row(L).features)
+                if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) featureSet.Add(f);
+            s.Features = featureSet;                           // keep current for eligibility checks
+
+            if (L % 2 == 1)
+            {
+                var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
+                string want = edgeIdx < spec.Edges.Count ? spec.Edges[edgeIdx] : null;
+                edgeIdx++;
+                var e = want != null ? EdgeByName(want) : null;
+                string chosen = e != null && EdgeEligible(e, s, cal, isFaith, owned) ? e.name
+                              : PickEdge(s, cal, isFaith, null);
+                if (chosen != null) s.Edges.Add(chosen);
+
+                if (cal.bonusCombatEdgeAtOdd)
+                {
+                    owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
+                    string wantGun = gunIdx < spec.BonusCombatEdges.Count ? spec.BonusCombatEdges[gunIdx] : null;
+                    gunIdx++;
+                    var ge = wantGun != null ? EdgeByName(wantGun) : null;
+                    string gun = ge != null && ge.group == "Gun" && EdgeEligible(ge, s, cal, isFaith, owned) ? ge.name
+                               : PickEdge(s, cal, isFaith, "Gun");
+                    if (gun != null) s.BonusCombatEdges.Add(gun);
+                }
+            }
+
+            if (L is 3 or 5 or 7 or 9)
+            {
+                string target = incIdx < spec.SkillIncreases.Count ? spec.SkillIncreases[incIdx] : null;
+                incIdx++;
+                bool applied = false;
+                if (target != null && D.skills.Any(k => k.name == target))
+                {
+                    if (!s.SkillRanks.TryGetValue(target, out var r)) { s.SkillRanks[target] = 1; applied = true; }
+                    else if (r == 1) { s.SkillRanks[target] = 2; applied = true; }
+                    else if (r == 2 && L >= 7) { s.SkillRanks[target] = 3; applied = true; }
+                }
+                if (!applied) ApplySkillIncrease(s, cal, L);
+            }
+        }
+
+        // subpath, the one-of choice, Signs
+        if (level >= 3 && cal.subpath != null && cal.subpath.options.Count > 0)
+            s.Subpath = cal.subpath.options.Any(o => o.name == spec.Subpath) ? spec.Subpath : Pick(cal.subpath.options).name;
+        if (cal.choice != null)
+            s.CallingChoice = $"{cal.choice.label}: {(cal.choice.options.Contains(spec.CallingChoice) ? spec.CallingChoice : Pick(cal.choice.options))}";
+
+        var signNames = D.signs.Select(x => x.name).ToList();
+        int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[level.ToString()] : 0;
+        if (s.Edges.Contains("Hedge Magic")) signCount += 1;
+        signCount = Math.Min(signCount, signNames.Count);
+        foreach (var sg in spec.Signs.Where(signNames.Contains).Distinct())
+            if (s.SignsKnown.Count < signCount) s.SignsKnown.Add(sg);
+        while (s.SignsKnown.Count < signCount)
+        { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
+
+        ReckonNumbers(s, cal, org);
+
+        // outfit: coin as rolled (or roll it here), the kit free, purchases at printed prices
+        int minCoin = cal.coin.dice * cal.coin.mult, maxCoin = cal.coin.dice * 6 * cal.coin.mult;
+        s.CoinRolled = spec.CoinRolled is double c && c >= minCoin && c <= maxCoin && c % cal.coin.mult == 0
+            ? c : Enumerable.Range(0, cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * cal.coin.mult;
+        double left = s.CoinRolled;
+        s.Gear.AddRange(cal.coin.kit);
+        s.Gear.AddRange(org.gear);
+        foreach (var wn in spec.BuyWeapons)
+        {
+            var w = D.weapons.FirstOrDefault(x => x.name == wn);
+            if (w != null && left >= w.cost)
+            { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) — ${w.cost}"); }
+        }
+        foreach (var gn in spec.BuyGear)
+        {
+            if (D.gearPrices.TryGetValue(gn, out var price) && left >= price && !s.Gear.Contains(gn))
+            { left -= price; s.Gear.Add(gn); }
+        }
+        s.CoinLeft = Math.Round(left, 2);
+
+        // a person, not a statline
+        if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
+        else s.Gender = spec.Gender.Trim();
+        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? GivenFor(s.Gender) + " " + Db.Pick("npcSurname") : spec.Name.Trim();
+        s.Compass = string.IsNullOrWhiteSpace(spec.Compass) ? WeightedCompass() : spec.Compass;
+        s.Lost = string.IsNullOrWhiteSpace(spec.Lost) ? Pick(FlavorList("lost")) : spec.Lost;
+        s.Seen = string.IsNullOrWhiteSpace(spec.Seen) ? Pick(FlavorList("seen")) : spec.Seen;
+        s.Vice = string.IsNullOrWhiteSpace(spec.Vice) ? Pick(FlavorList("vices")) : spec.Vice;
+        s.Moving = string.IsNullOrWhiteSpace(spec.Moving) ? Pick(FlavorList("moving")) : spec.Moving;
         return s;
     }
 
@@ -303,27 +471,46 @@ public static class CharGen
         return opts[0].name;
     }
 
+    // one Edge's legality against a sheet-in-progress — shared by the random generator,
+    // the wizard's option lists, and nothing else that could drift from it
+    static bool EdgeEligible(CgEdge e, CharacterSheet s, CgCalling cal, bool isFaith, HashSet<string> owned)
+    {
+        if (owned.Contains(e.name)) return false;
+        if (e.notFaith && isFaith) return false;
+        // "though you are not a Hexer" — Hedge Magic is for souls WITHOUT the Signs
+        // feature; the four sign-working Callings already have the whole craft
+        if (e.effect == "sign+1" && cal.signsKnownAt != null) return false;
+        if (e.reqAbility != null && e.reqAbility.Any(kv => s.Scores[kv.Key] < kv.Value)) return false;
+        if (e.reqEdge != null && !owned.Contains(e.reqEdge)) return false;
+        if (e.reqTrained != null && !s.SkillRanks.ContainsKey(e.reqTrained)) return false;
+        if (e.calling != null)
+        {
+            if (e.calling != cal.name) return false;
+            if (e.reqFeature != null && !s.Features.Any(f => f.StartsWith(e.reqFeature))) return false;
+        }
+        return true;
+    }
+
+    /// Every Edge the sheet could legally take right now (group != null restricts, e.g. "Gun").
+    /// The wizard fills its pick lists from this so it can never offer an illegal Edge.
+    public static List<string> EligibleEdges(CharacterSheet s, string group = null)
+    {
+        var cal = D.callings.First(c => c.name == s.Calling);
+        bool isFaith = cal.group == "Faith";
+        var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
+        return D.edges.Concat(D.callingEdges)
+            .Where(e => (group == null || e.group == group) && EdgeEligible(e, s, cal, isFaith, owned))
+            .Select(e => e.name).OrderBy(n => n).ToList();
+    }
+
+    public static CgEdge EdgeByName(string name)
+        => D.edges.Concat(D.callingEdges).FirstOrDefault(e => e.name == name);
+
     // pick one legal, not-yet-owned Edge; group != null restricts (the Gunhand's combat pool)
     static string PickEdge(CharacterSheet s, CgCalling cal, bool isFaith, string group)
     {
         var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
-        bool Eligible(CgEdge e)
-        {
-            if (owned.Contains(e.name)) return false;
-            if (e.notFaith && isFaith) return false;
-            // "though you are not a Hexer" — Hedge Magic is for souls WITHOUT the Signs
-            // feature; the four sign-working Callings already have the whole craft
-            if (e.effect == "sign+1" && cal.signsKnownAt != null) return false;
-            if (e.reqAbility != null && e.reqAbility.Any(kv => s.Scores[kv.Key] < kv.Value)) return false;
-            if (e.reqEdge != null && !owned.Contains(e.reqEdge)) return false;
-            if (e.reqTrained != null && !s.SkillRanks.ContainsKey(e.reqTrained)) return false;
-            if (e.calling != null)
-            {
-                if (e.calling != cal.name) return false;
-                if (e.reqFeature != null && !s.Features.Any(f => f.StartsWith(e.reqFeature))) return false;
-            }
-            return true;
-        }
+        bool Eligible(CgEdge e) => EdgeEligible(e, s, cal, isFaith, owned);
         var all = D.edges.Concat(D.callingEdges).ToList();
         if (group != null)
         {
@@ -342,6 +529,46 @@ public static class CharGen
         }
         var any = all.Where(e => Eligible(e) && !BlockedGroup(e)).ToList();
         return any.Count > 0 ? Pick(any).name : null;
+    }
+
+    /// Step 6 of Ch. III — the reckoned numbers, shared by Generate and Assemble so the
+    /// two roads can never disagree on the arithmetic.
+    static void ReckonNumbers(CharacterSheet s, CgCalling cal, CgOrigin org)
+    {
+        int level = s.Level;
+        var row = cal.Row(level);
+        int rawhide = (s.Edges.Contains("Tough as Rawhide") || s.BonusCombatEdges.Contains("Tough as Rawhide")) ? level : 0;   // +1 Blood per level
+        int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * level : 0;                                                       // +2 max Nerve per level
+        s.Blood = Math.Max(1, s.BloodRolls.Sum() + rawhide);
+        s.Defense = 10 + Mod(s.Scores["DEX"]);
+        s.Fort = row.fort + Mod(s.Scores["CON"]);
+        s.Ref = row.@ref + Mod(s.Scores["DEX"]);
+        s.Will = row.will + Mod(s.Scores["RES"]);
+        s.Attack = row.atk;
+        s.NerveMax = s.Scores["RES"] + level + stoneNerve;
+        s.Grit = 3;
+        s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0);
+        s.Mark = org.startMark + cal.startMark + (s.Edges.Contains("Touched") ? 1 : 0);
+
+        if (cal.pool != null)
+        {
+            int baseMod = Mod(s.Scores[cal.pool.formula.Substring(0, 3)]);
+            int val = cal.pool.formula.EndsWith("level") ? baseMod + level : baseMod + level / 2;
+            val = Math.Max(cal.pool.min, val);
+            string refresh = cal.pool.formula.EndsWith("level") ? "RES mod + level" : cal.pool.formula.Substring(0, 3) + " mod + half level";
+            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, refreshed each dawn)";
+        }
+    }
+
+    /// The flavor tables (lost / seen / vices / moving / gendered names), for the
+    /// wizard's pick lists. Empty (never a throw) when the data file lacks the key.
+    public static List<string> Flavor(string key)
+        => D.flavor.TryGetProperty(key, out _) ? FlavorList(key) : new();
+    public static List<string> CompassOptions()
+    {
+        var l = new List<string>();
+        foreach (var e in D.flavor.GetProperty("compass").EnumerateArray()) l.Add(e.GetProperty("name").GetString());
+        return l;
     }
 
     static void ApplySkillIncrease(CharacterSheet s, CgCalling cal, int level)
@@ -509,7 +736,8 @@ public static class CharGen
         string M(int m) => m >= 0 ? "+" + m : "−" + (-m);
 
         sb.AppendLine($"{s.Name} — {s.Calling} · {org.name}");
-        sb.AppendLine($"Level {s.Level} · {s.Method} · {s.Compass}");
+        sb.AppendLine($"Level {s.Level}{(string.IsNullOrEmpty(s.Gender) ? "" : " · " + s.Gender.ToLowerInvariant())} · {s.Method} · {s.Compass}"
+                      + (s.HandTweaked ? " · hand-tweaked" : ""));
         sb.AppendLine();
         sb.AppendLine(string.Join(" · ", Ab.Select(a => $"{a} {s.Scores[a]} ({M(Mod(s.Scores[a]))})")));
         sb.AppendLine();

@@ -34,7 +34,7 @@ public partial class MainForm
         {
             int idx = i;
             view.DropDownItems.Add(Item(tabs.TabPages[i].Text,
-                (s, e) => tabs.SelectedIndex = idx, shortcutText: $"Ctrl+{i + 1}"));
+                (s, e) => tabs.SelectedIndex = idx, shortcutText: $"Ctrl+{(i + 1) % 10}"));
         }
         menu.Items.Add(view);
 
@@ -42,7 +42,7 @@ public partial class MainForm
         help.DropDownItems.Add(Item("The &five-minute lesson", (s, e) => ShowLesson(), Keys.F1));
         help.DropDownItems.Add(Item("&Keyboard shortcuts", (s, e) => ShowShortcuts()));
         help.DropDownItems.Add(new ToolStripSeparator());
-        help.DropDownItems.Add(Item("&About The Keeper's Table…", (s, e) => ShowAbout()));
+        help.DropDownItems.Add(Item("&About GritKeeper…", (s, e) => ShowAbout()));
         menu.Items.Add(help);
 
         return menu;
@@ -135,24 +135,28 @@ public partial class MainForm
         void T(string s) { rtf.SelectionFont = new Font("Segoe UI", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n\n"); }
         void I(string s) { rtf.SelectionFont = new Font("Segoe UI", 9.7f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n\n"); }
 
-        H("The Keeper's Table, in five minutes");
-        I("Everything a Keeper reaches for mid-scene, in nine tabs. Ctrl+1 through Ctrl+9 jump straight to them. " +
-          "Nothing here invents rules — every number, table, and creature is taken word-for-word from the books.");
+        H("GritKeeper, in five minutes");
+        I("Everything a Keeper reaches for mid-scene, in ten tabs. Ctrl+1 through Ctrl+9 jump straight to them, " +
+          "Ctrl+0 to the tenth. Nothing here invents rules — every number, table, and creature is taken " +
+          "word-for-word from the books.");
 
         H("1 · Seat the posse  (Posse)");
         T("The party sheet. Add each soul's Blood, Defense, saves, Nerve, Grit, Mark, and Taint — or click straight " +
           "into a cell to edit it. The buttons along the top do the bookkeeping: Damage and Heal apply the Amount " +
           "spinner to the selected soul, Spend Grit counts it down, and Dread check rolls a Will save against the DC " +
           "you set, taking the Nerve loss by the horror's Tier automatically. \"New session\" refills Nerve and " +
-          "resets Grit to 3; Rest ▾ is the long rest. On first run the six ready-made souls from Appendix D are " +
-          "already seated — clear them out whenever your own posse is ready.");
+          "resets Grit to 3; Rest ▾ is the long rest; ▲ ▼ put the posse in whatever order you ride in. " +
+          "Double-click a soul to open their Ledger — the book's own character sheet — in its own window; " +
+          "double-click the Notes cell to read and edit the whole note. On first run the six ready-made souls from " +
+          "Appendix D are already seated — clear them out whenever your own posse is ready.");
 
         H("2 · Roll anything  (Dice)");
         T("Type an expression — 2d6+3, 1d8+1d6+2 — and press Enter, or punch it in with the buttons: the +d buttons " +
           "add dice (click one twice and it stacks: d6, 2d6, 3d6), the digits and ＋/− build the modifier. The dice " +
-          "tumble in the tray and land on the true results. Below that, the d20 checker rolls a full four-degrees " +
-          "check against a DC. Everything the app ever rolls — here or on any other tab — lands in the log on the " +
-          "right, so there is always a paper trail.");
+          "tumble in the tray and land on the true results — every die wears its color (green d4, blue d6, orange d8, " +
+          "white d10, yellow d12, red d20, purple d100), best faces ring gold and a 1 rings black. Below that, the " +
+          "d20 checker rolls a full four-degrees check against a DC. Everything the app ever rolls — here or on any " +
+          "other tab — lands in the log on the right, so there is always a paper trail.");
 
         H("3 · Know your horrors  (Bestiary)");
         T("All 110 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
@@ -172,24 +176,33 @@ public partial class MainForm
           "Blood is synced two ways with the Posse sheet — hurt a soul here and the party sheet knows, and the other " +
           "way around. \"New fight\" clears the foes and keeps the posse; double-click any foe to open its stat block.");
 
-        H("6 · Deal a new soul  (New Soul)");
-        T("A complete character, rolled strictly by Chapter III's eight steps at any level 1–10 — abilities, Calling, " +
-          "Origin, skills, Edges, Signs, coin and gear, all cross-checked against the rules before the sheet reaches " +
-          "you. Pin the Calling or Origin if you have one in mind, or let the country deal. → Posse seats them at " +
-          "the table; Copy sheet takes the text anywhere.");
-
-        H("7 · When the trail runs dry  (Generators)");
+        H("6 · When the trail runs dry  (Generators)");
         T("Every rollable table from The Country in Your Pocket: a town in three rolls, a face in four, rumors, " +
           "trail events, plunder, omens — and the Grounds tables, an encounter for any terrain with the safe-table " +
           "rule applied automatically. One click, and the country answers.");
 
-        H("8 · The rules at your elbow  (Reference)");
+        H("7 · Survey the country  (Map)");
+        T("A drafting table for frontier maps. Set the ground, the scale (a single gunfight up to weeks of trail), " +
+          "the hour, and the water; tick a trail, a rail line, a settlement, a grid; and 🎲 New map (Ctrl+G) draws a " +
+          "named survey — the same seed and settings always draw the same map, so note the number and you can have " +
+          "it back. The Keeper's layer adds the secrets in red; leave it off before showing players. Save as SVG or " +
+          "a one-page PDF, or copy the SVG straight to the clipboard.");
+
+        H("8 · Deal a new soul  (New Soul)");
+        T("A complete character at any level 1–10, displayed on the book's own Ledger sheet. 🎲 Make a soul rolls " +
+          "the whole character strictly by Chapter III's eight steps — pin the Calling or Origin if you have one in " +
+          "mind. 🧭 Wizard… walks you through every choice yourself: abilities, skills, Edges, Signs, coin and all, " +
+          "each list filtered to what the book allows. Either way the sheet is cross-checked against the rules " +
+          "before it reaches you, and ✎ Tweak lets you hand-adjust anything after (the Ledger notes the sheet was " +
+          "tweaked rather than arguing). → Posse seats them at the table; Copy sheet takes the text anywhere.");
+
+        H("9 · The rules at your elbow  (Reference)");
         T("A Keeper's screen in eleven leaves — the four degrees, the DC ladder, the Iron Code, wounds, every " +
           "condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, the Long Odds, and the book's own " +
           "arms, goods, and skills tables. Turn the deck with the ◀ ▶ buttons or the Left and Right arrow keys. " +
           "When a ruling is needed and the book is across the room, it's here.");
 
-        H("9 · Keep the record  (Session)");
+        H("10 · Keep the record  (Session)");
         T("The Keeper's ledger for notes — Stamp the date starts each session's entry — and threads with clocks " +
           "beside it. A thread is trouble on its way: name it, give it 4, 6, or 8 segments, and tick ＋ when the " +
           "world moves toward it. When the last segment fills, it comes due.");
@@ -222,7 +235,7 @@ public partial class MainForm
         void M(string s) { rtf.SelectionFont = new Font("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
 
         H("Anywhere");
-        M("  Ctrl+1 … Ctrl+9   Jump to a tab (in bar order)");
+        M("  Ctrl+1 … Ctrl+0   Jump to a tab (in bar order; Ctrl+0 is the tenth)");
         M("  Ctrl+S            Save the session now");
         M("  Ctrl+Shift+S      Save the session to a file…");
         M("  Ctrl+O            Load a session from a file…");
@@ -232,12 +245,14 @@ public partial class MainForm
         M("  Ctrl+D / Ctrl+H   Damage / Heal the selected soul (by the Amount)");
         M("  Delete            Remove the selected soul");
         M("  F2 (or type)      Edit the selected cell");
+        M("  Double-click      Open the soul's Ledger (on the Notes cell: the whole note)");
         M("");
         H("Tracker");
         M("  Ctrl+I            Roll initiative for the field");
         M("  Ctrl+R            Next round");
         M("  Ctrl+D / Ctrl+H   Damage / Heal the selected combatant (by the Amt)");
         M("  Delete            Remove the selected combatant");
+        M("  Double-click      Open the combatant's card (stat block, or a soul's Ledger)");
         M("");
         H("Bestiary & pickers");
         M("  Ctrl+F            Jump to the search box");
@@ -246,6 +261,9 @@ public partial class MainForm
         M("");
         H("Dice");
         M("  Enter             Roll the expression in the box");
+        M("");
+        H("Map");
+        M("  Ctrl+G            Draw a fresh map on a new seed");
         M("");
         H("Reference");
         M("  Left / Right      Turn the deck (or click ◀ ▶)");
@@ -262,7 +280,7 @@ public partial class MainForm
     {
         using var f = new Form
         {
-            Width = 520, Height = 420, Text = "About The Keeper's Table",
+            Width = 520, Height = 420, Text = "About GritKeeper",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
         };
@@ -273,7 +291,7 @@ public partial class MainForm
         };
         var title = new Label
         {
-            Text = "Blood & Grit — The Keeper's Table", AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
+            Text = "GritKeeper", AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
             Left = 0, Top = 178, Width = 504, Height = 30, Font = new Font("Segoe UI", 13f, FontStyle.Bold), ForeColor = Blood
         };
         var ver = new Label
@@ -284,7 +302,7 @@ public partial class MainForm
         };
         var blurb = new Label
         {
-            Text = "The companion app to Blood & Grit,\na roleplaying game of the haunted frontier.\n\n© 2026 Cole Williams",
+            Text = "The Keeper's table companion to Blood & Grit,\na roleplaying game of the haunted frontier.\n\n© 2026 Cole Williams",
             AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
             Left = 0, Top = 260, Width = 504, Height = 80, ForeColor = Ink
         };

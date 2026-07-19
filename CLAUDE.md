@@ -4,7 +4,8 @@ Import this file (and `blood-and-grit-sources.zip` / `BloodAndGrit-Keepers-Table
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-The Keeper's Table app v1.4.0 (self-contained, crash-hardened, Authenticode-signed).**
+GritKeeper app v1.5.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the Keeper's Table app is synced in the same session as any
 book change that touches it** — status-bar/README version strings every time the books bump,
@@ -366,10 +367,14 @@ its Tier in levels**):
 
 ---
 
-## The Keeper's Table (v1.4.0) — the C# desktop app
+## GritKeeper (v1.5.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
+**Renamed from "The Keeper's Table" to GritKeeper in v1.5.0** — exe `GritKeeper.exe`,
+product/title/About/README all updated; the **internal namespace stays
+`BloodAndGritKeeper`** (deliberately — embedded-resource names derive from it, and the
+delivered folder/zip keep their `BloodAndGrit-Keepers-Table` names for continuity).
 
 ### Source-tree layout (IMPORTANT — read before editing the app)
 There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`KT/`**:
@@ -381,18 +386,23 @@ then zipped to `BloodAndGrit-Keepers-Table.zip`. (History note: as of 2026-07-10
 had silently diverged — `KT/source` carried post-delivery work the zip never got. They're now
 reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 
-### What it does — nine tabs
+### What it does — ten tabs
 - **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
   inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread
   Checks with the real Nerve-loss ladder, New Session reset, **Rest ▾ (long rest — restore
-  Blood & Nerve to full, whole posse or selected soul)**, send-to-Tracker.
+  Blood & Nerve to full, whole posse or selected soul)**, send-to-Tracker. v1.5: **▲ ▼
+  reorder**, **double-click a soul (or the far-right Ledger button) → their Ledger window**,
+  **double-click the Notes cell → full-note editor dialog**.
 - **Dice** — expression roller (`2d6+3`, `1d8+1d6+2`) with a (v1.4) **builder keypad**:
-  `+d4`…`+d100` stack dice (same die clicked again bumps the count), ＋/−/digits build the
+  `+d4`…`+d100` stack dice (same die clicked again bumps the count; the v1.5 **× spinner**
+  adds several at once — `Rules.ExprAddDie` takes a count), ＋/−/digits build the
   modifier, ⌫/C edit — pure logic in `Rules.ExprAddDie`/`ExprAppend` (smoke-tested). Plus
   quick dice, a d20 four-degrees checker, shared roll/event log, and (v1.2) a **dice
   tray** above the log: every roll's dice tumble (owner-drawn, 40 ms timer, ~half a
-  second) and settle on the true per-die results from `Rules.RollExprFull` — best face
-  rings verdigris, a 1 rings blood-red; shows up to 8 dice, "+N more" beyond that.
+  second) and settle on the true per-die results from `Rules.RollExprFull`; shows up to
+  8 dice, "+N more" beyond that. v1.5: **every die wears its color** (user-specified:
+  d4 green · d6 blue · d8 orange · d10 white · d12 yellow · d20 red · d100 purple) on
+  buttons (`DieBtn`) and tray faces — best face rings gold, a 1 rings near-black.
 - **Bestiary** — all **110 creatures**, machine-extracted from the rendered Bestiary HTML
   (so lore/stats/witness quotes/keeper notes are word-for-word faithful to the book).
   Search, tier/chapter filters, one click to Encounter or Tracker. **Double-click a creature
@@ -410,7 +420,13 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   combatant from Appendix B's list), New fight (clear foes, keep the posse, back to Round 1),
   and Clear field (full wipe).** Foes arrive three ways: the Bestiary `× N` → Tracker, the
   v1.2 **Foe type-ahead box (× N) directly on the Tracker bar**, or ＋ Add by hand.
-- **New Soul** *(v1.3)* — a strictly-by-the-book random character generator: Ch. III's
+- **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine
+  Grounds) × scale (gunfight → weeks of trail) × hour × water, with trail/rail/settlement/
+  grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
+  back), Ctrl+G for a fresh one. Exports: SVG (file/clipboard) and one-page
+  landscape-Letter **PDF** — the GDI preview, the SVG, and the PDF all replay the same
+  primitive list (`MapGen.Generate` → `Prim[]`), so they always match.
+- **New Soul** *(v1.3; overhauled v1.5)* — a strictly-by-the-book character maker: Ch. III's
   eight steps end to end at any level 1–10, both ability methods (Honest Array /
   4d6-drop-lowest), all 17 Callings and 10 Origins with their cross-constraints honored
   (no Gambler origin for Faith, no Hedge Magic for Faith or for sign-working Callings,
@@ -421,7 +437,14 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
   change). `CharGen.Generate` builds, `CharGen.Validate` independently re-derives every
   number and returns violations (shown in-app if ever non-empty); the smoke suite
   generates and validates hundreds of sheets per run. **→ Posse** seats the result
-  directly at the table.
+  directly at the table. v1.5: the sheet renders on **the book's Ledger** (`LedgerView`),
+  characters carry **gender** (rolled, name drawn from gender-matched lists in
+  `chargen.json`; the books carry gender only in prose — reviewed 2026-07-18), a
+  **nine-step wizard** (`TabsWizard.cs`; pure assembly in `CharGen.Assemble(AssembleSpec)`
+  sharing `ReckonNumbers`/edge-eligibility with the generator, random fallback for any
+  unanswered choice), **✎ Tweak** (edit anything; re-validated, never blocked —
+  `HandTweaked` flag renders as a Ledger notice), **Save PDF…** (`Pdf.TextSheet`), and
+  the full sheet rides into the posse via `PartyMember.Sheet` (persists in session.json).
 - **Generators** — every Ch. XII rollable table (town/NPC/rumor/trail/plunder/omen) plus
   all nine Grounds terrain tables and the Hand Behind It villain picker, safe-table rule
   applied automatically. v1.2: **every table expanded** with new results in the book's voice
@@ -451,6 +474,13 @@ reconciled; `KT/source` won. Don't edit the delivered folder directly.)
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed. |
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
+| **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
+| **`TabsWizard.cs`** | (v1.5) The nine-step chargen wizard (`SoulWizard`, nested in MainForm) — collects an `AssembleSpec` for `CharGen.Assemble`. |
+| **`CharGen.cs`** | Chargen data model, `Generate` (random), `Assemble` (wizard spec, shared `ReckonNumbers`/edge-eligibility), `Validate`, text `Render`. Compiled into the smoke rig. |
+| **`Ledger.cs`** | (v1.5) `LedgerView` — the book's Ledger sheet as an owner-drawn, zoomable control — plus the per-soul pop-out windows (`ShowSoulCard`) and sheet↔member sync. |
+| **`MapGen.cs`** | (v1.5) Trail Maps generator — pure, no WinForms types (compiled into the smoke rig); emits `Prim` lists + `ToSvg`. |
+| **`TabsMap.cs`** | (v1.5) The Map tab UI + the GDI primitive replayer. |
+| **`Pdf.cs`** | (v1.5) From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. |
 | `app.ico` / `Assets/emblem.png` | (v1.4) The cover emblem as a multi-size Windows icon (full emblem 256/128/64/48, skull-crop 32/24/16 — regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded; `app.ico` is also the csproj `<ApplicationIcon>` (exe file icon). |
 | `Data/creatures.json` | All 110 creatures, extracted from `bestiary.html` by a one-off Python parser (balanced-div walk + per-tag capture). Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe** (`<EmbeddedResource>`), so the published build carries it inside the single file. |
@@ -469,7 +499,7 @@ dotnet build -c Release
 # so no flags are needed and a publish can never silently regress to framework-dependent:
 dotnet publish -c Release -o publish
 ```
-Deliverable = **just `publish/BloodAndGritKeeper.exe`** (~69 MB) — a **true single-file
+Deliverable = **just `publish/GritKeeper.exe`** (~69 MB) — a **true single-file
 standalone**: the .NET runtime is bundled *and* the `Data/*.json` (creatures + tables) are
 **embedded in the exe** (as of 2026-07-16), so it runs on any Windows machine with **no .NET
 install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the assembly, and
@@ -503,7 +533,12 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   model clamping, Nerve recompute on RES/Level change, `INotifyPropertyChanged` firing,
   serialization round-trips, and (v1.2) full data-load checks: 110 creatures parse, table
   merge counts, no duplicate entries, and **every terrain-table entry resolves to a real
-  creature by name**. Currently 1360/1360 passing — re-run after any `Core.cs`/data change.
+  creature by name**. v1.5 adds: `CharGen.Assemble` conformance sweeps (incl. junk-choice
+  fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
+  generation/SVG/PDF structural + determinism checks (the rig now also compiles
+  `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
+  validation). Currently 2322/2322 passing — re-run after any `Core.cs`/`CharGen.cs`/data
+  change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is
   published self-contained and unaffected).

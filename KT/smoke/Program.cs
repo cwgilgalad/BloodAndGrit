@@ -56,6 +56,11 @@ T("builder: append digit",        Rules.ExprAppend("2d6+", "3") == "2d6+3");
 T("builder: append operator",     Rules.ExprAppend("2d6", "+") == "2d6+");
 T("builder: operator replaces operator", Rules.ExprAppend("2d6+", "-") == "2d6-");
 T("builder: null-safe",           Rules.ExprAddDie(null, 6) == "1d6" && Rules.ExprAppend(null, "+") == "+");
+T("builder: × count from empty",  Rules.ExprAddDie("", 6, 4) == "4d6");
+T("builder: × count stacks",      Rules.ExprAddDie("2d6", 6, 3) == "5d6");
+T("builder: × count joins",       Rules.ExprAddDie("1d8", 6, 3) == "1d8+3d6");
+T("builder: × count after op",    Rules.ExprAddDie("2d6+", 8, 2) == "2d6+2d8");
+T("builder: × count clamped",     Rules.ExprAddDie("", 6, 0) == "1d6" && Rules.ExprAddDie("", 6, 999) == "100d6");
 for (int i = 0; i < 50; i++)
 {
     // whatever the buttons build must parse and roll cleanly
@@ -198,6 +203,114 @@ var sheet10 = CharGen.Generate(10, false, "Marshal");
 T("L10 boosts at 5 and 10", sheet10.AbilityBoostLevels.SequenceEqual(new[] { 5, 10 }));
 T("L10 Marshal attack +10 per table", sheet10.Attack == 10);
 T("render carries the Four Questions", CharGen.Render(sheet10).Contains("THE FOUR QUESTIONS"));
+
+// ---- a soul is somebody: gender rolled, name drawn to match ----
+for (int i = 0; i < 50; i++)
+{
+    var g = CharGen.Generate(1, false);
+    T("generated soul has a gender", g.Gender is "Woman" or "Man");
+    var expectList = CharGen.Flavor(g.Gender == "Woman" ? "givenWomen" : "givenMen");
+    T("given name matches the gender list", expectList.Contains(g.Name.Split(' ')[0]));
+}
+T("both genders turn up", Enumerable.Range(0, 60).Select(_ => CharGen.Generate(1, false).Gender).Distinct().Count() == 2);
+{
+    var spec = new CharGen.AssembleSpec { Level = 1, Calling = "Gunhand", Origin = "The Outlaw", Gender = "Woman" };
+    var pool2 = new List<int>(cg.honestArray);
+    var gh = cg.callings.First(c => c.name == "Gunhand");
+    for (int i = 0; i < 6; i++) spec.PreGiftScores[gh.keyAbilities[i]] = pool2[i];
+    var s2 = CharGen.Assemble(spec);
+    T("assemble honors the given gender", s2.Gender == "Woman");
+    T("assemble rolls a matching name", CharGen.Flavor("givenWomen").Contains(s2.Name.Split(' ')[0]));
+    T("render carries the gender", CharGen.Render(s2).Contains("woman"));
+}
+
+// ---- the wizard's road: Assemble must be exactly as conformant as Generate ----
+// empty specs (every choice left to the book) across all callings and levels
+foreach (var c in cg.callings)
+    foreach (int lvl in new[] { 1, 5, 10 })
+    {
+        var org = cg.origins.First(o => !(c.group == "Faith" && o.notFaith));
+        var spec = new CharGen.AssembleSpec { Level = lvl, Calling = c.name, Origin = org.name };
+        var pool = new List<int>(cg.honestArray);
+        for (int i = 0; i < 6; i++) spec.PreGiftScores[c.keyAbilities[i]] = pool[i];
+        var sheet = CharGen.Assemble(spec);
+        var v = CharGen.Validate(sheet);
+        T($"assemble conformant: {c.name} L{lvl}" + (v.Count > 0 ? " — " + v[0] : ""), v.Count == 0);
+    }
+
+// specs with explicit (sometimes illegal) choices — illegal picks must be re-drawn, never shipped
+for (int i = 0; i < 100; i++)
+{
+    var c = cg.callings[Rules.Rng.Next(cg.callings.Count)];
+    var legalOrigins = cg.origins.Where(o => !(c.group == "Faith" && o.notFaith)).ToList();
+    var org = legalOrigins[Rules.Rng.Next(legalOrigins.Count)];
+    int lvl = Rules.Rng.Next(1, 11);
+    var spec = new CharGen.AssembleSpec { Level = lvl, Calling = c.name, Origin = org.name, Rolled = true, Name = "Test Soul" };
+    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.PreGiftScores[a] = Rules.Rng.Next(3, 19);
+    // scattershot choices: some real, some junk the assembler must shrug off
+    spec.TrainedPicks.Add(cg.skills[Rules.Rng.Next(cg.skills.Count)].name);
+    spec.TrainedPicks.Add("Not A Skill");
+    spec.Edges.Add(cg.edges[Rules.Rng.Next(cg.edges.Count)].name);
+    spec.Edges.Add("Not An Edge");
+    spec.SkillIncreases.Add(cg.skills[Rules.Rng.Next(cg.skills.Count)].name);
+    spec.Signs.Add(cg.signs[Rules.Rng.Next(cg.signs.Count)].name);
+    spec.Subpath = "Not A Path";
+    spec.BuyWeapons.Add(cg.weapons[Rules.Rng.Next(cg.weapons.Count)].name);
+    spec.BuyGear.Add(cg.gearPrices.Keys.First());
+    var sheet = CharGen.Assemble(spec);
+    var v = CharGen.Validate(sheet);
+    T($"assemble sweep #{i}" + (v.Count > 0 ? $" ({sheet.Calling}/{sheet.Origin} L{sheet.Level}): {v[0]}" : ""), v.Count == 0);
+    if (i == 0) T("assemble honors the given name", sheet.Name == "Test Soul");
+}
+
+// the sheet now rides inside PartyMember through session.json — prove the round-trip
+var soulSess = new GameSession();
+var carried = CharGen.Generate(3, false, "Gunhand");
+soulSess.Party.Add(new PartyMember { Name = carried.Name, Sheet = carried });
+var soulJson = System.Text.Json.JsonSerializer.Serialize(soulSess);
+var soulBack = System.Text.Json.JsonSerializer.Deserialize<GameSession>(soulJson);
+T("sheet survives the session round-trip", soulBack.Party[0].Sheet != null
+    && soulBack.Party[0].Sheet.Calling == "Gunhand"
+    && soulBack.Party[0].Sheet.Edges.SequenceEqual(carried.Edges)
+    && soulBack.Party[0].Sheet.Scores["RES"] == carried.Scores["RES"]
+    && CharGen.Validate(soulBack.Party[0].Sheet).Count == 0);
+T("legacy member without a sheet still loads", System.Text.Json.JsonSerializer
+    .Deserialize<GameSession>("{\"Party\":[{\"Name\":\"Old Hand\"}]}").Party[0].Sheet == null);
+
+// ---- Trail Maps: generation, SVG, and PDF must all hold together ----
+foreach (var terrain in MapGen.Terrains)
+    for (int scale = 0; scale < MapGen.Scales.Length; scale++)
+    {
+        var spec = new MapSpec { Terrain = terrain, Scale = scale, Seed = 1234, Landmarks = 5, Secrets = true, Rail = true };
+        var m = MapGen.Generate(spec);
+        T($"map generates: {terrain} @ scale {scale}", m != null && m.P.Count > 20 && !string.IsNullOrWhiteSpace(m.Title));
+        var svg = MapGen.ToSvg(m);
+        T($"map SVG well-formed: {terrain} @ {scale}", svg.StartsWith("<svg") && svg.TrimEnd().EndsWith("</svg>") && svg.Contains(m.Title.Split(' ')[0]));
+        var pdf = Pdf.MapPdf(m);
+        string head = System.Text.Encoding.Latin1.GetString(pdf, 0, 8);
+        string tail = System.Text.Encoding.Latin1.GetString(pdf, Math.Max(0, pdf.Length - 32), Math.Min(32, pdf.Length));
+        T($"map PDF structural: {terrain} @ {scale}", head.StartsWith("%PDF-1.4") && tail.Contains("%%EOF") && pdf.Length > 2000);
+    }
+{
+    var spec = new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 777 };
+    T("same seed, same map", MapGen.ToSvg(MapGen.Generate(spec)) == MapGen.ToSvg(MapGen.Generate(spec)));
+    T("different seed, different map", MapGen.ToSvg(MapGen.Generate(spec))
+        != MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 778 })));
+}
+
+// the text-sheet PDF (the New Soul export) — structural checks + samples for external validation
+{
+    var soulPdfSheet = CharGen.Generate(5, false, "Gunhand");
+    var sheetPdf = Pdf.TextSheet(soulPdfSheet.Name, "Gunhand — test", CharGen.Render(soulPdfSheet));
+    string head = System.Text.Encoding.Latin1.GetString(sheetPdf, 0, 8);
+    T("sheet PDF structural", head.StartsWith("%PDF-1.4") && sheetPdf.Length > 1500);
+    string outDir = Path.Combine(Path.GetTempPath(), "gritkeeper-smoke");
+    Directory.CreateDirectory(outDir);
+    File.WriteAllBytes(Path.Combine(outDir, "sample-map.pdf"),
+        Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 42, Secrets = true })));
+    File.WriteAllBytes(Path.Combine(outDir, "sample-sheet.pdf"), sheetPdf);
+    Console.WriteLine($"sample PDFs → {outDir}");
+}
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");
 return fail == 0 ? 0 : 1;
