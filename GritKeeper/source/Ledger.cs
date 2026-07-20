@@ -152,9 +152,12 @@ public sealed class LedgerView : Panel
         }
 
         // ---- what fills the sheet ----
+        // A soul without a full character record (hand-entered, or the seeded pregens)
+        // still shows everything the table row knows; what's genuinely unknown reads
+        // as an em-dash, never as a bare white box that looks like a rendering bug.
         string name = sheet?.Name ?? member?.Name ?? "";
         string calling = sheet?.Calling ?? member?.Calling ?? "";
-        string origin = sheet?.Origin ?? "";
+        string origin = sheet?.Origin ?? "—";
         int level = sheet?.Level ?? member?.Level ?? 1;
         string bloodTxt = member != null ? $"{member.BloodCur} / {member.BloodMax}"
                         : sheet != null ? $"{sheet.Blood} / {sheet.Blood}" : "";
@@ -184,7 +187,7 @@ public sealed class LedgerView : Panel
         // ---- row: name / gender / calling / level / origin ----
         float nW = w * 0.28f, gW = w * 0.12f, cW = w * 0.21f, lW = w * 0.08f, oW = w - nW - gW - cW - lW - gap * 4;
         float rowH = FieldBox(x0, y, nW, "Name", name, valueBold: true);
-        FieldBox(x0 + nW + gap, y, gW, "Gender", sheet?.Gender ?? "");
+        FieldBox(x0 + nW + gap, y, gW, "Gender", sheet?.Gender ?? "—");
         FieldBox(x0 + nW + gW + gap * 2, y, cW, "Calling", calling);
         FieldBox(x0 + nW + gW + cW + gap * 3, y, lW, "Level", level.ToString());
         FieldBox(x0 + nW + gW + cW + lW + gap * 4, y, oW, "Origin", origin);
@@ -211,6 +214,17 @@ public sealed class LedgerView : Panel
                     string val = $"{sc} ({S(CharGen.Mod(sc))})";
                     g.DrawString(val, fValueB, GetBrush(Ink), ax + (aW - TextW(val, fValueB)) / 2, y + aH - 22 * zoom);
                 }
+                else if (abKeys[i] == "RES" && member != null)
+                {
+                    // Nerve = RES + level, so RES is recoverable from the table row
+                    int res = member.NerveMax - member.Level;
+                    string val = $"{res} ({S(CharGen.Mod(res))})";
+                    g.DrawString(val, fValueB, GetBrush(Ink), ax + (aW - TextW(val, fValueB)) / 2, y + aH - 22 * zoom);
+                }
+                else
+                {
+                    g.DrawString("—", fValue, GetBrush(InkSoft), ax + (aW - TextW("—", fValue)) / 2, y + aH - 22 * zoom);
+                }
             }
         }
         y += aH + gap;
@@ -219,11 +233,11 @@ public sealed class LedgerView : Panel
         float sW = (w - gap * 5) / 6;
         string atkTxt = sheet != null
             ? $"G {S(sheet.Attack + CharGen.Mod(sheet.Scores["DEX"]))} · M {S(sheet.Attack + CharGen.Mod(sheet.Scores["STR"]))}"
-            : "";
+            : "—";
         FieldBox(x0,                  y, sW, "Blood / Max", bloodTxt, valueBold: true);
-        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "");
-        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "");
-        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", "");
+        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "—");
+        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "—");
+        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : "—");
         FieldBox(x0 + (sW + gap) * 4, y, sW, "Attack", atkTxt);
         FieldBox(x0 + (sW + gap) * 5, y, sW, "Grit", grit.ToString());
         y += 40 * zoom + gap;
