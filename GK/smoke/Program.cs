@@ -298,6 +298,68 @@ foreach (var terrain in MapGen.Terrains)
         != MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 778 })));
 }
 
+// ---- Trail Maps: nothing linear may cross the map border (rivers used to) ----
+// Rivers/creeks/trails/rails are generated edge-to-edge and then clipped to the
+// inner neatline; every Line prim across a spread of seeds and waters must stay
+// on the paper, with a whisker of tolerance for the neatline itself.
+{
+    int outOfBounds = 0; string firstBad = null;
+    foreach (int seed in new[] { 1, 77, 555, 1234, 99999 })
+        for (int waterKind = 0; waterKind < MapGen.Waters.Length; waterKind++)
+        {
+            var m = MapGen.Generate(new MapSpec
+            {
+                Terrain = MapGen.Terrains[seed % MapGen.Terrains.Length],
+                Scale = seed % 4, Water = waterKind, Seed = seed,
+                Trail = true, Rail = true, Town = true, Secrets = true, Landmarks = 6
+            });
+            foreach (var pr in m.P)
+            {
+                if (pr.Kind != PrimKind.Line) continue;
+                for (int i = 0; i + 1 < pr.Pts.Length; i += 2)
+                    if (pr.Pts[i] < -0.01f || pr.Pts[i] > m.W + 0.01f || pr.Pts[i + 1] < -0.01f || pr.Pts[i + 1] > m.H + 0.01f)
+                    { outOfBounds++; firstBad ??= $"seed {seed} water {waterKind}: ({pr.Pts[i]}, {pr.Pts[i + 1]})"; }
+            }
+        }
+    T($"no line ink beyond the map edge (first offender: {firstBad ?? "none"})", outOfBounds == 0);
+}
+
+// ---- Trail Maps: landmarks are movable, and a move touches ONLY their own ink ----
+{
+    var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Landmarks = 6 });
+    T("landmarks recorded with sane prim ranges", m.Landmarks.Count > 0 && m.Landmarks.All(l =>
+        l.PrimStart >= 0 && l.PrimCount > 0 && l.PrimStart + l.PrimCount <= m.P.Count && l.Name.Length > 0
+        && l.X == l.GenX && l.Y == l.GenY));
+    T("landmark prim ranges never overlap", m.Landmarks.Zip(m.Landmarks.Skip(1))
+        .All(pair => pair.First.PrimStart + pair.First.PrimCount <= pair.Second.PrimStart));
+    if (m.Landmarks.Count > 0)
+    {
+        var lm = m.Landmarks[0];
+        var before = m.P.Select(p => (float[])p.Pts.Clone()).ToList();
+        float ox2 = lm.X, oy2 = lm.Y;
+        MapGen.MoveLandmark(m, 0, ox2 + 40, oy2 - 25);
+        bool ownMoved = true, othersStill = true;
+        for (int i = 0; i < m.P.Count; i++)
+        {
+            bool mine = i >= lm.PrimStart && i < lm.PrimStart + lm.PrimCount;
+            var (a, b) = (before[i], m.P[i].Pts);
+            if (!mine) { if (!a.SequenceEqual(b)) othersStill = false; continue; }
+            int n = m.P[i].Kind == PrimKind.Circle ? 2 : a.Length;   // circle: only cx,cy translate
+            for (int j = 0; j < n; j += 2)
+                if (Math.Abs(b[j] - a[j] - 40) > 0.001f || Math.Abs(b[j + 1] - a[j + 1] + 25) > 0.001f) ownMoved = false;
+            if (m.P[i].Kind == PrimKind.Circle && a[2] != b[2]) ownMoved = false;
+        }
+        T("moving a landmark translates exactly its own prims", ownMoved && lm.X == ox2 + 40 && lm.Y == oy2 - 25);
+        T("moving a landmark leaves every other prim alone", othersStill);
+        MapGen.MoveLandmark(m, 0, ox2, oy2);
+        bool restored = true;
+        for (int i = lm.PrimStart; i < lm.PrimStart + lm.PrimCount; i++)
+            for (int j = 0; j < m.P[i].Pts.Length; j++)
+                if (Math.Abs(m.P[i].Pts[j] - before[i][j]) > 0.001f) restored = false;
+        T("moving it back restores the original ink", restored);
+    }
+}
+
 // the text-sheet PDF (the New Soul export) — structural checks + samples for external validation
 {
     var soulPdfSheet = CharGen.Generate(5, false, "Gunhand");
@@ -309,6 +371,9 @@ foreach (var terrain in MapGen.Terrains)
     File.WriteAllBytes(Path.Combine(outDir, "sample-map.pdf"),
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 42, Secrets = true })));
     File.WriteAllBytes(Path.Combine(outDir, "sample-sheet.pdf"), sheetPdf);
+    // a river map as SVG — eyeball that waterways end AT the neatline, not past it
+    File.WriteAllText(Path.Combine(outDir, "sample-river.svg"),
+        MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[1], Scale = 2, Seed = 4242, Water = 3, Rail = true })));
     Console.WriteLine($"sample PDFs → {outDir}");
 }
 

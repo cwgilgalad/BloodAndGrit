@@ -39,11 +39,24 @@ public sealed class MapSpec
     public int Seed;
 }
 
+// A named landmark the Keeper can pick up and move: its anchor (the symbol's
+// center) plus the contiguous run of prims that draw it, so a move translates
+// exactly its own ink and nothing else's. GenX/GenY remember where the survey
+// originally drew it, for "put it back".
+public sealed class Landmark
+{
+    public string Name = "";
+    public float X, Y;
+    public float GenX, GenY;
+    public int PrimStart, PrimCount;
+}
+
 public sealed class MapModel
 {
     public int W = 1000, H = 700;
     public string Title = "", Sub = "";
     public List<Prim> P = new();
+    public List<Landmark> Landmarks = new();
 }
 
 public static class MapGen
@@ -109,25 +122,33 @@ public static class MapGen
         (float x, float y, float r) lake = default;
         bool frozen = ti == 5;
 
+        var clipR = (x0: ClipInset, y0: ClipInset, x1: W - ClipInset, y1: H - ClipInset);
         if (water is 3 or 5)                                     // a river, edge to edge
         {
             bool vert = rng.Next(2) == 0;
-            riverPts = vert
+            var raw = vert
                 ? Meander(rng, Lerp(rng, 0.25f, 0.75f) * W, -12, Lerp(rng, 0.25f, 0.75f) * W, H + 12, 7, 90)
                 : Meander(rng, -12, Lerp(rng, 0.25f, 0.75f) * H, W + 12, Lerp(rng, 0.25f, 0.75f) * H, 7, 90);
-            P.Add(new Prim { Kind = PrimKind.Line, Pts = riverPts, Stroke = WaterEdge, StrokeW = 13 });
-            P.Add(new Prim { Kind = PrimKind.Line, Pts = riverPts, Stroke = frozen ? "#dfe8ea" : WaterFill, StrokeW = 9 });
-            BlockAlong(blocked, riverPts, 26);
+            var runs = ClipPolyline(raw, clipR.x0, clipR.y0, clipR.x1, clipR.y1);
+            foreach (var run in runs)                            // edge under, water over — layer order kept
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = WaterEdge, StrokeW = 13 });
+            foreach (var run in runs)
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = frozen ? "#dfe8ea" : WaterFill, StrokeW = 9 });
+            riverPts = Longest(runs);
+            if (riverPts != null) BlockAlong(blocked, riverPts, 26);
         }
         else if (water == 2)                                     // a creek
         {
             bool vert = rng.Next(2) == 0;
-            var creek = vert
+            var raw = vert
                 ? Meander(rng, Lerp(rng, 0.2f, 0.8f) * W, -12, Lerp(rng, 0.2f, 0.8f) * W, H + 12, 8, 110)
                 : Meander(rng, -12, Lerp(rng, 0.2f, 0.8f) * H, W + 12, Lerp(rng, 0.2f, 0.8f) * H, 8, 110);
-            P.Add(new Prim { Kind = PrimKind.Line, Pts = creek, Stroke = WaterEdge, StrokeW = 4.5f });
-            riverPts = creek;
-            BlockAlong(blocked, creek, 16);
+            foreach (var run in ClipPolyline(raw, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+            {
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = WaterEdge, StrokeW = 4.5f });
+                if (riverPts == null || run.Length > riverPts.Length) riverPts = run;
+            }
+            if (riverPts != null) BlockAlong(blocked, riverPts, 16);
         }
         if (water is 4 or 5)                                     // a lake
         {
@@ -171,31 +192,36 @@ public static class MapGen
             var leg1 = vert ? Meander(rng, a0 * W, -12, tx, ty, 5, 60) : Meander(rng, -12, a0 * H, tx, ty, 5, 60);
             var leg2 = vert ? Meander(rng, tx, ty, a1 * W, H + 12, 5, 60) : Meander(rng, tx, ty, W + 12, a1 * H, 5, 60);
             foreach (var leg in new[] { leg1, leg2 })
-                P.Add(new Prim { Kind = PrimKind.Line, Pts = leg, Stroke = TrailBrown, StrokeW = 2.6f, Dash = new[] { 8f, 5f } });
+                foreach (var run in ClipPolyline(leg, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+                    P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = TrailBrown, StrokeW = 2.6f, Dash = new[] { 8f, 5f } });
             if (sp.Scale >= 2 && rng.Next(2) == 0)               // a fork, at riding scales
             {
                 int j = rng.Next(leg2.Length / 4) * 2;
                 var fork = Meander(rng, leg2[j], leg2[j + 1], rng.Next(2) == 0 ? -12 : W + 12, Lerp(rng, 0.15f, 0.85f) * H, 4, 70);
-                P.Add(new Prim { Kind = PrimKind.Line, Pts = fork, Stroke = TrailBrown, StrokeW = 2f, Dash = new[] { 7f, 5f } });
+                foreach (var run in ClipPolyline(fork, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+                    P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = TrailBrown, StrokeW = 2f, Dash = new[] { 7f, 5f } });
             }
         }
 
         // ---- the rail line (straight as money) ----
         if (sp.Rail)
         {
-            var rail = Meander(rng, -12, Lerp(rng, 0.25f, 0.75f) * H, W + 12, Lerp(rng, 0.25f, 0.75f) * H, 3, 30);
-            P.Add(new Prim { Kind = PrimKind.Line, Pts = rail, Stroke = "#4a4038", StrokeW = 2.2f });
-            for (int i = 0; i + 3 < rail.Length; i += 2)         // cross-ties
+            var rawRail = Meander(rng, -12, Lerp(rng, 0.25f, 0.75f) * H, W + 12, Lerp(rng, 0.25f, 0.75f) * H, 3, 30);
+            foreach (var rail in ClipPolyline(rawRail, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
             {
-                float dx = rail[i + 2] - rail[i], dy = rail[i + 3] - rail[i + 1];
-                float len = (float)Math.Sqrt(dx * dx + dy * dy);
-                if (len < 1) continue;
-                for (float d = 10; d < len; d += 16)
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = rail, Stroke = "#4a4038", StrokeW = 2.2f });
+                for (int i = 0; i + 3 < rail.Length; i += 2)     // cross-ties
                 {
-                    float px = rail[i] + dx * d / len, py = rail[i + 1] + dy * d / len;
-                    float nx = -dy / len * 5, ny = dx / len * 5;
-                    if (px < 14 || px > W - 14) continue;
-                    P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { px - nx, py - ny, px + nx, py + ny }, Stroke = "#4a4038", StrokeW = 1.2f });
+                    float dx = rail[i + 2] - rail[i], dy = rail[i + 3] - rail[i + 1];
+                    float len = (float)Math.Sqrt(dx * dx + dy * dy);
+                    if (len < 1) continue;
+                    for (float d = 10; d < len; d += 16)
+                    {
+                        float px = rail[i] + dx * d / len, py = rail[i + 1] + dy * d / len;
+                        float nx = -dy / len * 5, ny = dx / len * 5;
+                        if (px < 20 || px > W - 20) continue;
+                        P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { px - nx, py - ny, px + nx, py + ny }, Stroke = "#4a4038", StrokeW = 1.2f });
+                    }
                 }
             }
         }
@@ -269,9 +295,19 @@ public static class MapGen
                 : "The " + (rng.Next(2) == 0 ? Choice(rng, LmAdj) + " " : "") + pick.noun;
             var (x, y) = Place(34);
             if (float.IsNaN(x)) continue;
+            int primStart = P.Count;
             Sym(P, rng, pick.sym, x, y, k);
-            P.Add(TextP(x, y + 15 * k + 12, name, 10.5f, Ink, italic: true, anchor: 1));
+            // centered label: nudge it inward near the edges so a long name never
+            // runs off the paper (half-width ≈ 2.7px/char at this size and face)
+            float est = name.Length * 2.7f;
+            float lx = Math.Clamp(x, ClipInset + 4 + est, W - ClipInset - 4 - est);
+            P.Add(TextP(lx, y + 15 * k + 12, name, 10.5f, Ink, italic: true, anchor: 1));
             blocked.Add((x, y + 15 * k + 12, 40));
+            m.Landmarks.Add(new Landmark
+            {
+                Name = name, X = x, Y = y, GenX = x, GenY = y,
+                PrimStart = primStart, PrimCount = P.Count - primStart
+            });
         }
 
         // ---- the hour ----
@@ -486,9 +522,34 @@ public static class MapGen
         }
     }
 
+    // ---------------------------------------------------------- landmark editing
+    /// Move a landmark to a new anchor: translates exactly its own prims (symbol +
+    /// label) and nothing else. Pure model surgery — the UI drags, the smoke rig
+    /// proves the arithmetic. Callers clamp the target inside the neatline.
+    public static void MoveLandmark(MapModel m, int index, float nx, float ny)
+    {
+        if (index < 0 || index >= m.Landmarks.Count) return;
+        var lm = m.Landmarks[index];
+        float dx = nx - lm.X, dy = ny - lm.Y;
+        if (dx == 0 && dy == 0) return;
+        for (int i = lm.PrimStart; i < lm.PrimStart + lm.PrimCount && i < m.P.Count; i++)
+        {
+            var p = m.P[i];
+            if (p.Kind == PrimKind.Circle) { p.Pts[0] += dx; p.Pts[1] += dy; }   // (cx, cy, r) — radius stays
+            else for (int j = 0; j + 1 < p.Pts.Length; j += 2) { p.Pts[j] += dx; p.Pts[j + 1] += dy; }
+        }
+        lm.X = nx; lm.Y = ny;
+    }
+
     // ---------------------------------------------------------- geometry helpers
     static float Sq(float v) => v * v;
     static float Lerp(Random rng, float a, float b) => a + (float)rng.NextDouble() * (b - a);
+    static float[] Longest(List<float[]> runs)
+    {
+        float[] best = null;
+        foreach (var r in runs) if (best == null || r.Length > best.Length) best = r;
+        return best;
+    }
 
     static Prim Rect(float x, float y, float w, float h, string fill, string stroke, float sw, float alpha = 1f) =>
         new() { Kind = PrimKind.Poly, Pts = new[] { x, y, x + w, y, x + w, y + h, x, y + h }, Fill = fill, Stroke = stroke, StrokeW = sw, Alpha = alpha };
@@ -507,6 +568,47 @@ public static class MapGen
         }
         return pts;
     }
+
+    // Clip a polyline to a rectangle (Liang–Barsky per segment), returning the runs
+    // that survive. Rivers, trails, and rails are deliberately generated from just
+    // off one edge to just off the other so they read as passing through the country
+    // — this trims them to the map's inner neatline so no ink crosses the border,
+    // identically in all three renderers (the SVG viewBox used to hide it; the GDI
+    // panel and the PDF page didn't).
+    static List<float[]> ClipPolyline(float[] pts, float x0, float y0, float x1, float y1)
+    {
+        var runs = new List<float[]>();
+        var cur = new List<float>();
+        void EndRun() { if (cur.Count >= 4) runs.Add(cur.ToArray()); cur.Clear(); }
+        for (int i = 0; i + 3 < pts.Length; i += 2)
+        {
+            float ax = pts[i], ay = pts[i + 1], bx = pts[i + 2], by = pts[i + 3];
+            float dx = bx - ax, dy = by - ay, t0 = 0, t1 = 1;
+            bool ok = true;
+            Span<(float p, float q)> edges = stackalloc[] { (-dx, ax - x0), (dx, x1 - ax), (-dy, ay - y0), (dy, y1 - ay) };
+            foreach (var (p, q) in edges)
+            {
+                if (p == 0) { if (q < 0) { ok = false; break; } }
+                else
+                {
+                    float r = q / p;
+                    if (p < 0) { if (r > t1) { ok = false; break; } if (r > t0) t0 = r; }
+                    else       { if (r < t0) { ok = false; break; } if (r < t1) t1 = r; }
+                }
+            }
+            if (!ok) { EndRun(); continue; }
+            if (cur.Count == 0) { cur.Add(ax + dx * t0); cur.Add(ay + dy * t0); }
+            else if (t0 > 0) { EndRun(); cur.Add(ax + dx * t0); cur.Add(ay + dy * t0); }
+            cur.Add(ax + dx * t1); cur.Add(ay + dy * t1);
+            if (t1 < 1) EndRun();
+        }
+        EndRun();
+        return runs;
+    }
+
+    // The map content's edge: the inner neatline. Line ends land ON it, and even a
+    // wide river's round stroke cap stays inside the outer frame.
+    const float ClipInset = 15f;
 
     static float[] Meander(Random rng, float x0, float y0, float x1, float y1, int segs, float wobble)
     {

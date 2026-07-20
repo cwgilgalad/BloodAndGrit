@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.6.0.**
+**App version 1.7.0.**
 
 ---
 
@@ -127,6 +127,15 @@ marker to move it (each completed drag is one undo step); **right-click** a mark
 rename or remove it; **Clear markers** asks first. Markers ride in `session.json` and
 hold their ground across restarts and even fresh map seeds — they're your fight, not
 the map's.
+
+*(v1.7)* **The landmarks answer to you now.** Press **✥ Landmarks** and every named
+landmark wears a dashed gold ring — drag one to put the Hanging Tree where your table
+needs it (symbol and label travel together); right-click it to put it back where the
+survey drew it, or to put them all back. Custom placements hold while you stay on that
+map number — toggling the hour or the Keeper's layer won't shake them loose — and your
+SVG/PDF exports carry them. And **the ink respects the border now**: rivers, creeks,
+trails, and rails are clipped to the map's inner neatline at generation, so nothing
+runs off the paper in the preview, the SVG, or the PDF (rivers used to).
 
 **New Soul** *(overhauled in v1.5)* — a complete character at any level 1–10, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
