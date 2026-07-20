@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-GritKeeper app v1.7.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.8.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
@@ -367,7 +367,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.7.0) — the C# desktop app
+## GritKeeper (v1.8.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -459,7 +459,14 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   carry them. Also v1.7: rivers/creeks/trails/rails are **clipped to the inner
   neatline at generation** (`ClipPolyline`, Liang–Barsky) — they're deliberately
   generated overshooting the edges, and the SVG viewBox used to hide what the GDI
-  preview and PDF showed.
+  preview and PDF showed. v1.8: **per-feature random streams** (`R(salt)` in
+  `Generate`) — one shared stream used to make any overlay toggle reshuffle the whole
+  map (user-reported); now every checkbox is pure ink-on/ink-off, the settlement
+  claims its ground even unshown, and exports are exactly what's displayed. **Fords
+  snap to the river** (mid-polyline vertex) or lake shore. **Secrets are movable** like
+  landmarks (`MapModel.Secrets`, `MoveSecret`, keyed by index — lines can repeat; red
+  rings under ✥ when the Keeper's layer is shown). The bar is three rows by intent:
+  survey / Show+Zoom / table+Export.
 - **New Soul** *(v1.3; overhauled v1.5)* — a strictly-by-the-book character maker: Ch. III's
   eight steps end to end at any level 1–10, both ability methods (Honest Array /
   4d6-drop-lowest), all 17 Callings and 10 Origins with their cross-constraints honored
@@ -582,7 +589,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently 2339/2339 passing (2322 → 2333 in v1.6, → 2339 in v1.7 with the map border-containment sweep and MoveLandmark proofs — every new
+  validation). Currently 2348/2348 passing (2322 → 2333 in v1.6, → 2339 in v1.7 with the map border-containment sweep and MoveLandmark proofs — every new
   terrain-table entry gets its own real-creature-name assertion) — re-run after any
   `Core.cs`/`CharGen.cs`/data change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`

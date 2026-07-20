@@ -32,6 +32,12 @@ public partial class MainForm
     int lmEditSeed = -1;
     CheckBox lmEditBtn;
 
+    // The Keeper's-layer marks move the same way; keyed by index, not text, because
+    // two secrets on one map can carry the same line.
+    int secDragIdx = -1;
+    bool secDragMoved;
+    readonly Dictionary<int, (float x, float y)> secEdits = new();
+
     // View state — zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
     // Wheel to zoom at the cursor, drag empty ground to pan, Fit to come home.
     float mapZoom = 1f;
@@ -82,70 +88,71 @@ public partial class MainForm
     {
         var page = new TabPage("Map") { BackColor = Paper };
 
-        var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, 6, 8, 6), BackColor = Color.FromArgb(243, 237, 221) };
-        ComboBox Combo(string[] items, int sel, int w, string tip)
+        // Three rows, grouped by intent, so nothing hunts for a home when the bar wraps:
+        //   1. the survey — everything that decides WHAT the map is
+        //   2. show / zoom — how you VIEW it (overlays never change the map, only its ink)
+        //   3. at the table / export — what you DO with it
+        var barBg = Color.FromArgb(243, 237, 221);
+        FlowLayoutPanel Row(int padTop, int padBottom) => new()
+        { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, padTop, 8, padBottom), BackColor = barBg };
+        var rowGen = Row(6, 1);
+        var rowView = Row(1, 1);
+        var rowWork = Row(1, 5);
+        Control Sep() => new Panel { Width = 1, Height = 26, BackColor = Color.FromArgb(196, 181, 148), Margin = new Padding(10, 5, 10, 3) };
+
+        ComboBox Combo(FlowLayoutPanel row, string[] items, int sel, int w, string tip)
         {
             var c = new ComboBox { Width = w, DropDownStyle = ComboBoxStyle.DropDownList, Margin = new Padding(3, 5, 3, 3) };
             c.Items.AddRange(items);
             c.SelectedIndex = sel;
             Tip.SetToolTip(c, tip);
-            bar.Controls.Add(c);
+            row.Controls.Add(c);
             return c;
         }
-        CheckBox Check(string text, bool val, string tip)
+        CheckBox Check(FlowLayoutPanel row, string text, bool val, string tip)
         {
             var c = new CheckBox { Text = text, Checked = val, AutoSize = true, Margin = new Padding(6, 8, 3, 3), ForeColor = Ink };
             Tip.SetToolTip(c, tip);
-            bar.Controls.Add(c);
+            row.Controls.Add(c);
             return c;
         }
 
-        bar.Controls.Add(Lbl("Ground:"));
-        mapGround = Combo(MapGen.Terrains, 0, 235, "The kind of country — the Bestiary's Grounds");
-        bar.Controls.Add(Lbl("  Scale:"));
-        mapScale = Combo(MapGen.Scales, 2, 195, "From a single gunfight up to weeks of trail");
-        bar.Controls.Add(Lbl("  Hour:"));
-        mapTime = Combo(MapGen.Times, 1, 120, "The hour sets the light — night maps come with stars and a moon");
-        bar.Controls.Add(Lbl("  Water:"));
-        mapWater = Combo(MapGen.Waters, 0, 140, "Force a creek, river, or lake — or let the terrain decide");
-        bar.Controls.Add(Lbl("  Landmarks:"));
+        // ---- row 1: the survey ----
+        rowGen.Controls.Add(Lbl("Ground:"));
+        mapGround = Combo(rowGen, MapGen.Terrains, 0, 192, "The kind of country — the Bestiary's Grounds");
+        rowGen.Controls.Add(Lbl(" Scale:"));
+        mapScale = Combo(rowGen, MapGen.Scales, 2, 156, "From a single gunfight up to weeks of trail");
+        rowGen.Controls.Add(Lbl(" Hour:"));
+        mapTime = Combo(rowGen, MapGen.Times, 1, 100, "The hour sets the light — night maps come with stars and a moon");
+        rowGen.Controls.Add(Lbl(" Water:"));
+        mapWater = Combo(rowGen, MapGen.Waters, 0, 118, "Force a creek, river, or lake — or let the terrain decide");
+        rowGen.Controls.Add(Lbl(" Landmarks:"));
         mapLm = new NumericUpDown { Minimum = 0, Maximum = 12, Value = 5, Width = 48, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(mapLm, "How many named places the survey marks");
-        bar.Controls.Add(mapLm);
-        bar.SetFlowBreak(mapLm, true);
-
-        mapTrail = Check("Trail", true, "A trail or wagon road across the country");
-        mapRail = Check("Rail", false, "A rail line — straight as money");
-        mapTown = Check("Settlement", true, "A named town or camp on the trail");
-        mapGrid = Check("Grid", false, "Overlay squares — a battle map's grid (on by default at gunfight scale)");
-        mapSecrets = Check("Keeper's layer", false, "The secrets, in red — leave off before showing players");
-        bar.Controls.Add(Lbl("   Seed:"));
+        rowGen.Controls.Add(mapLm);
+        rowGen.Controls.Add(Lbl(" Seed:"));
         mapSeed = new NumericUpDown { Minimum = 0, Maximum = 999999, Value = 0, Width = 74, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(mapSeed, "The map's number — the same seed and settings always draw the same map");
-        bar.Controls.Add(mapSeed);
-        bar.Controls.Add(Btn("🎲 New map", (s, e) => MapDraw(true), 100, "Draw a fresh map on a new seed (Ctrl+G)"));
-        bar.Controls.Add(Btn("Save SVG…", (s, e) => MapSaveSvg(), 95, "Save the map as a scalable SVG file"));
-        bar.Controls.Add(Btn("Save PDF…", (s, e) => MapSavePdf(), 95, "Save the map as a one-page landscape PDF"));
-        bar.Controls.Add(Btn("Copy SVG", (s, e) =>
-        { if (curMap != null) { Clipboard.SetText(MapGen.ToSvg(curMap)); Log("Map SVG copied to the clipboard."); } }, 90,
-            "Copy the SVG markup to the clipboard"));
-        bar.Controls.Add(Btn("＋ Marker ▾", (s, e) => ShowMarkerMenu((Button)s), 100,
-            "Place a marker — a posse soul, an NPC, or a creature — then drag it into position"));
-        bar.Controls.Add(Btn("Tracker → Map", (s, e) => TrackerToMap(), 110,
-            "Drop everyone on the Tracker onto the map — posse west, trouble east"));
-        bar.Controls.Add(Btn("Clear markers", (s, e) =>
-        {
-            if (mapMarkers.Count == 0) { Log("No markers on the map."); return; }
-            if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
-            mapMarkers.Clear(); CaptureUndo(); mapPanel.Invalidate();
-            Log("The map is cleared of markers.");
-        }, 105, "Remove every marker from the map"));
-        bar.Controls.Add(Btn("🔍＋", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1.4f), 46,
+        rowGen.Controls.Add(mapSeed);
+        rowGen.Controls.Add(Btn("🎲 New map", (s, e) => MapDraw(true), 92, "Draw a fresh map on a new seed (Ctrl+G)"));
+
+        // ---- row 2: what's shown, and how close ----
+        rowView.Controls.Add(Lbl("Show:"));
+        mapTrail = Check(rowView, "Trail", true, "A trail or wagon road across the country");
+        mapRail = Check(rowView, "Rail", false, "A rail line — straight as money");
+        mapTown = Check(rowView, "Settlement", true, "A named town or camp on the trail");
+        mapGrid = Check(rowView, "Grid", false, "Overlay squares — a battle map's grid (on by default at gunfight scale)");
+        mapSecrets = Check(rowView, "Keeper's layer", false, "The secrets, in red — leave off before showing players. Exports include whatever is checked.");
+        rowView.Controls.Add(Sep());
+        rowView.Controls.Add(Lbl("Zoom:"));
+        rowView.Controls.Add(Btn("🔍＋", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1.4f), 46,
             "Zoom in — or roll the mouse wheel over the map"));
-        bar.Controls.Add(Btn("🔍−", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1 / 1.4f), 46,
+        rowView.Controls.Add(Btn("🔍−", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1 / 1.4f), 46,
             "Zoom out"));
-        bar.Controls.Add(Btn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
+        rowView.Controls.Add(Btn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
+
+        // ---- row 3: at the table, then out the door ----
         lmEditBtn = new CheckBox
         {
             Text = "✥ Landmarks", Appearance = Appearance.Button, AutoSize = false,
@@ -153,16 +160,37 @@ public partial class MainForm
             FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        Tip.SetToolTip(lmEditBtn, "Move the survey's landmarks: while pressed, drag a named landmark " +
-            "to reposition it; right-click one to put it back. Placements hold for this map number.");
+        Tip.SetToolTip(lmEditBtn, "Move the survey's own marks: while pressed, drag a named landmark — or a red " +
+            "Keeper's-layer mark, when shown — to reposition it; right-click one to put it back. " +
+            "Placements hold for this map number.");
         lmEditBtn.CheckedChanged += (s, e) =>
         {
             lmEditMode = lmEditBtn.Checked;
-            if (!lmEditMode && lmDragIdx >= 0) { lmDragIdx = -1; }
+            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; }
             mapPanel.Invalidate();
-            if (lmEditMode) Log("Landmark placement: drag a named landmark to move it; right-click to put it back.");
+            if (lmEditMode) Log("Placement: drag a named landmark (or a red secret, when shown); right-click to put it back.");
         };
-        bar.Controls.Add(lmEditBtn);
+        rowWork.Controls.Add(lmEditBtn);
+        rowWork.Controls.Add(Btn("＋ Marker ▾", (s, e) => ShowMarkerMenu((Button)s), 100,
+            "Place a marker — a posse soul, an NPC, or a creature — then drag it into position"));
+        rowWork.Controls.Add(Btn("Tracker → Map", (s, e) => TrackerToMap(), 110,
+            "Drop everyone on the Tracker onto the map — posse west, trouble east"));
+        rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
+        {
+            if (mapMarkers.Count == 0) { Log("No markers on the map."); return; }
+            if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
+            mapMarkers.Clear(); CaptureUndo(); mapPanel.Invalidate();
+            Log("The map is cleared of markers.");
+        }, 105, "Remove every marker from the map"));
+        rowWork.Controls.Add(Sep());
+        rowWork.Controls.Add(Lbl("Export:"));
+        rowWork.Controls.Add(Btn("Save SVG…", (s, e) => MapSaveSvg(), 95,
+            "Save the map as a scalable SVG file — exactly as shown, checked overlays included"));
+        rowWork.Controls.Add(Btn("Save PDF…", (s, e) => MapSavePdf(), 95,
+            "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
+        rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
+        { if (curMap != null) { Clipboard.SetText(MapGen.ToSvg(curMap)); Log("Map SVG copied to the clipboard."); } }, 90,
+            "Copy the SVG markup to the clipboard"));
 
         mapPanel = new MapPanel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(236, 229, 212) };
         mapPanel.Paint += (s, e) =>
@@ -193,7 +221,9 @@ public partial class MainForm
         };
 
         page.Controls.Add(mapPanel);
-        page.Controls.Add(bar);
+        page.Controls.Add(rowWork);      // Dock=Top stacks bottom-up: last added sits highest
+        page.Controls.Add(rowView);
+        page.Controls.Add(rowGen);
         MapDraw(true);
         return page;
     }
@@ -216,13 +246,18 @@ public partial class MainForm
         mapBusy = true;
         if (newSeed) mapSeed.Value = Rules.Rng.Next(0, 1000000);
         curMap = MapGen.Generate(MapSpecFromUi());
-        lmDragIdx = -1;                                   // the model it pointed into is gone
+        lmDragIdx = -1; secDragIdx = -1;                  // the model they pointed into is gone
         int seed = (int)mapSeed.Value;
-        if (seed != lmEditSeed) { lmEdits.Clear(); lmEditSeed = seed; }
+        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); lmEditSeed = seed; }
         else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
+        {
             for (int i = 0; i < curMap.Landmarks.Count; i++)
                 if (lmEdits.TryGetValue(curMap.Landmarks[i].Name, out var at))
                     MapGen.MoveLandmark(curMap, i, at.x, at.y);
+            for (int i = 0; i < curMap.Secrets.Count; i++)
+                if (secEdits.TryGetValue(i, out var at))
+                    MapGen.MoveSecret(curMap, i, at.x, at.y);
+        }
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
@@ -328,6 +363,9 @@ public partial class MainForm
                 lmDragIdx = HitLandmark(e.Location);
                 lmDragMoved = false;
                 if (lmDragIdx >= 0) { mapPanel.Invalidate(); return; }
+                secDragIdx = HitSecret(e.Location);
+                secDragMoved = false;
+                if (secDragIdx >= 0) { mapPanel.Invalidate(); return; }
             }
             if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
             {
@@ -367,8 +405,18 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
+            if (secDragIdx >= 0)
+            {
+                float nx = Math.Clamp((e.X - ox) / sc, 32, m.W - 32);
+                float ny = Math.Clamp((e.Y - oy) / sc, 32, m.H - 48);
+                MapGen.MoveSecret(m, secDragIdx, nx, ny);
+                secDragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
             // nothing in hand — show what's grabbable under the cursor
-            mapPanel.Cursor = HitMarker(e.Location) != null || (lmEditMode && HitLandmark(e.Location) >= 0)
+            mapPanel.Cursor = HitMarker(e.Location) != null
+                || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0))
                 ? Cursors.Hand : Cursors.Default;
         };
         mapPanel.MouseUp += (s, e) =>
@@ -392,24 +440,40 @@ public partial class MainForm
                 }
                 if (lmEditMode && mapPanel.Model != null)
                 {
-                    int li = HitLandmark(e.Location);
-                    if (li < 0) return;
                     var m2 = mapPanel.Model;
-                    var lm = m2.Landmarks[li];
+                    int li = HitLandmark(e.Location), si = li >= 0 ? -1 : HitSecret(e.Location);
+                    if (li < 0 && si < 0) return;
                     var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
-                    menu.Items.Add($"Put {lm.Name} back where the survey drew it", null, (ss, ee) =>
+                    if (li >= 0)
                     {
-                        MapGen.MoveLandmark(m2, li, lm.GenX, lm.GenY);
-                        lmEdits.Remove(lm.Name);
-                        mapPanel.Invalidate();
-                    });
-                    menu.Items.Add("Put every landmark back", null, (ss, ee) =>
+                        var lm = m2.Landmarks[li];
+                        menu.Items.Add($"Put {lm.Name} back where the survey drew it", null, (ss, ee) =>
+                        {
+                            MapGen.MoveLandmark(m2, li, lm.GenX, lm.GenY);
+                            lmEdits.Remove(lm.Name);
+                            mapPanel.Invalidate();
+                        });
+                    }
+                    else
                     {
-                        if (lmEdits.Count == 0) return;
-                        if (!Confirm($"Put all {lmEdits.Count} moved landmark(s) back where the survey drew them?")) return;
+                        var sec = m2.Secrets[si];
+                        menu.Items.Add($"Put \"{sec.Name}\" back where the survey drew it", null, (ss, ee) =>
+                        {
+                            MapGen.MoveSecret(m2, si, sec.GenX, sec.GenY);
+                            secEdits.Remove(si);
+                            mapPanel.Invalidate();
+                        });
+                    }
+                    menu.Items.Add("Put everything back", null, (ss, ee) =>
+                    {
+                        int n = lmEdits.Count + secEdits.Count;
+                        if (n == 0) return;
+                        if (!Confirm($"Put all {n} moved mark(s) back where the survey drew them?")) return;
                         for (int i = 0; i < m2.Landmarks.Count; i++)
                             MapGen.MoveLandmark(m2, i, m2.Landmarks[i].GenX, m2.Landmarks[i].GenY);
-                        lmEdits.Clear();
+                        for (int i = 0; i < m2.Secrets.Count; i++)
+                            MapGen.MoveSecret(m2, i, m2.Secrets[i].GenX, m2.Secrets[i].GenY);
+                        lmEdits.Clear(); secEdits.Clear();
                         mapPanel.Invalidate();
                     });
                     menu.Show(mapPanel, e.Location);
@@ -433,15 +497,41 @@ public partial class MainForm
                 }
                 lmDragIdx = -1;
                 mapPanel.Invalidate();
+                return;
+            }
+            if (secDragIdx >= 0)
+            {
+                if (secDragMoved && mapPanel.Model != null)
+                {
+                    var sec = mapPanel.Model.Secrets[secDragIdx];
+                    secEdits[secDragIdx] = (sec.X, sec.Y);
+                    lmEditSeed = (int)mapSeed.Value;
+                }
+                secDragIdx = -1;
+                mapPanel.Invalidate();
             }
         };
+    }
+
+    int HitSecret(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m == null) return -1;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        if (s <= 0) return -1;
+        for (int i = m.Secrets.Count - 1; i >= 0; i--)
+        {
+            float x = ox + m.Secrets[i].X * s, y = oy + m.Secrets[i].Y * s;
+            if ((p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= 16 * 16) return i;
+        }
+        return -1;
     }
 
     // While landmark editing is on, every named landmark wears a dashed gold ring —
     // the grab handle — and the one in hand rings solid. Off, the map stays clean.
     void DrawLandmarkHandles(Graphics g, MapModel m, Rectangle dest)
     {
-        if (!lmEditMode || m.Landmarks.Count == 0) return;
+        if (!lmEditMode || (m.Landmarks.Count == 0 && m.Secrets.Count == 0)) return;
         var (s, ox, oy) = MapXform(m, dest);
         if (s <= 0) return;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -451,6 +541,14 @@ public partial class MainForm
         {
             float x = ox + m.Landmarks[i].X * s, y = oy + m.Landmarks[i].Y * s;
             g.DrawEllipse(i == lmDragIdx ? held : ring, x - 14, y - 14, 28, 28);
+        }
+        // the Keeper's marks ring in their own red, so the two kinds never read as one
+        using var secRing = new Pen(Blood, 1.6f) { DashPattern = new[] { 3f, 2.5f } };
+        using var secHeld = new Pen(Blood, 2.6f);
+        for (int i = 0; i < m.Secrets.Count; i++)
+        {
+            float x = ox + m.Secrets[i].X * s, y = oy + m.Secrets[i].Y * s;
+            g.DrawEllipse(i == secDragIdx ? secHeld : secRing, x - 20, y - 20, 40, 40);
         }
     }
 

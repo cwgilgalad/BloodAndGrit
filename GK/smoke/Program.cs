@@ -360,6 +360,66 @@ foreach (var terrain in MapGen.Terrains)
     }
 }
 
+// ---- Trail Maps: overlays are VIEWS — toggling one must not reshuffle the map ----
+// (One shared rng stream used to mean checking Rail regenerated a different
+// countryside; per-feature streams make every checkbox pure ink on/ink off.)
+{
+    string Sig(MapModel mm) => mm.Title + "|" +
+        string.Join(";", mm.Landmarks.Select(l => $"{l.Name}:{l.GenX:0.#}:{l.GenY:0.#}"));
+    var baseSpec = new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 5150, Water = 3,
+        Trail = false, Rail = false, Town = false, Grid = false, Secrets = false, Landmarks = 5 };
+    string baseSig = Sig(MapGen.Generate(baseSpec));
+    (string flag, MapSpec s)[] flips =
+    {
+        ("trail", new MapSpec { Terrain = baseSpec.Terrain, Scale = 2, Seed = 5150, Water = 3, Trail = true,  Rail = false, Town = false, Grid = false, Secrets = false, Landmarks = 5 }),
+        ("rail",  new MapSpec { Terrain = baseSpec.Terrain, Scale = 2, Seed = 5150, Water = 3, Trail = false, Rail = true,  Town = false, Grid = false, Secrets = false, Landmarks = 5 }),
+        ("town",  new MapSpec { Terrain = baseSpec.Terrain, Scale = 2, Seed = 5150, Water = 3, Trail = false, Rail = false, Town = true,  Grid = false, Secrets = false, Landmarks = 5 }),
+        ("grid",  new MapSpec { Terrain = baseSpec.Terrain, Scale = 2, Seed = 5150, Water = 3, Trail = false, Rail = false, Town = false, Grid = true,  Secrets = false, Landmarks = 5 }),
+        ("secrets", new MapSpec { Terrain = baseSpec.Terrain, Scale = 2, Seed = 5150, Water = 3, Trail = false, Rail = false, Town = false, Grid = false, Secrets = true, Landmarks = 5 }),
+    };
+    foreach (var (flag, s) in flips)
+        T($"toggling {flag} leaves the land, landmarks & title alone", Sig(MapGen.Generate(s)) == baseSig);
+}
+
+// ---- Trail Maps: a Ford sits ON the water, not out in the sagebrush ----
+{
+    int fords = 0, snapped = 0;
+    for (int seed = 1; seed <= 60 && fords < 4; seed++)
+    {
+        var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = seed, Water = 3, Landmarks = 8 });
+        var ford = m.Landmarks.FirstOrDefault(l => l.Name.EndsWith("Ford"));
+        if (ford == null) continue;
+        fords++;
+        // the river is the widest stroke on the map; the ford anchor must touch a vertex of it
+        float best = float.MaxValue;
+        foreach (var rp in m.P)
+        {
+            if (rp.Kind != PrimKind.Line || rp.StrokeW < 12) continue;
+            for (int i = 0; i + 1 < rp.Pts.Length; i += 2)
+                best = Math.Min(best, (rp.Pts[i] - ford.GenX) * (rp.Pts[i] - ford.GenX) + (rp.Pts[i + 1] - ford.GenY) * (rp.Pts[i + 1] - ford.GenY));
+        }
+        if (best < 1f) snapped++;
+    }
+    T($"fords snap to the river ({snapped}/{fords} across seeds)", fords > 0 && snapped == fords);
+}
+
+// ---- Trail Maps: the Keeper's marks are recorded and movable like landmarks ----
+{
+    var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 909, Secrets = true, Landmarks = 4 });
+    T("secrets recorded with sane prim ranges", m.Secrets.Count >= 2 && m.Secrets.All(sx =>
+        sx.PrimStart >= 0 && sx.PrimCount >= 4 && sx.PrimStart + sx.PrimCount <= m.P.Count));
+    var sec = m.Secrets[0];
+    float sx0 = sec.X, sy0 = sec.Y;
+    var circleBefore = (float[])m.P[sec.PrimStart].Pts.Clone();
+    MapGen.MoveSecret(m, 0, sx0 + 33, sy0 - 21);
+    var circleAfter = m.P[sec.PrimStart].Pts;
+    T("moving a secret translates its ring", Math.Abs(circleAfter[0] - circleBefore[0] - 33) < 0.001f
+        && Math.Abs(circleAfter[1] - circleBefore[1] + 21) < 0.001f && circleAfter[2] == circleBefore[2]
+        && sec.X == sx0 + 33 && sec.Y == sy0 - 21);
+    T("a map without the Keeper's layer records no secrets",
+        MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 909, Secrets = false }).Secrets.Count == 0);
+}
+
 // the text-sheet PDF (the New Soul export) — structural checks + samples for external validation
 {
     var soulPdfSheet = CharGen.Generate(5, false, "Gunhand");

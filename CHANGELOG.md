@@ -8,6 +8,41 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.8.0 — the map holds still: per-feature random streams, WYSIWYG
+  exports, movable secrets, fords on the water, a three-row Map bar, and the Ledger
+  fills its boxes (2026-07-19, user-requested).**
+  - **The toggle bug (user-reported: checking/unchecking a view box showed a different
+    map).** Root cause: one shared `Random` stream — drawing the rail consumed numbers
+    the land would otherwise have used, so any overlay toggle reshuffled symbols,
+    landmarks, even the title. `Generate` now derives an independent stream per feature
+    (water/trail/rail/town/land/landmarks/hour/secrets/name) from the seed, and the
+    settlement claims its name and ground even when unshown. Every checkbox is pure
+    ink-on/ink-off. Smoke-proved: flipping each of the five overlays leaves the title
+    and every landmark byte-identical. (Seeds draw differently than v1.7 — the streams
+    changed; determinism per seed+settings is unchanged and still asserted.)
+  - **Exports are exactly what you see** — a corollary of the fix: Save SVG/PDF/Copy
+    SVG export the displayed model, so checked overlays (grid, Keeper's layer), moved
+    landmarks, and moved secrets all ride along. Tooltips now say so.
+  - **Fords snap to the water (user-requested):** a Ford landmark places on the river's
+    middle stretch (a vertex of the clipped polyline) or on the lake shore — never out
+    in the sagebrush. Smoke asserts every generated ford touches the river.
+  - **The Keeper's red marks are movable (user-requested):** secrets are recorded like
+    landmarks (`MapModel.Secrets`, keyed by index since their lines can repeat) and,
+    with ✥ pressed and the Keeper's layer shown, ring in red and drag like landmarks;
+    right-click puts one back, "put everything back" covers both kinds (confirmed).
+    Their labels also clamp inside the neatline now.
+  - **Map bar: three rows by intent (user-requested)** — row 1 the survey (Ground/
+    Scale/Hour/Water/Landmarks/Seed/New map), row 2 Show + Zoom (overlay checkboxes ·
+    zoom/Fit), row 3 at-the-table + Export (✥ Landmarks, markers, Tracker → Map · the
+    three exports), with thin rule separators between groups.
+  - **Ledger pop-ups fill their boxes (user-reported):** souls without a full character
+    record (hand-entered rows, the seeded Appendix D pregens) showed bare white boxes
+    for Abilities/Speed/Init./Attack/Origin/Gender. Everything derivable now fills in —
+    RES is recovered from Nerve − Level, Init. shows the DEX modifier on full sheets —
+    and the genuinely unknown reads as a muted em-dash. (Init. was empty even on full
+    sheets; now it's the DEX mod.)
+  - Smoke suite 2339 → **2348** asserts, all passing.
+
 - **GritKeeper v1.7.0 — movable landmarks, and the ink respects the border
   (2026-07-19, user-requested).**
   - **✥ Landmarks (Map tab):** a pressed-state toggle that lets the Keeper customize
