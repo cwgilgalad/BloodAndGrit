@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.7.0.**
+**App version 1.8.0.**
 
 ---
 
@@ -127,6 +127,18 @@ marker to move it (each completed drag is one undo step); **right-click** a mark
 rename or remove it; **Clear markers** asks first. Markers ride in `session.json` and
 hold their ground across restarts and even fresh map seeds — they're your fight, not
 the map's.
+
+*(v1.8)* **The map holds still, and everything answers to you.** Fixed a real bug:
+checking or unchecking any overlay (Trail, Rail, Settlement, Grid, the Keeper's layer)
+used to quietly regenerate a *different* countryside, because every feature drew from
+one shared random stream. Each feature now has its own seed-derived stream, so a
+checkbox is pure ink-on/ink-off — and **exports are exactly what you see**: SVG and PDF
+carry whatever overlays are checked, your moved landmarks included. **Fords now sit on
+the water** (mid-river, or on the lake shore) instead of out in the sagebrush. **The
+Keeper's red marks drag too**: with ✥ pressed and the Keeper's layer shown, the red
+circles ring in red and move just like landmarks — put the trouble where it actually
+is. And the bar was reorganized into three sane rows: the survey (what the map is),
+Show/Zoom (how you view it), and table tools + Export (what you do with it).
 
 *(v1.7)* **The landmarks answer to you now.** Press **✥ Landmarks** and every named
 landmark wears a dashed gold ring — drag one to put the Hanging Tree where your table
