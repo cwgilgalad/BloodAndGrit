@@ -8,6 +8,31 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.7.0 — movable landmarks, and the ink respects the border
+  (2026-07-19, user-requested).**
+  - **✥ Landmarks (Map tab):** a pressed-state toggle that lets the Keeper customize
+    the survey's randomly-placed landmarks. While on, every named landmark wears a
+    dashed gold grab ring; drag one and its whole ink (symbol + label) moves together —
+    `MapModel` now records each landmark's name, anchor, generated position, and its
+    contiguous prim range, and the pure `MapGen.MoveLandmark` translates exactly that
+    range and nothing else (smoke-proved: own prims shift by exactly the delta, every
+    other prim byte-identical, move-back restores the original ink). Right-click a
+    landmark → "put it back where the survey drew it," or "put every landmark back"
+    (confirmed, per the standing rule). Placements are kept per map number and
+    re-applied when the same seed regenerates (hour/layer/water toggles), cleared on a
+    genuinely new map; SVG/PDF exports carry the custom placement. Hover shows a hand
+    cursor over anything grabbable (markers included — new to this pass).
+  - **Border containment fix (user-reported: rivers ran past the map edge).** Rivers,
+    creeks, trail legs + forks, and rail lines are deliberately generated from 12
+    units off one edge to 12 off the other so they read as passing through the
+    country — the SVG viewBox quietly clipped that overhang, but the GDI preview and
+    the PDF drew it, so ink crossed the border frame. Now a Liang–Barsky polyline
+    clipper trims them to the inner neatline at *generation* time, so all three
+    renderers agree by construction; wide strokes' round caps stay inside the outer
+    frame (clip inset 15, frames at 8/15). New smoke sweep: 5 seeds × all 6 water
+    kinds with trail+rail+secrets on — zero Line-prim points beyond the paper.
+  - Smoke suite 2333 → **2339** asserts, all passing.
+
 - **GritKeeper v1.6.0 — universal undo/redo, a smarter watermark, a color-coded dice
   log, confirmations closed out everywhere, and bigger random generators (2026-07-19).**
   A user-requested UX pass:

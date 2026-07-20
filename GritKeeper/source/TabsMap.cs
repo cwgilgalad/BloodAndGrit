@@ -21,6 +21,17 @@ public partial class MainForm
     MapMarker dragMarker;
     bool dragMoved;
 
+    // Landmark editing — "the survey drew the Hanging Tree there, but I want it HERE."
+    // Custom placements are kept by landmark name and re-applied whenever the same
+    // seed regenerates (toggling the hour or the Keeper's layer rebuilds the model);
+    // a genuinely new map clears them. lmDragIdx is the landmark under the mouse.
+    bool lmEditMode;
+    int lmDragIdx = -1;
+    bool lmDragMoved;
+    readonly Dictionary<string, (float x, float y)> lmEdits = new();
+    int lmEditSeed = -1;
+    CheckBox lmEditBtn;
+
     // View state — zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
     // Wheel to zoom at the cursor, drag empty ground to pan, Fit to come home.
     float mapZoom = 1f;
@@ -135,12 +146,30 @@ public partial class MainForm
             "Zoom out"));
         bar.Controls.Add(Btn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
+        lmEditBtn = new CheckBox
+        {
+            Text = "✥ Landmarks", Appearance = Appearance.Button, AutoSize = false,
+            Width = 105, Height = 32, Margin = new Padding(3),
+            FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        Tip.SetToolTip(lmEditBtn, "Move the survey's landmarks: while pressed, drag a named landmark " +
+            "to reposition it; right-click one to put it back. Placements hold for this map number.");
+        lmEditBtn.CheckedChanged += (s, e) =>
+        {
+            lmEditMode = lmEditBtn.Checked;
+            if (!lmEditMode && lmDragIdx >= 0) { lmDragIdx = -1; }
+            mapPanel.Invalidate();
+            if (lmEditMode) Log("Landmark placement: drag a named landmark to move it; right-click to put it back.");
+        };
+        bar.Controls.Add(lmEditBtn);
 
         mapPanel = new MapPanel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(236, 229, 212) };
         mapPanel.Paint += (s, e) =>
         {
             if (mapPanel.Model == null) return;
             DrawModel(e.Graphics, mapPanel.Model, mapPanel.ClientRectangle);
+            DrawLandmarkHandles(e.Graphics, mapPanel.Model, mapPanel.ClientRectangle);
             DrawMarkers(e.Graphics, mapPanel.Model, mapPanel.ClientRectangle);
         };
         WireMarkerMouse();
@@ -187,6 +216,13 @@ public partial class MainForm
         mapBusy = true;
         if (newSeed) mapSeed.Value = Rules.Rng.Next(0, 1000000);
         curMap = MapGen.Generate(MapSpecFromUi());
+        lmDragIdx = -1;                                   // the model it pointed into is gone
+        int seed = (int)mapSeed.Value;
+        if (seed != lmEditSeed) { lmEdits.Clear(); lmEditSeed = seed; }
+        else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
+            for (int i = 0; i < curMap.Landmarks.Count; i++)
+                if (lmEdits.TryGetValue(curMap.Landmarks[i].Name, out var at))
+                    MapGen.MoveLandmark(curMap, i, at.x, at.y);
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
@@ -287,6 +323,12 @@ public partial class MainForm
             dragMarker = HitMarker(e.Location);
             dragMoved = false;
             if (dragMarker != null) { mapPanel.Invalidate(); return; }
+            if (lmEditMode)
+            {
+                lmDragIdx = HitLandmark(e.Location);
+                lmDragMoved = false;
+                if (lmDragIdx >= 0) { mapPanel.Invalidate(); return; }
+            }
             if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
             {
                 mapPanning = true;
@@ -303,13 +345,31 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
-            if (dragMarker == null || mapPanel.Model == null) return;
-            var (sc, ox, oy) = MapXform(mapPanel.Model, mapPanel.ClientRectangle);
+            var m = mapPanel.Model;
+            if (m == null) return;
+            var (sc, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
             if (sc <= 0) return;
-            dragMarker.X = Math.Clamp((e.X - ox) / sc, 0, mapPanel.Model.W);
-            dragMarker.Y = Math.Clamp((e.Y - oy) / sc, 0, mapPanel.Model.H);
-            dragMoved = true;
-            mapPanel.Invalidate();
+            if (dragMarker != null)
+            {
+                dragMarker.X = Math.Clamp((e.X - ox) / sc, 0, m.W);
+                dragMarker.Y = Math.Clamp((e.Y - oy) / sc, 0, m.H);
+                dragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
+            if (lmDragIdx >= 0)
+            {
+                // keep the symbol and its label inside the neatline
+                float nx = Math.Clamp((e.X - ox) / sc, 32, m.W - 32);
+                float ny = Math.Clamp((e.Y - oy) / sc, 32, m.H - 48);
+                MapGen.MoveLandmark(m, lmDragIdx, nx, ny);
+                lmDragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
+            // nothing in hand — show what's grabbable under the cursor
+            mapPanel.Cursor = HitMarker(e.Location) != null || (lmEditMode && HitLandmark(e.Location) >= 0)
+                ? Cursors.Hand : Cursors.Default;
         };
         mapPanel.MouseUp += (s, e) =>
         {
@@ -317,23 +377,96 @@ public partial class MainForm
             if (e.Button == MouseButtons.Right)
             {
                 var mk = HitMarker(e.Location);
-                if (mk == null) return;
-                var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
-                menu.Items.Add($"Rename {mk.Label}…", null, (ss, ee) =>
+                if (mk != null)
                 {
-                    string n = AskLine("Rename the marker", mk.Label);
-                    if (!string.IsNullOrWhiteSpace(n)) { mk.Label = n.Trim(); CaptureUndo(); mapPanel.Invalidate(); }
-                });
-                menu.Items.Add($"Remove {mk.Label}", null, (ss, ee) =>
-                { mapMarkers.Remove(mk); CaptureUndo(); mapPanel.Invalidate(); });
-                menu.Show(mapPanel, e.Location);
+                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    menu.Items.Add($"Rename {mk.Label}…", null, (ss, ee) =>
+                    {
+                        string n = AskLine("Rename the marker", mk.Label);
+                        if (!string.IsNullOrWhiteSpace(n)) { mk.Label = n.Trim(); CaptureUndo(); mapPanel.Invalidate(); }
+                    });
+                    menu.Items.Add($"Remove {mk.Label}", null, (ss, ee) =>
+                    { mapMarkers.Remove(mk); CaptureUndo(); mapPanel.Invalidate(); });
+                    menu.Show(mapPanel, e.Location);
+                    return;
+                }
+                if (lmEditMode && mapPanel.Model != null)
+                {
+                    int li = HitLandmark(e.Location);
+                    if (li < 0) return;
+                    var m2 = mapPanel.Model;
+                    var lm = m2.Landmarks[li];
+                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    menu.Items.Add($"Put {lm.Name} back where the survey drew it", null, (ss, ee) =>
+                    {
+                        MapGen.MoveLandmark(m2, li, lm.GenX, lm.GenY);
+                        lmEdits.Remove(lm.Name);
+                        mapPanel.Invalidate();
+                    });
+                    menu.Items.Add("Put every landmark back", null, (ss, ee) =>
+                    {
+                        if (lmEdits.Count == 0) return;
+                        if (!Confirm($"Put all {lmEdits.Count} moved landmark(s) back where the survey drew them?")) return;
+                        for (int i = 0; i < m2.Landmarks.Count; i++)
+                            MapGen.MoveLandmark(m2, i, m2.Landmarks[i].GenX, m2.Landmarks[i].GenY);
+                        lmEdits.Clear();
+                        mapPanel.Invalidate();
+                    });
+                    menu.Show(mapPanel, e.Location);
+                }
                 return;
             }
-            if (dragMarker == null) return;
-            if (dragMoved) CaptureUndo();          // one undo step per completed drag
-            dragMarker = null;
-            mapPanel.Invalidate();
+            if (dragMarker != null)
+            {
+                if (dragMoved) CaptureUndo();      // one undo step per completed drag
+                dragMarker = null;
+                mapPanel.Invalidate();
+                return;
+            }
+            if (lmDragIdx >= 0)
+            {
+                if (lmDragMoved && mapPanel.Model != null)
+                {
+                    var lm = mapPanel.Model.Landmarks[lmDragIdx];
+                    lmEdits[lm.Name] = (lm.X, lm.Y);
+                    lmEditSeed = (int)mapSeed.Value;
+                }
+                lmDragIdx = -1;
+                mapPanel.Invalidate();
+            }
         };
+    }
+
+    // While landmark editing is on, every named landmark wears a dashed gold ring —
+    // the grab handle — and the one in hand rings solid. Off, the map stays clean.
+    void DrawLandmarkHandles(Graphics g, MapModel m, Rectangle dest)
+    {
+        if (!lmEditMode || m.Landmarks.Count == 0) return;
+        var (s, ox, oy) = MapXform(m, dest);
+        if (s <= 0) return;
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        using var ring = new Pen(Gold, 1.6f) { DashPattern = new[] { 3f, 2.5f } };
+        using var held = new Pen(Gold, 2.6f);
+        for (int i = 0; i < m.Landmarks.Count; i++)
+        {
+            float x = ox + m.Landmarks[i].X * s, y = oy + m.Landmarks[i].Y * s;
+            g.DrawEllipse(i == lmDragIdx ? held : ring, x - 14, y - 14, 28, 28);
+        }
+    }
+
+    // A landmark is grabbed by its symbol — generous 16px screen radius, topmost wins.
+    int HitLandmark(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m == null) return -1;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        if (s <= 0) return -1;
+        for (int i = m.Landmarks.Count - 1; i >= 0; i--)
+        {
+            float x = ox + m.Landmarks[i].X * s, y = oy + m.Landmarks[i].Y * s;
+            if ((p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= 16 * 16) return i;
+        }
+        return -1;
     }
 
     void ShowMarkerMenu(Button host)
