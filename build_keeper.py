@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.14 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.6 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.14)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.6)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.15 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.7 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.15)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.7)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.14</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.6</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.15</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.7</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.14 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.6 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.15 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.7 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -288,7 +288,7 @@ CH2 = f"""<!-- II -->
     edge, the thing that makes it easier; never for the thread the whole night hangs on. The rule of three: put the key
     clue in at least three places, so missing one or two doesn't end the game.</li>
     <li><strong>Clues point forward, not just down.</strong> Every clue should suggest a next place to go or a next
-    person to press, not merely confirm what's already known. A bloodless steer is a fact; a bloodless steer with the
+    person to press, and give the party somewhere they haven't yet been. A bloodless steer is a fact; a bloodless steer with the
     tracks leading to the old Vane place is a direction.</li>
     <li><strong>When they stall, have the dark act.</strong> If the players run out of leads, don't wait &mdash; tick
     the clock. Another homestead falls, another body turns up, the thing grows bolder and leaves a fresh trail. The
