@@ -8,6 +8,23 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.9.0 — gender on every soul, and a first-launch posse with real sheets
+  (2026-07-21).**
+  - **Gender fills the Ledger on every row (follow-on to v1.8.0's box-filling).** The
+    Ledger's Gender box now reads from the member as well as the sheet, so a hand-entered
+    soul that carries a gender shows it instead of an em-dash; `PartyMember` gained a
+    `Gender` property (change-notified, persisted in `session.json`), the Posse grid gained
+    a **Gender** column, and both New Soul → Posse and the sheet→member resync carry it
+    across. (Genuinely-unknown gender still reads as a muted em-dash.)
+  - **The first-launch demo posse is now six full, rules-legal character sheets** rather
+    than bare stat rows — each Appendix-D pregen opens a complete Ledger (abilities, saves,
+    Signs, gear, the Four Questions), because `SeedDemo` now builds them through
+    `CharGen.Generate` with a fixed Calling and the pregen's own name and gender. A fixed
+    seed makes that opening posse identical for everyone; `Rules.Reseed`/`ReseedEntropy`
+    bracket the seeding so play dice stay unpredictable afterward. Every seeded soul
+    validates clean (0 violations). It persists after first launch exactly as before.
+  - Smoke suite **2348** asserts, all passing; build 0/0.
+
 - **GritKeeper v1.8.0 — the map holds still: per-feature random streams, WYSIWYG
   exports, movable secrets, fords on the water, a three-row Map bar, and the Ledger
   fills its boxes (2026-07-19, user-requested).**

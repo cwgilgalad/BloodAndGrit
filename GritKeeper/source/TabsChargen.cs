@@ -147,7 +147,7 @@ public partial class MainForm
         var s = lastSoul;
         var p = new PartyMember
         {
-            Name = s.Name, Calling = s.Calling, Level = s.Level,
+            Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
             BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
             Fort = s.Fort, Ref = s.Ref, Will = s.Will,
             RES = s.Scores["RES"],                       // drives the Nerve auto-recalc

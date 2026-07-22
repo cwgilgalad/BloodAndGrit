@@ -38,7 +38,7 @@ public class Creature
 
 public class PartyMember : INotifyPropertyChanged
 {
-    string _name = "New Soul", _calling = "", _notes = "";
+    string _name = "New Soul", _calling = "", _gender = "", _notes = "";
     int _level = 1, _bloodCur = 10, _bloodMax = 10, _defense = 12;
     int _fort, _ref, _will, _nerveCur = 11, _nerveMax = 11, _grit = 3, _mark, _taint, _res = 10;
 
@@ -48,6 +48,7 @@ public class PartyMember : INotifyPropertyChanged
 
     public string Name { get => _name; set { _name = value; On(); } }
     public string Calling { get => _calling; set { _calling = value; On(); } }
+    public string Gender { get => _gender; set { _gender = value; On(); } }
     public int Level { get => _level; set { _level = Math.Clamp(value, 1, 20); On(); RecalcNerve(); } }
     public int RES { get => _res; set { _res = value; On(); RecalcNerve(); } }
     public int BloodCur { get => _bloodCur; set { _bloodCur = Math.Clamp(value, 0, 999); On(); } }
@@ -139,7 +140,11 @@ public class GameSession
 
 public static class Rules
 {
-    public static readonly Random Rng = new();
+    public static Random Rng { get; private set; } = new();
+    // Seed the shared stream for deterministic runs (the first-launch demo posse), then
+    // ReseedEntropy() to hand play back its unpredictable dice. See SeedDemo.
+    public static void Reseed(int seed) => Rng = new Random(seed);
+    public static void ReseedEntropy() => Rng = new Random();
 
     public static string Roman(int t) => t switch { 1=>"I",2=>"II",3=>"III",4=>"IV",5=>"V", _=>t.ToString() };
 
