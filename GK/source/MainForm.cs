@@ -41,7 +41,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.9.0";
+    internal const string AppVersion = "1.10.0";
 
     public MainForm()
     {
@@ -552,6 +552,7 @@ public partial class MainForm : Form
         bar.Controls.Add(Btn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
         bar.Controls.Add(Btn("▲", (s, e) => MovePC(-1), 38, "Move the selected soul up the list"));
         bar.Controls.Add(Btn("▼", (s, e) => MovePC(+1), 38, "Move the selected soul down the list"));
+        bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(SelectedPC(), this), 90, "Advance the selected soul one level (New Soul–built souls only)"));
 
         bar.Controls.Add(Lbl("  Amount:"));
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };

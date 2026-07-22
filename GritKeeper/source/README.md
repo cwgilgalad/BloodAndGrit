@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6).
 
-**App version 1.8.0.**
+**App version 1.10.0.**
 
 ---
 
@@ -52,7 +52,14 @@ rest — Blood *and* Nerve to full, whole posse or one soul). *(v1.5)* **Double-
 soul (or hit the far-right Ledger button) to open their character sheet** — the book's
 own Ledger — **in its own window**, the same modeless pop-out pattern as the Bestiary's
 creature cards; **double-click the Notes cell** to read and edit the whole note in a
-proper editor instead of squinting at the truncated cell.
+proper editor instead of squinting at the truncated cell. *(v1.9)* a **Gender** column,
+shown on every soul's row and Ledger. *(v1.10)* **✦ Level up** — advance a soul built on
+the New Soul tab one level at a time; the dialog offers only what the new level actually
+unlocks (roll the new Hit Die, the 5th/10th ability boost, the odd-level Edge and the
+Gunhand's bonus combat Edge, the 3/5/7/9 skill increase, the 3rd-level path, and any new
+Signs), every list drawn from the character rules so it can't offer an illegal pick — and
+the same button rides on each Ledger window. The new Blood and Nerve are yours in full,
+and it's one press of Undo if you change your mind.
 
 **Dice** — an expression roller (`2d6+3`, `1d8+1d6+2`…) with a **build-it-by-button
 keypad**: `+d4`…`+d100` add dice (clicking the same die stacks it — d6, 2d6, 3d6), the
