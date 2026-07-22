@@ -8,6 +8,12 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.10.1 — book-version label sync (2026-07-21).** The status-bar and
+  About-box labels now read **Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7**,
+  matching the books' human-voice editorial pass. No behavior or embedded-content change
+  (the app's creature/table data was never affected by that copyedit); build 0/0, smoke
+  4569/4569, exe re-signed. Released with the signed exe.
+
 - **Books v2.15 / v2.7 / v2.7 — editorial pass for a human voice (2026-07-21,
   user-requested).** A line-editor's read of all three books to strip the tells of
   machine prose, with the author's voice preserved tightly. The main target was
