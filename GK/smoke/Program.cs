@@ -263,6 +263,81 @@ for (int i = 0; i < 100; i++)
     if (i == 0) T("assemble honors the given name", sheet.Name == "Test Soul");
 }
 
+// ---- levelling up: append exactly one level, keep the levels below stable, stay conformant ----
+foreach (var c in cg.callings)
+    foreach (bool rolled in new[] { false, true })
+    {
+        var s = CharGen.Generate(1, rolled, c.name);
+        for (int target = 2; target <= 10; target++)
+        {
+            var before = s;
+            int preBlood = before.BloodRolls.Count;
+            var grants = CharGen.PreviewLevelUp(before);
+            T($"levelup preview: {c.name} → L{target}", grants.NewLevel == target && !grants.AtCeiling);
+            s = CharGen.LevelUp(before, new CharGen.LevelUpChoices());
+            var lv = CharGen.Validate(s);
+            T($"levelup conformant: {c.name} {(rolled ? "rolled" : "array")} → L{target}" + (lv.Count > 0 ? " — " + lv[0] : ""), lv.Count == 0);
+            T($"levelup increments to L{target}: {c.name}", s.Level == target);
+            T($"levelup adds one Blood roll: {c.name} → L{target}", s.BloodRolls.Count == preBlood + 1);
+            // the levels below are byte-stable: prior Blood rolls / edges / signs are an unchanged prefix
+            T($"levelup keeps prior Blood: {c.name} → L{target}", before.BloodRolls.SequenceEqual(s.BloodRolls.Take(preBlood)));
+            T($"levelup keeps prior edges: {c.name} → L{target}", before.Edges.SequenceEqual(s.Edges.Take(before.Edges.Count)));
+            T($"levelup keeps prior signs: {c.name} → L{target}", before.SignsKnown.SequenceEqual(s.SignsKnown.Take(before.SignsKnown.Count)));
+        }
+        var capped = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
+        T($"levelup ceiling no-op: {c.name}", capped.Level == 10 && CharGen.Validate(capped).Count == 0);
+        T($"levelup preview at ceiling: {c.name}", CharGen.PreviewLevelUp(s).AtCeiling);
+    }
+
+// under a fixed seed the whole grow-up is reproducible (Generate + nine LevelUps)
+{
+    string Grow(int seed)
+    {
+        Rules.Reseed(seed);
+        var s = CharGen.Generate(1, false, "Marshal");
+        for (int L = 2; L <= 10; L++) s = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
+        return System.Text.Json.JsonSerializer.Serialize(s);
+    }
+    T("levelup reproducible under a fixed seed", Grow(0x1010) == Grow(0x1010));
+    T("different seed grows a different soul", Grow(0x1010) != Grow(0x2020));
+    Rules.ReseedEntropy();
+}
+
+// explicit choices are honored (edge, subpath, Blood die) and the sheet still conforms
+{
+    var s = CharGen.Generate(2, false, "Marshal");
+    var gr = CharGen.PreviewLevelUp(s);                    // → 3rd: edge + skill increase + subpath
+    var ch = new CharGen.LevelUpChoices { BloodDie = 1 };  // minimum Hit-Die face
+    if (gr.EdgeOptions.Count > 0) ch.Edge = gr.EdgeOptions[0];
+    if (gr.SkillOptions.Count > 0) ch.SkillIncrease = gr.SkillOptions[0];
+    if (gr.Subpath && gr.SubpathOptions.Count > 0) ch.Subpath = gr.SubpathOptions[^1];
+    var up = CharGen.LevelUp(s, ch);
+    T("levelup honors chosen edge", gr.EdgeOptions.Count == 0 || up.Edges.Contains(gr.EdgeOptions[0]));
+    T("levelup honors chosen subpath", !gr.Subpath || up.Subpath == gr.SubpathOptions[^1]);
+    T("levelup honors chosen Blood die", up.BloodRolls[^1] == 1 + up.ConModAtLevel[^1]);
+    T("levelup with explicit choices conformant", CharGen.Validate(up).Count == 0);
+}
+
+// the Gunhand's bonus combat Edge keeps pace, one Gun edge per odd level
+{
+    var s = CharGen.Generate(1, false, "Gunhand");
+    for (int L = 2; L <= 9; L++) s = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
+    T("Gunhand leveled to 9: 5 edges + 5 bonus combat edges", s.Edges.Count == 5 && s.BonusCombatEdges.Count == 5);
+    T("Gunhand leveled bonus edges are all Gun-group", s.BonusCombatEdges.All(n => CharGen.EdgeByName(n).group == "Gun"));
+    T("Gunhand leveled to 9 conformant", CharGen.Validate(s).Count == 0);
+}
+
+// a caster's Signs grow with the level, distinct and legal
+{
+    var s = CharGen.Generate(1, false, "Hexer");
+    int startSigns = s.SignsKnown.Count;
+    for (int L = 2; L <= 10; L++) s = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
+    T("Hexer leveled to 10 grows Signs, distinct & real",
+        s.SignsKnown.Count >= startSigns && s.SignsKnown.Distinct().Count() == s.SignsKnown.Count
+        && s.SignsKnown.All(n => cg.signs.Any(x => x.name == n)));
+    T("Hexer leveled to 10 conformant", CharGen.Validate(s).Count == 0);
+}
+
 // the sheet now rides inside PartyMember through session.json — prove the round-trip
 var soulSess = new GameSession();
 var carried = CharGen.Generate(3, false, "Gunhand");

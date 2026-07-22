@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
-GritKeeper app v1.8.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.10.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
@@ -367,7 +367,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.8.0) — the C# desktop app
+## GritKeeper (v1.10.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -405,7 +405,14 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   Checks with the real Nerve-loss ladder, New Session reset, **Rest ▾ (long rest — restore
   Blood & Nerve to full, whole posse or selected soul)**, send-to-Tracker. v1.5: **▲ ▼
   reorder**, **double-click a soul (or the far-right Ledger button) → their Ledger window**,
-  **double-click the Notes cell → full-note editor dialog**.
+  **double-click the Notes cell → full-note editor dialog**. v1.9: a **Gender** column
+  (persisted; shown on every Ledger row, member or sheet). v1.10: **✦ Level up** — advance
+  a New Soul–built soul one level through a dialog that offers only what the new level
+  unlocks (Blood roll, 5th/10th boost, odd-level Edge + Gunhand combat Edge, 3/5/7/9 skill
+  increase, 3rd-level subpath, new Signs), each drawn from the generator's eligibility
+  helpers; the same button rides on each Ledger window. Backed by `CharGen.LevelUp`, which
+  clones the sheet and appends exactly the new level's growth (lower levels byte-stable,
+  result `Validate`-clean) — see the New Soul entry.
 - **Dice** — expression roller (`2d6+3`, `1d8+1d6+2`) with a (v1.4) **builder keypad**:
   `+d4`…`+d100` stack dice (same die clicked again bumps the count; the v1.5 **× spinner**
   adds several at once — `Rules.ExprAddDie` takes a count), ＋/−/digits build the
@@ -589,8 +596,11 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently 2348/2348 passing (2322 → 2333 in v1.6, → 2339 in v1.7 with the map border-containment sweep and MoveLandmark proofs — every new
-  terrain-table entry gets its own real-creature-name assertion) — re-run after any
+  validation). Currently **4569/4569** passing (2322 → 2333 in v1.6, → 2339 in v1.7, → 2348
+  in v1.8/v1.9, → **4569 in v1.10** with the level-up conformance sweep: `CharGen.LevelUp`
+  is proved across every calling × ability method × level 1→10 — each step `Validate`-clean,
+  the levels below byte-stable, fixed-seed reproducible, explicit choices honored, and the
+  Gunhand/​caster growth paths checked) — re-run after any
   `Core.cs`/`CharGen.cs`/data change.
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is

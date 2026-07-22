@@ -157,6 +157,10 @@ public sealed class LedgerView : Panel
         // as an em-dash, never as a bare white box that looks like a rendering bug.
         string name = sheet?.Name ?? member?.Name ?? "";
         string calling = sheet?.Calling ?? member?.Calling ?? "";
+        // gender rides on the sheet, but hand-entered souls carry it on the member too — show
+        // whichever we have. (pattern var is gv, not sg — sg collides with the SignsKnown loop below.)
+        string Dash(string v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
+        string gender = Dash(sheet?.Gender is { Length: > 0 } gv ? gv : member?.Gender);
         string origin = sheet?.Origin ?? "—";
         int level = sheet?.Level ?? member?.Level ?? 1;
         string bloodTxt = member != null ? $"{member.BloodCur} / {member.BloodMax}"
@@ -187,7 +191,7 @@ public sealed class LedgerView : Panel
         // ---- row: name / gender / calling / level / origin ----
         float nW = w * 0.28f, gW = w * 0.12f, cW = w * 0.21f, lW = w * 0.08f, oW = w - nW - gW - cW - lW - gap * 4;
         float rowH = FieldBox(x0, y, nW, "Name", name, valueBold: true);
-        FieldBox(x0 + nW + gap, y, gW, "Gender", sheet?.Gender ?? "—");
+        FieldBox(x0 + nW + gap, y, gW, "Gender", gender);
         FieldBox(x0 + nW + gW + gap * 2, y, cW, "Calling", calling);
         FieldBox(x0 + nW + gW + cW + gap * 3, y, lW, "Level", level.ToString());
         FieldBox(x0 + nW + gW + cW + lW + gap * 4, y, oW, "Origin", origin);
@@ -432,6 +436,8 @@ public partial class MainForm
             else Log($"{p.Name} is already on the field.");
         }, 95, "Put this soul onto the combat tracker"));
         if (p.Sheet != null)
+        {
+            bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(p, win), 90, "Advance this soul one level"));
             bar.Controls.Add(Btn("✎ Tweak", (s, e) =>
             {
                 if (TweakSheet(p.Sheet, win))
@@ -443,6 +449,7 @@ public partial class MainForm
                     Log($"{p.Name}'s sheet hand-tweaked.");
                 }
             }, 85, "Hand-adjust this soul's sheet"));
+        }
 
         win.Controls.Add(ledger);
         win.Controls.Add(bar);
@@ -457,7 +464,7 @@ public partial class MainForm
     internal void SyncMemberFromSheet(PartyMember p)
     {
         var s = p.Sheet; if (s == null) return;
-        p.Name = s.Name; p.Calling = s.Calling; p.Level = s.Level;
+        p.Name = s.Name; p.Calling = s.Calling; p.Gender = s.Gender; p.Level = s.Level;
         p.RES = s.Scores.TryGetValue("RES", out var res) ? res : p.RES;
         p.BloodMax = s.Blood; p.BloodCur = Math.Min(p.BloodCur, s.Blood);
         p.Defense = s.Defense; p.Fort = s.Fort; p.Ref = s.Ref; p.Will = s.Will;

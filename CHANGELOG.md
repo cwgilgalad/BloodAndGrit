@@ -8,6 +8,59 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.10.0 — souls level up at the table, and a faster cold start (2026-07-21).**
+  - **Level up (Posse tab · Ledger window).** A New Soul–built soul can now advance one
+    level at a time through a ✦ Level up button — on the Posse action bar (acts on the
+    selected soul) and on each soul's Ledger window. The dialog shows only what the new
+    level unlocks: the Hit-Die Blood roll (roll it or set the face; CON mod added), the
+    5th/10th-level ability boost, the odd-level Edge (plus the Gunhand's bonus combat
+    Edge), the 3/5/7/9 skill increase, the 3rd-level subpath, and any new Signs — each
+    populated from the generator's own eligibility helpers so it can never offer an
+    illegal pick, and each defaulting to "let the book choose." The soul's new Blood and
+    Nerve are granted to current as well as maximum (leveling isn't a heal, but the new
+    capacity is theirs), and any open Ledger refreshes in place. A hand-entered row (no
+    character sheet) is told to build the soul out first; a 10th-level soul is told it's
+    at the frontier's ceiling.
+  - **How it works (`CharGen.LevelUp`).** Rather than reconstruct the wizard's
+    `AssembleSpec` and re-walk from 1st — `Assemble` re-rolls every prior level's Blood and
+    has no way to be handed the old rolls, so that path would quietly destabilize the
+    levels below — `LevelUp` clones the finished sheet and appends exactly the new level's
+    growth, mirroring `Generate`'s own per-level walk (boost → Blood → features → Edge(s)
+    → skill increase → subpath → Signs → reckon). Everything below the new level is
+    byte-stable, and the result passes `CharGen.Validate` clean. `PreviewLevelUp` drives
+    the dialog's controls and option lists off a clone advanced by the level's
+    deterministic part, so Edge/skill eligibility reflects the new level.
+  - **Startup pass.** The self-contained publish now precompiles with **ReadyToRun**
+    (cold start skips most JIT) and runs with **InvariantGlobalization** (no ICU culture
+    load at launch) — the latter is safe because every coordinate the PDF/SVG exporters
+    write already goes through an explicit `CultureInfo.InvariantCulture` formatter, so a
+    comma-decimal locale can't corrupt an export. Single-file compression stays on so the
+    release binary stays one modest file; `TieredPGO` stays at its default. The owner-drawn
+    Ledger and map controls were audited for per-paint GDI churn — both were already
+    double-buffered with cached brushes/pens, so no change was warranted, and the deeper
+    map-bitmap cache was deliberately deferred (a mis-invalidated cache would risk a real
+    visual bug on a surface that isn't animated).
+  - Smoke suite **2348 → 4569** asserts (the level-up walk is proved conformant across
+    every calling × ability method × level 1→10, with byte-stable lower levels, fixed-seed
+    reproducibility, honored explicit choices, and the Gunhand/​caster growth paths). Build 0/0.
+
+- **GritKeeper v1.9.0 — gender on every soul, and a first-launch posse with real sheets
+  (2026-07-21).**
+  - **Gender fills the Ledger on every row (follow-on to v1.8.0's box-filling).** The
+    Ledger's Gender box now reads from the member as well as the sheet, so a hand-entered
+    soul that carries a gender shows it instead of an em-dash; `PartyMember` gained a
+    `Gender` property (change-notified, persisted in `session.json`), the Posse grid gained
+    a **Gender** column, and both New Soul → Posse and the sheet→member resync carry it
+    across. (Genuinely-unknown gender still reads as a muted em-dash.)
+  - **The first-launch demo posse is now six full, rules-legal character sheets** rather
+    than bare stat rows — each Appendix-D pregen opens a complete Ledger (abilities, saves,
+    Signs, gear, the Four Questions), because `SeedDemo` now builds them through
+    `CharGen.Generate` with a fixed Calling and the pregen's own name and gender. A fixed
+    seed makes that opening posse identical for everyone; `Rules.Reseed`/`ReseedEntropy`
+    bracket the seeding so play dice stay unpredictable afterward. Every seeded soul
+    validates clean (0 violations). It persists after first launch exactly as before.
+  - Smoke suite **2348** asserts, all passing; build 0/0.
+
 - **GritKeeper v1.8.0 — the map holds still: per-feature random streams, WYSIWYG
   exports, movable secrets, fords on the water, a three-row Map bar, and the Ledger
   fills its boxes (2026-07-19, user-requested).**
