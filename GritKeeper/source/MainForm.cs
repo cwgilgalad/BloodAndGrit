@@ -41,7 +41,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.8.0";
+    internal const string AppVersion = "1.10.0";
 
     public MainForm()
     {
@@ -480,7 +480,7 @@ public partial class MainForm : Form
         void Col(string prop, string head, int weight, bool ro = false)
             => posseGrid.Columns.Add(new DataGridViewTextBoxColumn
             { DataPropertyName = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
-        Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Level", "Lv", 40);
+        Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Gender", "Gender", 70); Col("Level", "Lv", 40);
         Col("BloodCur", "Blood", 55); Col("BloodMax", "/Max", 50); Col("Defense", "Def", 45);
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
         Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
@@ -552,6 +552,7 @@ public partial class MainForm : Form
         bar.Controls.Add(Btn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
         bar.Controls.Add(Btn("▲", (s, e) => MovePC(-1), 38, "Move the selected soul up the list"));
         bar.Controls.Add(Btn("▼", (s, e) => MovePC(+1), 38, "Move the selected soul down the list"));
+        bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(SelectedPC(), this), 90, "Advance the selected soul one level (New Soul–built souls only)"));
 
         bar.Controls.Add(Lbl("  Amount:"));
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };
@@ -1131,14 +1132,34 @@ public partial class MainForm : Form
 
     void SeedDemo()
     {
-        // The ready-made posse from Appendix D, so the app is useful on first launch.
-        void Add(string n, string call, int bl, int def, int f, int r, int w, int nv, int mark = 0)
-            => party.Add(new PartyMember { Name = n, Calling = call, Level = 1, BloodCur = bl, BloodMax = bl, Defense = def, Fort = f, Ref = r, Will = w, NerveCur = nv, NerveMax = nv, Mark = mark });
-        Add("Ruth \"Six-Finger\" Calloway", "Gunhand", 12, 13, 4, 5, 1, 13);
-        Add("Doc Aurelia Mercer", "Sawbones", 9, 11, 3, 1, 4, 15);
-        Add("Brother Elias Crow", "Preacher", 9, 9, 3, -1, 4, 16);
-        Add("Anni Halvorsen", "Mountain Man", 12, 10, 4, 0, 4, 15);
-        Add("Addison Quill", "Bounty Hunter", 8, 12, 0, 4, 3, 14);
-        Add("Opal Vance", "Hexer", 7, 10, 1, 0, 5, 17, 1);
+        // The ready-made posse from Appendix D, so the app is useful on first launch — now
+        // seeded as full, rules-legal character sheets (Ledger, Signs, gear and all), not bare
+        // rows. A fixed seed makes the first-launch posse identical for everyone; ReseedEntropy
+        // afterward hands play back its unpredictable dice. Generate() (not Assemble — that
+        // throws on a null Origin) with a fixed Calling, then the pregen's own name and gender.
+        Rules.Reseed(0x5EEDA117);
+        void Add(string name, string gender, string calling)
+        {
+            var s = CharGen.Generate(1, rolled: false, fixedCalling: calling);
+            s.Name = name; s.Gender = gender;
+            var p = new PartyMember
+            {
+                Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
+                BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
+                Fort = s.Fort, Ref = s.Ref, Will = s.Will,
+                RES = s.Scores["RES"], Grit = s.Grit, Mark = s.Mark,
+                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : ""),
+                Sheet = s
+            };
+            if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
+            party.Add(p);
+        }
+        Add("Ruth \"Six-Finger\" Calloway", "Woman", "Gunhand");
+        Add("Doc Aurelia Mercer",           "Woman", "Sawbones");
+        Add("Brother Elias Crow",           "Man",   "Preacher");
+        Add("Anni Halvorsen",               "Woman", "Mountain Man");
+        Add("Addison Quill",                "Man",   "Bounty Hunter");
+        Add("Opal Vance",                   "Woman", "Hexer");
+        Rules.ReseedEntropy();   // restore entropy so play dice stay random
     }
 }

@@ -13,7 +13,7 @@
     <AssemblyName>GritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.8.0</Version>
+    <Version>1.10.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -39,6 +39,17 @@
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+
+    <!-- v1.10.0 startup pass. ReadyToRun precompiles the IL to native so cold start skips
+         most JIT (the biggest launch lever for a self-contained WinForms app); compression is
+         deliberately kept ON so the release binary stays ~one file of modest size — R2R already
+         carries the startup win, and the decompress cost is small next to the JIT it removes.
+         InvariantGlobalization drops the ICU culture load at startup and is safe here because
+         every number the app writes (Pdf.cs / MapGen.cs coordinates) already goes through an
+         explicit CultureInfo.InvariantCulture formatter, so comma-decimal locales can't corrupt
+         an export. TieredPGO stays at its .NET 8 default (on). -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
