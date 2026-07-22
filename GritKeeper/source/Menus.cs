@@ -304,7 +304,7 @@ public partial class MainForm
         };
         var ver = new Label
         {
-            Text = $"Version {AppVersion}\nPlayer's Book v2.14  ·  Keeper's Book v2.6  ·  Bestiary v2.6",
+            Text = $"Version {AppVersion}\nPlayer's Book v2.15  ·  Keeper's Book v2.7  ·  Bestiary v2.7",
             AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
             Left = 0, Top = 212, Width = 504, Height = 40, ForeColor = Ink
         };
