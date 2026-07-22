@@ -4,7 +4,7 @@ Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
 **Current versions: Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7 ·
-GritKeeper app v1.10.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.10.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
@@ -367,7 +367,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.10.0) — the C# desktop app
+## GritKeeper (v1.10.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.

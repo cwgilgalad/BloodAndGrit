@@ -41,7 +41,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.10.0";
+    internal const string AppVersion = "1.10.1";
 
     public MainForm()
     {
@@ -109,7 +109,7 @@ public partial class MainForm : Form
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
         status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6")
+            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7")
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
