@@ -461,6 +461,161 @@ public static class CharGen
         return s;
     }
 
+    // ============================================================ LEVELLING UP
+    // One soul, one level higher. Rather than reconstruct an AssembleSpec and re-walk from
+    // 1st — Assemble re-rolls every prior level's Blood and has no way to be handed the old
+    // rolls, so that path would destabilize the levels below — LevelUp clones the finished
+    // sheet and appends exactly the new level's growth, mirroring Generate's own per-level
+    // walk (boost → Blood → features → Edge(s) → skill increase → subpath → Signs → reckon).
+    // Everything below the new level is byte-stable, and the result is Validate-clean.
+    // Choices are honored where legal; anything blank falls back to the draw Generate makes.
+    public class LevelUpChoices
+    {
+        public string Boost;              // ability raised, if the new level is 5th or 10th
+        public int? BloodDie;             // the new level's Hit-Die face (1..hitDie); null → roll
+        public string Edge;               // the odd-level Edge; null → draw
+        public string BonusCombatEdge;    // the Gunhand's odd-level Gun Edge; null → draw
+        public string SkillIncrease;      // the 3/5/7/9 increase target; null → draw
+        public string Subpath;            // chosen when 3rd unlocks it; null → draw
+        public List<string> NewSigns = new();   // signs for any slots the new level opens
+    }
+
+    // What a soul's next level grants — drives the level-up dialog's controls and their
+    // option lists, computed on a clone advanced by the deterministic part of the level
+    // (default boost + the new features) so Edge/skill eligibility reflects the new level.
+    public class LevelUpGrants
+    {
+        public int NewLevel, HitDie, ConModForBlood;
+        public bool Boost, Edge, GunEdge, SkillIncrease, Subpath, AtCeiling;
+        public int NewSignSlots;
+        public string DefaultBoost, DefaultSubpath;
+        public List<string> BoostOptions = new(), EdgeOptions = new(), GunEdgeOptions = new(),
+            SkillOptions = new(), SubpathOptions = new(), SignOptions = new();
+    }
+
+    static CharacterSheet Clone(CharacterSheet s)
+        => JsonSerializer.Deserialize<CharacterSheet>(JsonSerializer.Serialize(s));
+
+    // legal targets for a skill increase at this level: trained skills that can still step
+    // (→ Expert always at 3rd+, → Master at 7th+) and any untrained skill (train it new)
+    static List<string> SkillIncreaseTargets(CharacterSheet s, int level)
+    {
+        var opts = new List<string>();
+        foreach (var name in D.skills.Select(k => k.name))
+        {
+            if (s.SkillRanks.TryGetValue(name, out var r))
+            { if (r == 1) opts.Add(name); else if (r == 2 && level >= 7) opts.Add(name); }
+            else opts.Add(name);
+        }
+        return opts;
+    }
+
+    public static LevelUpGrants PreviewLevelUp(CharacterSheet cur)
+    {
+        var cal = D.callings.First(c => c.name == cur.Calling);
+        int N = cur.Level + 1;
+        var g = new LevelUpGrants { NewLevel = N, HitDie = cal.hitDie };
+        if (cur.Level >= 10) { g.AtCeiling = true; return g; }
+
+        g.Boost = N is 5 or 10;
+        g.Edge = N % 2 == 1;
+        g.GunEdge = g.Edge && cal.bonusCombatEdgeAtOdd;
+        g.SkillIncrease = N is 3 or 5 or 7 or 9;
+        g.Subpath = N >= 3 && cal.subpath != null && cal.subpath.options.Count > 0 && cur.Subpath == null;
+
+        int Signs(int lvl)
+        {
+            int c = cal.signsKnownAt != null ? cal.signsKnownAt[lvl.ToString()] : 0;
+            if (cur.Edges.Contains("Hedge Magic")) c += 1;
+            return Math.Min(c, D.signs.Count);
+        }
+        g.NewSignSlots = Math.Max(0, Signs(N) - Signs(cur.Level));
+
+        var clone = Clone(cur); clone.Level = N;
+        if (g.Boost) clone.Scores[cal.keyAbilities[0]] += 1;
+        foreach (var f in cal.Row(N).features)
+            if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) clone.Features.Add(f);
+        g.ConModForBlood = Mod(clone.Scores["CON"]);
+
+        g.BoostOptions = Ab.ToList(); g.DefaultBoost = cal.keyAbilities[0];
+        if (g.Edge)
+            g.EdgeOptions = EligibleEdges(clone)
+                .Where(n => !(cal.bonusCombatEdgeAtOdd && EdgeByName(n).group == "Gun")).ToList();
+        if (g.GunEdge) g.GunEdgeOptions = EligibleEdges(clone, "Gun");
+        if (g.SkillIncrease) g.SkillOptions = SkillIncreaseTargets(clone, N);
+        if (g.Subpath) { g.SubpathOptions = cal.subpath.options.Select(o => o.name).ToList(); g.DefaultSubpath = g.SubpathOptions[0]; }
+        if (g.NewSignSlots > 0) g.SignOptions = D.signs.Select(x => x.name).Where(n => !cur.SignsKnown.Contains(n)).ToList();
+        return g;
+    }
+
+    public static CharacterSheet LevelUp(CharacterSheet cur, LevelUpChoices ch)
+    {
+        ch ??= new LevelUpChoices();
+        var cal = D.callings.First(c => c.name == cur.Calling);
+        var org = D.origins.First(o => o.name == cur.Origin);
+        bool isFaith = cal.group == "Faith";
+        var s = Clone(cur);
+        if (cur.Level >= 10) return s;                    // the frontier's ceiling
+        int N = cur.Level + 1; s.Level = N;
+
+        if (N is 5 or 10)                                  // boost first, as in Generate
+        {
+            string ab = Ab.Contains(ch.Boost ?? "") ? ch.Boost : cal.keyAbilities[0];
+            s.Scores[ab] += 1; s.AbilityBoostLevels.Add(N); s.BoostedAbilities.Add(ab);
+        }
+        int conMod = Mod(s.Scores["CON"]);
+        int die = ch.BloodDie is int bd && bd >= 1 && bd <= cal.hitDie ? bd : Rules.Rng.Next(1, cal.hitDie + 1);
+        s.BloodRolls.Add(die + conMod); s.ConModAtLevel.Add(conMod);
+
+        foreach (var f in cal.Row(N).features)
+            if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) s.Features.Add(f);
+
+        if (N % 2 == 1)
+        {
+            var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
+            var want = ch.Edge != null ? EdgeByName(ch.Edge) : null;
+            bool ok = want != null && !(cal.bonusCombatEdgeAtOdd && want.group == "Gun")
+                      && EdgeEligible(want, s, cal, isFaith, owned);
+            string chosen = ok ? want.name : PickEdge(s, cal, isFaith, null);
+            if (chosen != null) s.Edges.Add(chosen);
+            if (cal.bonusCombatEdgeAtOdd)
+            {
+                owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
+                var wg = ch.BonusCombatEdge != null ? EdgeByName(ch.BonusCombatEdge) : null;
+                string gun = wg != null && wg.group == "Gun" && EdgeEligible(wg, s, cal, isFaith, owned)
+                           ? wg.name : PickEdge(s, cal, isFaith, "Gun");
+                if (gun != null) s.BonusCombatEdges.Add(gun);
+            }
+        }
+
+        if (N is 3 or 5 or 7 or 9)
+        {
+            string t = ch.SkillIncrease; bool applied = false;
+            if (t != null && D.skills.Any(k => k.name == t))
+            {
+                if (!s.SkillRanks.TryGetValue(t, out var r)) { s.SkillRanks[t] = 1; applied = true; }
+                else if (r == 1) { s.SkillRanks[t] = 2; applied = true; }
+                else if (r == 2 && N >= 7) { s.SkillRanks[t] = 3; applied = true; }
+            }
+            if (!applied) ApplySkillIncrease(s, cal, N);
+        }
+
+        if (N >= 3 && cal.subpath != null && cal.subpath.options.Count > 0 && s.Subpath == null)
+            s.Subpath = cal.subpath.options.Any(o => o.name == ch.Subpath) ? ch.Subpath : Pick(cal.subpath.options).name;
+
+        var signNames = D.signs.Select(x => x.name).ToList();
+        int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[N.ToString()] : 0;
+        if (s.Edges.Contains("Hedge Magic")) signCount += 1;
+        signCount = Math.Min(signCount, signNames.Count);
+        foreach (var sg in ch.NewSigns.Where(signNames.Contains).Distinct())
+            if (s.SignsKnown.Count < signCount && !s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg);
+        while (s.SignsKnown.Count < signCount)
+        { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
+
+        ReckonNumbers(s, cal, org);
+        return s;                                          // HandTweaked provenance rides through the clone
+    }
+
     static string WeightedCompass()
     {
         var opts = new List<(string name, int w)>();

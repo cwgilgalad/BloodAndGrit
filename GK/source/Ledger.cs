@@ -436,6 +436,8 @@ public partial class MainForm
             else Log($"{p.Name} is already on the field.");
         }, 95, "Put this soul onto the combat tracker"));
         if (p.Sheet != null)
+        {
+            bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(p, win), 90, "Advance this soul one level"));
             bar.Controls.Add(Btn("✎ Tweak", (s, e) =>
             {
                 if (TweakSheet(p.Sheet, win))
@@ -447,6 +449,7 @@ public partial class MainForm
                     Log($"{p.Name}'s sheet hand-tweaked.");
                 }
             }, 85, "Hand-adjust this soul's sheet"));
+        }
 
         win.Controls.Add(ledger);
         win.Controls.Add(bar);

@@ -160,6 +160,144 @@ public partial class MainForm
         Log($"{s.Name} joins the posse.");
     }
 
+    // ============================================================ LEVEL UP
+    // Advance one seated soul by a single level, choosing what the new level unlocks. Only
+    // sheet-backed souls level by the book — a hand-entered row has no character record, so
+    // there's nothing to grow. The heavy lifting (and every rule) lives in CharGen.LevelUp;
+    // this is just the picker. Any choice left on "(let the book choose)" is drawn the way
+    // Generate would, and CharGen.LevelUp re-draws anything that turns out illegal.
+    internal void LevelUpMember(PartyMember p, IWin32Window owner)
+    {
+        if (p == null) { Log("Select a soul first."); return; }
+        if (p.Sheet == null)
+        { Log($"{p.Name} has no character sheet — build them on the New Soul tab first; a hand-entered row can't level by the book."); return; }
+        var cur = p.Sheet;
+        var g = CharGen.PreviewLevelUp(cur);
+        if (g.AtCeiling) { Log($"{p.Name} already stands at 10th level — the frontier's ceiling."); return; }
+
+        using var f = new Form
+        {
+            Text = $"Level up — {cur.Name}", Width = 520, AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink, FormBorderStyle = FormBorderStyle.FixedDialog,
+            StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
+            ShowIcon = false, BackColor = Paper
+        };
+        var tbl = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill, ColumnCount = 2, AutoSize = true, Padding = new Padding(14),
+            GrowStyle = TableLayoutPanelGrowStyle.AddRows
+        };
+        tbl.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        tbl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        void Row(string label, Control c)
+        {
+            tbl.Controls.Add(new Label { Text = label, AutoSize = true, Margin = new Padding(3, 8, 10, 3), ForeColor = Ink });
+            c.Margin = new Padding(3, 5, 3, 3);
+            tbl.Controls.Add(c);
+        }
+        void Span(Control c) { tbl.Controls.Add(c); tbl.SetColumnSpan(c, 2); }
+        ComboBox Choice(List<string> opts, int width = 260)
+        {
+            var cb = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = width };
+            cb.Items.Add("(let the book choose)");
+            foreach (var o in opts) cb.Items.Add(o);
+            cb.SelectedIndex = 0;
+            return cb;
+        }
+
+        Span(new Label { Text = $"{cur.Calling}   ·   Level {cur.Level} → {g.NewLevel}", AutoSize = true,
+            Font = new Font(Font, FontStyle.Bold), ForeColor = Blood, Margin = new Padding(3, 0, 3, 8) });
+
+        // Blood — roll the new level's Hit Die (or set the face), CON mod added automatically
+        var dieUp = new NumericUpDown { Minimum = 1, Maximum = g.HitDie, Width = 55 };
+        dieUp.Value = Rules.Rng.Next(1, g.HitDie + 1);
+        var totalLbl = new Label { AutoSize = true, ForeColor = Ink, Margin = new Padding(8, 8, 3, 3) };
+        void RefreshTotal() => totalLbl.Text =
+            $"= +{(int)dieUp.Value + g.ConModForBlood} Blood   (d{g.HitDie} rolled {(int)dieUp.Value}, CON {(g.ConModForBlood >= 0 ? "+" : "")}{g.ConModForBlood})";
+        dieUp.ValueChanged += (s, e) => RefreshTotal(); RefreshTotal();
+        var bloodPanel = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.LeftToRight, Margin = new Padding(0), WrapContents = false };
+        bloodPanel.Controls.Add(dieUp);
+        bloodPanel.Controls.Add(Btn("Roll", (s, e) => dieUp.Value = Rules.Rng.Next(1, g.HitDie + 1), 50, "Roll the new level's Hit Die"));
+        bloodPanel.Controls.Add(totalLbl);
+        Row("Blood gain:", bloodPanel);
+
+        ComboBox boostCb = null, edgeCb = null, gunCb = null, skillCb = null, subCb = null;
+        var signCbs = new List<ComboBox>();
+
+        if (g.Boost)
+        {
+            boostCb = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 120 };
+            foreach (var a in g.BoostOptions) boostCb.Items.Add(a);
+            boostCb.SelectedItem = g.DefaultBoost;
+            Row("Ability boost (+1):", boostCb);
+        }
+        if (g.Edge) { edgeCb = Choice(g.EdgeOptions); Row("New Edge:", edgeCb); }
+        if (g.GunEdge) { gunCb = Choice(g.GunEdgeOptions); Row("Gunhand's combat Edge:", gunCb); }
+        if (g.SkillIncrease)
+        {
+            skillCb = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 260 };
+            skillCb.Items.Add("(let the book choose)");
+            foreach (var sk in g.SkillOptions)
+            {
+                int r = cur.SkillRanks.TryGetValue(sk, out var rr) ? rr : 0;
+                skillCb.Items.Add($"{sk} ({(r == 0 ? "train" : r == 1 ? "→ Expert" : "→ Master")})");
+            }
+            skillCb.SelectedIndex = 0;
+            Row("Skill increase:", skillCb);
+        }
+        if (g.Subpath)
+        {
+            subCb = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 260 };
+            foreach (var o in g.SubpathOptions) subCb.Items.Add(o);
+            subCb.SelectedIndex = 0;
+            string section = CharGen.D.callings.First(c => c.name == cur.Calling).subpath.section;
+            Row($"{section}:", subCb);
+        }
+        for (int i = 0; i < g.NewSignSlots; i++)
+        {
+            var sc = Choice(g.SignOptions);
+            signCbs.Add(sc);
+            Row(g.NewSignSlots == 1 ? "New Sign:" : $"New Sign {i + 1}:", sc);
+        }
+
+        var okBtn = new Button { Text = "Level up", DialogResult = DialogResult.OK, AutoSize = true, Margin = new Padding(6, 10, 3, 3) };
+        var cancelBtn = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true, Margin = new Padding(6, 10, 3, 3) };
+        f.AcceptButton = okBtn; f.CancelButton = cancelBtn;
+        var btnPanel = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0) };
+        btnPanel.Controls.Add(okBtn); btnPanel.Controls.Add(cancelBtn);
+        Span(btnPanel);
+
+        f.Controls.Add(tbl);
+        if (f.ShowDialog(owner) != DialogResult.OK) return;
+
+        var ch = new CharGen.LevelUpChoices { BloodDie = (int)dieUp.Value };
+        if (boostCb != null) ch.Boost = (string)boostCb.SelectedItem;
+        if (edgeCb != null && edgeCb.SelectedIndex > 0) ch.Edge = (string)edgeCb.SelectedItem;
+        if (gunCb != null && gunCb.SelectedIndex > 0) ch.BonusCombatEdge = (string)gunCb.SelectedItem;
+        if (skillCb != null && skillCb.SelectedIndex > 0) ch.SkillIncrease = g.SkillOptions[skillCb.SelectedIndex - 1];
+        if (subCb != null) ch.Subpath = (string)subCb.SelectedItem;
+        foreach (var sc in signCbs) if (sc.SelectedIndex > 0) ch.NewSigns.Add((string)sc.SelectedItem);
+
+        // apply: swap in the grown sheet, resync the row, then grant the new level's Blood &
+        // Nerve to *current* too (leveling isn't a heal, but the new capacity is theirs).
+        int oldBloodMax = p.BloodMax, oldNerveMax = p.NerveMax;
+        var next = CharGen.LevelUp(cur, ch);
+        p.Sheet = next;
+        SyncMemberFromSheet(p);
+        int bloodGain = p.BloodMax - oldBloodMax; if (bloodGain > 0) p.BloodCur = Math.Min(p.BloodMax, p.BloodCur + bloodGain);
+        int nerveGain = p.NerveMax - oldNerveMax; if (nerveGain > 0) p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + nerveGain);
+        posseGrid?.Refresh();
+        if (soulWindows.TryGetValue(p, out var win) && !win.IsDisposed)
+            foreach (var lv in win.Controls.OfType<LedgerView>()) lv.ShowSheet(next, p, SheetWarnings(next));
+        Log($"{next.Name} rises to {Ordinal(next.Level)} level — +{bloodGain} Blood."
+            + (next.Edges.Count > cur.Edges.Count ? $"  New Edge: {next.Edges[^1]}." : "")
+            + (next.SignsKnown.Count > cur.SignsKnown.Count ? $"  New Sign: {next.SignsKnown[^1]}." : "")
+            + (next.Subpath != null && cur.Subpath == null ? $"  Path: {next.Subpath}." : ""));
+    }
+
+    static string Ordinal(int n) => n + (n % 100 is >= 11 and <= 13 ? "th"
+        : (n % 10) switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th" });
+
     // ============================================================ THE TWEAK DIALOG
     // Hand adjustments to a finished sheet — every number and every list editable.
     // The result is re-checked, but never blocked: a tweaked sheet is the Keeper's
