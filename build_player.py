@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.14 -->
+<!-- Blood & Grit — The Player's Book · Version 2.15 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.14)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.15)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.14</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.15</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.14 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.15 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -521,7 +521,7 @@ body{ background:#525659; }
   you succeeded; it consumes twenty times as long. You may never take 10 or 20 with a gun in your hand.</p>
 
   <h2 id="ix-grit">Grit</h2>
-  <p>You are not merely a column of numbers. You are stubborn. <strong>Grit</strong> is the measure of that
+  <p>You are more than a column of numbers. You are stubborn. <strong>Grit</strong> is the measure of that
   stubbornness — a small pool of points, refreshed each session, that lets you bend a moment your way. Every
   character begins a session with <strong>3 Grit</strong>. You may spend one point, after seeing the result, to
   do any one of the following:</p>
@@ -1774,7 +1774,7 @@ body{ background:#525659; }
   <p>When your quarry drops or flees, you do not relent: immediately Stride toward it for free, and your first Strike in
   pursuit ignores the Multiple Attack Penalty. A wounded thing that runs from a Witch Hunter is merely choosing where it dies.</p>
   <h4>The Pyre</h4>
-  <p>At 10th level you are the bane of unclean things. Your Judgment recharges at the start of every scene, not merely with
+  <p>At 10th level you are the bane of unclean things. Your Judgment recharges at the start of every scene, no longer only with
   each new quarry. And once per session, when you reduce an uncanny quarry to 0 Blood, you may perform the rites of ending —
   salt, fire, the severed name — and ensure it <strong>stays dead</strong>: it does not rise, reform, or return. Nothing the
   Keeper has prepared survives the Pyre. The cost is the man you have become to wield it.</p>
@@ -2331,7 +2331,7 @@ body{ background:#525659; }
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>IX. Edges</span></div>
   <h2>Edges of the Callings</h2>
   <p>The edges that follow belong to a single Calling. You may choose one only if it names a Calling you hold and you meet
-  what it asks. These are the signatures of the trade — the moves that make a Gunhand a Gunhand, and not merely a soul with
+  what it asks. These are the signatures of the trade — the moves that make a Gunhand a Gunhand, and more than a soul with
   a pistol and bad luck.</p>
 
   <h3>Worldly Callings</h3>

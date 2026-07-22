@@ -8,6 +8,21 @@ Desktop\Git repos.)
 
 ---
 
+- **Books v2.15 / v2.7 / v2.7 — editorial pass for a human voice (2026-07-21,
+  user-requested).** A line-editor's read of all three books to strip the tells of
+  machine prose, with the author's voice preserved tightly. The main target was
+  **negative parallelism** — the "it's not X, it's Y" antithesis, which had quietly
+  become a habit in the Bestiary's Keeper notes (the "Not a fight — a flood" construction
+  alone appeared three times). The iconic flagships were kept ("this is not a thing you
+  kill, it is a thing you resolve"; "a house that is a ghost"; "these are not killed, they
+  are shut out"); the repetitions were varied so no single figure recurs enough to read as
+  a formula. Every "not merely" (a formal/AI tic) across the Player's and Keeper's books
+  was recast. No creature, rule, or table content changed — page counts hold at 170 / 88 /
+  131, every book still measures clean (parity, zero true-scale clip, zero mobile h-scroll,
+  all TOC/index anchors resolved), and all three builds are idempotent. (GritKeeper embeds
+  no changed content, so its data is untouched; its README book-version labels were updated
+  to match, and only the compiled status-bar label lags until the app's next build.)
+
 - **GritKeeper v1.10.0 — souls level up at the table, and a faster cold start (2026-07-21).**
   - **Level up (Posse tab · Ledger window).** A New Soul–built soul can now advance one
     level at a time through a ✦ Level up button — on the Posse action bar (acts on the

@@ -3,7 +3,7 @@
 Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
 the project so a fresh chat can pick up exactly where we left off.
 
-**Current versions: Player's Book v2.14 · Keeper's Book v2.6 · Bestiary v2.6 ·
+**Current versions: Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7 ·
 GritKeeper app v1.10.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -75,9 +75,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.14 | 170 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.6 | 88 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.6 | 131 | none (110 creatures) |
+| The Player's Book | v2.15 | 170 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.7 | 88 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.7 | 131 | none (110 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -220,7 +220,7 @@ Regenerating overwrites the three PDFs in place.)*
 
 ---
 
-## The Player's Book (v2.13) — structure
+## The Player's Book (v2.15) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -259,7 +259,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.5) — structure
+## The Keeper's Book (v2.7) — structure
 
 Chapters I–XIII plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -288,7 +288,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.5) — structure & conventions
+## The Bestiary (v2.7) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **110 creatures** by name (from every `<p class="cr-name">`,
