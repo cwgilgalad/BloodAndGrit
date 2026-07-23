@@ -26,12 +26,17 @@ public class Creature
     public string keeperNote { get; set; } = "";
     public string witness { get; set; } = "";
 
+    // Built once. These are computed properties read per creature per encounter/tracker
+    // operation, and the static Regex.Match overload only reaches its pattern cache after
+    // re-hashing the pattern string on every single call.
+    static readonly System.Text.RegularExpressions.Regex WillRe =
+        new(@"Will\s*([+\-]\d+)", System.Text.RegularExpressions.RegexOptions.Compiled);
+
     public int BloodValue => Rules.FirstInt(blood, 10);
     public int DefenseValue => Rules.FirstInt(defense, 13);
     public int WillValue
     {
-        get { var m = System.Text.RegularExpressions.Regex.Match(saves, @"Will\s*([+\-]\d+)");
-              return m.Success ? int.Parse(m.Groups[1].Value) : 0; }
+        get { var m = WillRe.Match(saves ?? ""); return m.Success ? int.Parse(m.Groups[1].Value) : 0; }
     }
     public override string ToString() => $"{name}  ·  T{Rules.Roman(tier)}";
 }
@@ -148,9 +153,12 @@ public static class Rules
 
     public static string Roman(int t) => t switch { 1=>"I",2=>"II",3=>"III",4=>"IV",5=>"V", _=>t.ToString() };
 
+    static readonly System.Text.RegularExpressions.Regex FirstIntRe =
+        new(@"\d+", System.Text.RegularExpressions.RegexOptions.Compiled);
+
     public static int FirstInt(string s, int fallback)
     {
-        var m = System.Text.RegularExpressions.Regex.Match(s ?? "", @"\d+");
+        var m = FirstIntRe.Match(s ?? "");
         return m.Success ? int.Parse(m.Value) : fallback;
     }
 

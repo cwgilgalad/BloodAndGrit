@@ -2131,7 +2131,7 @@
   "speed": "clumsy afoot; tireless aloft",
   "saves": "Fort +4, Ref +6, Will +1",
   "attacks": "beak +2 (1d3, and only if you corner it)",
-  "special": "Reads the country for you. Has no interest in a fight and none in a living man; a wheel of them turning slow over a far ridge is the plainest message the frontier sends, and it is always about something already finished.",
+  "special": "Reads the country for you. Has no interest in a fight and none in a living man; a wheel of them turning slow over a far ridge is the plainest message the frontier sends, always about something already finished.",
   "dread": "\u2014",
   "puttingItDown": "Leave it to its work. Killing one tells you nothing and costs you the next message it would have carried.",
   "mark": "",
@@ -2180,7 +2180,7 @@
   "lore": [
    "Seven hundred pounds in the rut, and out of his right mind from September to the snow. Through the season he does not eat, does not sleep, and bugles all night for the pleasure of picking a fight; he is defending a harem of cows a man on the trail cannot even see, and he takes any moving thing in that meadow as a rival who has come to take them. He has fought a wagon. He has fought a locomotive. He will certainly fight a horse, and the rack he carries is five feet across and comes at the chest."
   ],
-  "found": "High meadows and timber edges through the autumn rut, and the winter range in the hard months. Heard long before he is seen \u2014 that whistling scream across a park at dusk is an address, and it is directed at you.",
+  "found": "High meadows and timber edges through the autumn rut, and the winter range in the hard months. Heard long before he is seen \u2014 that whistling scream across a park at dusk is an address, directed at you.",
   "keeperNote": "",
   "witness": ""
  },
@@ -2222,7 +2222,7 @@
   "lore": [
    "The shadow that takes the lamb, and the one predator on the range that a herder can never do a thing about. It works from a height no rifle honestly reaches, folds, and arrives at better than a hundred miles an hour, and the first the flock knows of it is a lamb going sideways in the grass. It has been known to take a fawn, a fox, and now and again a small dog off open ground. Against a man it does nothing at all unless he has climbed to the nest, at which point it becomes a different proposition entirely."
   ],
-  "found": "Open country with cliffs or high timber to nest in \u2014 canyon rims, buttes, and mountain fronts. Over lambing grounds in the spring, which is the whole of the trouble.",
+  "found": "Open country with cliffs or high timber to nest in \u2014 canyon rims, buttes, and mountain fronts. Over lambing grounds in the spring, and there lies the trouble.",
   "keeperNote": "",
   "witness": ""
  },
@@ -2346,7 +2346,7 @@
   "puttingItDown": "Stay out of the still water and off the log you meant to sit on. Get the bitten man to a doctor while the arm is still worth saving.",
   "mark": "",
   "lore": [
-   "The snake that comes toward you, which is a thing no other snake on the continent does. A cottonmouth threatened will hold its ground and gape \u2014 that white throat is where the name comes from \u2014 and there are enough sober accounts of one swimming a deliberate line at a wading man that the country has stopped arguing about it. The venom is the ugly kind: it kills the flesh around the bite, and a hand that takes a bad one in swamp country a hundred miles from a doctor is often not a hand much longer."
+   "The snake that comes toward you. No other snake on the continent does that. A cottonmouth threatened holds its ground and gapes \u2014 that white throat is where the name comes from \u2014 and there are enough sober accounts of one swimming a deliberate line at a wading man that the country has stopped arguing about it. The venom is the ugly kind: it kills the flesh around the bite, and a hand that takes a bad one in swamp country a hundred miles from a doctor is often not a hand much longer."
   ],
   "found": "Still and slow water in the hot country \u2014 sloughs, backwaters, rice ditches, cypress swamps. On the bank, on the log, and in the water with you; met while wading, and while sitting down where a log looked convenient.",
   "keeperNote": "",
@@ -2430,9 +2430,9 @@
   "puttingItDown": "The thicket is the whole problem. Get to open country or a tree; fighting a sounder in its own brush is how the dogs die and then the men.",
   "mark": "",
   "lore": [
-   "The whole family, in heavy brush, which is a very different animal from the lone razorback. A sounder runs to twenty head \u2014 sows, shoats, and a pair of old boars on the edges \u2014 through cover a man cannot see ten feet into, and it moves like one thing. They cut across, wheel in the thicket, and come back through from a direction nobody was watching, and they do this in country where a rifle is worth less than a good knife and a stout tree."
+   "The whole family, in heavy brush \u2014 a very different animal from the lone razorback. A sounder runs to twenty head \u2014 sows, shoats, and a pair of old boars on the edges \u2014 through cover a man cannot see ten feet into, and it moves like one thing. They cut across, wheel in the thicket, and come back through from a direction nobody was watching, and they do this in country where a rifle is worth less than a good knife and a stout tree."
   ],
-  "found": "Bottomland thickets, cane brakes, and swamp margins, rooting at dawn and dusk. Found by the dogs, which is how most of these fights start and how a good many dogs finish.",
+  "found": "Bottomland thickets, cane brakes, and swamp margins, rooting at dawn and dusk. Found by the dogs. That is how most of these fights start, and how a good many dogs finish.",
   "keeperNote": "",
   "witness": ""
  },
@@ -2511,10 +2511,10 @@
   "attacks": "the press +9 (2d6+4 to whatever is caught among them)",
   "special": "Not yet a stampede \u2014 and one lightning-crack from it. A trail herd bedded down is a hill of nerves; it mills, drifts, and swallows a man on foot without ever meaning to, and everything the outfit does at night is done to keep it from becoming the other thing.",
   "dread": "\u2014",
-  "puttingItDown": "Ride the circle and sing to them, which is what the singing was always for. Once it breaks, see The Stampede, and pray for room.",
+  "puttingItDown": "Ride the circle and sing to them, which is what the singing was always for \u2014 and on most outfits the hand who taught the rest of them how is the segundo. Once it breaks, see The Stampede, and pray for room.",
   "mark": "",
   "lore": [
-   "Three thousand head, bedded down, and one bad noise from being something else entirely. A trail herd at rest is not a peaceful thing; it is a hill of nerves that mills and drifts and swallows a man on foot without ever intending him any harm, and every single thing an outfit does at night \u2014 the night guard, the slow circle, the singing that the singing was always actually for \u2014 is done to keep it from turning into the entry four pages back."
+   "Three thousand head, bedded down, and one bad noise from being something else entirely. The outfit holding it is eleven or twelve hands, and on the great drives three of those are Black or Mexican as a matter of plain arithmetic \u2014 the night guard that keeps this from becoming a disaster is worked in shifts by whoever can sing and stay awake. A trail herd at rest is not a peaceful thing; it is a hill of nerves that mills and drifts and swallows a man on foot without ever intending him any harm, and every single thing an outfit does at night \u2014 the night guard, the slow circle, the singing that the singing was always actually for \u2014 is done to keep it from turning into the entry four pages back."
   ],
   "found": "The bed ground, every night of a drive, and any holding pasture where a big herd is gathered. Worst on a close night with lightning in it, on the first week out, and anywhere the ground ahead is broken.",
   "keeperNote": "",
@@ -2577,7 +2577,7 @@
   "puttingItDown": "Men rope these out of the brasada for money and count the broken bones as part of the wage. Take them at night on open ground, or leave them the brush.",
   "mark": "",
   "lore": [
-   "Cattle that went wild and got clever. The ladinos of the thorn brush are longhorns bred out of a hundred years of strays, and the brush has made them nocturnal, solitary, and genuinely hostile in a way ordinary range stock never is. Six feet of horn tip to tip, a bull will lie up in a thicket all day and charge anything that comes in after him, and he has a settled hatred of horses and the men on top of them. Outfits rope them out of the brasada for money and count broken bones as part of the wage."
+   "Cattle that went wild and got clever. The ladinos of the thorn brush are longhorns bred out of a hundred years of strays, and the brush has made them nocturnal, solitary, and genuinely hostile in a way ordinary range stock never is. Six feet of horn tip to tip, a bull will lie up in a thicket all day and charge anything that comes in after him, and he has a settled hatred of horses and the men on top of them. The brush poppers who rope them out of the brasada for money are mostly vaqueros, working in leather from throat to boot, and they count broken bones as part of the wage."
   ],
   "found": "The thorn brush of the south country \u2014 mesquite, prickly pear, and catclaw so thick a rider works it in leather from throat to boot. Moving to water at night, lying up in the thickets by day.",
   "keeperNote": "",
@@ -2850,10 +2850,10 @@
   "puttingItDown": "The courthouse, if the courthouse is honest, and a hard question about who paid the clerk if it is not. Shooting them proves their case for them.",
   "mark": "",
   "lore": [
-   "Men with your paper in their pocket, which is a worse thing to face than men with guns. A claim is a piece of ground and a piece of writing, and the writing is where the theft is done: a filing altered, a witness bought, an assessment work requirement quietly missed and quietly noticed. By the time anyone rides out to argue, there are four men on the ground who need only sit there, do very little, and be extremely lawful about it until the paper catches up."
+   "Men with your paper in their pocket, which is a worse thing to face than men with guns. A claim is a piece of ground and a piece of writing, and the writing is where the theft is done: a filing altered, a witness bought, an assessment work requirement quietly missed and quietly noticed. By the time anyone rides out to argue, there are four men on the ground who need only sit there, do very little, and be extremely lawful about it until the paper catches up. And the law is a great deal easier to bend against some claimants than others \u2014 a Chinese company that worked a bar for six years and paid the foreign miners' tax on every ounce of it, or a New Mexican family whose grant is older than the territory, can find the whole apparatus of the recorder's office quietly arranged against them."
   ],
   "found": "Placer diggings, lode claims, homestead sections, and water rights \u2014 anywhere the ground has value and the record of who owns it lives sixty miles away in a wooden building.",
-  "keeperNote": "This is a fight the party mostly cannot shoot its way out of, which is the point of putting it early. Let them discover that the recorder is the real antagonist, and that riding to town is more use than riding to the claim.",
+  "keeperNote": "This is a fight the party mostly cannot shoot its way out of. That is the point of putting it early. Let them discover that the recorder is the real antagonist, and that riding to town is more use than riding to the claim. If the wronged claimant is one the county is already inclined to rule against, do not make that the lesson of the scene \u2014 make it the reason the paper matters, and let the claimant be the one who knows exactly which filing to pull and which date will hang them.",
   "witness": ""
  },
  {
@@ -2889,7 +2889,7 @@
   "attacks": "rifle +4 (1d8+2, from cover, and only if pressed)",
   "special": "Would much rather ride off. Three or four men altering brands by lantern light; they came for cattle, they will run at the first real resistance, and they will kill without hesitation if running stops being an option.",
   "dread": "\u2014",
-  "puttingItDown": "They break the moment the odds turn. Follow them and you are in their country; corner them and you have made this a killing, which is what neither side wanted.",
+  "puttingItDown": "They break the moment the odds turn. Follow them and you are in their country; corner them and you have made this a killing that neither side wanted.",
   "mark": "",
   "lore": [
    "Men who do their work at night, and the commonest crime in the cattle country by a distance. Rustling is a business: a running iron, a wet blanket, a hot fire, and a brand redrawn into a different brand by men who know exactly which alterations the county will not look at twice. They are cowhands, mostly \u2014 often the same men who worked the outfit last season \u2014 and they are not killers by trade or by preference. But a man caught at it hangs, and every one of them knows it, which makes a cornered rustler a far worse proposition than a bold one."
@@ -2913,7 +2913,7 @@
   "puttingItDown": "Get out, get behind the bar, or get to the door. A drawn gun ends the brawl and starts something the town will remember for twenty years.",
   "mark": "",
   "lore": [
-   "Thirty men and no plan at all. It starts between two of them over a card, a woman, a slur, or a debt, and it is a fistfight for about four seconds. Then somebody swings at somebody who was not involved, and the room discovers it has opinions. Tables go over, the lamps come down, and the stove \u2014 there is always a stove \u2014 goes over with a load of coals into a floor that has been soaked in whiskey since 1868."
+   "Thirty men and no plan at all. It starts between two of them over a card, a woman, a slur, or a debt, and stays a fistfight for about four seconds. Then somebody swings at somebody who was not involved, and the room discovers it has opinions. Tables go over, the lamps come down, and the stove \u2014 there is always a stove \u2014 goes over with a load of coals into a floor that has been soaked in whiskey since 1868."
   ],
   "found": "Any saloon, dance hall, or bunkhouse with enough men and enough liquor in it, most reliably on a payday or the last night of a drive.",
   "keeperNote": "Run it as terrain rather than as an enemy: the room is the threat, and each round asks where a character is standing rather than who they are fighting. The fire is the real clock. A party that puts the stove upright before it puts anybody down has just bought itself a town full of friends.",
@@ -2955,7 +2955,7 @@
   "puttingItDown": "They deal, always. The question is only what you have that is worth more than what they are already carrying, and whether you can live with the trade.",
   "mark": "",
   "lore": [
-   "Traders in what should not be traded. Comancheros work the old routes out of the settlements onto the plains with mule trains of powder, lead, whiskey, iron, and repeating rifles, and they come back with cattle that had brands, horses that had riders, and sometimes with captives to be ransomed to whoever wants them most. They are scrupulously neutral. They will guide the party, feed them, sell them exactly what they need, and sell the same to whoever the party is riding against, and see nothing at all inconsistent in it."
+   "Traders in what should not be traded. Comancheros are New Mexican \u2014 families out of the Pecos and the Canadian who have worked the old routes onto the llano for four generations, speak Comanche and Kiowa as well as they speak Spanish, and are trusted on that plain in a way no Anglo trader has ever managed. They go out with mule trains of powder, lead, whiskey, iron, and repeating rifles, and they come back with cattle that had brands, horses that had riders, and sometimes with captives to be ransomed to whoever wants them most. They are scrupulously neutral. They will guide the party, feed them, sell them exactly what they need, and sell the same to whoever the party is riding against, and see nothing at all inconsistent in it."
   ],
   "found": "The llano and the deep plains, the old trading grounds, the borderlands. Met on the road with a wagon train and an unhurried, friendly manner that is entirely genuine.",
   "keeperNote": "Make them useful before making them a problem. A Comanchero the party has bought from twice is a far better complication than one they simply fight, and the ransom conversation \u2014 where the captive is real, and the price is real \u2014 is the best scene the entry has in it.",
@@ -3018,7 +3018,7 @@
   "puttingItDown": "Getting the horses back matters more than getting the men. Hobble, sidehobble, and stand a watch \u2014 and know that the country hangs these faster than it hangs killers.",
   "mark": "",
   "lore": [
-   "Men who leave you afoot, which on the high plains in August is a sentence with a delay in it. A good horse thief never fires a shot: he comes in on the picket line in the last dark hour, cuts what he wants, and is over the county line before the coffee is on. The frontier hangs these men faster and with less discussion than it hangs murderers, and every one of them knows the arithmetic, which is why the ones who are caught fight like the cornered thing they are."
+   "Men who leave you afoot, which on the high plains in August is a sentence with a delay in it. A good horse thief never fires a shot: he comes in on the picket line in the last dark hour, cuts what he wants, and is over the county line before the coffee is on. The frontier hangs these men faster and with less discussion than it hangs murderers, and every one of them knows the arithmetic, so the ones who are caught fight like the cornered thing they are."
   ],
   "found": "Night camps, remudas, livery corrals, and any picket line within a hard ride of a border or a broken country. Worst in a moonless week.",
   "keeperNote": "Do not stage this as a fight. Stage it as a morning: the party wakes, and the horses are gone, and everything they intended to do that week is now a different problem. What they do next \u2014 track, buy, steal in turn, or walk \u2014 will tell you more about them than a battle would.",
@@ -3042,7 +3042,7 @@
    "The town, with a rope. Every man in it is somebody the party has already met \u2014 the liveryman, the storekeeper, two hands off the Bar T, the fellow who fixed their wagon \u2014 and not one of them would do this by himself, or is entirely sure how he came to be doing it now. It has no leader, exactly. It has three or four loud men near the front and a great many quiet ones behind who are waiting to see. That back half is the whole of the party's opportunity."
   ],
   "found": "Outside a jail, at the livery, on the courthouse steps \u2014 wherever a prisoner is being held and the crime was against someone the town loved. Forms in the evening; hardest to break after full dark.",
-  "keeperNote": "This is a talking encounter with a clock on it, and the clock is the only thing that makes it dangerous. Track it as a countdown the party can push back with each successful appeal. Let them win it, once, in front of everybody \u2014 and let the loud men at the front remember them for it.",
+  "keeperNote": "This is a talking encounter with a clock on it, and the clock is the only thing that makes it dangerous. Track it as a countdown the party can push back with each successful appeal. Let them win it, once, in front of everybody \u2014 and let the loud men at the front remember them for it. Know before you start whether the man in that cell is guilty, because the crowd does not know and will not ask; and know that in this country a mob assembles a great deal faster when the accused is Black, Mexican, or Chinese, which is a fact the party's Keeper should use to raise the stakes and never to stage a spectacle. The prisoner gets a name, a trade, a family in the crowd, and something to say.",
   "witness": ""
  },
  {
@@ -3141,10 +3141,10 @@
   "attacks": "the wall (2d6+4 and swept under, to everything in the channel)",
   "special": "From a storm you cannot see. Comes down a bone-dry arroyo under a clear sky, carrying trees and boulders, out of rain that fell twenty miles upcountry an hour ago.",
   "dread": "\u2014",
-  "puttingItDown": "Get up the bank \u2014 any bank, immediately, before deciding whether it is necessary. There is no swimming this, and it is down again in an hour, which is what fools the next party through.",
+  "puttingItDown": "Get up the bank \u2014 any bank, immediately, before deciding whether it is necessary. There is no swimming this. An hour later it is dry again, and that is what fools the next party through.",
   "mark": "",
   "lore": [
-   "The dry wash, suddenly full, out of a sky directly overhead that is doing nothing at all. Rain that fell twenty miles up the country an hour ago gathers into a channel that has been bone dry for a season, and it arrives as a moving wall four feet high with trees and boulders rolling along inside it. The sound comes perhaps thirty seconds ahead of the water. An arroyo is the flattest, easiest, most sheltered ground in that whole country, which is exactly why people camp in it."
+   "The dry wash, suddenly full, out of a sky directly overhead that is doing nothing at all. Rain that fell twenty miles up the country an hour ago gathers into a channel that has been bone dry for a season, and it arrives as a moving wall four feet high with trees and boulders rolling along inside it. The sound comes perhaps thirty seconds ahead of the water. An arroyo is the flattest, easiest, most sheltered ground in that whole country. People camp in it for exactly that reason."
   ],
   "found": "Desert washes, arroyos, slot canyons, and dry creek beds in the thunderstorm season. Announced by a sound like a train and by nothing else whatever.",
   "keeperNote": "The warning is thirty seconds long, so put it in the fiction and not in a roll: describe the sound, and give the table one round to act. Whoever spends that round saving the gear instead of climbing is the object lesson.",
@@ -3165,10 +3165,10 @@
   "puttingItDown": "Break the leader and the rest are Road Agents again. Kill the leader and the smartest of the rest becomes the leader, and he has learned from watching you.",
   "mark": "",
   "lore": [
-   "Road agents with a leader and a name, which is the whole difference between this entry and the one in Chapter IV. A gang is a business with a payroll and a plan: the ground is scouted a week ahead, the telegraph operator has been paid, there are fresh horses cached at twelve miles and again at thirty, and there is a valley somewhere full of people who will swear the whole gang was at a dance. They are locally popular. That is not sentiment \u2014 they spend their money in that valley, and the bank they robbed foreclosed on it."
+   "Road agents with a leader and a name \u2014 the whole difference between this entry and the one in Chapter IV. A gang is a business with a payroll and a plan: the ground is scouted a week ahead, the telegraph operator has been paid, there are fresh horses cached at twelve miles and again at thirty, and there is a valley somewhere full of people who will swear the whole gang was at a dance. They are locally popular. That is not sentiment \u2014 they spend their money in that valley, and the bank they robbed foreclosed on it."
   ],
   "found": "The stage road, the bank town, the payroll car, and the county that shelters them afterward. Found in the papers long before they are found on the ground.",
-  "keeperNote": "The gang is the best long antagonist in this chapter because it is a mirror: it does what the party does, with the same skills, for reasons the party can understand. Give the leader one virtue the party has to respect, and the campaign writes itself.",
+  "keeperNote": "Nothing else in this chapter carries a campaign as far, because the gang is a mirror: it does what the party does, with the same skills, for reasons the party can understand. Give the leader one virtue the party has to respect, and the campaign writes itself.",
   "witness": ""
  },
  {
@@ -3228,7 +3228,7 @@
   "puttingItDown": "Nothing the party owns stops fifty men. Outlast them: the country turns, the territory wires the army, and the whole expedition ends with everyone arrested and nobody punished.",
   "mark": "",
   "lore": [
-   "A private army with the law's blessing, and the point at which a range war stops pretending. Fifty hired men come in by train with horses, supply wagons, a surgeon, and a list of seventy names, and they carry warrants signed by a judge who has since gone east on business. They are competent, they are supplied, and they intend to work down the list in order. What actually stops them is never a gun \u2014 it is the county, three hundred neighbors, and a telegraph key."
+   "A private army with the law's blessing, and the point at which a range war stops pretending. Fifty hired men come in by train with horses, supply wagons, a surgeon, and a list of seventy names \u2014 and a list like that is never sorted by evidence. The small outfits on it are the ones with the least standing to object: homesteaders, Mexican families holding grant land the association would like reassigned, anyone the county courthouse has learned it can rule against without consequence. They carry warrants signed by a judge who has since gone east on business. They are competent, they are supplied, and they intend to work down the list in order. What actually stops them is never a gun \u2014 it is the county, three hundred neighbors, and a telegraph key."
   ],
   "found": "One county, once, and it becomes the thing everybody in the Territory talks about for a generation. The party will be somewhere on the list, or will be asked to be.",
   "keeperNote": "Do not run this as a fight the party can win. Run it as a siege and a scramble: get the names warned, get to the telegraph, hold a ranch house for two days until help comes. The ending is deliberately unjust \u2014 everyone is arrested, the case is moved, nobody hangs \u2014 and that injustice is worth more to a campaign than a victory.",

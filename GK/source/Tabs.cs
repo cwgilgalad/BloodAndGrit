@@ -593,6 +593,14 @@ public partial class MainForm
             $"THE TOWN OF {Db.Pick("townFront").ToUpper()} {Db.Pick("townBack").ToUpper()}\n" +
             $"  What ails it:  {Db.Pick("townAils")}\n" +
             $"  What it hides: {Db.Pick("townSecret")}"), 230));
+        // The city generator's four rolls answer the four questions the Keeper's Book (Ch. XIV)
+        // says a city needs beyond a town's want/tell/secret: an industry quarter, a machine,
+        // a wrong note, and something for a country posse to actually be hired for.
+        left.Controls.Add(Btn("A city, in four rolls", (s, e) => Gen(
+            $"A CITY — {Db.Pick("cityQuarter").ToUpper()}\n" +
+            $"  Who really runs it: {Db.Pick("cityMachine")}\n" +
+            $"  Its wrong note:     {Db.Pick("cityWrongNote")}\n" +
+            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230));
         left.Controls.Add(Btn("A face, in four rolls", (s, e) => Gen(
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
@@ -741,6 +749,7 @@ public partial class MainForm
             ("Arms of the Frontier",      RefLeafArms),
             ("Goods & Provisions",        RefLeafGoods),
             ("Skills, Saves & Abilities", RefLeafSkills),
+            ("Running in Town",           RefLeafCity),
         };
 
         referencePage.Controls.Add(Pad(refView, 14));
@@ -837,6 +846,38 @@ public partial class MainForm
             new[] { "Slowed",    "Lose one Beat each turn while it lasts; may still defend" },
             new[] { "Stunned",   "Drop what you hold; lose all Beats this round; −2 Defense" });
         RI(r, "Tag any of these onto a combatant from the Tracker's ＋ Condition ▾ menu.");
+    }
+
+    // Keeper's Book Ch. XIV in one leaf: what actually changes when the game moves off the
+    // range and into Dodge, Kansas City, or Butte. Nothing here is a new rule — it is the
+    // existing rules, plus the handful of rulings a city keeps asking for.
+    void RefLeafCity(RichTextBox r)
+    {
+        RH(r, "The City  (Keeper's Book, Ch. XIV)");
+        RT(r, "A crowd is better cover than a wilderness. In a town of two hundred a thing that takes one soul a week " +
+              "is noticed by Tuesday; in Kansas City it feeds forever, because a missing stranger is a filing. Run the " +
+              "same rules — the city changes what they cost, not what they are.");
+
+        RH(r, "The Six Changes");
+        RTbl(r, new[] { 22, 44 }, new[] { "At the table", "What it costs" },
+            new[] { "The deadline",        "Guns checked north of the tracks by ordinance — the party is disarmed lawfully, by their own choice" },
+            new[] { "Firing a shot",       "An arrest, a coroner's inquest, two newspapers, a bail bond. Charge for it; never forbid it" },
+            new[] { "Witnesses & the press","Nothing done in public stays private — and a thing can be put IN the paper too" },
+            new[] { "Help exists",         "Police, hospital, coroner — and a man raving about the dead is committed, not ignored" },
+            new[] { "Paper is the tracking","Newspaper morgue, city directory, recorder, inquest book, hospital register, a bought telegraph clerk" },
+            new[] { "Dread moves indoors", "The killing floor at three, the tenement stair, the ore drift, the fog. DCs unchanged; there is nowhere to ride to" });
+
+        RH(r, "The Cult, Chartered");
+        RT(r, "In the country a cult is a barn and eleven people. In a city it incorporates — a benevolent association " +
+              "with a president, a treasurer, minute-books, a lawyer, and the coroner on its roll. It need not silence a " +
+              "witness; it can outspend one, sue one, or have one committed. Its one weakness is publicity, so the last " +
+              "scene of a city campaign is usually an exposure rather than a gunfight.");
+        RI(r, "Give the party one honest official, well down the ladder, with no power and a family.");
+
+        RH(r, "Keeping the Tone");
+        RT(r, "Keep the party's country competence valuable — they read sign, sit a horse, and stay calm with a gun, and " +
+              "the city has almost nobody who can do all three. Keep the money problems mundane. And ride out to a ranch, " +
+              "a mine, or a rail camp every third night, so the city is a place they come back to rather than a box.");
     }
 
     void RefLeafNerve(RichTextBox r)

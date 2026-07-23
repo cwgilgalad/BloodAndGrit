@@ -13,7 +13,7 @@
     <AssemblyName>GritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.10.1</Version>
+    <Version>1.11.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -39,7 +39,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-    <!-- v1.10.2 startup pass, MEASURED this time — the v1.10.0 pass reasoned about JIT in the
+    <!-- v1.11.0 startup pass, MEASURED this time — the v1.10.0 pass reasoned about JIT in the
          abstract and made launch worse, which is what the user actually felt. Four publish
          configurations, timed on this laptop from Start-Process to a real MainWindowHandle,
          each first launch done on a brand-new copy of the exe so Defender's first-execution
