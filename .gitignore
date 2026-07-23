@@ -4,6 +4,12 @@ GK/source/obj/
 GK/source/publish/
 GK/smoke/bin/
 GK/smoke/obj/
+# Never commit the published exe. Dropping ReadyToRun and single-file compression in
+# v1.11.0 (a 3.5x faster first launch — see the csproj) took it to ~155 MB, past
+# GitHub's 100 MB per-file limit; an autosync run that swept it in made the push fail
+# with an HTTP 408 that reads like a network problem and is not one. It ships the way
+# GritKeeper/app/ already does: as an asset on the GitHub Release.
+GK/publish/
 
 # --- packaged deliverables (regenerated from GK/source; app/ is ~160 MB of
 #     self-contained .NET runtime, the zip ~70 MB — both rebuilt on release) ---

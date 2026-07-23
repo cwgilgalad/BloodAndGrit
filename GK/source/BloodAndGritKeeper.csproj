@@ -13,7 +13,7 @@
     <AssemblyName>GritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.10.1</Version>
+    <Version>1.11.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -38,17 +38,39 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 
-    <!-- v1.10.0 startup pass. ReadyToRun precompiles the IL to native so cold start skips
-         most JIT (the biggest launch lever for a self-contained WinForms app); compression is
-         deliberately kept ON so the release binary stays ~one file of modest size — R2R already
-         carries the startup win, and the decompress cost is small next to the JIT it removes.
-         InvariantGlobalization drops the ICU culture load at startup and is safe here because
-         every number the app writes (Pdf.cs / MapGen.cs coordinates) already goes through an
-         explicit CultureInfo.InvariantCulture formatter, so comma-decimal locales can't corrupt
-         an export. TieredPGO stays at its .NET 8 default (on). -->
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- v1.11.0 startup pass, MEASURED this time — the v1.10.0 pass reasoned about JIT in the
+         abstract and made launch worse, which is what the user actually felt. Four publish
+         configurations, timed on this laptop from Start-Process to a real MainWindowHandle,
+         each first launch done on a brand-new copy of the exe so Defender's first-execution
+         scan is included the way a freshly-downloaded release really behaves:
+
+           config                    exe size   first launch   every launch after
+           R2R + compression (v1.10.0)  73 MB      18.0 s            1.64 s
+           R2R, no compression         172 MB      14.5 s            0.88 s
+           no R2R, no compression      155 MB       5.1 s            1.00 s   <- shipping this
+
+         Compression is the expensive one: the bundle's ~39 MB of native libraries must be
+         inflated and written to %TEMP%\.net\GritKeeper on the first run of every new build,
+         and Defender then scans what came out. ReadyToRun roughly doubles the payload that
+         has to go through that, so the two together cost 13 seconds of one-time launch to buy
+         0.12 s of steady-state — a bad trade for an app that is launched, not benchmarked.
+         Dropping both makes the first launch 3.5x faster and steady launches 1.6x faster;
+         tiered JIT covers what R2R was supposed to. The exe grows to ~155 MB on disk but the
+         SHIPPED ZIP actually SHRINKS (65.0 MB vs 67.9 MB) — Deflate does the same job once,
+         at download time, instead of on the user's clock at every install.
+         Do not re-enable either of these without re-running that measurement.
+
+         InvariantGlobalization stays: it drops the ICU culture load at startup and is safe
+         here because every number the app writes (Pdf.cs / MapGen.cs coordinates) already goes
+         through an explicit CultureInfo.InvariantCulture formatter, so comma-decimal locales
+         can't corrupt an export. TieredPGO stays at its .NET 8 default (on).
+
+         Also measured and REJECTED: IncludeNativeLibrariesForSelfExtract=false. It publishes
+         and signs cleanly but the app never opens a window (timed out at 90 s) — WinForms
+         self-contained single-file needs its native libraries extracted. -->
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <PublishReadyToRun>false</PublishReadyToRun>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 

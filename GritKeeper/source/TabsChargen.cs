@@ -161,19 +161,40 @@ public partial class MainForm
     }
 
     // ============================================================ LEVEL UP
-    // Advance one seated soul by a single level, choosing what the new level unlocks. Only
-    // sheet-backed souls level by the book — a hand-entered row has no character record, so
-    // there's nothing to grow. The heavy lifting (and every rule) lives in CharGen.LevelUp;
-    // this is just the picker. Any choice left on "(let the book choose)" is drawn the way
-    // Generate would, and CharGen.LevelUp re-draws anything that turns out illegal.
+    // Advance one seated soul by a single level, choosing what the new level unlocks. The
+    // heavy lifting (and every rule) lives in CharGen.LevelUp; this is just the picker. Any
+    // choice left on "(let the book choose)" is drawn the way Generate would, and
+    // CharGen.LevelUp re-draws anything that turns out illegal.
+    //
+    // Every road out of here that ISN'T a level-up says so in a dialog. It used to write the
+    // reason to the roll log and return, which — on the far side of the screen from the
+    // button, in a list that scrolls — is indistinguishable from a button that does nothing.
     internal void LevelUpMember(PartyMember p, IWin32Window owner)
     {
-        if (p == null) { Log("Select a soul first."); return; }
-        if (p.Sheet == null)
-        { Log($"{p.Name} has no character sheet — build them on the New Soul tab first; a hand-entered row can't level by the book."); return; }
+        if (p == null)
+        {
+            MessageBox.Show(owner, "Pick a soul on the Posse table first, then level them up.",
+                "Level up", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        if (p.Level >= 10)
+        {
+            MessageBox.Show(owner,
+                $"{p.Name} already stands at 10th level — the frontier's ceiling. There's nothing "
+                + "above it in the book.",
+                "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        if (p.Sheet == null && !BackfillSheet(p, owner)) return;
         var cur = p.Sheet;
         var g = CharGen.PreviewLevelUp(cur);
-        if (g.AtCeiling) { Log($"{p.Name} already stands at 10th level — the frontier's ceiling."); return; }
+        if (g.AtCeiling)
+        {
+            MessageBox.Show(owner,
+                $"{p.Name}'s sheet already stands at 10th level — the frontier's ceiling.",
+                "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
 
         using var f = new Form
         {
@@ -297,6 +318,61 @@ public partial class MainForm
 
     static string Ordinal(int n) => n + (n % 100 is >= 11 and <= 13 ? "th"
         : (n % 10) switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th" });
+
+    // ------------------------------------------------------------ SHEETLESS SOULS
+    // A posse row with no CharacterSheet can't level: there's nothing to grow. Two ways a
+    // row ends up that way — a Keeper typed it in by hand, or (the one that bit us) it was
+    // seeded by a build older than v1.9.0, when the first-launch demo posse was bare rows
+    // rather than full sheets. Those rows persist in session.json forever, so the ✦ Level up
+    // button quietly did nothing for the six souls most Keepers actually have seated. It used
+    // to say so in the roll log only, which reads as a dead button, not as an explanation.
+    //
+    // So offer the repair instead of the complaint: draw a book-legal sheet for their Calling
+    // at their current level and hang it on the row. Returns true when the soul now has a
+    // sheet and the level-up may proceed.
+    bool BackfillSheet(PartyMember p, IWin32Window owner)
+    {
+        bool known = !string.IsNullOrWhiteSpace(p.Calling)
+                     && CharGen.D.callings.Any(c => c.name == p.Calling);
+        if (!known)
+        {
+            MessageBox.Show(owner,
+                $"{p.Name} has no character sheet, and \"{p.Calling}\" isn't one of the seventeen "
+                + "Callings in Chapter IV — so there's no table to grow them by.\r\n\r\n"
+                + "Set their Calling on the Posse tab to a Calling from the book, or build them "
+                + "on the New Soul tab, and they'll level by the book from then on.",
+                "Level up — no sheet to grow",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+        }
+
+        var answer = MessageBox.Show(owner,
+            $"{p.Name} is a hand-entered row — no character sheet behind it, so there's nothing "
+            + "for the book to advance.\r\n\r\n"
+            + $"Draw one up now? GritKeeper will roll a rules-legal {p.Calling} at "
+            + $"{Ordinal(p.Level)} level, keeping their name and gender, and then level them.\r\n\r\n"
+            + "Their Blood, Nerve, Defense and saves will be replaced by the new sheet's numbers "
+            + "(current Blood and Nerve stay where they are, capped at the new maximums). "
+            + "Notes and Grit are untouched.",
+            "Level up — draw up a sheet?",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        if (answer != DialogResult.Yes) return false;
+
+        int bloodCur = p.BloodCur, nerveCur = p.NerveCur;
+        var s = CharGen.Generate(Math.Clamp(p.Level, 1, 10), rolled: false, fixedCalling: p.Calling);
+        s.Name = p.Name;
+        // Keep the row's gender; where the row has none — every pre-v1.9.0 demo row — leave it
+        // blank rather than let the generator's coin-flip write one in. Ruth "Six-Finger"
+        // Calloway coming back from this as a Man is worse than her coming back unstated.
+        s.Gender = p.Gender ?? "";
+        p.Sheet = s;
+        SyncMemberFromSheet(p);
+        p.BloodCur = Math.Min(bloodCur, p.BloodMax);
+        p.NerveCur = Math.Min(nerveCur, p.NerveMax);
+        posseGrid?.Refresh();
+        Log($"{p.Name} gets a sheet — a {Ordinal(s.Level)}-level {s.Calling} out of {s.Origin}.");
+        return true;
+    }
 
     // ============================================================ THE TWEAK DIALOG
     // Hand adjustments to a finished sheet — every number and every list editable.

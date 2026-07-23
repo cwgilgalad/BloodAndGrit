@@ -167,10 +167,12 @@ public partial class MainForm
           "other tab — lands in the log on the right, so there is always a paper trail.");
 
         H("3 · Know your horrors  (Bestiary)");
-        T("All 110 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
+        T("All 150 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
           "Double-click a creature (or hit ⧉ Pop out) to open it in its own window — open several side by side and " +
           "size the text to the light in the room. From here one click sends a creature to the Encounter builder or " +
-          "drops N copies straight onto the Tracker.");
+          "drops N copies straight onto the Tracker. Sixty-five of the hundred and fifty are the mundane half — " +
+          "the two chapters Beasts of the Living World and Hard Men & Hard Country, which cost no Nerve and never " +
+          "move the Mark. Filter to those for the slow-burn weeks before anything gets up that shouldn't.");
 
         H("4 · Weigh the fight  (Encounter)");
         T("The book's Long Odds math, live. Add creatures, set the party's level, and the bar at the bottom says " +
@@ -185,12 +187,15 @@ public partial class MainForm
           "way around. \"New fight\" clears the foes and keeps the posse; double-click any foe to open its stat block.");
 
         H("6 · When the trail runs dry  (Generators)");
-        T("Every rollable table from The Country in Your Pocket: a town in three rolls, a face in four, rumors, " +
-          "trail events, plunder, omens — and the Grounds tables, an encounter for any terrain with the safe-table " +
-          "rule applied automatically. One click, and the country answers.");
+        T("Every rollable table from The Country in Your Pocket: a town in three rolls, a CITY in four (its quarter, " +
+          "who really runs it, its wrong note, and work for a country posse — Keeper's Book Ch. XIV), a face in four, " +
+          "rumors, trail events, plunder, omens — and the Grounds tables, an encounter for any terrain with the " +
+          "safe-table rule applied automatically. Two grounds are new: The Ordinary Country, for the sessions before " +
+          "the horror, and The Lamplit City. One click, and the country answers.");
 
         H("7 · Survey the country  (Map)");
-        T("A drafting table for frontier maps. Set the ground, the scale (a single gunfight up to weeks of trail), " +
+        T("A drafting table for frontier maps. Set the ground — including The Lamplit City — and the scale (a single " +
+          "gunfight, a homestead, a county, a territory, or a city ward of streets and blocks), " +
           "the hour, and the water; tick a trail, a rail line, a settlement, a grid; and 🎲 New map (Ctrl+G) draws a " +
           "named survey — the same seed and settings always draw the same map, so note the number and you can have " +
           "it back. The Keeper's layer adds the secrets in red; leave it off before showing players. Save as SVG or " +

@@ -138,6 +138,7 @@ public partial class MainForm
     // ============================================================ ENCOUNTER TAB
     DataGridView encGrid;
     NumericUpDown encLevel, encQty;
+    static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
     ProgressBar encBar;
@@ -161,8 +162,9 @@ public partial class MainForm
         var page = new TabPage("Encounter") { BackColor = Paper };
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         top.Controls.Add(Lbl("Party level:"));
-        encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Value = 2, Width = 55, Margin = new Padding(3, 6, 3, 3) };
-        encLevel.ValueChanged += (s, e) => RefreshEncounter();
+        encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Width = 55, Margin = new Padding(3, 6, 3, 3) };
+        encLevel.Value = Math.Clamp(partyLevelHint, 1, 10);     // built on first visit — adopt the loaded value
+        encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);
         top.Controls.Add(Lbl("   Budget = 4 pts per soul in the posse (Posse tab).  Even foe 4 · Mook 1 · Standout 8."));
@@ -199,7 +201,9 @@ public partial class MainForm
             var pick = encounter[e.RowIndex];
             var (cost, role, spoor) = Rules.Cost(pick.Creature.tier, (int)encLevel.Value);
             string name = encGrid.Columns[e.ColumnIndex].Name;
-            if (name == "role") { e.Value = role; if (spoor) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold); } }
+            // SpoorFont is cached: CellFormatting fires per visible cell per repaint, and a
+            // fresh Font each time hands a GDI handle to the finalizer queue on every paint.
+            if (name == "role") { e.Value = role; if (spoor) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = SpoorFont; } }
             if (name == "cost") e.Value = cost;
         };
         encGrid.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) ShowCreatureCard(encounter[e.RowIndex].Creature); };
@@ -319,7 +323,7 @@ public partial class MainForm
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
         bar.Controls.Add(Btn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant (or press Delete)"));
         bar.Controls.Add(Btn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; roundLbl.Text = "Round 1"; Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
+        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -441,7 +445,7 @@ public partial class MainForm
     void NextRound()
     {
         round++;
-        roundLbl.Text = $"Round {round}";
+        if (roundLbl != null) roundLbl.Text = $"Round {round}";
         Log($"— Round {round} —");
     }
 
@@ -529,11 +533,11 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; roundLbl.Text = "Round 1"; return; }
+        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
         foreach (var c in tracker) c.Conditions = "";
-        round = 1; roundLbl.Text = "Round 1"; trkGrid?.Refresh();
+        round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; trkGrid?.Refresh();
         Log("New fight — foes cleared, the posse holds the field, Round 1.");
     }
 
@@ -589,6 +593,14 @@ public partial class MainForm
             $"THE TOWN OF {Db.Pick("townFront").ToUpper()} {Db.Pick("townBack").ToUpper()}\n" +
             $"  What ails it:  {Db.Pick("townAils")}\n" +
             $"  What it hides: {Db.Pick("townSecret")}"), 230));
+        // The city generator's four rolls answer the four questions the Keeper's Book (Ch. XIV)
+        // says a city needs beyond a town's want/tell/secret: an industry quarter, a machine,
+        // a wrong note, and something for a country posse to actually be hired for.
+        left.Controls.Add(Btn("A city, in four rolls", (s, e) => Gen(
+            $"A CITY — {Db.Pick("cityQuarter").ToUpper()}\n" +
+            $"  Who really runs it: {Db.Pick("cityMachine")}\n" +
+            $"  Its wrong note:     {Db.Pick("cityWrongNote")}\n" +
+            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230));
         left.Controls.Add(Btn("A face, in four rolls", (s, e) => Gen(
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
@@ -737,6 +749,7 @@ public partial class MainForm
             ("Arms of the Frontier",      RefLeafArms),
             ("Goods & Provisions",        RefLeafGoods),
             ("Skills, Saves & Abilities", RefLeafSkills),
+            ("Running in Town",           RefLeafCity),
         };
 
         referencePage.Controls.Add(Pad(refView, 14));
@@ -833,6 +846,38 @@ public partial class MainForm
             new[] { "Slowed",    "Lose one Beat each turn while it lasts; may still defend" },
             new[] { "Stunned",   "Drop what you hold; lose all Beats this round; −2 Defense" });
         RI(r, "Tag any of these onto a combatant from the Tracker's ＋ Condition ▾ menu.");
+    }
+
+    // Keeper's Book Ch. XIV in one leaf: what actually changes when the game moves off the
+    // range and into Dodge, Kansas City, or Butte. Nothing here is a new rule — it is the
+    // existing rules, plus the handful of rulings a city keeps asking for.
+    void RefLeafCity(RichTextBox r)
+    {
+        RH(r, "The City  (Keeper's Book, Ch. XIV)");
+        RT(r, "A crowd is better cover than a wilderness. In a town of two hundred a thing that takes one soul a week " +
+              "is noticed by Tuesday; in Kansas City it feeds forever, because a missing stranger is a filing. Run the " +
+              "same rules — the city changes what they cost, not what they are.");
+
+        RH(r, "The Six Changes");
+        RTbl(r, new[] { 22, 44 }, new[] { "At the table", "What it costs" },
+            new[] { "The deadline",        "Guns checked north of the tracks by ordinance — the party is disarmed lawfully, by their own choice" },
+            new[] { "Firing a shot",       "An arrest, a coroner's inquest, two newspapers, a bail bond. Charge for it; never forbid it" },
+            new[] { "Witnesses & the press","Nothing done in public stays private — and a thing can be put IN the paper too" },
+            new[] { "Help exists",         "Police, hospital, coroner — and a man raving about the dead is committed, not ignored" },
+            new[] { "Paper is the tracking","Newspaper morgue, city directory, recorder, inquest book, hospital register, a bought telegraph clerk" },
+            new[] { "Dread moves indoors", "The killing floor at three, the tenement stair, the ore drift, the fog. DCs unchanged; there is nowhere to ride to" });
+
+        RH(r, "The Cult, Chartered");
+        RT(r, "In the country a cult is a barn and eleven people. In a city it incorporates — a benevolent association " +
+              "with a president, a treasurer, minute-books, a lawyer, and the coroner on its roll. It need not silence a " +
+              "witness; it can outspend one, sue one, or have one committed. Its one weakness is publicity, so the last " +
+              "scene of a city campaign is usually an exposure rather than a gunfight.");
+        RI(r, "Give the party one honest official, well down the ladder, with no power and a family.");
+
+        RH(r, "Keeping the Tone");
+        RT(r, "Keep the party's country competence valuable — they read sign, sit a horse, and stay calm with a gun, and " +
+              "the city has almost nobody who can do all three. Keep the money problems mundane. And ride out to a ranch, " +
+              "a mine, or a rail camp every third night, so the city is a place they come back to rather than a box.");
     }
 
     void RefLeafNerve(RichTextBox r)
@@ -972,6 +1017,10 @@ public partial class MainForm
 
         var notesGroup = new GroupBox { Text = "The Keeper's ledger  (auto-saves on exit && every five minutes)", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         notesBox = new TextBox { Multiline = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
+        // This tab is built on first visit, so the box takes over from the field that has
+        // been holding the ledger since load, and keeps it fed from here on.
+        notesBox.Text = notesText;
+        notesBox.TextChanged += (s, e) => notesText = notesBox.Text;
         var nbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         nbar.Controls.Add(Btn("Stamp the date", (s, e) =>
         {

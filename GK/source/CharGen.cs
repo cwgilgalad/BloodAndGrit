@@ -158,6 +158,19 @@ public static class CharGen
         return (null, Db.Pick("npcGiven"));
     }
 
+    // A whole name for a soul. Most of the frontier's names are a given name drawn against
+    // gender plus a surname drawn separately, and mixing those two pools freely is right —
+    // "Refugio Whitlock" and "Jubal Deets" are both perfectly ordinary 1885. Some names do
+    // NOT decompose that way, though: a Chinese name puts the surname first, and pairing one
+    // half of it with a surname from the general pool produces nonsense. Those live in a
+    // whole-name pool and are drawn complete, surname draw skipped.
+    public static string FullName(string gender)
+    {
+        var whole = Flavor(gender == "Woman" ? "fullNamesWomen" : "fullNamesMen");
+        if (whole.Count > 0 && Rules.Rng.Next(100) < 12) return Pick(whole);
+        return GivenFor(gender) + " " + Db.Pick("npcSurname");
+    }
+
     static string GivenFor(string gender) => gender switch
     {
         "Woman" when D.flavor.TryGetProperty("givenWomen", out _) => Pick(FlavorList("givenWomen")),
@@ -452,7 +465,7 @@ public static class CharGen
         // a person, not a statline
         if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
         else s.Gender = spec.Gender.Trim();
-        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? GivenFor(s.Gender) + " " + Db.Pick("npcSurname") : spec.Name.Trim();
+        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? FullName(s.Gender) : spec.Name.Trim();
         s.Compass = string.IsNullOrWhiteSpace(spec.Compass) ? WeightedCompass() : spec.Compass;
         s.Lost = string.IsNullOrWhiteSpace(spec.Lost) ? Pick(FlavorList("lost")) : spec.Lost;
         s.Seen = string.IsNullOrWhiteSpace(spec.Seen) ? Pick(FlavorList("seen")) : spec.Seen;
@@ -874,7 +887,11 @@ public static class CharGen
         foreach (var w in s.WeaponsCarried)
         {
             var m = System.Text.RegularExpressions.Regex.Match(w, @"— \$(\d+(\.\d+)?)$");
-            if (m.Success) spent += double.Parse(m.Groups[1].Value);
+            // The price is written with a '.' decimal point, so parse it as one. The shipped
+            // app sets InvariantGlobalization and would be fine either way, but the smoke rig
+            // doesn't, and on a comma-decimal machine the bare Parse throws FormatException
+            // and takes the whole validation pass down with it.
+            if (m.Success) spent += double.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
         }
         Check(Math.Abs(s.CoinRolled - spent - s.CoinLeft) < 0.001, $"coin ledger: rolled {s.CoinRolled}, spent {spent}, left {s.CoinLeft}");
         Check(s.CoinLeft >= 0, "spent more than the rolled coin");
