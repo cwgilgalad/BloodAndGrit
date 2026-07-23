@@ -874,7 +874,11 @@ public static class CharGen
         foreach (var w in s.WeaponsCarried)
         {
             var m = System.Text.RegularExpressions.Regex.Match(w, @"— \$(\d+(\.\d+)?)$");
-            if (m.Success) spent += double.Parse(m.Groups[1].Value);
+            // The price is written with a '.' decimal point, so parse it as one. The shipped
+            // app sets InvariantGlobalization and would be fine either way, but the smoke rig
+            // doesn't, and on a comma-decimal machine the bare Parse throws FormatException
+            // and takes the whole validation pass down with it.
+            if (m.Success) spent += double.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
         }
         Check(Math.Abs(s.CoinRolled - spent - s.CoinLeft) < 0.001, $"coin ledger: rolled {s.CoinRolled}, spent {spent}, left {s.CoinLeft}");
         Check(s.CoinLeft >= 0, "spent more than the rolled coin");

@@ -138,6 +138,7 @@ public partial class MainForm
     // ============================================================ ENCOUNTER TAB
     DataGridView encGrid;
     NumericUpDown encLevel, encQty;
+    static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
     ProgressBar encBar;
@@ -161,8 +162,9 @@ public partial class MainForm
         var page = new TabPage("Encounter") { BackColor = Paper };
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         top.Controls.Add(Lbl("Party level:"));
-        encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Value = 2, Width = 55, Margin = new Padding(3, 6, 3, 3) };
-        encLevel.ValueChanged += (s, e) => RefreshEncounter();
+        encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Width = 55, Margin = new Padding(3, 6, 3, 3) };
+        encLevel.Value = Math.Clamp(partyLevelHint, 1, 10);     // built on first visit — adopt the loaded value
+        encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);
         top.Controls.Add(Lbl("   Budget = 4 pts per soul in the posse (Posse tab).  Even foe 4 · Mook 1 · Standout 8."));
@@ -199,7 +201,9 @@ public partial class MainForm
             var pick = encounter[e.RowIndex];
             var (cost, role, spoor) = Rules.Cost(pick.Creature.tier, (int)encLevel.Value);
             string name = encGrid.Columns[e.ColumnIndex].Name;
-            if (name == "role") { e.Value = role; if (spoor) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold); } }
+            // SpoorFont is cached: CellFormatting fires per visible cell per repaint, and a
+            // fresh Font each time hands a GDI handle to the finalizer queue on every paint.
+            if (name == "role") { e.Value = role; if (spoor) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = SpoorFont; } }
             if (name == "cost") e.Value = cost;
         };
         encGrid.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) ShowCreatureCard(encounter[e.RowIndex].Creature); };
@@ -319,7 +323,7 @@ public partial class MainForm
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
         bar.Controls.Add(Btn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant (or press Delete)"));
         bar.Controls.Add(Btn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; roundLbl.Text = "Round 1"; Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
+        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -441,7 +445,7 @@ public partial class MainForm
     void NextRound()
     {
         round++;
-        roundLbl.Text = $"Round {round}";
+        if (roundLbl != null) roundLbl.Text = $"Round {round}";
         Log($"— Round {round} —");
     }
 
@@ -529,11 +533,11 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; roundLbl.Text = "Round 1"; return; }
+        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
         foreach (var c in tracker) c.Conditions = "";
-        round = 1; roundLbl.Text = "Round 1"; trkGrid?.Refresh();
+        round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; trkGrid?.Refresh();
         Log("New fight — foes cleared, the posse holds the field, Round 1.");
     }
 
@@ -972,6 +976,10 @@ public partial class MainForm
 
         var notesGroup = new GroupBox { Text = "The Keeper's ledger  (auto-saves on exit && every five minutes)", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         notesBox = new TextBox { Multiline = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
+        // This tab is built on first visit, so the box takes over from the field that has
+        // been holding the ledger since load, and keeps it fed from here on.
+        notesBox.Text = notesText;
+        notesBox.TextChanged += (s, e) => notesText = notesBox.Text;
         var nbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         nbar.Controls.Add(Btn("Stamp the date", (s, e) =>
         {
