@@ -73,9 +73,18 @@ for (int i = 0; i < 50; i++)
 
 // ---- Data loads, extra tables merge, terrain entries resolve to real creatures ----
 Db.Load();
-T("110 creatures", Db.Creatures.Count == 110);
+T("150 creatures", Db.Creatures.Count == 150);
 T("creature names unique", Db.Creatures.Select(c => c.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() == Db.Creatures.Count);
 T("all stat blocks parse", Db.Creatures.All(c => c.BloodValue > 0 && c.DefenseValue > 0));
+T("eight creature chapters", Db.Creatures.Select(c => c.chapter).Distinct().Count() == 8);   // Bestiary II-IX; I is How to Read the Dead
+// The two mundane chapters are the campaign's slow-burn material and are meant to be
+// roughly half the book; they are also the two that must never cost Nerve or Mark.
+var mundane = Db.Creatures.Where(c => c.chapter is "Beasts of the Living World" or "Hard Men & Hard Country").ToList();
+T("65 mundane creatures", mundane.Count == 65);
+T("mundane creatures cost no Nerve", mundane.All(c => c.dread is "" or "—"));
+T("mundane creatures never move the Mark", mundane.All(c => string.IsNullOrEmpty(c.mark)));
+T("every creature carries lore", Db.Creatures.All(c => c.lore.Count > 0 && c.lore[0].Length > 0));
+T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 0));
 T("13 simple tables", Db.Simple.Count == 13);
 T("extra rumors merged", Db.Simple["rumors"].Count >= 30);
 T("extra terrain merged", Db.Terrain["The Old Places"].Count >= 11);
