@@ -127,7 +127,7 @@ public partial class MainForm : Form
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
         status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7")
+            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.8")
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);

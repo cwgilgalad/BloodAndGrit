@@ -167,7 +167,7 @@ public partial class MainForm
           "other tab — lands in the log on the right, so there is always a paper trail.");
 
         H("3 · Know your horrors  (Bestiary)");
-        T("All 110 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
+        T("All 150 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
           "Double-click a creature (or hit ⧉ Pop out) to open it in its own window — open several side by side and " +
           "size the text to the light in the room. From here one click sends a creature to the Encounter builder or " +
           "drops N copies straight onto the Tracker.");
