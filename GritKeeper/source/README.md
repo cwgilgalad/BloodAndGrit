@@ -3,9 +3,9 @@
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
 **Blood & Grit** at the table. Built in C# (.NET 8 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
-(Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7).
+(Player's Book v2.16 · Keeper's Book v2.8 · Bestiary v2.8).
 
-**App version 1.10.1.**
+**App version 1.11.0.**
 
 ---
 
@@ -75,7 +75,7 @@ near-black and bold, a plain success is verdigris green, a plain failure is rust
 any other roll gets a neutral steel-blue tag — so a result reads at a glance instead of
 by squinting at the words.
 
-**Bestiary** — all **110 creatures**, searchable by name or Found-text, filterable by
+**Bestiary** — all **150 creatures**, searchable by name or Found-text, filterable by
 tier and chapter, with the full book entry displayed. **Double-click any creature to pop
 it out into its own window** — resize it, maximize it, and step the text size up and
 down (A− / A＋); open as many creatures side by side as the fight needs. One click sends

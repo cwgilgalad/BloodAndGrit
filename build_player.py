@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.15 -->
+<!-- Blood & Grit — The Player's Book · Version 2.16 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.15)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.16)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.15</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.16</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.15 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.16 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -855,6 +855,83 @@ body{ background:#525659; }
   <p>Mechanically, a Mexican character chooses any Origin and Calling that fits — the <em>vaquero</em> is a Drifter, Gunhand,
   or Marshal as readily as any Anglo, and the old ranching families field Homesteaders and Fallen Gentry alike. Their
   language, faith, and the grant the family is fighting to keep are written into the four Questions, not bought with a stat.</p>
+
+  <h2 id="blackwesterners">Black Westerners</h2>
+  <p>The West was worked by Black hands from the first drive to the last spike, and the record is plainer than the
+  dime novels ever admitted. Roughly <strong>one trail hand in four</strong> on the great cattle drives is Black or
+  Mexican; the best bronc-riders and ropers in the business are known by name across three territories. Black men and
+  women are freighters, blacksmiths, cooks, barbers, laundresses who own the building, homesteaders, mail carriers,
+  and lawmen — a deputy marshal riding out of Fort Smith into Indian Territory has brought in more wanted men than any
+  other deputy in the Territory — thousands of them over his career — and every outlaw between the Arkansas
+  and the Red knows his name. Four regiments of the regular
+  Army — the <strong>Ninth and Tenth Cavalry, the Twenty-Fourth and Twenty-Fifth Infantry</strong> — are Black
+  soldiers under mostly white officers, and the Plains nations who fought them named them the
+  <strong>Buffalo Soldiers</strong>, which was meant as respect and was taken as such.</p>
+  <p>Most came under their own power and for their own reasons. When Reconstruction was abandoned in '77 and the old
+  order came back wearing a sheet, tens of thousands left the South in the <strong>Exodus of 1879</strong> — walking,
+  riding, and taking deck passage up the Mississippi for Kansas, which they had heard was free ground. They founded
+  whole towns of their own: <strong>Nicodemus</strong> on the Kansas grass, and after it a string of Black towns
+  across Kansas, Indian Territory, and Texas, each with its church and its school built before its saloon. What they
+  found was freer, and it was not free: the color line came west on the same trains they did, sundown towns turned
+  them out at dusk, and the law was a coin-flip. By 1885 the door is closing again — and they are still here, still
+  building, and no longer asking anyone's leave.</p>
+
+  <div class="box">
+    <h3>Playing a Black Character</h3>
+    <p>The same courtesy owed any real people applies here. A few plain rules of the road:</p>
+    <ul class="dash">
+      <li><strong>Avoid the worn lies.</strong> No faithful retainer, no comic relief, no saintly sufferer, no character who exists to be endured against. These are minstrel-show inventions, not character.</li>
+      <li><strong>Be specific.</strong> An Exoduster homesteader proving up outside Nicodemus, a sergeant of the Tenth out of Fort Davis with fifteen years in, a trail hand on his sixth drive who is the best horseman in the outfit, a widow who owns the laundry and half the block — these are different lives. Choose one and learn a little of it.</li>
+      <li><strong>Competence is the historical record.</strong> Where a Black character is the best hand, the best shot, or the best doctor in the scene, that is not a favor being done — it is the ordinary case, and the table should play it as ordinary.</li>
+      <li><strong>Community is the strength.</strong> The church, the lodge, the school built first, the town that holds together — these anchor a character against the dark, and they are somewhere to come back to.</li>
+      <li><strong>The injustice is real history.</strong> Slavery, the Exodus, the color line, and the violence that enforced it all happened. Use them with weight, by agreement, and never for flavor or shock.</li>
+    </ul>
+    <p class="note">As with the First Peoples and the Mexican frontier, lines and veils are the table's to set together. When the history is someone's own, let them be heard before the dice are.</p>
+  </div>
+
+  <p>Mechanically, a Black character chooses any Origin and Calling. <strong>The Freed</strong> and <strong>The
+  Veteran</strong> are the obvious roads and by no means the only ones — a great many were born free, and the
+  frontier's Black Gunhands, Sawbones, Marshals, Preachers, and Prospectors are all a matter of record. Where they
+  came from, who they left, and what they are proving up on go into the four Questions, not into a stat.</p>
+
+  <h2 id="chinesefrontier">The Chinese on the Frontier</h2>
+  <p>The hardest miles of the transcontinental railroad were built by Chinese labor, and the Central Pacific's own
+  officers said so. At the peak of the work, <strong>nine men in ten</strong> on that grade were Chinese — better
+  than ten thousand of them — cutting the Sierra tunnels by hand through granite at eight inches a day, hanging in
+  baskets off the Cape Horn cliffs, setting nitroglycerin, and wintering under forty feet of snow in the sheds while
+  avalanches took whole camps. When the rails met in '69 and the photograph was taken, not one of them was asked to
+  stand in it. Afterward they went where the work was: the quartz mines and the placer bars, the levees that made
+  the delta farmland, the fisheries, the cigar benches, the laundries and restaurants and market gardens of every
+  town on the coast and half the towns inland — and the cook tent of any cattle outfit shrewd enough to hire one,
+  where the man feeding twelve hands is often the best-paid and least-replaceable soul in the crew. The herbalist
+  with a shop full of drawers is a trained physician in a tradition two thousand years older than the one the Army
+  surgeon studied, and the town generally works this out the first time somebody is dying.</p>
+  <p>The country's answer to all this was the law. The Page Act of '75 shut out the women; the
+  <strong>Exclusion Act of 1882</strong> — three years back — shut the door outright, barred naturalization, and
+  stranded a generation of men on the wrong side of an ocean from wives and children they send money to and may
+  never see again. Where the law would not do it, mobs did: Los Angeles in '71, and this very year the coal camp at
+  <strong>Rock Springs</strong>, where a wage dispute ended with the Chinese quarter burned and twenty-eight men
+  dead. Against all of it they built their own civil order — the <strong>district associations</strong> that
+  settle disputes, lend money, run the schools, bury the dead, and ship the bones home to be buried properly in the
+  village. They are not guests here. They built the hardest miles of the road west, and they are owed for it.</p>
+
+  <div class="box">
+    <h3>Playing a Chinese Character</h3>
+    <p>The same courtesy owed any real people applies here. A few plain rules of the road:</p>
+    <ul class="dash">
+      <li><strong>Avoid the worn lies.</strong> No inscrutable mystic, no comic laundryman, no dispenser of ancient wisdom, no fortune-cookie speech, and no dialect played for laughs. These are stage inventions of the exclusion years, and they were built to justify it.</li>
+      <li><strong>Be specific.</strong> Nearly all came from a handful of districts in <strong>Guangdong</strong> — most from Toisan and the Sze Yup counties — and speak Cantonese, not "Chinese." They have a village, a family, a surname that means something, and a remittance going home every quarter. Choose the particulars.</li>
+      <li><strong>Skill is a trade, not magic.</strong> The herbalist's medicine is medicine; the railroad man's blasting is engineering; the merchant's ledger is capital. Do not turn any of it into mysticism, and do not hang the game's invented dark on Buddhist or Taoist practice — the same rule the First Peoples' section sets, for the same reason.</li>
+      <li><strong>The associations are civil society.</strong> The <em>huiguan</em> is a bank, a court, a hiring hall, and a burial society at once. A character with standing in one has resources; a character who has crossed one has a problem that a gun will not solve.</li>
+      <li><strong>The injustice is real history.</strong> The tax, the queue ordinances, the Exclusion Act, and the burnings all happened, and 1885 is the year of Rock Springs. Use them with weight, by agreement, never for flavor.</li>
+    </ul>
+    <p class="note">Lines and veils are the table's to set together. When the history is someone's own, let them be heard before the dice are.</p>
+  </div>
+
+  <p>Mechanically, a Chinese character chooses any Origin and Calling. <strong>The Laborer</strong> is the road most
+  walked and is far from the only one — the <strong>Sawbones</strong> fits the herbalist tradition exactly, and the
+  frontier's Chinese Prospectors, Gamblers, Drifters, and Bounty Hunters are all a matter of record. Their district,
+  their family across the water, and what the remittance is for go into the four Questions, not into a stat.</p>
 
   <div class="pageno">9</div>
 </section>

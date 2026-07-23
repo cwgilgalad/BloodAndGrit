@@ -37,9 +37,13 @@ tools — documented in their own sections below.
   + build scripts. The big self-contained HTML and the PDFs are generated artifacts, never
   the thing to hand-edit. Ranking, cheapest → most expensive to version:
   **lean source + external assets  ›  self-contained HTML  ›  PDF.**
-- **Do NOT save to PDF unless I explicitly ask.** Default deliverables are the lean sources
-  and the self-contained HTML. Only run the PDF pipeline when I say "save to PDF" (or
-  similar) in so many words.
+- **PDFs: automatic here, on request everywhere else (updated 2026-07-22).** When the work is
+  being done **in Claude Code / PowerShell CLI on my laptop**, regenerate the PDFs as part of
+  any change that touches book content — run `python make_pdf.py` once the books build and
+  measure clean, and hand them back with the HTML. No need to ask. **In any other
+  environment, the old rule stands:** don't run the PDF pipeline unless I say "save to PDF"
+  (or similar) in so many words. Either way the lean sources and the self-contained HTML
+  remain the primary deliverables; the PDFs are an extra, never a replacement.
 - **Keep this handoff doc current.** When I make changes, update the version table, the
   Changelog, and any affected section so a fresh chat is never working from stale facts.
 - **Work on session branches, merge on success — every edit, no exceptions.** Before making

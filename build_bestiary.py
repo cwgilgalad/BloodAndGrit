@@ -41,13 +41,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.15 -->", "<!-- Blood & Grit — The Bestiary · Version 2.7 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.15)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.7)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.16 -->", "<!-- Blood & Grit — The Bestiary · Version 2.8 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.16)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.8)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.15</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.7</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.16</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.8</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.15 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.7 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.16 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.8 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -162,6 +162,7 @@ CONTENTS = f"""<!-- ===================== BESTIARY CONTENTS ====================
     <li><a href="#wild">VI. The Wild &amp; the Weather</a><span class="pg">72</span></li>
     <li><a href="#olddark">VII. The Old Dark</a><span class="pg">84</span></li>
     <li><a href="#living">VIII. Beasts of the Living World</a><span class="pg">103</span></li>
+    <li><a href="#hard">IX. Hard Men &amp; Hard Country</a><span class="pg">121</span></li>
     <li><a href="#index">Appendix: The Roll, by Tier</a><span class="pg">121</span></li>
     <li><a href="#grounds">Appendix: The Grounds <span class="sub">(encounters by terrain)</span></a><span class="pg">123</span></li>
     <li><a href="#build">Appendix: Building Your Own Dead</a><span class="pg">128</span></li>
@@ -1408,6 +1409,26 @@ GROUNDS = f"""<!-- GROUNDS -->
   above the party, it arrives as sign and spoor, not in the flesh &mdash; the tracks, the kill, the survivor's account
   &mdash; and becomes a thread instead of a funeral.</p>
 
+  <h2>The Ordinary Country <span class="sub">(d20 &mdash; the night nothing is wrong)</span></h2>
+  <p class="note">Roll here for the sessions before the horror, and for every session after one, when the table needs
+  the country to be only a country again. Nothing on this table costs a point of Nerve or moves the Mark. Used for a
+  month of play, it does more work than any other table in this book: it teaches the party that the frontier is
+  dangerous on its own, so that the first time something is genuinely wrong, they have nowhere to file it.</p>
+  <table>
+    <tbody>
+      <tr><td>1</td><td>The Rustlers (I)</td><td>11</td><td>The Hornet Swarm (I) &mdash; and the horses</td></tr>
+      <tr><td>2</td><td>The Drunk with a Gun (I)</td><td>12</td><td>The Peccary Band (I)</td></tr>
+      <tr><td>3</td><td>The Bad Water (I)</td><td>13</td><td>The Elk Bull (II) &mdash; in the rut</td></tr>
+      <tr><td>4</td><td>The Prairie Dog Town (I)</td><td>14</td><td>The Horse Thieves (II)</td></tr>
+      <tr><td>5</td><td>The Mad Dog (I)</td><td>15</td><td>The Lynch Mob (II)</td></tr>
+      <tr><td>6</td><td>The Saloon Brawl (I)</td><td>16</td><td>The Norther (II)</td></tr>
+      <tr><td>7</td><td>The Tinhorn (I)</td><td>17</td><td>The Prairie Fire (II)</td></tr>
+      <tr><td>8</td><td>The Claim-Jumpers (I)</td><td>18</td><td>The Hired Gun (II)</td></tr>
+      <tr><td>9</td><td>The Turkey Buzzard (I) &mdash; go and look</td><td>19</td><td>The River Crossing (III)</td></tr>
+      <tr><td>10</td><td>The Skunk (I)</td><td>20</td><td>The Stock-Killer Wolf (III) &mdash; a whole season's work</td></tr>
+    </tbody>
+  </table>
+
   <h2>The Trail &amp; the Open Range <span class="sub">(d12)</span></h2>
   <table>
     <tbody>
@@ -1440,6 +1461,21 @@ GROUNDS = f"""<!-- GROUNDS -->
       <tr><td>4</td><td>The Throwing Spirit (II)</td><td>10</td><td>The Skin-Walker (III)</td></tr>
       <tr><td>5</td><td>The Cold Bride (II)</td><td>11</td><td>The Nightwalker (III)</td></tr>
       <tr><td>6</td><td>The Dollmaker's Children (II)</td><td>12</td><td>The House That Hungers (IV)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Lamplit City <span class="sub">(d12 &mdash; Dodge, Kansas City, Frisco, Butte)</span></h2>
+  <p class="note">A city is not thinner ground for the dark; it is richer. A missing stranger in a town of two hundred is
+  a manhunt, and in Kansas City it is a filing. Roll here for the terminus &mdash; the yards, the quarter, the works
+  below &mdash; and see the Keeper's Book, Ch. XIV, for running a night there without losing the tone.</p>
+  <table>
+    <tbody>
+      <tr><td>1</td><td>The Saloon Brawl (I) &mdash; and a stove</td><td>7</td><td>The Possessed (II) &mdash; with standing</td></tr>
+      <tr><td>2</td><td>The Bonepicker (I)</td><td>8</td><td>The Mesmerist (III) &mdash; a subscription hall</td></tr>
+      <tr><td>3</td><td>The Hired Gun (II) &mdash; an agency now</td><td>9</td><td>The Skin-Walker (III) &mdash; a new face each month</td></tr>
+      <tr><td>4</td><td>The Resurrectionist (II) &mdash; with a price list</td><td>10</td><td>The Nightwalker (III)</td></tr>
+      <tr><td>5</td><td>The Lynch Mob (II) &mdash; a whole ward of it</td><td>11</td><td>The Tallyman (III) &mdash; he holds the paper</td></tr>
+      <tr><td>6</td><td>Dark Cultist &amp; the Hollow Prophet (II) &mdash; chartered</td><td>12</td><td>The Thing in the Well (III) &mdash; the waterworks</td></tr>
     </tbody>
   </table>
 
@@ -1543,7 +1579,7 @@ BUILD = f"""<!-- BUILD -->
   <table class="lvl">
     <thead><tr><th>Tier</th><th>Defense</th><th>Attack</th><th>Blood</th><th>Saves (high/low)</th><th>Damage</th><th>Dread DC</th></tr></thead>
     <tbody>
-      <tr><td><strong>I</strong></td><td>13</td><td>+4</td><td>12</td><td>+6 / +2</td><td>1d6+2</td><td>10&ndash;13</td></tr>
+      <tr><td><strong>I</strong></td><td>13</td><td>+4</td><td>12</td><td>+6 / +2</td><td>1d6+2</td><td>&mdash; / 10&ndash;13</td></tr>
       <tr><td><strong>II</strong></td><td>15</td><td>+6</td><td>22</td><td>+8 / +3</td><td>1d8+3</td><td>13</td></tr>
       <tr><td><strong>III</strong></td><td>17</td><td>+9</td><td>40</td><td>+11 / +5</td><td>2d6+4</td><td>16</td></tr>
       <tr><td><strong>IV</strong></td><td>20</td><td>+13</td><td>70</td><td>+15 / +8</td><td>2d8+6</td><td>20</td></tr>
@@ -1814,6 +1850,89 @@ LIVING_CREATURES = [
      "bite +17 (3d8+8, takes a horse under whole)",
      "<strong>Older than the parish.</strong> Longer than a flatboat and patient as the tide; it takes a man or a mount under without a ripple, and the water is all its own.",
      N, "The black water is its kingdom and your grave. Draw it onto dry land or never face it at all; in the water you will simply be gone."),
+    # ---- Tier I, second rank: the small country, which does most of the killing ----
+    ("The Mad Dog", "Tier I &middot; the hydrophobia, walking", 13, 10, "fast; crooked and tireless", "+6", "+5", "&mdash;",
+     "bite +5 (1d6+2, and Fort DC 15 or take the hydrophobia)",
+     "<strong>The bite that kills late.</strong> Runs a straight line at whatever moves, jaws working on nothing, and cannot be called off, bought off, or frightened. A man it opens walks away fine, and stays fine for a month, and then the water starts to frighten him.",
+     N, "Shoot it at distance and burn the carcass. Then watch every man and every animal it touched, and know what you will have to do."),
+    ("The Skunk", "Tier I &middot; a small argument you have already lost", 14, 5, "slow", "+4", "+6", "+1",
+     "spray +7 (no Blood; Fort DC 13 or blinded a minute and sickened a day)",
+     "<strong>Warns you twice.</strong> Stamps its front feet, then raises the tail, and a man with any sense takes both hints; the range is longer than anyone expects and the effect outlasts the week.",
+     N, "Nothing needs putting down here. Back away slow, and if you were slower than that, bury the clothes."),
+    ("The Peccary Band", "Tier I &middot; javelinas out of the thicket", 14, 16, "fast", "+6", "+6", "+1",
+     "tusks +5 (1d6+2, everyone standing close)",
+     "<strong>Poor eyes, bad tempers, and a dozen of them.</strong> A band feeds shoulder to shoulder in heavy brush and cannot tell a man from a bear at ten feet; startled, it scatters straight through whatever is standing there, cutting as it goes.",
+     N, "Get behind something or get above something. They mean to be elsewhere; the wounds are what they leave on the way."),
+    ("The Gila Monster", "Tier I &middot; the beaded lizard that will not let go", 15, 8, "very slow", "+6", "+2", "+2",
+     "bite +5 (1d4 and holds; venom Fort DC 13 or 1d6 and sickened a day)",
+     "<strong>Chews, and keeps chewing.</strong> Slow enough that only a careless hand ever meets one, and once it has that hand it locks on and works the venom in rather than striking and letting go.",
+     N, "Prying the jaws takes a knife blade and patience. It never chased anybody in its life &mdash; watch where you reach in rock country."),
+    ("The Hornet Swarm", "Tier I &middot; the ground nest you just stepped on", 16, 9, "fast; flies", "+3", "+9", "&mdash;",
+     "stings +6 (1d6, everyone within reach, again each round they stay)",
+     "<strong>The horses go first.</strong> A nest in a stump or a bank empties in a heartbeat, and a stung horse does not care what the rider wants; more men are hurt by the bolting than by the stinging.",
+     N, "Run, and keep running further than feels necessary. Smoke clears a nest at night; nothing clears one at noon."),
+    ("The Prairie Dog Town", "Tier I &middot; a half-mile of broken legs", "&mdash;", "&mdash;", "still; and it waits", "&mdash;", "&mdash;", "&mdash;",
+     "the hole underfoot +5 against anything at a run (rider thrown for 2d6; the horse's leg usually ends the horse)",
+     "<strong>Ground, not an animal.</strong> Thousands of burrows worked into good grass, invisible from the saddle at any speed worth riding; the little dogs themselves are harmless and the town they built is not.",
+     N, "You do not put down a prairie-dog town. Walk the horses through it, or ride around and lose the hour."),
+    ("The Turkey Buzzard", "Tier I &middot; the bird that finds the dead first", 13, 6, "clumsy afoot; tireless aloft", "+4", "+6", "+1",
+     "beak +2 (1d3, and only if you corner it)",
+     "<strong>Reads the country for you.</strong> Has no interest in a fight and none in a living man; a wheel of them turning slow over a far ridge is the plainest message the frontier sends, always about something already finished.",
+     N, "Leave it to its work. Killing one tells you nothing and costs you the next message it would have carried."),
+    ("The Porcupine", "Tier I &middot; slow trouble in the low branches", 12, 10, "slow; climbs", "+6", "+2", "+1",
+     "quills (no attack of its own; anything that closes takes 1d6 and a bad evening)",
+     "<strong>Punishes the curious.</strong> Waddles off with its back turned and its business plain, and asks nothing except distance; a dog that has never met one learns in a single lunge and remembers for life.",
+     N, "Tie the dogs. Pulling quills takes pliers, a firm hand, and somebody sitting on the animal."),
+    # ---- Tier II, second rank ----
+    ("The Elk Bull", "Tier II &middot; seven hundred pounds in the rut", 15, 24, "fast", "+9", "+6", "+3",
+     "antlers +6 (1d8+3, and drives you back a rod)",
+     "<strong>Out of his right mind till the snow.</strong> Bugling, sleepless, and looking for something to fight; through the rut he will take on a horse, a wagon, or a man who happened to be standing in the wrong meadow.",
+     N, "Give him the meadow. He is defending a harem you cannot see, and he will quit the moment you are plainly gone from it."),
+    ("The Wolverine", "Tier II &middot; the small devil of the deep snow", 16, 20, "fast; climbs; tireless", "+9", "+7", "+4",
+     "claws &amp; bite +6 (1d8+3, worries the wound)",
+     "<strong>Drives bears off a kill.</strong> Forty pounds that has never once counted the odds; it robs traplines, tears into a cabin's stores, and answers a threat by coming straight at it, snarling, and staying.",
+     N, "Everything about it is out of proportion but its size. Give it the carcass; the carcass is cheaper than the fight."),
+    ("The Water Moccasin", "Tier II &middot; the snake that comes toward you", 15, 14, "slow; swims well", "+7", "+6", "+1",
+     "bite +6 (1d6+2 plus venom: Fort DC 14 or 2d6 and the flesh goes bad)",
+     "<strong>Holds its ground, and then some.</strong> Stands with its white mouth open instead of fleeing, and has been known to swim a deliberate line at a wading man; the venom rots what it touches and a bad bite costs a hand or a foot.",
+     N, "Stay out of the still water and off the log you meant to sit on. Get the bitten man to a doctor while the arm is still worth saving."),
+    ("The Golden Eagle", "Tier II &middot; the shadow that takes the lamb", 17, 16, "slow afoot; very fast in a stoop", "+6", "+10", "+3",
+     "talons +6 (1d8+3 from a stoop, and it does not come back for a second pass)",
+     "<strong>Comes down out of the sun.</strong> Takes lambs, kids, and the occasional dog off open ground at a speed that leaves the herder with nothing to shoot at; it will strike a man only to drive him off a nest.",
+     N, "It wants the stock and not the shepherd. Watch the sky over a lambing ground, and keep the young ones under something."),
+    ("The Feral Horse Band", "Tier II &middot; the mustangs, and the stallion who runs them", 15, 26, "very fast", "+8", "+9", "+3",
+     "hooves &amp; teeth +6 (1d8+3; the band tramples what the stallion knocks down)",
+     "<strong>Takes your horses with it.</strong> The stallion cuts saddle stock out of a picket line and runs it off with his mares, and a party that argues about it gets caught in forty head turning at once.",
+     N, "Hobble everything and stand a watch. Losing the fight to a wild band is survivable; losing the horses in that country is often not."),
+    ("The Rutting Buck", "Tier II &middot; the deer that buries more men than the bear", 16, 18, "very fast", "+7", "+9", "+2",
+     "antlers +6 (1d8+3, and hooks upward)",
+     "<strong>The animal nobody respects.</strong> Two hundred pounds of muscle behind a rack of points, in the season when it has stopped being careful; men who would never walk up on a bear walk up on a downed buck every autumn, and some of them do not walk back.",
+     N, "Never approach one that is down until it has been down a while. A buck that seems finished has killed a great many hunters who agreed."),
+    ("The Sow and Cubs", "Tier II &middot; the one bear with no quit in it", 16, 26, "fast; climbs", "+9", "+6", "+4",
+     "claws +6 (1d8+3, and she does not stop at driving you off)",
+     "<strong>No bluff in her at all.</strong> An ordinary black bear will bluster and leave; a sow who believes you are between her and the cubs commits at once, presses past wounds that would turn any other bear, and follows you as far as it takes.",
+     N, "Back out the way you came the second you hear a cub. Do not run, do not climb, and never put yourself uphill of the noise."),
+    # ---- Tier III, second rank ----
+    ("The Boar Sounder", "Tier III &middot; the whole family, in heavy brush", 17, 42, "fast", "+11", "+6", "+3",
+     "tusks +9 (2d6+4, from three directions at once)",
+     "<strong>Twenty of them, and they know the thicket.</strong> Sows, shoats, and a pair of old boars moving as one through cover a man cannot see ten feet into; they cut, wheel, and come back, and there is no high ground in a bottom.",
+     N, "The thicket is the whole problem. Get to open country or a tree; fighting a sounder in its own brush is how the dogs die and then the men."),
+    ("The Snake Den", "Tier III &middot; the winter den, opened", 15, 38, "slow; the ground moves", "+9", "+8", "&mdash;",
+     "bites +9 (2d6+4 to everyone in the rocks, plus venom: Fort DC 16 or 2d6 and sickened a week)",
+     "<strong>A hundred of them in one hole.</strong> Rattlers winter together in the deep rock by the score, and a man who breaks into that in a cold spring finds the whole floor of the place alive and slow and thoroughly annoyed.",
+     N, "Get out the way you came in, one careful step at a time. Nobody has ever won this by fighting; count the bitten and start riding."),
+    ("The Wild Cattle of the Brasada", "Tier III &middot; the ladinos of the brush country", 17, 44, "fast in cover", "+11", "+6", "+3",
+     "horns +9 (2d6+4, gore and toss)",
+     "<strong>Cattle that went wild and got clever.</strong> Longhorns bred out of strays in the thorn brush, nocturnal, six feet of horn wide, and possessed of a genuine hatred for horses and the men on them; they lie up in the thickets by day and charge anything that comes in after them.",
+     N, "Men rope these out of the brasada for money and count the broken bones as part of the wage. Take them at night on open ground, or leave them the brush."),
+    ("The Longhorn Herd", "Tier III &middot; three thousand head, and one bad noise", 16, 46, "fast, and all together", "+12", "+5", "+2",
+     "the press +9 (2d6+4 to whatever is caught among them)",
+     "<strong>Not yet a stampede &mdash; and one lightning-crack from it.</strong> A trail herd bedded down is a hill of nerves; it mills, drifts, and swallows a man on foot without ever meaning to, and everything the outfit does at night is done to keep it from becoming the other thing.",
+     N, "Ride the circle and sing to them, which is what the singing was always for &mdash; and on most outfits the hand who taught the rest of them how is the segundo. Once it breaks, see The Stampede, and pray for room."),
+    ("The Stock-Killer Wolf", "Tier III &middot; the wolf with a name and a price on it", 18, 36, "very fast; tireless", "+10", "+11", "+6",
+     "bite +9 (2d6+4, throat and hamstring)",
+     "<strong>Has beaten every man sent for it.</strong> One old wolf, usually running alone or with a single mate, that kills far past hunger &mdash; a dozen head in a night, left where they dropped. It springs traps with a stick, refuses poisoned bait, and knows the range better than the ranch does.",
+     N, "It cannot be trapped by anyone it has already outsmarted, which by now is everyone. Take the mate first; grief makes it careless, and that is the only opening it has ever given."),
 ]
 
 
@@ -1923,12 +2042,253 @@ LIVING_LORE = {
   "The Old Man of the Swamp": (
     "The gator that owns the bayou, older than the parish and longer than a flatboat, patient as the tide. It takes a man or a mount under without a ripple, and the black water is all its own; draw it onto dry land or never face it at all, for in the water you will simply be gone. The swamp is its kingdom and your grave.",
     "The deepest, oldest black water of the great swamps and bayous, where a gator has reigned long enough to grow legendary. It knows every channel and cut bank of its domain; on its own water, it is undefeated and undefeatable."),
+  # ---- the second rank: the small country, and what it actually does to people ----
+  "The Mad Dog": (
+    "The hydrophobia, walking, and the only honest animal in this chapter that kills a man weeks after it has finished with him. A dog with the madness in it runs a crooked line at whatever moves, jaws working on nothing, and it cannot be whistled back, bought off, or scared away by any noise a man can make. The bite itself is a small thing &mdash; a torn sleeve, a bad afternoon, a wound that scabs over clean. Then the month turns, and the bitten man finds he cannot drink, and every soul who has seen it before knows exactly how the rest of it goes.",
+    "Anywhere dogs run loose and something wild has bitten one &mdash; ranch yards, mining camps, the edges of town in high summer. Coyotes, foxes, and skunks carry it too, and a fox that walks up to a man in daylight is telling him something."),
+  "The Skunk": (
+    "A small argument you have already lost. The skunk is a decent, unhurried animal that wants beetles and eggs and no conversation, and it announces itself twice before it does anything &mdash; a stiff-legged charge that stops short, then a stamp of the front feet, then the tail comes up. Men who ignore all three deserve the education. The range is longer than anyone expects, the aim is better, and a man who takes it square is unwelcome in any bunkhouse in the county for a fortnight.",
+    "Everywhere there is garbage, grubs, or a hen house &mdash; camp middens, barns, hollow logs, and under the porch. Works the dusk and the dark, and is met most often by whoever went out to see what the dogs were carrying on about."),
+  "The Peccary Band": (
+    "Javelinas out of the thicket, and one of the few animals on the range that hurts people mostly by accident. A band feeds shoulder to shoulder in brush a man cannot see into, with weak eyes, a strong nose, and a standing assumption that anything close is trouble. Startled, they do not scatter away &mdash; they scatter through, twelve or fifteen of them at a dead run in whatever direction they were already pointed, and the tusks are self-sharpening and take a horse's leg open to the bone.",
+    "The thorn brush, the mesquite flats, and the dry washes of the hot country, usually near prickly pear. Met at close range by definition; you are in the band before you know the band is there."),
+  "The Gila Monster": (
+    "The beaded lizard that will not let go. It is a slow, heavy, black-and-orange thing that spends most of its life underground and has never in recorded history chased anybody, which means every bite it has ever given was to a hand that went somewhere careless. Once it has that hand it does not strike and release like a snake; it locks its jaws and works, chewing the venom in along grooved teeth while a man tries to get a knife blade between them.",
+    "Rock crevices, pack-rat nests, and the shade under ledges in the desert country. Out and moving after the spring rains and on warm evenings; encountered by reaching where you did not look."),
+  "The Hornet Swarm": (
+    "The ground nest you just stepped on, and the reason the trail boss rides slow through a stump field. A nest in a bank or a rotten log empties in a heartbeat and comes out angry at everything within a rod, and the stings themselves are the least of it. A horse taking a dozen of them does not consult its rider about what happens next, and most of the graves this chapter fills were dug for men who came off in rough country at a full gallop.",
+    "Bank holes, stumps, hollow trees, and barn eaves, worst in late summer when the nests are at their full strength and shortest of temper. Found by a hoof, a wheel, or an axe."),
+  "The Prairie Dog Town": (
+    "A half-mile of broken legs, and the only entry in this chapter that is not an animal at all. The dogs themselves are harmless, sociable, and rather good company from a distance; what they build is thousands of burrows worked into the best grass on the flat, mouths hidden in the sod, invisible from the saddle at anything above a walk. Cavalry has lost horses here. Cattle outfits budget for it. A rider who takes a town at a gallop learns the arithmetic of a horse's cannon bone against a six-inch hole.",
+    "The short-grass plains, always on good ground &mdash; which is precisely where a herd is being pushed and a rider is in a hurry. A town may cover a section or a county, and the far edge is never where you thought it was."),
+  "The Turkey Buzzard": (
+    "The bird that finds the dead first, and the most useful animal in this book to a party that pays attention. It has no fight in it and no interest in the living, and cornered it will do nothing worse than throw up on your boots. Its value is that it is always right. A wheel of them turning slow and low over a ridge two miles off is the plainest message the frontier ever sends, and every experienced hand reads it the same way: something out there is finished, and it is worth going to look at, or worth riding wide around.",
+    "Aloft over everything, all day, in any open country. On the ground at a carcass, at a battlefield, at a horse that went down in the night, and at whatever the party has not found yet."),
+  "The Porcupine": (
+    "Slow trouble in the low branches, and the finest teacher of dogs the country has. It has no speed, no cunning, and no interest in anybody; it turns its back, raises the quills, and lets the world make its own mistake. The quills are barbed and work deeper with every hour, and an animal that takes a face full of them will not eat, cannot be handled, and needs pliers, daylight, and two men sitting on it. A dog learns this once. A young dog sometimes learns it twice.",
+    "Timber and brush country, in the low branches and at the base of trees it has been girdling. Slow enough to be avoided by anyone who sees it, which excludes every dog and most horses at night."),
+  "The Elk Bull": (
+    "Seven hundred pounds in the rut, and out of his right mind from September to the snow. Through the season he does not eat, does not sleep, and bugles all night for the pleasure of picking a fight; he is defending a harem of cows a man on the trail cannot even see, and he takes any moving thing in that meadow as a rival who has come to take them. He has fought a wagon. He has fought a locomotive. He will certainly fight a horse, and the rack he carries is five feet across and comes at the chest.",
+    "High meadows and timber edges through the autumn rut, and the winter range in the hard months. Heard long before he is seen &mdash; that whistling scream across a park at dusk is an address, directed at you."),
+  "The Wolverine": (
+    "The small devil of the deep snow, and forty pounds that has never once counted the odds. It will drive a bear off a kill by sheer sustained outrage, tear the roof off a trapper's cache and foul what it cannot carry, and follow a trapline for a season out of what looks a great deal like spite. Threatened, it comes straight at the threat, snarling, and it does not have the sense or the inclination to break off. Everything about it is out of proportion except its size.",
+    "The deep timber and high snow country of the north, and any trapline, cache, or cabin left standing through the winter. Met at a carcass it has decided is now its own."),
+  "The Water Moccasin": (
+    "The snake that comes toward you. No other snake on the continent does that. A cottonmouth threatened holds its ground and gapes &mdash; that white throat is where the name comes from &mdash; and there are enough sober accounts of one swimming a deliberate line at a wading man that the country has stopped arguing about it. The venom is the ugly kind: it kills the flesh around the bite, and a hand that takes a bad one in swamp country a hundred miles from a doctor is often not a hand much longer.",
+    "Still and slow water in the hot country &mdash; sloughs, backwaters, rice ditches, cypress swamps. On the bank, on the log, and in the water with you; met while wading, and while sitting down where a log looked convenient."),
+  "The Golden Eagle": (
+    "The shadow that takes the lamb, and the one predator on the range that a herder can never do a thing about. It works from a height no rifle honestly reaches, folds, and arrives at better than a hundred miles an hour, and the first the flock knows of it is a lamb going sideways in the grass. It has been known to take a fawn, a fox, and now and again a small dog off open ground. Against a man it does nothing at all unless he has climbed to the nest, at which point it becomes a different proposition entirely.",
+    "Open country with cliffs or high timber to nest in &mdash; canyon rims, buttes, and mountain fronts. Over lambing grounds in the spring, and there lies the trouble."),
+  "The Feral Horse Band": (
+    "The mustangs, and the stallion who runs them, and the reason a careful outfit hobbles everything and stands a watch besides. A band stallion is a working thief with two hundred years of practice: he cuts saddle stock out of a picket line in the dark, drives it off among his mares, and is four miles gone before the camp is properly awake. Argue with him over it and you are not fighting one horse but standing in the middle of forty head turning at once, which the ground does not survive and neither does a man on it.",
+    "Open range and broken country with water and grass, anywhere the wild bands still run. Comes to the picket line at night; the trouble is always discovered at dawn, and always too late."),
+  "The Rutting Buck": (
+    "The deer that buries more men than the bear, for the plain reason that nobody is afraid of a deer. Two hundred pounds of muscle behind eight points of hard antler, in the one season of the year when it has stopped being careful about anything, will drive a man into the dirt and stand over him working. Worse is the buck that has been shot and gone down and been walked up on by a hunter who thought that settled it &mdash; every autumn produces a handful of those, and the coroner writes them up the same way every time.",
+    "Brush, timber edges, and field margins through the autumn rut; anywhere a buck has cows and an opinion. Most dangerously, at the end of a blood trail, where something is lying still and is not finished."),
+  "The Sow and Cubs": (
+    "The one bear with no quit in her. An ordinary black bear is a burglar and a bluffer &mdash; noise turns most of them and a thrown rock turns the rest. A sow who has decided that a man is between her and her cubs skips all of that. She commits on the first stride, presses through wounds that would send any other bear up a hill, and keeps coming as long as she believes the cubs are wrong-side of you. The cubs are the whole story, and they are usually the thing you did not see.",
+    "Timber, brush, and berry country in spring and early summer, when the cubs are small and the sow is thin and short-tempered. Met on a blind trail, at close range, and announced by a sound up in a tree that you will wish you had understood sooner."),
+  "The Boar Sounder": (
+    "The whole family, in heavy brush &mdash; a very different animal from the lone razorback. A sounder runs to twenty head &mdash; sows, shoats, and a pair of old boars on the edges &mdash; through cover a man cannot see ten feet into, and it moves like one thing. They cut across, wheel in the thicket, and come back through from a direction nobody was watching, and they do this in country where a rifle is worth less than a good knife and a stout tree.",
+    "Bottomland thickets, cane brakes, and swamp margins, rooting at dawn and dusk. Found by the dogs. That is how most of these fights start, and how a good many dogs finish."),
+  "The Snake Den": (
+    "The winter den, opened, and the single worst place a man can put his foot in a cold spring. Rattlers pass the winter in company &mdash; scores of them, sometimes hundreds, coiled together deep in the same rock fault year after year for longer than the county has had a name. Break into that in March, when they are stiff with cold and slow and thoroughly disinclined to move, and the floor of the place is alive and the walls are too, and every step out is another chance.",
+    "Deep rock faults, talus slopes, and old mine cuts on south-facing ground, used generation after generation. Dangerous from the first warm days until the den empties for the summer; dynamite and prospecting have opened more than a few."),
+  "The Wild Cattle of the Brasada": (
+    "Cattle that went wild and got clever. The ladinos of the thorn brush are longhorns bred out of a hundred years of strays, and the brush has made them nocturnal, solitary, and genuinely hostile in a way ordinary range stock never is. Six feet of horn tip to tip, a bull will lie up in a thicket all day and charge anything that comes in after him, and he has a settled hatred of horses and the men on top of them. The brush poppers who rope them out of the brasada for money are mostly vaqueros, working in leather from throat to boot, and they count broken bones as part of the wage.",
+    "The thorn brush of the south country &mdash; mesquite, prickly pear, and catclaw so thick a rider works it in leather from throat to boot. Moving to water at night, lying up in the thickets by day."),
+  "The Longhorn Herd": (
+    "Three thousand head, bedded down, and one bad noise from being something else entirely. The outfit holding it is eleven or twelve hands, and on the great drives three of those are Black or Mexican as a matter of plain arithmetic &mdash; the night guard that keeps this from becoming a disaster is worked in shifts by whoever can sing and stay awake. A trail herd at rest is not a peaceful thing; it is a hill of nerves that mills and drifts and swallows a man on foot without ever intending him any harm, and every single thing an outfit does at night &mdash; the night guard, the slow circle, the singing that the singing was always actually for &mdash; is done to keep it from turning into the entry four pages back.",
+    "The bed ground, every night of a drive, and any holding pasture where a big herd is gathered. Worst on a close night with lightning in it, on the first week out, and anywhere the ground ahead is broken."),
+  "The Stock-Killer Wolf": (
+    "The wolf with a name and a price on it, and the only honest animal in this book that a party can spend a whole campaign failing to kill. One old wolf, running alone or with a single mate, that kills far past any hunger &mdash; a dozen head in a night, throats opened and the carcasses left where they dropped. It springs traps with a stick and eats around the pan. It refuses poisoned bait it has never encountered before. It knows the range better than the ranch does, and it has already beaten every man the ranch has sent. Ranchers name these. That is how you know.",
+    "One range, one river drainage, one outfit's grass &mdash; a stock-killer works a territory and stays in it for years. Found by its work at dawn: the dead cattle, and the one set of tracks that walks straight past the trap line."),
 }
 
 
 LIVING = build_living(sb, runhead, quote, creature)
-BODY = CONTENTS + HOWTO + DEAD + BEASTS + MEN + SPIRITS + WILD + OLD + LIVING + INDEX + GROUNDS + BUILD
-_CSEC = ["dead", "beasts", "men", "spirits", "wild", "olddark", "living"]
+
+
+# ---- Chapter IX: the mundane frontier. Ordinary men with ordinary reasons, and the
+# country itself, which kills more people than everything in chapters II-VII combined.
+# Same no-Nerve/no-Mark rule as Chapter VIII: these are the slow-burn half of the book,
+# the material a Keeper runs for whole sessions before anything gets up that shouldn't.
+# Tuple layout matches LIVING_CREATURES, plus (lore, found, keeper) on the end.
+HARD_CREATURES = [
+    # ---------------------------------------------------------------- Tier I
+    ("The Drunk with a Gun", "Tier I &middot; a man who is going to regret this", 12, 11, "unsteady", "+4", "+1", "&mdash;",
+     "revolver +2 (1d8+2, and he may hit whoever he did not aim at)",
+     "<strong>No plan and no aim.</strong> Loud, weeping or furious by turns, and holding a loaded gun in a room full of people he mostly likes; the danger is entirely in what he does by accident.",
+     "&mdash;", "Talk, or the barkeep's bung starter across the back of the head. Killing him makes an enemy of a town that was on your side an hour ago.",
+     "A man who is going to regret this, assuming he lives to. Whiskey on the frontier is served by the water glass, and a payday, a grievance, and a Colt make a combination the country produces reliably every Saturday night. He is not a gunman. He could not hit the far wall on purpose. That is exactly the problem: he is waving a loaded revolver in a crowded room, his finger is inside the guard, and the man he actually wants is standing behind you.",
+     "Saloons, dances, paydays, and funerals, in every settlement with liquor in it. Most reliably at the end of a trail drive, when three months of wages meet a town for the first time.",
+     "Run him as a social problem with a firearm attached, and let the table solve him with talk, drink, or a chair. Then let the consequences land: the man he shoots by accident has a brother, and that brother is a perfectly ordinary fellow who will follow the party for a year."),
+    ("The Rustlers", "Tier I &middot; men who do their work at night", 13, 13, "mounted", "+5", "+5", "+2",
+     "rifle +4 (1d8+2, from cover, and only if pressed)",
+     "<strong>Would much rather ride off.</strong> Three or four men altering brands by lantern light; they came for cattle, they will run at the first real resistance, and they will kill without hesitation if running stops being an option.",
+     "&mdash;", "They break the moment the odds turn. Follow them and you are in their country; corner them and you have made this a killing that neither side wanted.",
+     "Men who do their work at night, and the commonest crime in the cattle country by a distance. Rustling is a business: a running iron, a wet blanket, a hot fire, and a brand redrawn into a different brand by men who know exactly which alterations the county will not look at twice. They are cowhands, mostly &mdash; often the same men who worked the outfit last season &mdash; and they are not killers by trade or by preference. But a man caught at it hangs, and every one of them knows it, which makes a cornered rustler a far worse proposition than a bold one.",
+     "Holding pastures, night camps, the far edge of a big range, and any brush country within a day's push of a border. The sign is on the ground: too few head, a cold fire, and a brand that reads wrong to anybody who looks.",
+     "The rustler is the Keeper's best early antagonist because he is negotiable. He can be bought, warned off, deputized, or turned into an informant, and every one of those choices makes the country more complicated. Hang one, and the party has taught the range something about themselves."),
+    ("The Claim-Jumpers", "Tier I &middot; men with your paper in their pocket", 13, 12, "afoot", "+5", "+4", "+3",
+     "shotgun +4 (1d8+2 close) or the county clerk (worse)",
+     "<strong>Half of this happens on paper.</strong> They have your claim recorded under another name, a lawyer in town, and four men on the ground who only need to hold the hole until the filing goes through.",
+     "&mdash;", "The courthouse, if the courthouse is honest, and a hard question about who paid the clerk if it is not. Shooting them proves their case for them.",
+     "Men with your paper in their pocket, which is a worse thing to face than men with guns. A claim is a piece of ground and a piece of writing, and the writing is where the theft is done: a filing altered, a witness bought, an assessment work requirement quietly missed and quietly noticed. By the time anyone rides out to argue, there are four men on the ground who need only sit there, do very little, and be extremely lawful about it until the paper catches up. And the law is a great deal easier to bend against some claimants than others &mdash; a Chinese company that worked a bar for six years and paid the foreign miners' tax on every ounce of it, or a New Mexican family whose grant is older than the territory, can find the whole apparatus of the recorder's office quietly arranged against them.",
+     "Placer diggings, lode claims, homestead sections, and water rights &mdash; anywhere the ground has value and the record of who owns it lives sixty miles away in a wooden building.",
+     "This is a fight the party mostly cannot shoot its way out of. That is the point of putting it early. Let them discover that the recorder is the real antagonist, and that riding to town is more use than riding to the claim. If the wronged claimant is one the county is already inclined to rule against, do not make that the lesson of the scene &mdash; make it the reason the paper matters, and let the claimant be the one who knows exactly which filing to pull and which date will hang them."),
+    ("The Saloon Brawl", "Tier I &middot; thirty men and no plan at all", 12, 20, "the whole room", "+5", "+3", "&mdash;",
+     "whatever is to hand +4 (1d6+2 to anyone still standing in it)",
+     "<strong>Nobody is in charge.</strong> It began between two men over something neither will remember; it now involves the room, the furniture, and a stove nobody is watching.",
+     "&mdash;", "Get out, get behind the bar, or get to the door. A drawn gun ends the brawl and starts something the town will remember for twenty years.",
+     "Thirty men and no plan at all. It starts between two of them over a card, a woman, a slur, or a debt, and stays a fistfight for about four seconds. Then somebody swings at somebody who was not involved, and the room discovers it has opinions. Tables go over, the lamps come down, and the stove &mdash; there is always a stove &mdash; goes over with a load of coals into a floor that has been soaked in whiskey since 1868.",
+     "Any saloon, dance hall, or bunkhouse with enough men and enough liquor in it, most reliably on a payday or the last night of a drive.",
+     "Run it as terrain rather than as an enemy: the room is the threat, and each round asks where a character is standing rather than who they are fighting. The fire is the real clock. A party that puts the stove upright before it puts anybody down has just bought itself a town full of friends."),
+    ("The Tinhorn", "Tier I &middot; the cheat, and the friends he keeps", 13, 11, "seated, mostly", "+3", "+6", "+5",
+     "derringer +4 (1d6+2, at the table, from a sleeve) &mdash; and two men at the bar",
+     "<strong>Reads the table better than the cards.</strong> Marked deck, cold deck, a mirror in the cigar case, and a pair of friends drinking nearby who have never met him in their lives.",
+     "&mdash;", "Catching him is easy; proving it in a room where he has stood a round for everybody is the trick. Take the money back quietly, or take the whole room's word away from him first.",
+     "The cheat, and the friends he keeps, which are always the actual difficulty. A tinhorn does not beat a table with cards; he beats it with preparation &mdash; a deck stacked before he sat down, a shiner set in a ring or a cigar case, and a partner across the room who signals every hand the party holds. He is unfailingly pleasant, he loses just often enough, and he has bought drinks for four men who will swear he has been square all evening.",
+     "Faro layouts, poker tables, and any game running in a boom camp with money moving through it. Thickest where the money is newest &mdash; end of a drive, a strike, a payroll.",
+     "The interesting scene is the accusation, not the fight. Make the table roll to spot the tell, then make them decide what to do in a room that likes him. If they simply shoot him, the two friends at the bar are a Tier I fight, and the town has watched the party kill an unarmed man over cards."),
+    # ---------------------------------------------------------------- Tier II
+    ("The Hired Gun", "Tier II &middot; a man paid to be wherever you are", 16, 22, "unhurried", "+7", "+9", "+6",
+     "revolver +6 (1d8+3, twice, and both where he meant them)",
+     "<strong>Does this for wages.</strong> Practiced, unbothered, and entirely without grudge; he will give warning once because a warning is cheaper than a fight, and he will not give it twice.",
+     "&mdash;", "Find out who is paying and pay them more, or make the job cost more than the fee. He has no personal stake and is the last man on this list who wants to die over one.",
+     "A man paid to be wherever you are. He is not an outlaw and he is careful about the distinction: he works for a cattle association, a mine, a railroad, or one large landowner, and there is usually a badge somewhere in the arrangement to keep the whole thing tidy. He practices, which almost nobody does. He is polite to women, good with horses, and will drink with the party the night before. The work is the work, and he has no more feeling about it than a farrier has about a shoe.",
+     "Where big money has a small problem &mdash; a range in dispute, a strike being broken, a witness who has not yet testified. He arrives on the stage, takes a room, and is seen at breakfast.",
+     "He is the frontier's cleanest lesson that money is the monster. Give him manners and a name and let the party like him. If they kill him, the association simply sends the next one, and that one has read the first one's notes."),
+    ("The Lynch Mob", "Tier II &middot; the town, with a rope", 14, 30, "one mass, moving", "+8", "+3", "&mdash;",
+     "hands, hooks, and axe handles +6 (1d8+3 to whoever stands in the way)",
+     "<strong>No one in it would do this alone.</strong> Forty neighbors carrying a decision none of them made; it has a rope, a tree already chosen, and about ninety minutes before it comes apart on its own.",
+     "&mdash;", "Names. Say enough of them out loud and the back of the crowd remembers it has to live here tomorrow. Firing into it makes it a riot and makes the party the thing it came for.",
+     "The town, with a rope. Every man in it is somebody the party has already met &mdash; the liveryman, the storekeeper, two hands off the Bar T, the fellow who fixed their wagon &mdash; and not one of them would do this by himself, or is entirely sure how he came to be doing it now. It has no leader, exactly. It has three or four loud men near the front and a great many quiet ones behind who are waiting to see. That back half is the whole of the party's opportunity.",
+     "Outside a jail, at the livery, on the courthouse steps &mdash; wherever a prisoner is being held and the crime was against someone the town loved. Forms in the evening; hardest to break after full dark.",
+     "This is a talking encounter with a clock on it, and the clock is the only thing that makes it dangerous. Track it as a countdown the party can push back with each successful appeal. Let them win it, once, in front of everybody &mdash; and let the loud men at the front remember them for it. Know before you start whether the man in that cell is guilty, because the crowd does not know and will not ask; and know that in this country a mob assembles a great deal faster when the accused is Black, Mexican, or Chinese, which is a fact the party's Keeper should use to raise the stakes and never to stage a spectacle. The prisoner gets a name, a trade, a family in the crowd, and something to say."),
+    ("The Deserters", "Tier II &middot; soldiers who quit the army and kept the guns", 15, 24, "mounted; disciplined", "+8", "+6", "+3",
+     "carbines +6 (1d8+3, volleyed, from cover on both flanks)",
+     "<strong>Trained, and out of anything to lose.</strong> They move like a squad because they were one; they post pickets, they use the ground, and they cannot surrender to anybody, ever.",
+     "&mdash;", "They fight better than they have to and quit harder than they should. Take the horses, or make it look like cavalry has found them; nothing else moves them.",
+     "Soldiers who quit the army and kept the guns, the horses, and the habits. That last part is what makes them worse than ordinary road agents: they scout, they post pickets, they take the high ground without discussing it, and they lay a crossfire because a sergeant somewhere taught them to and it never wore off. What they have lost is the part of a soldier that can be talked to. A deserter taken alive is a hanged deserter, so there is no arrangement on offer and no reason for them to consider one.",
+     "The far country between posts &mdash; the Territories, the border, the long stretches where the army's writ is a rumor. Living off the road, the stage line, and any ranch too small to answer them.",
+     "Play them tactically and let the party feel the difference between men with guns and men with training. The tragedy is available for free: one of them is nineteen, and would go home if going home were possible."),
+    ("The Comancheros", "Tier II &middot; traders in what should not be traded", 15, 23, "mounted; wagons", "+7", "+7", "+5",
+     "trade guns +6 (1d8+3) &mdash; and whatever they sold last month, pointed back at you",
+     "<strong>Everyone's friend and nobody's.</strong> They carry powder, lead, whiskey, and rifles out to the plains and bring back cattle, horses, and now and then people; they are neutral in every war they supply.",
+     "&mdash;", "They deal, always. The question is only what you have that is worth more than what they are already carrying, and whether you can live with the trade.",
+     "Traders in what should not be traded. Comancheros are New Mexican &mdash; families out of the Pecos and the Canadian who have worked the old routes onto the llano for four generations, speak Comanche and Kiowa as well as they speak Spanish, and are trusted on that plain in a way no Anglo trader has ever managed. They go out with mule trains of powder, lead, whiskey, iron, and repeating rifles, and they come back with cattle that had brands, horses that had riders, and sometimes with captives to be ransomed to whoever wants them most. They are scrupulously neutral. They will guide the party, feed them, sell them exactly what they need, and sell the same to whoever the party is riding against, and see nothing at all inconsistent in it.",
+     "The llano and the deep plains, the old trading grounds, the borderlands. Met on the road with a wagon train and an unhurried, friendly manner that is entirely genuine.",
+     "Make them useful before making them a problem. A Comanchero the party has bought from twice is a far better complication than one they simply fight, and the ransom conversation &mdash; where the captive is real, and the price is real &mdash; is the best scene the entry has in it."),
+    ("The Horse Thieves", "Tier II &middot; men who leave you afoot", 15, 20, "very fast; mounted", "+7", "+9", "+3",
+     "rifle +6 (1d8+3, at a distance, while riding away)",
+     "<strong>The theft is the attack.</strong> They rarely want a fight at all; they want the picket line, and in that country a party on foot has already lost more than the fight would have cost.",
+     "&mdash;", "Getting the horses back matters more than getting the men. Hobble, sidehobble, and stand a watch &mdash; and know that the country hangs these faster than it hangs killers.",
+     "Men who leave you afoot, which on the high plains in August is a sentence with a delay in it. A good horse thief never fires a shot: he comes in on the picket line in the last dark hour, cuts what he wants, and is over the county line before the coffee is on. The frontier hangs these men faster and with less discussion than it hangs murderers, and every one of them knows the arithmetic, so the ones who are caught fight like the cornered thing they are.",
+     "Night camps, remudas, livery corrals, and any picket line within a hard ride of a border or a broken country. Worst in a moonless week.",
+     "Do not stage this as a fight. Stage it as a morning: the party wakes, and the horses are gone, and everything they intended to do that week is now a different problem. What they do next &mdash; track, buy, steal in turn, or walk &mdash; will tell you more about them than a battle would."),
+    # ---------------------------------------------------------------- Tier III
+    ("The Outlaw Gang", "Tier III &middot; road agents with a leader and a name", 17, 40, "mounted; well armed", "+10", "+9", "+7",
+     "rifles &amp; revolvers +9 (2d6+4, from three positions they chose yesterday)",
+     "<strong>Somebody is thinking.</strong> Eight to twelve men who have done this before under a leader who plans, scouts the ground, buys the telegraph operator, and has a place to go afterward.",
+     "&mdash;", "Break the leader and the rest are Road Agents again. Kill the leader and the smartest of the rest becomes the leader, and he has learned from watching you.",
+     "Road agents with a leader and a name &mdash; the whole difference between this entry and the one in Chapter IV. A gang is a business with a payroll and a plan: the ground is scouted a week ahead, the telegraph operator has been paid, there are fresh horses cached at twelve miles and again at thirty, and there is a valley somewhere full of people who will swear the whole gang was at a dance. They are locally popular. That is not sentiment &mdash; they spend their money in that valley, and the bank they robbed foreclosed on it.",
+     "The stage road, the bank town, the payroll car, and the county that shelters them afterward. Found in the papers long before they are found on the ground.",
+     "Nothing else in this chapter carries a campaign as far, because the gang is a mirror: it does what the party does, with the same skills, for reasons the party can understand. Give the leader one virtue the party has to respect, and the campaign writes itself."),
+    ("The Bounty Killer", "Tier III &middot; a patient man with your description", 18, 36, "unhurried; never far", "+9", "+11", "+8",
+     "rifle +9 (2d6+4, at four hundred yards, once)",
+     "<strong>Chooses the ground and the day.</strong> Works alone, sleeps cold, and has followed men for a season without being seen; the paper says dead or alive and he has done the arithmetic on the difference.",
+     "&mdash;", "He can be paid, but only by someone who can outbid the paper, and he does not take a job he cannot finish. Break the warrant and you have broken him.",
+     "A patient man with your description folded in a coat pocket, and the only entry in this chapter that hunts the party rather than being found by them. He does not brawl, does not drink much, and has no interest whatever in a fair fight; he takes a season if a season is what it takes, and he is content to ride the same stage as his man for two days without saying anything at all. The paper says dead or alive, and he has quietly worked out that alive is a great deal more trouble to feed.",
+     "Wherever the party has been and has been noticed &mdash; a stage station, a hotel register, a livery book, a telegraph office. He is usually behind them by four days, and once by about forty feet.",
+     "Never fight him first. Let him be seen at a distance three times over three sessions, doing nothing, and let the party understand who it is. Then make the confrontation a conversation about the warrant, because the warrant is the only part of him that can actually be beaten."),
+    ("The Cattle Baron's Men", "Tier III &middot; the range war, in shirtsleeves", 17, 42, "mounted; many", "+10", "+8", "+6",
+     "rifles +9 (2d6+4, and there are always more of them tomorrow)",
+     "<strong>Backed by everything.</strong> Twenty riders, the association's money, the sheriff's tolerance, and a stack of eviction paper &mdash; and the standing instruction to make the small outfits sell.",
+     "&mdash;", "You cannot shoot an association. Newspapers, a territorial governor, and one honest judge have ended more of these than all the gunfights combined.",
+     "The range war, in shirtsleeves. A big outfit decides the small ones are rustling &mdash; sometimes they are &mdash; and hires twenty men to go and settle it, and the county's law is either on the payroll or wisely absent. What follows is not a battle. It is fence cutting, a dead dog on a porch, a barn burning at three in the morning, a homesteader's name on a list nailed up outside a store, and then one killing done in daylight to make the point that daylight is available.",
+     "The open range wherever wire, sheep, or homesteaders have arrived &mdash; which by now is everywhere. Announced by a list, a notice, or a rider who says something polite on the way past.",
+     "This is the campaign frame rather than an encounter: run it over months, mostly with paper and pressure, and let violence be the thing the party is trying to prevent. The Keeper's real material is the neighbors, and which way each of them jumps."),
+    # ---------------------------------------------------------------- Tier IV
+    ("The Regulators", "Tier IV &middot; a private army, with the law's blessing", 19, 66, "mounted column; supplied", "+14", "+9", "+8",
+     "volleys +13 (2d8+6, disciplined, at whatever they have surrounded)",
+     "<strong>Fifty men and a list.</strong> Hired invaders with a wagon of supplies, a doctor, a newspaperman brought along to write it up favorably, and warrants signed by a judge who left town.",
+     "&mdash;", "Nothing the party owns stops fifty men. Outlast them: the country turns, the territory wires the army, and the whole expedition ends with everyone arrested and nobody punished.",
+     "A private army with the law's blessing, and the point at which a range war stops pretending. Fifty hired men come in by train with horses, supply wagons, a surgeon, and a list of seventy names &mdash; and a list like that is never sorted by evidence. The small outfits on it are the ones with the least standing to object: homesteaders, Mexican families holding grant land the association would like reassigned, anyone the county courthouse has learned it can rule against without consequence. They carry warrants signed by a judge who has since gone east on business. They are competent, they are supplied, and they intend to work down the list in order. What actually stops them is never a gun &mdash; it is the county, three hundred neighbors, and a telegraph key.",
+     "One county, once, and it becomes the thing everybody in the Territory talks about for a generation. The party will be somewhere on the list, or will be asked to be.",
+     "Do not run this as a fight the party can win. Run it as a siege and a scramble: get the names warned, get to the telegraph, hold a ranch house for two days until help comes. The ending is deliberately unjust &mdash; everyone is arrested, the case is moved, nobody hangs &mdash; and that injustice is worth more to a campaign than a victory."),
+    # ---------------------------------------------------------------- hard country
+    ("The Bad Water", "Tier I &middot; the alkali seep and the poisoned well", "&mdash;", "&mdash;", "still; and it waits", "&mdash;", "&mdash;", "&mdash;",
+     "the drink (Fort DC 13 or 1d6 and sickened for a week; stock may simply die)",
+     "<strong>Looks exactly like water.</strong> Alkali flats, gypsum seeps, a spring gone foul, a well with something dead in it &mdash; it is wet, it is the only wet thing for a day's ride, and a thirsty outfit will argue itself into drinking it.",
+     "&mdash;", "Test it on the stock or on a tin cup and wait. Boiling helps a little; the smell and the white crust around the edge tell you everything, if anyone is still cautious enough to look.",
+     "The alkali seep and the poisoned well, and the reason experienced hands drink coffee. It looks like water. It is, in every way that matters to a man who has been dry since dawn, water. The white rim around a playa, the milky green of a gypsum spring, the well at an abandoned place with something at the bottom of it &mdash; each of these will empty a man out for a week, and each of them has killed whole strings of horses that had less say in the matter than their riders did.",
+     "Alkali flats, sinks, gypsum country, and any abandoned well or tank. Worst in the dry months, when the good water is gone and the bad water is all that is left showing.",
+     "This is the entry that teaches a party the country is a character. Put it two days out from anywhere, after their canteens have run low, and let them make the choice knowingly. Then let a horse die rather than a person, the first time."),
+    ("The Norther", "Tier II &middot; sixty degrees, in an afternoon", "&mdash;", "&mdash;", "faster than a horse", "&mdash;", "&mdash;", "&mdash;",
+     "the cold (Fort DC 14 each hour exposed, or 1d8+3 and the hands stop working)",
+     "<strong>Arrives as a blue line.</strong> A wall of cloud low in the north at noon, and by dark the temperature has fallen sixty degrees, the rain is ice, and the cattle are walking south ahead of it whether anybody is ready or not.",
+     "&mdash;", "Shelter, on the south side of anything, before it arrives. Once it is on you the only question is whether you are moving toward a wall or away from one.",
+     "Sixty degrees in an afternoon. A blue norther announces itself as a hard dark line low across the northern sky in the middle of a warm day, and there is perhaps an hour between seeing it and being in it. Then the wind comes around, the rain turns to sleet and the sleet to ice, and the whole country is suddenly thirty below what it was at dinner. Cattle drift ahead of it for a hundred miles and pile against the first fence they meet, and men who were in shirtsleeves at noon are in serious difficulty by dark.",
+     "The plains, from autumn through spring. The warning is always the same and always brief: a blue line in the north, and every experienced hand in sight suddenly working faster.",
+     "Give the party the warning and let them decide whether to believe it. The drama is in the hour before, not the storm; whoever says we can make the next place is the one the table will remember."),
+    ("The Prairie Fire", "Tier II &middot; the country, burning toward you", "&mdash;", "&mdash;", "faster than a horse, downwind", "&mdash;", "&mdash;", "&mdash;",
+     "the front (1d8+3 a round to anything caught, and the smoke comes first)",
+     "<strong>Outruns a horse.</strong> A front of flame in dry grass moves with the wind at better than a good horse can carry a man over broken ground, and the smoke takes the horses' nerve long before the fire arrives.",
+     "&mdash;", "Burn your own ground and stand on it, get to a river, or ride crosswind &mdash; never straight ahead of it. A wet blanket and a plowed furrow have saved more outfits than courage has.",
+     "The country, burning toward you. Dry grass and a wind will carry a fire front faster than a horse can go over ground it cannot see, and the smoke arrives well ahead of the flame to take the horses' nerve and the riders' bearings at the same time. It is started by lightning, by a campfire, by a locomotive's stack, and now and then deliberately by somebody who wanted a neighbor gone. What it leaves is forty miles of black ground, dead stock, and an outfit with nothing to feed anything on.",
+     "The grass country in late summer and autumn, after the cure and before the rains. Seen first as a brown smudge on the horizon that is in the wrong place for weather.",
+     "The correct answer &mdash; set a backfire and stand in the burn &mdash; is a thing a frontier character would know and a player might not. Let a hand suggest it. Riding crosswind is the other answer; riding away is the one that kills them."),
+    ("The River Crossing", "Tier III &middot; brown water, and a herd that will not swim", "&mdash;", "&mdash;", "moving; and it does not stop", "&mdash;", "&mdash;", "&mdash;",
+     "the water (Ref DC 16 or swept; a swept rider takes 2d6+4 and loses the horse)",
+     "<strong>Deeper and faster than it reads.</strong> Quicksand on the bar, a cut bank on the far side, a bottom nobody has seen, and a thousand head that will mill in the middle of it the instant the lead animal turns.",
+     "&mdash;", "Swim it above the herd, never below. Cut the lead steer loose to the far bank and the rest follow; let it mill and the river keeps whatever it takes.",
+     "Brown water and a herd that will not swim, which together have killed more trail hands than every outlaw in this book. A river in flood reads flat and slow from the bank and is neither. There is quicksand on the inside bar, a cut bank on the far side that a swimming horse cannot climb, driftwood coming down that nobody sees until it arrives, and a bottom that changed last week. And there is the herd: a thousand head that will string across beautifully until the lead animal loses its nerve, turns, and starts the whole mass revolving in deep water with men in it.",
+     "Every crossing of every drive, and worst in the spring rise. The Red, the Brazos, the Canadian, the Platte &mdash; each has a reputation, and each earned it.",
+     "Do not roll once. Roll for the scout, the point, the swing, and the drag, and let the party choose the order they go in. Drown a horse before you drown a person, and if somebody must go, make it the young hand everybody at the table liked."),
+    ("The Flash Flood", "Tier III &middot; the dry wash, suddenly full", "&mdash;", "&mdash;", "very fast; arrives before the rain does", "&mdash;", "&mdash;", "&mdash;",
+     "the wall (2d6+4 and swept under, to everything in the channel)",
+     "<strong>From a storm you cannot see.</strong> Comes down a bone-dry arroyo under a clear sky, carrying trees and boulders, out of rain that fell twenty miles upcountry an hour ago.",
+     "&mdash;", "Get up the bank &mdash; any bank, immediately, before deciding whether it is necessary. There is no swimming this. An hour later it is dry again, and that is what fools the next party through.",
+     "The dry wash, suddenly full, out of a sky directly overhead that is doing nothing at all. Rain that fell twenty miles up the country an hour ago gathers into a channel that has been bone dry for a season, and it arrives as a moving wall four feet high with trees and boulders rolling along inside it. The sound comes perhaps thirty seconds ahead of the water. An arroyo is the flattest, easiest, most sheltered ground in that whole country. People camp in it for exactly that reason.",
+     "Desert washes, arroyos, slot canyons, and dry creek beds in the thunderstorm season. Announced by a sound like a train and by nothing else whatever.",
+     "The warning is thirty seconds long, so put it in the fiction and not in a roll: describe the sound, and give the table one round to act. Whoever spends that round saving the gear instead of climbing is the object lesson."),
+    ("The Blizzard", "Tier IV &middot; three days of white", "&mdash;", "&mdash;", "settled in; it has nowhere to be", "&mdash;", "&mdash;", "&mdash;",
+     "the cold (Fort DC 18 an hour exposed, 2d8+6 and the extremities go; the stock dies first)",
+     "<strong>Takes the country away.</strong> Wind, and snow moving sideways, and no horizon and no direction &mdash; men have died forty feet from a lit house because the world stopped having a shape.",
+     "&mdash;", "Stop. Build or find shelter and stay in it three days. Every soul lost to one of these was moving when it happened, and was sure of the way.",
+     "Three days of white, and the entry that ended the open-range cattle business in a single winter. Wind at fifty miles an hour with snow going sideways in it takes the horizon away, then the direction, then any notion of distance; there are sober, well-documented accounts of men freezing to death within sight of their own lit windows, having walked in a circle in a farmyard. The stock goes first &mdash; drifting before the wind, piling against fences, and standing there until they are part of the drift.",
+     "The northern plains and mountain country from November to April. The warning is a falling glass, a still grey morning, and old hands putting up a rope line between the house and the barn.",
+     "The rope between house and barn is the whole entry in one image; use it. Run the blizzard as three days of decisions in a small room with finite fuel, food, and patience, and let the horror be what the party has to choose about the animals outside."),
+]
+
+
+def build_hard(sb, runhead, quote, creature):
+    blocks_list = []
+    for c in HARD_CREATURES:
+        stat = sb(*c[:12])
+        lore, found, keeper = c[12], c[13], c[14]
+        blocks_list.append(creature(stat, lore=lore, found=found, keeper=keeper))
+    blocks = "\n  ".join(blocks_list)
+    return f'''<!-- IX -->
+<section class="page" id="hard">
+  {runhead('IX. Hard Men &amp; Hard Country')}
+  <h1 class="chapter">IX. Hard Men &amp; Hard Country</h1>
+  <p class="chapter-sub">The ordinary frontier &mdash; which buries more people than everything before it.</p>
+  <div class="divider"></div>
+  {quote("I have written up seventy-one deaths in this county in eleven years. Two of them were strange. I would like the record to show what the other sixty-nine were: water, weather, whiskey, horses, and men with a reason.", "Coroner's ledger, Perdition Basin")}
+  <p class="dropcap lead">Every chapter before this one is the reason a party rides out. This chapter is what actually happens to them on the way. Men rustle cattle because cattle are worth money. A river is high because it rained in the mountains. A hired gun steps off the stage because somebody with an account wrote a draft against it. None of it has a curse in it anywhere, and between them these twenty things will cost a posse more Blood, more horses, and more friends than the whole of the Old Dark.</p>
+  <p class="note"> <strong>Signs of the kind:</strong> a brand that reads wrong, a list nailed up outside the store, a stranger who was at breakfast and is at supper, a blue line low in the north, a smell of smoke with no camp under it, and a wash that is the flattest ground for a mile.</p>
+  <div class="keeper-note"><span class="kn-tag">Whose country this is</span>The men in this chapter are drawn from every people on the frontier, because every people on the frontier is here. The trade itself came north with the vaquero, and a quarter of the hands on any drive worth the name are Black or Mexican; the Ninth and Tenth Cavalry ride the Territory; the Chinese who laid the Central Pacific are in the mines and the market gardens and the cook tent; New Mexican families have worked their grant land since before there was a Congress to doubt the deed; and the peoples who were here first are a dozen nations who agree on nothing. Run them as what they are &mdash; the county &mdash; and give the competence in every scene to whoever has actually earned it. The Keeper's Book, Chapter VIII, has the names and the handling.</div>
+  <div class="keeper-note"><span class="kn-tag">No Nerve, no Mark &mdash; and the whole point of them</span>Like the beasts of the living world, nothing here costs the party a point of Nerve or moves the Mark, and every <strong>Dread</strong> line reads &ldquo;&mdash;&rdquo; to say so. That is what makes this chapter the most useful one in the book. Run these for the first stretch of a campaign and the table learns that the country is dangerous on its own terms, that guns work, that a plan works, and that the Keeper is playing fair. Then, one night, a herd will not settle and the horses will not go near the water, and the table will find it has nowhere left to put that feeling &mdash; because it has spent eight sessions learning that everything out here has an ordinary explanation.</div>
+  {blocks}
+</section>
+'''
+
+
+HARD = build_hard(sb, runhead, quote, creature)
+BODY = CONTENTS + HOWTO + DEAD + BEASTS + MEN + SPIRITS + WILD + OLD + LIVING + HARD + INDEX + GROUNDS + BUILD
+_CSEC = ["dead", "beasts", "men", "spirits", "wild", "olddark", "living", "hard"]
 BODY = sort_sections(BODY, _CSEC)   # each section: tier asc, then name asc
 BODY = gen_appendix(BODY, _CSEC)    # appendix regenerated from actual stat blocks
 
@@ -1956,6 +2316,8 @@ BEST_INDEX = [
     ("Spirits &amp; Hauntings", "spirits"),
     ("The Wild &amp; the Weather", "wild"),
     ("The Old Dark", "olddark"),
+    ("Beasts of the Living World", "living"),
+    ("Hard Men &amp; Hard Country", "hard"),
     ("The Roll, by Tier <span class=\"note\">(appendix)</span>", "index"),
     ("The Grounds <span class=\"note\">(encounters by terrain)</span>", "grounds"),
     ("Encounters by terrain", "grounds"),

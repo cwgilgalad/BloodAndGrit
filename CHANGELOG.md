@@ -8,6 +8,120 @@ Desktop\Git repos.)
 
 ---
 
+- **Books v2.16 / v2.8 / v2.8 + GritKeeper v1.11.0 — the mundane frontier, the city, and
+  the people who were actually out here (2026-07-22, user-requested).** One release, four
+  asks.
+
+  **Forty "normal" creatures, so the Bestiary can carry a slow burn.** The Bestiary goes
+  110 → **150**. Twenty more honest animals join **Ch. VIII** (25 → 45): the Mad Dog and
+  its hydrophobia, the Prairie Dog Town that breaks a horse's leg, the Snake Den, the Sow
+  and Cubs, the Wild Cattle of the Brasada, the Stock-Killer Wolf with a name and a price
+  on it. Twenty more become a **new Ch. IX, "Hard Men & Hard Country"** — ordinary men
+  (rustlers, claim-jumpers, a saloon brawl, a lynch mob, deserters, Comancheros, a hired
+  gun, an outlaw gang, a bounty killer, the Regulators) and the country itself (bad water,
+  a norther, a prairie fire, a river crossing, a flash flood, a blizzard). Tiers skew low
+  on purpose — 14 at Tier I, 14 at II, 10 at III, 2 at IV — because this is early-campaign
+  material. Like the living beasts, **none of it costs a point of Nerve or moves the Mark**,
+  and that is the whole design: run it for a month and the table learns the country is
+  dangerous on its own terms, so the first genuinely wrong thing has nowhere to be filed.
+  Mundane entries are now **65 of 150**, against 25 of 110 before. New Grounds table,
+  **The Ordinary Country (d20)**; the Keeper's Ch. V now points at both mundane chapters
+  and says what they are for.
+
+  **The peoples of the frontier.** The Player's Book Ch. IV is titled *Origins & the
+  Peoples of the Frontier* and carried careful long-form sections on **The First Peoples**
+  and **The Mexican Frontier** — and nothing on two of the four peoples it most owed. Added
+  in the same shape, same length, same rules-of-the-road box: **Black Westerners** (one
+  trail hand in four, the Exodus of '79, Nicodemus, the Ninth and Tenth Cavalry) and **The
+  Chinese on the Frontier** (nine men in ten on the Central Pacific grade, the Exclusion Act
+  of '82, the district associations, Rock Springs this very year). Keeper's Book Ch. VIII
+  gains **"Who Is Actually Out Here"** — the trade's Spanish vocabulary, the real
+  proportions, and the instruction that this needs *names and jobs*, not a speech — plus a
+  note on running horrors that come out of living belief. Bestiary Ch. IX carries the same
+  in its own voice, and the Comancheros, Claim-Jumpers, Lynch Mob, Longhorn Herd, Wild
+  Cattle and Regulators entries were rewritten where the history is exact. Two new rollable
+  name tables in Ch. XII, and the app's `npcGiven`/`npcSurname` grew 20 → 48 and 20 → 46 to
+  match, so the generators stop contradicting the page.
+
+  **Cities.** New Keeper's Book **Ch. XIV, "The Lamplit City"** — running the game in Dodge,
+  Kansas City, San Francisco, Butte, Tombstone, Omaha, Denver, Virginia City, Cheyenne and
+  Leadville without losing the tone. Its argument is that a city is *better* ground for the
+  dark, not worse: anonymity beats isolation (a thing that empties a town of 200 by Tuesday
+  feeds in Kansas City forever), the crowd is cover, and indifference does the work fear used
+  to. Six things change at the table and only six — guns checked at the deadline, gunfire
+  that costs an inquest, witnesses and the press, institutions that commit you rather than
+  disbelieve you, paper as the new tracking, and Dread moved indoors and underground. Each
+  Bestiary chapter gets a paragraph on how it bends downtown, and **the Dark Cultist
+  incorporates**: it charters as a benevolent society with a lawyer, a brass plate, and the
+  coroner on its membership roll, so the final scene of a city campaign is an exposure rather
+  than a gunfight. Ten real cities keyed, a build-your-own-city checklist, three new tables,
+  and a closing note on keeping the party's country competence valuable. New Bestiary Grounds
+  table, **The Lamplit City (d12)**; new app tables `cityQuarter` / `cityMachine` /
+  `cityWrongNote` / `cityJob` behind a **"A city, in four rolls"** generator button.
+
+  **An editor's pass and a whitespace audit.** Cross-checked every shared number across both
+  books and `Core.cs` and found one real drift: the Bestiary's Threat-by-Tier table gave Tier
+  I's Dread DC as "10–13" where the Keeper's Book and the app both say "— / 10–13" (a Tier I
+  thing may have no Dread at all). Fixed in the Bestiary. All three books: 0 dead anchors, 0
+  duplicate ids, 0 die-size/row-count mismatches. `audit_whitespace.py` now **classifies**
+  gaps instead of listing them — a page that ends short because the next one opens a chapter
+  is the design working, not a defect. Of 44 gaps over 140px across 439 pages, 36 are chapter
+  starts and the remaining 8 are heading-orphan avoidance at 143–227px. Nothing to reclaim.
+
+  Page counts 170 → **174** / 88 → **101** / 131 → **164**; all three measure clean (parity,
+  zero true-scale clip, zero mobile h-scroll, every anchor resolved) and all three builds are
+  idempotent. **PDFs regenerated on explicit request** — 174 / 101 / 164 pages, 612×792pt,
+  verified page-for-sheet.
+
+- **GritKeeper v1.11.0 — the Level up button works, and launch is 3x faster (2026-07-22,
+  user-reported).**
+
+  **The dead Level up button.** Reported as "I used it once, but now it seems broken," and it
+  was: the first-launch demo posse seeded by builds older than v1.9.0 persists in
+  `session.json` as six rows with `Sheet: null`, and `LevelUpMember` answered a sheetless row
+  with one line in the roll log — on a different tab. The user's own live session had all six.
+  Now a sheetless row is offered a repair: GritKeeper draws a rules-legal sheet for the row's
+  Calling at its current level (keeping name and gender, and *not* inventing a gender the row
+  never had) and levels them. Every other way out of that button now says so in a dialog.
+
+  **Startup.** The v1.10.0 "startup pass" reasoned about JIT in the abstract and made launch
+  worse. Measured four publish configurations to first window, each first launch on a
+  brand-new copy of the exe so Defender's first-execution scan counts:
+
+  | config | exe | first launch | every launch after |
+  |---|---|---|---|
+  | ReadyToRun + compression (v1.10.0) | 73 MB | 18.0 s | 1.64 s |
+  | ReadyToRun, no compression | 172 MB | 14.5 s | 0.88 s |
+  | **no ReadyToRun, no compression** | **155 MB** | **5.1 s** | **1.00 s** |
+
+  Compression is the expensive one — ~39 MB of native libraries inflated and written to
+  `%TEMP%\.net\GritKeeper` on the first run of every new build, then scanned. R2R doubles what
+  goes through it. Shipping neither. **The zip shrinks** (71.3 → 65.4 MB) because Deflate does
+  the same job once, at download time. `IncludeNativeLibrariesForSelfExtract=false` was tried
+  and never opens a window; the csproj records that so nobody tries it again.
+
+  **Tab loading.** Building all ten tabs up front cost 379 ms of a ~1,000 ms launch (Bestiary
+  91, Posse 71, Map 61, Dice 46, Reference 45) for nine tabs nobody was looking at. Nine are
+  now built on first visit; the roll log, the session ledger and the encounter party level
+  moved behind fields first, so an unbuilt tab can't swallow them. Shipped and signed, the
+  app now opens in **6.1 s first / 0.86 s after**, against 18.0 s / 1.64 s.
+
+  **Five review findings, fixed.** `session.json` is written staged-then-moved — the old
+  truncate-in-place could tear on a kill or a crash-time save, and `TryAutoLoad`'s fallback
+  for an unparseable file was `SeedDemo()`, which silently replaced the Keeper's whole table
+  with the demo posse and then autosaved over it. An unreadable session is now set aside as
+  `session-unreadable.json` and reported. Open Ledger pop-outs close with the table they
+  describe on load/undo (they were keyed to `PartyMember` instances that Load and Undo
+  replace, so they went stale and leaked their dictionary entries). The encounter grid stopped
+  allocating a `Font` per cell paint. Two hot regexes cached. The coin ledger parses prices as
+  invariant.
+
+  Also: `creatures.json` was **stale** — it still carried the pre-editorial prose for seven
+  creatures from the 2026-07-21 pass, so the app and the book disagreed. Re-extracted. Smoke
+  4569 → **4612**, 0 failed, with new guards on the creature count, the eight chapters, the 65
+  mundane entries costing no Nerve and no Mark, every creature carrying lore and a Found line,
+  and the four city tables.
+
 - **GritKeeper v1.10.1 — book-version label sync (2026-07-21).** The status-bar and
   About-box labels now read **Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7**,
   matching the books' human-voice editorial pass. No behavior or embedded-content change

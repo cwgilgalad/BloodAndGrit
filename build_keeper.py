@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.15 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.7 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.15)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.7)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.16 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.8 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.16)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.8)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.15</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.7</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.16</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.8</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.15 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.7 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.16 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.8 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -97,6 +97,7 @@ CONTENTS = f"""<!-- ===================== KEEPER CONTENTS ===================== 
     <li><a href="#keepersyear">XI. The Keeper's Year <span class="sub">(running a campaign)</span></a><span class="pg">57</span></li>
     <li><a href="#pocket">XII. The Country in Your Pocket <span class="sub">(rollable tables)</span></a><span class="pg">62</span></li>
     <li><a href="#basin">XIII. Perdition Basin <span class="sub">(a country ready to ride)</span></a><span class="pg">71</span></li>
+    <li><a href="#city">XIV. The Lamplit City <span class="sub">(running the game in town)</span></a><span class="pg">78</span></li>
     <li><a href="#screen">Appendix: The Keeper's Screen</a><span class="pg">78</span></li>
   </ul>
 </section>
@@ -536,7 +537,7 @@ CH4 = f"""<!-- IV -->
   a dead man already on the ground, before the players commit.</p>
 
   <h2>Building a Threat from Scratch</h2>
-  <p>The Bestiary holds better than a hundred things to fight, but the country always has one more. To make your own,
+  <p>The Bestiary holds a hundred and fifty things to fight, and the country always has one more. To make your own,
   work down this list &mdash; it takes about a minute.</p>
   <div class="box">
     <h4>Six Steps to a Monster</h4>
@@ -696,7 +697,7 @@ CH5 = f"""<!-- V -->
   <div class="divider"></div>
   {quote("Know the thing before you set it loose. A monster the Keeper does not understand is a monster that kills the wrong player.", "from a Keeper's ledger")}
   <p class="dropcap lead">The creatures once kept in this chapter have a book of their own now &mdash; <em>The Bestiary</em>,
-  the third of these volumes, where better than a hundred of the things that walk the country are set down with the numbers
+  the third of these volumes, where a hundred and fifty of the things that walk the country are set down with the numbers
   to run them and the one hard truth that puts each one down. This chapter is the bridge: how to choose a horror, read
   its block, and wield it well. Keep the Bestiary at your elbow; this book tells you how to use it.</p>
 
@@ -718,6 +719,13 @@ CH5 = f"""<!-- V -->
   The Bestiary is sorted to help: the restless dead for sieges and grief; cursed beasts for the hunt; men and the shapes
   of men for paranoia and the gun; spirits and hauntings for the slow, helpless dread of a place; the wild and the
   weather for survival; and the Old Dark for the nights the players are meant only to survive.</p>
+  <p>Its last two chapters are sorted differently, and they are the ones a new Keeper reaches for last and should reach
+  for first. The beasts of the living world and the hard men and hard country are sixty-five things that will maim a
+  posse with nothing supernatural about them at all &mdash; a rustler with a running iron, a river in flood, a sow with
+  cubs, a norther coming down at four in the afternoon. None of them costs a point of Nerve. That is the whole use of
+  them: spend the first month of a campaign there, and the table learns that this country is dangerous on its own
+  terms, that their guns work, and that you are dealing straight with them. Everything in the seven chapters above
+  lands harder on a table that has been taught to expect an ordinary explanation.</p>
 
   <h2>Reskin Without Mercy</h2>
   <div class="keeper-note"><span class="kn-tag">Keeper's eye</span>A name is a costume. When the players have learned a
@@ -1050,6 +1058,45 @@ CH8 = f"""<!-- VIII -->
   d20 read against the situation. And when a human foe is bloodied, leaderless, or staring at something no bullet
   fixes, call the morale save from Chapter IV. People in this country mostly want to live; let them act like it.</p>
 
+  <h2>Who Is Actually Out Here</h2>
+  <p>A Keeper who peoples the frontier out of the picture-shows will run a thinner country than the real one, and a
+  duller game. The West of 1885 is the most mixed ground on the continent, and the mixing is not a footnote &mdash;
+  it is the trade, the vocabulary, and the town.</p>
+  <p>Start with the work itself. The cattle business is Mexican before it is anything else, and every player at your
+  table already speaks its language: the <em>lariat</em> is <em>la reata</em>, the <em>chaps</em> are
+  <em>chaparreras</em>, the <em>remuda</em>, the <em>corral</em>, the <em>rodeo</em>, the <em>mustang</em> out of
+  <em>mesteño</em>, and the <em>stampede</em> out of <em>estampida</em>. The vaquero taught the trade to everyone
+  who came after him, and on any outfit worth riding for, the segundo &mdash; the man the trail boss actually
+  listens to &mdash; is as likely to be a vaquero as not. Roughly one working hand in four on the great drives is
+  Black or Mexican, and the outfit that says otherwise is lying to the census.</p>
+  <p>Then the rest of the county. Men and women freed by the war came west by the tens of thousands in the exodus of
+  '79 and built whole towns of their own on the Kansas and Indian Territory grass, and their sons ride in the Ninth
+  and Tenth Cavalry &mdash; the finest horse soldiers in the Territory, and the ones the Army sends first. The
+  Chinese laid the Central Pacific through the Sierra, nine men in ten on that grade, and when the rails met they
+  went into the mines, the laundries, the market gardens, the fishing boats, and the kitchen of every outfit that
+  was lucky enough to hire one; three years back Congress shut the door behind them, and they are still here, and
+  they are still building. New Mexican families have held their grant land since long before there was a United
+  States to argue with, and are now watching a court in Santa Fe decide whether the paper their great-grandfathers
+  signed still means anything. And the peoples who were here first are not one people: the Comanche and the Kiowa
+  and the Chiricahua and the Diné and the Lakota and the Nez Perce and the Tohono O'odham want different things,
+  speak unrelated languages, and have as little in common with one another as a Georgian has with a Swede.</p>
+  <div class="keeper-note"><span class="kn-tag">Keeper's eye</span>None of this needs a speech at your table; a speech would spoil it. It needs <em>names and jobs</em>. The doctor who sets a bone in Act One is Doc Wong, who
+  trained in Guangzhou and again in San Francisco and is better than the man the Army sent. The segundo who reads
+  the river and says <em>not here, further up</em> is Esperanza Ochoa, and she is right. The blacksmith the party
+  will beg for a favor in Act Three is Jubal Deets, late of the Tenth, who has forgotten more about horses than
+  anyone in the county ever knew. Give these people competence, a want, and a stake, and the country fills in
+  behind them without a word of explanation. The one thing to avoid is the reverse: a face that is only there to be
+  a face, or to be a victim, or to deliver a warning and leave. Everybody in the county has business of their own.</div>
+
+  <div class="keeper-note"><span class="kn-tag">On the dark, and whose it is</span>Two entries in the Bestiary
+  &mdash; the Wendigo and the Skin-Walker &mdash; come out of Algonquian and Diné belief, and one comes out of
+  Mexican and New Mexican belief, the Bruja. These are not folklore anybody made up for a game; they are things
+  people hold, and in some cases hold sacred and do not discuss. Run them the way you would run something out of a
+  neighbor's church: as terrible and real, never as costume, and never with an Indian or a Mexican character
+  attached to explain it to the party. Where a horror comes out of a living tradition, the person who knows most
+  about it should be the one the party is lucky to have on their side &mdash; and should be under no obligation to
+  tell them everything.</div>
+
   <h2>Folk of the Frontier</h2>
   {statblock("Townsfolk &amp; Homesteaders", "the people the dark comes for",
     ["<span class='sb-tag'>Defense</span> 11 &nbsp; <span class='sb-tag'>Blood</span> 8 &nbsp; <span class='sb-tag'>Saves</span> +2 / +1 / +2",
@@ -1273,6 +1320,22 @@ APX = f"""<!-- APPENDIX -->
     &middot; 8 Vane &middot; 9 Tuttle &middot; 10 Pell &middot; 11 Devereaux &middot; 12 Calla &middot; 13 Stroud
     &middot; 14 Mercy &middot; 15 Obadiah &middot; 16 Sull &middot; 17 Wren &middot; 18 Hettie &middot; 19 Lafe
     &middot; 20 the one they will not name</p>
+
+    <h3>d20 &mdash; A Name for the Rest of the County</h3>
+    <p>Roll here as often as above &mdash; oftener, in the border counties and the rail towns (Ch. VIII).<br>
+    1 Esperanza Ochoa &middot; 2 Jubal Deets &middot; 3 Wong Kai-lun &middot; 4 Refugio Baca &middot; 5 Delphia
+    Kearse &middot; 6 Ah Sing &middot; 7 Trinidad Mestas &middot; 8 Isham Boyd &middot; 9 Soledad Herrera
+    &middot; 10 Lum Fong &middot; 11 Prospero Vigil &middot; 12 Naomi Pettiford &middot; 13 Chee Yee &middot;
+    14 Casimiro Luján &middot; 15 Hosea Tolliver &middot; 16 Altagracia Sandoval &middot; 17 Willa Redd
+    &middot; 18 Yuen Sook-ping &middot; 19 Eleuterio Padilla &middot; 20 the one who has not given it yet</p>
+
+    <h3>d12 &mdash; A Name Out of the Nations</h3>
+    <p>Ask whose country you are in before you roll &mdash; these are seven unrelated peoples, not one.<br>
+    1 Quanah Parker's cousin, Comanche &middot; 2 Ha-o-zinne, Chiricahua &middot; 3 Little Elk, Kiowa &middot;
+    4 Hastiin Tso, Diné &middot; 5 Mary Sits-Alone, Crow &middot; 6 Standing Bear's nephew, Ponca &middot;
+    7 Yellow Robe, Lakota &middot; 8 Josefa Antone, Tohono O'odham &middot; 9 Two Kettles, Cheyenne &middot;
+    10 Isidro Naranjo, of Taos &middot; 11 Wetatonmi's daughter, Nez Perce &middot; 12 a scout, and he has an
+    Army name and a real one</p>
 
     <h3>d12 &mdash; A Town's Wrong Note</h3>
     <p>1 no children seen &middot; 2 the church is locked &middot; 3 too many fresh graves &middot; 4 all owe the same
@@ -1854,7 +1917,208 @@ CH13 = f"""<!-- XIII -->
 </section>
 """
 
-BODY = CONTENTS + CH1 + CH2 + CH3 + CH4 + CH5 + CH6 + CH7 + CH8 + CH9 + CH10 + CH11 + CH12 + CH13 + APX
+CH14 = f"""<!-- XIV -->
+<section class="page" id="city">
+  {runhead('XIV. The Lamplit City')}
+  <h1 class="chapter">XIV. The Lamplit City</h1>
+  <p class="chapter-sub">Dodge, Kansas City, Frisco, Butte &mdash; and what the dark does with a crowd.</p>
+  <div class="divider"></div>
+  {quote("Out on the Cimarron a man screams and nobody hears him. In Kansas City a man screams and forty people hear him, and they go on in to supper. I have come to think the second is the worse country.", "Pinkerton operative, reporting to the Chicago office")}
+  <div class="narr">There is a fear, when a Keeper first moves the game off the open range, that the dark
+  will not survive the gaslight &mdash; that a country horror needs a lonely country, and that a city with
+  police in it, and a hospital, and four newspapers, and sixty thousand souls, is simply too well lit to be
+  frightened in. Put the fear down. The dark does not need the dark. It needs to be able to work unremarked,
+  and there has never been a better place for that than a city where nobody knows their neighbor's name.</div>
+
+  <p class="dropcap lead">By 1885 the West has cities, and they are not a compromise with the western &mdash; they are the
+  western's other half. Dodge is the cattle capital of the continent. Kansas City runs the beef trade of a nation out of the
+  West Bottoms. San Francisco is the great city of the West and about the ninth in the nation. Butte sits on the richest
+  hill on earth and is hollow underneath. Every trail your players ride ends in one of these places, because that is where the money is, and the
+  money is why anybody came. This chapter is how to run a night there without losing a thing.</p>
+
+  <h2>Why the Dark Prefers a City</h2>
+  <p>The country horror runs on isolation: nobody is coming, and the nearest help is a day's ride. A city takes that away
+  and hands you something better in exchange.</p>
+  <ul>
+    <li><strong>Anonymity beats isolation.</strong> A thing that takes one soul a week from a town of two hundred empties
+    it in a season and is noticed by Tuesday. The same thing in Kansas City takes one a week forever. The population turns
+    over constantly &mdash; drovers, rail hands, immigrants, whores, drifters, men whose families think they are in Oregon
+    &mdash; and a missing stranger is not a mystery. It is a filing, if that.</li>
+    <li><strong>The crowd is cover.</strong> Out on the flat, a stranger on the ridge is an event. On Front Street a
+    stranger is Tuesday. Things that could never cross open ground in daylight walk the city at noon in a good coat, and
+    the only person who notices is the one who has learned what to look for &mdash; which is your party, and nobody else.</li>
+    <li><strong>Indifference does the work fear used to.</strong> The country horror's line is <em>nobody can hear you</em>.
+    The city horror's line is <em>everybody heard you and went in to supper</em>. That is a colder note, and it plays.</li>
+    <li><strong>Scale.</strong> A haunting in the country takes a house. In a city it takes a block, a trade, a ward.
+    A thing under Perdition Basin wants a valley. A thing under the Kansas City stockyards has its hand on the beef of a
+    continent, and every steer the players ever drove came here to die.</li>
+  </ul>
+
+  <h2>What Changes at the Table</h2>
+  <p>Six things, and only six. Everything else in this book runs unaltered.</p>
+  <div class="box">
+    <h4>1. The gun goes in a rack</h4>
+    <p>Dodge City has a <strong>deadline</strong> &mdash; the railroad tracks &mdash; and north of it firearms are checked
+    at the first place of business you enter, by ordinary municipal ordinance and a marshal with a shotgun. Most cattle
+    towns have the same rule, and every real city has some version. This is the single best gift the setting ever gave a
+    horror Keeper: it disarms the party <em>lawfully</em>, in a way they agreed to, in a place they chose to be. Make the
+    check-in a scene. Then put the thing they need to shoot on the wrong side of the deadline at eleven at night.</p>
+    <h4>2. Firing costs something</h4>
+    <p>On the trail, a gunfight is a scene. In a city it is an arrest, a coroner's inquest, two newspapers, a bail bond,
+    and a lawyer. Do not forbid it &mdash; charge for it. A justified killing still costs the party three days and a
+    hundred dollars, and the thing they were chasing does not wait three days.</p>
+    <h4>3. Witnesses and the press</h4>
+    <p>Everything the players do in public happens in front of forty people and is in a newspaper by morning, usually
+    wrong. This cuts both ways and both ways are good: they cannot quietly bury a problem, and they can, if they are
+    clever, put a thing in the paper that its owner very badly needed kept out.</p>
+    <h4>4. Help exists, and is worse</h4>
+    <p>There are police, hospitals, and a coroner. Use them &mdash; and let the party learn that a city's institutions are
+    not built to believe them. A man raving about the dead walking is not ignored in Kansas City; he is <em>committed</em> &mdash; a far more frightening end than being disbelieved on the trail. The asylum is the city's version of dying
+    alone in the snow.</p>
+    <h4>5. Paper is the new tracking</h4>
+    <p>The country skills do not work here, so give the city its own: the newspaper morgue, the city directory, the county
+    recorder, the coroner's inquest book, the hospital register, the ship manifest, the telegraph clerk who can be bought
+    for two dollars. A party that learns to hunt through paper in a city is doing exactly what a party that learns to cut sign is doing on the trail, and finds it just as satisfying. Run these as Lore, Notice, and Persuade against the usual
+    ladder.</p>
+    <h4>6. Dread has new rooms</h4>
+    <p>The city has no wide dark sky, so take the fear indoors and underground: the packing-house floor at three in the
+    morning, the tenement stair, the fog off the bay, the ore drift eighteen hundred feet down where the rock is a hundred
+    and thirty degrees, the sewer, the crib alley, the charity ward. Dread DCs and Nerve loss are unchanged &mdash;
+    what changes is that the party cannot ride away from it, because they have nowhere to ride to.</p>
+  </div>
+
+  <h2>The Bestiary, Downtown</h2>
+  <p>Each kind bends differently to a city, and the bend is usually an improvement.</p>
+  <ul>
+    <li><strong>The Restless Dead (Ch. II).</strong> The country's dead haunt a grave; a city's dead haunt a
+    <em>system</em>. A potter's field with eleven thousand in it. A cholera trench built over by a good address. The
+    dissection room at the medical college, and the resurrection men who supply it &mdash; the Resurrectionist stops being
+    a lone ghoul with a spade and becomes a going concern with a price list and a standing order from a professor. Run a
+    siege on a tenement block instead of a farmhouse and the numbers get worse in every direction.</li>
+    <li><strong>Cursed Beasts (Ch. III).</strong> Harder to hide and therefore better: a thing that must feed nightly in a
+    city is on borrowed time, and knows it, and gets desperate on a clock. Put it in the stockyards, where a hundred
+    thousand head a day are killed anyway and nobody counts a carcass twice. Or in the rail yards. Or the sewers, where the city puts everything it would rather not look at.</li>
+    <li><strong>Men, and the Shapes of Men (Ch. IV).</strong> The city is their native ground. A Skin-Walker in a town of
+    two hundred is caught in a week because everyone knows everyone; in San Francisco it can wear a new face every month
+    for a decade. The Mesmerist gets a lecture hall and a subscription list. The Deathless Gun gets a reputation, a saloon
+    named after him, and an entire ward that would rather not testify.</li>
+    <li><strong>Spirits &amp; Hauntings (Ch. V).</strong> Cities are built on their own dead ground, and the good ones are
+    built on it twice. San Francisco's financial district stands on the hulls of the gold-rush fleet, scuttled and buried
+    where they lay, and there are ships under those foundations with cargo and crew still in them. That is not an invention; it is the ground, and there is no finer haunting site in the West.</li>
+    <li><strong>The Wild &amp; the Weather (Ch. VI).</strong> The one kind that weakens &mdash; so change its target. The
+    Thirst in a city is the water main and the typhoid ward. The Red Wind is the smelter smoke that turns Butte's noon into
+    night for three days at a stretch. A blizzard that kills one drover on the flat kills four hundred in a tenement
+    district with no coal.</li>
+    <li><strong>The Old Dark (Ch. VII).</strong> Unchanged, and worse. What the Old Dark wants is scale, and a city is
+    scale: a mine that goes down two thousand feet under a hundred thousand people, a subterranean waterworks, a ward it
+    can hollow out one household at a time. Where the country gave it a valley, the city gives it an <em>industry</em>.</li>
+    <li><strong>Hard Men &amp; Hard Country (Bestiary Ch. IX).</strong> Every entry survives the move and several improve.
+    The Lynch Mob becomes a race riot with a fire company in it. The Hired Gun becomes a detective agency with a contract
+    and an office. The Cattle Baron's Men become a corporation. Run these for the first month here exactly as you would
+    on the range.</li>
+  </ul>
+
+  <h2>The Dark Cultist, Incorporated</h2>
+  <p>This is the chapter's most useful idea, so take it whole. In the country a cult is a barn, a pit, and eleven people
+  who have to meet in secret. In a city it does not have to hide at all &mdash; it <strong>charters</strong>.</p>
+  <p>It becomes the Benevolent Association, the Subscription Library, the Improvement Society, the Widows' and Orphans'
+  Fund, the private lodge with a fine building on a good street and a brass plate by the door. It has a president, a
+  treasurer, minute-books, and a lawyer. It gives generously and publicly. Its members are the alderman, the coroner, the
+  editor of the second-largest paper, two police captains, and the man who holds the note on the boarding house where the
+  party is staying. It does not need to silence a witness; it can simply outspend one, or sue one, or have one committed.</p>
+  <div class="keeper-note"><span class="kn-tag">Keeper's eye</span>The horror of this is not the robes. It is the moment
+  the party realizes that every institution they were going to appeal to is already on the membership roll &mdash; and that
+  the thing has been perfectly, boringly legal the entire time. Give the party one honest official, well down the ladder,
+  with no power and a family. Everything the campaign is about will run through that person.</div>
+  <p>Practically: build the cult as a <em>faction</em> out of Chapter VIII, with a want, a lever, and a line. Its lever is
+  money and standing. Its line is publicity &mdash; it will do a great deal, but not in front of the papers. Everything the party has to work with lives in that gap. The final scene of a city campaign is more often an exposure than a gunfight, and it
+  should be: make the players choose between killing the thing and proving it, and let proving it be harder, slower, and
+  better.</p>
+
+  <h2>Ten Cities, Keyed</h2>
+  <p>A hook apiece. Each is a real place in 1885, and the wrongness listed is yours to keep or trade.</p>
+  <table>
+    <tbody>
+      <tr><td><strong>Dodge City, Kansas</strong> <span class="sub">cattle capital, ~1,200</span></td><td>The deadline at
+      the tracks, Front Street, Boot Hill, and the Kansas quarantine law that is killing the trade this very year. A town
+      with one boom left in it, and something under Boot Hill that has noticed the drives are ending.</td></tr>
+      <tr><td><strong>Kansas City, Missouri</strong> <span class="sub">~100,000 and doubling</span></td><td>The West Bottoms: stockyards
+      and packing houses where the whole beef of the continent comes to die, working day and night. Blood in the river.
+      Something in the killing floors that has been very well fed for eleven years and has grown accordingly.</td></tr>
+      <tr><td><strong>San Francisco, California</strong> <span class="sub">~250,000</span></td><td>Fog, the Barbary Coast,
+      Chinatown, and a financial district built on the buried hulls of the abandoned gold fleet. Ships under the streets,
+      with their holds shut. The city's foundations are a graveyard nobody consecrated.</td></tr>
+      <tr><td><strong>Butte, Montana</strong> <span class="sub">~8,000 and climbing fast</span></td><td>The richest hill on
+      earth, and entirely hollow &mdash; three thousand feet of workings under the houses, and men dying of the heat at
+      depth. The smelter smoke blots out noon. Everything in this book that lives underground lives here.</td></tr>
+      <tr><td><strong>Tombstone, Arizona</strong> <span class="sub">~5,000, falling</span></td><td>The silver is playing
+      out and the lower workings are filling with water. A town on the way down is a town that will agree to anything, and
+      what came up with the water table has opinions about who stays.</td></tr>
+      <tr><td><strong>Omaha, Nebraska</strong> <span class="sub">~40,000, about to treble</span></td><td>Union Pacific headquarters, the
+      shops, and the brand-new stockyards at South Omaha. Every soul heading west passes through, which means every soul
+      heading west can be counted, followed, and selected from.</td></tr>
+      <tr><td><strong>Denver, Colorado</strong> <span class="sub">~50,000</span></td><td>Larimer Street, the smelters, and
+      new money building mansions on Capitol Hill fast enough to bury what the digging turned up. The respectable half of
+      town is six years old and already has a secret.</td></tr>
+      <tr><td><strong>Virginia City, Nevada</strong> <span class="sub">the Comstock, past its peak</span></td><td>The
+      deepest hard-rock workings on the continent, hot enough at the bottom to kill a man in an hour, and the Sutro Tunnel
+      draining it. The mine is played out. Something is still down there, and the pumps are what is holding it.</td></tr>
+      <tr><td><strong>Cheyenne, Wyoming</strong> <span class="sub">~6,000, and the richest club in the West</span></td><td>The
+      Cheyenne Club, where the cattle barons take their brandy and decide who gets invaded. This is where the Regulators
+      (Bestiary Ch. IX) are hired, over dinner, by men in evening dress.</td></tr>
+      <tr><td><strong>Leadville, Colorado</strong> <span class="sub">~14,000 at 10,200 feet</span></td><td>A silver camp
+      grown into a city where the air is thin, the winter is nine months, and the graveyard fills faster than the
+      churches. Altitude, cold, and a boom that is one bad assay from over.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Building Your Own City</h2>
+  <p>Chapter VIII builds a town with a want, a tell, and a secret. A city needs four more things, and they are the four
+  that generate every plot you will ever need there.</p>
+  <ul>
+    <li><strong>An industry.</strong> Cattle, silver, copper, rail, shipping, packing. It decides who lives there, what
+    the air smells like, who has money, and what the city will forgive.</li>
+    <li><strong>A machine.</strong> Whoever really runs it &mdash; the ward boss, the association, the company, the
+    committee of vigilance that never quite disbanded. The mayor is rarely the answer.</li>
+    <li><strong>A quarter the city pretends not to have.</strong> The tenderloin, the crib alley, the Chinese quarter, the
+    shanties by the yards. This is where the dark works, because it is where the city has already agreed not to look.</li>
+    <li><strong>A below.</strong> Sewers, mine workings, cellars, a buried creek, a filled-in ravine, the old fort's
+    magazine, the ships under the fill. Every city has one. The third act happens there.</li>
+  </ul>
+
+  <div class="twocol">
+    <h3>d12 &mdash; A City's Wrong Note</h3>
+    <p>1 the potter's field is full again &middot; 2 the same charity buries them all &middot; 3 a ward with no children in
+    it &middot; 4 the paper killed the story &middot; 5 four inquests, one verdict &middot; 6 the night shift will not go
+    below &middot; 7 a fine new building on bad ground &middot; 8 the asylum is taking in strangers &middot; 9 the police
+    do not patrol one street &middot; 10 the tunnels were bricked last spring &middot; 11 a society nobody can join
+    &middot; 12 the mortality figures were amended</p>
+
+    <h3>d10 &mdash; Who Runs This Town, Really</h3>
+    <p>1 the packing company &middot; 2 the ward boss and his saloon &middot; 3 the mine's parent corporation &middot;
+    4 the vigilance committee that never disbanded &middot; 5 the railroad's land office &middot; 6 the bishop &middot;
+    7 the newspaper &middot; 8 the madam who holds everyone's secrets &middot; 9 a benevolent association with a fine
+    brass plate &middot; 10 nobody, and that is the emergency</p>
+
+    <h3>d10 &mdash; A City Job for a Country Posse</h3>
+    <p>1 escort a witness to the courthouse &middot; 2 find a drover's brother, last seen in the yards &middot; 3 recover
+    a body before the college does &middot; 4 sit up with a coffin &middot; 5 collect on a note nobody will collect on
+    &middot; 6 guard a payroll through the tenderloin &middot; 7 find who is buying the fresh graves &middot; 8 walk a
+    reporter into the quarter and back &middot; 9 identify the thing in the charity ward &middot; 10 attend a lodge dinner
+    and listen</p>
+  </div>
+
+  <div class="keeper-note"><span class="kn-tag">Keeper's eye &mdash; keeping the tone</span>The failure mode is letting the
+  city become a different game: a mystery in overcoats, all parlors and no dust. Guard against it three ways. Keep the
+  party's country competence <em>valuable</em> &mdash; they read sign, sit a horse, and stay calm with a gun, and the city
+  has almost nobody who can do all three. Keep the money problems mundane: a hotel bill, a stabling fee, a fine. And get
+  them out of town regularly &mdash; the best city campaigns run a ride out to a ranch, a mine, or a rail camp every third
+  night, so the city is a place they come back to rather than a box they are stuck in. The West is the trail
+  <em>and</em> the terminus. Run both, and the dark has twice as many doors.</div>
+</section>
+"""
+
+BODY = CONTENTS + CH1 + CH2 + CH3 + CH4 + CH5 + CH6 + CH7 + CH8 + CH9 + CH10 + CH11 + CH12 + CH13 + CH14 + APX
 
 
 def _inject_quote(body, cid, text, srcline):
@@ -1937,6 +2201,14 @@ KEEP_INDEX = [
     ("Town generator", "pocket"), ("NPC generator", "pocket"), ("Rumors (a d20)", "pocket"),
     ("Trail events", "pocket"), ("Plunder &amp; finds", "pocket"), ("Omens (a d20)", "pocket"),
     ("The Keeper's Screen", "screen"),
+    # --- the city ---
+    ("The Lamplit City", "city"), ("Cities (running the game in)", "city"),
+    ("The deadline (checking guns)", "city"), ("Anonymity (the city's isolation)", "city"),
+    ("The Dark Cultist, Incorporated", "city"), ("Paper (hunting through records)", "city"),
+    ("Ten Cities, Keyed", "city"), ("Building your own city", "city"),
+    ("Dodge City", "city"), ("Kansas City", "city"), ("San Francisco", "city"),
+    ("Butte, Montana", "city"), ("Tombstone", "city"), ("Omaha", "city"),
+    ("Denver", "city"), ("Virginia City", "city"), ("Cheyenne", "city"), ("Leadville", "city"),
     # --- Perdition Basin ---
     ("Perdition Basin", "basin"), ("The truth of the basin", "basin-truth"),
     ("The wells (the binding ring)", "basin-wells"), ("The ring of nails", "basin-wells"),

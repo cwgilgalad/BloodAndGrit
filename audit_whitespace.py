@@ -3,6 +3,13 @@
 whose bottom gap exceeds a threshold, with the block that moved to the next
 page (the split candidate).
 
+Gaps are split into two piles, because the raw list is mostly noise. A page that
+ends short because the NEXT page opens a chapter, an appendix, or the index is
+doing exactly what the design asks — chapters start on a fresh page, and the
+trailing gap is the cost of that rule, not a defect. Those are reported as
+"by design" and excluded from the count that matters. What is left — a page that
+ends short in the middle of running text — is the reclaimable whitespace.
+
 Usage: python audit_whitespace.py <book.html> [gap-px-threshold, default 140]
 """
 import sys
@@ -27,7 +34,11 @@ JS = """(thresh) => {
       let nxt=null;
       if(np){
         const nk=[...np.children].filter(c=>!c.classList.contains('pageno')&&!c.classList.contains('runhead'));
-        if(nk.length){const c=nk[0]; nxt={tag:c.tagName,cls:c.className,txt:(c.textContent||'').trim().slice(0,70)};}
+        if(nk.length){const c=nk[0];
+          // A fresh chapter, appendix, or index on the next page makes this gap deliberate:
+          // those always begin a page, so the short page before one is the design working.
+          const opensChapter = c.matches('h1.chapter') || !!c.querySelector('h1.chapter');
+          nxt={tag:c.tagName,cls:c.className,txt:(c.textContent||'').trim().slice(0,70),chapter:opensChapter};}
       }
       out.push({page:idx+1,gap,
         lastTag:last.tagName,lastCls:last.className,
@@ -50,8 +61,25 @@ with sync_playwright() as pw:
     r = page.evaluate(JS, thresh)
     b.close()
 
-print(f"{path}: {r['total']} pages, {len(r['gaps'])} with bottom gap > {thresh}px")
-for g in sorted(r["gaps"], key=lambda x: -x["gap"]):
-    print(f"  p.{g['page']:>3}  gap {g['gap']}px  last=<{g['lastTag'].lower()} {g['lastCls']}> \"{g['lastTxt']}\"")
-    if g["next"]:
+def by_design(g):
+    # last page of the book has no successor; a trailing gap there is the end of the text
+    if not g["next"]:
+        return True
+    return bool(g["next"].get("chapter"))
+
+gaps = sorted(r["gaps"], key=lambda x: -x["gap"])
+design = [g for g in gaps if by_design(g)]
+real   = [g for g in gaps if not by_design(g)]
+print(f"{path}: {r['total']} pages, {len(gaps)} with bottom gap > {thresh}px "
+      f"({len(design)} by design, {len(real)} reclaimable)")
+if real:
+    print("  -- reclaimable (page ends short inside running text) --")
+    for g in real:
+        print(f"  p.{g['page']:>3}  gap {g['gap']}px  last=<{g['lastTag'].lower()} {g['lastCls']}> \"{g['lastTxt']}\"")
         print(f"         next-page starts: <{g['next']['tag'].lower()} {g['next']['cls']}> \"{g['next']['txt']}\"")
+else:
+    print("  -- no reclaimable gaps --")
+print(f"  -- by design (next page opens a chapter/appendix/index, or end of book): {len(design)} --")
+for g in design:
+    nxt = g["next"]["txt"] if g["next"] else "(end of book)"
+    print(f"  p.{g['page']:>3}  gap {g['gap']}px  -> {nxt}")

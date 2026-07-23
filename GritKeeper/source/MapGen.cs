@@ -66,10 +66,13 @@ public static class MapGen
     {
         "The Trail & the Open Range", "Rivers, Lakes & Swamps", "Towns, Homesteads & Haunted Houses",
         "Graveyards & Battlefields", "Mines & Under the Earth", "Winter & the High Country",
-        "Desert & the Badlands", "The Old Places"
+        "Desert & the Badlands", "The Old Places", "The Lamplit City"
     };
+    // The city ward is appended rather than slotted in by size, so every stored or
+    // remembered Scale index keeps meaning what it meant before Ch. XIV existed.
     public static readonly string[] Scales =
-        { "A gunfight (yards)", "A homestead (half a mile)", "A county (a day's ride)", "A territory (the long trail)" };
+        { "A gunfight (yards)", "A homestead (half a mile)", "A county (a day's ride)", "A territory (the long trail)",
+          "A city ward (blocks)" };
     public static readonly string[] Times = { "First light", "High noon", "Dusk", "Dead of night" };
     public static readonly string[] Waters = { "As the land wills", "No water", "A creek", "A river", "A lake", "River & lake" };
 
@@ -94,12 +97,15 @@ public static class MapGen
         var P = m.P;
         float W = m.W, H = m.H;
         int ti = Math.Max(0, Array.IndexOf(Terrains, sp.Terrain));
-        float k = sp.Scale switch { 0 => 1.5f, 1 => 1.15f, 2 => 0.95f, _ => 0.8f };
+        float k = sp.Scale switch { 0 => 1.5f, 1 => 1.15f, 2 => 0.95f, 4 => 1.25f, _ => 0.8f };
+        // A city map is asked for either by ground or by scale; either way it draws
+        // streets and blocks instead of open country (Keeper's Book, Ch. XIV).
+        bool city = ti == 8 || sp.Scale == 4;
 
         string bg = ti switch
         {
             0 => "#eee7cf", 1 => "#e6e9d3", 2 => "#efe8d2", 3 => "#e9e2cf",
-            4 => "#ece2cc", 5 => "#eef0ee", 6 => "#f2e5c6", _ => "#e8e0cf"
+            4 => "#ece2cc", 5 => "#eef0ee", 6 => "#f2e5c6", 8 => "#e7e4dc", _ => "#e8e0cf"
         };
         P.Add(Rect(0, 0, W, H, bg, null, 0));
 
@@ -240,7 +246,39 @@ public static class MapGen
         // Settlement adds/removes only the town's own ink — the land never reshuffles.
         string townName = TownName(rngTown, ti);
         blocked.Add((tx, ty, sp.Scale == 0 ? 150 : 95));
-        if (sp.Town)
+        if (sp.Town && city)
+        {
+            // A ward: avenues and cross streets, the blocks between them, and the
+            // three things every city in Ch. XIV has — a depot, works that smoke,
+            // and a quarter the city would rather not look at.
+            const float m0 = 40;
+            float gw = W - m0 * 2, gh = H - m0 * 2;
+            int cols = 5 + rngTown.Next(2), rows = 3 + rngTown.Next(2);
+            float colW = gw / cols, rowH = gh / rows;
+            for (int c = 0; c <= cols; c++)
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { m0 + c * colW, m0, m0 + c * colW, m0 + gh },
+                                 Stroke = "#b09a72", StrokeW = c % 3 == 1 ? 9 : 5, Alpha = 0.6f });
+            for (int r2 = 0; r2 <= rows; r2++)
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { m0, m0 + r2 * rowH, m0 + gw, m0 + r2 * rowH },
+                                 Stroke = "#b09a72", StrokeW = r2 % 2 == 1 ? 9 : 5, Alpha = 0.6f });
+            for (int c = 0; c < cols; c++)
+                for (int r2 = 0; r2 < rows; r2++)
+                {
+                    if (rngTown.Next(9) == 0) continue;           // a lot the fire took
+                    float bx = m0 + c * colW + 7, by = m0 + r2 * rowH + 7;
+                    float bw = colW - 14, bh = rowH - 14;
+                    P.Add(Rect(bx, by, bw, bh, "#d9cba8", Dark, 1.2f));
+                    // a couple of blocks are dense tenement rows rather than one mass
+                    if (rngTown.Next(3) == 0)
+                        for (int t = 1; t < 4; t++)
+                            P.Add(new Prim { Kind = PrimKind.Line,
+                                Pts = new[] { bx + bw * t / 4f, by, bx + bw * t / 4f, by + bh },
+                                Stroke = Dark, StrokeW = 0.8f, Alpha = 0.7f });
+                }
+            blocked.Clear();
+            blocked.Add((170, 70, 190)); blocked.Add((W - 64, 92, 95)); blocked.Add((150, H - 40, 170));
+        }
+        else if (sp.Town)
         {
             if (sp.Scale == 0)                                   // a main street, building by building
             {
@@ -280,7 +318,8 @@ public static class MapGen
             6 => new[] { "cactus", "cactus", "cactus", "mesa", "mesa", "dune", "dune", "bones", "bones", "scrub", "rock" },
             _ => new[] { "stone", "stone", "stone", "ruin", "ruin", "deadtree", "deadtree", "mound", "tree", "grass" },
         };
-        int count = sp.Scale == 0 ? 16 : 30;
+        if (city) kit = new[] { "stack", "stack", "depot", "pens", "church", "wharf", "stack", "pens" };
+        int count = city ? 9 : (sp.Scale == 0 ? 16 : 30);
         for (int i = 0; i < count; i++)
         {
             var (x, y) = Place(rngLand, 15 * k + 12);
@@ -296,13 +335,32 @@ public static class MapGen
             ("stone", "Standing Stones"), ("church", "Mission"), ("camp", "Cold Camp"), ("soddy", "Soddy"),
         };
         if (riverPts != null || lake.r > 0) nouns.Add(("ford", "Ford"));
+        if (city)
+            nouns = new List<(string sym, string noun)>
+            {
+                ("depot", "Union Depot"), ("pens", "Stockyards"), ("stack", "Packing House"),
+                ("stack", "Smelter"), ("church", "Cathedral"), ("grave", "Potter's Field"),
+                ("ruin", "Burned Block"), ("well", "Waterworks"), ("mine", "Shaft House"),
+                ("wharf", "The Levee"), ("lodge", "The Lodge Hall"), ("lodge", "Benevolent Association"),
+                ("camp", "The Shanties"), ("soddy", "Charity Ward"),
+            };
         for (int i = 0; i < sp.Landmarks && nouns.Count > 0; i++)
         {
             var pick = nouns[rngLm.Next(nouns.Count)];
             nouns.Remove(pick);
-            string name = rngLm.Next(3) == 0
-                ? Choice(rngLm, LmOwner) + "'s " + pick.noun
-                : "The " + (rngLm.Next(2) == 0 ? Choice(rngLm, LmAdj) + " " : "") + pick.noun;
+            // City landmarks arrive already named ("The Levee", "Union Depot"), so the
+            // country decorator is skipped for them — it produced "The Drowned The Levee".
+            // They take a ward name or a company name instead, the way a city labels things.
+            string name;
+            if (city)
+                name = pick.noun.StartsWith("The ")
+                    ? pick.noun
+                    : rngLm.Next(2) == 0 ? "The " + pick.noun
+                                         : Choice(rngLm, LmOwner) + " " + pick.noun;
+            else
+                name = rngLm.Next(3) == 0
+                    ? Choice(rngLm, LmOwner) + "'s " + pick.noun
+                    : "The " + (rngLm.Next(2) == 0 ? Choice(rngLm, LmAdj) + " " : "") + pick.noun;
             float x, y;
             if (pick.sym == "ford" && riverPts != null)
             {
@@ -388,11 +446,14 @@ public static class MapGen
         P.Add(Rect(15, 15, W - 30, H - 30, null, Dark, 0.8f));
 
         // ---- cartouche ----
-        m.Title = MapTitle(rngName, ti);
+        // On a ward map the cartouche IS the city's name — the generated map title and a
+        // separate settlement label put two different names on one place.
+        m.Title = city ? townName : MapTitle(rngName, ti);
         string ground = ti switch
         {
             0 => "the open range", 1 => "the river bottoms", 2 => "settled country", 3 => "a field of the dead",
-            4 => "mining country", 5 => "the high country", 6 => "the badlands", _ => "the old places"
+            4 => "mining country", 5 => "the high country", 6 => "the badlands",
+            8 => "a city ward", _ => "the old places"
         };
         m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}";
         float cw = Math.Max(280, m.Title.Length * 12.5f + 40);
@@ -413,7 +474,8 @@ public static class MapGen
         // ---- scale bar ----
         var (barLen, barLabel) = sp.Scale switch
         {
-            0 => (200f, "fifty yards"), 1 => (250f, "half a mile"), 2 => (333f, "ten miles"), _ => (333f, "fifty miles")
+            0 => (200f, "fifty yards"), 1 => (250f, "half a mile"), 2 => (333f, "ten miles"),
+            4 => (250f, "four blocks"), _ => (333f, "fifty miles")
         };
         float sy = H - 40;
         P.Add(Rect(28, sy - 14, barLen + 28, 34, "#f6efdd", null, 0, 0.8f));
@@ -428,9 +490,10 @@ public static class MapGen
     static string ScaleLine(int s) => s switch
     {
         0 => "close work, counted in yards", 1 => "a homestead and its bounds",
-        2 => "a county, a hard day's ride", _ => "a territory, weeks on the trail"
+        2 => "a county, a hard day's ride", 4 => "a few blocks, and what is under them",
+        _ => "a territory, weeks on the trail"
     };
-    static string GridLabel(int s) => s switch { 0 => "ten yards", 1 => "a furlong", 2 => "five miles", _ => "a day's ride" };
+    static string GridLabel(int s) => s switch { 0 => "ten yards", 1 => "a furlong", 2 => "five miles", 4 => "two blocks", _ => "a day's ride" };
 
     // ---------------------------------------------------------- names
     static readonly string[] TitleFirst =
@@ -445,6 +508,7 @@ public static class MapGen
         new[] { "County", "Hollow", "Township", "Claim" },  new[] { "Field", "Ground", "Acre", "Rest" },
         new[] { "Gulch", "Diggings", "Lode", "Draw" },      new[] { "Pass", "Divide", "Heights", "Timber" },
         new[] { "Badlands", "Wash", "Mesa", "Wells" },      new[] { "Barrows", "Stones", "Hollow", "Ring" },
+        new[] { "Ward", "Bottoms", "Yards", "Works" },
     };
     static readonly string[] TownFirst =
     {
@@ -465,8 +529,22 @@ public static class MapGen
         "sign of the beast", "a cache — powder and coin"
     };
 
-    static string MapTitle(Random rng, int ti) => Choice(rng, TitleFirst) + " " + Choice(rng, TitleGeo[Math.Clamp(ti, 0, 7)]);
-    static string TownName(Random rng, int ti) => Choice(rng, TownFirst) + " " + Choice(rng, TownSecond);
+    static string MapTitle(Random rng, int ti) => Choice(rng, TitleFirst) + " " + Choice(rng, TitleGeo[Math.Clamp(ti, 0, 8)]);
+    static string TownName(Random rng, int ti) =>
+        ti == 8 ? Choice(rng, CityFirst) + " " + Choice(rng, CitySecond)
+                : Choice(rng, TownFirst) + " " + Choice(rng, TownSecond);
+
+    // City names carry the words a place uses once it has a stockyard and four newspapers.
+    static readonly string[] CityFirst =
+    {
+        "Ashton", "Cordell", "Marrow", "Bellhaven", "Kirkwood", "Ransom", "Calvary", "Ellsworth",
+        "Sable", "Thurlow", "Greystone", "Hollis", "Vesper", "Ironhead", "Chandler", "Merritt"
+    };
+    static readonly string[] CitySecond =
+    {
+        "City", "Junction", "Terminal", "Landing", "Works", "Yards", "Bluffs", "Crossing",
+        "Union", "Basin", "Falls", "Heights"
+    };
     static string Choice(Random rng, string[] a) => a[rng.Next(a.Length)];
 
     // ---------------------------------------------------------- symbols
@@ -557,6 +635,32 @@ public static class MapGen
                 Pl(null, "#574433", 1.4f, -6, 4, 0, -6, 6, 4); C(9, 3, 1.6f, Blood, null, 0); break;
             case "soddy":
                 Pl("#b3a281", Dark, 1.2f, -8, 4, -8, -2, 0, -6, 8, -2, 8, 4); break;
+            case "depot":                                  // a shed and a platform on the rails
+                Pl("#cbbb95", Dark, 1.3f, -11, 5, -11, -3, 0, -8, 11, -3, 11, 5);
+                L(-13, 7, 13, 7, Dark, 1.5f); L(-13, 9.5f, 13, 9.5f, Dark, 1.5f);
+                for (float t = -12; t <= 12; t += 4) L(t, 6, t, 10.5f, Dark, 0.7f);
+                break;
+            case "stack":                                  // works, and the smoke off them
+                Pl("#c7b892", Dark, 1.3f, -9, 6, -9, -1, 9, -1, 9, 6);
+                Pl("#b5a681", Dark, 1.2f, 3, -1, 3, -12, 7, -12, 7, -1);
+                L(5, -14, 8, -19, "#8c8578", 1.4f); L(8, -19, 5, -23, "#8c8578", 1.2f);
+                break;
+            case "pens":                                   // stockyard pens, seen from above
+                for (int r3 = 0; r3 < 2; r3++)
+                    for (int c3 = 0; c3 < 3; c3++)
+                        Pl(null, "#7a6647", 1.1f, -10 + c3 * 7, -5 + r3 * 6, -4 + c3 * 7, -5 + r3 * 6,
+                                                 -4 + c3 * 7, 0 + r3 * 6, -10 + c3 * 7, 0 + r3 * 6);
+                break;
+            case "wharf":                                  // a levee and two moored hulls
+                L(-11, 4, 11, 4, "#7a6647", 2f);
+                Pl("#c7b892", Dark, 1.1f, -9, 1, -3, 1, -4, -2, -8, -2);
+                Pl("#c7b892", Dark, 1.1f, 3, 1, 9, 1, 8, -2, 4, -2);
+                break;
+            case "lodge":                                  // a good address, and a brass plate
+                Pl("#d3c49e", Dark, 1.3f, -9, 6, -9, -4, 9, -4, 9, 6);
+                Pl("#c0b088", Dark, 1.2f, -11, -4, 0, -10, 11, -4);
+                for (float t = -6; t <= 6; t += 6) L(t, -4, t, 6, Dark, 0.9f);
+                break;
             case "ford":
                 L(-8, -3, 8, -3, WaterEdge, 1.6f); L(-8, 1, 8, 1, WaterEdge, 1.6f); break;
         }

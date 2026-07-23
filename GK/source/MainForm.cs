@@ -15,6 +15,16 @@ public partial class MainForm : Form
     int round = 1;
     TabControl tabsCtl;
 
+    // ---- state that outlives its control ----
+    // Nine of the ten tabs are built on first visit (see LazyTab), so anything the rest of
+    // the app reads or writes has to live in a field the whole time and merely be MIRRORED
+    // into a control once that control exists. Without this the roll log would swallow every
+    // line rolled before the Keeper first opened the Dice tab, and the session ledger would
+    // autosave an empty string over notes it had loaded but never shown.
+    readonly List<string> logLines = new();   // newest first, same order as the ListBox
+    string notesText = "";                    // the Keeper's ledger (Session tab)
+    int partyLevelHint = 2;                   // encounter-budget party level (Encounter tab)
+
     // ---- shared theme (frontier-book palette) ----
     public static readonly Color Paper   = Color.FromArgb(247, 242, 228);
     public static readonly Color Ink     = Color.FromArgb(38, 28, 20);
@@ -41,7 +51,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.10.1";
+    internal const string AppVersion = "1.11.0";
 
     public MainForm()
     {
@@ -60,16 +70,24 @@ public partial class MainForm : Form
 
         var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(14, 6) };
         tabsCtl = tabs;
+        // Build the tab the Keeper is looking at; hand the other nine over as shells that
+        // fill themselves the first time they're selected. Measured on this laptop, building
+        // all ten up front cost 379 ms of a ~1,000 ms launch (Bestiary 91, Posse 71, Map 61,
+        // Dice 46, Reference 45, the rest small) — a third of the wait spent on nine tabs
+        // nobody was looking at yet. Deferred, that third comes off the launch and is paid
+        // back a tab at a time, none of them over ~90 ms, which is under the threshold where
+        // a click feels like it waited.
         tabs.TabPages.Add(BuildPosseTab());
-        tabs.TabPages.Add(BuildDiceTab());
-        tabs.TabPages.Add(BuildBestiaryTab());
-        tabs.TabPages.Add(BuildEncounterTab());
-        tabs.TabPages.Add(BuildTrackerTab());
-        tabs.TabPages.Add(BuildGeneratorsTab());
-        tabs.TabPages.Add(BuildMapTab());
-        tabs.TabPages.Add(BuildSoulTab());
-        tabs.TabPages.Add(BuildReferenceTab());
-        tabs.TabPages.Add(BuildSessionTab());
+        tabs.TabPages.Add(LazyTab("Dice", BuildDiceTab));
+        tabs.TabPages.Add(LazyTab("Bestiary", BuildBestiaryTab));
+        tabs.TabPages.Add(LazyTab("Encounter", BuildEncounterTab));
+        tabs.TabPages.Add(LazyTab("Tracker", BuildTrackerTab));
+        tabs.TabPages.Add(LazyTab("Generators", BuildGeneratorsTab));
+        tabs.TabPages.Add(LazyTab("Map", BuildMapTab));
+        tabs.TabPages.Add(LazyTab("New Soul", BuildSoulTab));
+        tabs.TabPages.Add(LazyTab("Reference", BuildReferenceTab));
+        tabs.TabPages.Add(LazyTab("Session", BuildSessionTab));
+        tabs.Selecting += (s, e) => RealizeTab(e.TabPage);
         Controls.Add(tabs);
 
         var menu = BuildMenu(tabs);
@@ -109,7 +127,7 @@ public partial class MainForm : Form
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
         status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7")
+            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.16 · Keeper's Book v2.8 · Bestiary v2.8")
             { ForeColor = Ink });
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
@@ -173,11 +191,52 @@ public partial class MainForm : Form
         return base.ProcessCmdKey(ref msg, keyData);
     }
 
+    // ---------------------------------------------------------- lazy tabs
+    // A tab page that hasn't been filled in yet, mapped to the builder that will fill it.
+    readonly Dictionary<TabPage, Func<TabPage>> pendingTabs = new();
+
+    TabPage LazyTab(string title, Func<TabPage> build)
+    {
+        var shell = new TabPage(title) { BackColor = Paper };
+        pendingTabs[shell] = build;
+        return shell;
+    }
+
+    // Run the builder and move what it made onto the shell the TabControl is already
+    // holding. The builders each make their own TabPage (and half of them stash it in a
+    // field), so reparenting the children is less invasive than rewriting ten signatures.
+    // AddRange preserves the array's order, and WinForms resolves docking by z-order, so
+    // the layout comes out identical to the eager build — including the SplitContainers,
+    // whose geometry the Split() helper still defers to the first SizeChanged.
+    void RealizeTab(TabPage shell)
+    {
+        if (shell == null || !pendingTabs.TryGetValue(shell, out var build)) return;
+        pendingTabs.Remove(shell);          // remove FIRST: a builder that logs would re-enter
+        var built = build();
+        shell.SuspendLayout();
+        shell.Text = built.Text;
+        shell.BackColor = built.BackColor;
+        shell.Padding = built.Padding;
+        shell.AutoScroll = built.AutoScroll;
+        var kids = new Control[built.Controls.Count];
+        built.Controls.CopyTo(kids, 0);
+        built.Controls.Clear();
+        shell.Controls.AddRange(kids);
+        shell.ResumeLayout(true);
+        // ProcessCmdKey steers Left/Right to the Reference deck by comparing the selected
+        // tab against this field — it has to name the page actually in the TabControl.
+        if (ReferenceEquals(built, referencePage)) referencePage = shell;
+        built.Dispose();
+    }
+
     // ---------------------------------------------------------- shared helpers
     void Log(string s)
     {
-        if (rollLog == null) return;
         string line = $"[{DateTime.Now:HH:mm}] {s}";
+        // The list is the record; the ListBox is a view of it that may not exist yet.
+        logLines.Insert(0, line);
+        while (logLines.Count > 400) logLines.RemoveAt(logLines.Count - 1);
+        if (rollLog == null) return;
         rollLog.Items.Insert(0, line);
         while (rollLog.Items.Count > 400) rollLog.Items.RemoveAt(rollLog.Items.Count - 1);
         // Owner-drawn ListBoxes don't compute their own horizontal extent, so the
@@ -928,6 +987,15 @@ public partial class MainForm : Form
 
         rollLog = new ListBox { Dock = DockStyle.Fill, Font = new Font("Consolas", 9.5f), HorizontalScrollbar = true, BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
         StyleRollLog(rollLog);
+        // Catch the view up on everything logged before this tab was first opened.
+        if (logLines.Count > 0)
+        {
+            rollLog.BeginUpdate();
+            foreach (var line in logLines) rollLog.Items.Add(line);
+            int widest = logLines.Max(l => TextRenderer.MeasureText(l, rollLog.Font).Width) + 16;
+            if (widest > rollLog.HorizontalExtent) rollLog.HorizontalExtent = widest;
+            rollLog.EndUpdate();
+        }
         var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
         var logHead = new Label { Text = "  Roll && event log", Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
@@ -949,7 +1017,8 @@ public partial class MainForm : Form
         logBar.Controls.Add(Btn("Clear log", (s, e) =>
         {
             if (rollLog.Items.Count == 0) return;
-            if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone.")) rollLog.Items.Clear();
+            if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
+            { rollLog.Items.Clear(); logLines.Clear(); }
         }, 90));
         right.Controls.Add(rollLog); right.Controls.Add(diceTray); right.Controls.Add(logHead); right.Controls.Add(logBar);
 
@@ -996,18 +1065,30 @@ public partial class MainForm : Form
 
     GameSession Snapshot() => new()
     {
-        Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? "",
+        // ?? the field, never ?? a default: an unbuilt tab means "not shown yet", not "empty".
+        Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? notesText,
         EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
-        PartyLevelHint = (int)(encLevel?.Value ?? 2),
+        PartyLevelHint = (int)(encLevel?.Value ?? partyLevelHint),
         Tracker = tracker.ToList(), Round = round,
         MapMarkers = mapMarkers.ToList()
     };
 
+    // Write the session WHOLE or not at all. WriteAllText truncates the file and then fills
+    // it, so anything that interrupts the write — the five-minute timer firing as the machine
+    // sleeps, a kill, a power cut, and above all Crash(), which calls this while the process
+    // is already coming apart — leaves a half-written session.json on disk. TryAutoLoad can't
+    // parse that, and its fallback is SeedDemo(), so a torn write doesn't merely lose the last
+    // few minutes: it silently replaces the Keeper's whole table with the demo posse. Staging
+    // to a sibling file and moving it over is a single filesystem operation on NTFS, so the
+    // old session survives intact until the new one is complete on disk.
     internal void AutoSave()
     {
         try
         {
-            File.WriteAllText(SavePath, JsonSerializer.Serialize(Snapshot(), new JsonSerializerOptions { WriteIndented = true }));
+            string json = JsonSerializer.Serialize(Snapshot(), new JsonSerializerOptions { WriteIndented = true });
+            string staged = SavePath + ".new";
+            File.WriteAllText(staged, json);
+            File.Move(staged, SavePath, overwrite: true);
         }
         catch { /* never block closing */ }
     }
@@ -1020,13 +1101,26 @@ public partial class MainForm : Form
         suppressUndo = true;                  // the whole-table rebuild below is one event, not N
         try
         {
+            // Every soul in the table is about to be replaced by a freshly deserialized
+            // object. The open Ledger pop-outs are keyed on the OLD PartyMember instances,
+            // so left alone they'd show a soul that no longer exists, refuse to refresh,
+            // and hold their dictionary entries forever. Close them with the table.
+            foreach (var w in soulWindows.Values.ToList())
+                if (!w.IsDisposed) w.Close();
+            soulWindows.Clear();
+
             party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear();
             foreach (var p in s.Party ?? new()) party.Add(p);
             foreach (var c in s.Clocks ?? new()) clocks.Add(c);
-            if (notesBox != null) notesBox.Text = s.Notes ?? "";
+            notesText = s.Notes ?? "";
+            if (notesBox != null) notesBox.Text = notesText;
             foreach (var n in s.EncounterCreatures ?? new())
             { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
-            if (encLevel != null && s.PartyLevelHint >= 1) encLevel.Value = Math.Clamp(s.PartyLevelHint, 1, 10);
+            if (s.PartyLevelHint >= 1)
+            {
+                partyLevelHint = Math.Clamp(s.PartyLevelHint, 1, 10);
+                if (encLevel != null) encLevel.Value = partyLevelHint;
+            }
             foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
             round = Math.Max(1, s.Round);
             if (roundLbl != null) roundLbl.Text = $"Round {round}";
@@ -1120,14 +1214,28 @@ public partial class MainForm : Form
 
     void TryAutoLoad()
     {
+        if (!File.Exists(SavePath)) { SeedDemo(); return; }
         try
         {
-            if (!File.Exists(SavePath)) { SeedDemo(); return; }
             var s = JsonSerializer.Deserialize<GameSession>(File.ReadAllText(SavePath));
             if (s == null || s.Party.Count == 0) { SeedDemo(); return; }
             ApplySession(s);
         }
-        catch { if (party.Count == 0) SeedDemo(); }
+        catch (Exception ex)
+        {
+            // An unreadable session used to be swallowed and papered over with the demo
+            // posse, which then autosaved on exit — the Keeper's table quietly gone for
+            // good. Set the bad file aside under a name nothing else writes, and say so.
+            string kept = Path.Combine(AppContext.BaseDirectory, "session-unreadable.json");
+            try { File.Move(SavePath, kept, overwrite: true); } catch { kept = SavePath; }
+            MessageBox.Show(
+                "GritKeeper couldn't read the saved session:\r\n\r\n" + ex.Message +
+                "\r\n\r\nThe file has been set aside as\r\n" + kept +
+                "\r\nso nothing is lost, and the table starts from the ready-made posse. " +
+                "If the file looks salvageable, File → Load session will take it back.",
+                "Blood & Grit — GritKeeper", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (party.Count == 0) SeedDemo();
+        }
     }
 
     void SeedDemo()
