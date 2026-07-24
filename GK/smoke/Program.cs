@@ -162,7 +162,35 @@ var cg = CharGen.D;
 T("17 callings", cg.callings.Count == 17);
 T("10 origins", cg.origins.Count == 10);
 T("17 skills", cg.skills.Count == 17);
-T("8 signs", cg.signs.Count == 8);
+// ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
+T("40 signs across three lists", cg.signs.Count == 40
+    && cg.signs.All(s => s.list is "common" or "bargain" or "craft"));
+T("every sign carries a Rank of 1-5", cg.signs.All(s => s.rank >= 1 && s.rank <= 5));
+T("every Rank is represented on every list", new[] { "common", "bargain", "craft" }
+    .All(l => Enumerable.Range(1, 5).All(r => cg.signs.Any(s => s.list == l && s.rank == r))));
+T("sign names are unique", cg.signs.Select(s => s.name).Distinct().Count() == cg.signs.Count);
+T("the Craft is the Witch's alone", cg.callings
+    .Where(c => c.signLists != null && c.signLists.Contains("craft"))
+    .Select(c => c.name).SequenceEqual(new[] { "Witch" }));
+T("sign-workers and signLists are the same four callings", cg.callings
+    .All(c => (c.signsKnownAt != null) == (c.signLists != null && c.signLists.Count > 0)));
+T("Rank opens at 1st, 3rd, 5th, 7th, 9th", Enumerable.Range(1, 10)
+    .All(l => CharGen.SignRankAt(l) == (l + 1) / 2));
+// A Calling must never be asked to know more Signs than its Rank has actually opened.
+T("no caster is starved of legal signs at any level", cg.callings
+    .Where(c => c.signsKnownAt != null)
+    .All(c => Enumerable.Range(1, 10)
+        .All(l => CharGen.SignsFor(c, l).Count >= c.signsKnownAt[l.ToString()] + 1)));
+// Hedge Magic (Ch. IX) is the only way a non-caster ever holds a Sign, and it reaches
+// the shallow end only: the Common Signs at Rank 1, at any level, forever.
+{
+    var noSigns = cg.callings.First(c => c.signsKnownAt == null);
+    T("Hedge Magic opens the Common Signs at Rank 1 and nothing else",
+        CharGen.SignsFor(noSigns, 10, hedgeMagic: true).All(s => s.list == "common" && s.rank == 1)
+        && CharGen.SignsFor(noSigns, 10, hedgeMagic: true).Count > 0);
+    T("a mundane Calling without Hedge Magic reaches no Sign at all",
+        CharGen.SignsFor(noSigns, 10).Count == 0);
+}
 T("every calling has 10 table rows", cg.callings.All(c => c.rows.Count == 10 && c.rows.Select(r => r.level).SequenceEqual(Enumerable.Range(1, 10))));
 T("attack/saves never regress", cg.callings.All(c => Enumerable.Range(1, 9).All(l =>
     c.Row(l + 1).atk >= c.Row(l).atk && c.Row(l + 1).fort >= c.Row(l).fort

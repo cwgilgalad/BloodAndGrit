@@ -8,6 +8,46 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.19 · GritKeeper v1.13.0 — the Signs become a magic system
+  (2026-07-23, user-requested).** Ch. XIII held eight Signs, flat, with no progression and
+  no distinction between the four Callings that work them: a 10th-level Hexer knew seven of
+  the eight that existed, and knew exactly what a 10th-level Witch knew. It is now **forty
+  Signs on three lists across five Ranks**.
+
+  **Rank is the level gate.** Every Sign carries a Rank of 1–5; a soul reaches a new Rank at
+  1st, 3rd, 5th, 7th and 9th level and may learn nothing above it. The Calling's table still
+  says *how many* Signs you know — Rank says *which ones you may choose from*, so a caster
+  now spends a scarce repertoire across a widening range instead of collecting the set.
+
+  **Three lists, and the Witch is finally not a re-skinned Hexer.** The Common Signs (16)
+  are open to any worker. **The Bargain** (12) belongs to the Hexer, Dark Cultist and False
+  Prophet — the ones who reached out and took, priced accordingly, often in Mark. **The
+  Craft** (12) is the Witch's alone: poppets, warded thresholds, knotted wind, a curse that
+  cannot be lifted until the wrong is put right. The prose already claimed the Craft was
+  "older than the dark the Hexer bargains with"; it now means something mechanically. No
+  Hexer learns the Poppet, and no cultist will ever ward a house.
+
+  **Nerve and Blood are stated as an economy, not a per-Sign footnote.** A new *Price*
+  section names all three coins: Nerve is the standing one and generally costs the Sign's
+  Rank; **two Blood buys one Nerve** where a Sign offers the trade, and Blood so spent does
+  not return until a proper rest; Mark is the coin that never comes back, and Rank 5 always
+  costs it.
+
+  **The app enforces all of it.** `CgSign` gains `rank` and `list`, each Calling gains
+  `signLists`, and `CharGen.SignsFor` is the single gate every path draws through —
+  generation, the wizard, level-up, and the level-up option list alike. `Validate` rejects
+  any Sign off the Calling's lists or above its Rank rather than trusting the data. Smoke
+  4651 → 5053, including a check that no Calling is ever asked to know more Signs than its
+  Rank has legally opened.
+
+  **One regression caught while wiring it.** Gating by list meant *Hedge Magic* — the Edge
+  that lets a non-caster hold a single Sign — would have granted zero, since a Drifter has
+  no list. It now opens the shallow end and only that: the Common Signs at Rank 1, forever,
+  which is what Ch. XIII's own lead sentence describes ("by the Hexer freely, by the Touched
+  a little"). Opal Vance in Appendix D swapped Borrowed Breath, now Rank 3, for The Lender's
+  Ear; a 1st-level Hexer reaches Rank 1 and no further. Book 176 → 185 pages, and the Index
+  gained 38 entries (all 40 Signs plus the chapter's new rule sections).
+
 - **Player's Book v2.18 · GritKeeper v1.12.0 — armor becomes a thing you can wear
   (2026-07-23, user-requested).** Ch. X promised that "worn armor grants Damage Reduction
   against blades and small shot only" and then printed a table that only ever named the

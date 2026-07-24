@@ -1,5 +1,5 @@
 {
- "_source": "Transcribed from Blood & Grit Player's Book v2.18, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
+ "_source": "Transcribed from Blood & Grit Player's Book v2.19, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
  "honestArray": [
   15,
   14,
@@ -489,44 +489,284 @@
  ],
  "signs": [
   {
-   "name": "The Stilling",
-   "cost": "1 Beat · 1 Nerve · Will save",
-   "desc": "One living creature in sight is held fast, unable to act, 1 round per two levels. Backlash: on a failed working, you are stilled instead."
-  },
-  {
    "name": "Witch-Sight",
+   "list": "common",
+   "rank": 1,
    "cost": "Free · 1 Nerve",
-   "desc": "For a scene, see the unnatural plainly — the Marked, the haunted, the thin places. Backlash: what you see may see that you see it."
-  },
-  {
-   "name": "The Crimson Word",
-   "cost": "1 Beat · 2 Nerve or 4 Blood",
-   "desc": "A creature you can see takes 3d6 harm as its own blood turns against it. Backlash: on a natural 1, you take the damage instead."
-  },
-  {
-   "name": "Hollow Step",
-   "cost": "1 Beat · 1 Nerve",
-   "desc": "Step into a shadow and out of another within sight, as far as a stone's throw. Backlash: Frightened 1 until your next turn."
-  },
-  {
-   "name": "The Tally",
-   "cost": "Ten minutes · 2 Nerve",
-   "desc": "Ask the dark a single question; receive a true, partial, unwelcome answer. Backlash: the answer costs a Dread Check; deep truths gain Mark."
+   "desc": "For a scene you see the unnatural plainly: the Marked, the haunted, the places where the world has worn thin. Distance does not help it and neither does daylight. Backlash: What you are looking at may notice that you are looking."
   },
   {
    "name": "Salt & Iron",
+   "list": "common",
+   "rank": 1,
+   "cost": "1 Beat · 1 Nerve · Will save",
+   "desc": "A handful of blessed salt or cold-iron filings thrown wide. Uncanny things within ten feet save or recoil, and the Marked feel its sting whether they meant to stand in it or not. Backlash: None. This is the kindest Sign in the book, and the weakest."
+  },
+  {
+   "name": "The Listening",
+   "list": "common",
+   "rank": 1,
+   "cost": "One minute · 1 Nerve",
+   "desc": "Lay your palm flat on a wall, a table, a floorboard, and hear what was spoken in that room within the past day. You get the words. Tone, and who was lying, you must judge yourself. Backlash: You also hear whatever else has been speaking in that room, which is not always a person."
+  },
+  {
+   "name": "Cold Lamp",
+   "list": "common",
+   "rank": 1,
    "cost": "1 Beat · 1 Nerve",
-   "desc": "Uncanny things within ten feet must save or recoil; the Marked feel its sting. Backlash: none — the kindest Sign, and the weakest."
+   "desc": "A light rises off your hand that sheds no warmth and throws no shadow, bright as a good lantern, lasting an hour. It cannot be blown out, drowned, or hidden. Backlash: It cannot be hidden. Everything in that dark now knows exactly where you are standing."
+  },
+  {
+   "name": "The Stilling",
+   "list": "common",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve · Will save",
+   "desc": "A word and a gesture. One living creature within sight saves or is held fast, unable to act, for one round per two levels you hold. Backlash: On a failed working you are stilled instead, for the same count."
+  },
+  {
+   "name": "Hollow Step",
+   "list": "common",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve",
+   "desc": "Step into one shadow and out of another within sight, as far as a stone's throw. You arrive whole, which is not guaranteed and is worth remarking on. Backlash: Some part of you arrives late: Frightened 1 until your next turn."
+  },
+  {
+   "name": "The Tally",
+   "list": "common",
+   "rank": 2,
+   "cost": "Ten minutes · 2 Nerve",
+   "desc": "Ask the dark one question and receive an answer that is true, partial, and unwelcome. It does not lie. It simply declines to be helpful. Backlash: The answer costs a Dread Check, and a deep enough truth gains a Mark."
+  },
+  {
+   "name": "Deadman's Coat",
+   "list": "common",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve",
+   "desc": "For a scene the eye slides off you the way it slides off a fencepost. You are not invisible; you are uninteresting, which in a crowded room works better. Backlash: Speak, strike, or draw and it breaks at once, and whoever was nearest is startled into looking straight at you."
   },
   {
    "name": "Borrowed Breath",
+   "list": "common",
+   "rank": 3,
    "cost": "1 Beat · 3 Nerve",
-   "desc": "Heal a companion 2d8, taking half that in Blood yourself. Backlash: if they die anyway, +1 Mark."
+   "desc": "Lend a dying companion a measure of your own life. Heal them 2d8 and take half that number in Blood yourself, which does not come back until you rest. Backlash: If they die anyway, you gain +1 Mark. The dark keeps the loan regardless."
+  },
+  {
+   "name": "The Long Whisper",
+   "list": "common",
+   "rank": 3,
+   "cost": "1 Beat · 3 Nerve",
+   "desc": "Speak a sentence into the ear of someone you have met, wherever they are, as though you stood behind them. They may answer once. Most do not, the first time. Backlash: Anything between you that can hear the dark hears it too, and now has both your names."
+  },
+  {
+   "name": "Nail the Shadow",
+   "list": "common",
+   "rank": 3,
+   "cost": "1 Beat · 3 Nerve · Reflex save",
+   "desc": "Drive an iron nail through a creature's shadow. It saves or cannot move from that spot until the nail is pulled, though it may still fight, and will. Backlash: Pull the nail carelessly and the shadow comes with it, attached to you until dawn."
+  },
+  {
+   "name": "The Unburdening",
+   "list": "common",
+   "rank": 3,
+   "cost": "One minute · 3 Nerve",
+   "desc": "Take another soul's terror onto yourself. Clear their Frightened condition and restore 1d6 of their Nerve; you lose that much of your own. Backlash: You take their memory of the thing along with the fear, and it does not fade on the ordinary schedule."
+  },
+  {
+   "name": "Ward of the Threshold",
+   "list": "common",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Nerve",
+   "desc": "Chalk, salt, and a spoken name across a doorway. Until dawn nothing uncanny crosses it uninvited, and an invitation once given cannot be taken back that night. Backlash: The ward holds both ways. What is already inside stays inside with you."
+  },
+  {
+   "name": "The Reckoning Hour",
+   "list": "common",
+   "rank": 4,
+   "cost": "One minute · 4 Nerve",
+   "desc": "Look at a creature and learn the one thing that will kill it: silver, fire, its own name spoken backward, a blessed round, the fourth cut and not the third. Backlash: It learns the same about you, in the same moment, and it does not have to work a Sign to use what it learns."
+  },
+  {
+   "name": "Unmake the Working",
+   "list": "common",
+   "rank": 4,
+   "cost": "1 Beat · 4 Nerve",
+   "desc": "End another's Sign as it is spoken or after it has settled. Roll your Sign DC against theirs; the higher unmakes the lower, and a tie leaves both standing. Backlash: Fail and you have paid the Nerve and announced yourself to a worker who now knows your range."
+  },
+  {
+   "name": "The Long Night",
+   "list": "common",
+   "rank": 5,
+   "cost": "One minute · 5 Nerve and 1 Mark",
+   "desc": "Hold a soul at the very edge of death until dawn. They do not worsen, do not wake, and cannot be killed by anything short of fire or the deliberate hand of something old. Backlash: Whatever was coming for them waits at the foot of the bed until sunrise, and it is patient, and it can be seen."
+  },
+  {
+   "name": "Debt Collected",
+   "list": "bargain",
+   "rank": 1,
+   "cost": "Free · 1 Nerve",
+   "desc": "Name a creature you can see and mark it as owing. Your next blow against it, by hand or gun or Sign, deals an extra 1d6. Backlash: If the mark goes uncollected before the scene ends, you take that 1d6 yourself."
+  },
+  {
+   "name": "The Lender's Ear",
+   "list": "bargain",
+   "rank": 1,
+   "cost": "One minute · 1 Nerve",
+   "desc": "Put a question to whatever it is you deal with, framed so that yes or no will answer it. You get the one word. It is accurate. Backlash: It remembers that you asked, and asking is a thing that accrues."
+  },
+  {
+   "name": "Rot the Wound",
+   "list": "bargain",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve · Fortitude save",
+   "desc": "A wound you dealt this scene will not close. The creature saves or takes 1d6 each round until it is doctored, bound, or dead. Backlash: The next wound dealt to you behaves the same way, and you cannot doctor your own."
+  },
+  {
+   "name": "The Grasping Dark",
+   "list": "bargain",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve · Reflex save",
+   "desc": "Shadows within twenty feet take hold. Creatures there save or are held fast until they break loose with a Strength check against your Sign DC. Backlash: The dark does not distinguish. Your companions are standing in it too."
+  },
+  {
+   "name": "Coin of Pain",
+   "list": "bargain",
+   "rank": 2,
+   "cost": "1 Beat · 2 Blood",
+   "desc": "The trade run backward: open your own arm and buy 1d6 Nerve with the Blood. Some nights this is the only bank still open. Backlash: Work it twice in a session and the second working costs a Mark as well."
+  },
+  {
+   "name": "The Crimson Word",
+   "list": "bargain",
+   "rank": 3,
+   "cost": "1 Beat · 3 Nerve or 6 Blood",
+   "desc": "You speak a syllable that was not shaped for a human mouth, and a creature you can see takes 3d6 as its own blood turns against it. Backlash: On a natural 1, or a critical failure to overcome its resistance, you take the damage."
+  },
+  {
+   "name": "The Borrowed Face",
+   "list": "bargain",
+   "rank": 3,
+   "cost": "One minute · 3 Nerve",
+   "desc": "Wear the face of someone the dark has already taken. For an hour you are them to any eye, any voice, any old friend who ought to know better. Backlash: For that hour you also remember being them, and some of it stays after the face goes."
+  },
+  {
+   "name": "The Hungering Hand",
+   "list": "bargain",
+   "rank": 3,
+   "cost": "1 Beat · 3 Nerve · Fortitude save",
+   "desc": "Your touch takes 2d6 Blood from a living creature and gives half of it to you. It saves for half, and it feels exactly what it is. Backlash: Take Blood this way three times in a day and you must save or begin to prefer it."
+  },
+  {
+   "name": "Feed the Ledger",
+   "list": "bargain",
+   "rank": 4,
+   "cost": "1 Beat · 1 Mark",
+   "desc": "Pay in the only coin that never runs short. The next Sign you work this scene costs no Nerve and no Blood, and its dice are maximized. Backlash: None, and that is the trouble with it. The bill is already paid and it is never refunded."
+  },
+  {
+   "name": "The Black Contract",
+   "list": "bargain",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Nerve and 1 Mark · Will save",
+   "desc": "Bind a creature that can understand you to a single promise. It saves; on a failure it cannot break the promise, and both of you know the terms exactly. Backlash: You are bound to your half of it on the same terms, and it read the wording more carefully than you did."
+  },
+  {
+   "name": "Open the Vein of the World",
+   "list": "bargain",
+   "rank": 5,
+   "cost": "1 Beat · 5 Nerve and 1 Mark · Reflex save",
+   "desc": "The ground splits along something that was never a fault line. Every creature within thirty feet takes 6d8 and saves for half. The crack does not close. Backlash: The ground remembers. That country gains a step of Taint, permanently."
   },
   {
    "name": "The Calling",
-   "cost": "One minute · 4 Nerve and 1 Mark",
-   "desc": "Call something from the dark to bargain or to serve. It comes. Backlash: the most dangerous Sign in the book."
+   "list": "bargain",
+   "rank": 5,
+   "cost": "One minute · 5 Nerve and 1 Mark",
+   "desc": "You call something out of the dark to bargain or to serve, and it comes. What it is, what it wants, and whether it consents to leave are the Keeper's to decide. Backlash: The most dangerous Sign in this book. Work it last, or never."
+  },
+  {
+   "name": "Sour the Milk",
+   "list": "craft",
+   "rank": 1,
+   "cost": "Free · 1 Nerve",
+   "desc": "The small malice the Craft is famous for. A creature you can see takes a −2 on its very next roll, and the milk goes off, and the bread will not rise. Backlash: None worth the name, which is why every witch in the territories knows it."
+  },
+  {
+   "name": "Knot the Wind",
+   "list": "craft",
+   "rank": 1,
+   "cost": "Ten minutes · 1 Nerve",
+   "desc": "Tie the weather into a length of cord: three knots, three winds. Loose one later for a gust, a squall, or a good hour of driving rain. Backlash: Loose all three at once and the weather comes as it pleases, over country you had not intended to include."
+  },
+  {
+   "name": "The Green Hand",
+   "list": "craft",
+   "rank": 1,
+   "cost": "Ten minutes · 1 Nerve",
+   "desc": "Coax what grows into doing you a kindness. Treat a wound for 1d8, or bring a field, a poultice, or a half-dead horse back from the edge of ruin. Backlash: Whatever you healed it with dies, and the ground it stood in stays bare for a season."
+  },
+  {
+   "name": "The Poppet",
+   "list": "craft",
+   "rank": 2,
+   "cost": "Ten minutes · 2 Nerve · Will save",
+   "desc": "Bind a doll to a person whose hair, blood, or name you hold. What you do to the doll, they feel, up to 2d6 and a save to halve it, at any distance you can imagine. Backlash: Whoever holds the poppet holds the working, and dolls are small and easily pocketed."
+  },
+  {
+   "name": "Crossing the Threshold",
+   "list": "craft",
+   "rank": 2,
+   "cost": "One hour · 2 Nerve",
+   "desc": "Make a house yours. Nothing uncanny may enter it uninvited while you sleep under its roof, and it will know it is being kept out, and it will mind. Backlash: You must sleep there. A witch who wards a house and rides away has built a very good box for someone else."
+  },
+  {
+   "name": "Cat's Errand",
+   "list": "craft",
+   "rank": 2,
+   "cost": "1 Beat · 2 Nerve",
+   "desc": "Send your familiar out and ride behind its eyes at any distance, for as long as you sit still and let it work. It can carry a Sign of Rank 1 in its mouth and deliver it. Backlash: What happens to the familiar out there happens while you are looking through its eyes."
+  },
+  {
+   "name": "The Brewing",
+   "list": "craft",
+   "rank": 3,
+   "cost": "One hour · 3 Nerve",
+   "desc": "Cook a Sign of Rank 2 or lower down into a draught and cork it. It keeps a month and works for whoever drinks it, which need not be you. Backlash: It works for whoever drinks it. Label the bottle."
+  },
+  {
+   "name": "The Ninefold Knot",
+   "list": "craft",
+   "rank": 3,
+   "cost": "Ten minutes · 3 Nerve · Will save",
+   "desc": "Nine knots in a red cord and a name said over each. A creature saves or cannot work its own uncanny power for nine days, though it may fight, flee, and remember you fine. Backlash: Cut the cord early and the nine days come back all at once, on you."
+  },
+  {
+   "name": "The Widow's Curse",
+   "list": "craft",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Nerve · Will save",
+   "desc": "The old curse, laid properly and meant. A person saves or carries a lasting misfortune of your naming until the wrong you cursed them for is put right. Backlash: It cannot be lifted by you, or by anyone, until that wrong is actually put right. Curse carefully, and be sure of the wrong."
+  },
+  {
+   "name": "Ask the Line",
+   "list": "craft",
+   "rank": 4,
+   "cost": "One hour · 4 Nerve",
+   "desc": "Call up a woman of your own crooked line, dead these many years, and ask her. She answers plainly, at length, and with opinions about your choices. Backlash: She may decline to go back, and a dead grandmother in the house is a long and particular haunting."
+  },
+  {
+   "name": "The Old Woman's Bargain",
+   "list": "craft",
+   "rank": 5,
+   "cost": "One hour · 5 Nerve",
+   "desc": "Trade a year of your own life for a working of any Rank you know, at no other cost, worked as though you were the greatest of your line. The year is taken from the far end. Backlash: None at the time. The Craft always collects at the far end, and it is never late."
+  },
+  {
+   "name": "The Hearth Unbroken",
+   "list": "craft",
+   "rank": 5,
+   "cost": "One hour · 5 Nerve",
+   "desc": "For one night a place is genuinely safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. Backlash: One night only, and the same roof will not answer twice in the same season. Choose the night with care."
   }
  ],
  "weapons": [
@@ -3377,7 +3617,11 @@
    "choice": null,
    "startMark": 1,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Slight"
+   "attackRank": "Slight",
+   "signLists": [
+    "common",
+    "bargain"
+   ]
   },
   {
    "name": "False Prophet",
@@ -3580,7 +3824,11 @@
    "choice": null,
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Steady"
+   "attackRank": "Steady",
+   "signLists": [
+    "common",
+    "bargain"
+   ]
   },
   {
    "name": "Hexer",
@@ -3783,7 +4031,11 @@
    "choice": null,
    "startMark": 1,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Slight"
+   "attackRank": "Slight",
+   "signLists": [
+    "common",
+    "bargain"
+   ]
   },
   {
    "name": "Witch",
@@ -3996,7 +4248,11 @@
    },
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Slight"
+   "attackRank": "Slight",
+   "signLists": [
+    "common",
+    "craft"
+   ]
   }
  ],
  "flavor": {
@@ -4220,5 +4476,17 @@
    "Ha-o-zinne",
    "Mary Sits-Alone"
   ]
+ },
+ "signRankAtLevel": {
+  "1": 1,
+  "2": 1,
+  "3": 2,
+  "4": 2,
+  "5": 3,
+  "6": 3,
+  "7": 4,
+  "8": 4,
+  "9": 5,
+  "10": 5
  }
 }

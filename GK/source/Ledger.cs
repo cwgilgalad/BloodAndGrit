@@ -353,7 +353,7 @@ public sealed class LedgerView : Panel
                     foreach (var sg in sheet.SignsKnown)
                     {
                         var d = CharGen.D.signs.FirstOrDefault(x => x.name == sg);
-                        lines.Add(("† " + sg + (d?.cost != null ? $" ({d.cost})" : ""), false));
+                        lines.Add(("† " + sg + (d != null ? $" — Rank {d.rank}, {d.cost}" : ""), false));
                     }
                 }
             }

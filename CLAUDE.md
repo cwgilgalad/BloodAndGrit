@@ -536,7 +536,11 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   and save columns are a *transcription of a formula*, not free values: each Calling
   carries an `attackRank`, and `Validate` re-derives every row from
   `CharGen.AttackFor`/`StrongSave`/`WeakSave` (Player's Book Ch. XIV) — so a bad
-  transcription fails the smoke suite instead of silently drifting from the book. **→ Posse** seats the result
+  transcription fails the smoke suite instead of silently drifting from the book. The same
+  discipline now covers armor (v2.18 — `ArmorFrom`, folded into `ReckonNumbers` so Defense
+  and Speed have exactly one author) and the Signs (v2.19 — `SignRankAt`/`SignsFor`, with
+  `Validate` rejecting any Sign off the Calling's lists or above the Rank its level opened).
+  **→ Posse** seats the result
   directly at the table. v1.5: the sheet renders on **the book's Ledger** (`LedgerView`),
   characters carry **gender** (rolled, name drawn from gender-matched lists in
   `chargen.json`; the books carry gender only in prose — reviewed 2026-07-18), a

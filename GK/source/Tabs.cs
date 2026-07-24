@@ -921,9 +921,19 @@ public partial class MainForm
         RH(r, "Signs & the Sign DC");
         RT(r, "Where a Sign forces a save, the DC is the worker's Sign DC = 10 + half their level + RES modifier. " +
               "A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier — no level added.");
+        RT(r, "Rank opens at 1st, 3rd, 5th, 7th and 9th level. A Sign above your Rank does nothing at all — "
+             + "the words are there, the meaning is not. Nerve is the standing coin; two Blood buys one Nerve where "
+             + "a Sign offers the trade; Rank 5 costs Mark, and Mark never comes back.");
         if (CharGen.D?.signs?.Count > 0)
-            RTbl(r, new[] { 17, 20, 48 }, new[] { "Sign", "Cost", "The working" },
-                CharGen.D.signs.Select(sg => new[] { sg.name, sg.cost ?? "—", sg.desc ?? "" }));
+            foreach (var (key, title) in new[] { ("common", "The Common Signs — any worker"),
+                                                 ("bargain", "The Bargain — Hexer, Dark Cultist, False Prophet"),
+                                                 ("craft",   "The Craft — the Witch alone") })
+            {
+                RH(r, title);
+                RTbl(r, new[] { 6, 19, 22, 46 }, new[] { "Rank", "Sign", "Cost", "The working" },
+                    CharGen.D.signs.Where(sg => sg.list == key).OrderBy(sg => sg.rank).ThenBy(sg => sg.name)
+                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? "—", sg.desc ?? "" }));
+            }
 
         RH(r, "Grit");
         RT(r, "Three per soul, refreshed each session. Spend one AFTER seeing the result:");

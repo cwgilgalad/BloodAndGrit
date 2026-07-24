@@ -32,7 +32,14 @@ public class CgEdge
     public string calling { get; set; } public string reqFeature { get; set; }
 }
 
-public class CgSign { public string name { get; set; } public string cost { get; set; } public string desc { get; set; } }
+public class CgSign
+{
+    public string name { get; set; } public string cost { get; set; } public string desc { get; set; }
+    /// <summary>"common" | "bargain" | "craft" — which of Ch. XIII's three lists it sits on.</summary>
+    public string list { get; set; }
+    /// <summary>1–5. A soul may learn it once their level has opened that Rank.</summary>
+    public int rank { get; set; }
+}
 
 public class CgWeapon { public string name { get; set; } public string dmg { get; set; } public string traits { get; set; } public double cost { get; set; } public string kind { get; set; } }
 
@@ -67,6 +74,9 @@ public class CgCalling
     public List<CgRow> rows { get; set; } = new();
     public Dictionary<string, string> featureDescs { get; set; } = new();
     public Dictionary<string, int> signsKnownAt { get; set; }
+    /// <summary>Which of Ch. XIII's lists this Calling draws on. Null for the fourteen that
+    /// work no Signs at all; the Witch alone holds "craft".</summary>
+    public List<string> signLists { get; set; }
     public CgSubpath subpath { get; set; }
     public CgCoin coin { get; set; }
     public List<string> skillPrefs { get; set; } = new();
@@ -91,6 +101,7 @@ public class CgData
     public List<CgEdge> edges { get; set; } = new();
     public List<CgEdge> callingEdges { get; set; } = new();
     public List<CgSign> signs { get; set; } = new();
+    public Dictionary<string, int> signRankAtLevel { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
     public List<CgArmor> armor { get; set; } = new();
     public Dictionary<string, double> gearPrices { get; set; } = new();
@@ -160,6 +171,25 @@ public static class CharGen
 
     /// <summary>A weak save: a third of your level, rounding down.</summary>
     public static int WeakSave(int level) => level / 3;
+
+    // ---- the Signs (Player's Book Ch. XIII, "Rank and Reach") ----
+
+    /// <summary>The highest Sign Rank a soul of this level may reach: Rank 1 at 1st, then a new
+    /// Rank at 3rd, 5th, 7th and 9th. Read from the data where it is stated, so the book's table
+    /// and this rule cannot part company.</summary>
+    public static int SignRankAt(int level)
+        => D.signRankAtLevel.TryGetValue(level.ToString(), out var r) ? r
+         : Math.Clamp((level + 1) / 2, 1, 5);
+
+    /// <summary>Every Sign a soul may actually learn at a level: their Calling's lists, gated by Rank.
+    /// A Calling that works no Signs gets nothing — unless the soul took <em>Hedge Magic</em> (Ch. IX),
+    /// which opens the shallow end and only that: the Common Signs at Rank 1. Ch. XIII puts it as
+    /// reached "by the Hexer freely, by the Touched a little."</summary>
+    public static List<CgSign> SignsFor(CgCalling cal, int level, bool hedgeMagic = false)
+        => cal.signsKnownAt != null && cal.signLists != null
+         ? D.signs.Where(x => cal.signLists.Contains(x.list) && x.rank <= SignRankAt(level)).ToList()
+         : hedgeMagic ? D.signs.Where(x => x.list == "common" && x.rank == 1).ToList()
+         : new();
 
     // ---- armor (Player's Book Ch. X, "On Armor") ----
 
@@ -323,7 +353,8 @@ public static class CharGen
         if (cal.choice != null) s.CallingChoice = $"{cal.choice.label}: {Pick(cal.choice.options)}";
 
         // Signs (Ch. VII / XIII): only the Old Dark works them by nature; Hedge Magic adds one
-        var signNames = D.signs.Select(x => x.name).ToList();
+        var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
+                            .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
         int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[level.ToString()] : 0;
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         while (s.SignsKnown.Count < Math.Min(signCount, signNames.Count))
@@ -511,7 +542,8 @@ public static class CharGen
         if (cal.choice != null)
             s.CallingChoice = $"{cal.choice.label}: {(cal.choice.options.Contains(spec.CallingChoice) ? spec.CallingChoice : Pick(cal.choice.options))}";
 
-        var signNames = D.signs.Select(x => x.name).ToList();
+        var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
+                            .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
         int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[level.ToString()] : 0;
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         signCount = Math.Min(signCount, signNames.Count);
@@ -621,7 +653,7 @@ public static class CharGen
         {
             int c = cal.signsKnownAt != null ? cal.signsKnownAt[lvl.ToString()] : 0;
             if (cur.Edges.Contains("Hedge Magic")) c += 1;
-            return Math.Min(c, D.signs.Count);
+            return Math.Min(c, SignsFor(cal, lvl, cur.Edges.Contains("Hedge Magic")).Count);
         }
         g.NewSignSlots = Math.Max(0, Signs(N) - Signs(cur.Level));
 
@@ -638,7 +670,9 @@ public static class CharGen
         if (g.GunEdge) g.GunEdgeOptions = EligibleEdges(clone, "Gun");
         if (g.SkillIncrease) g.SkillOptions = SkillIncreaseTargets(clone, N);
         if (g.Subpath) { g.SubpathOptions = cal.subpath.options.Select(o => o.name).ToList(); g.DefaultSubpath = g.SubpathOptions[0]; }
-        if (g.NewSignSlots > 0) g.SignOptions = D.signs.Select(x => x.name).Where(n => !cur.SignsKnown.Contains(n)).ToList();
+        if (g.NewSignSlots > 0)
+            g.SignOptions = SignsFor(cal, cur.Level + 1, cur.Edges.Contains("Hedge Magic")).Select(x => x.name)
+                                .Where(n => !cur.SignsKnown.Contains(n)).ToList();
         return g;
     }
 
@@ -697,7 +731,8 @@ public static class CharGen
         if (N >= 3 && cal.subpath != null && cal.subpath.options.Count > 0 && s.Subpath == null)
             s.Subpath = cal.subpath.options.Any(o => o.name == ch.Subpath) ? ch.Subpath : Pick(cal.subpath.options).name;
 
-        var signNames = D.signs.Select(x => x.name).ToList();
+        var signNames = SignsFor(cal, N, s.Edges.Contains("Hedge Magic"))
+                            .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
         int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[N.ToString()] : 0;
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         signCount = Math.Min(signCount, signNames.Count);
@@ -964,11 +999,21 @@ public static class CharGen
             "Hedge Magic on a Calling that already has the Signs feature");
         int expectSigns = cal.signsKnownAt != null ? cal.signsKnownAt[s.Level.ToString()] : 0;
         if (owned.Contains("Hedge Magic")) expectSigns += 1;
-        expectSigns = Math.Min(expectSigns, D.signs.Count);
+        var legal = SignsFor(cal, s.Level, owned.Contains("Hedge Magic"));
+        expectSigns = Math.Min(expectSigns, legal.Count);
         Check(s.SignsKnown.Count == expectSigns, $"{s.SignsKnown.Count} signs ≠ {expectSigns} allowed");
         Check(!(isFaith && s.SignsKnown.Count > 0), "a Calling of Faith may never work a Sign (Ch. XIII)");
         Check(s.SignsKnown.Distinct().Count() == s.SignsKnown.Count, "duplicate sign");
-        foreach (var sg in s.SignsKnown) Check(D.signs.Any(x => x.name == sg), $"unknown sign {sg}");
+        // Ch. XIII: a Sign must sit on one of the Calling's lists and at a Rank the level has opened.
+        // Checked here rather than trusted, so a mis-listed Sign in the data cannot pass silently.
+        foreach (var sg in s.SignsKnown)
+        {
+            var sign = D.signs.FirstOrDefault(x => x.name == sg);
+            Check(sign != null, $"unknown sign {sg}");
+            if (sign == null) continue;
+            Check(legal.Any(x => x.name == sg),
+                $"{cal.name} L{s.Level} may not know {sg} (Rank {sign.rank}, {sign.list} list)");
+        }
 
         // the Mark: Hexer & Dark Cultist begin at 1; Came Back Wrong adds 1; Touched adds 1; Witch starts clean
         int expectMark = org.startMark + cal.startMark + (owned.Contains("Touched") ? 1 : 0);
@@ -1059,9 +1104,9 @@ public static class CharGen
 
         if (s.SignsKnown.Count > 0)
         {
-            sb.AppendLine("SIGNS KNOWN");
-            foreach (var sg in s.SignsKnown)
-            { var d = D.signs.First(x => x.name == sg); sb.AppendLine($"   {d.name} ({d.cost}) — {FirstSentence(d.desc)}"); }
+            sb.AppendLine($"SIGNS KNOWN — {string.Join(" + ", cal.signLists ?? new())}, to Rank {SignRankAt(s.Level)}");
+            foreach (var d in s.SignsKnown.Select(n => D.signs.First(x => x.name == n)).OrderBy(x => x.rank))
+                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}) — {FirstSentence(d.desc)}");
             sb.AppendLine();
         }
 
