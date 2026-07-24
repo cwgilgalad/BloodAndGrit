@@ -8,6 +8,29 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.22 · GritKeeper v1.16.1 — rules consistency audit (2026-07-24,
+  user-requested).** A cross-source pass, engineer and philosophy professor both: do the
+  numbers agree across the book, the data, and the app, and are the concepts used the same
+  way everywhere? The mechanical layer came back clean — the single-source discipline holds.
+  `verify_rules.py` confirms the seventeen Calling tables (697 attack/save cross-checks) are
+  in step; Sign DC, Miracle DC, the Dread ladder → Nerve loss, armor DR, and the Threat-by-Tier
+  benchmarks (the Keeper's Book table is byte-identical to the app's `Rules.TierRow`) all agree.
+
+  Three *textual* seams needed reconciling:
+  - **The nat-20/nat-1 rule read two ways.** Chapter II calls it a one-step shift; Chapter XI,
+    the combat chapter, says a natural 20 "always at least hits." At a wide margin those
+    diverge. Ch. XI now states the relationship outright — the one-step shift as ever, *and*,
+    in a Strike, an at-least-hits/at-least-misses floor — matching how the Iron Code engine
+    (#1) already adjudicates it.
+  - **Brother Elias Crow, the Appendix D Preacher, had no Miracles** — an omission from the
+    Step-3b faith expansion. He now lists his two Rank-1 Miracles (The Steadying Word, Call to
+    the Mourner's Bench), his Miracle DC 13, and his Conviction pool, exactly as generation
+    would give a 1st-level Preacher.
+  - **The Witch Hunter's Zeal pool sat only in prose.** The other four Callings of Faith name
+    their pool feature in their 1st-level table; Zeal (added in Step 3b) did not. It now
+    appears in the table and in `chargen.json` (feature + description), so the app grants and
+    shows it like the rest. Smoke still green (Validate's feature-match accepts it).
+
 - **GritKeeper v1.16.0 — the horror economy on rails (2026-07-24, user-requested).** The
   quiet bookkeeping a horror-tactical hybrid forgets mid-fight — Nerve off the ladder, the
   break, the faith pool — now runs itself.

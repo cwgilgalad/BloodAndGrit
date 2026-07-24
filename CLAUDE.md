@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.21 · Keeper's Book v2.9 · Bestiary v2.8 ·
-GritKeeper app v1.16.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.22 · Keeper's Book v2.9 · Bestiary v2.8 ·
+GritKeeper app v1.16.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
@@ -95,7 +95,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.21 | 200 | one inline SVG map (Appendix E) + cover emblem |
+| The Player's Book | v2.22 | 200 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.9 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.8 | 164 | none (150 creatures) |
 
@@ -256,7 +256,7 @@ appears in more than one place, wire it this way: one source, generated outward,
 
 ---
 
-## The Player's Book (v2.21) — structure
+## The Player's Book (v2.22) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
