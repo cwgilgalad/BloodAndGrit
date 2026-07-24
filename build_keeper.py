@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.20 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.8 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.20)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.8)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.21 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.9 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.21)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.9)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.20</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.8</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.21</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.9</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.20 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.8 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.21 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.9 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -1064,7 +1064,7 @@ CH8 = f"""<!-- VIII -->
   it is the trade, the vocabulary, and the town.</p>
   <p>Start with the work itself. The cattle business is Mexican before it is anything else, and every player at your
   table already speaks its language: the <em>lariat</em> is <em>la reata</em>, the <em>chaps</em> are
-  <em>chaparreras</em>, the <em>remuda</em>, the <em>corral</em>, the <em>rodeo</em>, the <em>mustang</em> out of
+  <em>chaparreras</em>, the <em>remuda</em> (the herd of spare mounts), the <em>corral</em>, the <em>rodeo</em>, the <em>mustang</em> out of
   <em>mesteño</em>, and the <em>stampede</em> out of <em>estampida</em>. The vaquero taught the trade to everyone
   who came after him, and on any outfit worth riding for, the segundo &mdash; the man the trail boss actually
   listens to &mdash; is as likely to be a vaquero as not. Roughly one working hand in four on the great drives is

@@ -8,6 +8,25 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.21 · Keeper's Book v2.9 — editorial pass: glossing the period idioms
+  (2026-07-24, user-requested).** A read-through of all three books "like a teacher with a
+  PhD in English," charged with preserving the period voice while briefly clarifying any
+  frontier idiom a modern player wouldn't parse. The honest finding: the prose is already
+  remarkably self-glossing — period terms are explained at first use (*the Exodus of 1879*,
+  *Buffalo Soldiers*, *barrow* → "mounded tombs"), false-friends resolved on the spot
+  (*The Drummer* → "a travelling seller of tonics, Bibles, futures, or lies"), and creature
+  and feature names are self-defining (*psychopomp* → "a death-guide," *Viaticum* → "the last
+  rites are also the kindest medicine"). Chapters I and II, the highest-traffic rules text,
+  needed nothing.
+
+  Three genuine gaps were filled, briefly and in voice: **"proving up"** (homestead-law
+  jargon, never explained) gained a parenthetical — *working a claim the years the law
+  required to earn its title*; **"Exoduster"** was tied to the Exodus of 1879 at the point
+  that migration is described; and **"remuda"** — lumped in the Keeper's Book cowboy-vocabulary
+  passage with the fully-assimilated *corral* and *rodeo*, though a modern reader knows those
+  and not it — gained *the herd of spare mounts*. No voice was flattened and no atmospheric
+  quote was touched. Player's Book 199 → 200 pages.
+
 - **Player's Book v2.20 · GritKeeper v1.14.0 — the faithful get a magic system too
   (2026-07-24, user-requested).** Step 3 gave the Old Dark forty ranked Signs and left the
   five Callings of Faith with what they had before: a fixed kit of signature features and no
