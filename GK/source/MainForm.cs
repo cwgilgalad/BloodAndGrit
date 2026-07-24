@@ -778,15 +778,21 @@ public partial class MainForm : Form
     {
         int added = 0;
         foreach (var p in party)
-            if (!tracker.Any(t => t.IsPC && t.Name == p.Name))
-            { tracker.Add(new Combatant { Name = p.Name, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense }); added++; }
+            if (!tracker.Any(t => t.IsSoul(p)))
+            { tracker.Add(new Combatant { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense }); added++; }
         Log($"Sent {added} soul(s) to the tracker.");
     }
 
     void MirrorToTracker(PartyMember p)
     {
-        var c = tracker.FirstOrDefault(t => t.IsPC && t.Name == p.Name);
-        if (c != null) { c.BloodCur = p.BloodCur; c.BloodMax = p.BloodMax; trkGrid?.Refresh(); }
+        var c = tracker.FirstOrDefault(t => t.IsSoul(p));
+        if (c != null)
+        {
+            if (string.IsNullOrEmpty(c.PcId)) c.PcId = p.Id;   // adopt the id on a legacy row
+            c.Name = p.Name;                                    // keep the tracker label in step with a rename
+            c.BloodCur = p.BloodCur; c.BloodMax = p.BloodMax;
+            trkGrid?.Refresh();
+        }
     }
 
     // ============================================================ DICE TAB
