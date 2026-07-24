@@ -232,8 +232,8 @@ var cg = CharGen.D;
     T("a PC row follows its soul by id across a rename", pcRow.IsSoul(soul));
     var twin = new PartyMember { Name = "Ruth" };             // a different soul, same original name
     T("a different soul with the same name does not match", !pcRow.IsSoul(twin));
-    var legacy = new Combatant { IsPC = true, PcId = "", Name = "Doc" };
-    T("a legacy row (no id) still matches by name", legacy.IsSoul(new PartyMember { Name = "Doc" }));
+    var legacyRow = new Combatant { IsPC = true, PcId = "", Name = "Doc" };
+    T("a legacy row (no id) still matches by name", legacyRow.IsSoul(new PartyMember { Name = "Doc" }));
     var foe = new Combatant { IsPC = false, PcId = soul.Id, Name = "x" };
     T("a foe row is never mistaken for a soul", !foe.IsSoul(soul));
 
