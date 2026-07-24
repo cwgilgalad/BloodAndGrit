@@ -27,8 +27,14 @@ robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
 ```
 (`/XD bin obj publish` keeps the .NET build output out of the deliverable; robocopy exit
 codes 0–7 are success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and
-re-zip to `GritKeeper.zip`. If this ever gets scripted — alongside `sign.ps1`, or as a new
-`package.ps1` — fold the copy step in there so it can't be skipped.
+re-zip to `GritKeeper.zip`.
+
+**This is now scripted: `package.ps1`.** Run it *after* signing the published exe — it copies
+the signed exe into `GritKeeper\app\` (dropping the runtime `session.json`), re-mirrors
+`GritKeeper\source`, and writes `GritKeeper.zip`. It refuses to package an unsigned exe unless
+you pass `-Force` (a local test build). So a release is: `dotnet publish -c Release` → sign →
+`.\package.ps1` → upload the zip with the matching `RELEASE_NOTES_vX.Y.Z.md`. The zip, the
+`app/` exe, and the `source/` mirror are all git-ignored (release assets, never committed).
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
