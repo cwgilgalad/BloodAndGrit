@@ -1,12 +1,54 @@
 # Changelog — Blood & Grit
 
-All notable changes to the three books and The Keeper's Table app, newest first. Any commit
+All notable changes to the three books and the GritKeeper app, newest first. Any commit
 that changes content or behavior adds an entry here — and bumps the affected component's
 version — in the same commit. Version bumps are tagged `component-vX.Y` at the commit that
 ships them. (Moved out of CLAUDE.md on 2026-07-18 when tracking was standardized across all
 Desktop\Git repos.)
 
 ---
+
+- **Repo cleanup — the onboarding artifacts that drifted (2026-07-23, user-requested).**
+  Housekeeping only: **no version bumps**, no content or behavior change to any book or to
+  the app. Worked from a written assessment of the repo; the project itself was in good
+  shape, but several files a fresh session reads *first* had quietly gone stale.
+
+  **The `/session-start` command was describing the pre-rename project.** It still said to
+  edit `KT/source`, called the delivered folder `BloodAndGrit-Keepers-Table/`, and named the
+  app "The Keeper's Table" throughout — paths that stopped existing at the 2026-07-19 rename.
+  A session following it literally would have written to the wrong tree. Rewritten against
+  current conventions (`GK/`, `GritKeeper/`, `GritKeeper.zip`, GritKeeper), with the PDF rule
+  and the `CHANGELOG.md` split folded in.
+
+  **`preferences.md` deleted.** It was supposed to be a duplicate of `CLAUDE.md` — 687 of its
+  815 lines had diverged, freezing it at roughly the 2026-07-11 state: Player's Book v2.12,
+  app "The Keeper's Table" v1.2.2, none of the standing rules added since. `session-start.md`
+  told you to "read one," so it was a coin flip whether a session picked up context 12 days
+  and two renames out of date. `CLAUDE.md` is now the only handoff doc.
+
+  **Onboarding no longer points at a packaged snapshot.** `CLAUDE.md`'s first line told you to
+  import `blood-and-grit-sources.zip` into a fresh Project — a zip dated 2026-07-11 carrying
+  the old thin `build_player.py`, a standalone `bestiary_extra.py`, and instructions for a
+  `player-src.html` that was retired on 2026-07-18. Following it would have produced a broken
+  build. Replaced with "hand over the current loose files," which can't go stale.
+
+  **~3.9 MB of dead weight removed** (~11% of the repo): the nine root-level versioned book
+  snapshots (`-v2.4/2.5/2.6` Bestiary and Keeper's, `-v2.12/2.13/2.14` Player's — all two or
+  more versions behind, produced by no documented build, referenced by no script or doc), and
+  the root copy of `img20.png` (byte-identical to `assets/img20.png`, which is the one the
+  build actually inlines). `add_index.py` deliberately kept — documented-intentional dead
+  code, not clutter.
+
+  **`GritKeeper/source/` is now generated, not tracked.** It was a byte-identical second copy
+  of `GK/source` living in git for no build reason — and the exact seam that silently diverged
+  once before (2026-07-10). Now git-ignored like `GritKeeper/app/` already was, and rewritten
+  from the master tree at package time (`robocopy GK\source GritKeeper\source /MIR /XD bin obj
+  publish`). "Don't edit the delivered folder" still holds; the reason is now "it gets
+  overwritten," not "it'll diverge." Verified byte-identical against `GK/source` before the
+  untracking landed.
+
+  Verified: `build_player.py` rebuilds byte-identical to `main` (the emblem still inlines from
+  `assets/`), and twice in a row to itself.
 
 - **Books v2.16 / v2.8 / v2.8 + GritKeeper v1.11.0 — the mundane frontier, the city, and
   the people who were actually out here (2026-07-22, user-requested).** One release, four
