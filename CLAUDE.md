@@ -237,6 +237,22 @@ Regenerating overwrites the three PDFs in place.)*
 - **Contents page numbers** re-measured against the rendered sheets and patched.
 - **JS valid** — extract the `<script>` and run `node --check`.
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
+- **No rules drift** — `python verify_rules.py` parses the built Player's Book and checks its
+  seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
+
+### One source of truth, and disagreement is a failing test
+
+The standing discipline behind the numbers: **each rule is encoded once, both the book and the
+app are generated/checked from it, and any disagreement fails a build.** Concretely — the attack
+spine (rank → level) and the save formulas live in Ch. XIV; `chargen.json` transcribes them and
+carries each Calling's `attackRank`; `CharGen.Validate` re-derives every row from
+`AttackFor`/`StrongSave`/`WeakSave` (so data↔app can't drift — the smoke suite fails first); and
+`verify_rules.py` checks the *printed book* against the data and the formula (so book↔data can't
+drift). The same shape governs armor (`ArmorFrom`, folded into `ReckonNumbers`), the Signs and
+Miracles (`SignsFor`/`MiraclesFor` gated by the shared `RankAt`), the faith/sign pool
+(`PoolMax` re-derived in `Validate`), and the Iron Code weapon traits (`WeaponTraits.Parse` reads
+the book's own free-text `traits`, and a smoke test asserts the parse). When you add a rule that
+appears in more than one place, wire it this way: one source, generated outward, checked back.
 
 ---
 
