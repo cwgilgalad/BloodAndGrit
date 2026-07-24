@@ -301,6 +301,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100, "Step to the next round (Ctrl+R)"));
         bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82, "The selected combatant's turn: 3 Beats, a clean MAP"));
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
+        bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
         bar.Controls.Add(Lbl("  Amt:"));
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
         bar.Controls.Add(trkAmount);
@@ -649,6 +650,48 @@ public partial class MainForm
             Log(rep.Line);
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
+        }
+    }
+
+    // Roll a Dread Check for the selected soul (Ch. XII): Will save vs the Dread DC, Nerve off the
+    // ladder on a failure, Frightened on a critical failure — and, at 0 Nerve, the break table.
+    void DreadDialog()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a soul first."); return; }
+        var soul = SoulOf(c);
+        if (soul == null) { Log("Dread Checks are for the posse — select a player's soul."); return; }
+
+        using var f = new Form { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
+        var dc = new NumericUpDown { Left = 112, Top = 48, Width = 70, Minimum = 5, Maximum = 40, Value = 16 };
+        f.Controls.Add(new Label { Left = 16, Top = 51, Width = 92, Text = "Dread DC:" });
+        f.Controls.Add(dc);
+        int top = 84;
+        foreach (var (label, val) in new[] { ("A fresh corpse (10)", 10), ("A mutilation (13)", 13),
+            ("The walking dead (16)", 16), ("A thing from outside (20)", 20), ("A world unmade (25)", 25) })
+        {
+            var b = new Button { Left = 16, Top = top, Width = 185, Height = 26, Text = label, TextAlign = ContentAlignment.MiddleLeft };
+            int v = val; b.Click += (s, e) => dc.Value = v;
+            f.Controls.Add(b); top += 30;
+        }
+        var check = new Button { Text = "Check ▸", Left = 250, Top = 90, Width = 150, Height = 34, DialogResult = DialogResult.OK };
+        var close = new Button { Text = "Close", Left = 250, Top = 132, Width = 150, Height = 30, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { check, close });
+        f.AcceptButton = check;
+
+        while (f.ShowDialog(this) == DialogResult.OK)
+        {
+            var o = Horror.DreadCheck(soul.Will, (int)dc.Value);
+            Log($"{soul.Name}: {o.Line}");
+            if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
+            if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
+            if (soul.NerveCur == 0)
+            {
+                var bk = Horror.Break();
+                Log($"{soul.Name} {bk.Line}");
+                if (bk.GainsMark) soul.Mark += 1;
+            }
+            posseGrid?.Refresh(); trkGrid?.Refresh();
         }
     }
 

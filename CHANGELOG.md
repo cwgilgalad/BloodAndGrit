@@ -8,6 +8,28 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.16.0 — the horror economy on rails (2026-07-24, user-requested).** The
+  quiet bookkeeping a horror-tactical hybrid forgets mid-fight — Nerve off the ladder, the
+  break, the faith pool — now runs itself.
+
+  **A pure Dread engine (`Horror.cs`).** `DreadCheck` is a Will save vs the Dread DC (Ch. XII):
+  crit success steadies (no Nerve), failure loses the ladder's Nerve (DC 10 → 1, 13 → 1d4,
+  16 → 1d6, 20/25 → 1d10), critical failure loses it *and* imposes Frightened 1, and DC 25
+  carries a lasting Affliction. `Break` rolls the 0-Nerve table, where a 6 is +1 Mark. A new
+  tracker **Dread ▸** button rolls it for the selected soul off their own Will, applies the
+  Nerve loss, hangs the Frightened, and — at 0 Nerve — rolls the break and takes the Mark.
+  Quick-pick buttons for the five sights (a fresh corpse … a world unmade).
+
+  **The faith/sign pool is tracked live.** Every believer's currency (Grace, Conviction,
+  Breath, Vital Breath, Zeal) now rides on the posse as a Pool column, seeded full at
+  generation and refreshed with a long rest alongside Blood and Nerve. The numeric max is
+  re-derived on the sheet and re-checked in `CharGen.Validate`, so it can't drift from the
+  Calling's formula — a Padre's Grace is PRE mod + half level or the build goes red.
+
+  ~360 new smoke assertions (the Dread ladder over 400 iterations, the break table, the pool
+  formula across every Calling); 7179 → 7986. Engine and pool logic fully covered; the two new
+  WinForms dialogs and columns compile clean and want a run-through at the table.
+
 - **GritKeeper v1.15.0 — the Iron Code, adjudicated at the table (2026-07-24,
   user-requested).** The combat crunch that makes a fight satisfying is also what slows a
   table down: Beats, the Multiple Attack Penalty, Fatal dice, Misfire, DR by damage type,

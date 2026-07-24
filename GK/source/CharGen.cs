@@ -154,6 +154,8 @@ public class CharacterSheet
     public string Subpath { get; set; }                                  // chosen at 3rd, or null
     public string CallingChoice { get; set; }                            // Marshal reputation / Shaman aspect / Witch familiar
     public string PoolLine { get; set; }                                 // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
+    public string PoolName { get; set; }                                 // the faith/sign currency's name, or null
+    public int PoolMax { get; set; }                                     // its maximum at this level, or 0 for no pool
     public double CoinRolled { get; set; } public double CoinLeft { get; set; }
     public List<string> Gear { get; set; } = new();
     public List<string> WeaponsCarried { get; set; } = new();            // "Single-Action Revolver 1d8 (Fatal d10, Misfire 1)"
@@ -909,6 +911,8 @@ public static class CharGen
             val = Math.Max(cal.pool.min, val);
             string refresh = cal.pool.formula.EndsWith("level") ? "RES mod + level" : cal.pool.formula.Substring(0, 3) + " mod + half level";
             s.PoolLine = $"{cal.pool.name} {val} ({refresh}, refreshed each dawn)";
+            s.PoolName = cal.pool.name;
+            s.PoolMax = val;
         }
     }
 
@@ -1005,6 +1009,14 @@ public static class CharGen
                 $"{cal.name} L{s.Level}: table {label} {val} is neither strong ({StrongSave(s.Level)}) nor weak ({WeakSave(s.Level)})");
         int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * s.Level : 0;
         Check(s.NerveMax == s.Scores["RES"] + s.Level + stoneNerve, "Nerve ≠ RES score + level (+Stone Nerve)");
+        // the faith/sign pool (re-derived so a bad transcription can't drift; 0 for Callings without one)
+        int expectPool = 0;
+        if (cal.pool != null)
+        {
+            int baseMod = Mod(s.Scores[cal.pool.formula.Substring(0, 3)]);
+            expectPool = Math.Max(cal.pool.min, cal.pool.formula.EndsWith("level") ? baseMod + s.Level : baseMod + s.Level / 2);
+        }
+        Check(s.PoolMax == expectPool, $"pool {s.PoolMax} ≠ {cal.pool?.name ?? "none"} formula {expectPool}");
         Check(s.Grit == 3, "Grit must be 3");
         Check(s.Speed == 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (ArmorFrom(s.Gear)?.speed ?? 0),
             "Speed ≠ 30 (+Fleet, +armor)");

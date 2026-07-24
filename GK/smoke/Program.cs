@@ -265,6 +265,32 @@ var cg = CharGen.D;
         CombatFlow.StrikeAndApply(atk, tgt, revolver, attackBonus: -50, forcedDie: 10);            // sure miss
         T("a missed Strike leaves the target's Blood alone", tgt.BloodCur == 40);
     }
+
+    // -- the horror economy: Dread Checks and the break table (#3, Ch. XII) --
+    T("Dread DC maps to the Nerve ladder's tier",
+        Horror.DreadTier(10) == 1 && Horror.DreadTier(13) == 2 && Horror.DreadTier(16) == 3
+        && Horror.DreadTier(20) == 4 && Horror.DreadTier(25) == 5);
+    // a natural 20 always steels the soul (nat-20 floor via FourDegrees); crit success loses no Nerve
+    T("a crit-success Dread Check steadies and costs no Nerve",
+        Horror.DreadCheck(will: 0, dreadDc: 16, forcedDie: 20) is { Steadied: true, NerveLost: 0 });
+    // a natural 1 against a high DC is a critical failure: Nerve lost AND Frightened
+    T("a crit-failure Dread Check loses Nerve and imposes Frightened 1",
+        Horror.DreadCheck(will: 0, dreadDc: 20, forcedDie: 1) is { Frightened: true, NerveLost: > 0 });
+    // tier-5 dread (DC 25) carries a lasting Affliction on a failure
+    T("tier-5 dread carries an Affliction on failure",
+        Horror.DreadCheck(will: 0, dreadDc: 25, forcedDie: 2).Affliction);
+    for (int i = 0; i < 400; i++)
+    {
+        var d3 = Horror.DreadCheck(will: 0, dreadDc: 16);   // 1d6 ladder
+        T("a Dread Check never loses more than its ladder allows", d3.NerveLost is >= 0 and <= 6);
+        T("Nerve is lost only on a failure, never a success", d3.Degree >= 2 ? d3.NerveLost == 0 : true);
+    }
+    // the break table: only a 6 gains a Mark, and it always names an outcome
+    for (int roll = 1; roll <= 6; roll++)
+    {
+        var bk = Horror.Break(forcedRoll: roll);
+        T($"break d6={roll}: Mark only on a 6", bk.GainsMark == (roll == 6) && bk.Text.Length > 0);
+    }
 }
 
 // ============================================================ BALANCE, SIMULATED (#4)
@@ -370,6 +396,14 @@ T("every faith calling holds the Common Blessings plus one own list", cg.calling
     .All(c => c.miracleLists.Count == 2 && c.miracleLists[0] == "blessing"));
 T("the Witch Hunter now has a pool (Zeal)", cg.callings
     .First(c => c.name == "Witch Hunter").pool?.name == "Zeal");
+// the live faith/sign pool the app tracks is re-derived on the sheet (#3): a Padre at 5th holds
+// Grace = PRE mod + half level; a mundane Gunhand carries none.
+{
+    var padre = CharGen.Generate(5, false, "Padre");
+    T("a Padre's Grace pool = PRE mod + half level",
+        padre.PoolName == "Grace" && padre.PoolMax == Math.Max(1, CharGen.Mod(padre.Scores["PRE"]) + 5 / 2));
+    T("a Gunhand carries no pool", CharGen.Generate(5, false, "Gunhand").PoolMax == 0);
+}
 T("no faith calling is starved of legal miracles at any level", cg.callings
     .Where(c => c.miraclesKnownAt != null)
     .All(c => Enumerable.Range(1, 10)

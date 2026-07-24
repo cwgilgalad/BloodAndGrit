@@ -51,7 +51,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.15.0";
+    internal const string AppVersion = "1.16.0";
 
     public MainForm()
     {
@@ -543,7 +543,8 @@ public partial class MainForm : Form
         Col("BloodCur", "Blood", 55); Col("BloodMax", "/Max", 50); Col("Defense", "Def", 45);
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
         Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
-        Col("Mark", "Mark", 48); Col("Taint", "Taint", 48); Col("Notes", "Notes", 150);
+        Col("PoolCur", "Pool", 46); Col("PoolMax", "/Max", 45);
+        Col("Mark", "Mark", 48); Col("Taint", "Taint", 48); Col("Notes", "Notes", 140);
         // far-right Ledger button — one click to the soul's character sheet
         posseGrid.Columns.Add(new DataGridViewButtonColumn
         { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
@@ -552,7 +553,7 @@ public partial class MainForm : Form
             if (e.RowIndex >= 0 && e.RowIndex < party.Count && posseGrid.Columns[e.ColumnIndex].Name == "ledgerBtn")
                 ShowSoulCard(party[e.RowIndex]);
         };
-        WireNumericValidation(posseGrid, new() { "Level","BloodCur","BloodMax","Defense","Fort","Ref","Will","NerveCur","NerveMax","Grit","Mark","Taint" });
+        WireNumericValidation(posseGrid, new() { "Level","BloodCur","BloodMax","Defense","Fort","Ref","Will","NerveCur","NerveMax","Grit","PoolCur","PoolMax","Mark","Taint" });
 
         // current values can't outrun their maximums, whichever side of the pair was edited
         posseGrid.CellEndEdit += (s, e) =>
@@ -760,18 +761,18 @@ public partial class MainForm : Form
     void RestPosse()
     {
         if (party.Count == 0) return;
-        if (!Confirm("A long rest for the whole posse? Restores every soul's Blood and Nerve to full.")) return;
-        foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; MirrorToTracker(p); }
+        if (!Confirm("A long rest for the whole posse? Restores every soul's Blood, Nerve, and pool to full.")) return;
+        foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; MirrorToTracker(p); }
         posseGrid?.Refresh();
-        Log("The posse takes a long rest — Blood and Nerve restored to full.");
+        Log("The posse takes a long rest — Blood, Nerve, and the day's pool restored to full.");
     }
 
     void RestSoul(PartyMember p)
     {
         if (p == null) { Log("Select a soul first."); return; }
-        p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax;
+        p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax;
         MirrorToTracker(p); posseGrid?.Refresh();
-        Log($"{p.Name} rests — Blood and Nerve restored to full.");
+        Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
     }
 
     void PartyToTracker()
@@ -1267,6 +1268,7 @@ public partial class MainForm : Form
                 Sheet = s
             };
             if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
+            p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
             party.Add(p);
         }
         Add("Ruth \"Six-Finger\" Calloway", "Woman", "Gunhand");
