@@ -51,7 +51,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.16.0";
+    internal const string AppVersion = "1.16.1";
 
     public MainForm()
     {

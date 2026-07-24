@@ -3565,7 +3565,8 @@
      "will": 2,
      "features": [
       "The Hunt",
-      "Sanctified Iron"
+      "Sanctified Iron",
+      "Zeal"
      ]
     },
     {
@@ -3664,6 +3665,7 @@
    "featureDescs": {
     "The Hunt": "As a single Beat, name one creature you can see as your quarry. Against that quarry you gain +1 to hit and to all checks to find, track, and study it; you ignore any supernatural concealment it enjoys; and you may not be forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. The Hunt is the whole of the art: choose your prey, and never lose the trail.",
     "Sanctified Iron": "Each dawn, anoint your weapons with salt, silver-wash, oil, and a muttered rite. Until next dawn they count as silver, cold iron, and blessed for the purpose of overcoming the uncanny's resistances, and deal +1 damage to the Marked and the unnatural. At 6th level, all three at once; before that, choose one each morning and guess well.",
+    "Zeal": "A cold, countable certainty: a pool of Zeal equal to your WIT modifier + half your level (minimum 1), refreshed each dawn, that fuels your Miracles (the Common Blessings and the Consecrations).",
     "Steeled Nerve": "You have stared into too many open graves to flinch at one more. Gain +2 on all Dread Checks and saves against fear, and halve the Nerve you lose to your current quarry's kind. The horror is still there. You have simply made a profession of not looking away.",
     "Recognize the Unclean": "Study a creature or a person for a round and make a Lore: Occult check: learn whether they bear the Mark or are unnatural, what manner of thing they are, and one weakness the Keeper will honor — silver, fire, running water, true names, the dawn. The gift is exact, and it is the most dangerous thing you own, for it tempts you to trust it absolutely.",
     "Judgment": "Once per quarry, declare Judgment before a Strike. On a hit, deal the listed extra holy-and-silver damage; on a critical hit, the quarry must save (DC 10 + half level + WIT) or be Frightened and Slowed, losing a Beat. Judgment refreshes when you name a new quarry.",
