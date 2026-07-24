@@ -51,6 +51,7 @@ public class PartyMember : INotifyPropertyChanged
     string _name = "New Soul", _calling = "", _gender = "", _notes = "";
     int _level = 1, _bloodCur = 10, _bloodMax = 10, _defense = 12;
     int _fort, _ref, _will, _nerveCur = 11, _nerveMax = 11, _grit = 3, _mark, _taint, _res = 10;
+    int _poolCur, _poolMax; string _poolName = "";
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -72,6 +73,11 @@ public class PartyMember : INotifyPropertyChanged
     public int Grit { get => _grit; set { _grit = Math.Clamp(value, 0, 9); On(); } }
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, 6); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
+    // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Vital Breath,
+    // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
+    public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
+    public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
+    public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
 
     // The full character sheet, when this soul came out of the New Soul tab (generated,

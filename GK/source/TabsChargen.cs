@@ -157,6 +157,7 @@ public partial class MainForm
             Sheet = s                                    // the full record rides along
         };
         if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
+        p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
         party.Add(p);
         Log($"{s.Name} joins the posse.");
     }

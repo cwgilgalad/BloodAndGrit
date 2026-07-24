@@ -480,6 +480,8 @@ public partial class MainForm
         p.BloodMax = s.Blood; p.BloodCur = Math.Min(p.BloodCur, s.Blood);
         p.Defense = s.Defense; p.Fort = s.Fort; p.Ref = s.Ref; p.Will = s.Will;
         if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = Math.Min(p.NerveCur, s.NerveMax); }
+        p.PoolName = s.PoolName ?? "";
+        if (p.PoolMax != s.PoolMax) { p.PoolMax = s.PoolMax; p.PoolCur = Math.Min(p.PoolCur, s.PoolMax); }
         p.Grit = s.Grit; p.Mark = s.Mark;
         MirrorToTracker(p);
     }
