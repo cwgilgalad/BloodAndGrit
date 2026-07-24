@@ -15,6 +15,11 @@ GK/publish/
 #     self-contained .NET runtime, the zip ~70 MB — both rebuilt on release) ---
 GritKeeper/app/
 GritKeeper.zip
+# GritKeeper/source/ was a byte-identical second copy of GK/source tracked in git for no
+# build reason — and the exact seam that silently diverged once (2026-07-10). It is now a
+# generated mirror like app/: overwritten from GK/source as a step of packaging, never
+# hand-edited, never carried between sessions in git. GK/source is the only source of truth.
+GritKeeper/source/
 
 # --- per-table runtime state (the Keeper's live session, not project source) ---
 session.json
