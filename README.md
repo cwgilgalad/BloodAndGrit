@@ -84,6 +84,7 @@ python build_bestiary.py               # reads blood-and-grit.html → bestiary.
 python measure_index.py                 # Player's Book: parity/clip/anchors + re-patch index statics
 python measure_book.py keeper-handbook.html
 python measure_book.py bestiary.html
+python verify_rules.py                  # book ↔ data ↔ formula: the Calling tables can't drift
 python audit_whitespace.py <book.html>  # optional: list pages with large bottom gaps
 ```
 
@@ -105,6 +106,9 @@ strings current with the books. See `CLAUDE.md` for the full standing rule.
   `python perdition_map.py both` writes `_map_preview.html`.
 - `pag_patch.py` — shared paginator patch (splittable blocks).
 - `make_pdf.py` — prints all three books to true 8.5×11 US-Letter PDFs.
+- `verify_rules.py` — the drift guard: parses the built Player's Book and checks its seventeen
+  Calling tables against `chargen.json` and the one spine formula (Ch. XIV), so the printed
+  page, the app's data, and the rule can never quietly disagree.
 - `update_readme.py` — regenerates the `AUTO:editions` block above from the build scripts and
   `CHANGELOG.md`, so the version line and latest-change note here never drift. The
   `.githooks/pre-commit` hook runs it on every commit (enable once per clone with
