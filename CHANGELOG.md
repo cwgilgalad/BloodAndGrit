@@ -50,7 +50,8 @@ Desktop\Git repos.)
   import `blood-and-grit-sources.zip` into a fresh Project — a zip dated 2026-07-11 carrying
   the old thin `build_player.py`, a standalone `bestiary_extra.py`, and instructions for a
   `player-src.html` that was retired on 2026-07-18. Following it would have produced a broken
-  build. Replaced with "hand over the current loose files," which can't go stale.
+  build. Replaced with "hand over the current loose files," which can't go stale. The zip
+  itself was deleted in a follow-up the same day, once nothing pointed at it any more (379 KB).
 
   **~3.9 MB of dead weight removed** (~11% of the repo): the nine root-level versioned book
   snapshots (`-v2.4/2.5/2.6` Bestiary and Keeper's, `-v2.12/2.13/2.14` Player's — all two or
