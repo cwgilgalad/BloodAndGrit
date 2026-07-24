@@ -4,9 +4,9 @@ Import this file into the project so a fresh chat can pick up exactly where we l
 For onboarding a fresh Project, hand over **the current loose files from the repo** — the
 builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shared modules
 (`nav_tools.py`, `perdition_map.py`, `pag_patch.py`), `assets/`, and whatever else the task
-touches — not a packaged snapshot. (Packaged snapshots go stale silently: the retired
-`blood-and-grit-sources.zip` sat at its day-one 2026-07-11 contents while the build
-architecture moved on underneath it.)
+touches — not a packaged snapshot. (Packaged snapshots go stale silently: the old
+`blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
+while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.16 · Keeper's Book v2.8 · Bestiary v2.8 ·
 GritKeeper app v1.11.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
