@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.23 · Keeper's Book v2.9 · Bestiary v2.8 ·
+**Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
 GritKeeper app v1.16.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -96,8 +96,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | Book | Version | Pages† | Images |
 |---|---|---|---|
 | The Player's Book | v2.23 | 200 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.9 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.8 | 164 | none (150 creatures) |
+| The Keeper's Book (GM guide) | v2.10 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.9 | 164 | none (150 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -305,7 +305,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.9) — structure
+## The Keeper's Book (v2.10) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -338,7 +338,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.8) — structure & conventions
+## The Bestiary (v2.9) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **150 creatures** by name (from every `<p class="cr-name">`,

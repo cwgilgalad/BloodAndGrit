@@ -41,13 +41,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Bestiary · Version 2.8 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.8)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Bestiary · Version 2.9 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.9)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.8</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.9</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.8 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.9 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -1602,6 +1602,10 @@ BUILD = f"""<!-- BUILD -->
     <li><strong>Familiarity is the death of dread.</strong> The second meeting with any horror costs no Dread Check
     for the same sight &mdash; so escalate: a new behavior, a new ground, a new face. Or reskin (Chapter I) and let
     them start over.</li>
+    <li><strong>When the dead work the uncanny.</strong> A cultist, a hexer gone bad, or a thing that curses and
+    conjures forces saves at a <strong>Sign or Miracle DC of 10 + half its level + its keyed ability</strong> &mdash;
+    read its level as twice its Tier, so a Tier III worker forces about DC 16, a Tier V about DC 18. Give it two or
+    three workings, not a spellbook; a foe is its Special, not a caster's whole list.</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The quarter-hour monster</span>Name the wrong. Pick the ground. Read
   the Tier row. Give it one trick and one true death. Write the Found line and two sentences of what the locals say.
