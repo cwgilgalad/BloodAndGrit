@@ -745,6 +745,7 @@ public partial class MainForm
             ("Nerve & Dread",             RefLeafNerve),
             ("The Mark & the Taint",      RefLeafMarkTaint),
             ("Signs & Grit",              RefLeafSignsGrit),
+            ("Miracles of the Faithful",  RefLeafMiracles),
             ("The Long Odds",             RefLeafLongOdds),
             ("Arms of the Frontier",      RefLeafArms),
             ("Goods & Provisions",        RefLeafGoods),
@@ -944,6 +945,33 @@ public partial class MainForm
             new[] { "Shrug a fright until the end of your next turn" },
             new[] { "Soften a critical failure to an ordinary failure" });
         RI(r, "The Keeper may award a point mid-session for a deed of true courage.");
+    }
+
+    void RefLeafMiracles(RichTextBox r)
+    {
+        RH(r, "Miracles & the Miracle DC");
+        RT(r, "The faith-side counterpart to the Signs, worked by the five Callings of Faith (Ch. VI). "
+             + "Where a Miracle forces a save, the DC is 10 + half your level + your faith ability's modifier "
+             + "(the Padre's and Preacher's PRE, the Shaman's and Medicine Man's RES, the Witch Hunter's WIT).");
+        RT(r, "Same Rank spine as the Signs — Rank opens at 1st, 3rd, 5th, 7th and 9th level, and nothing above "
+             + "your Rank will work. Miracles are paid from your Calling's pool (Grace, Conviction, Breath, Vital "
+             + "Breath, or the Witch Hunter's Zeal), not in Nerve or Blood. Faith does not bite back; the cost is "
+             + "the pool, and the risk is a prayer unanswered.");
+        if (CharGen.D?.miracles?.Count > 0)
+            foreach (var (key, title) in new[] {
+                    ("blessing",     "The Common Blessings — any Calling of Faith"),
+                    ("liturgy",      "The Liturgy — the Padre"),
+                    ("revival",      "The Revival — the Preacher"),
+                    ("spirits",      "The Spirits — the Shaman"),
+                    ("mending",      "The Mending — the Medicine Man"),
+                    ("consecration", "The Consecrations — the Witch Hunter") })
+            {
+                RH(r, title);
+                RTbl(r, new[] { 6, 21, 20, 46 }, new[] { "Rank", "Miracle", "Cost", "The working" },
+                    CharGen.D.miracles.Where(m => m.list == key).OrderBy(m => m.rank).ThenBy(m => m.name)
+                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? "—", m.desc ?? "" }));
+            }
+        RI(r, "\"Faith\" in a Miracle's cost means points from your Calling's pool, whatever your Calling names it.");
     }
 
     void RefLeafLongOdds(RichTextBox r)

@@ -191,6 +191,32 @@ T("no caster is starved of legal signs at any level", cg.callings
     T("a mundane Calling without Hedge Magic reaches no Sign at all",
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
+// ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
+T("40 miracles across six lists", cg.miracles.Count == 40 && cg.miracles.All(m =>
+    m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"));
+T("every miracle carries a Rank of 1-5", cg.miracles.All(m => m.rank >= 1 && m.rank <= 5));
+T("every Rank is represented on every miracle list", new[] {
+    "blessing", "liturgy", "revival", "spirits", "mending", "consecration" }
+    .All(l => Enumerable.Range(1, 5).All(rk => cg.miracles.Any(m => m.list == l && m.rank == rk))));
+T("miracle names are unique", cg.miracles.Select(m => m.name).Distinct().Count() == cg.miracles.Count);
+T("Signs and Miracles ride the one Rank spine", Enumerable.Range(1, 10)
+    .All(l => CharGen.MiracleRankAt(l) == CharGen.SignRankAt(l)));
+// Exactly the five Callings of Faith work Miracles, and none of them works a Sign.
+T("the five faith callings work Miracles", cg.callings
+    .Where(c => c.miracleLists != null && c.miracleLists.Count > 0)
+    .Select(c => c.name).OrderBy(n => n)
+    .SequenceEqual(new[] { "Medicine Man", "Padre", "Preacher", "Shaman", "Witch Hunter" }));
+T("miracle-workers and Sign-workers never overlap", cg.callings
+    .All(c => !(c.miracleLists?.Count > 0 && c.signLists?.Count > 0)));
+T("every faith calling holds the Common Blessings plus one own list", cg.callings
+    .Where(c => c.miracleLists != null)
+    .All(c => c.miracleLists.Count == 2 && c.miracleLists[0] == "blessing"));
+T("the Witch Hunter now has a pool (Zeal)", cg.callings
+    .First(c => c.name == "Witch Hunter").pool?.name == "Zeal");
+T("no faith calling is starved of legal miracles at any level", cg.callings
+    .Where(c => c.miraclesKnownAt != null)
+    .All(c => Enumerable.Range(1, 10)
+        .All(l => CharGen.MiraclesFor(c, l).Count >= c.miraclesKnownAt[l.ToString()] + 1)));
 T("every calling has 10 table rows", cg.callings.All(c => c.rows.Count == 10 && c.rows.Select(r => r.level).SequenceEqual(Enumerable.Range(1, 10))));
 T("attack/saves never regress", cg.callings.All(c => Enumerable.Range(1, 9).All(l =>
     c.Row(l + 1).atk >= c.Row(l).atk && c.Row(l + 1).fort >= c.Row(l).fort
@@ -252,6 +278,19 @@ T("every calling has an armor preference, all names resolving",
         wearing.GetValueOrDefault("Scavenged Iron Plate") < n / 2);
 }
 
+// ---- a faith soul actually receives its Miracles, at the right count and Rank ----
+foreach (var name in new[] { "Padre", "Preacher", "Shaman", "Medicine Man", "Witch Hunter" })
+    foreach (int lvl in new[] { 1, 3, 5, 7, 10 })
+    {
+        var fs = CharGen.Generate(lvl, false, name);
+        var cal = cg.callings.First(c => c.name == name);
+        T($"{name} L{lvl}: knows {cal.miraclesKnownAt[lvl.ToString()]} miracles",
+            fs.MiraclesKnown.Count == cal.miraclesKnownAt[lvl.ToString()]);
+        T($"{name} L{lvl}: every miracle is legal (list + Rank)", fs.MiraclesKnown.All(mk =>
+            CharGen.MiraclesFor(cal, lvl).Any(x => x.name == mk)));
+        T($"{name} L{lvl}: works no Sign", fs.SignsKnown.Count == 0);
+    }
+
 // ---- targeted rule spot-checks (the Appendix D cross-checks) ----
 for (int i = 0; i < 25; i++)
 {
@@ -297,7 +336,9 @@ T("both genders turn up", Enumerable.Range(0, 60).Select(_ => CharGen.Generate(1
     for (int i = 0; i < 6; i++) spec.PreGiftScores[gh.keyAbilities[i]] = pool2[i];
     var s2 = CharGen.Assemble(spec);
     T("assemble honors the given gender", s2.Gender == "Woman");
-    T("assemble rolls a matching name", CharGen.Flavor("givenWomen").Contains(s2.Name.Split(' ')[0]));
+    T("assemble rolls a matching name",
+        CharGen.Flavor("givenWomen").Contains(s2.Name.Split(' ')[0])
+        || CharGen.Flavor("fullNamesWomen").Contains(s2.Name));   // a name may be a whole-name draw
     T("render carries the gender", CharGen.Render(s2).Contains("woman"));
 }
 
@@ -331,6 +372,7 @@ for (int i = 0; i < 100; i++)
     spec.Edges.Add("Not An Edge");
     spec.SkillIncreases.Add(cg.skills[Rules.Rng.Next(cg.skills.Count)].name);
     spec.Signs.Add(cg.signs[Rules.Rng.Next(cg.signs.Count)].name);
+    spec.Miracles.Add(cg.miracles[Rules.Rng.Next(cg.miracles.Count)].name);
     spec.Subpath = "Not A Path";
     spec.BuyWeapons.Add(cg.weapons[Rules.Rng.Next(cg.weapons.Count)].name);
     spec.BuyGear.Add(cg.gearPrices.Keys.First());

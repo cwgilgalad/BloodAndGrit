@@ -41,6 +41,17 @@ public class CgSign
     public int rank { get; set; }
 }
 
+/// <summary>The faith-side counterpart to a Sign (Player's Book Ch. VI). Same shape and same
+/// five-Rank spine; a Calling of Faith learns these instead of Signs, paid from its pool.</summary>
+public class CgMiracle
+{
+    public string name { get; set; } public string cost { get; set; } public string desc { get; set; }
+    /// <summary>"blessing" | "liturgy" | "revival" | "spirits" | "mending" | "consecration".</summary>
+    public string list { get; set; }
+    /// <summary>1–5. Same rank gate as the Signs (Rank opens at 1/3/5/7/9).</summary>
+    public int rank { get; set; }
+}
+
 public class CgWeapon { public string name { get; set; } public string dmg { get; set; } public string traits { get; set; } public double cost { get; set; } public string kind { get; set; } }
 
 /// <summary>One row of the Ch. X armor table. <c>gear</c> is the gearPrices key that buys it,
@@ -77,6 +88,10 @@ public class CgCalling
     /// <summary>Which of Ch. XIII's lists this Calling draws on. Null for the fourteen that
     /// work no Signs at all; the Witch alone holds "craft".</summary>
     public List<string> signLists { get; set; }
+    /// <summary>Which of Ch. VI's Miracle lists this Calling draws on. Null for every Calling
+    /// but the five of Faith; each holds "blessing" plus its own.</summary>
+    public List<string> miracleLists { get; set; }
+    public Dictionary<string, int> miraclesKnownAt { get; set; }
     public CgSubpath subpath { get; set; }
     public CgCoin coin { get; set; }
     public List<string> skillPrefs { get; set; } = new();
@@ -101,7 +116,9 @@ public class CgData
     public List<CgEdge> edges { get; set; } = new();
     public List<CgEdge> callingEdges { get; set; } = new();
     public List<CgSign> signs { get; set; } = new();
-    public Dictionary<string, int> signRankAtLevel { get; set; } = new();
+    public List<CgMiracle> miracles { get; set; } = new();
+    /// <summary>The shared five-Rank spine: level → highest Rank, for Signs and Miracles alike.</summary>
+    public Dictionary<string, int> rankAtLevel { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
     public List<CgArmor> armor { get; set; } = new();
     public Dictionary<string, double> gearPrices { get; set; } = new();
@@ -133,6 +150,7 @@ public class CharacterSheet
     public List<string> BonusCombatEdges { get; set; } = new();          // Gunhand's Edge picks
     public List<string> Features { get; set; } = new();
     public List<string> SignsKnown { get; set; } = new();
+    public List<string> MiraclesKnown { get; set; } = new();          // Ch. VI, the Callings of Faith
     public string Subpath { get; set; }                                  // chosen at 3rd, or null
     public string CallingChoice { get; set; }                            // Marshal reputation / Shaman aspect / Witch familiar
     public string PoolLine { get; set; }                                 // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
@@ -172,14 +190,26 @@ public static class CharGen
     /// <summary>A weak save: a third of your level, rounding down.</summary>
     public static int WeakSave(int level) => level / 3;
 
-    // ---- the Signs (Player's Book Ch. XIII, "Rank and Reach") ----
+    // ---- the Rank spine, shared by Signs (Ch. XIII) and Miracles (Ch. VI) ----
 
-    /// <summary>The highest Sign Rank a soul of this level may reach: Rank 1 at 1st, then a new
-    /// Rank at 3rd, 5th, 7th and 9th. Read from the data where it is stated, so the book's table
-    /// and this rule cannot part company.</summary>
-    public static int SignRankAt(int level)
-        => D.signRankAtLevel.TryGetValue(level.ToString(), out var r) ? r
+    /// <summary>The highest Rank a soul of this level may reach: Rank 1 at 1st, then a new Rank at
+    /// 3rd, 5th, 7th and 9th. One spine for both magic systems, read from the data where it is
+    /// stated so the book's table and this rule cannot part company.</summary>
+    public static int RankAt(int level)
+        => D.rankAtLevel.TryGetValue(level.ToString(), out var r) ? r
          : Math.Clamp((level + 1) / 2, 1, 5);
+
+    /// <summary>The Sign Rank a soul of this level reaches (Player's Book Ch. XIII).</summary>
+    public static int SignRankAt(int level) => RankAt(level);
+
+    /// <summary>The Miracle Rank a soul of this level reaches (Player's Book Ch. VI).</summary>
+    public static int MiracleRankAt(int level) => RankAt(level);
+
+    /// <summary>Every Miracle a Calling of Faith may learn at a level: its lists, gated by Rank.
+    /// A Calling that works no Miracles gets nothing.</summary>
+    public static List<CgMiracle> MiraclesFor(CgCalling cal, int level)
+        => cal.miraclesKnownAt == null || cal.miracleLists == null ? new()
+         : D.miracles.Where(x => cal.miracleLists.Contains(x.list) && x.rank <= RankAt(level)).ToList();
 
     /// <summary>Every Sign a soul may actually learn at a level: their Calling's lists, gated by Rank.
     /// A Calling that works no Signs gets nothing — unless the soul took <em>Hedge Magic</em> (Ch. IX),
@@ -360,6 +390,12 @@ public static class CharGen
         while (s.SignsKnown.Count < Math.Min(signCount, signNames.Count))
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
+        // Miracles (Ch. VI): the five Callings of Faith, from their lists, gated by Rank
+        var miracleNames = MiraclesFor(cal, level).Select(x => x.name).ToList();
+        int miracleCount = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[level.ToString()] : 0;
+        while (s.MiraclesKnown.Count < Math.Min(miracleCount, miracleNames.Count))
+        { var m = Pick(miracleNames); if (!s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m); }
+
         // ---- Step 6: reckon the numbers (Ch. III) ----
         ReckonNumbers(s, cal, org);
 
@@ -442,6 +478,7 @@ public static class CharGen
         public List<string> BonusCombatEdges = new();         // the Gunhand's picks, one per odd level
         public List<string> Boosts = new();                   // ability per boost level reached (5, 10)
         public List<string> Signs = new();
+        public List<string> Miracles = new();
         public string Subpath;                                // at 3rd+, if the Calling has one
         public string CallingChoice;                          // the option only; the label is added
         public double? CoinRolled;                            // null → roll fresh
@@ -552,6 +589,13 @@ public static class CharGen
         while (s.SignsKnown.Count < signCount)
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
+        var miracleNames = MiraclesFor(cal, level).Select(x => x.name).ToList();
+        int miracleCount = Math.Min(cal.miraclesKnownAt != null ? cal.miraclesKnownAt[level.ToString()] : 0, miracleNames.Count);
+        foreach (var m in spec.Miracles.Where(miracleNames.Contains).Distinct())
+            if (s.MiraclesKnown.Count < miracleCount) s.MiraclesKnown.Add(m);
+        while (s.MiraclesKnown.Count < miracleCount)
+        { var m = Pick(miracleNames); if (!s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m); }
+
         ReckonNumbers(s, cal, org);
 
         // outfit: coin as rolled (or roll it here), the kit free, purchases at printed prices
@@ -603,7 +647,8 @@ public static class CharGen
         public string BonusCombatEdge;    // the Gunhand's odd-level Gun Edge; null → draw
         public string SkillIncrease;      // the 3/5/7/9 increase target; null → draw
         public string Subpath;            // chosen when 3rd unlocks it; null → draw
-        public List<string> NewSigns = new();   // signs for any slots the new level opens
+        public List<string> NewSigns = new();      // signs for any slots the new level opens
+        public List<string> NewMiracles = new();   // miracles for any slots the new level opens
     }
 
     // What a soul's next level grants — drives the level-up dialog's controls and their
@@ -613,10 +658,10 @@ public static class CharGen
     {
         public int NewLevel, HitDie, ConModForBlood;
         public bool Boost, Edge, GunEdge, SkillIncrease, Subpath, AtCeiling;
-        public int NewSignSlots;
+        public int NewSignSlots, NewMiracleSlots;
         public string DefaultBoost, DefaultSubpath;
         public List<string> BoostOptions = new(), EdgeOptions = new(), GunEdgeOptions = new(),
-            SkillOptions = new(), SubpathOptions = new(), SignOptions = new();
+            SkillOptions = new(), SubpathOptions = new(), SignOptions = new(), MiracleOptions = new();
     }
 
     static CharacterSheet Clone(CharacterSheet s)
@@ -657,6 +702,13 @@ public static class CharGen
         }
         g.NewSignSlots = Math.Max(0, Signs(N) - Signs(cur.Level));
 
+        int Miracles(int lvl)
+        {
+            int c = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[lvl.ToString()] : 0;
+            return Math.Min(c, MiraclesFor(cal, lvl).Count);
+        }
+        g.NewMiracleSlots = Math.Max(0, Miracles(N) - Miracles(cur.Level));
+
         var clone = Clone(cur); clone.Level = N;
         if (g.Boost) clone.Scores[cal.keyAbilities[0]] += 1;
         foreach (var f in cal.Row(N).features)
@@ -673,6 +725,9 @@ public static class CharGen
         if (g.NewSignSlots > 0)
             g.SignOptions = SignsFor(cal, cur.Level + 1, cur.Edges.Contains("Hedge Magic")).Select(x => x.name)
                                 .Where(n => !cur.SignsKnown.Contains(n)).ToList();
+        if (g.NewMiracleSlots > 0)
+            g.MiracleOptions = MiraclesFor(cal, cur.Level + 1).Select(x => x.name)
+                                .Where(n => !cur.MiraclesKnown.Contains(n)).ToList();
         return g;
     }
 
@@ -740,6 +795,13 @@ public static class CharGen
             if (s.SignsKnown.Count < signCount && !s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg);
         while (s.SignsKnown.Count < signCount)
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
+
+        var miracleNames = MiraclesFor(cal, N).Select(x => x.name).ToList();
+        int miracleCount = Math.Min(cal.miraclesKnownAt != null ? cal.miraclesKnownAt[N.ToString()] : 0, miracleNames.Count);
+        foreach (var m in ch.NewMiracles.Where(miracleNames.Contains).Distinct())
+            if (s.MiraclesKnown.Count < miracleCount && !s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m);
+        while (s.MiraclesKnown.Count < miracleCount)
+        { var m = Pick(miracleNames); if (!s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m); }
 
         ReckonNumbers(s, cal, org);
         return s;                                          // HandTweaked provenance rides through the clone
@@ -1015,6 +1077,23 @@ public static class CharGen
                 $"{cal.name} L{s.Level} may not know {sg} (Rank {sign.rank}, {sign.list} list)");
         }
 
+        // Miracles (Ch. VI): the five Callings of Faith, from their lists, gated by the same Rank.
+        // The Old Dark and the mundane never hold one; a Calling never mixes Signs and Miracles.
+        int expectMiracles = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[s.Level.ToString()] : 0;
+        var legalM = MiraclesFor(cal, s.Level);
+        expectMiracles = Math.Min(expectMiracles, legalM.Count);
+        Check(s.MiraclesKnown.Count == expectMiracles, $"{s.MiraclesKnown.Count} miracles ≠ {expectMiracles} allowed");
+        Check(!(s.SignsKnown.Count > 0 && s.MiraclesKnown.Count > 0), "no soul works both Signs and Miracles");
+        Check(s.MiraclesKnown.Distinct().Count() == s.MiraclesKnown.Count, "duplicate miracle");
+        foreach (var mk in s.MiraclesKnown)
+        {
+            var mir = D.miracles.FirstOrDefault(x => x.name == mk);
+            Check(mir != null, $"unknown miracle {mk}");
+            if (mir == null) continue;
+            Check(legalM.Any(x => x.name == mk),
+                $"{cal.name} L{s.Level} may not know {mk} (Rank {mir.rank}, {mir.list} list)");
+        }
+
         // the Mark: Hexer & Dark Cultist begin at 1; Came Back Wrong adds 1; Touched adds 1; Witch starts clean
         int expectMark = org.startMark + cal.startMark + (owned.Contains("Touched") ? 1 : 0);
         Check(s.Mark == expectMark, $"Mark {s.Mark} ≠ origin {org.startMark} + calling {cal.startMark} + Touched");
@@ -1071,6 +1150,11 @@ public static class CharGen
             sb.AppendLine($"Sign DC {10 + s.Level / 2 + Mod(s.Scores["RES"])} (10 + half level + RES mod)");
         else if (s.SignsKnown.Count > 0)
             sb.AppendLine($"Sign DC {10 + Mod(s.Scores["RES"])} (Hedge Magic — no Signs feature, so no level added)");
+        if (cal.miraclesKnownAt != null)
+        {
+            string fa = cal.pool.formula.Substring(0, 3);
+            sb.AppendLine($"Miracle DC {10 + s.Level / 2 + Mod(s.Scores[fa])} (10 + half level + {fa} mod)");
+        }
         if (s.PoolLine != null) sb.AppendLine(s.PoolLine);
         sb.AppendLine();
 
@@ -1106,6 +1190,14 @@ public static class CharGen
         {
             sb.AppendLine($"SIGNS KNOWN — {string.Join(" + ", cal.signLists ?? new())}, to Rank {SignRankAt(s.Level)}");
             foreach (var d in s.SignsKnown.Select(n => D.signs.First(x => x.name == n)).OrderBy(x => x.rank))
+                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}) — {FirstSentence(d.desc)}");
+            sb.AppendLine();
+        }
+
+        if (s.MiraclesKnown.Count > 0)
+        {
+            sb.AppendLine($"MIRACLES KNOWN — {string.Join(" + ", cal.miracleLists ?? new())}, to Rank {MiracleRankAt(s.Level)}");
+            foreach (var d in s.MiraclesKnown.Select(n => D.miracles.First(x => x.name == n)).OrderBy(x => x.rank))
                 sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}) — {FirstSentence(d.desc)}");
             sb.AppendLine();
         }
