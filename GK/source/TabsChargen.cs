@@ -152,7 +152,8 @@ public partial class MainForm
             Fort = s.Fort, Ref = s.Ref, Will = s.Will,
             RES = s.Scores["RES"],                       // drives the Nerve auto-recalc
             Grit = s.Grit, Mark = s.Mark,
-            Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : ""),
+            Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
+                             + (CharGen.ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
             Sheet = s                                    // the full record rides along
         };
         if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
@@ -535,6 +536,9 @@ public partial class MainForm
         s.Features = Lines(features);
         s.WeaponsCarried = Lines(weapons);
         s.Gear = Lines(gear);
+        // Gear is free text here, so armor can be added or struck out by hand. Re-read what it
+        // says; Defense and Speed are left as typed, since a hand-tweaked sheet is the user's.
+        CharGen.ReadArmor(s);
         s.Lost = lost.Text.Trim(); s.Seen = seen.Text.Trim();
         s.Vice = vice.Text.Trim(); s.Moving = moving.Text.Trim();
         s.Compass = compass.Text.Trim();

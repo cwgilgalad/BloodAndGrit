@@ -8,6 +8,44 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.18 · GritKeeper v1.12.0 — armor becomes a thing you can wear
+  (2026-07-23, user-requested).** Ch. X promised that "worn armor grants Damage Reduction
+  against blades and small shot only" and then printed a table that only ever named the
+  blades half. The three entries now state both, in their own columns, and **small shot**
+  is defined where it is used: birdshot and buckshot, a spent ricochet, a pocket pistol
+  across a room — anything arriving with less than a full charge behind it. Heavy Duster
+  DR 1/1, Boiled Leather DR 2/1 (−1 Defense), Scavenged Iron Plate DR 3/3 (−2 Speed, and
+  alone of the three it stops a pistol ball). **No value changed**, as asked: the blades
+  column, the penalties and the prices are exactly what they were.
+
+  **Generated souls can now buy armor, which they could not before.** The three entries
+  had no `gearPrices` rows, so `buyPlan` was literally unable to purchase them. Leather
+  and plate were added at their printed prices, and each Calling now carries an ordered
+  armor preference bought *last*, out of whatever the coin leaves after the gun, the horse
+  and the rations. Roughly 390 of 400 sampled souls end up dressed — mostly in a duster,
+  a third in leather, and plate stays as rare as $60 ought to make it.
+
+  **Armor is on the sheet, and everywhere the sheet goes.** `ArmorWorn`, `DrBlades` and
+  `DrShot` join `CharacterSheet` (additively — sheets saved before this deserialize as
+  unarmored, so no `session.json` migration). Defense and Speed carry the armor modifier;
+  the Ledger's Arms box, the printed text sheet, the Posse notes column and the in-app
+  Quick Reference all show it, the last rendering the Ch. X table live from the data.
+
+  **One authorship bug found and fixed by the new checks.** Extending `Validate` to
+  re-derive Defense and Speed with the armor term immediately failed 40 level-up cases:
+  `ReckonNumbers` overwrites both, so every caller had to remember to re-apply armor
+  afterward, and the level-up path did not. Rather than add the missing call, the armor
+  term moved *into* `ReckonNumbers` — it holds no randomness and is safe to run repeatedly,
+  so Defense and Speed now have exactly one author. A second bug followed from the first:
+  Callings that already bought a duster among their sundries skipped the armor step
+  entirely, so a Witch Hunter could never reach the plate; the step now upgrades rather
+  than skips. Smoke suite 4651 → 5045 checks, all passing, and prints the armor
+  distribution so whoever next changes a price can see what it did.
+
+  **Appendix D's six souls state what they are wearing**, like any other sheet. Anni
+  Halvorsen gained a buffalo coat: thirty winters in the high country and no coat on her
+  gear line contradicted Ch. X's own first sentence.
+
 - **Player's Book v2.17 — one progression spine under seventeen tables (2026-07-23,
   user-requested).** The seventeen per-Calling tables were written one at a time, in 3.5
   idiom, and their attack columns had drifted into seventeen unrelated curves. Reduced to
