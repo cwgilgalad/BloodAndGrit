@@ -356,6 +356,15 @@ public sealed class LedgerView : Panel
                         lines.Add(("† " + sg + (d != null ? $" — Rank {d.rank}, {d.cost}" : ""), false));
                     }
                 }
+                if (sheet.MiraclesKnown.Count > 0)
+                {
+                    lines.Add((" ", false));
+                    foreach (var mk in sheet.MiraclesKnown)
+                    {
+                        var d = CharGen.D.miracles.FirstOrDefault(x => x.name == mk);
+                        lines.Add(("✝ " + mk + (d != null ? $" — Rank {d.rank}, {d.cost}" : ""), false));
+                    }
+                }
             }
             else lines.Add(("—", false));
             yR += ProseBox(xx, yR, bw, "Edges, Calling Features & Path", lines, minH: 120 * zoom) + gap;

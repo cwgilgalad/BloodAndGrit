@@ -314,6 +314,7 @@ public partial class MainForm
         Log($"{next.Name} rises to {Ordinal(next.Level)} level — +{bloodGain} Blood."
             + (next.Edges.Count > cur.Edges.Count ? $"  New Edge: {next.Edges[^1]}." : "")
             + (next.SignsKnown.Count > cur.SignsKnown.Count ? $"  New Sign: {next.SignsKnown[^1]}." : "")
+            + (next.MiraclesKnown.Count > cur.MiraclesKnown.Count ? $"  New Miracle: {next.MiraclesKnown[^1]}." : "")
             + (next.Subpath != null && cur.Subpath == null ? $"  Path: {next.Subpath}." : ""));
     }
 
@@ -477,6 +478,12 @@ public partial class MainForm
             signs = Multi(s.SignsKnown, 56);
             Wide("Signs known", signs);
         }
+        TextBox miracles = null;
+        if (s.MiraclesKnown.Count > 0 || CharGen.D.callings.FirstOrDefault(c => c.name == s.Calling)?.miraclesKnownAt != null)
+        {
+            miracles = Multi(s.MiraclesKnown, 56);
+            Wide("Miracles known", miracles);
+        }
         var features = Multi(s.Features, 76);
         Wide("Features", features);
         var weapons = Multi(s.WeaponsCarried, 56);
@@ -533,6 +540,7 @@ public partial class MainForm
         s.Edges = Lines(edges);
         if (gunEdges != null) s.BonusCombatEdges = Lines(gunEdges);
         if (signs != null) s.SignsKnown = Lines(signs);
+        if (miracles != null) s.MiraclesKnown = Lines(miracles);
         s.Features = Lines(features);
         s.WeaponsCarried = Lines(weapons);
         s.Gear = Lines(gear);
