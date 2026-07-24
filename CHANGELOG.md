@@ -8,6 +8,36 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.17 — one progression spine under seventeen tables (2026-07-23,
+  user-requested).** The seventeen per-Calling tables were written one at a time, in 3.5
+  idiom, and their attack columns had drifted into seventeen unrelated curves. Reduced to
+  three named **attack ranks**, all of which climb by one per level: **Practiced** = your
+  level (Bounty Hunter, Gunhand, Marshal, Mountain Man, Witch Hunter), **Steady** = level
+  less 1 (the nine mixed Callings), **Slight** = level less 2, never below +0 (Hexer,
+  Witch, Dark Cultist). The rank is now printed on each Calling's statline.
+
+  **This was a real balance bug, not a tidying.** Under the old columns the gap between a
+  gun Calling and a caster widened from 1 at first level to 5 at tenth, while Bestiary
+  Defense climbs 13 → 23 over the same span — so a Hexer's chance to land a blow against a
+  level-appropriate foe *fell* as they advanced. Ranks that all climb +1/level fix the
+  distance in place: a Hexer never outshoots a Gunhand, but never stops being able to hit
+  a barn door either. Martial Callings are unchanged; casters gain +3 by tenth level
+  (75 of 170 table cells changed).
+
+  **Saves needed no balance change at all — only to be stated.** All 510 printed save
+  values already reduced to exactly two formulas: a **strong save is 2 plus half your
+  level**, a **weak save a third of your level**, both rounding down. Ch. III's reckoning
+  rows and a new Ch. XIV section, *Attack Rank and the Saves*, now say so outright, so a
+  player can reckon either figure without the book. Book grew 174 → 175 pages.
+
+  **The app can no longer drift from the book.** `chargen.json` gains an `attackRank` per
+  Calling; `CharGen` gains `AttackFor`/`StrongSave`/`WeakSave`; and `CharGen.Validate`
+  re-derives every row of the transcribed table from those formulas rather than trusting
+  it. A mistyped `atk` value now fails the smoke suite instead of quietly disagreeing with
+  the printed book — the structural fix for having two implementations of one rule. The
+  Quick Reference leaf in-app renders the rank table live from the data. Smoke suite
+  4569 → 4651 checks, all passing.
+
 - **README — a front door instead of a build sheet (2026-07-23, user-requested).** The root
   `README.md` was purely build instructions: how to run the builders, how to verify. Nothing
   said what Blood & Grit *is*, and nothing linked to a single finished thing. Added a pitch

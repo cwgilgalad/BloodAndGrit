@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.16 -->
+<!-- Blood & Grit — The Player's Book · Version 2.17 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.16)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.17)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.16</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.17</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.16 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.17 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -370,7 +370,7 @@ body{ background:#525659; }
     <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">157</span></li>
     <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">162</span></li>
     <li><a href="#ledger">The Ledger</a><span class="pg">164</span></li>
-    <li><a href="#index">Index</a><span class="pg">166</span></li>
+    <li><a href="#index">Index</a><span class="pg">171</span></li>
   </ul>
 </section>
 
@@ -474,7 +474,8 @@ body{ background:#525659; }
   <p>The <strong>ability modifier</strong> comes from whichever of your six attributes best fits the task.
   <strong>Proficiency</strong> is the catch-all term for the training you bring. For a skill, it is your level plus a
   proficiency bonus — +2 if you are <em>trained</em>, +4 <em>expert</em>, +6 <em>master</em> — once you are trained in
-  it. For attacks and saves, your Calling's table in Chapter V gives the number outright. The
+  it. For attacks it is your level, adjusted by your Calling's rank; for saves, your Calling's own
+  progression. Both stand on your Calling's table in Chapter V, and both are reckoned in Chapter XIV. The
   <strong>Difficulty Class</strong> (DC) is the number to beat, set by the Keeper or by the Defense of whatever
   you are trying to harm.</p>
 
@@ -639,8 +640,8 @@ body{ background:#525659; }
     <tbody>
       <tr><td>Blood (Hit Points)</td><td>Your Calling's full Hit Die + CON modifier at 1st level; add a roll (or the average) of the Hit Die + CON each level after.</td></tr>
       <tr><td>Defense (AC)</td><td>10 + DEX modifier + armor worn + any cover. See Conflict for how bullets treat armor.</td></tr>
-      <tr><td>Saves</td><td>Base from your Calling + the keyed ability: Fortitude (CON), Reflex (DEX), Will (RES).</td></tr>
-      <tr><td>Attack Proficiency</td><td>Read straight from your Calling's table, added to every attack roll along with the keyed ability.</td></tr>
+      <tr><td>Saves</td><td>Base from your Calling — a strong save is 2 plus half your level, a weak save a third of it, both rounding down — plus the keyed ability: Fortitude (CON), Reflex (DEX), Will (RES).</td></tr>
+      <tr><td>Attack</td><td>Your Calling's rank — Practiced (your level), Steady (level less 1), or Slight (level less 2, never below +0) — added to every attack roll along with the keyed ability. See Chapter XIV.</td></tr>
       <tr><td>Nerve</td><td>RES score + your character level. The measure of how much horror your mind can bank before it breaks.</td></tr>
       <tr><td>Grit</td><td>3, refreshed each session. Spend to bend fate (Chapter II).</td></tr>
       <tr><td>Speed</td><td>30 feet on foot for most folk; a horse is faster and you will want one.</td></tr>
@@ -963,7 +964,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-bounty">Bounty Hunter</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Practiced</p>
   <p>Some come to the frontier to take what others carried; the Bounty Hunter comes for the men who took it. Manhunter,
   paper-collector, skip-chaser — call it what you like, the trade is the same: find the soul the warrant names, be where he
   does not expect you, and bring him in before his friends or his nerve can turn the odds. Bounty men are not duelists and
@@ -1033,7 +1034,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
   <h2 id="ix-c-drifter">Drifter</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Save Reflex</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Save Reflex · Attack Steady</p>
   <p>The Drifter belongs to no town and answers to no brand. Scout, tracker, horse-thief, bounty-man, or simply a soul
   who cannot stop moving — the Drifter survives by seeing first, striking once, and being elsewhere by dawn. They are the
   party's eyes on the trail and its knife in the dark.</p>
@@ -1044,12 +1045,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+0</td><td>Ghost</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+1</td><td>Edge, Evasion, Trail</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>—</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>Sudden Strike +2d6</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Uncanny Step</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td class="c">+2</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td class="c">+3</td><td>Sudden Strike +3d6</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td class="c">+3</td><td>Edge, Vanish, Trail Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>Sudden Strike +2d6</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Uncanny Step</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+2</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+3</td><td>Sudden Strike +3d6</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+3</td><td>Edge, Vanish, Trail Mastery</td></tr>
     </tbody>
   </table>
   <h4>Sudden Strike</h4>
@@ -1082,7 +1083,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
   <h2 id="ix-c-gambler">Gambler</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Steady</p>
   <p>Every town past the railhead has a green-felt table and a soul who lives by it. The Gambler reads people the way the
   Prospector reads rock — the tell, the bluff, the breaking nerve — and has made a working peace with chance that most folk
   only pray for. They are charming, watchful, and very hard to rattle, for anyone who has seen a year's wages turn on a
@@ -1094,12 +1095,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Hedge Your Bets</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, Game</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Cold Deck</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Ace in the Hole</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Press Your Luck</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stack the Odds</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The House Always Wins, Game Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Ace in the Hole</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Press Your Luck</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stack the Odds</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The House Always Wins, Game Mastery</td></tr>
     </tbody>
   </table>
   <h4>Fortune's Favor</h4>
@@ -1157,7 +1158,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-gunhand">Gunhand</h2>
-  <p class="statline">Hit Die d10 · Trained Skills 2 + WIT · Strong Saves Fortitude, Reflex</p>
+  <p class="statline">Hit Die d10 · Trained Skills 2 + WIT · Strong Saves Fortitude, Reflex · Attack Practiced</p>
   <p>Some folk are simply faster than the rest, and have made their peace with what that means. The Gunhand is the
   gunfighter, the shootist, the hired iron — a person who has reduced the question of survival to who clears leather
   first. They are not brave so much as quick, and they know the difference even if no one else does. The Gunhand is built
@@ -1216,7 +1217,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
   <h2 id="ix-c-marshal">Marshal</h2>
-  <p class="statline">Hit Die d10 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d10 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Practiced</p>
   <p>Lawman, cavalry sergeant, wagon-boss, or self-appointed keeper of a town that never asked — the Marshal leads. Their
   gift is not the fast draw but the steady one, the voice that keeps frightened people pointed the right way when everything
   in them wants to run. A Marshal rarely dies alone.</p>
@@ -1270,7 +1271,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-mountain">Mountain Man</h2>
-  <p class="statline">Hit Die d10 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d10 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Practiced</p>
   <p>Some men went up into the high country to trap beaver and never entirely came back down. The Mountain Man lives where
   the maps give out — the peaks, the deep timber, the snowbound passes — trapping, hunting, and reading a wilderness that
   kills the unready in an afternoon. He is hard as a hickory axe-handle, easy with a long rifle, and short on conversation,
@@ -1347,7 +1348,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
   <h2 id="ix-c-prospector">Prospector</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Reflex</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Reflex · Attack Steady</p>
   <p>The Prospector came west for the one honest promise the country ever made: that what lies in the ground belongs to
   whoever is fool enough to dig it out. Part surveyor, part gambler, part blasting-man, they read rock and water and luck
   the way others read scripture — and they have learned, the hard way, that some seams were sealed for a reason, and that
@@ -1362,12 +1363,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td class="c">+0</td><td>Grubstake</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td>Edge, Claim</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Dowse, Field Inventions</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Assayer's Eye</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Demolitionist</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Sapper</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td>Overcharge</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>The Mother Lode, Claim Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Assayer's Eye</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Demolitionist</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Sapper</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td>Overcharge</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>The Mother Lode, Claim Mastery</td></tr>
     </tbody>
   </table>
   <h4>Pay Dirt</h4>
@@ -1443,7 +1444,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-sawbones">Sawbones</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p>Surgeon, alienist, horse-doctor, or barber with a bone-saw — the Sawbones is the one who digs the bullet out by
   lamplight and decides who is worth the laudanum. They know the body too well to romanticize it, and the mind too well to
   trust it. In a country this lethal, they are worth their weight in silver.</p>
@@ -1454,12 +1455,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Tonics</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Practice</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Precise Strike 1d6</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Alienist</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Precise Strike 2d6</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Precise Strike 3d6, Miracle Worker, Practice Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Alienist</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Precise Strike 2d6</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Precise Strike 3d6, Miracle Worker, Practice Mastery</td></tr>
     </tbody>
   </table>
   <h4>Field Surgery</h4>
@@ -1526,7 +1527,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-medicine">Medicine Man</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p>In a country that deals exclusively in wounds, the rarest soul of all is the one who closes them. The Medicine Man is
   that soul: healer, herb-doctor, prayer-mender, bonesetter — keeper of the only craft the frontier truly cannot do without.
   Where other Callings of Faith answer the dark with fire or rite, this one answers it with the simple, stubborn insistence
@@ -1538,12 +1539,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mend the Body</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Way</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Draw Out the Sickness</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Call Back the Breath</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Soothe the Spirit</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Hands of Life, Way Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Call Back the Breath</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Soothe the Spirit</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Hands of Life, Way Mastery</td></tr>
     </tbody>
   </table>
   <h4>Healing Hands</h4>
@@ -1599,7 +1600,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VI. Callings of Faith</span></div>
   <h2 id="ix-c-padre">Padre</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p>Where the Preacher improvises, the Padre inherits. Behind one tired man at a crumbling mission stands eighteen
   centuries of liturgy, an unbroken chain of ordination, and a Church that has been writing down what it learned about the
   dark since long before the dark followed the settlers west. The Padre's power is the power of the Rite, performed exactly,
@@ -1611,12 +1612,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Holy Water &amp; Relic</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Order</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Sanctuary</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Viaticum</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, The Greater Rite</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Church Militant, Order Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Viaticum</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, The Greater Rite</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Church Militant, Order Mastery</td></tr>
     </tbody>
   </table>
   <h4>Sacraments</h4>
@@ -1671,7 +1672,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-preacher">Preacher</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p>Whether ordained, defrocked, or self-anointed, the Preacher carries the Word into a country that has plainly been
   abandoned by whatever wrote it — and keeps preaching anyway. Their faith is a weapon and a wall. Whether any god hears them
   is a question the Preacher has stopped asking aloud.</p>
@@ -1682,12 +1683,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Ward</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Testament</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Brimstone 1d6</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Lay On Hands</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Brimstone 2d6</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 3d6, Revelation, Testament Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Lay On Hands</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Brimstone 2d6</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 3d6, Revelation, Testament Mastery</td></tr>
     </tbody>
   </table>
   <h4>Conviction</h4>
@@ -1732,7 +1733,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VI. Callings of Faith</span></div>
   <h2 id="ix-c-shaman">Shaman</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p>The Shaman of this book is a spirit-talker: one who has learned that the country is not empty but <em>crowded</em> —
   with the spirits of beasts and weather, river and rock, and the long-departed dead — and who keeps a working peace with
   them through respect, offering, and the long apprenticeship of listening. Theirs is not the borrowed power of the Hexer
@@ -1746,12 +1747,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mending Hands</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Spirit-Pact</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Spirit-Walk</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Don the Aspect</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Commune</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Become the Mask, Spirit-Pact Mastery</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Don the Aspect</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Commune</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Become the Mask, Spirit-Pact Mastery</td></tr>
     </tbody>
   </table>
   <h4>Spirit-Sight</h4>
@@ -1805,7 +1806,7 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-witchhunter">Witch Hunter</h2>
-  <p class="statline">Hit Die d10 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will</p>
+  <p class="statline">Hit Die d10 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Practiced</p>
   <p>Where the Marshal hunts men, the Witch Hunter hunts the things that wear them. Inquisitor, monster-killer, burned-out
   zealot — they are the grim specialists who ride toward the thing the town is fleeing, with silver in the cylinder and a
   litany of weaknesses by heart. In a country where the uncanny is plainly real, they are a mercy. The trouble is that a
@@ -1903,20 +1904,20 @@ body{ background:#525659; }
   They have looked upon one of the old things beneath the country, understood exactly what it is, and chosen it — gladly,
   fully, with both hands. Their power is the gift of a true believer to a patron that answers, and they pay its price not in
   dread but in joy. The Hexer flinches at the Mark. The Dark Cultist counts each step of it as a sacrament, and asks the dark for one more.</p>
-  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Save Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
       <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Devotion, Dark Communion, The Glad Mark</td></tr>
-      <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
+      <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
       <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Sacrifice, <strong>Devotion</strong></td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned</td></tr>
-      <tr><td>5</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Gifts of the Patron</td></tr>
-      <tr><td>6</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
-      <tr><td>7</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Rapture</td></tr>
-      <tr><td>8</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+4</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Devotion (Greater)</strong></td></tr>
-      <tr><td>10</td><td class="c">+5</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Vessel</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Gifts of the Patron</td></tr>
+      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
+      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Rapture</td></tr>
+      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Devotion (Greater)</strong></td></tr>
+      <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Vessel</td></tr>
     </tbody>
   </table>
   <h4>Devotion</h4>
@@ -1983,7 +1984,7 @@ body{ background:#525659; }
   the worship is aimed. So the False Prophet raises a congregation that believes it prays to Heaven, skims the devotion off
   the top, and lets something out past the firelight drink the rest. The miracles are real. The gospel is a lie. And the
   bill, when at last it falls due, is mailed to the flock.</p>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will</p>
+  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Steady</p>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1991,12 +1992,12 @@ body{ background:#525659; }
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Stolen Wonder</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, <strong>Gospel</strong></td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Honeyed Word</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Visit the Cost</td></tr>
-      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Stolen Wonder</td></tr>
-      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Feed the Dark</td></tr>
-      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stolen Wonder</td></tr>
-      <tr><td>9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge, <strong>Gospel (Greater)</strong></td></tr>
-      <tr><td>10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Hollow Crown</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Visit the Cost</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Stolen Wonder</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Feed the Dark</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stolen Wonder</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge, <strong>Gospel (Greater)</strong></td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Hollow Crown</td></tr>
     </tbody>
   </table>
   <h4>The Conduit</h4>
@@ -2062,20 +2063,20 @@ body{ background:#525659; }
   pact-sworn — has reached into the old country beneath the country and pulled something back. Their power is real and it
   is borrowed, and the lender always collects. Every Hexer begins already touched (Mark 1), and every Hexer travels the
   Mark faster than the rest of the living. This is not a Calling for a soul that wishes to stay one.</p>
-  <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will</p>
+  <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
       <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Witch-Sight, Signs, Marked</td></tr>
-      <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
+      <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
       <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, <strong>Bargain</strong></td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned</td></tr>
-      <tr><td>5</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Blood Price</td></tr>
-      <tr><td>6</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
-      <tr><td>7</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
-      <tr><td>8</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+4</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Bargain (Greater)</strong></td></tr>
-      <tr><td>10</td><td class="c">+5</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, Adept</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Blood Price</td></tr>
+      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
+      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
+      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Bargain (Greater)</strong></td></tr>
+      <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, Adept</td></tr>
     </tbody>
   </table>
   <h4>Signs</h4>
@@ -2121,20 +2122,20 @@ body{ background:#525659; }
   bargains with, and steadier; a Witch does not begin Marked, and need not end that way. But the Craft keeps its own
   accounts — in curses that linger, in a familiar's small life bound to hers, and in the quiet certainty that the village
   will turn on her the day a child takes sick.</p>
-  <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will</p>
+  <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
       <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>The Craft, Familiar, The Evil Eye</td></tr>
-      <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
+      <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
       <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, <strong>Craft</strong></td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned, Brew</td></tr>
-      <tr><td>5</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Hex</td></tr>
-      <tr><td>6</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
-      <tr><td>7</td><td class="c">+3</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
-      <tr><td>8</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+4</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Craft (Greater)</strong></td></tr>
-      <tr><td>10</td><td class="c">+5</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Old Witch</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Hex</td></tr>
+      <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
+      <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
+      <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Craft (Greater)</strong></td></tr>
+      <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Old Witch</td></tr>
     </tbody>
   </table>
   <h4>The Craft</h4>
@@ -3021,7 +3022,7 @@ body{ background:#525659; }
   of cover against that one attack, at the cost of being Prone when you rise.</p>
 
   <h2 id="ix-map">The Strike, and the Multiple Attack Penalty</h2>
-  <p>To make a Strike, roll d20 + your attack proficiency (read straight from your Calling's table) + the keyed ability — DEX for guns and thrown, STR for blades and
+  <p>To make a Strike, roll d20 + your attack (your level, adjusted by your Calling's rank — Chapter XIV) + the keyed ability — DEX for guns and thrown, STR for blades and
   fists — against the target's <strong>Defense</strong>. Your first Strike in a turn is clean. Your second takes a
   <strong>Multiple Attack Penalty (MAP)</strong> of –5; your third, –10. An <strong>Agile</strong> weapon (a knife, a
   light blade) softens this to –4 and –8. The penalty resets at the start of each of your turns. The Code rewards the
@@ -3468,12 +3469,33 @@ body{ background:#525659; }
   <h2 id="ix-level-brings">What a Level Brings</h2>
   <ul class="dash">
     <li>One <strong>ability score</strong> raised by a point at 5th and at 10th level.</li>
-    <li>Better <strong>attack and saves</strong> — your proficiencies grow — as your Calling's table shows.</li>
+    <li>Better <strong>attack and saves</strong>, as your Calling's table shows — and as <em>Attack Rank and the Saves</em>, below, lets you reckon without the book.</li>
     <li>More <strong>Blood</strong>: roll your Calling's Hit Die (or take its average) and add your CON modifier.</li>
     <li>New <strong>Calling features</strong>; an Old Dark path (Bargain, Craft, Gospel, or Devotion) deepens at 3rd and 9th; the gifted learn new <strong>Signs</strong> at the listed levels.</li>
     <li>An <strong>Edge</strong> at 1st, 3rd, 5th, 7th, and 9th level.</li>
     <li>A <strong>skill increase</strong> at 3rd, 5th, 7th, and 9th level, raising one skill's proficiency a step (toward Expert, then Master, as your level allows).</li>
   </ul>
+  <h2 id="ix-ranks">Attack Rank and the Saves</h2>
+  <p>Two of the figures on your Calling's table follow a plain rule, so you may reckon either in your
+  head when the book is not to hand.</p>
+  <p><strong>Attack.</strong> Every Calling holds one of three ranks, named on its statline. All three
+  climb by one at every level. What the rank fixes is how far behind the gun Callings you stand — and
+  that distance never grows.</p>
+  <table>
+    <thead><tr><th>Rank</th><th>Your attack</th><th>Callings</th></tr></thead>
+    <tbody>
+      <tr><td>Practiced</td><td>Equal to your level</td><td>Bounty Hunter, Gunhand, Marshal, Mountain Man, Witch Hunter</td></tr>
+      <tr><td>Steady</td><td>Your level, less 1</td><td>Drifter, Gambler, Prospector, Sawbones, Medicine Man, Padre, Preacher, Shaman, False Prophet</td></tr>
+      <tr><td>Slight</td><td>Your level, less 2 (never below +0)</td><td>Hexer, Witch, Dark Cultist</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Saves.</strong> Your statline names which of your three saves are strong. A <strong>strong
+  save is 2 plus half your level</strong>; a <strong>weak save is a third of your level</strong>; both
+  round down. Add the keyed ability on top — Fortitude (CON), Reflex (DEX), Will (RES).</p>
+  <p>A Hexer will never outshoot a Gunhand, and is not meant to. But the country's teeth grow sharper as
+  you climb, and no soul should arrive at a tenth-level reckoning unable to hit a barn door for the sole
+  crime of having learned to read the dark.</p>
+
   <h2 id="ix-milestones">Milestones over Tallies</h2>
   <p>Many Keepers dispense with counting experience and simply raise the whole party a level when the story turns a corner —
   a survived winter, a mystery closed, a town saved or lost. This keeps the table together and the bookkeeping light. Use
@@ -3825,236 +3847,236 @@ body{ background:#525659; }
   <ul class="ix">
     <li class="ix-hd">A</li>
     <li><a href="#ix-abilities">Abilities, the six</a><span class="pg">17</span></li>
-    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">150</span></li>
-    <li><a href="#advancement">Advancement</a><span class="pg">149</span></li>
-    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">139</span></li>
-    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">97</span></li>
-    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">132</span></li>
-    <li><a href="#ix-alienist">Alienist (Sawbones)</a><span class="pg">56</span></li>
-    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">116</span></li>
-    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">113</span></li>
-    <li><a href="#ix-armor">Armor</a><span class="pg">111</span></li>
-    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">125</span></li>
+    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">154</span></li>
+    <li><a href="#advancement">Advancement</a><span class="pg">153</span></li>
+    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">143</span></li>
+    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">101</span></li>
+    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">136</span></li>
+    <li><a href="#ix-alienist">Alienist (Sawbones)</a><span class="pg">60</span></li>
+    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">120</span></li>
+    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">117</span></li>
+    <li><a href="#ix-armor">Armor</a><span class="pg">115</span></li>
+    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">129</span></li>
     <li class="ix-hd">B</li>
-    <li><a href="#signs">Backlash</a><span class="pg">144</span></li>
-    <li><a href="#ix-beats">Beats, the three</a><span class="pg">129</span></li>
-    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">111</span></li>
-    <li><a href="#ix-wounds">Bleeding</a><span class="pg">133</span></li>
-    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">133</span></li>
-    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">127</span></li>
-    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">145</span></li>
-    <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">30</span></li>
-    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">138</span></li>
+    <li><a href="#signs">Backlash</a><span class="pg">148</span></li>
+    <li><a href="#ix-beats">Beats, the three</a><span class="pg">133</span></li>
+    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">115</span></li>
+    <li><a href="#ix-wounds">Bleeding</a><span class="pg">137</span></li>
+    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">137</span></li>
+    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">131</span></li>
+    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">149</span></li>
+    <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">34</span></li>
+    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">142</span></li>
     <li class="ix-hd">C</li>
-    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">146</span></li>
-    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">145</span></li>
-    <li><a href="#faith">Callings of Faith</a><span class="pg">58</span></li>
-    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">76</span></li>
-    <li><a href="#callings">Callings, worldly</a><span class="pg">30</span></li>
-    <li><a href="#ix-o-wrong">Came Back Wrong (Origin)</a><span class="pg">26</span></li>
-    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">118</span></li>
-    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">126</span></li>
+    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">150</span></li>
+    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">149</span></li>
+    <li><a href="#faith">Callings of Faith</a><span class="pg">62</span></li>
+    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">80</span></li>
+    <li><a href="#callings">Callings, worldly</a><span class="pg">34</span></li>
+    <li><a href="#ix-o-wrong">Came Back Wrong (Origin)</a><span class="pg">25</span></li>
+    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">122</span></li>
+    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">130</span></li>
     <li><a href="#character">Character creation</a><span class="pg">16</span></li>
-    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">134</span></li>
-    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">123</span></li>
+    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">138</span></li>
+    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">127</span></li>
     <li><a href="#ix-checks">Checks, saves &amp; opposed rolls</a><span class="pg">12</span></li>
-    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">125</span></li>
-    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">117</span></li>
-    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">103</span></li>
+    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">129</span></li>
+    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">121</span></li>
+    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">107</span></li>
     <li><a href="#ix-compass">Compass, the (alignment)</a><span class="pg">19</span></li>
-    <li><a href="#conditions">Conditions, table of</a><span class="pg">153</span></li>
-    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">126</span></li>
+    <li><a href="#conditions">Conditions, table of</a><span class="pg">158</span></li>
+    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">130</span></li>
     <li><a href="#ix-core-roll">Core roll, the</a><span class="pg">10</span></li>
-    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">131</span></li>
-    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">124</span></li>
-    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">144</span></li>
+    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">135</span></li>
+    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">128</span></li>
+    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">148</span></li>
     <li><a href="#ix-degrees">Critical success &amp; failure</a><span class="pg">11</span></li>
-    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">101</span></li>
+    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">105</span></li>
     <li class="ix-hd">D</li>
-    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">133</span></li>
-    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">77</span></li>
-    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">101</span></li>
-    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">123</span></li>
-    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">133</span></li>
-    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">84</span></li>
+    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">137</span></li>
+    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">81</span></li>
+    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">105</span></li>
+    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">127</span></li>
+    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">137</span></li>
+    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">88</span></li>
     <li><a href="#ix-reckoning">Defense</a><span class="pg">18</span></li>
     <li><a href="#ix-degrees">Degrees of success</a><span class="pg">11</span></li>
-    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">97</span></li>
+    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">101</span></li>
     <li><a href="#ix-difficulty">Difficulty Classes</a><span class="pg">11</span></li>
-    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">130</span></li>
-    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">138</span></li>
-    <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">34</span></li>
+    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">134</span></li>
+    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">142</span></li>
+    <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">38</span></li>
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">22</span></li>
     <li class="ix-hd">E</li>
-    <li><a href="#edges">Edges</a><span class="pg">101</span></li>
-    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">104</span></li>
-    <li><a href="#play">Example of play</a><span class="pg">151</span></li>
-    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">149</span></li>
+    <li><a href="#edges">Edges</a><span class="pg">105</span></li>
+    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">108</span></li>
+    <li><a href="#play">Example of play</a><span class="pg">156</span></li>
+    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">153</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">22</span></li>
-    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">82</span></li>
-    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">90</span></li>
-    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">110</span></li>
-    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">128</span></li>
-    <li><a href="#ix-firearms">Firearms</a><span class="pg">109</span></li>
+    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">86</span></li>
+    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">94</span></li>
+    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">114</span></li>
+    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">132</span></li>
+    <li><a href="#ix-firearms">Firearms</a><span class="pg">113</span></li>
     <li><a href="#firstpeoples">First Peoples, the</a><span class="pg">26</span></li>
-    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">130</span></li>
+    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">134</span></li>
     <li><a href="#ix-questions">Four Questions, the</a><span class="pg">19</span></li>
     <li><a href="#ix-o-freed">Freed, the (Origin)</a><span class="pg">23</span></li>
-    <li><a href="#ix-frightened">Frightened</a><span class="pg">153</span></li>
-    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">103</span></li>
+    <li><a href="#ix-frightened">Frightened</a><span class="pg">158</span></li>
+    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">107</span></li>
     <li class="ix-hd">G</li>
-    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-c-gambler">Gambler (Calling)</a><span class="pg">36</span></li>
-    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">124</span></li>
+    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-c-gambler">Gambler (Calling)</a><span class="pg">40</span></li>
+    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">128</span></li>
     <li><a href="#ix-o-gambler">Gambler, the (Origin)</a><span class="pg">23</span></li>
-    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">98</span></li>
-    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">124</span></li>
-    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">107</span></li>
-    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">135</span></li>
+    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">102</span></li>
+    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">128</span></li>
+    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">111</span></li>
+    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">139</span></li>
     <li><a href="#ix-grit">Grit</a><span class="pg">13</span></li>
-    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-c-gunhand">Gunhand (Calling)</a><span class="pg">40</span></li>
+    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-c-gunhand">Gunhand (Calling)</a><span class="pg">44</span></li>
     <li class="ix-hd">H</li>
-    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">126</span></li>
-    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">123</span></li>
-    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">112</span></li>
-    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">104</span></li>
-    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">86</span></li>
-    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">145</span></li>
+    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">130</span></li>
+    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">127</span></li>
+    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">116</span></li>
+    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">108</span></li>
+    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">90</span></li>
+    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">149</span></li>
     <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">21</span></li>
     <li><a href="#ix-o-homesteader">Homesteader, the (Origin)</a><span class="pg">24</span></li>
-    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">115</span></li>
+    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">119</span></li>
     <li class="ix-hd">I</li>
-    <li><a href="#ix-beats">Initiative</a><span class="pg">129</span></li>
-    <li><a href="#conflict">Iron Code, the</a><span class="pg">129</span></li>
-    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">126</span></li>
-    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">103</span></li>
+    <li><a href="#ix-beats">Initiative</a><span class="pg">133</span></li>
+    <li><a href="#conflict">Iron Code, the</a><span class="pg">133</span></li>
+    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">130</span></li>
+    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">107</span></li>
     <li class="ix-hd">K</li>
-    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">132</span></li>
+    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">136</span></li>
     <li class="ix-hd">L</li>
     <li><a href="#ix-o-laborer">Laborer, the (Origin)</a><span class="pg">24</span></li>
-    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">135</span></li>
-    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">146</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">164</span></li>
-    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">150</span></li>
-    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">120</span></li>
-    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">139</span></li>
+    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">139</span></li>
+    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">150</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">169</span></li>
+    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">154</span></li>
+    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">124</span></li>
+    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">143</span></li>
     <li class="ix-hd">M</li>
-    <li><a href="#ix-mark">Mark, the</a><span class="pg">139</span></li>
-    <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">43</span></li>
+    <li><a href="#ix-mark">Mark, the</a><span class="pg">143</span></li>
+    <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">47</span></li>
     <li><a href="#ix-time">Measures of time, the</a><span class="pg">14</span></li>
-    <li><a href="#ix-c-medicine">Medicine Man (Calling)</a><span class="pg">59</span></li>
-    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">127</span></li>
+    <li><a href="#ix-c-medicine">Medicine Man (Calling)</a><span class="pg">63</span></li>
+    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">131</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">28</span></li>
-    <li><a href="#ix-milestones">Milestones</a><span class="pg">150</span></li>
-    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">110</span></li>
+    <li><a href="#ix-milestones">Milestones</a><span class="pg">155</span></li>
+    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">114</span></li>
     <li><a href="#ix-modifiers">Modifiers</a><span class="pg">18</span></li>
-    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">115</span></li>
-    <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">45</span></li>
-    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">133</span></li>
-    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">113</span></li>
-    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">130</span></li>
+    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">119</span></li>
+    <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">49</span></li>
+    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">137</span></li>
+    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">117</span></li>
+    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">134</span></li>
     <li class="ix-hd">N</li>
-    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">138</span></li>
-    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">140</span></li>
-    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">136</span></li>
+    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">142</span></li>
+    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">144</span></li>
+    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">140</span></li>
     <li class="ix-hd">O</li>
-    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">132</span></li>
-    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">145</span></li>
+    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">136</span></li>
+    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">149</span></li>
     <li><a href="#ix-checks">Opposed rolls</a><span class="pg">12</span></li>
     <li><a href="#origins">Origins</a><span class="pg">22</span></li>
     <li><a href="#ix-o-outlaw">Outlaw, the (Origin)</a><span class="pg">24</span></li>
     <li class="ix-hd">P</li>
-    <li><a href="#ix-c-padre">Padre (Calling)</a><span class="pg">62</span></li>
-    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">127</span></li>
-    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">103</span></li>
+    <li><a href="#ix-c-padre">Padre (Calling)</a><span class="pg">66</span></li>
+    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">131</span></li>
+    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">107</span></li>
     <li><a href="#ix-pf2e">Pathfinder Second Edition</a><span class="pg">10</span></li>
-    <li><a href="#ix-patrons">Patrons of the Old Dark, the</a><span class="pg">92</span></li>
-    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">125</span></li>
-    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">157</span></li>
-    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">65</span></li>
+    <li><a href="#ix-patrons">Patrons of the Old Dark, the</a><span class="pg">96</span></li>
+    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">129</span></li>
+    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">162</span></li>
+    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">69</span></li>
     <li><a href="#ix-core-roll">Proficiency</a><span class="pg">10</span></li>
-    <li><a href="#ix-c-prospector">Prospector (Calling)</a><span class="pg">49</span></li>
-    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">119</span></li>
-    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">112</span></li>
+    <li><a href="#ix-c-prospector">Prospector (Calling)</a><span class="pg">53</span></li>
+    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">123</span></li>
+    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">116</span></li>
     <li class="ix-hd">Q</li>
-    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#quickref">Quick Reference</a><span class="pg">155</span></li>
+    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#quickref">Quick Reference</a><span class="pg">160</span></li>
     <li class="ix-hd">R</li>
-    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">108</span></li>
-    <li><a href="#ix-reactions">Reactions</a><span class="pg">130</span></li>
-    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">146</span></li>
-    <li><a href="#ix-reloading">Reloading</a><span class="pg">132</span></li>
-    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">129</span></li>
+    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">112</span></li>
+    <li><a href="#ix-reactions">Reactions</a><span class="pg">134</span></li>
+    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">150</span></li>
+    <li><a href="#ix-reloading">Reloading</a><span class="pg">136</span></li>
+    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">133</span></li>
     <li class="ix-hd">S</li>
-    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">133</span></li>
-    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-safety">Safety at the table</a><span class="pg">140</span></li>
-    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">146</span></li>
-    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">126</span></li>
-    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">123</span></li>
-    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">145</span></li>
-    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">124</span></li>
-    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">104</span></li>
+    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">137</span></li>
+    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-safety">Safety at the table</a><span class="pg">144</span></li>
+    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">150</span></li>
+    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">130</span></li>
+    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">127</span></li>
+    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">149</span></li>
+    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">128</span></li>
+    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">108</span></li>
     <li><a href="#ix-holy">Sanctification</a><span class="pg">21</span></li>
     <li><a href="#ix-checks">Saves</a><span class="pg">12</span></li>
-    <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">54</span></li>
+    <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">58</span></li>
     <li><a href="#ix-scores">Scores, generating the</a><span class="pg">17</span></li>
     <li><a href="#ix-o-scout">Scout, the (Origin)</a><span class="pg">25</span></li>
-    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">120</span></li>
-    <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">68</span></li>
-    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">144</span></li>
-    <li><a href="#signs">Signs</a><span class="pg">144</span></li>
-    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">146</span></li>
-    <li><a href="#skills">Skills</a><span class="pg">96</span></li>
-    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">97</span></li>
+    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">124</span></li>
+    <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">72</span></li>
+    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">148</span></li>
+    <li><a href="#signs">Signs</a><span class="pg">148</span></li>
+    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">150</span></li>
+    <li><a href="#skills">Skills</a><span class="pg">100</span></li>
+    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">101</span></li>
     <li><a href="#ix-reckoning">Speed</a><span class="pg">18</span></li>
-    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">144</span></li>
-    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">103</span></li>
+    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">148</span></li>
+    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">107</span></li>
     <li class="ix-hd">T</li>
-    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">141</span></li>
-    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">143</span></li>
+    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">145</span></li>
+    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">147</span></li>
     <li><a href="#ix-take-time">Take 10 / Take 20</a><span class="pg">12</span></li>
-    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">145</span></li>
+    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">149</span></li>
     <li><a href="#ix-truths">Three Truths, the</a><span class="pg">8</span></li>
-    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">102</span></li>
+    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">106</span></li>
     <li><a href="#ix-tone">Tone, on</a><span class="pg">9</span></li>
-    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">112</span></li>
-    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">118</span></li>
-    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">104</span></li>
-    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">102</span></li>
-    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">102</span></li>
+    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">116</span></li>
+    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">122</span></li>
+    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">108</span></li>
+    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">106</span></li>
+    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">106</span></li>
     <li class="ix-hd">U</li>
-    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">121</span></li>
-    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">147</span></li>
-    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">103</span></li>
-    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">98</span></li>
+    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">125</span></li>
+    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">151</span></li>
+    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">107</span></li>
+    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">102</span></li>
     <li class="ix-hd">V</li>
     <li><a href="#ix-o-veteran">Veteran, the (Origin)</a><span class="pg">25</span></li>
-    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">125</span></li>
-    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">119</span></li>
+    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">129</span></li>
+    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">123</span></li>
     <li class="ix-hd">W</li>
-    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">104</span></li>
-    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">146</span></li>
-    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">117</span></li>
-    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">110</span></li>
-    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">124</span></li>
-    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">88</span></li>
-    <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">72</span></li>
-    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">123</span></li>
-    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">144</span></li>
-    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">133</span></li>
+    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">108</span></li>
+    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">150</span></li>
+    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">121</span></li>
+    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">114</span></li>
+    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">128</span></li>
+    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">92</span></li>
+    <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">76</span></li>
+    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">127</span></li>
+    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">148</span></li>
+    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">137</span></li>
     <li class="ix-hd">Y</li>
     <li><a href="#ix-1885">Year of 1885, the</a><span class="pg">8</span></li>
   </ul>
