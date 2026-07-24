@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.21 -->
+<!-- Blood & Grit — The Player's Book · Version 2.22 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.21)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.22)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.21</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.22</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.21 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.22 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -1833,7 +1833,7 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>The Hunt, Sanctified Iron</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>The Hunt, Sanctified Iron, Zeal</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Steeled Nerve</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Creed</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Recognize the Unclean</td></tr>
@@ -3215,8 +3215,9 @@ body{ background:#525659; }
     </tbody>
   </table>
   <p>This is the spine of the Iron Code: the same roll that decides whether you hit also decides whether you hit
-  <em>well</em>, and whether your own iron betrays you. A natural 20 always at least hits; a natural 1 always at least
-  misses. The country humbles the sure.</p>
+  <em>well</em>, and whether your own iron betrays you. A natural 20 shifts the result one step better as it does on any
+  roll (Chapter II), and in a Strike it always <em>at least</em> hits; a natural 1 shifts one step worse, and always at
+  least misses. The country humbles the sure.</p>
   <div class="pageno">42</div>
 </section>
 
@@ -3924,7 +3925,7 @@ body{ background:#525659; }
     <p><strong>STR</strong> 10 (+0) &middot; <strong>DEX</strong> 8 (&minus;1) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 12 (+1) &middot; <strong>RES</strong> 15 (+2) &middot; <strong>PRE</strong> 16 (+3)</p>
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 9 &middot; <strong>Saves</strong> Fort +3, Ref &minus;1, Will +4 &middot; <strong>Nerve</strong> 16 &middot; <strong>Grit</strong> 3</p>
     <p><strong>Attack</strong> +0 &middot; walking staff 1d4, double-barrel shotgun 2d8 (Scatter, kept wrapped in oilcloth and prayer) &middot; <strong>Armor</strong> none</p>
-    <p><strong>Trained:</strong> Persuade, Intimidate, Lore (Occult), Notice, Insight. <strong>Features:</strong> Conviction, Sermon. <strong>Edge:</strong> Iron Will.</p>
+    <p><strong>Trained:</strong> Persuade, Intimidate, Lore (Occult), Notice, Insight. <strong>Features:</strong> Conviction (pool 3), Sermon. <strong>Miracles known:</strong> The Steadying Word, Call to the Mourner's Bench (both Rank 1). <strong>Miracle DC</strong> 13. <strong>Edge:</strong> Iron Will.</p>
     <p><strong>Gear:</strong> Bible, salt, camp kit, the shotgun, $11 and a congregation's last collection.</p>
     <p class="note"><strong>Lost:</strong> his congregation, to a fire that did not behave like fire. <strong>Seen:</strong> what set it &mdash; and it saw him. <strong>Vice:</strong> pride in the Word. <strong>Moving:</strong> the thing that burned his church went west, and so, therefore, did he.</p>
   </div>
