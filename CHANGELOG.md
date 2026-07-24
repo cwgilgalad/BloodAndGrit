@@ -8,6 +8,26 @@ Desktop\Git repos.)
 
 ---
 
+- **README — a front door instead of a build sheet (2026-07-23, user-requested).** The root
+  `README.md` was purely build instructions: how to run the builders, how to verify. Nothing
+  said what Blood & Grit *is*, and nothing linked to a single finished thing. Added a pitch
+  above the technical content — the game in a paragraph (western horror on a PF2E-derived d20
+  hybrid; Nerve and the Mark as the two tracks that are ours), a one-line-each table of the
+  three books, and what GritKeeper actually does at the table.
+
+  **Four links to the current release of each deliverable.** The three book PDFs go to their
+  `blob/main` URLs, which GitHub renders inline in its own viewer — click and read, no
+  download. They're unversioned filenames living on `main`, so they stay current by
+  themselves. GritKeeper goes to `/releases/latest`, which never needs touching on a version
+  bump. The self-contained HTML books get a note rather than a link: GitHub serves raw `.html`
+  as plain text for security reasons, so a link would show source instead of the book — no
+  third-party viewer dependency was added for it.
+
+  **Deliberately version-agnostic prose** ("the current edition," "the latest release," "a
+  whole mundane half" rather than a creature count) so a version bump never leaves the README
+  lying. The build/verify instructions are unchanged below the fold, plus a `GK/` entry in
+  "What's what" and the app's name corrected to GritKeeper. No version bumps.
+
 - **Repo cleanup — the onboarding artifacts that drifted (2026-07-23, user-requested).**
   Housekeeping only: **no version bumps**, no content or behavior change to any book or to
   the app. Worked from a written assessment of the repo; the project itself was in good
