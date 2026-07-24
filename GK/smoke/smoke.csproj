@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="..\source\Core.cs" />
     <Compile Include="..\source\CharGen.cs" />
+    <Compile Include="..\source\IronCode.cs" />
     <Compile Include="..\source\MapGen.cs" />
     <Compile Include="..\source\Pdf.cs" />
     <None Include="..\source\Data\*.json" Link="Data\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
