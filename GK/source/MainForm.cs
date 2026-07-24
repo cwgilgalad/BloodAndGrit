@@ -1256,7 +1256,8 @@ public partial class MainForm : Form
                 BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
                 Fort = s.Fort, Ref = s.Ref, Will = s.Will,
                 RES = s.Scores["RES"], Grit = s.Grit, Mark = s.Mark,
-                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : ""),
+                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
+                                 + (CharGen.ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
                 Sheet = s
             };
             if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve

@@ -1,5 +1,5 @@
 {
- "_source": "Transcribed from Blood & Grit Player's Book v2.17, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
+ "_source": "Transcribed from Blood & Grit Player's Book v2.18, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
  "honestArray": [
   15,
   14,
@@ -601,6 +601,38 @@
    "kind": "melee"
   }
  ],
+ "armor": [
+  {
+   "name": "Heavy Duster / Coat",
+   "gear": "Heavy duster ($6)",
+   "drBlades": 1,
+   "drShot": 1,
+   "defense": 0,
+   "speed": 0,
+   "cost": 6.0,
+   "note": "Nothing, and it keeps the cold out"
+  },
+  {
+   "name": "Boiled Leather",
+   "gear": "Boiled leather ($15)",
+   "drBlades": 2,
+   "drShot": 1,
+   "defense": -1,
+   "speed": 0,
+   "cost": 15.0,
+   "note": "–1 Defense; stiff in the heat"
+  },
+  {
+   "name": "Scavenged Iron Plate",
+   "gear": "Scavenged iron plate ($60)",
+   "drBlades": 3,
+   "drShot": 3,
+   "defense": 0,
+   "speed": -2,
+   "cost": 60.0,
+   "note": "–2 Speed, and loud with it; alone of the three it stops a pistol ball"
+  }
+ ],
  "gearPrices": {
   "Heavy duster ($6)": 6.0,
   "Box of cartridges (50) ($1)": 1.0,
@@ -621,7 +653,9 @@
   "Cow pony ($25)": 25.0,
   "Saddle, bridle & blanket ($15)": 15.0,
   "Saddlebags ($3)": 3.0,
-  "Saddle scabbard ($4)": 4.0
+  "Saddle scabbard ($4)": 4.0,
+  "Boiled leather ($15)": 15.0,
+  "Scavenged iron plate ($60)": 60.0
  },
  "callings": [
   {
@@ -801,6 +835,10 @@
      "Spyglass ($8)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -985,6 +1023,10 @@
      "Heavy duster ($6)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -1173,6 +1215,9 @@
      "Week's rations ($3)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -1355,6 +1400,10 @@
      "Week's rations ($3)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -1536,6 +1585,10 @@
      "Double-Barrel Shotgun ($25)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -1734,6 +1787,10 @@
      "Week's rations ($3)",
      "Lantern & oil ($1)",
      "Heavy duster ($6)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -1931,6 +1988,10 @@
      "Box of cartridges (50) ($1)",
      "Week's rations ($3)",
      "Bedroll & tarp ($2)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -2123,6 +2184,9 @@
      "Week's rations ($3)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -2305,6 +2369,9 @@
      "Week's rations ($3)",
      "Bedroll & tarp ($2)",
      "Lantern & oil ($1)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -2490,6 +2557,9 @@
      "Lantern & oil ($1)",
      "Week's rations ($3)",
      "Bedroll & tarp ($2)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -2676,6 +2746,9 @@
      "Box of cartridges (50) ($1)",
      "Week's rations ($3)",
      "Bedroll & tarp ($2)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -2860,6 +2933,9 @@
      "Graveyard salt, lb. ($1)",
      "Week's rations ($3)",
      "Bedroll & tarp ($2)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -3063,6 +3139,11 @@
      "Heavy duster ($6)",
      "Cow pony ($25)",
      "Saddle, bridle & blanket ($15)"
+    ],
+    "armor": [
+     "Scavenged Iron Plate",
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -3274,6 +3355,10 @@
      "Graveyard salt, lb. ($1)",
      "Lantern & oil ($1)",
      "Box of cartridges (50) ($1)"
+    ],
+    "armor": [
+     "Boiled Leather",
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -3474,6 +3559,9 @@
      "Bottle of whiskey (50¢)",
      "Box of cartridges (50) ($1)",
      "Week's rations ($3)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -3678,6 +3766,9 @@
      "Talisman ($2)",
      "Lantern & oil ($1)",
      "Box of cartridges (50) ($1)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [
@@ -3879,6 +3970,9 @@
      "Talisman ($2)",
      "Graveyard salt, lb. ($1)",
      "Week's rations ($3)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
     ]
    },
    "keyAbilities": [

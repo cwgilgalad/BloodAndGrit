@@ -1013,6 +1013,14 @@ public partial class MainForm
                         string.Join(", ", CharGen.D.callings
                             .Where(c => c.attackRank == x.Item1).Select(c => c.name)) }));
         RI(r, "Every rank climbs by one each level, so the distance between a Gunhand and a Hexer never widens.");
+
+        RH(r, "Armor");
+        if (CharGen.D?.armor?.Count > 0)
+            RTbl(r, new[] { 22, 9, 12, 8 }, new[] { "Protection", "Blades", "Small shot", "Price" },
+                CharGen.D.armor.Select(a => new[] {
+                    a.name, "DR " + a.drBlades, "DR " + a.drShot, "$" + a.cost.ToString("0.##") }));
+        RI(r, "Most firearms ignore most armor. DR applies to blades and small shot only — birdshot, "
+             + "buckshot, a ricochet, a pocket pistol across a room. Armor does not stack: count the better of two.");
         RH(r, "Skills");
         if (CharGen.D?.skills?.Count > 0)
             RTbl(r, new[] { 17, 10 }, new[] { "Skill", "Ability" },
