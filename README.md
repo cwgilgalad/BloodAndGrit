@@ -1,9 +1,63 @@
-# Blood & Grit — book sources
+# Blood & Grit
 
-Three companion books share one HTML engine (cover + client-side paginator + print CSS).
-**Each book is one builder script that carries its own content** — edit the builder, run it.
-See `CLAUDE.md` for the full handoff doc (version table, structure, verification standards,
-changelog).
+**A roleplaying game of the haunted frontier.**
+
+The West as it actually was — bad water, worse men, a long ride to anywhere — with something
+underneath it that the country has agreed not to name. Blood & Grit is a western-horror
+tabletop RPG built on a d20 hybrid derived from Pathfinder 2E: four degrees of success, saves
+you recognize, and two tracks that belong to this game alone. **Nerve** is what a soul has
+left after seeing something it can't file. **The Mark** is a six-step record of what looking
+back has cost. Spend Grit to survive the gunfight; the Mark keeps its own ledger, and it does
+not clear.
+
+The whole thing runs at the table off three books and one app.
+
+## The books
+
+Three companion volumes, one HTML engine — cover, client-side paginator, print CSS. They
+paginate and number themselves at render time, so the Contents and the back-of-book Index
+always point at the right page no matter what your browser does to the type.
+
+| Book | What's in it | |
+|---|---|---|
+| **The Player's Book** | Character creation through advancement — seventeen Callings, ten Origins, the Iron Code, Signs and old rites, a worked sample county, and six pregenerated souls ready to ride. | **[Read ↗](https://github.com/cwgilgalad/BloodAndGrit/blob/main/Blood-and-Grit-Players-Book.pdf)** |
+| **The Keeper's Book** | Running the game: fear and the Mark, building a fight that's a fair hard one, cursed ground, two starter reckonings, a fully-keyed county, the campaign year, and the game in a lamplit city. | **[Read ↗](https://github.com/cwgilgalad/BloodAndGrit/blob/main/Blood-and-Grit-Keepers-Book.pdf)** |
+| **The Bestiary** | The dead, the cursed, the old dark — and, deliberately, a whole mundane half of ordinary animal and ordinary man, so a Keeper can run a slow burn before the first genuinely wrong thing walks in. | **[Read ↗](https://github.com/cwgilgalad/BloodAndGrit/blob/main/Blood-and-Grit-Bestiary.pdf)** |
+
+Those links are the PDFs, which render inline in GitHub's own viewer — click and read. Each is
+rebuilt from source on every change, so the link always points at the current edition.
+
+*(The self-contained HTML books — `blood-and-grit.html`, `keeper-handbook.html`,
+`bestiary.html` — are the primary deliverable and carry the live paginator, TOC, and Index
+that the PDFs freeze. GitHub serves raw `.html` as plain text, so there's no click-to-read
+link for them; download the file and open it locally, or build your own per the instructions
+below.)*
+
+## GritKeeper — the app
+
+**[Download the latest release ↗](https://github.com/cwgilgalad/BloodAndGrit/releases/latest)**
+— `GritKeeper.zip`, carrying a self-contained, Authenticode-signed Windows exe and the full
+source tree. No .NET install, no folder of loose data files beside it, nothing to configure:
+unzip, run the exe.
+
+GritKeeper is the Keeper's side of the table in one window: the full posse sheet with Blood,
+Nerve, Grit, Mark and Taint tracked live; every creature in the Bestiary, searchable and one
+click from the initiative tracker; the encounter budget costed against your party as you build
+the fight; a by-the-book character generator that walks all eight steps at any level and seats
+the result in the posse; seeded procedural trail maps that export to SVG and PDF; every
+rollable table in the books; and an eleven-leaf Keeper's screen. It autosaves the session
+beside itself and reloads it on launch.
+
+The app's creature and table data is machine-extracted from the rendered Bestiary, so what it
+tells you is word-for-word what the book says.
+
+---
+
+# Building the books from source
+
+Each book is one builder script that carries its own content — edit the builder, run it.
+See `CLAUDE.md` for the full handoff doc (version table, structure, verification standards);
+`CHANGELOG.md` is the version record.
 
 ## Build (Windows: real Python 3.12 + `pip install playwright` + Edge)
 
@@ -27,7 +81,7 @@ python measure_book.py bestiary.html
 python audit_whitespace.py <book.html>  # optional: list pages with large bottom gaps
 ```
 
-**Keeper's Table app sync:** whenever Bestiary creature content changes, re-extract the
+**GritKeeper app sync:** whenever Bestiary creature content changes, re-extract the
 app's data with `python extract_creatures.py bestiary.html GK/source/Data/creatures.json`
 (diff against the previous JSON first), and keep the app's status-bar/README version
 strings current with the books. See `CLAUDE.md` for the full standing rule.
@@ -37,14 +91,18 @@ strings current with the books. See `CLAUDE.md` for the full standing rule.
 - `build_player.py` — Player's Book: the full book HTML lives in its `SRC` string (edit there),
   plus the asset-inlining build. `measure_index.py` patches index statics into `SRC` directly.
 - `build_keeper.py` — Keeper's Book content + builder.
-- `build_bestiary.py` — Bestiary content + builder, including the 25 ordinary beasts, the
+- `build_bestiary.py` — Bestiary content + builder, including the ordinary beasts, the
   tier/name sorter, and the generated Roll-by-Tier appendix (formerly `bestiary_extra.py`).
   To add a creature, edit this one file.
 - `nav_tools.py` — generates the detailed two-level Contents and the indexes for all three books.
 - `perdition_map.py` — draws the Perdition Basin map (player + Keeper layers) as inline SVG;
   `python perdition_map.py both` writes `_map_preview.html`.
 - `pag_patch.py` — shared paginator patch (splittable blocks).
+- `make_pdf.py` — prints all three books to true 8.5×11 US-Letter PDFs.
 - `assets/` — images (only the cover emblem `img20.png` is currently referenced).
+- `GK/` — the GritKeeper app: `GK/source` (the master C# tree — edit here) and `GK/smoke`
+  (the headless logic-test rig). `GritKeeper/` is the packaged deliverable, generated from
+  `GK/` at release time.
 
 **Version cascade:** bumping the Player's Book version means updating the hard-coded match
 strings in `build_keeper.py` and `build_bestiary.py` too (do the Keeper/Bestiary own-version
