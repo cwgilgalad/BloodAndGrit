@@ -8,6 +8,21 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Book v2.10 · Bestiary v2.9 — the magic systems reach the Keeper's side
+  (2026-07-25, user-requested).** The Signs (Ch. XIII) and Miracles (Ch. VI) are full systems
+  now, but the two Keeper-facing books hadn't caught up — a Keeper running an NPC cultist or
+  adjudicating the party's Padre had no quick number. Fixed in both, using one benchmark:
+  **Sign/Miracle DC = 10 + half the worker's level + its keyed ability** (RES for Signs; PRE,
+  RES, or WIT for Miracles), Rank opening at 1st/3rd/5th/7th/9th, and for a foe you read its
+  level as twice its Tier — so a Tier III worker forces about DC 16.
+
+  - The **Keeper's Screen** appendix gains a *Signs & Miracles* block beside Grit and Threat
+    by Tier: the two DCs, the Rank ladder, and the costs (Signs in Nerve/Blood/Mark, Miracles
+    from the pool).
+  - The **Bestiary's** *House Rules of the Dead* gains *When the dead work the uncanny* — the
+    same DC benchmark, with the standing advice to give a foe two or three workings, not a
+    spellbook. A foe is its Special, not a caster's whole list.
+
 - **Player's Book v2.23 — AI-detection pass on the session's new prose (2026-07-24,
   user-requested).** A read of everything written this session — the Signs and Miracles
   chapters, the armor rewrite, the new sections — for the tells that mark machine prose,
