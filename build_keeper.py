@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.9 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.9)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.10 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.10)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.9</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.10</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.9 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.10 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -1290,6 +1290,12 @@ APX = f"""<!-- APPENDIX -->
     <h3>Grit</h3>
     <p>3 per character per session; award more for courage, character, or a line that stops the table. Spent to
     add 1d6, reroll, steady a fright, stay on your feet at 0 Blood, or soften a critical failure.</p>
+
+    <h3>Signs &amp; Miracles</h3>
+    <p><strong>Sign DC</strong> (the Old Dark) and <strong>Miracle DC</strong> (the Faithful) = 10 + half the worker's
+    level + the keyed ability &mdash; RES for Signs; PRE, RES, or WIT for Miracles. Rank opens at 1st / 3rd / 5th /
+    7th / 9th. Signs are paid in Nerve, Blood, and the Mark; Miracles from the Calling's pool. For an uncanny foe, read
+    its level as twice its Tier: a Tier III worker forces about DC 16.</p>
   </div>
 
   <div class="twocol">
