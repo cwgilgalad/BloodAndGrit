@@ -1001,6 +1001,18 @@ public partial class MainForm
             new[] { "Fortitude", "CON" },
             new[] { "Reflex",    "DEX" },
             new[] { "Will",      "RES" });
+        RT(r, "Strong save = 2 + half your level.  Weak save = a third of your level.  Both round down.");
+
+        RH(r, "Attack Rank");
+        if (CharGen.D?.callings?.Count > 0)
+            RTbl(r, new[] { 11, 26, 34 }, new[] { "Rank", "Your attack", "Callings" },
+                new[] { ("Practiced", "your level"),
+                        ("Steady",    "your level, less 1"),
+                        ("Slight",    "your level, less 2 (min +0)") }
+                    .Select(x => new[] { x.Item1, x.Item2,
+                        string.Join(", ", CharGen.D.callings
+                            .Where(c => c.attackRank == x.Item1).Select(c => c.name)) }));
+        RI(r, "Every rank climbs by one each level, so the distance between a Gunhand and a Hexer never widens.");
         RH(r, "Skills");
         if (CharGen.D?.skills?.Count > 0)
             RTbl(r, new[] { 17, 10 }, new[] { "Skill", "Ability" },
