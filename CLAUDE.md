@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.20 · Keeper's Book v2.8 · Bestiary v2.8 ·
+**Current versions: Player's Book v2.21 · Keeper's Book v2.9 · Bestiary v2.8 ·
 GritKeeper app v1.14.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -95,8 +95,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.20 | 199 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.8 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.21 | 200 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.9 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.8 | 164 | none (150 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
@@ -240,7 +240,7 @@ Regenerating overwrites the three PDFs in place.)*
 
 ---
 
-## The Player's Book (v2.20) — structure
+## The Player's Book (v2.21) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -289,7 +289,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.8) — structure
+## The Keeper's Book (v2.9) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
