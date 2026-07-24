@@ -364,6 +364,8 @@ public sealed class LedgerView : Panel
             if (sheet != null)
             {
                 foreach (var wpn in sheet.WeaponsCarried) gear.Add(("• " + wpn, true));
+                gear.Add(("• " + (string.IsNullOrEmpty(sheet.ArmorWorn)
+                    ? "Armor: none" : CharGen.ArmorLine(sheet)), true));
                 foreach (var it in sheet.Gear) gear.Add(("• " + it, false));
                 gear.Add((" ", false));
                 gear.Add(($"Coin — rolled ${sheet.CoinRolled:0}, ${sheet.CoinLeft:0.##} left", true));

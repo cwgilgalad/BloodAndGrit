@@ -36,6 +36,16 @@ public class CgSign { public string name { get; set; } public string cost { get;
 
 public class CgWeapon { public string name { get; set; } public string dmg { get; set; } public string traits { get; set; } public double cost { get; set; } public string kind { get; set; } }
 
+/// <summary>One row of the Ch. X armor table. <c>gear</c> is the gearPrices key that buys it,
+/// which is how a duster already in a soul's kit is recognized as the armor it always was.</summary>
+public class CgArmor
+{
+    public string name { get; set; } public string gear { get; set; }
+    public int drBlades { get; set; } public int drShot { get; set; }
+    public int defense { get; set; } public int speed { get; set; }
+    public double cost { get; set; } public string note { get; set; }
+}
+
 public class CgRow
 {
     public int level { get; set; }
@@ -82,6 +92,7 @@ public class CgData
     public List<CgEdge> callingEdges { get; set; } = new();
     public List<CgSign> signs { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
+    public List<CgArmor> armor { get; set; } = new();
     public Dictionary<string, double> gearPrices { get; set; } = new();
     public List<CgCalling> callings { get; set; } = new();
     public JsonElement flavor { get; set; }
@@ -117,6 +128,10 @@ public class CharacterSheet
     public double CoinRolled { get; set; } public double CoinLeft { get; set; }
     public List<string> Gear { get; set; } = new();
     public List<string> WeaponsCarried { get; set; } = new();            // "Single-Action Revolver 1d8 (Fatal d10, Misfire 1)"
+    // Armor worn (Ch. X). Added v1.12; absent from sheets saved before it, which deserialize
+    // to null/0 and simply read as an unarmored soul — no session.json migration needed.
+    public string ArmorWorn { get; set; }                                // Ch. X name, or null for none
+    public int DrBlades { get; set; } public int DrShot { get; set; }    // what the armor turns
     public string Lost { get; set; } public string Seen { get; set; }
     public string Vice { get; set; } public string Moving { get; set; }
     public List<int> AbilityBoostLevels { get; set; } = new();           // 5 and/or 10 if reached
@@ -145,6 +160,32 @@ public static class CharGen
 
     /// <summary>A weak save: a third of your level, rounding down.</summary>
     public static int WeakSave(int level) => level / 3;
+
+    // ---- armor (Player's Book Ch. X, "On Armor") ----
+
+    /// <summary>What a soul is actually wearing, read off the gear they ended up with. The book
+    /// says armor does not stack — "count only the better of the two" — so the best row wins.</summary>
+    public static CgArmor ArmorFrom(IEnumerable<string> gear)
+    {
+        var owned = D.armor.Where(a => gear.Contains(a.gear)).ToList();
+        return owned.Count == 0 ? null
+             : owned.OrderByDescending(a => a.drBlades).ThenByDescending(a => a.drShot).First();
+    }
+
+    /// <summary>How a soul's armor reads — one phrasing, used by the sheet, the ledger, the posse
+    /// notes and the printed page alike. Empty when they are standing in nothing but a shirt.</summary>
+    public static string ArmorLine(CharacterSheet s) => string.IsNullOrEmpty(s.ArmorWorn)
+        ? "" : $"{s.ArmorWorn} — DR {s.DrBlades} vs blades, DR {s.DrShot} vs small shot";
+
+    /// <summary>Record what the gear says a soul is wearing, without touching Defense or Speed.
+    /// Safe to call again after a hand edit: the numbers stay whatever the user typed.</summary>
+    public static void ReadArmor(CharacterSheet s)
+    {
+        var a = ArmorFrom(s.Gear);
+        s.ArmorWorn = a?.name;
+        s.DrBlades  = a?.drBlades ?? 0;
+        s.DrShot    = a?.drShot   ?? 0;
+    }
 
     public static CgData D { get; private set; }
 
@@ -323,7 +364,25 @@ public static class CharGen
             if (left >= cost) { left -= cost; s.Gear.Add(item); }
         }
         if (horseItems.Count == 2 && left >= horseCost) { left -= horseCost; s.Gear.AddRange(horseItems); }
+        // Armor last, out of whatever is left. Ch. X is plain that there is precious little of it
+        // out here, so it is what a soul buys after the gun, the horse and the week's rations —
+        // never instead of them. Callings that already bought a duster as a sundry are dressed.
+        // Most of them have already bought a duster among the sundries, so this is an upgrade
+        // step, not a first purchase: walk the preference best-first and stop at the first thing
+        // better than what they are standing in — or at what they are standing in.
+        if (cal.buyPlan.TryGetProperty("armor", out var armorPref))
+        {
+            var have = ArmorFrom(s.Gear);
+            foreach (var an in armorPref.EnumerateArray())
+            {
+                var a = D.armor.FirstOrDefault(x => x.name == an.GetString());
+                if (a == null) continue;
+                if (have != null && a.drBlades <= have.drBlades) break;   // nothing better left on the list
+                if (left >= a.cost) { left -= a.cost; s.Gear.Add(a.gear); break; }
+            }
+        }
         s.CoinLeft = Math.Round(left, 2);
+        ReckonNumbers(s, cal, org);   // again, now that the gear — and so the armor — is known
 
         // ---- Steps 1 & 8: a person, not a statline ----
         var (gender, given) = PickPerson();
@@ -482,6 +541,7 @@ public static class CharGen
             { left -= price; s.Gear.Add(gn); }
         }
         s.CoinLeft = Math.Round(left, 2);
+        ReckonNumbers(s, cal, org);   // the wizard buys armor like any other gear; re-reckon on it
 
         // a person, not a statline
         if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
@@ -728,15 +788,21 @@ public static class CharGen
         var row = cal.Row(level);
         int rawhide = (s.Edges.Contains("Tough as Rawhide") || s.BonusCombatEdges.Contains("Tough as Rawhide")) ? level : 0;   // +1 Blood per level
         int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * level : 0;                                                       // +2 max Nerve per level
+        // Armor (Ch. X) rides in the gear, which on the generation path is not bought until after
+        // the first reckoning — hence the second call once outfitting is done. This method holds no
+        // randomness and is safe to run any number of times, so Defense and Speed have exactly one
+        // author and no caller has to remember to re-apply the armor itself.
+        ReadArmor(s);
+        var worn = ArmorFrom(s.Gear);
         s.Blood = Math.Max(1, s.BloodRolls.Sum() + rawhide);
-        s.Defense = 10 + Mod(s.Scores["DEX"]);
+        s.Defense = 10 + Mod(s.Scores["DEX"]) + (worn?.defense ?? 0);
         s.Fort = row.fort + Mod(s.Scores["CON"]);
         s.Ref = row.@ref + Mod(s.Scores["DEX"]);
         s.Will = row.will + Mod(s.Scores["RES"]);
         s.Attack = row.atk;
         s.NerveMax = s.Scores["RES"] + level + stoneNerve;
         s.Grit = 3;
-        s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0);
+        s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (worn?.speed ?? 0);
         s.Mark = org.startMark + cal.startMark + (s.Edges.Contains("Touched") ? 1 : 0);
 
         if (cal.pool != null)
@@ -822,7 +888,13 @@ public static class CharGen
         Check(s.Blood == Math.Max(1, s.BloodRolls.Sum() + rawhide), "Blood total ≠ sum of per-level gains (+Rawhide)");
 
         // the reckoned numbers (Ch. III step 6)
-        Check(s.Defense == 10 + Mod(s.Scores["DEX"]), $"Defense {s.Defense} ≠ 10 + DEX mod");
+        // Armor is worn out of the gear, so Defense and Speed carry its modifier (Ch. X).
+        var worn = ArmorFrom(s.Gear);
+        Check(s.ArmorWorn == worn?.name, $"ArmorWorn \"{s.ArmorWorn}\" ≠ best armor in the gear \"{worn?.name}\"");
+        Check(s.DrBlades == (worn?.drBlades ?? 0), $"DR vs blades {s.DrBlades} ≠ Ch. X row for {worn?.name ?? "no armor"}");
+        Check(s.DrShot == (worn?.drShot ?? 0), $"DR vs small shot {s.DrShot} ≠ Ch. X row for {worn?.name ?? "no armor"}");
+        Check(s.Defense == 10 + Mod(s.Scores["DEX"]) + (worn?.defense ?? 0),
+            $"Defense {s.Defense} ≠ 10 + DEX mod + armor {worn?.defense ?? 0}");
         Check(s.Fort == row.fort + Mod(s.Scores["CON"]), $"Fort {s.Fort} ≠ table {row.fort} + CON mod");
         Check(s.Ref == row.@ref + Mod(s.Scores["DEX"]), $"Ref {s.Ref} ≠ table {row.@ref} + DEX mod");
         Check(s.Will == row.will + Mod(s.Scores["RES"]), $"Will {s.Will} ≠ table {row.will} + RES mod");
@@ -837,7 +909,8 @@ public static class CharGen
         int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * s.Level : 0;
         Check(s.NerveMax == s.Scores["RES"] + s.Level + stoneNerve, "Nerve ≠ RES score + level (+Stone Nerve)");
         Check(s.Grit == 3, "Grit must be 3");
-        Check(s.Speed == 30 + (s.Edges.Contains("Fleet") ? 10 : 0), "Speed ≠ 30 (+Fleet)");
+        Check(s.Speed == 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (ArmorFrom(s.Gear)?.speed ?? 0),
+            "Speed ≠ 30 (+Fleet, +armor)");
 
         // trained skills: Calling number + WIT mod (min 1) — the WIT of creation, before any
         // 5th/10th-level boost — with Origin grants riding free
@@ -946,6 +1019,9 @@ public static class CharGen
         int gunAtk = s.Attack + Mod(s.Scores["DEX"]), melAtk = s.Attack + Mod(s.Scores["STR"]);
         sb.AppendLine($"Attack {M(s.Attack)} (guns {M(gunAtk)} with DEX · melee {M(melAtk)} with STR)");
         if (s.WeaponsCarried.Count > 0) foreach (var w in s.WeaponsCarried) sb.AppendLine("   " + w);
+        sb.AppendLine("Armor " + (string.IsNullOrEmpty(s.ArmorWorn)
+            ? "none — no DR; cover and not being shot are your whole defense"
+            : ArmorLine(s)));
         if (cal.signsKnownAt != null)
             sb.AppendLine($"Sign DC {10 + s.Level / 2 + Mod(s.Scores["RES"])} (10 + half level + RES mod)");
         else if (s.SignsKnown.Count > 0)

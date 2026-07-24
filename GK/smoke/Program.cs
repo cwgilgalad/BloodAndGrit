@@ -193,6 +193,37 @@ for (int i = 0; i < 200; i++)
     T($"random sweep #{i}" + (v.Count > 0 ? $" ({sheet.Calling}/{sheet.Origin} L{sheet.Level}): {v[0]}" : ""), v.Count == 0);
 }
 
+// ---- armor (Ch. X): the three rows, and souls who actually end up wearing them ----
+T("three armors, each priced in gearPrices", cg.armor.Count == 3
+    && cg.armor.All(a => cg.gearPrices.TryGetValue(a.gear, out var p) && Math.Abs(p - a.cost) < 0.001));
+T("every calling has an armor preference, all names resolving",
+    cg.callings.All(c => c.buyPlan.TryGetProperty("armor", out var ap)
+        && ap.GetArrayLength() > 0
+        && ap.EnumerateArray().All(n => cg.armor.Any(a => a.name == n.GetString()))));
+{
+    // Armor is bought last, out of what the coin leaves, so this is a distribution not a
+    // guarantee — but "precious little armor" must not turn out to mean "none, ever."
+    var wearing = new Dictionary<string, int>();
+    int dressed = 0, n = 400;
+    for (int i = 0; i < n; i++)
+    {
+        var sheet = CharGen.Generate(Rules.Rng.Next(1, 11), Rules.Rng.Next(2) == 0);
+        if (string.IsNullOrEmpty(sheet.ArmorWorn)) continue;
+        dressed++;
+        wearing[sheet.ArmorWorn] = wearing.GetValueOrDefault(sheet.ArmorWorn) + 1;
+        // whatever they wear, the sheet must agree with the Ch. X row it came from
+        var row = cg.armor.Single(a => a.name == sheet.ArmorWorn);
+        T($"armor sheet matches Ch. X row: {sheet.ArmorWorn}",
+            sheet.DrBlades == row.drBlades && sheet.DrShot == row.drShot && sheet.Gear.Contains(row.gear));
+    }
+    // printed, not just asserted: whoever next changes a price wants to see what it did
+    Console.WriteLine($"armor worn: {dressed}/{n} souls dressed — "
+        + string.Join(", ", wearing.OrderByDescending(k => k.Value).Select(k => $"{k.Key} {k.Value}")));
+    T($"generated souls buy armor ({dressed}/{n} dressed)", dressed > n / 4);
+    T("iron plate stays rare (it costs $60)",
+        wearing.GetValueOrDefault("Scavenged Iron Plate") < n / 2);
+}
+
 // ---- targeted rule spot-checks (the Appendix D cross-checks) ----
 for (int i = 0; i < 25; i++)
 {
