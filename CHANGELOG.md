@@ -8,6 +8,22 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.23 — AI-detection pass on the session's new prose (2026-07-24,
+  user-requested).** A read of everything written this session — the Signs and Miracles
+  chapters, the armor rewrite, the new sections — for the tells that mark machine prose,
+  against the standing bar that the books must read human and hold their period voice. It
+  came back nearly clean: no AI vocabulary (no *delve*, *tapestry*, *navigate*, *underscore*),
+  no hedging or signposting (*arguably*, *notably*, *ultimately*), and the eighty Sign and
+  Miracle descriptions carry varied, concrete sentence rhythm rather than a uniform cadence.
+
+  One real cluster fixed: the *Work of Faith* opening stacked two negative-parallelism
+  constructions close together ("the difference is not only a matter of…", "chosen, not
+  merely granted"). The concrete contrast — a Sign is *taken* and entered in a ledger, a
+  Miracle is *asked for* on the knees — carries the point without the meta-framing, so the
+  hedged versions are gone. The antithesis constructions left standing (a Rank "is not how
+  hard the Sign is to say; it is how far you have to reach") do real explanatory work and
+  read human, so they stay.
+
 - **Player's Book v2.22 · GritKeeper v1.16.1 — rules consistency audit (2026-07-24,
   user-requested).** A cross-source pass, engineer and philosophy professor both: do the
   numbers agree across the book, the data, and the app, and are the concepts used the same
