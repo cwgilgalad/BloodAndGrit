@@ -1,0 +1,17 @@
+#!/bin/sh
+# Keep README.md's "current editions" block in step with what is actually being committed.
+#
+# Regenerates the AUTO block from the build scripts + CHANGELOG (see update_readme.py) and
+# re-stages README.md so the change rides along in this commit. Deliberately never blocks a
+# commit: if Python is missing or the script errors, it warns and lets the commit through.
+#
+# Enabled per-clone with:  git config core.hooksPath .githooks
+# (documented in CLAUDE.md; run it once after cloning).
+
+py=python
+command -v "$py" >/dev/null 2>&1 || py=python3
+command -v "$py" >/dev/null 2>&1 || { echo "pre-commit: no python; skipping README refresh"; exit 0; }
+
+"$py" update_readme.py || { echo "pre-commit: update_readme.py failed; committing anyway"; exit 0; }
+git add README.md 2>/dev/null || true
+exit 0
