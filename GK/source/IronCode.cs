@@ -152,3 +152,59 @@ public static class IronCode
         return new Resolution(so, dmg, after, dtype);
     }
 }
+
+// ============================================================ AT THE TABLE
+// The bridge from the engine to the tracker: reads a PC's own to-hit off their sheet, and takes
+// a Strike from one combatant at another — spending the Beat, taking the MAP at the attacker's
+// current step, applying the damage, and advancing the step. Pure and smoke-tested; the UI just
+// gathers the attacker, the target, and the weapon and calls it.
+public static class CombatFlow
+{
+    /// <summary>A PC's attack bonus for a Strike with a given weapon: the sheet's Attack plus the
+    /// keyed ability — DEX for guns and thrown, STR for blades and fists (Ch. XI).</summary>
+    public static int AttackBonusFor(CharacterSheet s, CgWeapon w)
+    {
+        if (s == null) return 0;
+        string ability = string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase) ? "DEX" : "STR";
+        int mod = s.Scores != null && s.Scores.TryGetValue(ability, out var sc) ? CharGen.Mod(sc) : 0;
+        return s.Attack + mod;
+    }
+
+    public record StrikeReport(IronCode.Resolution Res, int Map, string Line);
+
+    /// <summary>Take one Strike from <paramref name="attacker"/> at <paramref name="target"/> and
+    /// apply it: spend a Beat, resolve at the attacker's current MAP step, subtract the damage
+    /// (after DR) from the target's Blood, and advance the step. Returns a one-line log summary.</summary>
+    public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CgWeapon weapon,
+        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null)
+    {
+        var tr = WeaponTraits.Parse(weapon?.traits);
+        int map = IronCode.MapPenalty(attacker?.MapStep ?? 1, tr.Agile);
+        var res = IronCode.Strike(attackBonus + map, target.Defense, weapon, targetDr, forcedDie);
+
+        if (attacker != null)
+        {
+            if (attacker.Beats > 0) attacker.Beats -= 1;   // a Strike is one Beat (Ch. XI)
+            attacker.MapStep += 1;                          // the next Strike this turn is at higher MAP
+        }
+
+        string who = $"{attacker?.Name ?? "—"} → {target.Name}";
+        string mapNote = map != 0 ? $" (MAP {map})" : "";
+        string line;
+        if (res.Strike.Hit)
+        {
+            target.BloodCur = Math.Max(0, target.BloodCur - res.AfterDR);
+            string drNote = res.Damage != null && res.AfterDR != res.Damage.Total
+                ? $" ({res.Damage.Total} − DR)" : "";
+            line = $"{who}{mapNote}: {res.Strike.DegreeName}{(res.Strike.Crit ? " —" : "")} "
+                 + $"{res.AfterDR} Blood{drNote}. {target.Name} at {target.BloodCur}."
+                 + (target.Down ? " DOWN." : "");
+        }
+        else
+        {
+            line = $"{who}{mapNote}: {res.Strike.DegreeName} — "
+                 + (res.Strike.Jam ? "the iron JAMS (clear it: Interact + Repair)." : "a miss.");
+        }
+        return new StrikeReport(res, map, line);
+    }
+}

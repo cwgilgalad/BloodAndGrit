@@ -43,6 +43,11 @@ public class Creature
 
 public class PartyMember : INotifyPropertyChanged
 {
+    // A stable identity that survives a rename. Combatant.PcId points at it, so the posse↔tracker
+    // Blood mirror follows a soul even after the Keeper renames them, and two same-named souls
+    // never collapse to one row. Assigned once; old saves without it are backfilled on load.
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+
     string _name = "New Soul", _calling = "", _gender = "", _notes = "";
     int _level = 1, _bloodCur = 10, _bloodMax = 10, _defense = 12;
     int _fort, _ref, _will, _nerveCur = 11, _nerveMax = 11, _grit = 3, _mark, _taint, _res = 10;
@@ -88,8 +93,8 @@ public class PartyMember : INotifyPropertyChanged
 
 public class Combatant : INotifyPropertyChanged
 {
-    string _name = "", _conditions = "", _ref = "";
-    int _init, _bloodCur, _bloodMax, _defense;
+    string _name = "", _conditions = "", _ref = "", _pcId = "";
+    int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1;
     bool _isPC;
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -104,7 +109,22 @@ public class Combatant : INotifyPropertyChanged
     public bool IsPC { get => _isPC; set { _isPC = value; On(); } }
     public string Conditions { get => _conditions; set { _conditions = value; On(); } }
     public string Ref { get => _ref; set { _ref = value; On(); } }   // creature name for lookup, or ""
+    // Links a PC row back to its PartyMember.Id (empty for foes and hand-entered rows), so the
+    // Blood mirror survives a rename. Falls back to Name-match for legacy rows that lack it.
+    public string PcId { get => _pcId; set { _pcId = value; On(); } }
+    // The Iron Code turn state (Ch. XI): three Beats to spend, and which Strike this turn is next
+    // (1 = clean, 2 = second at MAP, 3 = third). Reset when the combatant's turn comes round.
+    public int Beats { get => _beats; set { _beats = Math.Clamp(value, 0, 9); On(); } }
+    public int MapStep { get => _mapStep; set { _mapStep = Math.Clamp(value, 1, 9); On(); } }
     [JsonIgnore] public bool Down => _bloodCur <= 0;
+
+    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean.</summary>
+    public void BeginTurn() { Beats = 3; MapStep = 1; }
+
+    /// <summary>Is this tracker row the given posse soul? By the stable PcId when it has one, else
+    /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
+    public bool IsSoul(PartyMember p)
+        => _isPC && p != null && (!string.IsNullOrEmpty(_pcId) ? _pcId == p.Id : _name == p.Name);
 }
 
 public class CampaignClock : INotifyPropertyChanged

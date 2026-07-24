@@ -224,6 +224,47 @@ var cg = CharGen.D;
         targetDr: new[] { new DrEntry(1, "blades") }, forcedDie: 10);
     T("a landed knife Strike deals its damage minus DR",
         hit.Damage != null && hit.AfterDR == Math.Max(0, hit.Damage.Total - 1));
+
+    // -- combat state: identity survives a rename, Beats/MAP reset per turn (#2) --
+    var soul = new PartyMember { Name = "Ruth" };
+    var pcRow = new Combatant { IsPC = true, PcId = soul.Id, Name = "Ruth" };
+    soul.Name = "Ruth (the Kid) Calloway";                    // rename after they're on the tracker
+    T("a PC row follows its soul by id across a rename", pcRow.IsSoul(soul));
+    var twin = new PartyMember { Name = "Ruth" };             // a different soul, same original name
+    T("a different soul with the same name does not match", !pcRow.IsSoul(twin));
+    var legacy = new Combatant { IsPC = true, PcId = "", Name = "Doc" };
+    T("a legacy row (no id) still matches by name", legacy.IsSoul(new PartyMember { Name = "Doc" }));
+    var foe = new Combatant { IsPC = false, PcId = soul.Id, Name = "x" };
+    T("a foe row is never mistaken for a soul", !foe.IsSoul(soul));
+
+    var actor = new Combatant { Name = "actor", Beats = 0, MapStep = 3 };
+    actor.BeginTurn();
+    T("BeginTurn restores 3 Beats and a clean MAP", actor.Beats == 3 && actor.MapStep == 1);
+
+    // -- CombatFlow: a PC's to-hit off the sheet, and a resolved Strike that applies --
+    var gh = CharGen.Generate(3, false, "Gunhand");
+    var revolver = cg.weapons.First(w => w.name == "Single-Action Revolver");
+    T("gun to-hit = sheet Attack + DEX mod",
+        CombatFlow.AttackBonusFor(gh, revolver) == gh.Attack + CharGen.Mod(gh.Scores["DEX"]));
+    var knife = cg.weapons.First(w => w.name == "Knife / Bowie");
+    T("melee to-hit = sheet Attack + STR mod",
+        CombatFlow.AttackBonusFor(gh, knife) == gh.Attack + CharGen.Mod(gh.Scores["STR"]));
+
+    {
+        var atk = new Combatant { Name = "Ruth" };            // fresh: Beats 3, MapStep 1
+        var tgt = new Combatant { Name = "Ghoul", Defense = 1, BloodCur = 40, BloodMax = 40 };
+        var rep = CombatFlow.StrikeAndApply(atk, tgt, revolver, attackBonus: 50, forcedDie: 10);   // sure hit
+        T("a landed Strike drops the target's Blood", tgt.BloodCur == 40 - rep.Res.AfterDR && rep.Res.AfterDR > 0);
+        T("a Strike spends a Beat and advances the MAP step", atk.Beats == 2 && atk.MapStep == 2);
+        var rep2 = CombatFlow.StrikeAndApply(atk, tgt, revolver, attackBonus: 50, forcedDie: 10);  // second, at MAP -5
+        T("the second Strike this turn takes the Multiple Attack Penalty", rep2.Map == -5 && atk.MapStep == 3);
+    }
+    {
+        var atk = new Combatant { Name = "Ruth" };
+        var tgt = new Combatant { Name = "Ghoul", Defense = 99, BloodCur = 40, BloodMax = 40 };
+        CombatFlow.StrikeAndApply(atk, tgt, revolver, attackBonus: -50, forcedDie: 10);            // sure miss
+        T("a missed Strike leaves the target's Blood alone", tgt.BloodCur == 40);
+    }
 }
 
 // ============================================================ BALANCE, SIMULATED (#4)
