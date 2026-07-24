@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.17 -->
+<!-- Blood & Grit — The Player's Book · Version 2.18 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.17)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.18)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.17</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.18</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.17 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.18 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -370,7 +370,7 @@ body{ background:#525659; }
     <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">157</span></li>
     <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">162</span></li>
     <li><a href="#ledger">The Ledger</a><span class="pg">164</span></li>
-    <li><a href="#index">Index</a><span class="pg">171</span></li>
+    <li><a href="#index">Index</a><span class="pg">172</span></li>
   </ul>
 </section>
 
@@ -2550,14 +2550,21 @@ body{ background:#525659; }
   cold; boiler-plate and scavenged iron will stop a pistol ball at the cost of speed and sweat. Note the hard truth plainly:
   <strong>most firearms ignore most armor.</strong> Worn armor grants Damage Reduction against blades and small shot only; cover
   and not being shot remain your best defense.</p>
+  <p><strong>Small shot</strong> means birdshot and buckshot, a spent ricochet, or a pocket pistol's ball fired from
+  across a room — anything that reaches you with less than a full charge behind it. A rifle ball is not small shot,
+  and neither is a revolver at conversational range. The table below will not save you from either one.</p>
   <table>
-    <thead><tr><th>Protection</th><th>Effect</th><th class="c">Cost</th></tr></thead>
+    <thead><tr><th>Protection</th><th class="c">vs Blades</th><th class="c">vs Small Shot</th><th>What it costs you</th><th class="c">Price</th></tr></thead>
     <tbody>
-      <tr><td>Boiled Leather</td><td>DR 2 vs blades; –1 Defense</td><td class="c">$15</td></tr>
-      <tr><td>Heavy Duster / Coat</td><td>DR 1 vs blades; warmth</td><td class="c">$6</td></tr>
-      <tr><td>Scavenged Iron Plate</td><td>DR 3, stops pistol ball; –2 Speed, loud</td><td class="c">$60</td></tr>
+      <tr><td>Heavy Duster / Coat</td><td class="c">DR 1</td><td class="c">DR 1</td><td>Nothing, and it keeps the cold out</td><td class="c">$6</td></tr>
+      <tr><td>Boiled Leather</td><td class="c">DR 2</td><td class="c">DR 1</td><td>–1 Defense; stiff in the heat</td><td class="c">$15</td></tr>
+      <tr><td>Scavenged Iron Plate</td><td class="c">DR 3</td><td class="c">DR 3</td><td>–2 Speed, and loud with it</td><td class="c">$60</td></tr>
     </tbody>
   </table>
+  <p>The iron is the exception worth the money. Alone among the three it applies its DR against a pistol ball as well,
+  which is why a soul who expects to be shot at close quarters will sweat under sixty dollars of stove plate and call it
+  a bargain. Long irons still punch through it. Nothing here stacks: wear the coat over the leather if you like, but
+  count only the better of the two.</p>
 
   <h2 id="ix-gear">Provisions, Gear &amp; Sundries</h2>
   <table>
@@ -2835,8 +2842,10 @@ body{ background:#525659; }
     </tbody>
   </table>
   <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Medicine Man treat one
-  extra patient between rests. <strong>Iron vest.</strong> DR 3 against pistol balls and small shot, but –2 Speed and loud;
-  most long irons still punch clean through. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
+  extra patient between rests. <strong>Iron vest.</strong> The tailored cousin of the scavenged plate in
+  Chapter X — chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
+  against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
+  through it. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
   Lore: Occult, or — at the Keeper's discretion, and at the usual risk — the working of a single Sign.
   <strong>Camera &amp; wet-plate kit.</strong> A long exposure and a steady hand make a portrait — and now and again the
   plate holds what the eye refused: a figure at the window, a face in the smoke. The camera does not lie, which is exactly
@@ -3625,7 +3634,7 @@ body{ background:#525659; }
     <p class="note">There is paper on her in two territories and a sixth finger of scar down her draw hand. She is faster than her reputation, which is saying something.</p>
     <p><strong>STR</strong> 13 (+1) &middot; <strong>DEX</strong> 16 (+3) &middot; <strong>CON</strong> 14 (+2) &middot; <strong>WIT</strong> 10 (+0) &middot; <strong>RES</strong> 12 (+1) &middot; <strong>PRE</strong> 9 (&minus;1)</p>
     <p><strong>Blood</strong> 12 &middot; <strong>Defense</strong> 13 &middot; <strong>Saves</strong> Fort +4, Ref +5, Will +1 &middot; <strong>Nerve</strong> 13 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +1 (guns +4 with DEX) &middot; single-action revolver 1d8 (Fatal d10), knife 1d4</p>
+    <p><strong>Attack</strong> +1 (guns +4 with DEX) &middot; single-action revolver 1d8 (Fatal d10), knife 1d4 &middot; <strong>Armor</strong> heavy duster (DR 1 vs blades &amp; small shot)</p>
     <p><strong>Trained:</strong> Notice, Intimidate. <strong>Features:</strong> Deadly Aim (&minus;2 attack / +4 damage), Gunhand's Edge. <strong>Edges:</strong> Quick Draw, Steady Shot.</p>
     <p><strong>Gear:</strong> revolver, 40 cartridges, knife, duster, a horse she didn't pay for, $9.</p>
     <p class="note"><strong>Lost:</strong> her gang, to a job gone wrong she didn't plan. <strong>Seen:</strong> the man she shot at Careless Creek stand back up. <strong>Vice:</strong> the cards. <strong>Moving:</strong> the paper on her, and whoever's carrying it this month.</p>
@@ -3636,7 +3645,7 @@ body{ background:#525659; }
     <p class="note">A surgeon's hands, a ruined family name, and a habit of talking to patients who have stopped listening. Politer than anyone this far west has a right to be.</p>
     <p><strong>STR</strong> 8 (&minus;1) &middot; <strong>DEX</strong> 12 (+1) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 16 (+3) &middot; <strong>RES</strong> 14 (+2) &middot; <strong>PRE</strong> 11 (+0)</p>
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 11 &middot; <strong>Saves</strong> Fort +3, Ref +1, Will +4 &middot; <strong>Nerve</strong> 15 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +0 &middot; knife 1d4, cap-and-ball revolver 1d8 (slow reload)</p>
+    <p><strong>Attack</strong> +0 &middot; knife 1d4, cap-and-ball revolver 1d8 (slow reload) &middot; <strong>Armor</strong> good coat (DR 1 vs blades &amp; small shot)</p>
     <p><strong>Trained:</strong> Medicine, Lore (Occult), Notice, Deceive, Survival, Sleight, Insight, Lore (Frontier), Persuade. <strong>Features:</strong> Field Surgery, Anatomist. <strong>Edge:</strong> Frontier Medicine.</p>
     <p><strong>Gear:</strong> surgeon's kit, laudanum, good coat, worn revolver, $14 and a letter of unpaid debt.</p>
     <p class="note"><strong>Lost:</strong> the name, the house, the inheritance &mdash; a scandal she will not discuss. <strong>Seen:</strong> a body on her table open its eyes, four hours dead. <strong>Vice:</strong> laudanum. <strong>Moving:</strong> the debt, and the man back east who holds it.</p>
@@ -3647,7 +3656,7 @@ body{ background:#525659; }
     <p class="note">Took his freedom, took the Word, and walked west preaching to whoever the country hadn't killed yet. His voice can fill a canyon, and has.</p>
     <p><strong>STR</strong> 10 (+0) &middot; <strong>DEX</strong> 8 (&minus;1) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 12 (+1) &middot; <strong>RES</strong> 15 (+2) &middot; <strong>PRE</strong> 16 (+3)</p>
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 9 &middot; <strong>Saves</strong> Fort +3, Ref &minus;1, Will +4 &middot; <strong>Nerve</strong> 16 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +0 &middot; walking staff 1d4, double-barrel shotgun 2d8 (Scatter, kept wrapped in oilcloth and prayer)</p>
+    <p><strong>Attack</strong> +0 &middot; walking staff 1d4, double-barrel shotgun 2d8 (Scatter, kept wrapped in oilcloth and prayer) &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Persuade, Intimidate, Lore (Occult), Notice, Insight. <strong>Features:</strong> Conviction, Sermon. <strong>Edge:</strong> Iron Will.</p>
     <p><strong>Gear:</strong> Bible, salt, camp kit, the shotgun, $11 and a congregation's last collection.</p>
     <p class="note"><strong>Lost:</strong> his congregation, to a fire that did not behave like fire. <strong>Seen:</strong> what set it &mdash; and it saw him. <strong>Vice:</strong> pride in the Word. <strong>Moving:</strong> the thing that burned his church went west, and so, therefore, did he.</p>
@@ -3658,9 +3667,9 @@ body{ background:#525659; }
     <p class="note">Thirty winters in the high country and a Hawken older than most towns. Speaks four languages and prefers none of them.</p>
     <p><strong>STR</strong> 15 (+2) &middot; <strong>DEX</strong> 11 (+0) &middot; <strong>CON</strong> 14 (+2) &middot; <strong>WIT</strong> 12 (+1) &middot; <strong>RES</strong> 14 (+2) &middot; <strong>PRE</strong> 8 (&minus;1)</p>
     <p><strong>Blood</strong> 12 &middot; <strong>Defense</strong> 10 &middot; <strong>Saves</strong> Fort +4, Ref +0, Will +4 &middot; <strong>Nerve</strong> 15 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +1 &middot; Hawken rifle 1d12 (Dead Aim +1d6), bowie knife 1d4</p>
+    <p><strong>Attack</strong> +1 &middot; Hawken rifle 1d12 (Dead Aim +1d6), bowie knife 1d4 &middot; <strong>Armor</strong> buffalo coat (DR 1 vs blades &amp; small shot)</p>
     <p><strong>Trained:</strong> Survival, Notice, Athletics, Stealth, Animal Handling, Lore (Frontier), Medicine. <strong>Features:</strong> Hawken Rifle, Dead Aim 1d6, Hard Country. <strong>Edge:</strong> Tracker.</p>
-    <p><strong>Gear:</strong> the Hawken, traps, pelts worth 2d6 &times; $10, a good knife, a better dog.</p>
+    <p><strong>Gear:</strong> the Hawken, traps, pelts worth 2d6 &times; $10, a buffalo coat, a good knife, a better dog.</p>
     <p class="note"><strong>Lost:</strong> her trapping partner, to a winter that was not a winter. <strong>Seen:</strong> its tracks &mdash; man-shaped, and forty feet apart. <strong>Vice:</strong> solitude, and the flask that makes it bearable. <strong>Moving:</strong> she is hunting it. She does not say so.</p>
   </div>
 
@@ -3669,7 +3678,7 @@ body{ background:#525659; }
     <p class="note">Rode with the cavalry, kept the carbine, and found that hunting men paid better than soldiering and asked fewer questions he couldn't answer.</p>
     <p><strong>STR</strong> 13 (+1) &middot; <strong>DEX</strong> 15 (+2) &middot; <strong>CON</strong> 11 (+0) &middot; <strong>WIT</strong> 14 (+2) &middot; <strong>RES</strong> 13 (+1) &middot; <strong>PRE</strong> 8 (&minus;1)</p>
     <p><strong>Blood</strong> 8 &middot; <strong>Defense</strong> 12 &middot; <strong>Saves</strong> Fort +0, Ref +4, Will +3 &middot; <strong>Nerve</strong> 14 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +1 (guns +3 with DEX) &middot; service carbine 1d10, revolver 1d8, rope and irons</p>
+    <p><strong>Attack</strong> +1 (guns +3 with DEX) &middot; service carbine 1d10, revolver 1d8, rope and irons &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Notice, Stealth, Survival, Intimidate, Insight, Lore (Frontier), Athletics, Deceive. <strong>Features:</strong> Bushwhack 1d6, Quick Hands. <strong>Edge:</strong> Cold Read.</p>
     <p><strong>Gear:</strong> carbine, irons, wanted papers, field glasses, $22 of the last bounty.</p>
     <p class="note"><strong>Lost:</strong> the certainty the war promised him. <strong>Seen:</strong> a man he'd buried collect his own bounty in the next county. <strong>Vice:</strong> violence, arrived at too easily. <strong>Moving:</strong> one name left on a private list, and it keeps moving west.</p>
@@ -3680,7 +3689,7 @@ body{ background:#525659; }
     <p class="note">Buried a husband and three children under sod she broke herself, and one night the country offered her a different arrangement. She took it. She is still deciding what it took back.</p>
     <p><strong>STR</strong> 8 (&minus;1) &middot; <strong>DEX</strong> 10 (+0) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 14 (+2) &middot; <strong>RES</strong> 16 (+3) &middot; <strong>PRE</strong> 13 (+1)</p>
     <p><strong>Blood</strong> 7 &middot; <strong>Defense</strong> 10 &middot; <strong>Saves</strong> Fort +1, Ref +0, Will +5 &middot; <strong>Nerve</strong> 17 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +0 &middot; kitchen knife 1d4, and the Signs she paid for</p>
+    <p><strong>Attack</strong> +0 &middot; kitchen knife 1d4, and the Signs she paid for &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Lore (Occult), Medicine, Survival, Notice, Animal Handling, Deceive. <strong>Features:</strong> Witch-Sight, Signs, Marked. <strong>Signs known:</strong> Borrowed Breath, Salt &amp; Iron. <strong>Sign DC</strong> 13. <strong>Edge:</strong> Salt-Wise.</p>
     <p><strong>Gear:</strong> herb satchel, salt, iron nails, charm-makings, a crow named Deuteronomy, $6.</p>
     <p class="note"><strong>Lost:</strong> everything the sod could take, and then the man too. <strong>Seen:</strong> what answered the night she asked &mdash; she carries <strong>Mark 1</strong>, and knows it. <strong>Vice:</strong> the bargains; they keep working. <strong>Moving:</strong> paying it back before it comes to collect.</p>
@@ -3919,7 +3928,7 @@ body{ background:#525659; }
     <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">86</span></li>
     <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">94</span></li>
     <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">106</span></li>
-    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">114</span></li>
+    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">113</span></li>
     <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">132</span></li>
     <li><a href="#ix-firearms">Firearms</a><span class="pg">113</span></li>
     <li><a href="#firstpeoples">First Peoples, the</a><span class="pg">26</span></li>
@@ -3945,7 +3954,7 @@ body{ background:#525659; }
     <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">130</span></li>
     <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">127</span></li>
     <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">106</span></li>
-    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">116</span></li>
+    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">117</span></li>
     <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">108</span></li>
     <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">90</span></li>
     <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">149</span></li>
@@ -3956,7 +3965,7 @@ body{ background:#525659; }
     <li><a href="#ix-beats">Initiative</a><span class="pg">133</span></li>
     <li><a href="#conflict">Iron Code, the</a><span class="pg">133</span></li>
     <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">106</span></li>
-    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">130</span></li>
+    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">131</span></li>
     <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">107</span></li>
     <li class="ix-hd">K</li>
     <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">136</span></li>
@@ -3964,9 +3973,9 @@ body{ background:#525659; }
     <li><a href="#ix-o-laborer">Laborer, the (Origin)</a><span class="pg">24</span></li>
     <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">139</span></li>
     <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">150</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">169</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">170</span></li>
     <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">154</span></li>
-    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">124</span></li>
+    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">125</span></li>
     <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">143</span></li>
     <li class="ix-hd">M</li>
     <li><a href="#ix-mark">Mark, the</a><span class="pg">143</span></li>
@@ -3976,7 +3985,7 @@ body{ background:#525659; }
     <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">131</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">28</span></li>
     <li><a href="#ix-milestones">Milestones</a><span class="pg">155</span></li>
-    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">114</span></li>
+    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">113</span></li>
     <li><a href="#ix-modifiers">Modifiers</a><span class="pg">18</span></li>
     <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">119</span></li>
     <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">49</span></li>
@@ -4023,7 +4032,7 @@ body{ background:#525659; }
     <li><a href="#ix-safety">Safety at the table</a><span class="pg">144</span></li>
     <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">150</span></li>
     <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">130</span></li>
-    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">127</span></li>
+    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">128</span></li>
     <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">149</span></li>
     <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">128</span></li>
     <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">108</span></li>
@@ -4051,27 +4060,27 @@ body{ background:#525659; }
     <li><a href="#ix-truths">Three Truths, the</a><span class="pg">8</span></li>
     <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">106</span></li>
     <li><a href="#ix-tone">Tone, on</a><span class="pg">9</span></li>
-    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">116</span></li>
+    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">117</span></li>
     <li><a href="#ix-tools">Tools of many trades</a><span class="pg">122</span></li>
     <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">108</span></li>
     <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">106</span></li>
     <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">107</span></li>
     <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">106</span></li>
     <li class="ix-hd">U</li>
-    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">125</span></li>
+    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">126</span></li>
     <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">151</span></li>
     <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">107</span></li>
     <li><a href="#ix-untrained">Untrained skills</a><span class="pg">102</span></li>
     <li class="ix-hd">V</li>
     <li><a href="#ix-o-veteran">Veteran, the (Origin)</a><span class="pg">25</span></li>
-    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">129</span></li>
+    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">130</span></li>
     <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">123</span></li>
     <li class="ix-hd">W</li>
     <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">108</span></li>
     <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">150</span></li>
     <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">121</span></li>
-    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">114</span></li>
-    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">128</span></li>
+    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">113</span></li>
+    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">129</span></li>
     <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">92</span></li>
     <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">76</span></li>
     <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">127</span></li>

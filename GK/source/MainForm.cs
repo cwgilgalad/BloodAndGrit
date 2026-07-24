@@ -51,7 +51,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.11.0";
+    internal const string AppVersion = "1.12.0";
 
     public MainForm()
     {
@@ -1256,7 +1256,8 @@ public partial class MainForm : Form
                 BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
                 Fort = s.Fort, Ref = s.Ref, Will = s.Will,
                 RES = s.Scores["RES"], Grit = s.Grit, Mark = s.Mark,
-                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : ""),
+                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
+                                 + (CharGen.ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
                 Sheet = s
             };
             if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
