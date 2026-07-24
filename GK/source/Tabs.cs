@@ -299,6 +299,8 @@ public partial class MainForm
             ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
             ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
         bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100, "Step to the next round (Ctrl+R)"));
+        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82, "The selected combatant's turn: 3 Beats, a clean MAP"));
+        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
         bar.Controls.Add(Lbl("  Amt:"));
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
         bar.Controls.Add(trkAmount);
@@ -335,14 +337,15 @@ public partial class MainForm
         StyleGrid(trkGrid);
         void C(string prop, string head, int w, bool ro = false)
             => trkGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = prop, HeaderText = head, FillWeight = w, ReadOnly = ro });
-        C("Init", "Init", 50); C("Name", "Name", 210, true); C("BloodCur", "Blood", 60);
-        C("BloodMax", "/Max", 55, true); C("Defense", "Def", 50, true); C("Conditions", "Conditions", 240);
+        C("Init", "Init", 50); C("Name", "Name", 200, true); C("BloodCur", "Blood", 58);
+        C("BloodMax", "/Max", 52, true); C("Defense", "Def", 48, true); C("Beats", "Beats", 46);
+        C("Conditions", "Conditions", 230);
         // far-right Ledger button — posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
         trkGrid.Columns.Add(new DataGridViewButtonColumn
         { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
         bool TrkHasSheet(int i) => i >= 0 && i < tracker.Count && tracker[i].IsPC
-            && string.IsNullOrEmpty(tracker[i].Ref) && party.Any(p => p.Name == tracker[i].Name);
+            && string.IsNullOrEmpty(tracker[i].Ref) && SoulOf(tracker[i]) != null;
         trkGrid.CellPainting += (s, e) =>
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && trkGrid.Columns[e.ColumnIndex].Name == "ledgerBtn" && !TrkHasSheet(e.RowIndex))
@@ -351,9 +354,9 @@ public partial class MainForm
         trkGrid.CellContentClick += (s, e) =>
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && trkGrid.Columns[e.ColumnIndex].Name == "ledgerBtn" && TrkHasSheet(e.RowIndex))
-            { var p = party.FirstOrDefault(x => x.Name == tracker[e.RowIndex].Name); if (p != null) ShowSoulCard(p); }
+            { if (SoulOf(tracker[e.RowIndex]) is PartyMember p) ShowSoulCard(p); }
         };
-        WireNumericValidation(trkGrid, new() { "Init", "BloodCur" });
+        WireNumericValidation(trkGrid, new() { "Init", "BloodCur", "Beats" });
         trkGrid.CellFormatting += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
@@ -576,7 +579,77 @@ public partial class MainForm
         c.BloodCur = Math.Clamp(c.BloodCur + sign * v, 0, hi);
         Log($"{c.Name} {(sign < 0 ? "takes" : "recovers")} {v} → {c.BloodCur}/{c.BloodMax}" + (c.BloodCur == 0 ? "  — PUT DOWN." : ""));
         trkGrid.Refresh();
-        if (c.IsPC) { var p = party.FirstOrDefault(x => x.Name == c.Name); if (p != null) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); } }
+        if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
+    }
+
+    // The posse soul behind a tracker row, matched by the stable id (Name only as a legacy
+    // fallback) — so damage mirrors back to the right soul even after a rename.
+    PartyMember SoulOf(Combatant c) => c != null && c.IsPC ? party.FirstOrDefault(c.IsSoul) : null;
+
+    // The selected combatant's turn begins: three Beats, the next Strike clean (Ch. XI).
+    void BeginTurnForSelected()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        c.BeginTurn(); trkGrid.Refresh();
+        Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
+    }
+
+    // Resolve a Strike from the selected combatant through the Iron Code engine: to hit, the four
+    // degrees, the Multiple Attack Penalty at this combatant's current step, the Fatal die on a
+    // crit, and the damage after the target's DR — then spend the Beat and apply it.
+    void StrikeDialog()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Log("Select the attacker first."); return; }
+        var foes = tracker.Where(t => !ReferenceEquals(t, attacker)).ToList();
+        if (foes.Count == 0) { Log("Nothing on the field to strike."); return; }
+
+        using var f = new Form { Width = 430, Height = 320, Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        Label L(string t, int top) => new() { Left = 16, Top = top + 3, Width = 92, Text = t };
+        var target = new ComboBox { Left = 112, Top = 15, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var t in foes) target.Items.Add(t.Name);
+        target.SelectedIndex = 0;
+        var weapon = new ComboBox { Left = 112, Top = 51, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var w in CharGen.D.weapons) weapon.Items.Add($"{w.name}  ({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})");
+        var toHit = new NumericUpDown { Left = 112, Top = 87, Width = 70, Minimum = -20, Maximum = 40, Value = 0 };
+        var dr = new NumericUpDown { Left = 112, Top = 123, Width = 70, Minimum = 0, Maximum = 40, Value = 0 };
+        var mapLbl = new Label { Left = 200, Top = 90, Width = 197, ForeColor = Blood };
+
+        // Prefill the attacker's own to-hit off their sheet, and re-figure it when the gun changes.
+        var sheet = SoulOf(attacker)?.Sheet;
+        void Sync()
+        {
+            var w = CharGen.D.weapons[Math.Max(0, weapon.SelectedIndex)];
+            if (sheet != null) toHit.Value = Math.Clamp(CombatFlow.AttackBonusFor(sheet, w), -20, 40);
+            int map = IronCode.MapPenalty(attacker.MapStep, WeaponTraits.Parse(w.traits).Agile);
+            mapLbl.Text = $"MAP this Strike: {(map == 0 ? "none (clean)" : map.ToString())} · Beats left {attacker.Beats}";
+        }
+        // default the weapon to the attacker's carried gun if we can spot one, else the first
+        int guess = sheet?.WeaponsCarried?.Select(wc => CharGen.D.weapons.FindIndex(w => wc.StartsWith(w.name)))
+                        .FirstOrDefault(ix => ix >= 0) ?? -1;
+        weapon.SelectedIndex = guess >= 0 ? guess : 0;
+        weapon.SelectedIndexChanged += (s, e) => Sync();
+        Sync();
+
+        var ok = new Button { Text = "Strike ▸", Left = 214, Top = 240, Width = 90, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Close", Left = 310, Top = 240, Width = 84, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] {
+            L("Target:", 15), target, L("Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
+            L("Target DR:", 123), dr,
+            new Label { Left = 16, Top = 162, Width = 381, Height = 66, ForeColor = Ink,
+                Text = "The engine rolls the d20, reads the four degrees, applies the Multiple Attack Penalty at this combatant's step and the Fatal die on a critical hit, subtracts the target's DR, and takes the Blood — then spends a Beat. Strike again for the next at MAP." },
+            ok, cancel });
+        f.AcceptButton = ok;
+
+        while (f.ShowDialog(this) == DialogResult.OK)
+        {
+            var tgt = foes[target.SelectedIndex];
+            var w = CharGen.D.weapons[Math.Max(0, weapon.SelectedIndex)];
+            var drList = dr.Value > 0 ? new[] { new DrEntry((int)dr.Value, "all") } : null;
+            var rep = CombatFlow.StrikeAndApply(attacker, tgt, w, (int)toHit.Value, drList);
+            Log(rep.Line);
+            if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
+            trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
+        }
     }
 
     // ============================================================ GENERATORS TAB

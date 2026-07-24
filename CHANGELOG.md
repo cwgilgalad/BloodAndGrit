@@ -8,6 +8,35 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.15.0 — the Iron Code, adjudicated at the table (2026-07-24,
+  user-requested).** The combat crunch that makes a fight satisfying is also what slows a
+  table down: Beats, the Multiple Attack Penalty, Fatal dice, Misfire, DR by damage type,
+  all tracked by hand. The app now carries it. Two pieces landed together:
+
+  **A pure Iron Code engine (`IronCode.cs`).** `WeaponTraits.Parse` reads structure (Fatal
+  dX, Misfire X, Agile, Scatter, Volley, Kickback, …) out of a weapon's free-text `traits` —
+  the book's printed trait stays the single source of truth, and a smoke test asserts every
+  weapon parses to the right structure. `ResolveStrike` applies the four degrees, the MAP
+  (−5/−10, Agile −4/−8), and a Misfire jam on a critical failure; `RollDamage` implements the
+  Fatal rule faithfully (a 1d8 Fatal d10 crit is 2×1d10+1d10); `ApplyDR` is typed, best-of
+  (no stacking), floored at zero. All pure and WinForms-free, proven by ~90 property-based
+  smoke assertions.
+
+  **A live Beat tracker.** Each combatant now carries three Beats and a MAP step; a **Begin
+  turn** button resets them, and a **Strike ▸** dialog resolves an attack through the engine —
+  prefilling a PC's own to-hit off their sheet, applying the MAP at the attacker's current
+  step, rolling the Fatal die on a crit, subtracting the target's DR, taking the Blood, and
+  spending the Beat. The result reads off one log line.
+
+  **Fixed along the way (the Step-5 review's one real finding): PCs are now keyed by a stable
+  id, not by name.** Renaming a posse soul after they were on the tracker used to silently
+  break the Blood mirror, and two same-named souls collapsed to one row. `PartyMember.Id` and
+  `Combatant.PcId` (both additive — old saves backfill on load) fix it; every posse↔tracker
+  match now follows the id, with name only as a legacy fallback.
+
+  Smoke 5137 → 7179. The engine and all combat logic are covered by tests; the new WinForms
+  dialog and column compile clean but want a run-through at the table.
+
 - **Player's Book v2.21 · Keeper's Book v2.9 — editorial pass: glossing the period idioms
   (2026-07-24, user-requested).** A read-through of all three books "like a teacher with a
   PhD in English," charged with preserving the period voice while briefly clarifying any
