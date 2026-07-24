@@ -1,7 +1,12 @@
 # Blood & Grit — Project Handoff & Preferences
 
-Import this file (and `blood-and-grit-sources.zip` / `GritKeeper.zip`) into
-the project so a fresh chat can pick up exactly where we left off.
+Import this file into the project so a fresh chat can pick up exactly where we left off.
+For onboarding a fresh Project, hand over **the current loose files from the repo** — the
+builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shared modules
+(`nav_tools.py`, `perdition_map.py`, `pag_patch.py`), `assets/`, and whatever else the task
+touches — not a packaged snapshot. (Packaged snapshots go stale silently: the retired
+`blood-and-grit-sources.zip` sat at its day-one 2026-07-11 contents while the build
+architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.16 · Keeper's Book v2.8 · Bestiary v2.8 ·
 GritKeeper app v1.11.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
@@ -12,7 +17,18 @@ book change that touches it** — status-bar/README version strings every time t
 `Data/creatures.json` re-extracted whenever Bestiary creature content changes (extractor
 lives in the repo as `extract_creatures.py` — verify with a diff against the previous JSON),
 and the Reference tab whenever a rule it quotes changes. Then build, smoke, publish,
-re-mirror `GritKeeper/`, and rezip.
+**re-mirror `GritKeeper/`**, and rezip.
+
+**"Re-mirror" means overwrite, not sync-and-diff.** `GritKeeper/source/` is a *generated*
+copy of `GK/source` (git-ignored since 2026-07-23, same as `GritKeeper/app/`) — blow it away
+and rewrite it from the master tree every package:
+```powershell
+robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
+```
+(`/XD bin obj publish` keeps the .NET build output out of the deliverable; robocopy exit
+codes 0–7 are success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and
+re-zip to `GritKeeper.zip`. If this ever gets scripted — alongside `sign.ps1`, or as a new
+`package.ps1` — fold the copy step in there so it can't be skipped.
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
@@ -125,7 +141,7 @@ cloning it and splicing in their own content.
 
 ---
 
-## Files — what's in `blood-and-grit-sources.zip`
+## Files — the book sources
 
 Each book's cheapest editable form is **bolded**.
 
@@ -405,11 +421,21 @@ file-dialog filters, crash-report captions) were also renamed in v1.6.0.
 There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`GK/`**:
 `GK/source/` (the `.cs`, `.csproj`, `Data/`), `GK/smoke/` (the headless logic-test project),
 and `GK/source/publish/` (the self-contained build output). **Edit `GK/source`, build/test in
-`GK/`.** The `GritKeeper/` folder is the *packaged deliverable* — its `source/`
-mirrors `GK/source` and its `app/` holds the published build; it is regenerated from `GK/` and
-then zipped to `GritKeeper.zip`. (History note: as of 2026-07-10 these two trees
-had silently diverged — `GK/source` carried post-delivery work the zip never got. They're now
-reconciled; `GK/source` won. Don't edit the delivered folder directly.)
+`GK/`.**
+
+The `GritKeeper/` folder is the *packaged deliverable*, and **both halves of it are generated
+build output, not source** — `source/` is a mirror of `GK/source`, `app/` holds the published
+build, and the pair is zipped to `GritKeeper.zip`. Since 2026-07-23 `GritKeeper/source/` is
+**git-ignored** (it was previously tracked as a byte-identical second copy of `GK/source` —
+2,900 lines of C# sitting in git for no build reason). Only `GritKeeper/README.md` is still
+tracked there.
+
+**Don't edit the delivered folder directly** — the rule hasn't changed, but the reason has.
+It used to be "the two trees will diverge"; now it's simply that your edits get overwritten
+by the next `robocopy` at package time and were never in git to begin with. `GK/source` is
+the only source of truth. (History note: as of 2026-07-10 these two trees *had* silently
+diverged — `GK/source` carried post-delivery work the zip never got. Making the delivered
+copy generated-only closes that seam for good.)
 
 ### Universal Undo/Redo (v1.6)
 Snapshot-based, over the same `GameSession` shape File → Save/Load already uses:
