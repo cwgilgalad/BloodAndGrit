@@ -67,6 +67,8 @@ public class CgCalling
     public CgChoice choice { get; set; }
     public int startMark { get; set; }
     public bool bonusCombatEdgeAtOdd { get; set; }
+    /// <summary>Practiced / Steady / Slight — see CharGen.AttackFor (Player's Book Ch. XIV).</summary>
+    public string attackRank { get; set; }
 
     public CgRow Row(int level) => rows.First(r => r.level == level);
 }
@@ -125,6 +127,25 @@ public class CharacterSheet
 // ============================================================ GENERATOR
 public static class CharGen
 {
+    // ---- the progression spine (Player's Book Ch. XIV, "Attack Rank and the Saves") ----
+    // Every rank climbs by one per level; the rank fixes a constant distance behind the gun
+    // Callings. Saves are two formulas shared by all seventeen Callings.
+
+    /// <summary>Attack bonus from the Calling's rank at a given level.</summary>
+    public static int AttackFor(string rank, int level) => rank switch
+    {
+        "Practiced" => level,
+        "Steady"    => level - 1,
+        "Slight"    => Math.Max(0, level - 2),
+        _           => throw new ArgumentOutOfRangeException(nameof(rank), $"unknown attack rank '{rank}'"),
+    };
+
+    /// <summary>A strong save: 2 + half your level, rounding down.</summary>
+    public static int StrongSave(int level) => 2 + level / 2;
+
+    /// <summary>A weak save: a third of your level, rounding down.</summary>
+    public static int WeakSave(int level) => level / 3;
+
     public static CgData D { get; private set; }
 
     public static void Load()
@@ -805,7 +826,14 @@ public static class CharGen
         Check(s.Fort == row.fort + Mod(s.Scores["CON"]), $"Fort {s.Fort} ≠ table {row.fort} + CON mod");
         Check(s.Ref == row.@ref + Mod(s.Scores["DEX"]), $"Ref {s.Ref} ≠ table {row.@ref} + DEX mod");
         Check(s.Will == row.will + Mod(s.Scores["RES"]), $"Will {s.Will} ≠ table {row.will} + RES mod");
-        Check(s.Attack == row.atk, "Attack proficiency must be read straight from the Calling table");
+        Check(s.Attack == row.atk, "Attack must be read straight from the Calling table");
+        // The table is a transcription of the Player's Book spine (Ch. XIV). Re-derive it here so a
+        // bad transcription in chargen.json can never pass silently — book and app cannot drift apart.
+        Check(row.atk == AttackFor(cal.attackRank, s.Level),
+            $"{cal.name} L{s.Level}: table attack {row.atk} ≠ {cal.attackRank} rank formula {AttackFor(cal.attackRank, s.Level)}");
+        foreach (var (label, val) in new[] { ("Fort", row.fort), ("Ref", row.@ref), ("Will", row.will) })
+            Check(val == StrongSave(s.Level) || val == WeakSave(s.Level),
+                $"{cal.name} L{s.Level}: table {label} {val} is neither strong ({StrongSave(s.Level)}) nor weak ({WeakSave(s.Level)})");
         int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * s.Level : 0;
         Check(s.NerveMax == s.Scores["RES"] + s.Level + stoneNerve, "Nerve ≠ RES score + level (+Stone Nerve)");
         Check(s.Grit == 3, "Grit must be 3");
