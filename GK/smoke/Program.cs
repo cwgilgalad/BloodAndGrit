@@ -226,6 +226,55 @@ var cg = CharGen.D;
         hit.Damage != null && hit.AfterDR == Math.Max(0, hit.Damage.Total - 1));
 }
 
+// ============================================================ BALANCE, SIMULATED (#4)
+// Run the actual Iron Code engine to answer the question a playtest can only guess at:
+// can a level-appropriate soul still threaten a level-appropriate foe at every level?
+// This is the property Step 1 restored — casters' attack had drifted so far behind monster
+// Defense that their hit rate fell as they advanced. Turn that into a failing test, not a hunch.
+{
+    // to-hit ability held at a fixed +3 so the sim isolates the CALLING's attack progression
+    // (the attack rank) from stat luck — the rank curve is exactly what broke and was fixed.
+    const int AtkAbility = 3;
+    int TierDefFor(int level) => Rules.TierRow[Math.Max(1, (level + 1) / 2) - 1].def;
+    double HitRate(int toHit, int def, int n)
+    {
+        int hits = 0;
+        for (int i = 0; i < n; i++)
+            if (IronCode.ResolveStrike(toHit, def, new WeaponTraits()).Hit) hits++;
+        return (double)hits / n;
+    }
+
+    Console.WriteLine("balance — hit rate vs a tier-appropriate foe (attack rank + " + AtkAbility + " to-hit):");
+    bool floorHeld = true, martialBandHeld = true;
+    foreach (var c in cg.callings.OrderBy(x => x.attackRank).ThenBy(x => x.name))
+    {
+        var rates = new List<string>();
+        foreach (int L in new[] { 1, 3, 5, 7, 10 })
+        {
+            int toHit = CharGen.AttackFor(c.attackRank, L) + AtkAbility;
+            double rate = HitRate(toHit, TierDefFor(L), 3000);
+            rates.Add($"L{L}:{rate,4:P0}");
+            // the floor: no soul, however magical, becomes unable to threaten a level-appropriate foe
+            if (rate < 0.30) floorHeld = false;
+            // martials are the reliable damage dealers; they should stay solidly able to hit
+            if (c.attackRank == "Practiced" && (rate < 0.45 || rate > 0.80)) martialBandHeld = false;
+        }
+        Console.WriteLine($"  {c.name,-16} {c.attackRank,-9} {string.Join("  ", rates)}");
+    }
+    T("no calling falls below a 30% hit rate vs a tier-appropriate foe at any level", floorHeld);
+    T("martial (Practiced) callings hold a 45–80% hit band across levels", martialBandHeld);
+
+    // Step 1's structural invariant: every attack rank climbs +1 per level, so the distance
+    // between the best gun Calling and the worst caster is fixed — it never widens with level.
+    bool gapConstant = true;
+    for (int L = 2; L <= 10; L++)
+        if (CharGen.AttackFor("Practiced", L) - CharGen.AttackFor("Slight", L) != 2) gapConstant = false;
+    T("the Practiced→Slight attack gap is a constant 2 from 2nd level up (never widens)", gapConstant);
+    T("no attack rank ever loses ground as level rises", Enumerable.Range(2, 9).All(L =>
+        new[] { "Practiced", "Steady", "Slight" }.All(rk =>
+            CharGen.AttackFor(rk, L) >= CharGen.AttackFor(rk, L - 1))));
+}
+
 T("17 callings", cg.callings.Count == 17);
 T("10 origins", cg.origins.Count == 10);
 T("17 skills", cg.skills.Count == 17);
