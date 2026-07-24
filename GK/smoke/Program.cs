@@ -159,6 +159,73 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
 // ---- Character generator: data sanity ----
 CharGen.Load();
 var cg = CharGen.D;
+
+// ============================================================ THE IRON CODE ENGINE (Ch. XI)
+// Property-based proof that the adjudicator matches the printed gun rules.
+{
+    // -- every weapon's free-text traits parse, and known ones parse to the right structure --
+    T("every weapon's traits parse without throwing",
+        cg.weapons.All(w => WeaponTraits.Parse(w.traits) != null));
+    var sa = WeaponTraits.Parse(cg.weapons.First(w => w.name == "Single-Action Revolver").traits);
+    T("Single-Action Revolver → Fatal d10, Misfire 1", sa.FatalDie == 10 && sa.Misfire == 1 && !sa.Agile);
+    var sg = WeaponTraits.Parse(cg.weapons.First(w => w.name == "Double-Barrel Shotgun").traits);
+    T("Double-Barrel → Scatter 10, Fatal d12, Kickback", sg.Scatter == 10 && sg.FatalDie == 12 && sg.Kickback);
+    var kn = WeaponTraits.Parse(cg.weapons.First(w => w.name == "Knife / Bowie").traits);
+    T("Knife → Agile, no Misfire", kn.Agile && !kn.HasMisfire && kn.FatalDie == 0);
+    var br = WeaponTraits.Parse(cg.weapons.First(w => w.name == "Buffalo Rifle").traits);
+    T("Buffalo Rifle → Volley 30, Fatal d12", br.Volley == 30 && br.FatalDie == 12);
+
+    // -- the Multiple Attack Penalty (Ch. XI) --
+    T("MAP: 1st clean, 2nd -5, 3rd -10", IronCode.MapPenalty(1, false) == 0
+        && IronCode.MapPenalty(2, false) == -5 && IronCode.MapPenalty(3, false) == -10);
+    T("MAP: Agile softens to -4/-8", IronCode.MapPenalty(2, true) == -4 && IronCode.MapPenalty(3, true) == -8);
+
+    // -- the Strike: nat 20 always hits, nat 1 always misses, jam only on a Misfire crit-fail --
+    T("nat 20 hits even against an impossible Defense",
+        IronCode.ResolveStrike(-50, 99, sa, forcedDie: 20).Hit);
+    T("nat 1 misses even against a trivial Defense",
+        !IronCode.ResolveStrike(+50, 1, sa, forcedDie: 1).Hit);
+    T("beat-by-10 is a critical hit", IronCode.ResolveStrike(20, 13, sa, forcedDie: 15).Crit);      // 35 vs 13
+    T("a Misfire weapon jams on a natural 1", IronCode.ResolveStrike(0, 13, sa, forcedDie: 1).Jam);
+    var saber = cg.weapons.First(w => w.name == "Saber");
+    T("a no-Misfire weapon never jams", !IronCode.ResolveStrike(0, 13, WeaponTraits.Parse(saber.traits), forcedDie: 1).Jam);
+
+    // -- damage bounds, incl. the Fatal crit rule (2N dice of Fatal + one more) --
+    for (int i = 0; i < 500; i++)
+    {
+        var norm = IronCode.RollDamage("1d8", sa, crit: false);
+        T("1d8 normal in [1,8]", norm.Total is >= 1 and <= 8);
+        var crit = IronCode.RollDamage("1d8", sa, crit: true);   // 2×1d10 + 1d10 = 3d10
+        T("1d8 Fatal d10 crit in [3,30]", crit.Total is >= 3 and <= 30);
+        var shot = IronCode.RollDamage("2d8", sg, crit: true);   // 2×2d12 + 1d12 = 5d12
+        T("2d8 Fatal d12 crit in [5,60]", shot.Total is >= 5 and <= 60);
+        var plain = IronCode.RollDamage("1d8", WeaponTraits.Parse(saber.traits), crit: true);  // no Fatal → ×2
+        T("no-Fatal crit is doubled dice [2,16]", plain.Total is >= 2 and <= 16);
+    }
+
+    // -- Damage Reduction: typed, best-of (no stacking), floored at zero (Ch. XI) --
+    var dr = new[] { new DrEntry(2, "blades"), new DrEntry(1, "small shot") };
+    T("DR vs blades reduces a blade hit", IronCode.ApplyDR(6, "blades", dr) == 4);
+    T("DR vs blades does NOT reduce a ball hit", IronCode.ApplyDR(6, "ball", dr) == 6);
+    T("DR does not stack — best line applies",
+        IronCode.ApplyDR(6, "blades", new[] { new DrEntry(2, "blades"), new DrEntry(3, "all") }) == 3);
+    T("DR never lowers a hit below zero", IronCode.ApplyDR(1, "blades", new[] { new DrEntry(5, "blades") }) == 0);
+
+    // -- damage types for DR matching --
+    T("a revolver fires ball (armor mostly ignores)",
+        IronCode.DamageType(cg.weapons.First(w => w.name == "Single-Action Revolver")) == "ball");
+    T("a shotgun throws small shot", IronCode.DamageType(cg.weapons.First(w => w.name == "Double-Barrel Shotgun")) == "small shot");
+    T("a blade cuts as blades", IronCode.DamageType(saber) == "blades");
+
+    // -- the composed Strike: a miss deals nothing; a hit rolls damage and applies DR --
+    var miss = IronCode.Strike(-50, 99, cg.weapons.First(w => w.name == "Single-Action Revolver"), forcedDie: 10);
+    T("a missed Strike deals no damage", miss.Damage == null && miss.AfterDR == 0);
+    var hit = IronCode.Strike(+50, 1, cg.weapons.First(w => w.name == "Knife / Bowie"),
+        targetDr: new[] { new DrEntry(1, "blades") }, forcedDie: 10);
+    T("a landed knife Strike deals its damage minus DR",
+        hit.Damage != null && hit.AfterDR == Math.Max(0, hit.Damage.Total - 1));
+}
+
 T("17 callings", cg.callings.Count == 17);
 T("10 origins", cg.origins.Count == 10);
 T("17 skills", cg.skills.Count == 17);
