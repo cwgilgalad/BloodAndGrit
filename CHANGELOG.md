@@ -8,6 +8,21 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.16.2 — a headless self-test of the shipped binary (2026-07-25,
+  user-requested).** `GritKeeper.exe --selftest` drives the real code paths behind the table
+  tools — #1 the Iron Code Strike (hit, Fatal crit, typed DR), #2 the Beat/MAP turn state
+  (spend, penalty, Begin turn), #3 the Dread economy and the live faith pool — validates a
+  generated caster-hybrid, and **constructs the whole WinForms UI graph** (every tab, the new
+  Strike ▸/Dread ▸ buttons, the Beats and Pool columns, the seeded demo posse). It prints to
+  the caller's console (via `AttachConsole`) and drops a `selftest-report.txt`, exiting 0 (all
+  clear) / 1 (a check failed). Normal launch is untouched.
+
+  It lets a remote or headless session verify the built exe without a screen — and on this
+  machine the full UI graph does construct headlessly, so the largest residual risk (does the
+  new WinForms wiring even build?) is now a passing check rather than a manual step. The
+  modal dialogs' visual layout and click-through still want the on-screen run-through. First
+  run: **11/11 checks passed.**
+
 - **Keeper's Book v2.10 · Bestiary v2.9 — the magic systems reach the Keeper's side
   (2026-07-25, user-requested).** The Signs (Ch. XIII) and Miracles (Ch. VI) are full systems
   now, but the two Keeper-facing books hadn't caught up — a Keeper running an NPC cultist or

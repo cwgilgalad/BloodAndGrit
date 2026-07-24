@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.16.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.16.2 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any

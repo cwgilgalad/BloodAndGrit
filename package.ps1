@@ -9,7 +9,7 @@
         1.  cd GK\source; dotnet publish -c Release        # produces the self-contained exe
         2.  <your sign step>  (sign.ps1 / signtool with your .pfx)  on the published exe
         3.  .\package.ps1                                   # this script -> GritKeeper.zip
-        4.  upload GritKeeper.zip to the GitHub Release, paste RELEASE_NOTES_v1.16.1.md
+        4.  upload GritKeeper.zip to the GitHub Release, paste RELEASE_NOTES_v1.16.2.md
 
     -Exe   path to the (signed) published exe; defaults to the standard publish output.
     -Force package even if the exe is not Authenticode-signed (for a local test build only).
@@ -56,7 +56,7 @@ Write-Host "  wrote GritKeeper.zip ($mb MB)"
 
 Write-Host ""
 Write-Host "Ready: GritKeeper.zip carries GritKeeper.exe $($info.FileVersion) ($sig) + the full source."
-Write-Host "Upload it to the GitHub Release and paste RELEASE_NOTES_v1.16.1.md."
+Write-Host "Upload it to the GitHub Release and paste RELEASE_NOTES_v1.16.2.md."
 
 # robocopy leaves a non-zero $LASTEXITCODE on success (1 = files copied); end clean so a
 # caller or CI check doesn't read this run as a failure.

@@ -1,4 +1,4 @@
-# GritKeeper v1.16.1
+# GritKeeper v1.16.2
 
 The Keeper's side of *Blood & Grit* in one window — now with the whole Iron Code and the
 horror economy adjudicated for you, not just displayed. Unzip, run `GritKeeper.exe`. No .NET
