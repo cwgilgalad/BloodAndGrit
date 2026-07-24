@@ -336,7 +336,9 @@ T("both genders turn up", Enumerable.Range(0, 60).Select(_ => CharGen.Generate(1
     for (int i = 0; i < 6; i++) spec.PreGiftScores[gh.keyAbilities[i]] = pool2[i];
     var s2 = CharGen.Assemble(spec);
     T("assemble honors the given gender", s2.Gender == "Woman");
-    T("assemble rolls a matching name", CharGen.Flavor("givenWomen").Contains(s2.Name.Split(' ')[0]));
+    T("assemble rolls a matching name",
+        CharGen.Flavor("givenWomen").Contains(s2.Name.Split(' ')[0])
+        || CharGen.Flavor("fullNamesWomen").Contains(s2.Name));   // a name may be a whole-name draw
     T("render carries the gender", CharGen.Render(s2).Contains("woman"));
 }
 

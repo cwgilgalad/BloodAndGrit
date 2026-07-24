@@ -8,6 +8,46 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.20 · GritKeeper v1.14.0 — the faithful get a magic system too
+  (2026-07-24, user-requested).** Step 3 gave the Old Dark forty ranked Signs and left the
+  five Callings of Faith with what they had before: a fixed kit of signature features and no
+  chosen, ranked, growing repertoire. The asymmetry was glaring. So the faithful now work
+  **Miracles** — the book already called them that ("Conviction fuels your sermons and
+  miracles") — **forty of them, on six lists, across the same five Ranks** as the Signs.
+
+  **The exact parallel to the Signs, deliberately.** Rank opens at 1st/3rd/5th/7th/9th (one
+  shared `RankAt` spine now drives both systems); a soul begins knowing two Miracles and
+  learns another as each Rank opens, to six by 10th. Every Calling of Faith draws on the
+  **Common Blessings** plus one list of its own, closed to the others: the Padre's
+  **Liturgy**, the Preacher's **Revival**, the Shaman's **Spirits**, the Medicine Man's
+  **Mending**, the Witch Hunter's **Consecrations**. A Padre and a Preacher answer the same
+  dark and no longer answer it with the same words.
+
+  **What makes faith not the Old Dark.** Miracles cost no Mark and draw no Backlash — the
+  price is the Calling's pool (Grace, Conviction, Breath, Vital Breath), and the risk is a
+  prayer unanswered. They keep each Calling's signature features intact and sit on top, the
+  way the Hexer kept Witch-Sight and chose Signs.
+
+  **The Witch Hunter, who had no pool, gains one.** *Zeal* (WIT mod + half level) fuels their
+  Consecrations — salt, silver, fire, ward, and the litany of weaknesses. The generic pool
+  code meant adding it was a one-line data change that "just worked" through the reckoning,
+  the sheet, and the ledger.
+
+  **Enforced end to end, same discipline as the Signs.** `CgMiracle`, `miracleLists` and
+  `miraclesKnownAt` per Calling, `MiraclesKnown` on the sheet, and `MiraclesFor` as the
+  single gate every path draws through — generation, wizard, level-up, and the level-up
+  option list. `Validate` rejects any Miracle off the Calling's lists or above its Rank, and
+  — the one genuinely new rule — refuses any soul that somehow holds both a Sign and a
+  Miracle. The in-app Quick Reference gained a Miracles leaf rendering all six lists live
+  from the data; the printed sheet, the Ledger and the Posse notes all show them. Smoke
+  5056 → 5137, including a per-Calling check that each faith soul actually receives its
+  Miracles at the right count and legal Rank.
+
+  Book 185 → 199 pages: a new *The Work of Faith* section closes Ch. VI (the rank/pool/list
+  rules plus all six lists), the five Callings each name their lists, and the Index gained
+  51 entries. Fixed in passing: the CLAUDE.md version table, which had been left at v2.18
+  when Step 3's doc script threw before its write.
+
 - **Player's Book v2.19 · GritKeeper v1.13.0 — the Signs become a magic system
   (2026-07-23, user-requested).** Ch. XIII held eight Signs, flat, with no progression and
   no distinction between the four Callings that work them: a 10th-level Hexer knew seven of
