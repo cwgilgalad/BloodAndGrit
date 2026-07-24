@@ -1,5 +1,5 @@
 {
- "_source": "Transcribed from Blood & Grit Player's Book v2.19, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
+ "_source": "Transcribed from Blood & Grit Player's Book v2.20, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
  "honestArray": [
   15,
   14,
@@ -767,6 +767,288 @@
    "rank": 5,
    "cost": "One hour · 5 Nerve",
    "desc": "For one night a place is genuinely safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. Backlash: One night only, and the same roof will not answer twice in the same season. Choose the night with care."
+  }
+ ],
+ "miracles": [
+  {
+   "name": "The Steadying Word",
+   "list": "blessing",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it."
+  },
+  {
+   "name": "A Light Unfailing",
+   "list": "blessing",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "A steady light rises at your word, warm where Cold Lamp is cold, and lasts an hour. The uncanny will not willingly step into it, and the Marked find it hard to meet."
+  },
+  {
+   "name": "The Blessing of the Road",
+   "list": "blessing",
+   "rank": 2,
+   "cost": "Ten minutes · 2 Faith",
+   "desc": "Bless a journey before it is begun. For the next day the party ignores the first hazard of the trail and travels at +2 on Survival to find the way, the water, and the safe camp."
+  },
+  {
+   "name": "Hands Clasped",
+   "list": "blessing",
+   "rank": 2,
+   "cost": "1 Beat · 2 Faith",
+   "desc": "Take an ally's hand, or bid them take another's. For the scene the two of you share your saves against fear — whichever of you rolls better, both use — and neither may be made to flee while the other stands."
+  },
+  {
+   "name": "The Warding Psalm",
+   "list": "blessing",
+   "rank": 3,
+   "cost": "Reaction · 3 Faith",
+   "desc": "As an uncanny blow lands on you or a soul beside you, speak the psalm and turn it: the attack is halved, and its wielder gives ground a step. You may do this once per round, and not on ordinary lead."
+  },
+  {
+   "name": "The Unclean Named",
+   "list": "blessing",
+   "rank": 3,
+   "cost": "1 Beat · 2 Faith · Will save",
+   "desc": "Point and name a thing for what it truly is. It saves or its nature stands revealed to all who can hear you, and it suffers a −2 against you and yours until the scene ends. Some things have not been named aloud in a long age, and do not care for it."
+  },
+  {
+   "name": "The Vigil",
+   "list": "blessing",
+   "rank": 4,
+   "cost": "One minute · 3 Faith",
+   "desc": "Keep the watch and pray it through. Until dawn, no one in the camp may be surprised or driven by fear, and every soul but you sleeps easy under it. You take no rest, and you will feel the want of it come morning."
+  },
+  {
+   "name": "Rebuke the Dark",
+   "list": "blessing",
+   "rank": 4,
+   "cost": "1 Beat · 4 Faith · Will save",
+   "desc": "Raise your voice against the unclean things in sight. Each lesser uncanny saves or flees you for a round per two levels, and a greater one that fails is Frightened and gives ground. The oldest of them only smile — but the small ones run."
+  },
+  {
+   "name": "The Miracle Plain",
+   "list": "blessing",
+   "rank": 5,
+   "cost": "1 Beat · 0 Faith",
+   "desc": "Once, and never lightly: ask for the thing that cannot be asked for, and now and again receive it. Undo one calamity of the moment just past — a death, a fire caught, a fall — as the Keeper allows. It empties your whole pool to nothing and cannot be tried again until you have rested and given thanks. Most prayers are not answered. This is about the ones that are."
+  },
+  {
+   "name": "The Covenant",
+   "list": "blessing",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith",
+   "desc": "Spread your arms and stand for them. For the scene, no ally who can hear you may be brought below 1 Blood by uncanny harm — struck to the edge of death, and no further, while your voice holds. Ordinary lead still kills as it pleases. The dark does not get to."
+  },
+  {
+   "name": "Asperges Me",
+   "list": "liturgy",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith · Fortitude save",
+   "desc": "Sprinkle holy water and speak the old antiphon. Each Marked or uncanny thing within reach saves or takes 1d6 and recoils, hissing at the water and the Latin both."
+  },
+  {
+   "name": "The Sign of the Cross",
+   "list": "liturgy",
+   "rank": 1,
+   "cost": "Reaction · 1 Faith",
+   "desc": "The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time."
+  },
+  {
+   "name": "The Litany of the Saints",
+   "list": "liturgy",
+   "rank": 2,
+   "cost": "One minute · 2 Faith",
+   "desc": "Call the long roll of the faithful dead, and let the living hear how many stood before them. Every ally who listens gains one reroll against fear, kept until the scene ends or it is spent."
+  },
+  {
+   "name": "Extreme Unction",
+   "list": "liturgy",
+   "rank": 3,
+   "cost": "One minute · 2 Faith",
+   "desc": "Anoint the dying with oil and the last words. They are stabilized at once, wake with 1d6 Blood, and — whatever comes after — cannot rise as one of the restless dead. The rite is a mercy first and a precaution second, but it is both."
+  },
+  {
+   "name": "The Interdict",
+   "list": "liturgy",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Faith",
+   "desc": "Lay the Church's ban upon a place, an object, or a grave. For a day and a night no uncanny thing may enter it, use it, or draw strength from it, as though the ground itself had been forbidden to them by an authority older than their hunger."
+  },
+  {
+   "name": "Te Deum",
+   "list": "liturgy",
+   "rank": 5,
+   "cost": "One minute · 5 Faith · Will save",
+   "desc": "The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words."
+  },
+  {
+   "name": "Call to the Mourner's Bench",
+   "list": "revival",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith · Will save",
+   "desc": "Round on one sinner — mortal or monstrous — and call them forward to answer for it. They save or lose their next action, rooted and named before the whole room."
+  },
+  {
+   "name": "The Amen Corner",
+   "list": "revival",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Work the crowd, and let them work back. Allies who can hear you and answer aloud gain +1 to hit for a round. Faith, the Preacher will tell you, is a call and a response."
+  },
+  {
+   "name": "The Altar Call",
+   "list": "revival",
+   "rank": 2,
+   "cost": "1 Beat · 2 Faith",
+   "desc": "Lay hands and call a soul back to itself: heal a touched ally 2d6, and they may at once reroll one save they have just failed. Come forward, the Preacher says. It is not too late — not quite yet."
+  },
+  {
+   "name": "Testify",
+   "list": "revival",
+   "rank": 3,
+   "cost": "1 Beat · 3 Faith · Will save",
+   "desc": "Speak a true and terrible thing into the silence. One creature saves or is Frightened 2 and made to blurt the last lie it told. The Preacher has found that the guilty fear the truth far worse than the gun."
+  },
+  {
+   "name": "The Camp Meeting",
+   "list": "revival",
+   "rank": 4,
+   "cost": "sustained · 4 Faith",
+   "desc": "Preach a rolling revival and do not stop. For three rounds, so long as you keep the Word going and take no other action, every ally who can hear you regains Nerve and shakes one condition at the start of each round. The tent shakes. So does the dark outside it."
+  },
+  {
+   "name": "Pentecost",
+   "list": "revival",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith",
+   "desc": "Tongues of fire, and every ear hearing in its own language. For the scene your Brimstone strikes every uncanny thing you can see at once, and the Marked cannot resist it by their Mark. The fire does not fall often. When it does, it does not ask permission."
+  },
+  {
+   "name": "A Word to the Small Spirits",
+   "list": "spirits",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly."
+  },
+  {
+   "name": "The Offering",
+   "list": "spirits",
+   "rank": 1,
+   "cost": "One minute · 1 Faith",
+   "desc": "Leave tobacco, salt, or bread, and name the debt. The spirits of that ground grant safe passage, or +2 on one task done there, for as long as the gift is respected and the ground not fouled."
+  },
+  {
+   "name": "Borrow the Beast's Gift",
+   "list": "spirits",
+   "rank": 2,
+   "cost": "1 Beat · 2 Faith",
+   "desc": "Ask a nearby animal spirit for the loan of one gift, and wear it for a scene: an owl's eyes in the dark, a wolf's nose, a hare's speed, a bear's thick hide. The spirits lend gladly and expect the courtesy of thanks."
+  },
+  {
+   "name": "Turn the Weather",
+   "list": "spirits",
+   "rank": 3,
+   "cost": "One minute · 3 Faith",
+   "desc": "Coax the sky a step kinder or crueler for the hour — a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel and grants the favor, not the command."
+  },
+  {
+   "name": "The Spirit-Snare",
+   "list": "spirits",
+   "rank": 4,
+   "cost": "1 Beat · 4 Faith · Will save",
+   "desc": "Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it — able to speak, and to rage, and to bargain, but not to go."
+  },
+  {
+   "name": "Call the Great Spirit",
+   "list": "spirits",
+   "rank": 5,
+   "cost": "One minute · 5 Faith",
+   "desc": "Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked."
+  },
+  {
+   "name": "The Poultice",
+   "list": "mending",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse."
+  },
+  {
+   "name": "Set the Bone",
+   "list": "mending",
+   "rank": 1,
+   "cost": "One minute · 1 Faith",
+   "desc": "Splint, wrap, and set what is broken. Ease the penalty of one Lasting Injury for a day, buying a wounded soul the working hours the country would sooner deny them."
+  },
+  {
+   "name": "The Fever Broken",
+   "list": "mending",
+   "rank": 2,
+   "cost": "One minute · 2 Faith",
+   "desc": "Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse."
+  },
+  {
+   "name": "The Sleep of Healing",
+   "list": "mending",
+   "rank": 3,
+   "cost": "One minute · 3 Faith",
+   "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures."
+  },
+  {
+   "name": "The Life Shared",
+   "list": "mending",
+   "rank": 4,
+   "cost": "1 Beat · 4 Faith",
+   "desc": "Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one."
+  },
+  {
+   "name": "The Long Mercy",
+   "list": "mending",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith",
+   "desc": "Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today."
+  },
+  {
+   "name": "Salt the Threshold",
+   "list": "consecration",
+   "rank": 1,
+   "cost": "One minute · 1 Faith · Will save",
+   "desc": "Lay a line of blessed salt across a door, a window, a circle of camp. Uncanny things save or cannot cross it until dawn or until the line is broken by a living hand — theirs cannot break it."
+  },
+  {
+   "name": "The Litany of Weakness",
+   "list": "consecration",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Recite what you know of a thing's banes — the silver, the fire, the true name, the running water. Your next Judgment against it deals +1d8, the knowledge sharpening the blow."
+  },
+  {
+   "name": "Silver the Round",
+   "list": "consecration",
+   "rank": 2,
+   "cost": "1 Beat · 2 Faith",
+   "desc": "Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger."
+  },
+  {
+   "name": "The Branding",
+   "list": "consecration",
+   "rank": 3,
+   "cost": "One minute · 3 Faith · Will save",
+   "desc": "Mark your quarry with the sign of the hunt. For a day you always know its direction and rough distance, it cannot hide from you by any uncanny means, and it knows, wherever it runs, that it has been marked."
+  },
+  {
+   "name": "Consecrate the Killing Ground",
+   "list": "consecration",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Faith",
+   "desc": "Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at −2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all."
+  },
+  {
+   "name": "The Reckoning Fire",
+   "list": "consecration",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith · Reflex save",
+   "desc": "Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck."
   }
  ],
  "weapons": [
@@ -2630,7 +2912,23 @@
    "choice": null,
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Steady"
+   "attackRank": "Steady",
+   "miracleLists": [
+    "blessing",
+    "mending"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
   },
   {
    "name": "Padre",
@@ -2818,7 +3116,23 @@
    "choice": null,
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Steady"
+   "attackRank": "Steady",
+   "miracleLists": [
+    "blessing",
+    "liturgy"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
   },
   {
    "name": "Preacher",
@@ -3007,7 +3321,23 @@
    "choice": null,
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Steady"
+   "attackRank": "Steady",
+   "miracleLists": [
+    "blessing",
+    "revival"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
   },
   {
    "name": "Shaman",
@@ -3202,7 +3532,23 @@
    },
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Steady"
+   "attackRank": "Steady",
+   "miracleLists": [
+    "blessing",
+    "spirits"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
   },
   {
    "name": "Witch Hunter",
@@ -3394,11 +3740,31 @@
     "WIT",
     "PRE"
    ],
-   "pool": null,
+   "pool": {
+    "name": "Zeal",
+    "formula": "WIT+half",
+    "min": 1
+   },
    "choice": null,
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
-   "attackRank": "Practiced"
+   "attackRank": "Practiced",
+   "miracleLists": [
+    "blessing",
+    "consecration"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
   },
   {
    "name": "Dark Cultist",
@@ -4477,7 +4843,7 @@
    "Mary Sits-Alone"
   ]
  },
- "signRankAtLevel": {
+ "rankAtLevel": {
   "1": 1,
   "2": 1,
   "3": 2,
