@@ -604,50 +604,100 @@ public partial class MainForm
         var foes = tracker.Where(t => !ReferenceEquals(t, attacker)).ToList();
         if (foes.Count == 0) { Log("Nothing on the field to strike."); return; }
 
-        using var f = new Form { Width = 430, Height = 320, Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        // A creature strikes with its OWN attacks, parsed from the Bestiary line; a soul (or a
+        // hand-entered row) reaches for the posse's guns. The attacker's Ref names its creature.
+        var sheet = SoulOf(attacker)?.Sheet;
+        var creature = string.IsNullOrEmpty(attacker.Ref) ? null : Db.Find(attacker.Ref);
+        List<CreatureAttack> catks = null; List<string> riders = null;
+        if (creature != null)
+        {
+            (catks, riders) = CreatureAttack.Parse(creature.attacks);
+            if (catks.Count == 0)   // an intangible or pure-rider foe: give it its tier's benchmark blow
+            {
+                var row = Rules.TierRow[Math.Clamp(creature.tier - 1, 0, Rules.TierRow.Length - 1)];
+                catks.Add(new CreatureAttack { Name = "its assault", Bonus = row.atk, Damage = row.dmg });
+            }
+        }
+        bool asCreature = creature != null;
+
+        bool hasSpecials = asCreature && (!string.IsNullOrWhiteSpace(creature.special) || riders.Count > 0);
+        int botY = hasSpecials ? 320 : 240;
+        using var f = new Form { Width = 430, Height = botY + 80, Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         Label L(string t, int top) => new() { Left = 16, Top = top + 3, Width = 92, Text = t };
         var target = new ComboBox { Left = 112, Top = 15, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var t in foes) target.Items.Add(t.Name);
         target.SelectedIndex = 0;
         var weapon = new ComboBox { Left = 112, Top = 51, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
-        foreach (var w in CharGen.D.weapons) weapon.Items.Add($"{w.name}  ({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})");
+        if (asCreature)
+            foreach (var a in catks)
+                weapon.Items.Add($"{a.Name}  +{a.Bonus} ({(a.DealsDamage ? a.Damage : "no dice")}{(a.Type != "blades" ? " " + a.Type : "")})"
+                                 + (string.IsNullOrEmpty(a.Effect) ? "" : "  · " + a.Effect));
+        else
+            foreach (var w in CharGen.D.weapons) weapon.Items.Add($"{w.name}  ({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})");
         var toHit = new NumericUpDown { Left = 112, Top = 87, Width = 70, Minimum = -20, Maximum = 40, Value = 0 };
         var dr = new NumericUpDown { Left = 112, Top = 123, Width = 70, Minimum = 0, Maximum = 40, Value = 0 };
         var mapLbl = new Label { Left = 200, Top = 90, Width = 197, ForeColor = Blood };
+        // Dice-and-books table: the Keeper rolls the d20 and enters it; the engine table rolls its own.
+        var d20 = new NumericUpDown { Left = 250, Top = 123, Width = 60, Minimum = 1, Maximum = 20, Value = 10 };
 
-        // Prefill the attacker's own to-hit off their sheet, and re-figure it when the gun changes.
-        var sheet = SoulOf(attacker)?.Sheet;
+        // Prefill the to-hit — a creature's built-in bonus, or a soul's own off their sheet — and
+        // re-figure it (and the MAP) when the chosen attack changes.
         void Sync()
         {
-            var w = CharGen.D.weapons[Math.Max(0, weapon.SelectedIndex)];
-            if (sheet != null) toHit.Value = Math.Clamp(CombatFlow.AttackBonusFor(sheet, w), -20, 40);
-            int map = IronCode.MapPenalty(attacker.MapStep, WeaponTraits.Parse(w.traits).Agile);
+            int idx = Math.Max(0, weapon.SelectedIndex);
+            bool agile;
+            if (asCreature) { toHit.Value = Math.Clamp(catks[idx].Bonus, -20, 40); agile = false; }
+            else
+            {
+                var w = CharGen.D.weapons[idx];
+                if (sheet != null) toHit.Value = Math.Clamp(CombatFlow.AttackBonusFor(sheet, w), -20, 40);
+                agile = WeaponTraits.Parse(w.traits).Agile;
+            }
+            int map = IronCode.MapPenalty(attacker.MapStep, agile);
             mapLbl.Text = $"MAP this Strike: {(map == 0 ? "none (clean)" : map.ToString())} · Beats left {attacker.Beats}";
         }
-        // default the weapon to the attacker's carried gun if we can spot one, else the first
-        int guess = sheet?.WeaponsCarried?.Select(wc => CharGen.D.weapons.FindIndex(w => wc.StartsWith(w.name)))
-                        .FirstOrDefault(ix => ix >= 0) ?? -1;
+        // default a soul to the gun they carry if we can spot one, else the first attack
+        int guess = asCreature ? -1
+            : sheet?.WeaponsCarried?.Select(wc => CharGen.D.weapons.FindIndex(w => wc.StartsWith(w.name)))
+                   .FirstOrDefault(ix => ix >= 0) ?? -1;
         weapon.SelectedIndex = guess >= 0 ? guess : 0;
         weapon.SelectedIndexChanged += (s, e) => Sync();
         Sync();
 
-        var ok = new Button { Text = "Strike ▸", Left = 214, Top = 240, Width = 90, DialogResult = DialogResult.OK };
-        var cancel = new Button { Text = "Close", Left = 310, Top = 240, Width = 84, DialogResult = DialogResult.Cancel };
+        var ok = new Button { Text = "Strike ▸", Left = 214, Top = botY, Width = 90, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Close", Left = 310, Top = botY, Width = 84, DialogResult = DialogResult.Cancel };
         f.Controls.AddRange(new Control[] {
-            L("Target:", 15), target, L("Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
+            L("Target:", 15), target, L(asCreature ? "Attack:" : "Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
             L("Target DR:", 123), dr,
-            new Label { Left = 16, Top = 162, Width = 381, Height = 66, ForeColor = Ink,
-                Text = "The engine rolls the d20, reads the four degrees, applies the Multiple Attack Penalty at this combatant's step and the Fatal die on a critical hit, subtracts the target's DR, and takes the Blood — then spends a Beat. Strike again for the next at MAP." },
+            new Label { Left = 16, Top = 162, Width = 381, Height = 50, ForeColor = Ink,
+                Text = (EngineRolls ? "The engine rolls the d20" : "You roll the d20 and enter it; the engine")
+                     + ", reads the four degrees, applies the Multiple Attack Penalty at this combatant's step" + (asCreature ? "" : " and the Fatal die on a critical hit") + ", subtracts the target's DR, takes the Blood, and spends a Beat. Strike again for the next at MAP." },
             ok, cancel });
+        if (!EngineRolls)
+        {
+            f.Controls.Add(new Label { Left = 200, Top = 126, Width = 48, Text = "d20:", ForeColor = Blood, TextAlign = ContentAlignment.MiddleRight });
+            f.Controls.Add(d20);
+        }
+        if (hasSpecials)
+        {
+            var bits = new List<string>();
+            if (!string.IsNullOrWhiteSpace(creature.special)) bits.Add(creature.special.Trim());
+            foreach (var r in riders) bits.Add("• " + char.ToUpper(r[0]) + r.Substring(1));
+            f.Controls.Add(new Label { Left = 16, Top = 214, Width = 381, Text = "Its special work — narrate as it fights:", ForeColor = Blood, Font = new Font(Font, FontStyle.Italic) });
+            f.Controls.Add(new TextBox { Left = 16, Top = 234, Width = 381, Height = botY - 244, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, BorderStyle = BorderStyle.FixedSingle, BackColor = Paper, Text = string.Join("\r\n", bits) });
+        }
         f.AcceptButton = ok;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
             var tgt = foes[target.SelectedIndex];
-            var w = CharGen.D.weapons[Math.Max(0, weapon.SelectedIndex)];
             var drList = dr.Value > 0 ? new[] { new DrEntry((int)dr.Value, "all") } : null;
-            var rep = CombatFlow.StrikeAndApply(attacker, tgt, w, (int)toHit.Value, drList);
-            Log(rep.Line);
+            int idx = Math.Max(0, weapon.SelectedIndex);
+            int? forced = EngineRolls ? null : (int)d20.Value;
+            var rep = asCreature
+                ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced)
+                : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList, forced);
+            Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $"  — {catks[idx].Effect}." : ""));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
         }
@@ -677,11 +727,18 @@ public partial class MainForm
         var check = new Button { Text = "Check ▸", Left = 250, Top = 90, Width = 150, Height = 34, DialogResult = DialogResult.OK };
         var close = new Button { Text = "Close", Left = 250, Top = 132, Width = 150, Height = 30, DialogResult = DialogResult.Cancel };
         f.Controls.AddRange(new Control[] { check, close });
+        // Dice-and-books table: the Keeper rolls the Will save and enters it; the engine table rolls it.
+        var d20 = new NumericUpDown { Left = 335, Top = 174, Width = 65, Minimum = 1, Maximum = 20, Value = 10 };
+        if (!EngineRolls)
+        {
+            f.Controls.Add(new Label { Left = 250, Top = 176, Width = 82, Text = "d20 rolled:", ForeColor = Blood });
+            f.Controls.Add(d20);
+        }
         f.AcceptButton = check;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
-            var o = Horror.DreadCheck(soul.Will, (int)dc.Value);
+            var o = Horror.DreadCheck(soul.Will, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
             Log($"{soul.Name}: {o.Line}");
             if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
             if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)

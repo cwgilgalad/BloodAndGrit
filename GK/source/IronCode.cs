@@ -44,6 +44,80 @@ public class WeaponTraits
     }
 }
 
+/// <summary>One attack a Bestiary creature makes, read out of its free-text <c>attacks</c> line so a
+/// creature can Strike through the very same Iron Code engine as a posse gun — with its OWN to-hit
+/// and damage, not the party's. The free-text in creatures.json stays the single source of truth (it
+/// is what the Bestiary prints); this parses structure out of it, exactly as <see cref="WeaponTraits"/>
+/// does for a gun's traits. A creature's whole line splits on ';' into named Strikes ("pick and claw
+/// +4 (1d6+2 and grab)") and riders — the maneuvers and auras with no to-hit that the Keeper narrates.</summary>
+public class CreatureAttack
+{
+    public string Name { get; set; } = "";      // "pick and claw", "draining bite", "a touch that blisters"
+    public int Bonus { get; set; }               // the built-in to-hit, e.g. +6
+    public string Damage { get; set; } = "1d4";  // the dice, e.g. "1d6+2"; "" for a hit with no dice
+    public string Type { get; set; } = "blades"; // a physical natural attack, or an element it names (fire/cold/…)
+    public string Effect { get; set; } = "";     // the rider after the dice: "grab", "Fort DC 15 or Sickened 1"
+
+    public bool DealsDamage => !string.IsNullOrWhiteSpace(Damage);
+
+    /// <summary>A creature attack feeds the engine as a plain weapon of its own damage — no gun
+    /// traits (no Fatal/Misfire). Its <see cref="Type"/> overrides the gun/blade damage-type guess.
+    /// A dice-less attack ("spray +7 (no Blood…)") deals 0 Blood: the hit is real, the harm is the rider.</summary>
+    public CgWeapon ToWeapon() => new() { name = Name, dmg = string.IsNullOrEmpty(Damage) ? "0" : Damage, traits = "", kind = "natural" };
+
+    static readonly Regex StrikeRe  = new(@"^(?<name>.+?)\s*\+(?<bonus>\d+)\s*\((?<inner>[^)]*)\)(?<tail>.*)$", RegexOptions.Compiled);
+    static readonly Regex LeadDice  = new(@"^\s*(?<dmg>\d*d\d+(?:\s*[+\-]\s*\d+)?)", RegexOptions.Compiled);
+    static readonly Regex ElementRe = new(@"\b(fire|cold|acid|lightning|electric(?:ity)?|poison|necrotic|holy|unholy|spirit)\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    static readonly char[] EffectTrim = { ' ', ',', '-', '—' };   // strip leading punctuation and dashes
+
+    // Split a creature's line on ';' — but only at paren depth zero, so a parenthetical that itself
+    // holds a ';' ("bite +5 (1d4 and holds; venom Fort DC 13 …)") is not sheared in two.
+    static IEnumerable<string> Clauses(string s)
+    {
+        int depth = 0, start = 0;
+        for (int i = 0; i < s.Length; i++)
+        {
+            char ch = s[i];
+            if (ch == '(') depth++;
+            else if (ch == ')') { if (depth > 0) depth--; }
+            else if (ch == ';' && depth == 0) { yield return s.Substring(start, i - start); start = i + 1; }
+        }
+        yield return s.Substring(start);
+    }
+
+    /// <summary>Parse a creature's whole <c>attacks</c> line into its Strikes (with numbers, ready for
+    /// the engine) and its riders (clauses that carry no to-hit — the special maneuvers and auras).</summary>
+    public static (List<CreatureAttack> strikes, List<string> riders) Parse(string attacks)
+    {
+        var strikes = new List<CreatureAttack>();
+        var riders = new List<string>();
+        foreach (var raw in Clauses(attacks ?? ""))
+        {
+            var clause = raw.Trim();
+            if (clause.Length == 0) continue;
+            var m = StrikeRe.Match(clause);
+            if (!m.Success) { riders.Add(clause); continue; }   // a rider: no "+N (…)"
+
+            var a = new CreatureAttack { Name = m.Groups["name"].Value.Trim(), Bonus = int.Parse(m.Groups["bonus"].Value) };
+            string inner = m.Groups["inner"].Value.Trim();
+            string tail = m.Groups["tail"].Value.Trim();       // text after the ')': "…) and a strength that bends iron"
+            var dm = LeadDice.Match(inner);
+            string effect;
+            if (dm.Success) { a.Damage = dm.Groups["dmg"].Value.Replace(" ", ""); effect = inner.Substring(dm.Length).TrimStart(EffectTrim); }
+            else            { a.Damage = ""; effect = inner; }  // "+9 (all in its path)" — a hit, no dice of its own
+            if (tail.Length > 0) effect = (effect.Length > 0 ? effect + " " : "") + tail.TrimStart(EffectTrim);
+            if (effect.StartsWith("and ", StringComparison.OrdinalIgnoreCase)) effect = effect.Substring(4);
+            a.Effect = effect.Trim();
+            var el = ElementRe.Match(inner + " " + tail);
+            if (el.Success) a.Type = el.Value.ToLowerInvariant();
+            strikes.Add(a);
+        }
+        return (strikes, riders);
+    }
+}
+
 /// <summary>One line of Damage Reduction on a defender (Ch. XI): an amount and what it turns.
 /// <c>Vs</c> is "blades" | "small shot" | "ball" | "nonmagical" | "all".</summary>
 public record DrEntry(int Amount, string Vs);
@@ -141,13 +215,16 @@ public static class IronCode
     /// <summary>Resolve a Strike and its damage in one call, applying the defender's DR. Damage is
     /// null and AfterDR 0 on a miss. This is the whole of an attack the table can read off one line.</summary>
     public static Resolution Strike(int attackMod, int defense, CgWeapon weapon,
-        IEnumerable<DrEntry> targetDr = null, int? forcedDie = null)
+        IEnumerable<DrEntry> targetDr = null, int? forcedDie = null, string forceType = null)
     {
         var tr = WeaponTraits.Parse(weapon?.traits);
         var so = ResolveStrike(attackMod, defense, tr, forcedDie);
         if (!so.Hit) return new Resolution(so, null, 0, null);
         var dmg = RollDamage(weapon?.dmg ?? "1d4", tr, so.Crit);
-        string dtype = DamageType(weapon);
+        // A creature attack names its own damage type (a fiery touch, a freezing grip); a gun's is
+        // read off its kind and Scatter. The forced type, when given, wins — so worn-armor DR ("blades")
+        // keeps out a claw but not a flame.
+        string dtype = string.IsNullOrEmpty(forceType) ? DamageType(weapon) : forceType;
         int after = ApplyDR(dmg.Total, dtype, targetDr);
         return new Resolution(so, dmg, after, dtype);
     }
@@ -175,12 +252,19 @@ public static class CombatFlow
     /// <summary>Take one Strike from <paramref name="attacker"/> at <paramref name="target"/> and
     /// apply it: spend a Beat, resolve at the attacker's current MAP step, subtract the damage
     /// (after DR) from the target's Blood, and advance the step. Returns a one-line log summary.</summary>
-    public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CgWeapon weapon,
+    /// <summary>Take a Strike with a creature's own natural attack — its built-in to-hit, its damage,
+    /// and its damage type — through the identical path a posse gun takes. The Bestiary's numbers
+    /// finally reach the table: a ghoul claws with +6 (1d8+3), not with the party's revolver.</summary>
+    public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CreatureAttack attack,
         int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null)
+        => StrikeAndApply(attacker, target, attack.ToWeapon(), attackBonus, targetDr, forcedDie, attack.Type);
+
+    public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CgWeapon weapon,
+        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null, string forceType = null)
     {
         var tr = WeaponTraits.Parse(weapon?.traits);
         int map = IronCode.MapPenalty(attacker?.MapStep ?? 1, tr.Agile);
-        var res = IronCode.Strike(attackBonus + map, target.Defense, weapon, targetDr, forcedDie);
+        var res = IronCode.Strike(attackBonus + map, target.Defense, weapon, targetDr, forcedDie, forceType);
 
         if (attacker != null)
         {
