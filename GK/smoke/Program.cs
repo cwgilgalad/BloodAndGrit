@@ -133,6 +133,38 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
     T("blades DR does not reduce a fire touch", fr.Res.DamageType == "fire" && fr.Res.AfterDR == fr.Res.Damage.Total);
 }
 
+// CombatMenu is the single authority the Strike dialog uses to decide whose attacks a tracker
+// row shows. The bug it guards: the posse and creatures showing EACH OTHER'S attacks. IsPC is
+// decisive, so no stray Ref on a soul (or a lost Ref on a foe) can cross the wires.
+{
+    // a real Bestiary foe fights with its OWN attacks
+    var badgerName = Db.Creatures.First(c => c.attacks.Length > 0 && c.DefenseValue > 0).name;
+    var foe = new Combatant { Name = badgerName + " #2", Ref = badgerName, IsPC = false };
+    T("a foe row is classed as a creature", CombatMenu.IsCreature(foe));
+    var (fa, _, fc) = CombatMenu.For(foe);
+    T("a foe draws its own attacks, not the posse's", fc != null && fa != null && fa.Count >= 1);
+
+    // a posse soul NEVER fights as a creature — even if a stale Ref rode in on an old session
+    var soul = new Combatant { Name = "Ruth", IsPC = true, Ref = badgerName };
+    T("a PC is never classed as a creature (even with a stray Ref)", !CombatMenu.IsCreature(soul));
+    var (sa, sr, sc) = CombatMenu.For(soul);
+    T("a PC draws no creature attacks (falls to weapons)", sc == null && sa == null && sr == null);
+
+    // a hand-entered NPC (no Bestiary match) falls back to weapons rather than throwing
+    var npc = new Combatant { Name = "Bandit", IsPC = false, Ref = "" };
+    T("a hand-entered foe with no Ref uses weapons", !CombatMenu.IsCreature(npc) && CombatMenu.For(npc).creature == null);
+    var ghost = new Combatant { Name = "???", IsPC = false, Ref = "no such creature in the book" };
+    T("a foe whose Ref no longer resolves falls back, never throws", !CombatMenu.IsCreature(ghost) && CombatMenu.For(ghost).creature == null);
+
+    // a bodiless foe (no dice of its own) still gets a tier-benchmark blow, not an empty menu
+    var bodiless = Db.Creatures.FirstOrDefault(c => CreatureAttack.Parse(c.attacks).strikes.Count == 0);
+    if (bodiless != null)
+    {
+        var (ba, _, _) = CombatMenu.For(new Combatant { Ref = bodiless.name, IsPC = false });
+        T($"bodiless foe [{bodiless.name}] still offers a blow", ba != null && ba.Count >= 1 && ba[0].Bonus > 0);
+    }
+}
+
 T("17 simple tables", Db.Simple.Count == 17);
 // The city generator (Keeper's Book Ch. XIV) is data-driven off these four; a missing
 // one is a KeyNotFoundException on the Generators tab, not a quiet blank.
