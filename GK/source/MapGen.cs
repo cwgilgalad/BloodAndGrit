@@ -136,6 +136,10 @@ public static class MapGen
         float[] riverPts = null;
         (float x, float y, float r) lake = default;
         bool frozen = ti == 5;
+        // Where the water's ink begins, its channel half-width, and where it ends — so a city ward
+        // can leave the waterway open (no blocks stamped over it) and redraw it, unbroken, on top.
+        int waterStart = P.Count;
+        float waterHalf = 0f;
 
         var clipR = (x0: ClipInset, y0: ClipInset, x1: W - ClipInset, y1: H - ClipInset);
         if (water is 3 or 5)                                     // a river, edge to edge
@@ -150,6 +154,7 @@ public static class MapGen
             foreach (var run in runs)
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = frozen ? "#dfe8ea" : WaterFill, StrokeW = 9 });
             riverPts = Longest(runs);
+            waterHalf = 16;
             if (riverPts != null) BlockAlong(blocked, riverPts, 26);
         }
         else if (water == 2)                                     // a creek
@@ -163,6 +168,7 @@ public static class MapGen
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = WaterEdge, StrokeW = 4.5f });
                 if (riverPts == null || run.Length > riverPts.Length) riverPts = run;
             }
+            waterHalf = 10;
             if (riverPts != null) BlockAlong(blocked, riverPts, 16);
         }
         if (water is 4 or 5)                                     // a lake
@@ -175,6 +181,19 @@ public static class MapGen
             lake = (lx, ly, lr);
             blocked.Add((lx, ly, lr + 18));
         }
+        int waterEnd = P.Count;
+
+        // True when a spot of the given reach touches the river channel or the lake — so a city ward
+        // can refuse to build there, leaving the water an open, legible course through the blocks.
+        bool OverWater(float px, float py, float pad)
+        {
+            if (lake.r > 0 && Sq(lake.x - px) + Sq(lake.y - py) < Sq(lake.r + pad)) return true;
+            if (riverPts != null)
+                for (int i = 0; i + 1 < riverPts.Length; i += 2)
+                    if (Sq(riverPts[i] - px) + Sq(riverPts[i + 1] - py) < Sq(waterHalf + pad)) return true;
+            return false;
+        }
+
         if (ti == 1)                                             // swamp country: reeds crowd the water
             for (int i = 0; i < 14; i++)
             {
@@ -267,6 +286,10 @@ public static class MapGen
                     if (rngTown.Next(9) == 0) continue;           // a lot the fire took
                     float bx = m0 + c * colW + 7, by = m0 + r2 * rowH + 7;
                     float bw = colW - 14, bh = rowH - 14;
+                    // No block is raised in the river or the lake — the waterway stays open ground,
+                    // so the water reads as one course through the city, not blue scraps between roofs.
+                    if (waterHalf > 0 || lake.r > 0)
+                        if (OverWater(bx + bw / 2, by + bh / 2, Math.Min(bw, bh) * 0.35f)) continue;
                     P.Add(Rect(bx, by, bw, bh, "#d9cba8", Dark, 1.2f));
                     // a couple of blocks are dense tenement rows rather than one mass
                     if (rngTown.Next(3) == 0)
@@ -275,8 +298,20 @@ public static class MapGen
                                 Pts = new[] { bx + bw * t / 4f, by, bx + bw * t / 4f, by + bh },
                                 Stroke = Dark, StrokeW = 0.8f, Alpha = 0.7f });
                 }
+            // Redraw the water over the streets and block-borders so the course is unbroken and plainly
+            // blue — the river a city is built along, not one hidden beneath it. The banks are already
+            // lined with blocks; a redraw on top is what a surveyor's hand would ink last.
+            for (int i = waterStart; i < waterEnd; i++)
+            {
+                var wp = P[i];
+                P.Add(new Prim { Kind = wp.Kind, Pts = wp.Pts, Fill = wp.Fill, Stroke = wp.Stroke,
+                                 StrokeW = wp.StrokeW, Dash = wp.Dash, Alpha = wp.Alpha });
+            }
+            // The furniture keeps its keep-out; so does the water, so no depot or landmark lands in it.
             blocked.Clear();
             blocked.Add((170, 70, 190)); blocked.Add((W - 64, 92, 95)); blocked.Add((150, H - 40, 170));
+            if (riverPts != null) BlockAlong(blocked, riverPts, waterHalf + 8);
+            if (lake.r > 0) blocked.Add((lake.x, lake.y, lake.r + 14));
         }
         else if (sp.Town)
         {
@@ -322,9 +357,18 @@ public static class MapGen
         int count = city ? 9 : (sp.Scale == 0 ? 16 : 30);
         for (int i = 0; i < count; i++)
         {
-            var (x, y) = Place(rngLand, 15 * k + 12);
+            var (x, y) = Place(rngLand, 15 * k + (city ? 20 : 12));
             if (float.IsNaN(x)) continue;
-            Sym(P, rngLand, kit[rngLand.Next(kit.Length)], x, y, k);
+            string sym = kit[rngLand.Next(kit.Length)];
+            Sym(P, rngLand, sym, x, y, k);
+            // In a city, the little marks sit on the built-up blocks, so name what each one is —
+            // otherwise it's a scatter of unreadable symbols. Country marks (a tree, a hill) need no label.
+            if (city && CitySymCaption(sym) is string cap)
+            {
+                float cy = y + 15 * k + 9;
+                P.Add(TextP(x, cy, cap, 8.5f, Ink, italic: true, anchor: 1));
+                blocked.Add((x, cy, 22));
+            }
         }
 
         // ---- named landmarks ----
@@ -494,6 +538,14 @@ public static class MapGen
         _ => "a territory, weeks on the trail"
     };
     static string GridLabel(int s) => s switch { 0 => "ten yards", 1 => "a furlong", 2 => "five miles", 4 => "two blocks", _ => "a day's ride" };
+
+    // What a scattered city mark is, in a word — so the ward reads as a place with a depot and a
+    // packing house, not a field of anonymous symbols.
+    static string CitySymCaption(string sym) => sym switch
+    {
+        "stack" => "works", "depot" => "depot", "pens" => "pens",
+        "church" => "chapel", "wharf" => "landing", _ => null
+    };
 
     // ---------------------------------------------------------- names
     static readonly string[] TitleFirst =

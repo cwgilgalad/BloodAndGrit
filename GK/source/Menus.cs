@@ -46,6 +46,19 @@ public partial class MainForm
         }
         menu.Items.Add(view);
 
+        // Switch how the table is run without leaving the app — a checkmark on the mode in force.
+        var table = new ToolStripMenuItem("&Table");
+        void ModeItem(string text, RunMode m)
+        {
+            var it = Item(text, (s, e) => { SetMode(m); RebuildMenu(); });
+            it.Checked = Mode == m;
+            table.DropDownItems.Add(it);
+        }
+        ModeItem("&Player's table", RunMode.Player);
+        ModeItem("Keeper — &dice && books", RunMode.KeeperDice);
+        ModeItem("Keeper — on the &engine", RunMode.KeeperEngine);
+        menu.Items.Add(table);
+
         var help = new ToolStripMenuItem("&Help");
         help.DropDownItems.Add(Item("The &five-minute lesson", (s, e) => ShowLesson(), Keys.F1));
         help.DropDownItems.Add(Item("&Keyboard shortcuts", (s, e) => ShowShortcuts()));
@@ -54,6 +67,18 @@ public partial class MainForm
         menu.Items.Add(help);
 
         return menu;
+    }
+
+    // Rebuild the menu bar in place — after a live mode switch, so the View list matches the tabs now
+    // on show and the Table checkmark tracks the mode. Cheap, and keeps the menu the single source.
+    void RebuildMenu()
+    {
+        var old = MainMenuStrip;
+        var menu = BuildMenu(tabsCtl);
+        MainMenuStrip = menu;
+        Controls.Add(menu);
+        if (old != null) Controls.Remove(old);
+        RefreshUndoRedoButtons();   // the fresh Undo/Redo items start disabled; restore their real state
     }
 
     // ---------------------------------------------------------- save / load to a chosen file

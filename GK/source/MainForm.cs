@@ -51,10 +51,21 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.16.2";
+    internal const string AppVersion = "1.17.0";
+    // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
+    // stamp. Bump these in the same breath as a book version (they show in the status bar).
+    internal const string PlayerBookVer = "2.23", KeeperBookVer = "2.10", BestiaryVer = "2.9";
 
-    public MainForm()
+    // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
+    // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
+    internal RunMode Mode { get; private set; }
+    readonly List<TabPage> allTabs = new();     // every tab, in order, so the mode can hide/show them
+
+    public MainForm() : this(RunMode.KeeperEngine) { }
+
+    public MainForm(RunMode mode)
     {
+        Mode = mode;
         Text = "GritKeeper — Blood & Grit";
         if (AppIcon != null) Icon = AppIcon;      // the emblem, not the stock-Windows square
         // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
@@ -77,18 +88,19 @@ public partial class MainForm : Form
         // nobody was looking at yet. Deferred, that third comes off the launch and is paid
         // back a tab at a time, none of them over ~90 ms, which is under the threshold where
         // a click feels like it waited.
-        tabs.TabPages.Add(BuildPosseTab());
-        tabs.TabPages.Add(LazyTab("Dice", BuildDiceTab));
-        tabs.TabPages.Add(LazyTab("Bestiary", BuildBestiaryTab));
-        tabs.TabPages.Add(LazyTab("Encounter", BuildEncounterTab));
-        tabs.TabPages.Add(LazyTab("Tracker", BuildTrackerTab));
-        tabs.TabPages.Add(LazyTab("Generators", BuildGeneratorsTab));
-        tabs.TabPages.Add(LazyTab("Map", BuildMapTab));
-        tabs.TabPages.Add(LazyTab("New Soul", BuildSoulTab));
-        tabs.TabPages.Add(LazyTab("Reference", BuildReferenceTab));
-        tabs.TabPages.Add(LazyTab("Session", BuildSessionTab));
+        allTabs.Add(BuildPosseTab());
+        allTabs.Add(LazyTab("Dice", BuildDiceTab));
+        allTabs.Add(LazyTab("Bestiary", BuildBestiaryTab));
+        allTabs.Add(LazyTab("Encounter", BuildEncounterTab));
+        allTabs.Add(LazyTab("Tracker", BuildTrackerTab));
+        allTabs.Add(LazyTab("Generators", BuildGeneratorsTab));
+        allTabs.Add(LazyTab("Map", BuildMapTab));
+        allTabs.Add(LazyTab("New Soul", BuildSoulTab));
+        allTabs.Add(LazyTab("Reference", BuildReferenceTab));
+        allTabs.Add(LazyTab("Session", BuildSessionTab));
         tabs.Selecting += (s, e) => RealizeTab(e.TabPage);
         Controls.Add(tabs);
+        ApplyModeTabs();     // put the right tabs on show for the chosen mode, and land on the first
 
         var menu = BuildMenu(tabs);
         MainMenuStrip = menu;
@@ -126,9 +138,8 @@ public partial class MainForm : Form
         };
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
-        status.Items.Add(new ToolStripStatusLabel(
-            $"{Db.Creatures.Count} creatures loaded  ·  Player's Book v2.16 · Keeper's Book v2.8 · Bestiary v2.8")
-            { ForeColor = Ink });
+        statusLoaded = new ToolStripStatusLabel(StatusLoadedText()) { ForeColor = Ink };
+        status.Items.Add(statusLoaded);
         var spring = new ToolStripStatusLabel { Spring = true };
         status.Items.Add(spring);
         undoStatusBtn = new ToolStripButton("⟲ Undo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
@@ -176,6 +187,95 @@ public partial class MainForm : Form
         var saveTimer = new System.Windows.Forms.Timer { Interval = 5 * 60 * 1000 };
         saveTimer.Tick += (s, e) => AutoSave();
         saveTimer.Start();
+    }
+
+    // ---------------------------------------------------------- the table's mode
+    ToolStripStatusLabel statusLoaded;
+
+    static string ModeLabel(RunMode m) => m switch
+    {
+        RunMode.Player      => "Player's table",
+        RunMode.KeeperDice  => "Keeper · dice & books",
+        _                   => "Keeper · on the engine",
+    };
+    string StatusLoadedText() =>
+        $"{Db.Creatures.Count} creatures loaded  ·  {ModeLabel(Mode)}  ·  Player's Book v{PlayerBookVer} · Keeper's Book v{KeeperBookVer} · Bestiary v{BestiaryVer}";
+
+    // True when the app rolls the dice (the engine table); false when the Keeper rolls their own and
+    // just enters the result (the dice-and-books table). A player's own table rolls on the Dice tab.
+    internal bool EngineRolls => Mode != RunMode.KeeperDice;
+
+    // The tabs a given mode shows. A player gets their own three; a Keeper gets the whole board.
+    static readonly string[] PlayerTabs = { "New Soul", "Dice", "Reference" };
+    bool ShowsTab(string title) => Mode != RunMode.Player || Array.IndexOf(PlayerTabs, title) >= 0;
+
+    // Put the right tabs on show for the current mode, preserving their order, and land on the first.
+    // The lazy shells are reused, so hiding a tab the Keeper never opened costs nothing.
+    void ApplyModeTabs()
+    {
+        tabsCtl.TabPages.Clear();
+        foreach (var t in allTabs) if (ShowsTab(t.Text)) tabsCtl.TabPages.Add(t);
+        if (tabsCtl.TabPages.Count > 0) { tabsCtl.SelectedIndex = 0; RealizeTab(tabsCtl.SelectedTab); }
+    }
+
+    /// <summary>Switch modes live from the menu: re-lay the tabs, refresh the status line, and record
+    /// the choice so the next launch remembers it. The roll behavior follows <see cref="EngineRolls"/>
+    /// on the next Strike or Dread Check — no restart needed.</summary>
+    internal void SetMode(RunMode mode)
+    {
+        if (mode == Mode) return;
+        Mode = mode;
+        ApplyModeTabs();
+        if (statusLoaded != null) statusLoaded.Text = StatusLoadedText();
+        Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
+        Log($"Table set to {ModeLabel(mode)}.");
+    }
+
+    /// <summary>The launch chooser. Returns the picked mode and whether to skip this next time.
+    /// A pure modal with no dependence on an existing MainForm, so Program can show it before the
+    /// window is built. Cancel keeps the mode it opened on.</summary>
+    public static (RunMode mode, bool remember) ChooseMode(RunMode current)
+    {
+        using var f = new Form
+        {
+            Text = "Blood & Grit — GritKeeper", Width = 560, Height = 430,
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterScreen,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = AppIcon != null, BackColor = Paper
+        };
+        if (AppIcon != null) f.Icon = AppIcon;
+        f.Controls.Add(new Label { Left = 24, Top = 18, Width = 500, Height = 24, Text = "How are you running the table tonight?",
+            Font = new Font("Segoe UI Semibold", 12f), ForeColor = Ink });
+
+        var picked = current;
+        var cards = new (RunMode mode, string head, string blurb)[]
+        {
+            (RunMode.Player,       "I'm a Player",
+                "Build and run your own character, roll your dice, and look up the rules. The Keeper's tools stay put away."),
+            (RunMode.KeeperDice,   "Keeper — with dice & books",
+                "You roll real dice and run from the books. GritKeeper is your referee and ledger: enter the die you rolled and it reads the degrees, the penalties, the damage, and keeps everyone's Blood and Nerve."),
+            (RunMode.KeeperEngine, "Keeper — on the engine",
+                "No dice on the table, no ledgers to keep. GritKeeper rolls it all — to-hit, damage, Dread — so you can play on a phone, on a porch, anywhere."),
+        };
+        int y = 56;
+        var radios = new List<RadioButton>();
+        foreach (var c in cards)
+        {
+            var rb = new RadioButton { Left = 24, Top = y, Width = 500, Height = 22, Text = c.head,
+                Font = new Font("Segoe UI Semibold", 10.5f), ForeColor = Ink, Checked = c.mode == current };
+            var mode = c.mode; rb.CheckedChanged += (s, e) => { if (rb.Checked) picked = mode; };
+            f.Controls.Add(rb); radios.Add(rb);
+            f.Controls.Add(new Label { Left = 44, Top = y + 24, Width = 480, Height = 44, Text = c.blurb, ForeColor = Ink });
+            y += 84;
+        }
+        if (!radios.Any(r => r.Checked)) radios[2].Checked = true;
+
+        var remember = new CheckBox { Left = 24, Top = y + 2, Width = 300, Text = "Start here next time (skip this)", ForeColor = Ink };
+        f.Controls.Add(remember);
+        var ok = new Button { Text = "Sit down ▸", Left = 360, Top = y, Width = 160, Height = 32, DialogResult = DialogResult.OK };
+        f.Controls.Add(ok); f.AcceptButton = ok;
+
+        f.ShowDialog();
+        return (picked, remember.Checked);
     }
 
     // Left/Right turn the Reference deck no matter which control holds focus — arrow

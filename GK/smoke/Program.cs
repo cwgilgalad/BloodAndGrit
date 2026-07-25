@@ -85,6 +85,54 @@ T("mundane creatures cost no Nerve", mundane.All(c => c.dread is "" or "—"));
 T("mundane creatures never move the Mark", mundane.All(c => string.IsNullOrEmpty(c.mark)));
 T("every creature carries lore", Db.Creatures.All(c => c.lore.Count > 0 && c.lore[0].Length > 0));
 T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 0));
+
+// ---- Creature attacks: the Bestiary's own attacks parse, and Strike through the Iron Code ----
+// Every creature's free-text `attacks` line must yield structured Strikes with sane numbers, so a
+// creature in the tracker fights with ITS OWN claws and bite, not the posse's guns.
+{
+    int totalStrikes = 0, withDice = 0, elemental = 0, noStrikeCreatures = 0;
+    foreach (var c in Db.Creatures)
+    {
+        var (strikes, riders) = CreatureAttack.Parse(c.attacks);
+        // A creature either has parseable Strikes, or its line is pure riders (an intangible hazard,
+        // a phenomenon) — never a parser crash, never a half-parsed clause.
+        if (strikes.Count == 0) { noStrikeCreatures++; }
+        totalStrikes += strikes.Count;
+        foreach (var a in strikes)
+        {
+            T($"[{c.name}] '{a.Name}' has a name", a.Name.Length > 0);
+            T($"[{c.name}] '{a.Name}' bonus in range", a.Bonus >= 0 && a.Bonus <= 30);
+            if (a.DealsDamage)
+            {
+                withDice++;
+                var (dt, bd) = Rules.RollExpr(a.Damage);
+                T($"[{c.name}] '{a.Name}' damage rolls ({a.Damage})", bd != "could not parse" && bd != "empty" && dt >= 1);
+            }
+            if (a.Type != "blades") elemental++;
+        }
+        // riders are non-empty text (the special maneuvers/auras the Keeper narrates)
+        T($"[{c.name}] riders are non-empty", riders.All(r => r.Trim().Length > 0));
+    }
+    T("most creatures have at least one Strike", noStrikeCreatures <= 25);   // ~intangible hazards only
+    T("attacks parse into 120+ strikes", totalStrikes >= 120);
+    T("the great majority of strikes carry dice", withDice >= totalStrikes - 10);
+    T("some creature attacks are elemental (fire/cold/…)", elemental >= 3);
+
+    // End to end: a Tier-III ghoul claws a target through the very same engine a gun uses.
+    var ghoulLike = new Combatant { Name = "Foe", Defense = 12, BloodCur = 40, BloodMax = 40 };
+    var claw = new CreatureAttack { Name = "rending claws", Bonus = 8, Damage = "1d8+3" };
+    var attacker = new Combatant { Name = "Ghoul", Beats = 3, MapStep = 1 };
+    var rep = CombatFlow.StrikeAndApply(attacker, ghoulLike, claw, claw.Bonus, forcedDie: 15);
+    T("a creature Strike lands and takes Blood", rep.Res.Strike.Hit && ghoulLike.BloodCur < 40);
+    T("a creature Strike spends its Beat and steps the MAP", attacker.Beats == 2 && attacker.MapStep == 2);
+    // an elemental touch types as its element, so worn-armor DR (blades) does not stop it
+    var fireTouch = new CreatureAttack { Name = "a touch that blisters", Bonus = 20, Damage = "1d8+3", Type = "fire" };
+    var burned = new Combatant { Name = "Armored", Defense = 5, BloodCur = 30, BloodMax = 30 };
+    var fr = CombatFlow.StrikeAndApply(new Combatant { Beats = 3, MapStep = 1 }, burned, fireTouch, 20,
+        new[] { new DrEntry(3, "blades") }, forcedDie: 15);
+    T("blades DR does not reduce a fire touch", fr.Res.DamageType == "fire" && fr.Res.AfterDR == fr.Res.Damage.Total);
+}
+
 T("17 simple tables", Db.Simple.Count == 17);
 // The city generator (Keeper's Book Ch. XIV) is data-driven off these four; a missing
 // one is a KeyNotFoundException on the Generators tab, not a quiet blank.
@@ -709,6 +757,59 @@ foreach (var terrain in MapGen.Terrains)
     T($"no line ink beyond the map edge (first offender: {firstBad ?? "none"})", outOfBounds == 0);
 }
 
+// ---- Trail Maps: a city on a river reads as ONE course, not blue scraps between roofs ----
+// The reported bug: in a ward, building blocks stamped over the water, and structures landed in
+// it. The fix leaves the waterway open and redraws the water ON TOP of the block layer — so the
+// last water ink must sit above the last block, and a lake must carve blocks out of the ward.
+{
+    // a ward block is a 4-point rectangle (8 floats); the 5-point church roof shares the fill but isn't one
+    bool IsBlock(Prim p) => p.Kind == PrimKind.Poly && p.Fill == "#d9cba8" && p.Pts.Length == 8;
+    // WaterEdge stroke, or WaterFill as a river's fill-line stroke or a lake's polygon fill
+    bool IsWater(Prim p) => p.Stroke == "#7d98a1" || p.Stroke == "#b9cbcf" || p.Fill == "#b9cbcf";
+
+    int riverAboveBlocks = 0, seeds = 0;
+    foreach (int seed in new[] { 3, 88, 421, 1500, 27182 })
+    {
+        seeds++;
+        var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = seed, Water = 3, Town = true });
+        int lastBlock = -1, lastWater = -1;
+        for (int i = 0; i < m.P.Count; i++)
+        {
+            if (IsBlock(m.P[i])) lastBlock = i;
+            if (IsWater(m.P[i])) lastWater = i;
+        }
+        if (lastBlock >= 0 && lastWater > lastBlock) riverAboveBlocks++;
+        // and the ward's ink still stays on the paper
+        foreach (var pr in m.P)
+            if (pr.Kind == PrimKind.Poly)
+                for (int i = 0; i + 1 < pr.Pts.Length; i += 2)
+                    T($"city block on paper (seed {seed})", pr.Pts[i] > -0.01f && pr.Pts[i] < m.W + 0.01f && pr.Pts[i + 1] > -0.01f && pr.Pts[i + 1] < m.H + 0.01f);
+    }
+    T("a city river is redrawn over the blocks (unbroken course)", riverAboveBlocks == seeds);
+
+    // a lake carves building blocks out of the ward it sits in
+    int Blocks(MapSpec sp) => MapGen.Generate(sp).P.Count(IsBlock);
+    int dry = Blocks(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 77, Water = 1, Town = true });
+    int wet = Blocks(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 77, Water = 4, Town = true });
+    T("a lake carves blocks out of the ward", wet < dry);
+
+    // scattered city works are labeled ("works", "depot", "pens", "chapel", "landing"), so it is
+    // plain what each mark is — the second reported symptom.
+    var caps = new HashSet<string> { "works", "depot", "pens", "chapel", "landing" };
+    var cityMap = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Landmarks = 6 });
+    T("city works carry captions", cityMap.P.Any(p => p.Kind == PrimKind.Text && caps.Contains(p.Text)));
+
+    // and no named landmark is planted in the river — structures keep out of the water now
+    var riverVerts = cityMap.P.Where(IsWater).SelectMany(p =>
+    {
+        var v = new List<(float x, float y)>();
+        for (int i = 0; i + 1 < p.Pts.Length; i += 2) v.Add((p.Pts[i], p.Pts[i + 1]));
+        return v;
+    }).ToList();
+    bool AnyInWater(float x, float y) => riverVerts.Any(v => (v.x - x) * (v.x - x) + (v.y - y) * (v.y - y) < 12 * 12);
+    T("no city landmark is planted in the river", cityMap.Landmarks.All(l => !AnyInWater(l.X, l.Y)));
+}
+
 // ---- Trail Maps: landmarks are movable, and a move touches ONLY their own ink ----
 {
     var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Landmarks = 6 });
@@ -819,6 +920,16 @@ foreach (var terrain in MapGen.Terrains)
     // a river map as SVG — eyeball that waterways end AT the neatline, not past it
     File.WriteAllText(Path.Combine(outDir, "sample-river.svg"),
         MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[1], Scale = 2, Seed = 4242, Water = 3, Rail = true })));
+    // city wards WITH water — eyeball that the river/lake reads as one open course through the
+    // blocks (the reported bug), and that the scattered works are labeled
+    File.WriteAllText(Path.Combine(outDir, "sample-city-river.svg"),
+        MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Rail = true, Landmarks = 6 })));
+    File.WriteAllText(Path.Combine(outDir, "sample-city-lake.svg"),
+        MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 313, Water = 4, Landmarks = 6 })));
+    File.WriteAllBytes(Path.Combine(outDir, "sample-city-river.pdf"),
+        Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Rail = true, Landmarks = 6 })));
+    File.WriteAllBytes(Path.Combine(outDir, "sample-city-lake.pdf"),
+        Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 313, Water = 4, Landmarks = 6 })));
     Console.WriteLine($"sample PDFs → {outDir}");
 }
 

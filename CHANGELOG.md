@@ -8,6 +8,35 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.17.0 — creatures fight with their own attacks, cities read right, and three
+  ways to run the table (2026-07-25, user-requested).** Three changes, all from table feedback:
+
+  - **The Bestiary's attacks reach combat.** Before, a creature dropped onto the tracker could
+    only Strike with the *posse's* weapons — a ghoul shooting a revolver. Now the Strike dialog
+    reads the creature's own free-text `attacks` line into structured attacks (name, built-in
+    to-hit, damage, damage type, and the rider effect) and Strikes with **those** through the same
+    Iron Code engine the guns use: a ghoul claws at +6 (1d8+3), a fiery touch types as fire so
+    worn-armor DR doesn't stop it, and the creature's special maneuvers and auras are surfaced in
+    the dialog for the Keeper to narrate. New pure parser `CreatureAttack.Parse` (paren-aware
+    clause splitting, tolerant of trailing riders); ~40 new smoke assertions across all 150
+    creatures. A stat audit confirmed the numbers were already tier-true — the gap was the app
+    ignoring them, not thin stat blocks.
+  - **City maps stop fighting themselves.** On a ward map, rivers and lakes were drawn first and
+    then paved over by building blocks (blue scraps between roofs), and structures could land in
+    the water because the water keep-out was being cleared. Now a city leaves the waterway open
+    (no block is raised in it), redraws the water **over** the block layer so it reads as one
+    course, keeps depots and landmarks out of it, and **labels** the scattered works (*works,
+    depot, pens, chapel, landing*) so it's plain what each mark is.
+  - **A mode chooser at launch.** GritKeeper now asks how you're running the table — **Player's
+    table** (a player's pared-down view), **Keeper with dice & books** (you roll, the app referees
+    and keeps the ledger), or **Keeper on the engine** (the app rolls everything, for dice-free
+    play anywhere). Changeable any time from the **Table** menu; the choice is remembered. The
+    Strike and Dread dialogs take the die you rolled in dice-and-books mode and roll it themselves
+    on the engine. Self-test now constructs the UI in all three modes: **13/13 checks passed.**
+
+  Also fixed a long-standing stale status-bar version string, now sourced from one C#-side
+  constant beside the app version.
+
 - **GritKeeper v1.16.2 — a headless self-test of the shipped binary (2026-07-25,
   user-requested).** `GritKeeper.exe --selftest` drives the real code paths behind the table
   tools — #1 the Iron Code Strike (hit, Fatal crit, typed DR), #2 the Beat/MAP turn state

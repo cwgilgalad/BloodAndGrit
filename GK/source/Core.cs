@@ -4,6 +4,45 @@ using System.Text.Json.Serialization;
 
 namespace BloodAndGritKeeper;
 
+// ============================================================ HOW THE TABLE RUNS
+
+/// <summary>How this table is being run — chosen at launch, changeable from the menu.
+/// <list type="bullet">
+/// <item><b>Player</b> — a player's own view: build and run a character, roll dice, look up the rules;
+/// the Keeper's tabs (the Bestiary, encounters, the tracker, the map, the campaign threads) are put away.</item>
+/// <item><b>KeeperDice</b> — a Keeper who runs the game with physical dice and the books. The app is the
+/// tracker and the referee: the Keeper enters the die they rolled, and GritKeeper reads the four
+/// degrees, the Multiple Attack Penalty, the damage, the DR, and keeps the Blood and the Beats.</item>
+/// <item><b>KeeperEngine</b> — a Keeper leaning on the engine, so the game can be played anywhere there
+/// are no dice and the players can't keep their own ledgers. GritKeeper rolls everything.</item>
+/// </list></summary>
+public enum RunMode { Player, KeeperDice, KeeperEngine }
+
+/// <summary>The one small preference that outlives a session: how the last table chose to run, and
+/// whether to skip the chooser next time. Kept beside the exe in prefs.json; a missing or unreadable
+/// file just means "ask, defaulting to the engine".</summary>
+public static class Prefs
+{
+    public class Data { public string Mode { get; set; } = "KeeperEngine"; public bool Remember { get; set; } }
+
+    static string PathTo => Path.Combine(AppContext.BaseDirectory, "prefs.json");
+
+    public static Data Load()
+    {
+        try { if (File.Exists(PathTo)) return JsonSerializer.Deserialize<Data>(File.ReadAllText(PathTo)) ?? new(); }
+        catch { }
+        return new();
+    }
+
+    public static RunMode ModeOf(Data d) => Enum.TryParse<RunMode>(d?.Mode, out var m) ? m : RunMode.KeeperEngine;
+
+    public static void Save(RunMode mode, bool remember)
+    {
+        try { File.WriteAllText(PathTo, JsonSerializer.Serialize(new Data { Mode = mode.ToString(), Remember = remember })); }
+        catch { }
+    }
+}
+
 // ============================================================ MODELS
 
 public class Creature

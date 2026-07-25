@@ -36,7 +36,19 @@ static class Program
             ApplicationConfiguration.Initialize();
             Db.Load();
             CharGen.Load();
-            Application.Run(new MainForm());
+
+            // How is this table run — a player's own view, a Keeper with dice, or a Keeper on the
+            // engine? Ask at launch unless a past table asked to be remembered; the choice is saved
+            // and can be changed any time from the Table menu.
+            var prefs = Prefs.Load();
+            var mode = Prefs.ModeOf(prefs);
+            if (!prefs.Remember)
+            {
+                var (chosen, remember) = MainForm.ChooseMode(mode);
+                mode = chosen;
+                Prefs.Save(mode, remember);
+            }
+            Application.Run(new MainForm(mode));
         }
         catch (Exception ex)
         {
@@ -90,8 +102,13 @@ static class Program
             //    but does not by itself fail the run. --
             try
             {
-                using var mf = new MainForm();
-                Chk(mf != null, "GUI: the full WinForms graph constructs (tabs, tracker, posse, demo posse)");
+                // Construct the graph in every mode — the player's pared-down board and both Keeper
+                // tables — so a broken tab filter or mode wiring fails the self-test, not the table.
+                foreach (var mode in new[] { RunMode.Player, RunMode.KeeperDice, RunMode.KeeperEngine })
+                {
+                    using var mf = new MainForm(mode);
+                    Chk(mf != null && mf.Mode == mode, $"GUI: the WinForms graph constructs in {mode} mode");
+                }
             }
             catch (Exception ux)
             {

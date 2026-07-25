@@ -9,8 +9,24 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.16.2 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.17.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
+
+**GritKeeper run modes (v1.17.0):** launch shows a chooser — `RunMode.Player` (a player's
+pared-down view: only New Soul / Dice / Reference tabs), `RunMode.KeeperDice` (Keeper rolls
+physical dice and enters the die; a `d20` field appears in the Strike/Dread dialogs and feeds
+`forcedDie`), `RunMode.KeeperEngine` (the app rolls everything). Persisted in `prefs.json`
+beside the exe (`Prefs` in `Core.cs`); changeable live from the **Table** menu (`SetMode` →
+`ApplyModeTabs` + `RebuildMenu`). `MainForm.EngineRolls` is the live read the dialogs branch on.
+The book-edition strings the status bar shows now come from one place — `MainForm.PlayerBookVer`
+/`KeeperBookVer`/`BestiaryVer` consts (keep them current with the books). `--selftest` constructs
+all three modes.
+
+**Creature attacks (v1.17.0):** a creature on the tracker Strikes with its OWN attacks, parsed
+from the Bestiary's free-text `attacks` line by `CreatureAttack.Parse` in `IronCode.cs` (pure,
+smoke-tested across all 150 creatures) — no data-format change; the free-text stays the source
+of truth, like `WeaponTraits`. `CombatFlow.StrikeAndApply` has a `CreatureAttack` overload;
+`IronCode.Strike` takes an optional `forceType` so an elemental touch types past worn-armor DR.
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
 book change that touches it** — status-bar/README version strings every time the books bump,
