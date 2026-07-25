@@ -469,6 +469,11 @@ public partial class MainForm
     {
         trkSort = mode;
         try { trkGrid?.EndEdit(); } catch { }      // commit a half-typed Init before reading it
+        // Remember WHO the Keeper had selected — clearing the list below resets the grid's
+        // current row to the top, and every action that reads CurrentRow (Strike, Dread,
+        // Damage) would then silently act on whoever the sort floated to row 0 instead of the
+        // combatant the Keeper picked. Restore the same combatant after the reorder.
+        var keep = trkGrid?.CurrentRow?.DataBoundItem as Combatant;
         var sorted = (mode switch
         {
             TrkSort.InitDesc  => tracker.OrderByDescending(c => c.Init).ThenByDescending(c => c.IsPC).ThenBy(c => c.Name),
@@ -484,7 +489,25 @@ public partial class MainForm
         foreach (var c in sorted) tracker.Add(c);
         tracker.RaiseListChangedEvents = true;
         tracker.ResetBindings();
+        RestoreTrkSelection(keep);
         trkGrid?.Refresh();
+    }
+
+    // Re-seat the grid's current row on a specific combatant after the list was rebuilt, so the
+    // Keeper's selection survives a sort/roll-initiative. No match (it was removed) leaves the
+    // grid as-is rather than guessing.
+    void RestoreTrkSelection(Combatant keep)
+    {
+        if (trkGrid == null || keep == null) return;
+        int row = tracker.IndexOf(keep);
+        if (row < 0 || row >= trkGrid.Rows.Count) return;
+        try
+        {
+            trkGrid.ClearSelection();
+            trkGrid.CurrentCell = trkGrid.Rows[row].Cells[0];
+            trkGrid.Rows[row].Selected = true;
+        }
+        catch { /* grid mid-rebuild — the next click re-selects */ }
     }
 
     // Ad-hoc combatant: a named NPC, a hireling, an improvised foe — anything not in the
@@ -607,17 +630,7 @@ public partial class MainForm
         // A creature strikes with its OWN attacks, parsed from the Bestiary line; a soul (or a
         // hand-entered row) reaches for the posse's guns. The attacker's Ref names its creature.
         var sheet = SoulOf(attacker)?.Sheet;
-        var creature = string.IsNullOrEmpty(attacker.Ref) ? null : Db.Find(attacker.Ref);
-        List<CreatureAttack> catks = null; List<string> riders = null;
-        if (creature != null)
-        {
-            (catks, riders) = CreatureAttack.Parse(creature.attacks);
-            if (catks.Count == 0)   // an intangible or pure-rider foe: give it its tier's benchmark blow
-            {
-                var row = Rules.TierRow[Math.Clamp(creature.tier - 1, 0, Rules.TierRow.Length - 1)];
-                catks.Add(new CreatureAttack { Name = "its assault", Bonus = row.atk, Damage = row.dmg });
-            }
-        }
+        var (catks, riders, creature) = CombatMenu.For(attacker);
         bool asCreature = creature != null;
 
         bool hasSpecials = asCreature && (!string.IsNullOrWhiteSpace(creature.special) || riders.Count > 0);
