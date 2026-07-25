@@ -29,12 +29,15 @@ robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
 codes 0–7 are success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and
 re-zip to `GritKeeper.zip`.
 
-**This is now scripted: `package.ps1`.** Run it *after* signing the published exe — it copies
-the signed exe into `GritKeeper\app\` (dropping the runtime `session.json`), re-mirrors
-`GritKeeper\source`, and writes `GritKeeper.zip`. It refuses to package an unsigned exe unless
-you pass `-Force` (a local test build). So a release is: `dotnet publish -c Release` → sign →
-`.\package.ps1` → upload the zip with the matching `RELEASE_NOTES_vX.Y.Z.md`. The zip, the
-`app/` exe, and the `source/` mirror are all git-ignored (release assets, never committed).
+**This is now scripted: `sign.ps1` + `package.ps1`.** `sign.ps1` Authenticode-signs the
+published exe with the code-signing cert in `CurrentUser\My` (native
+`Set-AuthenticodeSignature`, no Windows SDK / signtool needed; timestamped when a server is
+reachable). `package.ps1` then copies the signed exe into `GritKeeper\app\` (dropping the
+runtime `session.json`), re-mirrors `GritKeeper\source`, and writes `GritKeeper.zip` — refusing
+an unsigned exe unless you pass `-Force` (a local test build). So a release is:
+`dotnet publish -c Release` → `.\sign.ps1` → `.\package.ps1` → upload the zip with the matching
+`RELEASE_NOTES_vX.Y.Z.md`. The zip, the `app/` exe, and the `source/` mirror are all git-ignored
+(release assets, never committed).
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
