@@ -58,6 +58,24 @@ public sealed class MapModel
     public List<Prim> P = new();
     public List<Landmark> Landmarks = new();
     public List<Landmark> Secrets = new();     // the Keeper's-layer marks, movable the same way
+
+    // The settlement, when it's a discrete town rather than a city ward that fills the
+    // whole sheet — movable exactly like a landmark, so a town the survey seated badly
+    // can be picked up and put on better ground. Null on a city map and when Town is off.
+    public Landmark Town;
+
+    // True when the survey wanted to seat the town in the water and it was walked onto dry
+    // ground instead. The app says so in the roll log — a Keeper who wrote down a map's number
+    // is owed an explanation when the same number draws a town in a different spot than before.
+    public bool TownSeated;
+
+    // The water this map carries, kept with the model so the town-seating rule at
+    // generation and the "move it off the water" action in the app ask the same question
+    // of the same geometry. RiverPts is the channel's centerline; LakeR is 0 when there's
+    // no lake.
+    public float[] RiverPts;
+    public float RiverHalf;
+    public float LakeX, LakeY, LakeR;
 }
 
 public static class MapGen
@@ -183,16 +201,15 @@ public static class MapGen
         }
         int waterEnd = P.Count;
 
+        // Hand the water to the model, so the seating rule below, the city's block test, and the
+        // app's "move it off the water" all read one description of where the wet ground is.
+        m.RiverPts = riverPts;
+        m.RiverHalf = waterHalf;
+        m.LakeX = lake.x; m.LakeY = lake.y; m.LakeR = lake.r;
+
         // True when a spot of the given reach touches the river channel or the lake — so a city ward
         // can refuse to build there, leaving the water an open, legible course through the blocks.
-        bool OverWater(float px, float py, float pad)
-        {
-            if (lake.r > 0 && Sq(lake.x - px) + Sq(lake.y - py) < Sq(lake.r + pad)) return true;
-            if (riverPts != null)
-                for (int i = 0; i + 1 < riverPts.Length; i += 2)
-                    if (Sq(riverPts[i] - px) + Sq(riverPts[i + 1] - py) < Sq(waterHalf + pad)) return true;
-            return false;
-        }
+        bool OverWater(float px, float py, float pad) => OnWater(m, px, py, pad);
 
         if (ti == 1)                                             // swamp country: reeds crowd the water
             for (int i = 0; i < 14; i++)
@@ -219,6 +236,17 @@ public static class MapGen
 
         // ---- the trail, and where it leads ----
         float tx = W * 0.5f + rngTown.Next(-120, 121), ty = H * 0.5f + rngTown.Next(-80, 81);
+        // A town seated in the river or the lake draws its roofs and its streets straight through
+        // the water, and the two layers argue — you can't tell a building from a bank (user-reported).
+        // Walk the seat to the nearest dry ground before anything is drawn, while the trail still
+        // has time to meet it there. A town that wasn't in the water doesn't move at all, so every
+        // survey that was fine stays exactly as it was.
+        if (!city)
+        {
+            var seat = DryGroundNear(m, tx, ty, TownReach(sp.Scale));
+            m.TownSeated = seat.x != tx || seat.y != ty;
+            (tx, ty) = seat;
+        }
         if (sp.Trail)
         {
             bool vert = rngTrail.Next(2) == 0;
@@ -310,11 +338,13 @@ public static class MapGen
             // The furniture keeps its keep-out; so does the water, so no depot or landmark lands in it.
             blocked.Clear();
             blocked.Add((170, 70, 190)); blocked.Add((W - 64, 92, 95)); blocked.Add((150, H - 40, 170));
+            blocked.Add((W - 144, H - 104, 135));            // the key's corner — nothing gets planted under it
             if (riverPts != null) BlockAlong(blocked, riverPts, waterHalf + 8);
             if (lake.r > 0) blocked.Add((lake.x, lake.y, lake.r + 14));
         }
         else if (sp.Town)
         {
+            int townStart = P.Count;                             // its ink begins here, so it can be picked up whole
             if (sp.Scale == 0)                                   // a main street, building by building
             {
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { tx - 150, ty, tx + 150, ty }, Stroke = "#b09a72", StrokeW = 16, Alpha = 0.65f });
@@ -339,6 +369,13 @@ public static class MapGen
                 if (rngTown.Next(2) == 0) Sym(P, rngTown, "church", tx + 40, ty - 22, k);
             }
             P.Add(TextP(tx, ty + (sp.Scale == 0 ? 66 : 48), townName, 14, Ink, bold: true, anchor: 1));
+            // The whole settlement — street, buildings, church, name — as one movable thing,
+            // recorded the way a landmark is so it drags with the same hand.
+            m.Town = new Landmark
+            {
+                Name = townName, X = tx, Y = ty, GenX = tx, GenY = ty,
+                PrimStart = townStart, PrimCount = P.Count - townStart
+            };
         }
 
         // ---- the land itself ----
@@ -441,6 +478,13 @@ public static class MapGen
                 PrimStart = primStart, PrimCount = P.Count - primStart
             });
         }
+
+        // ---- the key (city wards only) ----
+        // A ward is a crowded sheet — avenues, blocks, works, water all inked over one another —
+        // and a Keeper running a scene shouldn't have to guess which mark is the depot and which
+        // is the smelter. Country maps get no key: out there a mark is a tree or a hill, and the
+        // survey already labels the ones that matter.
+        if (city && sp.Town) CityKey(P, W, H);
 
         // ---- the hour ----
         (string col, float a) overlay = sp.Time switch
@@ -728,10 +772,20 @@ public static class MapGen
     public static void MoveSecret(MapModel m, int index, float nx, float ny)
         => MoveFeature(m, m.Secrets, index, nx, ny);
 
+    /// Move the whole settlement — street, roofs, church, name — to a new seat.
+    public static void MoveTown(MapModel m, float nx, float ny)
+    {
+        if (m?.Town != null) MoveOne(m, m.Town, nx, ny);
+    }
+
     static void MoveFeature(MapModel m, List<Landmark> list, int index, float nx, float ny)
     {
         if (index < 0 || index >= list.Count) return;
-        var lm = list[index];
+        MoveOne(m, list[index], nx, ny);
+    }
+
+    static void MoveOne(MapModel m, Landmark lm, float nx, float ny)
+    {
         float dx = nx - lm.X, dy = ny - lm.Y;
         if (dx == 0 && dy == 0) return;
         for (int i = lm.PrimStart; i < lm.PrimStart + lm.PrimCount && i < m.P.Count; i++)
@@ -743,8 +797,91 @@ public static class MapGen
         lm.X = nx; lm.Y = ny;
     }
 
+    // The city key: a small paper panel in the free corner, one row per mark the ward
+    // actually draws. Deterministic on purpose — a key that reshuffles between two draws
+    // of the same survey would be worse than none.
+    static void CityKey(List<Prim> P, float W, float H)
+    {
+        var rows = new (string sym, string label)[]
+        {
+            ("depot", "Depot & rail platform"),
+            ("stack", "Works — a smelter, a packing house"),
+            ("pens",  "Stockyards"),
+            ("church","Church or cathedral"),
+            ("wharf", "The levee — moorings"),
+            ("lodge", "A lodge hall, a charity ward"),
+        };
+        float w = 236, h = 30 + rows.Length * 21;
+        float x0 = W - w - 26, y0 = H - h - 26;
+        P.Add(Rect(x0, y0, w, h, "#f2ecd8", Dark, 1.3f, 0.94f));
+        P.Add(TextP(x0 + 12, y0 + 19, "THE KEY", 10.5f, Ink, bold: true));
+        var still = new Random(0);
+        for (int i = 0; i < rows.Length; i++)
+        {
+            float ry = y0 + 34 + i * 21;
+            Sym(P, still, rows[i].sym, x0 + 24, ry + 2, 0.62f);
+            P.Add(TextP(x0 + 44, ry + 6, rows[i].label, 9f, Ink));
+        }
+    }
+
+    // ---------------------------------------------------------- water & seating
+    /// How much dry ground a settlement wants around its seat before the water starts running
+    /// through its streets: a gunfight map draws a whole main street, a wider map a cluster of roofs.
+    public static float TownReach(int scale) => scale == 0 ? 110f : 46f;
+
+    /// True when a spot of the given reach touches this map's river channel or its lake.
+    public static bool OnWater(MapModel m, float x, float y, float pad)
+    {
+        if (m == null) return false;
+        if (m.LakeR > 0 && Sq(m.LakeX - x) + Sq(m.LakeY - y) < Sq(m.LakeR + pad)) return true;
+        if (m.RiverPts != null)
+            for (int i = 0; i + 1 < m.RiverPts.Length; i += 2)
+                if (Sq(m.RiverPts[i] - x) + Sq(m.RiverPts[i + 1] - y) < Sq(m.RiverHalf + pad)) return true;
+        return false;
+    }
+
+    /// How far a spot stands from the nearest water — negative when it's standing in it.
+    /// A map with no water at all answers with a large number rather than a special case.
+    public static float WaterClearance(MapModel m, float x, float y)
+    {
+        float d = float.MaxValue;
+        if (m == null) return 9999f;
+        if (m.LakeR > 0) d = Math.Min(d, Dist(m.LakeX, m.LakeY, x, y) - m.LakeR);
+        if (m.RiverPts != null)
+            for (int i = 0; i + 1 < m.RiverPts.Length; i += 2)
+                d = Math.Min(d, Dist(m.RiverPts[i], m.RiverPts[i + 1], x, y) - m.RiverHalf);
+        return d == float.MaxValue ? 9999f : d;
+    }
+
+    /// The nearest dry seat to a spot, searched in widening rings so a town lands as close to
+    /// where it was wanted as the water allows. A spot that's already dry doesn't move at all.
+    /// A river laid across a gunfight map can leave nowhere truly dry — then this gives back the
+    /// driest ground it found rather than refusing to answer.
+    public static (float x, float y) DryGroundNear(MapModel m, float x, float y, float reach)
+    {
+        if (m == null || !OnWater(m, x, y, reach)) return (x, y);
+        float loX = reach + 24, hiX = m.W - reach - 24;
+        float loY = reach + 24, hiY = m.H - reach - 40;
+        if (loX > hiX) { loX = hiX = m.W / 2f; }        // a reach wider than the paper: hold the middle
+        if (loY > hiY) { loY = hiY = m.H / 2f; }
+        var best = (x, y);
+        float bestClear = WaterClearance(m, x, y);
+        for (float rad = 28; rad <= 470; rad += 28)
+            for (int i = 0; i < 16; i++)
+            {
+                double a = Math.PI * 2 * i / 16;
+                float cx = Math.Clamp(x + (float)Math.Cos(a) * rad, loX, hiX);
+                float cy = Math.Clamp(y + (float)Math.Sin(a) * rad, loY, hiY);
+                if (!OnWater(m, cx, cy, reach)) return (cx, cy);
+                float c = WaterClearance(m, cx, cy);
+                if (c > bestClear) { bestClear = c; best = (cx, cy); }
+            }
+        return best;
+    }
+
     // ---------------------------------------------------------- geometry helpers
     static float Sq(float v) => v * v;
+    static float Dist(float ax, float ay, float bx, float by) => (float)Math.Sqrt(Sq(ax - bx) + Sq(ay - by));
     static float Lerp(Random rng, float a, float b) => a + (float)rng.NextDouble() * (b - a);
     static float[] Longest(List<float[]> runs)
     {

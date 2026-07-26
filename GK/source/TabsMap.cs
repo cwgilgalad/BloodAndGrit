@@ -38,6 +38,11 @@ public partial class MainForm
     bool secDragMoved;
     readonly Dictionary<int, (float x, float y)> secEdits = new();
 
+    // The settlement moves by the same hand. There's only ever one, so it needs no key —
+    // just where the Keeper put it, held for as long as the map number holds.
+    bool townDrag, townDragMoved;
+    (float x, float y)? townEdit;
+
     // View state — zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
     // Wheel to zoom at the cursor, drag empty ground to pan, Fit to come home.
     float mapZoom = 1f;
@@ -153,22 +158,26 @@ public partial class MainForm
             "Fit the whole survey back in the window"));
 
         // ---- row 3: at the table, then out the door ----
+        // The old label just read "✥ Landmarks", which named a thing rather than an action — you
+        // had to already know that pressing it let you move anything (user-reported). It now says
+        // what it does, and stays saying it while it's held down.
         lmEditBtn = new CheckBox
         {
-            Text = "✥ Landmarks", Appearance = Appearance.Button, AutoSize = false,
-            Width = 105, Height = 32, Margin = new Padding(3),
+            Text = "✥ Move things", Appearance = Appearance.Button, AutoSize = false,
+            Width = 118, Height = 32, Margin = new Padding(3),
             FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        Tip.SetToolTip(lmEditBtn, "Move the survey's own marks: while pressed, drag a named landmark — or a red " +
-            "Keeper's-layer mark, when shown — to reposition it; right-click one to put it back. " +
-            "Placements hold for this map number.");
+        Tip.SetToolTip(lmEditBtn, "Press to pick things up. While it's down, drag the town, any named landmark, " +
+            "or a red Keeper's-layer mark to a better spot — right-click one to put it back where the survey " +
+            "drew it. Placements hold for this map number, and exports carry them.");
         lmEditBtn.CheckedChanged += (s, e) =>
         {
             lmEditMode = lmEditBtn.Checked;
-            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; }
+            lmEditBtn.Text = lmEditMode ? "✥ Moving — on" : "✥ Move things";
+            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; townDrag = false; }
             mapPanel.Invalidate();
-            if (lmEditMode) Log("Placement: drag a named landmark (or a red secret, when shown); right-click to put it back.");
+            if (lmEditMode) Log("Moving is on: drag the town, a landmark, or a red secret. Right-click one to put it back.");
         };
         rowWork.Controls.Add(lmEditBtn);
         rowWork.Controls.Add(Btn("＋ Marker ▾", (s, e) => ShowMarkerMenu((Button)s), 100,
@@ -246,9 +255,9 @@ public partial class MainForm
         mapBusy = true;
         if (newSeed) mapSeed.Value = Rules.Rng.Next(0, 1000000);
         curMap = MapGen.Generate(MapSpecFromUi());
-        lmDragIdx = -1; secDragIdx = -1;                  // the model they pointed into is gone
+        lmDragIdx = -1; secDragIdx = -1; townDrag = false;   // the model they pointed into is gone
         int seed = (int)mapSeed.Value;
-        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); lmEditSeed = seed; }
+        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); townEdit = null; lmEditSeed = seed; }
         else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
         {
             for (int i = 0; i < curMap.Landmarks.Count; i++)
@@ -257,11 +266,17 @@ public partial class MainForm
             for (int i = 0; i < curMap.Secrets.Count; i++)
                 if (secEdits.TryGetValue(i, out var at))
                     MapGen.MoveSecret(curMap, i, at.x, at.y);
+            if (townEdit is (float tex, float tey)) MapGen.MoveTown(curMap, tex, tey);
         }
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
         Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value}.");
+        // Say it plainly when the survey wanted the town in the river and it was seated on the
+        // bank instead — otherwise a map number that used to draw a town in the water quietly
+        // draws it somewhere else, and that reads like a bug.
+        if (curMap.TownSeated && curMap.Town != null)
+            Log($"{curMap.Town.Name} was seated on the bank — the survey had it standing in the water.");
     }
 
     static string MapSlug(string title) =>
@@ -366,6 +381,9 @@ public partial class MainForm
                 secDragIdx = HitSecret(e.Location);
                 secDragMoved = false;
                 if (secDragIdx >= 0) { mapPanel.Invalidate(); return; }
+                // the town is tested last: a landmark standing in the town's streets is the
+                // smaller, more precise target, so it wins the click
+                if (HitTown(e.Location)) { townDrag = true; townDragMoved = false; mapPanel.Invalidate(); return; }
             }
             if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
             {
@@ -414,9 +432,20 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
+            if (townDrag && m.Town != null)
+            {
+                // a town needs more elbow room than a single mark — it carries its street and its name
+                float reach = MapGen.TownReach(mapScale.SelectedIndex);
+                float nx = Math.Clamp((e.X - ox) / sc, reach * 0.4f + 24, m.W - reach * 0.4f - 24);
+                float ny = Math.Clamp((e.Y - oy) / sc, 40, m.H - 72);
+                MapGen.MoveTown(m, nx, ny);
+                townDragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
             // nothing in hand — show what's grabbable under the cursor
             mapPanel.Cursor = HitMarker(e.Location) != null
-                || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0))
+                || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0 || HitTown(e.Location)))
                 ? Cursors.Hand : Cursors.Default;
         };
         mapPanel.MouseUp += (s, e) =>
@@ -442,7 +471,34 @@ public partial class MainForm
                 {
                     var m2 = mapPanel.Model;
                     int li = HitLandmark(e.Location), si = li >= 0 ? -1 : HitSecret(e.Location);
-                    if (li < 0 && si < 0) return;
+                    bool onTown = li < 0 && si < 0 && HitTown(e.Location);
+                    if (li < 0 && si < 0 && !onTown) return;
+                    if (onTown)
+                    {
+                        var town = m2.Town;
+                        var tmenu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                        bool wet = MapGen.OnWater(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
+                        var dry = tmenu.Items.Add($"Move {town.Name} onto dry ground", null, (ss, ee) =>
+                        {
+                            var (nx, ny) = MapGen.DryGroundNear(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
+                            if (nx == town.X && ny == town.Y) { Log($"{town.Name} already stands clear of the water."); return; }
+                            MapGen.MoveTown(m2, nx, ny);
+                            townEdit = (nx, ny);
+                            lmEditSeed = (int)mapSeed.Value;
+                            Log($"{town.Name} moved off the water.");
+                            mapPanel.Invalidate();
+                        });
+                        dry.Enabled = wet;
+                        if (!wet) dry.ToolTipText = "It's already on dry ground.";
+                        tmenu.Items.Add($"Put {town.Name} back where the survey drew it", null, (ss, ee) =>
+                        {
+                            MapGen.MoveTown(m2, town.GenX, town.GenY);
+                            townEdit = null;
+                            mapPanel.Invalidate();
+                        });
+                        tmenu.Show(mapPanel, e.Location);
+                        return;
+                    }
                     var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
                     if (li >= 0)
                     {
@@ -509,8 +565,31 @@ public partial class MainForm
                 }
                 secDragIdx = -1;
                 mapPanel.Invalidate();
+                return;
+            }
+            if (townDrag)
+            {
+                if (townDragMoved && mapPanel.Model?.Town != null)
+                {
+                    townEdit = (mapPanel.Model.Town.X, mapPanel.Model.Town.Y);
+                    lmEditSeed = (int)mapSeed.Value;
+                }
+                townDrag = false;
+                mapPanel.Invalidate();
             }
         };
+    }
+
+    // The town is grabbed anywhere in its seat — a broad target, since it's a broad thing.
+    bool HitTown(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m?.Town == null) return false;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        if (s <= 0) return false;
+        float x = ox + m.Town.X * s, y = oy + m.Town.Y * s;
+        float r = Math.Max(22f, MapGen.TownReach(mapScale.SelectedIndex) * 0.5f * s);
+        return (p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= r * r;
     }
 
     int HitSecret(Point p)
@@ -531,10 +610,34 @@ public partial class MainForm
     // the grab handle — and the one in hand rings solid. Off, the map stays clean.
     void DrawLandmarkHandles(Graphics g, MapModel m, Rectangle dest)
     {
-        if (!lmEditMode || (m.Landmarks.Count == 0 && m.Secrets.Count == 0)) return;
+        if (!lmEditMode) return;
         var (s, ox, oy) = MapXform(m, dest);
         if (s <= 0) return;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+        // A banner across the top while moving is on, so the mode is never a secret the Keeper
+        // has to remember they turned on.
+        using (var f = new Font("Segoe UI", 9f, FontStyle.Bold))
+        using (var band = new SolidBrush(Color.FromArgb(224, 244, 236, 210)))
+        using (var edge = new Pen(Gold, 1.4f))
+        using (var ink = new SolidBrush(Ink))
+        {
+            string hint = "Moving is on — drag the town, a landmark, or a red secret. Right-click one to put it back.";
+            var sz = g.MeasureString(hint, f);
+            float bw = sz.Width + 22, bx = dest.X + (dest.Width - bw) / 2, by = dest.Y + 6;
+            g.FillRectangle(band, bx, by, bw, sz.Height + 8);
+            g.DrawRectangle(edge, bx, by, bw, sz.Height + 8);
+            g.DrawString(hint, f, ink, bx + 11, by + 4);
+        }
+
+        // the town rings like everything else that can be picked up
+        if (m.Town != null)
+        {
+            float r = Math.Max(24f, MapGen.TownReach(mapScale.SelectedIndex) * 0.5f * s);
+            using var townRing = new Pen(Gold, townDrag ? 2.6f : 1.6f) { DashPattern = new[] { 5f, 3.5f } };
+            float tx = ox + m.Town.X * s, ty = oy + m.Town.Y * s;
+            g.DrawEllipse(townRing, tx - r, ty - r, r * 2, r * 2);
+        }
         using var ring = new Pen(Gold, 1.6f) { DashPattern = new[] { 3f, 2.5f } };
         using var held = new Pen(Gold, 2.6f);
         for (int i = 0; i < m.Landmarks.Count; i++)

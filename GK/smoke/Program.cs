@@ -878,6 +878,76 @@ foreach (var terrain in MapGen.Terrains)
     }
 }
 
+// ---- Trail Maps: a town is never seated in the water, and it can be picked up ----
+// (A settlement drawn on the river inked its streets straight through the channel and the two
+// layers argued — you couldn't tell a roof from a bank. The seat is now walked onto dry ground
+// before anything is drawn, and the Keeper can still move it by hand.)
+{
+    int seated = 0, checkedMaps = 0;
+    bool allDry = true;
+    foreach (int water in new[] { 2, 3, 4, 5 })
+        foreach (int scale in new[] { 1, 2, 3 })
+            for (int seed = 1; seed <= 40; seed++)
+            {
+                var mm = MapGen.Generate(new MapSpec
+                { Terrain = MapGen.Terrains[seed % 8], Scale = scale, Seed = seed * 7 + water, Water = water, Landmarks = 4 });
+                if (mm.Town == null) continue;
+                checkedMaps++;
+                if (mm.TownSeated) seated++;
+                if (MapGen.OnWater(mm, mm.Town.X, mm.Town.Y, MapGen.TownReach(scale))) allDry = false;
+            }
+    T("every town across the water settings stands on dry ground", allDry && checkedMaps > 300);
+    T("the seating rule actually fired on some of them", seated > 0);
+
+    // a town clear of the water is left exactly where the survey put it — old maps don't shift
+    var dryMap = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Water = 1, Landmarks = 4 });
+    T("a town on dry ground is not moved at all", dryMap.Town != null && !dryMap.TownSeated);
+
+    // the settlement is recorded like a landmark, and moving it touches only its own ink
+    var tm = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 909, Water = 1, Landmarks = 4 });
+    T("the town is recorded with a sane prim range", tm.Town != null && tm.Town.PrimCount > 0
+        && tm.Town.PrimStart >= 0 && tm.Town.PrimStart + tm.Town.PrimCount <= tm.P.Count
+        && tm.Town.Name.Length > 0 && tm.Town.X == tm.Town.GenX && tm.Town.Y == tm.Town.GenY);
+    if (tm.Town != null)
+    {
+        var before = tm.P.Select(p => (float[])p.Pts.Clone()).ToList();
+        float tox = tm.Town.X, toy = tm.Town.Y;
+        MapGen.MoveTown(tm, tox - 60, toy + 35);
+        bool ownMoved = true, othersStill = true;
+        for (int i = 0; i < tm.P.Count; i++)
+        {
+            bool mine = i >= tm.Town.PrimStart && i < tm.Town.PrimStart + tm.Town.PrimCount;
+            var (a, b) = (before[i], tm.P[i].Pts);
+            if (!mine) { if (!a.SequenceEqual(b)) othersStill = false; continue; }
+            int n = tm.P[i].Kind == PrimKind.Circle ? 2 : a.Length;
+            for (int j = 0; j < n; j += 2)
+                if (Math.Abs(b[j] - a[j] + 60) > 0.001f || Math.Abs(b[j + 1] - a[j + 1] - 35) > 0.001f) ownMoved = false;
+        }
+        T("moving the town translates exactly its own ink", ownMoved && tm.Town.X == tox - 60 && tm.Town.Y == toy + 35);
+        T("moving the town leaves every other prim alone", othersStill);
+        MapGen.MoveTown(tm, tm.Town.GenX, tm.Town.GenY);
+        T("putting the town back restores its seat", tm.Town.X == tox && tm.Town.Y == toy);
+    }
+
+    // the water question is asked of one description of the water, so the app and the
+    // generator can never disagree about what counts as wet
+    var wm = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[1], Scale = 2, Seed = 313, Water = 4, Landmarks = 4 });
+    T("the model carries its lake", wm.LakeR > 0);
+    T("the lake's middle reads as water", MapGen.OnWater(wm, wm.LakeX, wm.LakeY, 0));
+    T("clearance is negative in the water, positive out of it",
+        MapGen.WaterClearance(wm, wm.LakeX, wm.LakeY) < 0 && MapGen.WaterClearance(wm, 20, 20) > 0);
+    var moved = MapGen.DryGroundNear(wm, wm.LakeX, wm.LakeY, 40);
+    T("dry ground near the lake's middle is out of the lake", !MapGen.OnWater(wm, moved.x, moved.y, 40));
+    T("dry ground leaves an already-dry spot alone", MapGen.DryGroundNear(wm, 30, 30, 10) == (30f, 30f));
+
+    // a city ward carries a key; the open country doesn't need one
+    var keyed = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Landmarks = 6 });
+    var plain = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Water = 3, Landmarks = 6 });
+    T("a city ward draws a key", keyed.P.Any(p => p.Kind == PrimKind.Text && p.Text == "THE KEY"));
+    T("open country draws no key", !plain.P.Any(p => p.Kind == PrimKind.Text && p.Text == "THE KEY"));
+    T("a city has no movable town — the ward IS the map", keyed.Town == null);
+}
+
 // ---- Trail Maps: overlays are VIEWS — toggling one must not reshuffle the map ----
 // (One shared rng stream used to mean checking Rail regenerated a different
 // countryside; per-feature streams make every checkbox pure ink on/ink off.)
