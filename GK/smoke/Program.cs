@@ -181,6 +181,29 @@ foreach (var (ground, list) in Db.Terrain)
         T($"terrain resolves [{ground}]: {entry}", Db.Find(nm) != null);
     }
 
+// Every creature can be rolled. A Bestiary entry no table ever offers is one a Keeper has to
+// already know about to use, which defeats the point of having the tables. The White Bison is
+// the one deliberate exception — Ch. XII says it has gone quiet, so it stays off.
+{
+    var onTables = new HashSet<string>(
+        Db.Terrain.SelectMany(kv => kv.Value)
+                  .Select(e => System.Text.RegularExpressions.Regex.Match(e, @"^(.*?)(\s*\(|$)").Groups[1].Value.Trim()));
+    var unreachable = Db.Creatures.Select(c => c.name).Where(n => !onTables.Contains(n)).ToList();
+    T("every creature is reachable from some terrain table, bar the one held back",
+        unreachable.Count == 1 && unreachable[0] == "The White Bison");
+}
+
+// The generators the Keeper actually presses. A re-extraction of tables.json that lands without
+// tables_extra.json would still boot and still roll — just thinly, and silently. Hold the floor.
+foreach (var (table, floor) in new[]
+{
+    ("townFront", 40), ("townBack", 40), ("townAils", 28), ("townSecret", 28),
+    ("npcGiven", 72), ("npcSurname", 70), ("npcWant", 28), ("npcTell", 28),
+    ("rumors", 56), ("trailDay", 40), ("trailNight", 40), ("plunder", 40), ("omens", 52),
+    ("cityQuarter", 20), ("cityMachine", 20), ("cityWrongNote", 24), ("cityJob", 20),
+})
+    T($"table [{table}] is at least {floor} deep", Db.Simple[table].Count >= floor);
+
 // ---- Nerve-loss ladder ----
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)
@@ -637,6 +660,13 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
 // ---- Character generator: data sanity ----
 CharGen.Load();
 var cg = CharGen.D;
+
+// The flavor pools — a soul's vice, what they lost, what they've seen, what moves them, and the
+// gendered given names. A pool that thinned out still generates perfectly valid souls; they just
+// come out the same souls over a long campaign, which is the failure nobody notices.
+foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28), ("moving", 28),
+                                      ("givenWomen", 50), ("givenMen", 51) })
+    T($"flavor pool [{pool}] is at least {floor} deep", CharGen.FlavorList(pool).Count >= floor);
 
 // ============================================================ THE IRON CODE ENGINE (Ch. XI)
 // Property-based proof that the adjudicator matches the printed gun rules.

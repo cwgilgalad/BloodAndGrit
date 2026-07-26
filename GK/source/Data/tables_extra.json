@@ -422,5 +422,55 @@
    "The Bounty Killer (III) — a man, which is worse",
    "The Regulators (IV) — they were sent, and they will be sent again"
   ]
- }
+ },
+ "cityQuarter": [
+  "The brewery flats, and the caves cut under them",
+  "The exposition grounds, half built and already leased",
+  "The old cemetery the streets were laid over",
+  "The gasworks and the streets it lights first",
+  "The rooming houses behind the depot",
+  "The produce market, which never fully closes",
+  "The medical college and what it needs",
+  "The hill, where the money sleeps",
+  "The pest house on the far bank",
+  "The freight tunnels under the wholesale district"
+ ],
+ "cityMachine": [
+  "The waterworks board, which decides who gets a main",
+  "The undertakers' trust",
+  "The two rival fire companies, and whichever arrives second",
+  "The immigration agent who meets every train",
+  "The coroner",
+  "The bank that holds every other bank's paper",
+  "The streetcar franchise and the men who voted it",
+  "The Ladies' Aid Society, and the ledger it keeps",
+  "A judge who has never once been overruled",
+  "The union hall, and the man who is not its president"
+ ],
+ "cityWrongNote": [
+  "The city directory lists forty households at one address",
+  "Three fires in a month, all after the buildings were insured",
+  "The new main was laid around something, not through it",
+  "Every hack driver refuses one fare and will not say which",
+  "The college's anatomy class is oversubscribed and undersupplied",
+  "The gas burns blue on one street and nowhere else",
+  "A whole rooming house gave the same name to the census man",
+  "The bells at the cathedral are rung by nobody on record",
+  "Two men were hanged for it and the killings did not stop",
+  "The health officer condemned a block and then bought it",
+  "Somebody has been paying the pest house's bills for eleven years",
+  "The streetcar runs a route with no stops on it after midnight"
+ ],
+ "cityJob": [
+  "Serve a paper on a man four doors will not open for",
+  "Stand at an exhumation and see it done honestly",
+  "Trace a shipment of ice that arrived warm",
+  "Sit in on a coroner's inquest and count the lies",
+  "Get a witness out of the city before the trial",
+  "Deliver a payroll to the far bank and come back empty-handed on purpose",
+  "Find out who is renting the caves under the brewery",
+  "Escort the health officer through a block that does not want him",
+  "Keep a lamp lit on one corner from midnight to dawn",
+  "Bring a runaway home, and decide on the way whether to"
+ ]
 }
