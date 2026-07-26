@@ -13,7 +13,7 @@
     <AssemblyName>GritKeeper</AssemblyName>
     <RootNamespace>BloodAndGritKeeper</RootNamespace>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
-    <Version>1.17.0</Version>
+    <Version>1.18.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -82,6 +82,7 @@
     <EmbeddedResource Include="Data\tables.json" />
     <EmbeddedResource Include="Data\tables_extra.json" />
     <EmbeddedResource Include="Data\chargen.json" />
+    <EmbeddedResource Include="Data\rides.json" />
     <!-- window/title-bar icon + the faint emblem watermark, loaded from the assembly so
          the single-file exe stays truly single-file -->
     <EmbeddedResource Include="app.ico" />

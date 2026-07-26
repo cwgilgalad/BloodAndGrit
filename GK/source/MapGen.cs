@@ -834,10 +834,8 @@ public static class MapGen
     {
         if (m == null) return false;
         if (m.LakeR > 0 && Sq(m.LakeX - x) + Sq(m.LakeY - y) < Sq(m.LakeR + pad)) return true;
-        if (m.RiverPts != null)
-            for (int i = 0; i + 1 < m.RiverPts.Length; i += 2)
-                if (Sq(m.RiverPts[i] - x) + Sq(m.RiverPts[i + 1] - y) < Sq(m.RiverHalf + pad)) return true;
-        return false;
+        float half = m.RiverHalf + pad;
+        return RiverDistSq(m, x, y) < half * half;
     }
 
     /// How far a spot stands from the nearest water — negative when it's standing in it.
@@ -847,10 +845,34 @@ public static class MapGen
         float d = float.MaxValue;
         if (m == null) return 9999f;
         if (m.LakeR > 0) d = Math.Min(d, Dist(m.LakeX, m.LakeY, x, y) - m.LakeR);
-        if (m.RiverPts != null)
-            for (int i = 0; i + 1 < m.RiverPts.Length; i += 2)
-                d = Math.Min(d, Dist(m.RiverPts[i], m.RiverPts[i + 1], x, y) - m.RiverHalf);
+        float rq = RiverDistSq(m, x, y);
+        if (rq < float.MaxValue) d = Math.Min(d, (float)Math.Sqrt(rq) - m.RiverHalf);
         return d == float.MaxValue ? 9999f : d;
+    }
+
+    /// Squared distance from a spot to the river's CHANNEL — measured to the segments, not to the
+    /// vertices. Vertex-only sampling was near enough while the meander's points sit ~40px apart and
+    /// every caller passes a pad wider than that, but it was only near enough by luck: shrink the
+    /// pad and a town could be seated mid-channel on a straight reach and called dry.
+    /// Answers float.MaxValue when the map has no river at all.
+    static float RiverDistSq(MapModel m, float x, float y)
+    {
+        var p = m.RiverPts;
+        if (p == null || p.Length < 2) return float.MaxValue;
+        if (p.Length == 2) return Sq(p[0] - x) + Sq(p[1] - y);        // a one-point run
+        float best = float.MaxValue;
+        for (int i = 0; i + 3 < p.Length; i += 2)
+            best = Math.Min(best, SegDistSq(x, y, p[i], p[i + 1], p[i + 2], p[i + 3]));
+        return best;
+    }
+
+    static float SegDistSq(float px, float py, float ax, float ay, float bx, float by)
+    {
+        float dx = bx - ax, dy = by - ay;
+        float len2 = dx * dx + dy * dy;
+        if (len2 <= 1e-6f) return Sq(px - ax) + Sq(py - ay);          // a degenerate segment
+        float t = Math.Clamp(((px - ax) * dx + (py - ay) * dy) / len2, 0f, 1f);
+        return Sq(px - (ax + dx * t)) + Sq(py - (ay + dy * t));
     }
 
     /// The nearest dry seat to a spot, searched in widening rings so a town lands as close to
@@ -892,6 +914,32 @@ public static class MapGen
 
     static Prim Rect(float x, float y, float w, float h, string fill, string stroke, float sw, float alpha = 1f) =>
         new() { Kind = PrimKind.Poly, Pts = new[] { x, y, x + w, y, x + w, y + h, x, y + h }, Fill = fill, Stroke = stroke, StrokeW = sw, Alpha = alpha };
+
+    /// <summary>The Keeper's tactical markers, drawn as map primitives so an export can carry them:
+    /// a filled dot per marker in its own ink, with the name beside it. Deliberately NOT produced by
+    /// <see cref="Generate"/> — markers are session state, not survey ink, and redrawing the map must
+    /// never move or lose one. The exporters take these as a separate overlay rather than having them
+    /// appended to the model, so the map the Map tab is holding keeps exactly what the survey drew.</summary>
+    public static List<Prim> MarkerPrims(IEnumerable<MapMarker> markers, float w, float h)
+    {
+        var list = new List<Prim>();
+        if (markers == null) return list;
+        const float r = 10f, fs = 11f;
+        foreach (var mk in markers)
+        {
+            if (mk == null) continue;
+            float x = Math.Clamp(mk.X, 0, w), y = Math.Clamp(mk.Y, 0, h);
+            list.Add(new Prim
+            { Kind = PrimKind.Circle, Pts = new[] { x, y, r }, Fill = MapInk.Hex(MapInk.Of(mk)), Stroke = Dark, StrokeW = 1.8f });
+            if (string.IsNullOrWhiteSpace(mk.Label)) continue;
+            // The label's backing is sized by estimate, not measurement: out here there's no font
+            // to ask for metrics, and paper laid a little wide on paper costs nothing to look at.
+            float tw = mk.Label.Length * fs * 0.55f + 7;
+            list.Add(Rect(x + r + 3, y - fs * 0.72f, tw, fs * 1.34f, "#f4efdd", null, 0, 0.82f));
+            list.Add(TextP(x + r + 6, y + fs * 0.36f, mk.Label, fs, Dark, bold: true));
+        }
+        return list;
+    }
 
     static Prim TextP(float x, float y, string t, float size, string col, bool bold = false, bool italic = false, int anchor = 0) =>
         new() { Kind = PrimKind.Text, Pts = new[] { x, y }, Text = t, FontSize = size, Fill = col, Bold = bold, Italic = italic, Anchor = anchor };
@@ -1020,12 +1068,14 @@ public static class MapGen
     static string N(float v) => v.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
     static string Xml(string s) => s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 
-    public static string ToSvg(MapModel m)
+    /// <paramref name="overlay"/> is drawn last, over the finished survey — the Keeper's tactical
+    /// markers, when the Map tab was asked to include them. Null means the map alone.
+    public static string ToSvg(MapModel m, IEnumerable<Prim> overlay = null)
     {
         var sb = new StringBuilder();
         sb.Append($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {m.W} {m.H}\" width=\"{m.W}\" height=\"{m.H}\" font-family=\"Georgia, 'Times New Roman', serif\">\n");
         sb.Append("<title>").Append(Xml(m.Title)).Append("</title>\n");
-        foreach (var p in m.P)
+        foreach (var p in overlay == null ? m.P : m.P.Concat(overlay))
         {
             string op = p.Alpha < 0.999f ? $" opacity=\"{N(p.Alpha)}\"" : "";
             string dash = p.Dash != null ? $" stroke-dasharray=\"{string.Join(" ", p.Dash.Select(N))}\"" : "";

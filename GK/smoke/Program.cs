@@ -1,4 +1,4 @@
-using BloodAndGritKeeper;
+﻿using BloodAndGritKeeper;
 
 int pass = 0, fail = 0;
 void T(string name, bool ok)
@@ -195,6 +195,267 @@ T("even foe = 4",   Rules.Cost(2, 4).cost == 4 && Rules.Cost(2, 4).role == "Even
 T("mook = 1",       Rules.Cost(1, 4).cost == 1);
 T("standout = 8",   Rules.Cost(3, 4).cost == 8 && !Rules.Cost(3, 4).spoor);
 T("spoor at +2",    Rules.Cost(4, 4).spoor);
+
+// ---- The budget verdict (what the Encounter tab's bar and line both read from) ----
+{
+    // The band the whole tab hangs on: exactly on budget is the balanced fight, and it is the
+    // ONLY band that reads green. Anything over reads red, however far over.
+    T("budget: nothing costed is Empty",   Rules.BudgetBand(0, 24) == Rules.Weight.Empty);
+    T("budget: under is Under",            Rules.BudgetBand(23, 24) == Rules.Weight.Under);
+    T("budget: exact is Exact",            Rules.BudgetBand(24, 24) == Rules.Weight.Exact);
+    T("budget: one over is Over",          Rules.BudgetBand(25, 24) == Rules.Weight.Over);
+    T("budget: +4 is still Over",          Rules.BudgetBand(28, 24) == Rules.Weight.Over);
+    T("budget: +5 is WellOver",            Rules.BudgetBand(29, 24) == Rules.Weight.WellOver);
+
+    // A one-soul posse (budget 4) is the tightest case — Exact must not be swallowed by the
+    // "within 4 of budget" Over band, which spans the same width.
+    T("budget: 4/4 exact on a lone soul",  Rules.BudgetBand(4, 4) == Rules.Weight.Exact);
+    T("budget: 5/4 is Over",               Rules.BudgetBand(5, 4) == Rules.Weight.Over);
+    T("budget: 9/4 is WellOver",           Rules.BudgetBand(9, 4) == Rules.Weight.WellOver);
+
+    // Empty wins over Exact when the posse is empty too — a budget of 0 with nothing costed is
+    // an empty tab, not a perfectly balanced fight. (The tab floors the budget at 4, but the
+    // rule shouldn't depend on the caller to keep it honest.)
+    T("budget: 0 spend, 0 budget is Empty", Rules.BudgetBand(0, 0) == Rules.Weight.Empty);
+    T("budget: negative spend is Empty",    Rules.BudgetBand(-3, 12) == Rules.Weight.Empty);
+
+    // Exactly one band per spend, and every band has words.
+    for (int budget = 4; budget <= 40; budget += 4)
+        for (int spend = 0; spend <= budget * 3; spend++)
+        {
+            var band = Rules.BudgetBand(spend, budget);
+            if (spend > 0 && spend == budget && band != Rules.Weight.Exact)
+                { T($"budget: {spend}/{budget} must be Exact", false); goto doneBudget; }
+            if (spend > budget && band != Rules.Weight.Over && band != Rules.Weight.WellOver)
+                { T($"budget: {spend}/{budget} must read over", false); goto doneBudget; }
+            if (spend > 0 && spend < budget && band != Rules.Weight.Under)
+                { T($"budget: {spend}/{budget} must be Under", false); goto doneBudget; }
+            if (string.IsNullOrWhiteSpace(Rules.BudgetVerdict(spend, budget)))
+                { T($"budget: {spend}/{budget} has no words", false); goto doneBudget; }
+        }
+    T("budget: every spend 0..3x budget lands in one band, with words", true);
+    doneBudget: ;
+
+    T("budget: the exact verdict says so", Rules.BudgetVerdict(24, 24).Contains("ON BUDGET"));
+    T("budget: the over verdict says so",  Rules.BudgetVerdict(30, 24).Contains("WELL over"));
+}
+
+// ---- Recovering Nerve (the Posse tab's Steady menu) ----
+{
+    // NerveCur clamps to 0..999, NOT to NerveMax — so anything handing Nerve back has to clamp
+    // itself. This is the assumption Steady()/SteadyByHand() are written on; if it ever changes,
+    // this test is the thing that says so.
+    var n = new PartyMember { NerveMax = 10, NerveCur = 2 };
+    n.NerveCur = 500;
+    T("Nerve: the model does NOT clamp cur to max", n.NerveCur == 500);
+
+    // The shape Steady uses: never past max, never backwards, and "all of it" means max.
+    static int Steadied(int cur, int max, int gain) => Math.Min(max, cur + gain);
+    T("steady: a remedy stops at max",      Steadied(8, 10, 6) == 10);
+    T("steady: a remedy adds what it can",  Steadied(3, 10, 4) == 7);
+    T("steady: already full gains nothing", Steadied(10, 10, 6) == 10);
+    T("steady: a broken soul can come back", Steadied(0, 10, 1) == 1);
+    for (int cur = 0; cur <= 20; cur++)
+        for (int gain = 1; gain <= 10; gain++)
+            if (Steadied(cur, 20, gain) < cur || Steadied(cur, 20, gain) > 20)
+                { T("steady: never loses Nerve and never passes max", false); goto doneSteady; }
+    T("steady: never loses Nerve and never passes max", true);
+    doneSteady: ;
+
+    // The remedies the menu offers, as the book prints them.
+    for (int i = 0; i < 200; i++)
+    {
+        int d6 = Rules.RollExpr("1d6").total, d4 = Rules.RollExpr("1d4").total;
+        if (d6 < 1 || d6 > 6 || d4 < 1 || d4 > 4)
+            { T("steady: the remedies roll in range", false); goto doneRemedy; }
+    }
+    T("steady: the remedies roll in range (1d6 confession/night, 1d4 whiskey)", true);
+    doneRemedy: ;
+}
+
+// ---- Naming a new ride when one of that name is already in the corral ----
+{
+    T("ride name: an empty corral takes the stem", Db.FreeRideName(new string[0], "Mule") == "Mule");
+    T("ride name: the second is numbered 2",       Db.FreeRideName(new[] { "Mule" }, "Mule") == "Mule 2");
+    T("ride name: the third is numbered 3",        Db.FreeRideName(new[] { "Mule", "Mule 2" }, "Mule") == "Mule 3");
+
+    // The regression this helper exists for: sell the middle horse of three and the next one must
+    // NOT take a name that is already standing in the corral.
+    T("ride name: a sold middle number is reused, not collided with",
+        Db.FreeRideName(new[] { "Mule", "Mule 3" }, "Mule") == "Mule 2");
+
+    T("ride name: a different stem is untouched", Db.FreeRideName(new[] { "Mule", "Mule 2" }, "Ox") == "Ox");
+    T("ride name: matching ignores case",         Db.FreeRideName(new[] { "mule" }, "Mule") == "Mule 2");
+    T("ride name: a null roster is an empty one", Db.FreeRideName(null, "Ox") == "Ox");
+
+    // Add a hundred of the same thing and every name must still be its own.
+    var corral = new List<string>();
+    for (int i = 0; i < 100; i++) corral.Add(Db.FreeRideName(corral, "Saddle Horse"));
+    T("ride name: 100 of a kind are 100 distinct names",
+        corral.Distinct(StringComparer.OrdinalIgnoreCase).Count() == 100);
+
+    // Remove a scatter of them, add as many back, and the corral is still collision-free.
+    foreach (var gone in corral.Where((_, i) => i % 3 == 1).ToList()) corral.Remove(gone);
+    for (int i = 0; i < 40; i++) corral.Add(Db.FreeRideName(corral, "Saddle Horse"));
+    T("ride name: still distinct after a churn of sales and purchases",
+        corral.Distinct(StringComparer.OrdinalIgnoreCase).Count() == corral.Count);
+}
+
+// ---- Marker ink: the book's colors, the Keeper's, and one marker's own ----
+{
+    MapInk.LoadKindColors(null);                                  // start from the book
+
+    T("ink: the posse is verdigris",   MapInk.BookColor("posse")    == MapInk.Verdigris);
+    T("ink: an NPC is gold",           MapInk.BookColor("npc")      == MapInk.Gold);
+    T("ink: a creature is blood",      MapInk.BookColor("creature") == MapInk.BloodRed);
+    T("ink: an unknown kind reads as trouble", MapInk.BookColor("bandit") == MapInk.BloodRed);
+    T("ink: a null kind reads as trouble",     MapInk.BookColor(null)     == MapInk.BloodRed);
+
+    // A marker with no color of its own takes its kind's.
+    var plain = new MapMarker { Label = "Jed", Kind = "posse" };
+    T("ink: a plain marker takes its kind's color", MapInk.Of(plain) == MapInk.Verdigris);
+    T("ink: a null marker still answers something", MapInk.Of(null) == MapInk.BloodRed);
+
+    // One marker breaking ranks must not move anything else.
+    int indigo = MapInk.Palette.First(p => p.name == "Indigo").argb;
+    var own = new MapMarker { Label = "Mose", Kind = "posse", Argb = indigo };
+    T("ink: a marker's own color wins",             MapInk.Of(own) == indigo);
+    T("ink: and leaves its kinsman alone",          MapInk.Of(plain) == MapInk.Verdigris);
+    own.Argb = MapInk.Unset;
+    T("ink: clearing it falls back to the kind",    MapInk.Of(own) == MapInk.Verdigris);
+
+    // Re-inking a whole kind.
+    int moss = MapInk.Palette.First(p => p.name == "Moss").argb;
+    MapInk.SetKindColor("posse", moss);
+    T("ink: a re-inked kind takes the new color",   MapInk.KindColor("posse") == moss);
+    T("ink: and its plain markers follow",          MapInk.Of(plain) == moss);
+    T("ink: other kinds are untouched",             MapInk.KindColor("creature") == MapInk.BloodRed);
+    T("ink: the book's color is still the book's",  MapInk.BookColor("posse") == MapInk.Verdigris);
+    T("ink: kind lookup ignores case",              MapInk.KindColor("POSSE") == moss);
+
+    // Only decisions are kept — setting a kind back to the book's own color is not a decision,
+    // so prefs.json must not grow a line recording that nothing changed.
+    T("ink: a changed kind is recorded",            MapInk.KindColors().Count == 1);
+    MapInk.SetKindColor("posse", MapInk.Verdigris);
+    T("ink: setting the book's color clears the record", MapInk.KindColors().Count == 0);
+    MapInk.SetKindColor("posse", moss);
+    MapInk.SetKindColor("posse", MapInk.Unset);
+    T("ink: Unset also clears the record",          MapInk.KindColors().Count == 0);
+    T("ink: and the kind is back to the book",      MapInk.KindColor("posse") == MapInk.Verdigris);
+
+    // A round trip through what prefs.json would hold.
+    MapInk.SetKindColor("npc", indigo);
+    MapInk.SetKindColor("creature", moss);
+    var saved = MapInk.KindColors();
+    MapInk.LoadKindColors(null);
+    T("ink: loading nothing puts every kind back", MapInk.KindColor("npc") == MapInk.Gold);
+    MapInk.LoadKindColors(saved);
+    T("ink: a saved choice survives the round trip", MapInk.KindColor("npc") == indigo
+        && MapInk.KindColor("creature") == moss && MapInk.KindColor("posse") == MapInk.Verdigris);
+
+    // Names and hex, which the menus and both exporters depend on.
+    T("ink: a palette color knows its name", MapInk.NameOf(MapInk.Verdigris) == "Verdigris");
+    T("ink: a mixed color falls back to hex", MapInk.NameOf(unchecked((int)0xFF123456)) == "#123456");
+    T("ink: hex drops the alpha",             MapInk.Hex(unchecked((int)0xFF781616)) == "#781616");
+    T("ink: hex pads short channels",         MapInk.Hex(unchecked((int)0xFF010203)) == "#010203");
+    T("ink: every palette color is opaque",   MapInk.Palette.All(p => ((p.argb >> 24) & 0xFF) == 0xFF));
+    T("ink: no two palette colors are alike", MapInk.Palette.Select(p => p.argb).Distinct().Count() == MapInk.Palette.Length);
+    T("ink: no two palette names are alike",  MapInk.Palette.Select(p => p.name).Distinct().Count() == MapInk.Palette.Length);
+    T("ink: every palette hex is well formed",
+        MapInk.Palette.All(p => System.Text.RegularExpressions.Regex.IsMatch(MapInk.Hex(p.argb), "^#[0-9a-f]{6}$")));
+    T("ink: all three book colors are in the palette",
+        MapInk.Palette.Any(p => p.argb == MapInk.Verdigris) && MapInk.Palette.Any(p => p.argb == MapInk.Gold)
+        && MapInk.Palette.Any(p => p.argb == MapInk.BloodRed));
+
+    MapInk.LoadKindColors(null);                                  // leave the rig as we found it
+}
+
+// ---- Markers as export ink: the overlay the SVG and PDF writers take ----
+{
+    MapInk.LoadKindColors(null);
+    var map = MapGen.Generate(new MapSpec { Seed = 4242, Landmarks = 4 });
+    int survey = map.P.Count;
+
+    T("marker export: no markers, no ink", MapGen.MarkerPrims(new List<MapMarker>(), map.W, map.H).Count == 0);
+    T("marker export: a null list is an empty one", MapGen.MarkerPrims(null, map.W, map.H).Count == 0);
+
+    var crew = new List<MapMarker>
+    {
+        new() { Label = "Jed",   Kind = "posse",    X = 100, Y = 100 },
+        new() { Label = "Mose",  Kind = "npc",      X = 200, Y = 150 },
+        new() { Label = "",      Kind = "creature", X = 300, Y = 200 },   // unnamed — dot only
+    };
+    var ink = MapGen.MarkerPrims(crew, map.W, map.H);
+    T("marker export: a named marker is a dot, a backing, and a name; an unnamed one just a dot",
+        ink.Count == 3 + 3 + 1);
+    T("marker export: every dot is a circle",
+        ink.Count(p => p.Kind == PrimKind.Circle) == 3);
+    T("marker export: the names are carried",
+        ink.Where(p => p.Kind == PrimKind.Text).Select(p => p.Text).OrderBy(x => x).SequenceEqual(new[] { "Jed", "Mose" }));
+    T("marker export: each dot is drawn in its kind's ink",
+        ink.Where(p => p.Kind == PrimKind.Circle).Select(p => p.Fill).SequenceEqual(
+            new[] { MapInk.Hex(MapInk.Verdigris), MapInk.Hex(MapInk.Gold), MapInk.Hex(MapInk.BloodRed) }));
+
+    // A marker off the edge of the map is drawn at the edge, not off the page.
+    var stray = MapGen.MarkerPrims(new List<MapMarker> { new() { Label = "", X = -500, Y = 9999 } }, map.W, map.H);
+    T("marker export: a stray marker is pulled back onto the paper",
+        stray[0].Pts[0] == 0 && stray[0].Pts[1] == map.H);
+
+    // The whole point of an overlay: the model the Map tab holds is not touched by an export.
+    string svgPlain = MapGen.ToSvg(map);
+    string svgMarked = MapGen.ToSvg(map, ink);
+    T("marker export: the survey's own ink is unchanged by drawing markers", map.P.Count == survey);
+    T("marker export: markers off, the name is not in the file", !svgPlain.Contains(">Jed<"));
+    T("marker export: markers on, it is",                        svgMarked.Contains(">Jed<"));
+    T("marker export: markers on, the file is the bigger one",   svgMarked.Length > svgPlain.Length);
+    T("marker export: the marker's ink reaches the SVG",         svgMarked.Contains(MapInk.Hex(MapInk.Verdigris)));
+
+    // Both writers must accept the overlay, and the PDF must still be a PDF with one on.
+    var pdfPlain = Pdf.MapPdf(map);
+    var pdfMarked = Pdf.MapPdf(map, ink);
+    T("marker export: the PDF still starts with its header",
+        System.Text.Encoding.Latin1.GetString(pdfMarked, 0, 5) == "%PDF-");
+    T("marker export: the marked PDF carries more than the plain one", pdfMarked.Length > pdfPlain.Length);
+    T("marker export: the survey's ink is STILL unchanged after both writers", map.P.Count == survey);
+
+    // The label backing is drawn behind the name, and is see-through enough to read paper through.
+    var backing = ink.First(p => p.Kind == PrimKind.Poly);
+    T("marker export: the label's backing is translucent", backing.Alpha > 0 && backing.Alpha < 1);
+    T("marker export: a backing comes before the name it backs",
+        ink.IndexOf(backing) < ink.FindIndex(p => p.Kind == PrimKind.Text));
+}
+
+// ---- Water is measured to the river's CHANNEL, not to its vertices ----
+{
+    // A long straight reach whose two ends are 1000px apart. A spot at its midpoint is squarely in
+    // the water, but it is 500px from the nearest VERTEX — the old test called it dry.
+    var straight = new MapModel { RiverPts = new float[] { 0, 0, 1000, 0 }, RiverHalf = 16, W = 1000, H = 600 };
+    T("water: mid-channel on a long reach is wet", MapGen.OnWater(straight, 500, 0, 1));
+    T("water: mid-channel clearance is negative",  MapGen.WaterClearance(straight, 500, 0) < 0);
+    T("water: well off the reach is dry",         !MapGen.OnWater(straight, 500, 400, 1));
+    T("water: clearance off the reach is the gap", Math.Abs(MapGen.WaterClearance(straight, 500, 400) - (400 - 16)) < 0.01);
+
+    // Past the end of a reach the distance is to the endpoint, not to the infinite line.
+    T("water: beyond the reach's end is dry",     !MapGen.OnWater(straight, 1200, 0, 1));
+    T("water: clearance past the end measures from the end",
+        Math.Abs(MapGen.WaterClearance(straight, 1200, 0) - (200 - 16)) < 0.01);
+
+    // No river and no lake: everything is dry, and clearance answers big rather than throwing.
+    var dry = new MapModel { W = 1000, H = 600 };
+    T("water: a map with no water is dry",        !MapGen.OnWater(dry, 500, 300, 40));
+    T("water: no water answers a big clearance",   MapGen.WaterClearance(dry, 500, 300) > 1000);
+
+    // A degenerate one-point run must not divide by zero.
+    var speck = new MapModel { RiverPts = new float[] { 100, 100 }, RiverHalf = 8, W = 400, H = 400 };
+    T("water: a one-point run still measures",     MapGen.OnWater(speck, 102, 100, 1));
+    T("water: a one-point run is dry far off",    !MapGen.OnWater(speck, 300, 300, 1));
+
+    // The lake is a disc, and the two waters are read together.
+    var lake = new MapModel { LakeX = 200, LakeY = 200, LakeR = 50, W = 600, H = 600 };
+    T("water: inside the lake is wet",             MapGen.OnWater(lake, 200, 200, 0));
+    T("water: outside the lake is dry",           !MapGen.OnWater(lake, 400, 200, 0));
+    T("water: the pad pushes the shore outward",   MapGen.OnWater(lake, 260, 200, 20));
+}
 
 // ---- Model clamps ----
 var p = new PartyMember();
@@ -876,6 +1137,47 @@ foreach (var terrain in MapGen.Terrains)
                 if (Math.Abs(m.P[i].Pts[j] - before[i][j]) > 0.001f) restored = false;
         T("moving it back restores the original ink", restored);
     }
+}
+
+// ---- Rides: the corral and the yard ----
+{
+    T("the ride roster loads", Db.Rides.Count >= 20);
+    T("it carries both mounts and vehicles",
+        Db.Rides.Any(r => r.kind == "mount") && Db.Rides.Any(r => r.kind == "vehicle"));
+    foreach (var want in new[] { "Saddle Horse", "Mule", "Wagon", "Stagecoach", "Ferry", "Riverboat", "Locomotive & Cars" })
+        T($"the roster carries the {want}", Db.Rides.Any(r => r.name == want));
+    T("every roster entry is whole", Db.Rides.All(r =>
+        r.name.Length > 0 && (r.kind == "mount" || r.kind == "vehicle") &&
+        r.blood > 0 && r.defense > 0 && r.speed.Length > 0 && r.capacity >= 0 && r.notes.Length > 0));
+    T("no two roster entries share a name", Db.Rides.Select(r => r.name).Distinct().Count() == Db.Rides.Count);
+
+    var coach = Db.MakeRide("Stagecoach");
+    T("a built ride takes its roster numbers",
+        coach.Type == "Stagecoach" && coach.Kind == "vehicle" && coach.BloodCur == coach.BloodMax
+        && coach.BloodMax > 0 && coach.Capacity == 9 && !coach.IsMount);
+    var horse = Db.MakeRide("saddle horse");           // the roster is matched case-insensitively
+    T("the roster is found whatever the case", horse.Type == "Saddle Horse" && horse.IsMount);
+    var odd = Db.MakeRide("A Borrowed Handcart");
+    T("an unknown ride is still usable", odd.Name == "A Borrowed Handcart" && odd.BloodMax >= 1);
+
+    coach.BloodCur = 0;
+    T("a ride at no Blood is down", coach.Down);
+    coach.BloodCur = -50;
+    T("Blood is clamped at nothing", coach.BloodCur == 0);
+    coach.BloodMax = 0;
+    T("a ride always has at least one Blood of maximum", coach.BloodMax == 1);
+    horse.Defense = 999;
+    T("Defense is clamped to something sane", horse.Defense == 40);
+
+    // it rides in the session file with everything else
+    var rideSess = new GameSession { Rides = { Db.MakeRide("Wagon"), Db.MakeRide("Mule") } };
+    rideSess.Rides[0].Rider = "Anni Halvorsen";
+    rideSess.Rides[0].Notes = "Nearside wheel is complaining.";
+    var rideBack = System.Text.Json.JsonSerializer.Deserialize<GameSession>(
+        System.Text.Json.JsonSerializer.Serialize(rideSess));
+    T("rides survive a session round-trip", rideBack.Rides.Count == 2
+        && rideBack.Rides[0].Type == "Wagon" && rideBack.Rides[0].Rider == "Anni Halvorsen"
+        && rideBack.Rides[0].Notes.StartsWith("Nearside") && rideBack.Rides[1].IsMount);
 }
 
 // ---- Trail Maps: a town is never seated in the water, and it can be picked up ----

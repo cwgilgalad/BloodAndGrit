@@ -8,6 +8,7 @@ public partial class MainForm : Form
     // shared state
     readonly BindingList<PartyMember> party = new();
     readonly BindingList<Combatant> tracker = new();
+    readonly BindingList<Ride> rides = new();          // the corral and the yard — see TabsRides.cs
     readonly BindingList<EncounterPick> encounter = new();
     readonly BindingList<CampaignClock> clocks = new();
     TextBox notesBox;
@@ -66,6 +67,7 @@ public partial class MainForm : Form
     public MainForm(RunMode mode)
     {
         Mode = mode;
+        MapInk.LoadKindColors(Prefs.Load().MarkerInk);   // the Keeper's standing marker colors
         Text = "GritKeeper — Blood & Grit";
         if (AppIcon != null) Icon = AppIcon;      // the emblem, not the stock-Windows square
         // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
@@ -138,7 +140,7 @@ public partial class MainForm : Form
         };
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
-        statusLoaded = new ToolStripStatusLabel(StatusLoadedText()) { ForeColor = Ink };
+        statusLoaded = new ToolStripStatusLabel(Amp(StatusLoadedText())) { ForeColor = Ink };
         status.Items.Add(statusLoaded);
         // The last thing that happened, said where the Keeper is looking. Every action already
         // answered in the roll log — but the roll log lives on the Dice tab, so from the Posse or
@@ -164,6 +166,7 @@ public partial class MainForm : Form
         tracker.ListChanged += (s, e) => CaptureUndo();
         encounter.ListChanged += (s, e) => CaptureUndo();
         clocks.ListChanged += (s, e) => CaptureUndo();
+        rides.ListChanged += (s, e) => CaptureUndo();
 
         TryAutoLoad();
         undoBaseline = JsonSerializer.Serialize(Snapshot());
@@ -231,7 +234,7 @@ public partial class MainForm : Form
         if (mode == Mode) return;
         Mode = mode;
         ApplyModeTabs();
-        if (statusLoaded != null) statusLoaded.Text = StatusLoadedText();
+        if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
         Log($"Table set to {ModeLabel(mode)}.");
     }
@@ -352,9 +355,15 @@ public partial class MainForm : Form
     {
         if (statusSay == null) return;          // logged before the shell was built
         statusSay.ForeColor = c;
-        statusSay.Text = s;
-        statusSay.ToolTipText = s;
+        statusSay.Text = Amp(s);
+        statusSay.ToolTipText = s;              // a tooltip draws its text literally — no escaping
     }
+
+    /// <summary>Escape a run of prose for a control that reads "&amp;" as a keyboard mnemonic.
+    /// ToolStrip items do, silently: "dice &amp; books" renders as "dice  books" on the status bar.
+    /// Labels are handled at their own helpers (<see cref="Lbl"/>/<see cref="Heading"/>) by turning
+    /// mnemonics off, but a ToolStripItem has no such switch, so the text has to be doubled.</summary>
+    static string Amp(string s) => s?.Replace("&", "&&");
 
     Panel resultCard;
     Label resultBig, resultSub;
@@ -471,30 +480,147 @@ public partial class MainForm : Form
     // A button that drops a menu of choices on click, so one control offers several
     // related actions (sort orders, rest scopes, conditions) without crowding the bar.
     // A "-" label becomes a separator. The menu lives as long as the button (closure-held).
+    /// One font for every drop-down in the app, instead of a fresh one per menu. The pop-ups below
+    /// are built on each click by design — the lists they carry (who's in the posse, what's under
+    /// the cursor) must never be stale — so anything allocated per menu is allocated per click.
+    static readonly Font MenuFont = new("Segoe UI", 9.5f);
+    static readonly Font MenuFontBold = new("Segoe UI", 9.5f, FontStyle.Bold);
+
+    /// <summary>A right-click menu that lets itself go once it closes. Built-per-click menus used to
+    /// leave the strip (and its native handles) behind for the life of the process; a Keeper who
+    /// spends an evening nudging map markers can open a great many of them.</summary>
+    static ContextMenuStrip PopupMenu()
+    {
+        var menu = new ContextMenuStrip { Font = MenuFont };
+        // Disposing inside the Closed handler would pull the strip out from under the click that
+        // is still being dispatched, so it waits for the message to finish first.
+        menu.Closed += (s, e) => menu.BeginInvoke(new Action(menu.Dispose));
+        return menu;
+    }
+
     static Button MenuBtn(string text, int w, string tip, params (string label, EventHandler onClick)[] items)
     {
         var b = Btn(text, null, w, tip);
-        var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+        // NOT PopupMenu(): this one belongs to the button and is shown again on every press.
+        var menu = new ContextMenuStrip { Font = MenuFont };
         foreach (var (label, onClick) in items)
         {
             if (label == "-") { menu.Items.Add(new ToolStripSeparator()); continue; }
-            var mi = new ToolStripMenuItem(label);
-            mi.Click += onClick;
+            // A null handler means the line is a group heading, not a choice — grey it out so it
+            // doesn't read as a button that does nothing when clicked. Amp() because a menu item
+            // DOES take "&" as a mnemonic, and these labels are prose.
+            var mi = new ToolStripMenuItem(Amp(label)) { Enabled = onClick != null };
+            if (onClick != null) mi.Click += onClick;
             menu.Items.Add(mi);
         }
         b.Click += (s, e) => menu.Show(b, new Point(0, b.Height));
         return b;
     }
 
+    // ---------------------------------------------------------- right-click on a list
+    // Every list in the app answers a right-click with the things that can be done to the row
+    // under the cursor — the same operations as the buttons above it, no more and no less, so
+    // the menu can never quietly become a second, divergent set of features. The row is SELECTED
+    // first, before the menu is built: that way each item can call the very same handler the
+    // button calls ("the selected soul…"), and what the Keeper pointed at and what the app acts
+    // on are guaranteed to be the same row. Wiring is on MouseDown so the selection has moved
+    // before the menu draws, which is what makes it look like it belongs to the row.
+
+    /// <summary>Hang a right-click menu on a data-bound grid. <paramref name="build"/> fills the menu
+    /// for the row's item; an empty menu simply doesn't show, and a right-click on blank space below
+    /// the rows does nothing at all.</summary>
+    void GridMenu<T>(DataGridView grid, Action<ContextMenuStrip, T> build) where T : class
+    {
+        grid.MouseDown += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Right) return;
+            var hit = grid.HitTest(e.X, e.Y);
+            if (hit.RowIndex < 0 || hit.RowIndex >= grid.Rows.Count) return;
+
+            // A cell left mid-edit would otherwise refuse the move and throw on CurrentCell.
+            grid.EndEdit();
+            var row = grid.Rows[hit.RowIndex];
+            if (row.DataBoundItem is not T item) return;
+            grid.ClearSelection();
+            row.Selected = true;
+            // Land on a real column: the hit can be a row header (-1), and a button column would
+            // put the grid's focus on something that isn't a value.
+            var cell = row.Cells[hit.ColumnIndex >= 0 && grid.Columns[hit.ColumnIndex] is DataGridViewTextBoxColumn
+                ? hit.ColumnIndex : FirstTextColumn(grid)];
+            if (cell.Visible) grid.CurrentCell = cell;
+
+            var menu = PopupMenu();
+            build(menu, item);
+            if (menu.Items.Count > 0) menu.Show(grid, e.Location);
+        };
+    }
+
+    static int FirstTextColumn(DataGridView g)
+    {
+        for (int i = 0; i < g.Columns.Count; i++)
+            if (g.Columns[i] is DataGridViewTextBoxColumn && g.Columns[i].Visible) return i;
+        return 0;
+    }
+
+    /// <summary>The same, for a ListBox. <paramref name="build"/> is handed the item under the cursor.</summary>
+    void ListMenu<T>(ListBox list, Action<ContextMenuStrip, T> build) where T : class
+    {
+        list.MouseDown += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Right) return;
+            int i = list.IndexFromPoint(e.Location);
+            if (i < 0 || i >= list.Items.Count) return;
+            list.SelectedIndex = i;
+            if (list.Items[i] is not T item) return;
+            var menu = PopupMenu();
+            build(menu, item);
+            if (menu.Items.Count > 0) menu.Show(list, e.Location);
+        };
+    }
+
+    /// <summary>One menu line. Kept as a helper so every list's menu is built the same way and every
+    /// label goes through <see cref="Amp"/> — a menu item reads "&amp;" as a mnemonic, and these are
+    /// creature names and prose, not accelerators.</summary>
+    static ToolStripItem MI(ContextMenuStrip menu, string label, Action go, bool enabled = true)
+    {
+        var it = menu.Items.Add(Amp(label), null, (s, e) => go());
+        it.Enabled = enabled;
+        return it;
+    }
+
+    static void MISep(ContextMenuStrip menu) => menu.Items.Add(new ToolStripSeparator());
+
+    /// <summary>A greyed line naming what the menu is acting on, so there is never any doubt which
+    /// row the actions below will land on. Bold, because it's a title and not a choice.</summary>
+    static void MIHead(ContextMenuStrip menu, string label)
+    {
+        // MenuFontBold, not a fresh Font: these menus are built on every right-click by design,
+        // and a Font handed to a ToolStripItem isn't disposed with the item.
+        menu.Items.Add(new ToolStripMenuItem(Amp(label)) { Enabled = false, Font = MenuFontBold });
+        menu.Items.Add(new ToolStripSeparator());
+    }
+
+    // UseMnemonic off on both: a Label treats "&" as a keyboard mnemonic and swallows it, so
+    // "dice & books" renders as "dice  books" and "The corral & the yard" loses its ampersand.
+    // Labels here are prose, never accelerators, so the trap has no upside — closing it in the
+    // helpers means no future caller has to remember (it has bitten this app three times now).
+    /// <summary>A Panel that paints without flicker. A plain Panel can't be told to double-buffer
+    /// from outside (the property is protected), and anything owner-drawn on one tears as the
+    /// window resizes — which is exactly when a docked bar gets repainted most.</summary>
+    sealed class BufferedPanel : Panel
+    {
+        public BufferedPanel() { DoubleBuffered = true; ResizeRedraw = true; }
+    }
+
     static Label Lbl(string t, int w = 0)
     {
-        var l = new Label { Text = t, AutoSize = w == 0, Padding = new Padding(0, 8, 4, 0), ForeColor = Ink };
+        var l = new Label { Text = t, AutoSize = w == 0, Padding = new Padding(0, 8, 4, 0), ForeColor = Ink, UseMnemonic = false };
         if (w > 0) l.Width = w;
         return l;
     }
 
     static Label Heading(string t) => new()
-    { Text = t, AutoSize = true, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 0, 2) };
+    { Text = t, AutoSize = true, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 0, 2), UseMnemonic = false };
 
     /// <summary>
     /// Breathing room for text panes. WinForms RichTextBox/ListBox ignore their own Padding
@@ -732,7 +858,40 @@ public partial class MainForm : Form
             if (prop == "Notes") ExpandNotes(p);
             else ShowSoulCard(p);
         };
-        Tip.SetToolTip(posseGrid, "Double-click a soul to open their Ledger — double-click the Notes cell to read the whole note");
+        Tip.SetToolTip(posseGrid, "Double-click a soul to open their Ledger — double-click the Notes cell to read the whole note, " +
+            "right-click for everything that can be done to them");
+
+        // Everything the bar above can do to one soul, on the soul itself. The row is selected by
+        // GridMenu before this runs, so each line calls the very same handler the button does.
+        GridMenu<PartyMember>(posseGrid, (menu, p) =>
+        {
+            MIHead(menu, p.Name is { Length: > 0 } ? p.Name : "This soul");
+            MI(menu, "Open the Ledger", () => ShowSoulCard(p));
+            MI(menu, "Read and edit the note…", () => ExpandNotes(p));
+            MISep(menu);
+            MI(menu, $"Damage {adjAmount.Value}", () => AdjustPC(-1));
+            MI(menu, $"Heal {adjAmount.Value}", () => AdjustPC(+1));
+            MI(menu, p.Grit > 0 ? $"Spend Grit  ({p.Grit} left)" : "Spend Grit — none left", () => SpendGrit(p), p.Grit > 0);
+            MISep(menu);
+            MI(menu, $"Dread check  (DC {dreadDc.Value}, Tier {dreadTier.Value})", () => DreadCheckPC(p));
+            var steady = new ToolStripMenuItem("Steady — give Nerve back");
+            steady.DropDownItems.Add("Confession, spoken plainly  (1d6)", null, (s, e) => Steady(false, "1d6", "makes confession"));
+            steady.DropDownItems.Add("A night unmolested, in real safety  (1d6)", null, (s, e) => Steady(false, "1d6", "sleeps a night in real safety"));
+            steady.DropDownItems.Add("Whiskey  (1d4 — and it courts a vice)", null, (s, e) => Steady(false, "1d4", "takes to the bottle"));
+            steady.DropDownItems.Add("A week of true peace  (all of it)", null, (s, e) => Steady(false, null, "takes a week of true peace"));
+            steady.DropDownItems.Add("Steady by hand…", null, (s, e) => SteadyByHand(false));
+            menu.Items.Add(steady);
+            MI(menu, "Long rest — Blood and Nerve to full", () => RestSoul(p));
+            MISep(menu);
+            MI(menu, p.Mark < 6 ? $"Mark +1  (step {p.Mark} of 6)" : "Mark is full at 6", () => AdvanceMark(p), p.Mark < 6);
+            MI(menu, p.Taint < 4 ? $"Taint +1  ({p.Taint} of 4)" : "Taint is full at 4", () => DeepenTaint(p), p.Taint < 4);
+            MI(menu, "Level up…", () => LevelUpMember(p, this));
+            MISep(menu);
+            MI(menu, "Send to the Tracker", () => AddSoulToTracker(p));
+            MI(menu, "Move up the list", () => MovePC(-1), party.IndexOf(p) > 0);
+            MI(menu, "Move down the list", () => MovePC(+1), party.IndexOf(p) < party.Count - 1);
+            MI(menu, "Remove from the posse", () => RemoveSelectedPC());
+        });
 
         // colour Blood/Nerve/Mark cells by danger so the Keeper can read the table at a glance
         posseGrid.CellFormatting += (s, e) =>
@@ -774,24 +933,12 @@ public partial class MainForm : Form
         bar.Controls.Add(Btn("Damage", (s, e) => AdjustPC(-1), 80, "Subtract the Amount from the selected soul's Blood (Ctrl+D)"));
         bar.Controls.Add(Btn("Heal", (s, e) => AdjustPC(+1), 70, "Add the Amount to the selected soul's Blood (Ctrl+H)"));
 
-        bar.Controls.Add(Btn("Spend Grit", (s, e) =>
-        {
-            var p = SelectedPC(); if (p == null) return;
-            if (p.Grit > 0) { p.Grit--; Log($"{p.Name} spends Grit ({p.Grit} left)."); }
-            else Log($"{p.Name} has no Grit left to spend.");
-        }, 90, "Spend one Grit (re-roll, refuse to fall at 0 Blood, shrug a fright)"));
-        bar.Controls.Add(Btn("Mark +1", (s, e) =>
-        {
-            var p = SelectedPC(); if (p == null) return;
-            p.Mark = Math.Min(6, p.Mark + 1);
-            Log($"{p.Name}'s Mark advances to step {p.Mark} of 6." + (p.Mark >= 6 ? "  THE MARK IS FULL — the country collects." : ""));
-        }, 75, "Advance the Mark one step (only when a soul CHOOSES the dark)"));
-        bar.Controls.Add(Btn("Taint +1", (s, e) =>
-        {
-            var p = SelectedPC(); if (p == null) return;
-            p.Taint = Math.Min(4, p.Taint + 1);
-            Log($"{p.Name}'s Taint deepens to {p.Taint} of 4.");
-        }, 75, "Deepen the Taint of the Land one step"));
+        bar.Controls.Add(Btn("Spend Grit", (s, e) => SpendGrit(SelectedPC()), 90,
+            "Spend one Grit (re-roll, refuse to fall at 0 Blood, shrug a fright)"));
+        bar.Controls.Add(Btn("Mark +1", (s, e) => AdvanceMark(SelectedPC()), 75,
+            "Advance the Mark one step (only when a soul CHOOSES the dark)"));
+        bar.Controls.Add(Btn("Taint +1", (s, e) => DeepenTaint(SelectedPC()), 75,
+            "Deepen the Taint of the Land one step"));
 
         // Dread on its own row with inline DC + tier
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
@@ -804,6 +951,26 @@ public partial class MainForm : Form
         bar.Controls.Add(dreadTier);
         bar.Controls.Add(Btn("Dread check — selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
         bar.Controls.Add(Btn("Dread check — whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
+
+        // Dread takes Nerve; something has to give it back. Until now the only ways were a long
+        // rest or a new session — both of which do more than steady a soul, and neither of which
+        // is named for Nerve, so a Keeper who had just spent it had nowhere obvious to go. These
+        // are the Player's Book remedies (Ch. XII, "Recovering Nerve") in the order it prints them.
+        bar.Controls.Add(MenuBtn("Steady ▾", 92, "Give Nerve back — the book's remedies, or straight to full",
+            ("— The selected soul —", null),
+            ("Confession, spoken plainly  (1d6)", (s, e) => Steady(false, "1d6", "makes confession")),
+            ("A night unmolested, in real safety  (1d6)", (s, e) => Steady(false, "1d6", "sleeps a night in real safety")),
+            ("Whiskey  (1d4 — and it courts a vice)", (s, e) => Steady(false, "1d4", "takes to the bottle")),
+            ("A week of true peace  (all of it)", (s, e) => Steady(false, null, "takes a week of true peace")),
+            ("Steady by hand…", (s, e) => SteadyByHand(false)),
+            ("-", null),
+            ("— The whole posse —", null),
+            ("Confession, spoken plainly  (1d6 each)", (s, e) => Steady(true, "1d6", "makes confession")),
+            ("A night unmolested, in real safety  (1d6 each)", (s, e) => Steady(true, "1d6", "sleeps a night in real safety")),
+            ("Whiskey  (1d4 each — and it courts a vice)", (s, e) => Steady(true, "1d4", "takes to the bottle")),
+            ("A week of true peace  (all of it)", (s, e) => Steady(true, null, "takes a week of true peace")),
+            ("Steady by hand…", (s, e) => SteadyByHand(true))));
+
         bar.Controls.Add(Btn("New session", (s, e) =>
         {
             if (!Confirm("Start a new session? Refills every soul's Nerve and resets Grit to 3.")) return;
@@ -822,7 +989,12 @@ public partial class MainForm : Form
             Log("The posse is cleared — a fresh start.");
         }, 100, "Remove every soul and start fresh"));
 
-        page.Controls.Add(posseGrid);
+        // The posse above, what they ride below — one deferred split, never geometry at
+        // construction time (the SplitContainer landmine).
+        var split = Split(Orientation.Horizontal, 180, 150, 0.62);
+        split.Panel1.Controls.Add(posseGrid);
+        split.Panel2.Controls.Add(BuildRidesPane());
+        page.Controls.Add(split);
         page.Controls.Add(bar);
         Watermark(posseGrid, () => GridBottom(posseGrid));
         return page;
@@ -928,13 +1100,94 @@ public partial class MainForm : Form
         Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
     }
 
+    /// <summary>Give Nerve back. <paramref name="expr"/> is the remedy's die (rolled fresh per soul,
+    /// the way the table reads) or null for "all of it". Nothing here touches Blood, the Mark, or
+    /// the Taint — steadying a soul is not healing one, and the book is careful about the difference.</summary>
+    // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
+    // on the bar and the lines in the row's right-click menu are literally the same code — a menu
+    // that reimplements what a button does is a menu that will one day disagree with it.
+    void SpendGrit(PartyMember p)
+    {
+        if (p == null) return;
+        if (p.Grit > 0) { p.Grit--; Log($"{p.Name} spends Grit ({p.Grit} left)."); }
+        else Log($"{p.Name} has no Grit left to spend.");
+    }
+
+    void AdvanceMark(PartyMember p)
+    {
+        if (p == null) return;
+        p.Mark = Math.Min(6, p.Mark + 1);
+        Log($"{p.Name}'s Mark advances to step {p.Mark} of 6." + (p.Mark >= 6 ? "  THE MARK IS FULL — the country collects." : ""));
+    }
+
+    void DeepenTaint(PartyMember p)
+    {
+        if (p == null) return;
+        p.Taint = Math.Min(4, p.Taint + 1);
+        Log($"{p.Name}'s Taint deepens to {p.Taint} of 4.");
+    }
+
+    void Steady(bool wholePosse, string expr, string doing)
+    {
+        var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
+        if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
+        if (who[0] == null) { Nope("Select a soul first."); return; }
+
+        foreach (var p in who)
+        {
+            int before = p.NerveCur;
+            if (expr == null) p.NerveCur = p.NerveMax;
+            else p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + Rules.RollExpr(expr).total);
+            int back = p.NerveCur - before;
+            Log(back == 0
+                ? $"{p.Name} {doing} — Nerve already steady at {p.NerveCur}/{p.NerveMax}."
+                : $"{p.Name} {doing} — +{back} Nerve → {p.NerveCur}/{p.NerveMax}.");
+        }
+        posseGrid?.Refresh();
+        // No CaptureUndo here: party is a BindingList of INotifyPropertyChanged souls, so setting
+        // NerveCur already raises ListChanged, and CaptureUndo coalesces the whole posse's worth
+        // into one step. Same reason RestPosse/RestSoul don't call it either.
+    }
+
+    /// <summary>The escape hatch for a remedy the book doesn't print — a Sawbones' reason, a sermon,
+    /// a grim joke. The Keeper says how much steadiness it was worth.</summary>
+    void SteadyByHand(bool wholePosse)
+    {
+        var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
+        if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
+        if (who[0] == null) { Nope("Select a soul first."); return; }
+
+        string ans = AskLine(wholePosse ? "How much Nerve does each soul get back?" : "How much Nerve comes back?", "3");
+        if (!int.TryParse(ans?.Trim(), out int amt) || amt <= 0) return;
+
+        foreach (var p in who)
+        {
+            int before = p.NerveCur;
+            p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + amt);
+            Log($"{p.Name} steadies — +{p.NerveCur - before} Nerve → {p.NerveCur}/{p.NerveMax}.");
+        }
+        posseGrid?.Refresh();
+    }
+
     void PartyToTracker()
     {
-        int added = 0;
-        foreach (var p in party)
-            if (!tracker.Any(t => t.IsSoul(p)))
-            { tracker.Add(new Combatant { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense }); added++; }
+        int added = party.Count(p => AddSoulToTracker(p, quiet: true));
         Log($"Sent {added} soul(s) to the tracker.");
+    }
+
+    /// <summary>Put one soul on the field, unless they're already standing on it. Answers whether a
+    /// row was actually added, which is what lets <see cref="PartyToTracker"/> count honestly.</summary>
+    bool AddSoulToTracker(PartyMember p, bool quiet = false)
+    {
+        if (p == null || tracker.Any(t => t.IsSoul(p)))
+        {
+            if (!quiet && p != null) Log($"{p.Name} is already on the field.");
+            return false;
+        }
+        tracker.Add(new Combatant
+        { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense });
+        if (!quiet) Log($"{p.Name} takes the field.");
+        return true;
     }
 
     void MirrorToTracker(PartyMember p)
@@ -1161,7 +1414,7 @@ public partial class MainForm : Form
             rollLog.EndUpdate();
         }
         var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
-        var logHead = new Label { Text = "  Roll && event log", Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
+        var logHead = new Label { Text = "  Roll & event log", UseMnemonic = false, Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
         // The last roll, said loud. The log is the record and the tray shows the dice, but the
         // one thing a Keeper actually wants — what did it come to, and did it beat the DC — was
@@ -1201,6 +1454,24 @@ public partial class MainForm : Form
             if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
             { rollLog.Items.Clear(); logLines.Clear(); }
         }, 90, "Wipe the log — the rolls themselves are already spent"));
+        Tip.SetToolTip(rollLog, "Right-click a line to copy it, or the whole log");
+
+        // A log line isn't a thing that can be acted on so much as one the Keeper wants OUT — into
+        // a chat window, into notes. The menu is exactly the two Copy paths plus the Clear the bar
+        // below already offers, so no reader has to hunt for the button.
+        ListMenu<string>(rollLog, (menu, line) =>
+        {
+            MI(menu, "Copy this line", () => Clipboard.SetText(line));
+            MI(menu, $"Copy the whole log  ({rollLog.Items.Count} lines)",
+                () => Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())));
+            MISep(menu);
+            MI(menu, "Clear the log", () =>
+            {
+                if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
+                { rollLog.Items.Clear(); logLines.Clear(); }
+            });
+        });
+
         // Added last among the top-docked children, so the card sits above the heading and the tray.
         right.Controls.Add(rollLog); right.Controls.Add(diceTray); right.Controls.Add(logHead);
         right.Controls.Add(resultCard); right.Controls.Add(logBar);
@@ -1259,7 +1530,8 @@ public partial class MainForm : Form
         EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
         PartyLevelHint = (int)(encLevel?.Value ?? partyLevelHint),
         Tracker = tracker.ToList(), Round = round,
-        MapMarkers = mapMarkers.ToList()
+        MapMarkers = mapMarkers.ToList(),
+        Rides = rides.ToList()
     };
 
     // Write the session WHOLE or not at all. WriteAllText truncates the file and then fills
@@ -1298,7 +1570,7 @@ public partial class MainForm : Form
                 if (!w.IsDisposed) w.Close();
             soulWindows.Clear();
 
-            party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear();
+            party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear(); rides.Clear();
             foreach (var p in s.Party ?? new()) party.Add(p);
             foreach (var c in s.Clocks ?? new()) clocks.Add(c);
             notesText = s.Notes ?? "";
@@ -1313,6 +1585,7 @@ public partial class MainForm : Form
             foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
             round = Math.Max(1, s.Round);
             if (roundLbl != null) roundLbl.Text = $"Round {round}";
+            foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
             mapMarkers.Clear();
             mapMarkers.AddRange(s.MapMarkers ?? new());
             mapPanel?.Invalidate();

@@ -23,7 +23,16 @@ public enum RunMode { Player, KeeperDice, KeeperEngine }
 /// file just means "ask, defaulting to the engine".</summary>
 public static class Prefs
 {
-    public class Data { public string Mode { get; set; } = "KeeperEngine"; public bool Remember { get; set; } }
+    public class Data
+    {
+        public string Mode { get; set; } = "KeeperEngine";
+        public bool Remember { get; set; }
+
+        /// What the Keeper wants each KIND of map marker inked in, where that differs from the
+        /// book. A single marker's own color travels in the session file with the marker; this
+        /// is the standing choice that outlives any one session.
+        public Dictionary<string, int> MarkerInk { get; set; } = new();
+    }
 
     static string PathTo => Path.Combine(AppContext.BaseDirectory, "prefs.json");
 
@@ -36,10 +45,21 @@ public static class Prefs
 
     public static RunMode ModeOf(Data d) => Enum.TryParse<RunMode>(d?.Mode, out var m) ? m : RunMode.KeeperEngine;
 
+    public static void Save(Data d)
+    {
+        try { File.WriteAllText(PathTo, JsonSerializer.Serialize(d ?? new(), new JsonSerializerOptions { WriteIndented = true })); }
+        catch { }
+    }
+
+    /// Set the run mode without disturbing anything else in the file. Writing a freshly-built
+    /// Data here would silently drop every preference this call doesn't happen to know about —
+    /// which is how a Keeper's marker colors would vanish the first time they changed modes.
     public static void Save(RunMode mode, bool remember)
     {
-        try { File.WriteAllText(PathTo, JsonSerializer.Serialize(new Data { Mode = mode.ToString(), Remember = remember })); }
-        catch { }
+        var d = Load();
+        d.Mode = mode.ToString();
+        d.Remember = remember;
+        Save(d);
     }
 }
 
@@ -192,6 +212,145 @@ public class MapMarker
     public string Kind { get; set; } = "creature";   // "posse" | "npc" | "creature" — sets the color
     public float X { get; set; }
     public float Y { get; set; }
+
+    /// This one marker's own ink, if the Keeper picked one — otherwise <see cref="MapInk.Unset"/>
+    /// and it takes its kind's color. Four riders all drawn verdigris are four dots the table
+    /// can't tell apart, which is the whole reason a marker can break ranks. Saved with the
+    /// marker, so a soul who has been the blue one all campaign is still blue next session.
+    public int Argb { get; set; }
+}
+
+/// <summary>The map's marker inks: what each kind is drawn in by default, what the Keeper may have
+/// chosen instead, and the palette the right-click menu offers. Kept in one place so the preview,
+/// the menu, and the saved preference can't drift apart — and kept in plain ARGB ints rather than
+/// <c>Color</c> so nothing here needs System.Drawing to be read or tested.</summary>
+public static class MapInk
+{
+    public const int Unset = 0;   // "the Keeper hasn't said" — fall back to the kind's color
+
+    // The book's own inks: verdigris for the posse, gold for whoever is neither friend nor
+    // foe yet, blood for what means to kill them. These match MainForm's palette by value;
+    // they're written out here because Core.cs has no business referencing the shell.
+    public const int Verdigris = unchecked((int)0xFF3C6054);
+    public const int Gold      = unchecked((int)0xFF967432);
+    public const int BloodRed  = unchecked((int)0xFF781616);
+
+    /// The color a kind is drawn in before anyone changes anything. An unknown kind reads as
+    /// trouble, which is the safer way to be wrong.
+    public static int BookColor(string kind) => kind switch
+    {
+        "posse" => Verdigris,
+        "npc"   => Gold,
+        _       => BloodRed,
+    };
+
+    // What the Keeper set instead, by kind. Loaded from prefs.json at startup and written back
+    // when it changes; empty means every kind is still in the book's ink.
+    static readonly Dictionary<string, int> kindInk = new(StringComparer.OrdinalIgnoreCase);
+
+    public static int KindColor(string kind)
+        => kind != null && kindInk.TryGetValue(kind, out int c) && c != Unset ? c : BookColor(kind);
+
+    public static void SetKindColor(string kind, int argb)
+    {
+        if (string.IsNullOrEmpty(kind)) return;
+        if (argb == Unset || argb == BookColor(kind)) kindInk.Remove(kind);   // back to the book
+        else kindInk[kind] = argb;
+    }
+
+    /// Only the kinds that actually differ from the book, so prefs.json stays a record of
+    /// decisions rather than a copy of the defaults.
+    public static Dictionary<string, int> KindColors() => new(kindInk);
+
+    public static void LoadKindColors(Dictionary<string, int> saved)
+    {
+        kindInk.Clear();
+        if (saved == null) return;
+        foreach (var kv in saved) SetKindColor(kv.Key, kv.Value);
+    }
+
+    /// What a given marker is drawn in: its own ink if it has one, else its kind's.
+    public static int Of(MapMarker mk)
+        => mk == null ? BookColor(null) : mk.Argb != Unset ? mk.Argb : KindColor(mk.Kind);
+
+    /// The choices the menu offers. Ten, because a posse and its trouble rarely need more, and
+    /// every one of them dark enough to read as a filled dot on the survey's cream paper.
+    public static readonly (string name, int argb)[] Palette =
+    {
+        ("Verdigris", Verdigris),
+        ("Blood",     BloodRed),
+        ("Gold",      Gold),
+        ("Indigo",    unchecked((int)0xFF344678)),
+        ("Rust",      unchecked((int)0xFF96461E)),
+        ("Plum",      unchecked((int)0xFF5A2A52)),
+        ("Slate",     unchecked((int)0xFF44505A)),
+        ("Moss",      unchecked((int)0xFF4A6B2A)),
+        ("Copper",    unchecked((int)0xFF8C5A2A)),
+        ("Ink",       unchecked((int)0xFF261C14)),
+    };
+
+    /// The palette's name for a color, or its hex if it isn't one of ours — so a menu can always
+    /// say what's currently set without having to guess.
+    public static string NameOf(int argb)
+    {
+        foreach (var (name, c) in Palette) if (c == argb) return name;
+        return Hex(argb);
+    }
+
+    /// "#rrggbb", which is what both the SVG writer and the PDF writer speak. Alpha is dropped:
+    /// map primitives carry their opacity separately, and a marker is never drawn see-through.
+    public static string Hex(int argb) => $"#{(argb & 0xFFFFFF):x6}";
+}
+
+// What the posse rides, drives, or takes passage on — a saddle horse, a freight wagon, the
+// stage, a ferry, a sternwheeler, the cars. They take damage like anything else (a wagon is
+// what a Tier-III thing goes for first), they carry weight and people, and they move at their
+// own rate, so they're tracked rather than remembered. Built from the Data/rides.json roster
+// but free to be edited afterward — a horse with a name and a limp is the point.
+public class Ride : INotifyPropertyChanged
+{
+    string _name = "", _type = "", _kind = "mount", _rider = "", _notes = "";
+    int _bloodCur = 10, _bloodMax = 10, _defense = 12, _capacity = 1;
+    string _speed = "";
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
+
+    /// What it's called at this table — "Deuteronomy", "the Concord coach".
+    public string Name { get => _name; set { _name = value; On(); } }
+    /// Which entry in the roster it was built from — "Saddle Horse", "Stagecoach".
+    public string Type { get => _type; set { _type = value; On(); } }
+    /// "mount" (it breathes) or "vehicle" (it doesn't) — sets how a Keeper treats a wound.
+    public string Kind { get => _kind; set { _kind = value; On(); } }
+    /// The soul in the saddle or holding the lines; empty when it's standing in the corral.
+    public string Rider { get => _rider; set { _rider = value; On(); } }
+    public int BloodCur { get => _bloodCur; set { _bloodCur = Math.Clamp(value, 0, 9999); On(); OnDown(); } }
+    public int BloodMax { get => _bloodMax; set { _bloodMax = Math.Clamp(value, 1, 9999); On(); } }
+    public int Defense { get => _defense; set { _defense = Math.Clamp(value, 1, 40); On(); } }
+    /// How fast, in the book's own words — "40 ft, gallop 120 ft", "as the river runs".
+    public string Speed { get => _speed; set { _speed = value; On(); } }
+    /// How many it carries — riders for a mount, passengers for a vehicle.
+    public int Capacity { get => _capacity; set { _capacity = Math.Clamp(value, 0, 999); On(); } }
+    public string Notes { get => _notes; set { _notes = value; On(); } }
+
+    void OnDown() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Down)));
+    /// A mount at 0 Blood is down; a vehicle at 0 is wrecked. Either way it isn't going anywhere.
+    [JsonIgnore] public bool Down => _bloodCur <= 0;
+    [JsonIgnore] public bool IsMount => _kind == "mount";
+}
+
+/// One entry in the roster the Keeper builds rides from — the printed animal or rig, before
+/// a table gives it a name and a history.
+public class RideTemplate
+{
+    public string name { get; set; } = "";
+    public string kind { get; set; } = "mount";
+    public int blood { get; set; } = 10;
+    public int defense { get; set; } = 12;
+    public string speed { get; set; } = "";
+    public int capacity { get; set; } = 1;
+    public string notes { get; set; } = "";
 }
 
 public class GameSession
@@ -204,6 +363,7 @@ public class GameSession
     public List<Combatant> Tracker { get; set; } = new();
     public int Round { get; set; } = 1;
     public List<MapMarker> MapMarkers { get; set; } = new();
+    public List<Ride> Rides { get; set; } = new();
 }
 
 // ============================================================ RULES & DICE
@@ -335,6 +495,28 @@ public static class Rules
         if (creatureTier == pt)     return (4, "Even foe", false);
         return (1, "Mook", false);
     }
+
+    /// How a costed encounter stands against the budget. Lives here, not in the Encounter tab, so
+    /// the words and the color the tab shows are decided in one place the smoke rig can hold to
+    /// the book's rule — spend the budget exactly and the fight is fair; overspend and you had
+    /// better mean it (Keeper's Book Ch. IV).
+    public enum Weight { Empty, Under, Exact, Over, WellOver }
+
+    public static Weight BudgetBand(int spend, int budget) =>
+        spend <= 0            ? Weight.Empty :
+        spend <  budget       ? Weight.Under :
+        spend == budget       ? Weight.Exact :
+        spend <= budget + 4   ? Weight.Over :
+                                Weight.WellOver;
+
+    public static string BudgetVerdict(int spend, int budget) => BudgetBand(spend, budget) switch
+    {
+        Weight.Empty    => "Empty — add creatures above, or send them over from the Bestiary tab.",
+        Weight.Under    => "Under budget — a fight they should win.",
+        Weight.Exact    => "ON BUDGET — a fair, hard fight.",
+        Weight.Over     => "Over budget — mean. Somebody bleeds.",
+        _               => "WELL over budget — you had better mean it.",
+    };
 }
 
 // ============================================================ DATA STORE
@@ -355,6 +537,40 @@ public static class Db
         // tables_extra.json carries the app's own additions, so a re-extraction can't eat them.
         MergeTables(ReadData("tables.json"));
         MergeTables(ReadData("tables_extra.json"));
+
+        Rides = JsonSerializer.Deserialize<List<RideTemplate>>(ReadData("rides.json"), opts) ?? new();
+    }
+
+    /// The roster of mounts and vehicles a Keeper can put in the corral or the yard.
+    public static List<RideTemplate> Rides { get; private set; } = new();
+
+    /// Build a working ride from its roster entry. The Keeper renames it afterward — a horse
+    /// with a name is a horse the table will miss.
+    public static Ride MakeRide(string type)
+    {
+        var t = Rides.Find(r => string.Equals(r.name, type, StringComparison.OrdinalIgnoreCase));
+        if (t == null) return new Ride { Name = type, Type = type };
+        return new Ride
+        {
+            Name = t.name, Type = t.name, Kind = t.kind,
+            BloodMax = t.blood, BloodCur = t.blood, Defense = t.defense,
+            Speed = t.speed, Capacity = t.capacity, Notes = t.notes
+        };
+    }
+
+    /// <summary>The name a new ride should take when one of that name is already in the corral:
+    /// the stem, then the lowest free number after it. Counting how many of a TYPE are standing
+    /// there isn't the same thing — sell the second of three horses and the count says 2 again,
+    /// which collides with the horse still in the corral. Pure, so the smoke rig can prove it.</summary>
+    public static string FreeRideName(IEnumerable<string> taken, string stem)
+    {
+        var used = new HashSet<string>(taken ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+        if (!used.Contains(stem)) return stem;
+        for (int n = 2; ; n++)
+        {
+            string candidate = $"{stem} {n}";
+            if (!used.Contains(candidate)) return candidate;
+        }
     }
 
     // The JSON data is EMBEDDED in the app assembly so the published exe is a TRUE single-file

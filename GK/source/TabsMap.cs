@@ -9,7 +9,7 @@ public partial class MainForm
     // MapGen draws a named frontier survey. The preview here, the SVG export, and
     // the PDF export all replay the same primitive list, so they always match.
     ComboBox mapGround, mapScale, mapTime, mapWater;
-    CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets;
+    CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets, mapMarkOut;
     NumericUpDown mapLm, mapSeed;
     MapPanel mapPanel;
     MapModel curMap;
@@ -184,6 +184,9 @@ public partial class MainForm
             "Place a marker — a posse soul, an NPC, or a creature — then drag it into position"));
         rowWork.Controls.Add(Btn("Tracker → Map", (s, e) => TrackerToMap(), 110,
             "Drop everyone on the Tracker onto the map — posse west, trouble east"));
+        rowWork.Controls.Add(Btn("Marker colors ▾", (s, e) => ShowKindInkMenu((Button)s), 112,
+            "Choose the ink for each kind of marker — and remember it. A single marker can also take " +
+            "a color of its own: right-click it on the map."));
         rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
         {
             if (mapMarkers.Count == 0) { Nope("No markers on the map."); return; }
@@ -193,13 +196,24 @@ public partial class MainForm
         }, 105, "Remove every marker from the map"));
         rowWork.Controls.Add(Sep());
         rowWork.Controls.Add(Lbl("Export:"));
+        // Markers are the table's business, not the survey's, so a saved map leaves them off unless
+        // the Keeper says otherwise — a map for the players shouldn't show them where the ambush is.
+        // The checkbox is here, beside the save buttons, because that's the moment the question comes up.
+        mapMarkOut = new CheckBox
+        { Text = "with markers", AutoSize = true, Margin = new Padding(2, 7, 6, 3), ForeColor = Ink, UseMnemonic = false };
+        Tip.SetToolTip(mapMarkOut, "Off, a saved SVG or PDF is the survey alone — the markers stay on screen. " +
+            "On, they're drawn onto the file too, in the colors shown here.");
+        rowWork.Controls.Add(mapMarkOut);
         rowWork.Controls.Add(Btn("Save SVG…", (s, e) => MapSaveSvg(), 95,
             "Save the map as a scalable SVG file — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Save PDF…", (s, e) => MapSavePdf(), 95,
             "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
-        { if (curMap != null) { Clipboard.SetText(MapGen.ToSvg(curMap)); Log("Map SVG copied to the clipboard."); } }, 90,
-            "Copy the SVG markup to the clipboard"));
+        {
+            if (curMap == null) return;
+            Clipboard.SetText(MapGen.ToSvg(curMap, MarkerOverlay()));
+            Log("Map SVG copied to the clipboard" + MarkerNote() + ".");
+        }, 90, "Copy the SVG markup to the clipboard"));
 
         mapPanel = new MapPanel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(236, 229, 212) };
         mapPanel.Paint += (s, e) =>
@@ -279,6 +293,24 @@ public partial class MainForm
             Log($"{curMap.Town.Name} was seated on the bank — the survey had it standing in the water.");
     }
 
+    /// <summary>The markers as export ink, or null for "the survey alone". Null rather than an empty
+    /// list when the box is unchecked, so the writers take their no-overlay path outright.</summary>
+    List<Prim> MarkerOverlay()
+        => mapMarkOut != null && mapMarkOut.Checked && mapMarkers.Count > 0 && curMap != null
+            ? MapGen.MarkerPrims(mapMarkers, curMap.W, curMap.H)
+            : null;
+
+    /// <summary>What to say about the markers when a file is written. A map that quietly comes out
+    /// without the markers the Keeper spent ten minutes arranging is a map they'll assume is broken,
+    /// so the log says which way it went — and, when they're left off, where the switch is.</summary>
+    string MarkerNote()
+    {
+        if (mapMarkers.Count == 0) return "";
+        return mapMarkOut != null && mapMarkOut.Checked
+            ? $" — {mapMarkers.Count} marker(s) drawn on it"
+            : $" — the survey alone; {mapMarkers.Count} marker(s) stayed on screen (tick “with markers” to include them)";
+    }
+
     static string MapSlug(string title) =>
         new string(title.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray()).Trim('-');
 
@@ -294,8 +326,8 @@ public partial class MainForm
         if (d.ShowDialog(this) != DialogResult.OK) return;
         try
         {
-            File.WriteAllText(d.FileName, MapGen.ToSvg(curMap), new UTF8Encoding(false));
-            Log($"Map saved: {Path.GetFileName(d.FileName)}.");
+            File.WriteAllText(d.FileName, MapGen.ToSvg(curMap, MarkerOverlay()), new UTF8Encoding(false));
+            Log($"Map saved: {Path.GetFileName(d.FileName)}{MarkerNote()}.");
         }
         catch (Exception ex)
         {
@@ -315,8 +347,8 @@ public partial class MainForm
         if (d.ShowDialog(this) != DialogResult.OK) return;
         try
         {
-            File.WriteAllBytes(d.FileName, Pdf.MapPdf(curMap));
-            Log($"Map saved: {Path.GetFileName(d.FileName)} (landscape Letter).");
+            File.WriteAllBytes(d.FileName, Pdf.MapPdf(curMap, MarkerOverlay()));
+            Log($"Map saved: {Path.GetFileName(d.FileName)} (landscape Letter){MarkerNote()}.");
         }
         catch (Exception ex)
         {
@@ -339,8 +371,7 @@ public partial class MainForm
         foreach (var mk in mapMarkers)
         {
             float x = ox + Math.Clamp(mk.X, 0, m.W) * s, y = oy + Math.Clamp(mk.Y, 0, m.H) * s;
-            Color c = mk.Kind == "posse" ? Verdigris : mk.Kind == "npc" ? Gold : Blood;
-            using var b = new SolidBrush(c);
+            using var b = new SolidBrush(Color.FromArgb(MapInk.Of(mk)));
             g.FillEllipse(b, x - 8, y - 8, 16, 16);
             g.DrawEllipse(mk == dragMarker ? held : ink, x - 8, y - 8, 16, 16);
             var sz = g.MeasureString(mk.Label, f);
@@ -456,12 +487,23 @@ public partial class MainForm
                 var mk = HitMarker(e.Location);
                 if (mk != null)
                 {
-                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    var menu = PopupMenu();
                     menu.Items.Add($"Rename {mk.Label}…", null, (ss, ee) =>
                     {
                         string n = AskLine("Rename the marker", mk.Label);
                         if (!string.IsNullOrWhiteSpace(n)) { mk.Label = n.Trim(); CaptureUndo(); mapPanel.Invalidate(); }
                     });
+                    menu.Items.Add(InkMenu($"Color — {MapInk.NameOf(MapInk.Of(mk))}", MapInk.Of(mk),
+                        mk.Argb == MapInk.Unset ? null : $"Back to the {mk.Kind} color",
+                        argb =>
+                        {
+                            mk.Argb = argb;
+                            CaptureUndo(); mapPanel.Invalidate();
+                            Log(argb == MapInk.Unset
+                                ? $"{mk.Label} goes back to the {mk.Kind} color."
+                                : $"{mk.Label} is drawn in {MapInk.NameOf(argb).ToLowerInvariant()} now.");
+                        }));
+                    menu.Items.Add(new ToolStripSeparator());
                     menu.Items.Add($"Remove {mk.Label}", null, (ss, ee) =>
                     { mapMarkers.Remove(mk); CaptureUndo(); mapPanel.Invalidate(); });
                     menu.Show(mapPanel, e.Location);
@@ -476,7 +518,7 @@ public partial class MainForm
                     if (onTown)
                     {
                         var town = m2.Town;
-                        var tmenu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                        var tmenu = PopupMenu();
                         bool wet = MapGen.OnWater(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
                         var dry = tmenu.Items.Add($"Move {town.Name} onto dry ground", null, (ss, ee) =>
                         {
@@ -499,7 +541,7 @@ public partial class MainForm
                         tmenu.Show(mapPanel, e.Location);
                         return;
                     }
-                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    var menu = PopupMenu();
                     if (li >= 0)
                     {
                         var lm = m2.Landmarks[li];
@@ -672,7 +714,7 @@ public partial class MainForm
 
     void ShowMarkerMenu(Button host)
     {
-        var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+        var menu = PopupMenu();
         foreach (var p in party)
         {
             var soul = p;
@@ -684,6 +726,89 @@ public partial class MainForm
         menu.Items.Add("A creature…", null, (s, e) =>
         { string n = AskLine("Name the creature", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "creature"); });
         menu.Show(host, new Point(0, host.Height));
+    }
+
+    // ---------------------------------------------------------- marker ink
+    // Four riders all drawn the same verdigris are four dots the table argues about. A marker
+    // can take its own color, and a whole kind can be re-inked for good — the first travels in
+    // the session file with the marker, the second in prefs.json with the Keeper.
+
+    // Swatches live as long as the app does. The menus below are rebuilt on every right-click
+    // by design, and an Image handed to a ToolStripItem isn't reliably disposed with the item,
+    // so building them per click would leak a bitmap a click. The palette is ten colors; the
+    // rest of the cache is however many the Keeper mixes by hand, which is not a growth curve.
+    static readonly Dictionary<int, Image> swatchCache = new();
+
+    static Image Swatch(int argb)
+    {
+        if (swatchCache.TryGetValue(argb, out var img)) return img;
+        var bmp = new Bitmap(16, 16);
+        using (var g = Graphics.FromImage(bmp))
+        using (var b = new SolidBrush(Color.FromArgb(argb)))
+        using (var pen = new Pen(Color.FromArgb(96, 86, 70)))
+        { g.FillRectangle(b, 2, 2, 12, 12); g.DrawRectangle(pen, 2, 2, 12, 12); }
+        swatchCache[argb] = bmp;
+        return bmp;
+    }
+
+    /// <summary>The ink choices as a submenu: the palette with the current color ticked, a mixer for
+    /// anything else, and — when <paramref name="backLabel"/> is given — the way back to the default.
+    /// <paramref name="pick"/> receives the chosen ARGB, or <see cref="MapInk.Unset"/> for "back".</summary>
+    ToolStripMenuItem InkMenu(string head, int current, string backLabel, Action<int> pick)
+    {
+        var sub = new ToolStripMenuItem(Amp(head), Swatch(current));
+        foreach (var (name, argb) in MapInk.Palette)
+        {
+            int c = argb;
+            sub.DropDownItems.Add(new ToolStripMenuItem(name, Swatch(c), (s, e) => pick(c))
+            { Checked = c == current });
+        }
+        sub.DropDownItems.Add(new ToolStripSeparator());
+        sub.DropDownItems.Add("Mix another color…", null, (s, e) =>
+        {
+            using var d = new ColorDialog { Color = Color.FromArgb(current), FullOpen = true, AnyColor = true };
+            if (d.ShowDialog(this) == DialogResult.OK) pick(d.Color.ToArgb());
+        });
+        if (backLabel != null)
+            sub.DropDownItems.Add(Amp(backLabel), null, (s, e) => pick(MapInk.Unset));
+        return sub;
+    }
+
+    /// <summary>Re-ink a whole kind at once, and keep it. Markers that have taken a color of their
+    /// own are left alone — a soul the Keeper singled out shouldn't lose that to a sweep.</summary>
+    void ShowKindInkMenu(Button host)
+    {
+        var menu = PopupMenu();
+        foreach (var (kind, said) in new[] { ("posse", "The posse"), ("npc", "NPCs"), ("creature", "Creatures") })
+        {
+            string k = kind;
+            int cur = MapInk.KindColor(k);
+            menu.Items.Add(InkMenu($"{said} — {MapInk.NameOf(cur)}", cur,
+                cur == MapInk.BookColor(k) ? null : "Back to the book's color",
+                argb =>
+                {
+                    MapInk.SetKindColor(k, argb);
+                    SaveMarkerInk();
+                    mapPanel.Invalidate();
+                    Log($"{said} now drawn in {MapInk.NameOf(MapInk.KindColor(k)).ToLowerInvariant()} on the map.");
+                }));
+        }
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Put every kind back to the book's colors", null, (s, e) =>
+        {
+            MapInk.LoadKindColors(null);
+            SaveMarkerInk();
+            mapPanel.Invalidate();
+            Log("Marker colors are back to the book's.");
+        });
+        menu.Show(host, new Point(0, host.Height));
+    }
+
+    void SaveMarkerInk()
+    {
+        var d = Prefs.Load();          // read-modify-write: this file also holds the run mode
+        d.MarkerInk = MapInk.KindColors();
+        Prefs.Save(d);
     }
 
     void AddMarker(string label, string kind)
