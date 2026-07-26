@@ -108,6 +108,13 @@ static class Program
                 {
                     using var mf = new MainForm(mode);
                     Chk(mf != null && mf.Mode == mode, $"GUI: the WinForms graph constructs in {mode} mode");
+                    // Tabs are realized lazily, so build the Reference deck on purpose: it proves
+                    // every leaf's title has a renderer beside it, and that the count the app's own
+                    // prose quotes is the count it actually holds.
+                    using (var refPage = mf.BuildReferenceTab())
+                        Chk(mf.RefDeckLength == MainForm.RefLeafCount,
+                            $"GUI: the Keeper's screen builds all {MainForm.RefLeafCount} leaves "
+                            + $"(built {mf.RefDeckLength})");
                 }
             }
             catch (Exception ux)

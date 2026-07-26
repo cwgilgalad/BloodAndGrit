@@ -1077,6 +1077,27 @@ public partial class MainForm
     int refPage;
     (string title, Action<RichTextBox> render)[] refDeck;
 
+    /// <summary>The Keeper's screen, leaf by leaf. Named here rather than inline with the
+    /// renderers so that everything which counts them reads one list — the five-minute lesson
+    /// quotes the number, and prose has no way of noticing when a leaf is added. It went stale
+    /// twice: the app told Keepers it held eleven leaves for two releases while the deck held
+    /// thirteen.</summary>
+    static readonly string[] RefLeafTitles =
+    {
+        "The Roll", "A Turn in the Iron Code", "Blood, Wounds & Healing", "Conditions",
+        "Nerve & Dread", "The Mark & the Taint", "Signs & Grit", "Miracles of the Faithful",
+        "The Long Odds", "Arms of the Frontier", "Goods & Provisions",
+        "Skills, Saves & Abilities", "Running in Town",
+    };
+
+    /// <summary>How many leaves the Keeper's screen holds — derived, never typed twice.</summary>
+    internal static int RefLeafCount => RefLeafTitles.Length;
+
+    /// <summary>The deck as actually built. Zero until the Reference tab is realized (tabs are
+    /// lazy); <c>--selftest</c> builds it on purpose to check the titles and the renderers agree.
+    /// </summary>
+    internal int RefDeckLength => refDeck?.Length ?? 0;
+
     static readonly Font RefMono  = new("Consolas", 9.5f);
     static readonly Font RefMonoB = new("Consolas", 9.5f, FontStyle.Bold);
     static readonly Font RefBody  = new("Segoe UI", 10f);
@@ -1131,7 +1152,7 @@ public partial class MainForm
     static void RTbl(RichTextBox r, int[] w, string[] head, params string[][] rows)
         => RTbl(r, w, head, (IEnumerable<string[]>)rows);
 
-    TabPage BuildReferenceTab()
+    internal TabPage BuildReferenceTab()
     {
         referencePage = new TabPage("Reference") { BackColor = Paper };
 
@@ -1145,22 +1166,20 @@ public partial class MainForm
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
 
-        refDeck = new (string, Action<RichTextBox>)[]
+        // Paired with RefLeafTitles, in that order. Kept as two lists so the titles can be a
+        // static the prose reads without constructing a form.
+        var leaves = new Action<RichTextBox>[]
         {
-            ("The Roll",                  RefLeafRoll),
-            ("A Turn in the Iron Code",   RefLeafIronCode),
-            ("Blood, Wounds & Healing",   RefLeafWounds),
-            ("Conditions",                RefLeafConditions),
-            ("Nerve & Dread",             RefLeafNerve),
-            ("The Mark & the Taint",      RefLeafMarkTaint),
-            ("Signs & Grit",              RefLeafSignsGrit),
-            ("Miracles of the Faithful",  RefLeafMiracles),
-            ("The Long Odds",             RefLeafLongOdds),
-            ("Arms of the Frontier",      RefLeafArms),
-            ("Goods & Provisions",        RefLeafGoods),
-            ("Skills, Saves & Abilities", RefLeafSkills),
-            ("Running in Town",           RefLeafCity),
+            RefLeafRoll, RefLeafIronCode, RefLeafWounds, RefLeafConditions,
+            RefLeafNerve, RefLeafMarkTaint, RefLeafSignsGrit, RefLeafMiracles,
+            RefLeafLongOdds, RefLeafArms, RefLeafGoods,
+            RefLeafSkills, RefLeafCity,
         };
+        if (leaves.Length != RefLeafTitles.Length)
+            throw new InvalidOperationException(
+                $"Reference deck: {RefLeafTitles.Length} titles against {leaves.Length} leaves — "
+                + "add the title beside the renderer.");
+        refDeck = RefLeafTitles.Zip(leaves, (t, r) => (t, r)).ToArray();
 
         referencePage.Controls.Add(Pad(refView, 14));
         referencePage.Controls.Add(bar);

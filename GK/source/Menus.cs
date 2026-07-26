@@ -235,10 +235,11 @@ public partial class MainForm
           "tweaked rather than arguing). → Posse seats them at the table; Copy sheet takes the text anywhere.");
 
         H("9 · The rules at your elbow  (Reference)");
-        T("A Keeper's screen in eleven leaves — the four degrees, the DC ladder, the Iron Code, wounds, every " +
-          "condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, the Long Odds, and the book's own " +
-          "arms, goods, and skills tables. Turn the deck with the ◀ ▶ buttons or the Left and Right arrow keys. " +
-          "When a ruling is needed and the book is across the room, it's here.");
+        T($"A Keeper's screen in {RefLeafCount} leaves — the four degrees, the DC ladder, the Iron Code, wounds, " +
+          "every condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, Miracles, the Long Odds and " +
+          "the safe-table rule, running in town, and the book's own arms, goods, and skills tables. Turn the deck " +
+          "with the ◀ ▶ buttons or the Left and Right arrow keys. When a ruling is needed and the book is across " +
+          "the room, it's here.");
 
         H("10 · Keep the record  (Session)");
         T("The Keeper's ledger for notes — Stamp the date starts each session's entry — and threads with clocks " +
