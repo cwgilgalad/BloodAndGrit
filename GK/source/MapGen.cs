@@ -461,7 +461,11 @@ public static class MapGen
             ("grave", "Boot Hill"), ("mine", "Diggings"), ("windmill", "Windmill"), ("corral", "Corral"),
             ("stone", "Standing Stones"), ("church", "Mission"), ("camp", "Cold Camp"), ("soddy", "Soddy"),
         };
-        nouns.AddRange(GroundLandmarks(ti));
+        // A ground's own places arrive already named — The Palisades, Lonesome Peak — so the
+        // decorator below has to leave them alone. Run through it they came out "The Crooked The
+        // Wall" and "Pryor's The Spine", which is the same fault the city list hit and fixed.
+        var ownName = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var g in GroundLandmarks(ti)) { nouns.Add(g); ownName.Add(g.noun); }
         if (riverPts != null || lake.r > 0) { nouns.Add(("ford", "Ford")); nouns.Add(("ford", "Crossing")); }
         if (city)
             nouns = new List<(string sym, string noun)>
@@ -485,6 +489,14 @@ public static class MapGen
                     ? pick.noun
                     : rngLm.Next(2) == 0 ? "The " + pick.noun
                                          : Choice(rngLm, LmOwner) + " " + pick.noun;
+            else if (ownName.Contains(pick.noun))
+            {
+                // The country's own. A man can own the working of a place ("Merritt's Pinery")
+                // but not the Divide, so the owner form only takes the name off the article.
+                name = pick.noun.StartsWith("The ") && rngLm.Next(4) == 0
+                    ? Choice(rngLm, LmOwner) + "'s " + pick.noun.Substring(4)
+                    : pick.noun;
+            }
             else
                 name = rngLm.Next(3) == 0
                     ? Choice(rngLm, LmOwner) + "'s " + pick.noun
@@ -598,7 +610,9 @@ public static class MapGen
         };
         m.Weather = Weathers[wx];
         m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}  ·  {WeatherLine(wx)}";
-        float cw = Math.Max(280, m.Title.Length * 12.5f + 40);
+        // Wide enough for BOTH lines. Sizing it off the title alone left the subtitle hanging out
+        // past the box and off the paper once the weather was added to it.
+        float cw = Math.Max(280, Math.Max(m.Title.Length * 12.5f + 40, m.Sub.Length * 5.2f + 34));
         P.Add(Rect(26, 26, cw, 78, "#f6efdd", Dark, 1.6f, 0.93f));
         P.Add(Rect(31, 31, cw - 10, 68, null, Dark, 0.7f));
         P.Add(TextP(26 + cw / 2, 62, m.Title, 21, Dark, bold: true, anchor: 1));
