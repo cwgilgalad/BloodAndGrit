@@ -301,6 +301,41 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
         corral.Distinct(StringComparer.OrdinalIgnoreCase).Count() == corral.Count);
 }
 
+// ---- The turn state, which the tracker now has to be able to SHOW ----
+{
+    var c = new Combatant { Name = "Ruth", BloodCur = 20, BloodMax = 20, Defense = 15 };
+    T("turn: a fresh combatant is nobody's turn", !c.Acting);
+    T("turn: and their next Strike is clean",     c.NextStrike == "clean");
+
+    c.BeginTurn();
+    T("turn: Begin turn hands them the turn", c.Acting && c.Beats == 3 && c.MapStep == 1);
+
+    var foe = new Combatant { Name = "The Bobcat", BloodCur = 9, BloodMax = 9, Defense = 15 };
+    var claw = new CreatureAttack { Name = "claws", Bonus = 5, Damage = "1d6+1" };
+    CombatFlow.StrikeAndApply(c, foe, claw, 5, null, 12);
+    T("turn: a Strike spends a Beat",        c.Beats == 2);
+    T("turn: and the next one costs −5",     c.NextStrike == "−5");
+    CombatFlow.StrikeAndApply(c, foe, claw, 5, null, 12);
+    T("turn: the third costs −10",           c.NextStrike == "−10" && c.Beats == 1);
+    CombatFlow.StrikeAndApply(c, foe, claw, 5, null, 12);
+    T("turn: three Strikes and the Beats are spent", c.Beats == 0);
+    CombatFlow.StrikeAndApply(c, foe, claw, 5, null, 12);
+    T("turn: Beats never go negative",       c.Beats == 0);
+    T("turn: and the MAP does not run past the worst step", c.NextStrike == "−10");
+
+    c.BeginTurn();
+    T("turn: Begin turn gives it all back", c.Beats == 3 && c.NextStrike == "clean" && c.Acting);
+
+    // The readout is turn state, so it has to survive a save and a load like Beats do.
+    var session = new GameSession();
+    session.Tracker.Add(c);
+    var reloaded = System.Text.Json.JsonSerializer.Deserialize<GameSession>(
+        System.Text.Json.JsonSerializer.Serialize(session));
+    T("turn: who is acting rides in the session file", reloaded.Tracker[0].Acting);
+    T("turn: so do the Beats and the step",
+        reloaded.Tracker[0].Beats == 3 && reloaded.Tracker[0].MapStep == 1);
+}
+
 // ---- Marker ink: the book's colors, the Keeper's, and one marker's own ----
 {
     MapInk.LoadKindColors(null);                                  // start from the book
@@ -423,6 +458,108 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("marker export: the label's backing is translucent", backing.Alpha > 0 && backing.Alpha < 1);
     T("marker export: a backing comes before the name it backs",
         ink.IndexOf(backing) < ink.FindIndex(p => p.Kind == PrimKind.Text));
+}
+
+// ---- The weather over the survey ----
+{
+    var sky = new Random(7);
+    // An explicit pick is honored exactly; only "as the sky wills" rolls.
+    for (int w = 1; w < MapGen.Weathers.Length; w++)
+        T($"weather: a forced sky stands ({MapGen.Weathers[w]})", MapGen.WeatherFor(w, 0, sky) == w);
+    T("weather: an out-of-range pick falls back to the country's own",
+        MapGen.WeatherFor(99, 0, new Random(1)) is > 0 and < 12);
+    T("weather: every index has words for the cartouche",
+        Enumerable.Range(0, MapGen.Weathers.Length).All(i => !string.IsNullOrWhiteSpace(MapGen.WeatherLine(i))));
+
+    // Rolled skies are the ones the ground would actually get: the high country can hand you a
+    // blizzard, and the badlands never will.
+    var high = new HashSet<int>();
+    var dry = new HashSet<int>();
+    for (int i = 0; i < 400; i++)
+    {
+        high.Add(MapGen.WeatherFor(0, 5, new Random(i)));
+        dry.Add(MapGen.WeatherFor(0, 6, new Random(i)));
+    }
+    T("weather: the high country rolls snow and blizzards", high.Contains(8) && high.Contains(9));
+    T("weather: the badlands roll neither",               !dry.Contains(8) && !dry.Contains(9));
+    T("weather: the badlands roll heat and blowing dust",  dry.Contains(2) && dry.Contains(7));
+
+    // Forcing the sky must not move one rock: the weather draws off its own stream, and every
+    // prim the country laid down is still there, in the same order, before the sky goes on.
+    MapModel Sky(int w) => MapGen.Generate(new MapSpec { Seed = 31337, Weather = w, Landmarks = 5 });
+    var fair = Sky(1);
+    var blizzard = Sky(9);
+    // Every sky over one seed has to leave the same country underneath: the same named places in
+    // the same spots, the same town on the same ground, the same title on the cartouche.
+    string Places(MapModel m) => string.Join("|", m.Landmarks.Select(l => $"{l.Name}@{l.X:F2},{l.Y:F2}"))
+        + "//" + (m.Town == null ? "-" : $"{m.Town.Name}@{m.Town.X:F2},{m.Town.Y:F2}") + "//" + m.Title;
+    string ground = Places(fair);
+    bool same = true;
+    for (int w = 0; w < MapGen.Weathers.Length; w++) if (Places(Sky(w)) != ground) same = false;
+    T("weather: the country under every sky is the same country", same);
+    // …and the country's ink is laid down before the sky goes over it, prim for prim.
+    int common = 0;
+    while (common < fair.P.Count && common < blizzard.P.Count
+           && MapGen.ToSvg(new MapModel { P = new List<Prim> { fair.P[common] } })
+              == MapGen.ToSvg(new MapModel { P = new List<Prim> { blizzard.P[common] } })) common++;
+    // The whole country, then the sky, then the frame and the cartouche over both — so the
+    // identical prefix is the great bulk of a fair-day map, and everything after it is furniture.
+    T("weather: and the survey's ink runs identical right up to the sky",
+        common > 60 && common > fair.P.Count * 0.7);
+    T("weather: a blizzard puts more ink on the page than a fair day", blizzard.P.Count > fair.P.Count);
+    T("weather: the sky is named on the model",   blizzard.Weather == "Blizzard" && fair.Weather == "Fair");
+    T("weather: and it reaches the cartouche",    blizzard.Sub.Contains("blizzard"));
+    T("weather: a rolled sky still names itself", Sky(0).Weather.Length > 0);
+    T("weather: same seed, same sky",             Sky(0).Weather == Sky(0).Weather);
+
+    // Weather ink is thrown at random across the sheet, which is exactly how it got past the
+    // edge the first time. Hold every sky to the paper.
+    for (int w = 0; w < MapGen.Weathers.Length; w++)
+    {
+        var m = MapGen.Generate(new MapSpec { Seed = 8080 + w, Weather = w });
+        bool inside = true;
+        foreach (var wp in m.P)
+        {
+            if (wp.Kind is not (PrimKind.Line or PrimKind.Poly) || wp.Pts == null) continue;
+            for (int i = 0; i + 1 < wp.Pts.Length; i += 2)
+                if (wp.Pts[i] < 0 || wp.Pts[i] > m.W || wp.Pts[i + 1] < 0 || wp.Pts[i + 1] > m.H) inside = false;
+        }
+        T($"weather: {MapGen.Weathers[w]} keeps its ink on the paper", inside);
+    }
+}
+
+// ---- Landforms: the country has hills, ridges, timber and whole ranges in it ----
+{
+    // Every ground draws its own furniture and offers its own named places. A landmark named
+    // The Divide has to be drawn as a range, which means the symbol behind it has to exist —
+    // a name with no case in Sym() is a label floating over blank paper.
+    foreach (var terrain in MapGen.Terrains)
+    {
+        var m = MapGen.Generate(new MapSpec { Terrain = terrain, Seed = 991, Landmarks = 12 });
+        T($"land: {terrain} draws something", m.P.Count > 60);
+        T($"land: {terrain} names its places", m.Landmarks.Count > 0);
+        foreach (var lm in m.Landmarks)
+            T($"land: {terrain} — “{lm.Name}” has ink of its own", lm.PrimCount >= 1);
+    }
+
+    // The high country and the badlands must not read as the same county.
+    var peaks = MapGen.Generate(new MapSpec { Terrain = "Winter & the High Country", Seed = 55, Landmarks = 12 });
+    var sand = MapGen.Generate(new MapSpec { Terrain = "Desert & the Badlands", Seed = 55, Landmarks = 12 });
+    T("land: two grounds on one seed name different places",
+        !peaks.Landmarks.Select(l => l.Name).SequenceEqual(sand.Landmarks.Select(l => l.Name)));
+
+    // A landmark still moves as one piece now that some of them are five-crown forests.
+    var moved = MapGen.Generate(new MapSpec { Terrain = "Winter & the High Country", Seed = 606, Landmarks = 6 });
+    if (moved.Landmarks.Count > 0)
+    {
+        var lm = moved.Landmarks[0];
+        float ox = lm.X, oy = lm.Y;
+        var before = moved.P[lm.PrimStart].Pts[0];
+        MapGen.MoveLandmark(moved, 0, ox + 40, oy - 25);
+        T("land: a moved landmark takes all its own ink with it",
+            Math.Abs(moved.P[lm.PrimStart].Pts[0] - (before + 40)) < 0.01f);
+        T("land: and remembers where the survey put it", lm.GenX == ox && lm.GenY == oy);
+    }
 }
 
 // ---- Water is measured to the river's CHANNEL, not to its vertices ----
@@ -1334,6 +1471,9 @@ foreach (var terrain in MapGen.Terrains)
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Rail = true, Landmarks = 6 })));
     File.WriteAllBytes(Path.Combine(outDir, "sample-city-lake.pdf"),
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 313, Water = 4, Landmarks = 6 })));
+    // one sheet per sky and one per ground — the weather washes and the new landforms are
+    // asserted above, but they also have to be looked at
+    WeatherSheets.Write(Path.Combine(outDir, "weather"));
     Console.WriteLine($"sample PDFs → {outDir}");
 }
 

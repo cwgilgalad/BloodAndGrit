@@ -8,6 +8,49 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.19.0 — weather and real country on the maps, and a turn you can see
+  (2026-07-26, user-requested).**
+
+  - **The maps have landforms now.** The country used to be hills, mesas and the odd snowy peak.
+    A survey can now say *mountains here, a bluff along there, timber the whole north half*:
+    mountains, whole ranges, ridges, bluffs and escarpments, buttes, hoodoos, hardwood forests and
+    pine stands, marsh, orchards, springs. Each ground draws its own furniture, weighted so a
+    county reads as country with a shape to it rather than one of everything scattered evenly.
+  - **And each ground names its own places.** The high country offers The Divide, Lonesome Peak,
+    The Palisades, Devil's Backbone, The Pinery; the badlands offer Chimney Butte, The Goblins,
+    The Wall, The Tanks; the river bottoms offer The Sloughs and The Landing. Every ground has
+    six to nine of its own on top of the ones people build anywhere. A place that comes already
+    named is left alone by the name decorator, which is what used to produce "The Crooked The
+    Wall" and "Pryor's The Spine".
+  - **Weather.** Fair, sunny and hot, overcast, rain, thunderstorm, fog, wind and blowing dust,
+    snow, a blizzard, hail, hard freeze — each inked over the survey with its own wash and marks,
+    named in the cartouche and in the roll log. Left on **as the sky wills**, the country rolls
+    what it would actually get: the high country hands you a blizzard, the badlands never will.
+    Drawn from its own random stream, so forcing the sky does not move one rock — asserted.
+  - **Begin turn does something you can see.** It always worked; nothing on screen said so. The
+    acting combatant's row now lights gold and bold, a **Next strike** column shows what the next
+    one costs (clean, then −5, then −10), and a line beside the round reads *"Ruth is up — 3 Beats
+    left, next Strike clean."* Next round clears it, because a new round is nobody's turn yet.
+  - **The Strike dialog stopped cutting itself off.** Its prose changes with the run mode and with
+    whether a creature or a soul is swinging, and the fixed heights it was laid out with clipped
+    the last line — and the Beats count off the right edge, which is exactly the readout a Keeper
+    needs. Everything is now measured and sized to its own words at any DPI. Also fixed a stray
+    comma in dice-and-books mode, and a font leaked on every open.
+  - **Undo and Redo look like buttons.** They were always in the status bar, live on every tab,
+    but flat text there reads as a caption (user-reported). They now wear a raised face and a
+    border. Ctrl+Z / Ctrl+Y and **Edit ▸ Undo/Redo** are unchanged.
+  - **Bigger tables everywhere else.** Rumors 44 → 56, trail days and nights 30 → 40 each, plunder
+    30 → 40, omens 42 → 52, what ails a town and what it hides 20 → 28 each, NPC wants and tells
+    20 → 28 each, given names and surnames up by 12 apiece. The town roller now has over a million
+    combinations and the face roller nearly four. Every creature in the Bestiary except the White
+    Bison — which stays off on purpose, per its Ch. XII "gone quiet" rumor — is now on a terrain
+    table: twenty that no table cited, including the whole of Ch. IX's hard men and hard country.
+  - Also: the cartouche is sized to fit its subtitle as well as its title, and weather ink is
+    started far enough in that no stroke lands past the neatline.
+
+  Smoke suite **10,372 assertions, all green** (+~250 this release); self-test 13/13; the button
+  audit reports 118 buttons, every one with a handler and a tooltip.
+
 - **GritKeeper v1.18.0 — what the posse rides, a right-click on everything, and marker colors
   that are the Keeper's own (2026-07-25, user-requested).** A session's worth of table feedback:
 

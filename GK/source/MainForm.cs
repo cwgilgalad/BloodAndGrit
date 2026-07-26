@@ -148,12 +148,30 @@ public partial class MainForm : Form
         // button that did nothing at all. That's the "some buttons don't work" report.
         statusSay = new ToolStripStatusLabel("") { Spring = true, ForeColor = Ink, TextAlign = ContentAlignment.MiddleLeft };
         status.Items.Add(statusSay);
-        undoStatusBtn = new ToolStripButton("⟲ Undo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
-        redoStatusBtn = new ToolStripButton("⟳ Redo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
-        undoStatusBtn.Click += (s, e) => Undo();
-        redoStatusBtn.Click += (s, e) => Redo();
-        undoStatusBtn.ToolTipText = "Undo the last change (Ctrl+Z)";
-        redoStatusBtn.ToolTipText = "Redo the last undone change (Ctrl+Y)";
+        // Undo and Redo are pinned here rather than on a tab so they're reachable wherever the
+        // Keeper is working. Flat text in a status bar reads as a caption, though, not as
+        // something you can press (user-reported) — so they wear a raised face and a border.
+        ToolStripButton UndoBtn(string text, string tip, Action go)
+        {
+            var b = new ToolStripButton(text)
+            {
+                Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text, ToolTipText = tip,
+                BackColor = Color.FromArgb(238, 230, 210), ForeColor = Ink,
+                Margin = new Padding(3, 2, 3, 2), Padding = new Padding(7, 1, 7, 1),
+                Font = new Font("Segoe UI", 9f, FontStyle.Bold)
+            };
+            b.Click += (s, e) => go();
+            b.Paint += (s, e) =>
+            {
+                var r = new Rectangle(0, 0, b.Width - 1, b.Height - 1);
+                using var pen = new Pen(Color.FromArgb(b.Enabled ? 150 : 205, 140, 118));
+                e.Graphics.DrawRectangle(pen, r);
+            };
+            return b;
+        }
+        undoStatusBtn = UndoBtn("⟲ Undo", "Undo the last change — the posse, the corral, the tracker, "
+            + "the encounter, the threads (Ctrl+Z)", Undo);
+        redoStatusBtn = UndoBtn("⟳ Redo", "Redo the last undone change (Ctrl+Y)", Redo);
         status.Items.Add(undoStatusBtn);
         status.Items.Add(redoStatusBtn);
         status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
