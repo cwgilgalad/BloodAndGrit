@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.19.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.19.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Map weather & landforms (v1.19.0):** `MapSpec.Weather` indexes `MapGen.Weathers` (0 = "as the
@@ -191,8 +191,10 @@ cloning it and splicing in their own content.
 ### Current design state (the old doc was wrong on all of this)
 - **All three book interiors are illustration-free.** The Player's Book's 18 plates were
   removed for visual continuity across the set (the Keeper and Bestiary never had plates).
-  The plate *images* still sit unused in `assets/` (img02–img19), so plates can be restored
-  later; nothing was destroyed.
+  **The plate images are not in this repo** — `assets/` holds `img20.png` (the
+  cover emblem) and nothing else, and git has never tracked anything else there. Restoring
+  plates means generating new artwork, not recovering old files. (Corrected 2026-07-26; this
+  doc claimed for weeks that img02–img19 were sitting in `assets/` waiting.)
 - **Cover emblem** = `assets/img20.png` (940×485, ~67 KB): gold rifles + bone-white steer
   skull, transparent background **and** transparent rifle-lever holes so the cover ground
   shows through. It replaced an older inline-SVG emblem. Centered in the blank lower area of
@@ -217,7 +219,7 @@ Each book's cheapest editable form is **bolded**.
 | File | Role |
 |---|---|
 | **`build_player.py`** | Player's Book — edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64 — currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
-| `assets/` | The images. **`img20.png`** is the cover emblem (transparent bg + transparent lever holes) — the only asset currently used. `img01.png` (old parchment texture) and `img02–img19` (old Player plates) are present but **unused**; keep them only if you might restore plates. |
+| `assets/` | The images — **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book — edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
 | **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
@@ -366,7 +368,8 @@ Character), IX (Edges), A (Example of Play), and B (Conditions).
 
 ### Plates
 **Removed** (18 of them) for design continuity with the other two books. If restoring later:
-the artwork is still in `assets/` (img02–img19). **Placement bug to avoid if you re-add
+the artwork would have to be generated fresh — it is not in `assets/` and never
+was. **Placement bug to avoid if you re-add
 any:** inserting a `<figure>` *before* a `<section class="page" id=X>` opener drops it
 between sections where the paginator silently discards it — figures must go *inside* a
 section (before the preceding `</section>`, or before an inner `<h2>`). Always re-count
@@ -490,7 +493,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.11.0) — the C# desktop app
+## GritKeeper (v1.19.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -504,9 +507,17 @@ file-dialog filters, crash-report captions) were also renamed in v1.6.0.
 
 ### Source-tree layout (IMPORTANT — read before editing the app)
 There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`GK/`**:
-`GK/source/` (the `.cs`, `.csproj`, `Data/`), `GK/smoke/` (the headless logic-test project),
-and `GK/source/publish/` (the self-contained build output). **Edit `GK/source`, build/test in
-`GK/`.**
+`GK/source/` (the `.cs`, `.csproj`, `Data/`) and `GK/smoke/` (the headless logic-test project).
+**Edit `GK/source`, build/test in `GK/`.**
+
+**The build output is `GK/source/bin/Release/net8.0-windows/win-x64/` — RID-qualified, and the
+assembly is named `GritKeeper`, not `BloodAndGritKeeper`.** The published single file lands in
+`…/win-x64/publish/GritKeeper.exe`, which is what `sign.ps1` and `package.ps1` default to. There
+is no `GK/publish/` and no `GK/source/publish/`; both were stale paths from older flows and were
+cleared out on 2026-07-26 (`GK/publish/` still held a 155 MB Jul-22 exe). A run of Jul-12
+`BloodAndGritKeeper.{exe,dll,pdb,…}` files one directory up from `win-x64/` went with them —
+they were a v1.2.2 build under the old assembly name, and running one by mistake looks exactly
+like the app hanging.
 
 The `GritKeeper/` folder is the *packaged deliverable*, and **both halves of it are generated
 build output, not source** — `source/` is a mirror of `GK/source`, `app/` holds the published
@@ -699,11 +710,18 @@ cd GK/source
 dotnet build -c Release
 
 # Self-contained single-file Windows exe. The publish settings (RuntimeIdentifier=win-x64,
-# SelfContained, PublishSingleFile, compression) are BAKED INTO THE CSPROJ as of 2026-07-15,
-# so no flags are needed and a publish can never silently regress to framework-dependent:
-dotnet publish -c Release -o publish
+# SelfContained, PublishSingleFile) are BAKED INTO THE CSPROJ as of 2026-07-15, so no flags
+# are needed and a publish can never silently regress to framework-dependent.
+#
+# NEVER pass -o. `sign.ps1` and `package.ps1` both default to the RID-qualified publish path
+# below; -o diverts the build somewhere else and they will happily sign and ship the PREVIOUS
+# version's exe instead (this happened during the v1.18.0 release — caught on the version check):
+dotnet publish -c Release
 ```
-Deliverable = **just `publish/GritKeeper.exe`** (~69 MB) — a **true single-file
+Deliverable = **just `bin/Release/net8.0-windows/win-x64/publish/GritKeeper.exe`** (~155 MB;
+`EnableCompressionInSingleFile` and `PublishReadyToRun` are deliberately **off** for startup
+speed and Defender scan time, which is why it is not the ~69 MB a compressed publish would be —
+the zip comes out ~63 MB) — a **true single-file
 standalone**: the .NET runtime is bundled *and* the `Data/*.json` (creatures + tables) are
 **embedded in the exe** (as of 2026-07-16), so it runs on any Windows machine with **no .NET
 install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the assembly, and
@@ -741,20 +759,32 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **4569/4569** passing (2322 → 2333 in v1.6, → 2339 in v1.7, → 2348
-  in v1.8/v1.9, → **4569 in v1.10** with the level-up conformance sweep: `CharGen.LevelUp`
-  is proved across every calling × ability method × level 1→10 — each step `Validate`-clean,
-  the levels below byte-stable, fixed-seed reproducible, explicit choices honored, and the
-  Gunhand/​caster growth paths checked) — re-run after any
-  `Core.cs`/`CharGen.cs`/data change.
+  validation). Currently **≈10,390 passing, 0 failing** — the total drifts by a few dozen run to
+  run because several sweeps assert once per random draw, so read the *failures*, not the total.
+  Re-run (`cd GK/smoke; dotnet run -c Release`)
+  after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)
+  → 2339 (v1.7) → 2348 (v1.8/v1.9) → **4569** (v1.10, the level-up conformance sweep: `LevelUp`
+  proved across every calling × ability method × level 1→10, each step `Validate`-clean, lower
+  levels byte-stable, fixed-seed reproducible) → ~10,120 (v1.18, marker ink + marker export)
+  → **~10,390** (v1.19: weather resolution and ink-inside-the-neatline for every sky, the landform
+  and per-ground landmark sweeps, the Beat/MAP turn state, and depth floors on every generator
+  table and chargen flavor pool so a re-extraction that drops `tables_extra.json` fails loudly
+  instead of quietly rolling from a thinner deck).
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj`
   carries `<RollForward>LatestMajor</RollForward>` (test rig only; the app itself is
   published self-contained and unaffected).
 - **Static wiring audit**: grep-confirm every `Btn(...)` call supplies a handler and every
   input control (`NumericUpDown`/`ComboBox`/`TextBox` driving logic) is referenced by at
   least one event handler — cheap and has caught orphaned controls before.
-- Cannot visually verify layout from this environment — see the note in "How I like to
-  work" above about the blind-build limitation and the `startup-error.txt` mechanism.
+- **Look at it.** The app builds and runs natively here, so layout is verifiable and should be
+  verified — the v1.19.0 clipped Strike dialog and the "The Crooked The Wall" landmark names both
+  passed every assertion and were only caught by rendering. Two safe ways, both used on
+  2026-07-26: capture a single window with `PrintWindow` (never a full-screen grab of the user's
+  desktop), and drive **your own** instance through UI Automation's Invoke/SelectionItem patterns
+  rather than synthesizing mouse or keyboard input. Close it with `CloseMainWindow()`, or post
+  `WM_CLOSE` to each of its windows when a modal is up — **never `Stop-Process`**, and never
+  touch the user's own running copy. For maps, the smoke rig writes one SVG per sky and per
+  ground to `%TEMP%\gritkeeper-smoke\weather`; render them with Playwright and look.
 
 ---
 
