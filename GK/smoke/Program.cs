@@ -204,6 +204,36 @@ foreach (var (table, floor) in new[]
 })
     T($"table [{table}] is at least {floor} deep", Db.Simple[table].Count >= floor);
 
+// ---- The safe-table rule: sign and spoor ----
+{
+    T("spoor: a row for every Tier", Rules.SpoorRow.Length == 5);
+    // The DCs climb with the Tier, and the Dread cost is one rung below meeting the thing —
+    // which is the whole claim the books make about this rule, so hold them to it.
+    for (int i = 1; i < Rules.SpoorRow.Length; i++)
+    {
+        T($"spoor: Tier {Rules.Roman(i + 1)} is harder to read than {Rules.Roman(i)}",
+            Rules.SpoorRow[i].readDc > Rules.SpoorRow[i - 1].readDc);
+        T($"spoor: Tier {Rules.Roman(i + 1)} costs no less Nerve than {Rules.Roman(i)}",
+            Rules.SpoorRow[i].dreadDc >= Rules.SpoorRow[i - 1].dreadDc);
+    }
+    T("spoor: a Tier I trace costs nothing — out here a cougar kills a calf", Rules.SpoorRow[0].dreadDc == 0);
+    // "one rung below the thing itself": the sign of a Tier N horror costs what MEETING a
+    // Tier N-1 horror costs. Tier II's 10 is the bottom of Tier I's "— / 10–13" band.
+    for (int i = 1; i < Rules.SpoorRow.Length; i++)
+        T($"spoor: Tier {Rules.Roman(i + 1)} sign costs a Tier {Rules.Roman(i)} meeting",
+            Rules.TierRow[i - 1].dread.Contains(Rules.SpoorRow[i].dreadDc.ToString()));
+    T("spoor: every Tier says what is left on the ground",
+        Rules.SpoorRow.All(s => !string.IsNullOrWhiteSpace(s.what) && s.what.Length > 20));
+    T("spoor: the four degrees each buy something different",
+        Enumerable.Range(0, 4).Select(Rules.SpoorRead).Distinct().Count() == 4);
+    T("spoor: and none of them is blank",
+        Enumerable.Range(0, 4).All(d => !string.IsNullOrWhiteSpace(Rules.SpoorRead(d))));
+    T("spoor: the thread is a four-segment clock", Rules.SpoorClockSegments == 4);
+    // The rule only fires where Rules.Cost says it does — two or more Tiers over the posse.
+    T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
+    T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
+}
+
 // ---- Nerve-loss ladder ----
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)

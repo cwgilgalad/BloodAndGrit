@@ -41,13 +41,13 @@ if ".statblock{" not in H:
 
 # ---- cover / meta retext ----
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Bestiary · Version 2.9 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.9)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.24 -->", "<!-- Blood & Grit — The Bestiary · Version 2.10 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.24)</title>", "<title>Blood &amp; Grit — The Bestiary (v2.10)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.9</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.24</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.10</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.9 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.24 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.10 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -1409,6 +1409,50 @@ GROUNDS = f"""<!-- GROUNDS -->
   above the party, it arrives as sign and spoor, not in the flesh &mdash; the tracks, the kill, the survivor's account
   &mdash; and becomes a thread instead of a funeral.</p>
 
+  <h2 id="ix-spoor">Sign &amp; Spoor <span class="sub">(running the thing they don't meet)</span></h2>
+  <p><strong>Spoor</strong> is the physical trace: the track, the scat, the hair caught on wire, the blood, the scrape
+  on a tree at a height that ends the conversation. <strong>Sign</strong> is everything wider than that &mdash; a kill,
+  a silence where there were birds an hour ago, stock that will not go back in the barn. A Keeper who says "you find
+  sign of it" and stops has given the players a mood. Give them the reading instead: it is a whole scene, it costs
+  Nerve, and it is how a campaign gets its shape.</p>
+
+  <p>Set the scene at the trace and let them work it. A <strong>Survival</strong> check reads it; the DC and the
+  Dread Check both come off the thing's Tier, not the party's.</p>
+
+  <table>
+    <tr><th>Tier of the thing</th><th>Read the sign</th><th>Dread Check</th><th>What is left of it</th></tr>
+    <tr><td>I</td><td>Survival DC 12</td><td>&mdash;</td>
+        <td>Tracks, and a killed animal that was eaten properly</td></tr>
+    <tr><td>II</td><td>Survival DC 14</td><td>DC 10</td>
+        <td>A killed animal that was not eaten, and was not left the way a beast leaves one</td></tr>
+    <tr><td>III</td><td>Survival DC 16</td><td>DC 13</td>
+        <td>A killed man, and the manner of it plain in what's left</td></tr>
+    <tr><td>IV</td><td>Survival DC 18</td><td>DC 16</td>
+        <td>A killed party, and one survivor who will not go back</td></tr>
+    <tr><td>V</td><td>Survival DC 20</td><td>DC 20</td>
+        <td>A place unmade &mdash; ground, weather, and the people in it, all wrong together</td></tr>
+  </table>
+
+  <p class="note">The Dread DC is one rung below meeting the thing itself, because reading an aftermath is not standing
+  in front of the animal. Nerve comes off the usual ladder (Ch. XII). A Tier I trace costs nothing at all &mdash; out
+  here a cougar kills a calf, and that is weather.</p>
+
+  <p>The Survival check reads the four degrees like any other:</p>
+  <ul>
+    <li><strong>Critical success.</strong> What it is, how many, how long ago, which way it went &mdash; and whether it
+    already knows about them.</li>
+    <li><strong>Success.</strong> What it is, and which way it went.</li>
+    <li><strong>Failure.</strong> Something passed, and it was wrong. Nothing further, and no second try at this trace.</li>
+    <li><strong>Critical failure.</strong> They read it backward: the wrong direction, the wrong number, or they miss
+    that the track is circling them. Play the wrong answer straight and let the country correct them.</li>
+  </ul>
+
+  <p>Then make it a thread. Start a <strong>four-segment clock</strong> and name it for the thing. Every fresh sign of
+  the same horror fills a segment &mdash; a second kill, a name in a rumor, a night the dogs won't go out. A full clock
+  is the night it arrives in the flesh, and by then the posse should be a Tier stronger or holding a plan. That is the
+  whole trade the safe-table rule offers: the monster they cannot fight yet becomes the reason they get strong enough
+  to, and the country does the pacing for you.</p>
+
   <h2>The Ordinary Country <span class="sub">(d20 &mdash; the night nothing is wrong)</span></h2>
   <p class="note">Roll here for the sessions before the horror, and for every session after one, when the table needs
   the country to be only a country again. Nothing on this table costs a point of Nerve or moves the Mark. Used for a
@@ -1532,7 +1576,9 @@ GROUNDS = f"""<!-- GROUNDS -->
     </tbody>
   </table>
   <p class="note">On the old ground, the safe-table rule is not a suggestion. Most of what this table turns up should
-  arrive as evidence and dread long before it arrives in person.</p>
+  arrive as evidence and dread long before it arrives in person &mdash; run it off <em>Sign &amp; Spoor</em>, above,
+  and let the clock do the rest. A Tier V trace is a place unmade: the Survival DC is 20, the Dread Check is DC 20,
+  and a party that reads it correctly has learned exactly how far they are from being able to do anything about it.</p>
 
   <h2>The Hand Behind It <span class="sub">(d10 &mdash; when the mystery needs an author)</span></h2>
   <p>Half this book's horrors were <em>sent</em>. When the players ask who is behind the trouble, roll or choose:</p>
@@ -2326,7 +2372,10 @@ BEST_INDEX = [
     ("The Grounds <span class=\"note\">(encounters by terrain)</span>", "grounds"),
     ("Encounters by terrain", "grounds"),
     ("The Hand Behind It (villain picker)", "grounds"),
-    ("The safe-table rule", "grounds"),
+    ("The safe-table rule", "ix-spoor"),
+    ("Sign &amp; spoor (running what they don't meet)", "ix-spoor"),
+    ("Spoor, reading it", "ix-spoor"),
+    ("Tracking a horror (Survival DCs)", "ix-spoor"),
     ("Building Your Own Dead", "build"),
     ("Threat by Tier (workshop)", "build"),
 ]

@@ -408,6 +408,40 @@ public static class Rules
         (23, 17,110, 19,11, "3d8+8", "25"),
     };
 
+    /// <summary>Sign and spoor — the safe-table rule's numbers (Bestiary, Appendix: The Grounds).
+    /// <para><i>Spoor</i> is the physical trace a thing leaves: track, scat, hair, blood, the
+    /// scrape on a tree at a height that stops the conversation. <i>Sign</i> is everything wider
+    /// than that — a kill, a silence, stock that won't go back in the barn. When a horror stands
+    /// two or more Tiers over the posse it does not arrive in the flesh; it arrives as this, and
+    /// the scene is a reading, not a fight.</para>
+    /// <para>Read the sign with Survival at <c>ReadDc</c>. It costs Nerve like anything else, but
+    /// one rung down the ladder from meeting the thing — the aftermath is not the animal — which
+    /// is why <c>DreadDc</c> here is the Dread DC of the Tier BELOW, and a Tier I trace costs
+    /// nothing at all.</para></summary>
+    public static readonly (int readDc, int dreadDc, string what)[] SpoorRow =
+    {
+        (12,  0, "Tracks, and a killed animal that was eaten properly"),
+        (14, 10, "A killed animal that was not eaten, and was not left the way a beast leaves one"),
+        (16, 13, "A killed man, and the manner of it plain in what's left"),
+        (18, 16, "A killed party, and one survivor who will not go back"),
+        (20, 20, "A place unmade — ground, weather, and the people in it, all wrong together"),
+    };
+
+    /// <summary>What a Survival check against <see cref="SpoorRow"/> buys, by degree — the same
+    /// ordered 0–3 scale <see cref="FourDegrees"/> returns.</summary>
+    public static string SpoorRead(int degree) => degree switch
+    {
+        3 => "What it is, how many, how long ago, which way — and whether it already knows about you.",
+        2 => "What it is, and which way it went.",
+        1 => "Something passed, and it was wrong. Nothing further.",
+        _ => "You read it backward: the wrong direction, the wrong number, or you miss that it is circling.",
+    };
+
+    /// <summary>The safe-table rule turns a monster into a thread. Four segments: each fresh sign
+    /// of the same thing fills one, and a filled clock is the night it finally arrives in the
+    /// flesh — by which time the posse should be a Tier higher, or have a plan.</summary>
+    public const int SpoorClockSegments = 4;
+
     /// Nerve loss ladder by Dread severity tier (I..V → 1, 1d4, 1d6, 1d10, 1d10)
     public static (string label, Func<int> roll) NerveLoss(int tier) => tier switch
     {

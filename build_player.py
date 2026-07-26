@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.23 -->
+<!-- Blood & Grit — The Player's Book · Version 2.24 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.24)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.24</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.23 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.24 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -2470,7 +2470,7 @@ body{ background:#525659; }
     <li id="ix-aid"><strong>Helping (Aid).</strong> Declare you are helping before the action; on your turn, make a DC 10 check of a relevant skill. Success grants your ally +2 (a critical success, +3); a critical failure may hinder them by –1. Many hands make light a heavy door.</li>
     <li><strong>Lore as a lifeline.</strong> A successful Lore (Occult) check may tell you what a thing is, what it wants, and what it fears — but every such check on the deep dark risks a Dread Check (Chapter XII). A <em>critical</em> success tells you all three and spares the Dread Check; a <em>critical</em> failure plants a confident lie. Knowing is never free.</li>
     <li><strong>Opposed work.</strong> Stealth opposes Notice; Deceive opposes Insight; Sleight opposes Notice. Read these as opposed rolls, not flat DCs, when a living mind stands against you.</li>
-    <li><strong>Reading the country.</strong> A Survival check forewarns of weather, finds water, and reads how long ago something passed; against the spoor of the uncanny, the DC rises and the answer chills.</li>
+    <li id="ix-spoor"><strong>Reading the country.</strong> A Survival check forewarns of weather, finds water, and reads how long ago something passed. <em>Spoor</em> is the physical trace a thing leaves &mdash; track, scat, hair on wire, blood, a scrape on a tree at a height you would rather not measure; <em>sign</em> is everything wider, the kill, the silence, the stock that will not go back in the barn. Against the spoor of the uncanny the DC rises and the answer chills, and some things you will only ever meet this way: the Keeper is not obliged to put every horror in front of you in the flesh, and the ones two Tiers above your posse arrive as tracks and a survivor's account. Read them well. It is the difference between a thread and a funeral.</li>
     <li id="ix-untrained"><strong>Untrained.</strong> You may attempt most skills while untrained, rolling ability alone — save for Medicine (surgery), Repair (machinery), and the two Lores, which need at least Trained proficiency to attempt the hard work. The untrained do not perform amputations by guesswork. Often they perform them anyway.</li>
   </ul>
 
@@ -4391,6 +4391,7 @@ body{ background:#525659; }
     <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">91</span></li>
     <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">170</span></li>
     <li><a href="#ix-reckoning">Speed</a><span class="pg">19</span></li>
+    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">116</span></li>
     <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">90</span></li>
     <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">89</span></li>
     <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">120</span></li>
