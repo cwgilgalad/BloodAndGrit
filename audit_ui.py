@@ -122,6 +122,11 @@ def main():
                     for item in args[3:]:
                         if item.lstrip().startswith('("-"'):
                             continue                     # a separator, which carries no handler by design
+                        # A group heading, written "— Mounts —" / "— The whole posse —". MenuBtn
+                        # renders a null handler as a DISABLED item, so these can't read as a dead
+                        # button; only a heading may take the exemption, and it must look like one.
+                        if re.match(r'\(\s*"—[^"]*—"', item.lstrip()):
+                            continue
                         if re.search(r",\s*null\s*\)\s*$", item):
                             findings.append(f"{where}  MenuBtn({label}) — a menu item with no handler")
 

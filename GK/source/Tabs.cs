@@ -75,7 +75,21 @@ public partial class MainForm
             if (e.KeyCode == Keys.Enter && beastList.SelectedItem is Creature c)
             { ShowCreatureCard(c); e.Handled = true; e.SuppressKeyPress = true; }
         };
-        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window");
+        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window — right-click for where else it can go");
+
+        // The filter bar's actions, on the creature itself. The quantity spinner is honored here
+        // too, so "× 4 → Tracker" means the same thing whichever way it's reached.
+        ListMenu<Creature>(beastList, (menu, c) =>
+        {
+            MIHead(menu, $"{c.name} — Tier {Rules.Roman(c.tier)}");
+            MI(menu, "Open it in its own window", () => ShowCreatureCard(c));
+            MISep(menu);
+            MI(menu, "Add to the encounter plan", () => { encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}."); });
+            int n = (int)beastQty.Value;
+            MI(menu, n == 1 ? "Drop one onto the battlefield" : $"Drop {n} onto the battlefield", () => AddCreatureToTracker(c, n));
+            MISep(menu);
+            MI(menu, "Copy its stat block", () => { Clipboard.SetText(CreatureText(c)); Log($"{c.name}'s stat block copied to the clipboard."); });
+        });
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
@@ -135,13 +149,32 @@ public partial class MainForm
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
     }
 
+    /// <summary>The same stat block as plain text, for pasting into notes or a chat window. It follows
+    /// <see cref="RenderCreature"/> line for line on purpose — a Keeper who copies what's on screen
+    /// should get what's on screen, not an abridgement of it.</summary>
+    static string CreatureText(Creature c)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine(c.name).AppendLine(c.tierText).AppendLine();
+        foreach (var p in c.lore) sb.AppendLine(p).AppendLine();
+        if (!string.IsNullOrEmpty(c.witness)) sb.AppendLine("“" + c.witness + "”").AppendLine();
+        if (!string.IsNullOrEmpty(c.found)) sb.AppendLine("FOUND — " + c.found).AppendLine();
+        void Stat(string k, string v) { if (!string.IsNullOrEmpty(v)) sb.AppendLine(k.ToUpperInvariant() + "  " + v); }
+        Stat("Defense", c.defense); Stat("Blood", c.blood); Stat("Speed", c.speed);
+        Stat("Saves", c.saves); Stat("Attacks", c.attacks); Stat("Special", c.special);
+        Stat("Dread", c.dread); Stat("The Mark", c.mark); Stat("Putting It Down", c.puttingItDown);
+        if (!string.IsNullOrEmpty(c.keeperNote)) sb.AppendLine().AppendLine("HOW TO PLAY IT").AppendLine(c.keeperNote);
+        return sb.ToString().TrimEnd();
+    }
+
     // ============================================================ ENCOUNTER TAB
     DataGridView encGrid;
     NumericUpDown encLevel, encQty;
     static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
-    ProgressBar encBar;
+    Panel encBar;
+    int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
 
     // a creature-name picker with type-ahead, shared by the Encounter and Tracker tabs
     static ComboBox CreaturePicker(int width)
@@ -209,10 +242,28 @@ public partial class MainForm
             if (name == "cost") e.Value = cost;
         };
         encGrid.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) ShowCreatureCard(encounter[e.RowIndex].Creature); };
+        Tip.SetToolTip(encGrid, "Double-click a creature for its stat block — right-click for what can be done with it");
+
+        GridMenu<EncounterPick>(encGrid, (menu, pick) =>
+        {
+            var beast = pick.Creature;
+            MIHead(menu, $"{beast.name} — Tier {Rules.Roman(beast.tier)}");
+            MI(menu, "Open the stat block", () => ShowCreatureCard(beast));
+            MISep(menu);
+            MI(menu, "Add another of these", () => { encounter.Add(new EncounterPick(beast)); RefreshEncounter(); Log($"Encounter: added {beast.name}."); });
+            MI(menu, "Send this one to the Tracker", () => AddCreatureToTracker(beast));
+            MISep(menu);
+            MI(menu, "Take it off the plan", () => { encounter.Remove(pick); RefreshEncounter(); });
+        });
 
         var bottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
         encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
-        encBar = new ProgressBar { Dock = DockStyle.Bottom, Height = 22, Maximum = 100 };
+        // Owner-drawn rather than a ProgressBar: a themed ProgressBar ignores ForeColor outright,
+        // so the bar could never agree with the verdict line above it. Drawing it also buys the
+        // budget tick — the mark that says where "a fair, hard fight" actually sits, so being
+        // over is something you can SEE, not just read.
+        encBar = new BufferedPanel { Dock = DockStyle.Bottom, Height = 22, BackColor = Color.FromArgb(243, 237, 221) };
+        encBar.Paint += (s, e) => PaintBudgetBar(e.Graphics, encBar.ClientRectangle);
         bottom.Controls.Add(encVerdict); bottom.Controls.Add(encBar);
 
         page.Controls.Add(encGrid);
@@ -257,18 +308,54 @@ public partial class MainForm
         encGrid.Refresh();
         int budget = 4 * Math.Max(1, party.Count);
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
-        string verdict = spend == 0 ? "Empty — add creatures above, or send them over from the Bestiary tab." :
-            spend < budget ? "Under budget — a fight they should win." :
-            spend == budget ? "On budget — a fair, hard fight." :
-            spend <= budget + 4 ? "Over budget — mean. Somebody bleeds." :
-            "WELL over budget — you had better mean it.";
-        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {verdict}";
-        encVerdict.ForeColor = spend > budget + 4 ? Blood : (spend > budget ? Color.FromArgb(150, 80, 20) : Ink);
-        if (encBar != null)
-        {
-            encBar.Maximum = Math.Max(budget * 2, Math.Max(spend, 1));
-            encBar.Value = Math.Min(spend, encBar.Maximum);
-        }
+        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {Rules.BudgetVerdict(spend, budget)}";
+        encVerdict.ForeColor = BudgetColor(spend, budget);
+        encSpend = spend; encBudget = budget;
+        encBar?.Invalidate();
+    }
+
+    /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can
+    /// never disagree. Green ONLY at exactly budget — that is the balanced fight, and it should be
+    /// the one reading on this tab you can spot without reading. Red the moment it goes over, at
+    /// any depth; the words are what say how far over.</summary>
+    public static Color BudgetColor(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
+    {
+        Rules.Weight.Exact    => Verdigris,   // perfectly balanced
+        Rules.Weight.Over     => Blood,
+        Rules.Weight.WellOver => Blood,
+        _                     => Ink,         // empty or under — safe, and not worth a color
+    };
+
+    /// <summary>The same reading, as a solid fill. Under budget takes a muted tan rather than the
+    /// text's Ink: a bar filled with near-black weighs heavier on the eye than the red one beside
+    /// it, which would make the safe state look like the loud one. Only over budget gets to shout.</summary>
+    public static Color BudgetFill(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
+    {
+        Rules.Weight.Exact    => Verdigris,
+        Rules.Weight.Over     => Blood,
+        Rules.Weight.WellOver => Blood,
+        _                     => Color.FromArgb(176, 163, 138),
+    };
+
+    /// <summary>The budget bar: a track, the spend filled in the verdict's own color, and a tick
+    /// standing at the budget so overspend is visible as distance past the mark.</summary>
+    void PaintBudgetBar(Graphics g, Rectangle r)
+    {
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        var track = new Rectangle(r.X, r.Y + 4, Math.Max(1, r.Width - 1), Math.Max(1, r.Height - 9));
+        using (var back = new SolidBrush(Color.FromArgb(232, 224, 205))) g.FillRectangle(back, track);
+
+        // The scale always shows twice the budget, so the tick sits mid-bar and there is room to
+        // run past it; a spend beyond that stretches the scale rather than pinning at the end.
+        int scale = Math.Max(Math.Max(encBudget * 2, encSpend), 1);
+        int fill = (int)Math.Round(track.Width * (double)Math.Min(encSpend, scale) / scale);
+        if (fill > 0)
+            using (var b = new SolidBrush(BudgetFill(encSpend, encBudget)))
+                g.FillRectangle(b, new Rectangle(track.X, track.Y, fill, track.Height));
+
+        int tick = track.X + (int)Math.Round(track.Width * (double)encBudget / scale);
+        using (var pen = new Pen(Ink, 2f)) g.DrawLine(pen, tick, r.Y + 1, tick, r.Bottom - 2);
+        using (var pen = new Pen(Color.FromArgb(150, 140, 120), 1f)) g.DrawRectangle(pen, track);
     }
 
     // ============================================================ TRACKER TAB
@@ -390,6 +477,37 @@ public partial class MainForm
             else if (t.IsPC)
             { var p = party.FirstOrDefault(x => x.Name == t.Name); if (p != null) ShowSoulCard(p); }
         };
+
+        Tip.SetToolTip(trkGrid, "Double-click a combatant for their card — right-click for everything that can be done to them");
+
+        // The bar's actions, on the combatant itself. What's offered depends on who the row is:
+        // only a soul takes a Dread Check or has a Ledger, and only a creature has a stat block.
+        GridMenu<Combatant>(trkGrid, (menu, c) =>
+        {
+            MIHead(menu, c.Name is { Length: > 0 } ? c.Name : "This combatant");
+            MI(menu, "Begin their turn — 3 Beats, a clean MAP", () => BeginTurnForSelected());
+            MI(menu, "Strike…", () => StrikeDialog(), !c.Down);
+            if (c.IsPC) MI(menu, "Dread check…", () => DreadDialog());
+            MISep(menu);
+            MI(menu, $"Damage {trkAmount.Value}", () => AdjustCombatant(-1));
+            MI(menu, $"Heal {trkAmount.Value}", () => AdjustCombatant(+1), c.BloodMax == 0 || c.BloodCur < c.BloodMax);
+
+            var cond = new ToolStripMenuItem("Conditions");
+            foreach (var name in BookConditions)
+            {
+                string cd = name;
+                cond.DropDownItems.Add(Amp(cd), null, (s, e) => ApplyCondition(cd));
+            }
+            cond.DropDownItems.Add(new ToolStripSeparator());
+            var clear = cond.DropDownItems.Add("Clear all of them", null, (s, e) => ClearConditions());
+            clear.Enabled = !string.IsNullOrWhiteSpace(c.Conditions);
+            menu.Items.Add(cond);
+
+            MISep(menu);
+            if (!string.IsNullOrEmpty(c.Ref)) MI(menu, "Open the stat block", () => { if (Db.Find(c.Ref) is Creature b) ShowCreatureCard(b); });
+            else if (c.IsPC && SoulOf(c) is PartyMember soul) MI(menu, "Open the Ledger", () => ShowSoulCard(soul));
+            MI(menu, "Take them off the field", () => tracker.Remove(c));
+        });
 
         page.Controls.Add(trkGrid);
         page.Controls.Add(bar);
