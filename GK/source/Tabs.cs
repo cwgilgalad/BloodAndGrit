@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace BloodAndGritKeeper;
 
@@ -75,7 +75,21 @@ public partial class MainForm
             if (e.KeyCode == Keys.Enter && beastList.SelectedItem is Creature c)
             { ShowCreatureCard(c); e.Handled = true; e.SuppressKeyPress = true; }
         };
-        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window");
+        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window — right-click for where else it can go");
+
+        // The filter bar's actions, on the creature itself. The quantity spinner is honored here
+        // too, so "× 4 → Tracker" means the same thing whichever way it's reached.
+        ListMenu<Creature>(beastList, (menu, c) =>
+        {
+            MIHead(menu, $"{c.name} — Tier {Rules.Roman(c.tier)}");
+            MI(menu, "Open it in its own window", () => ShowCreatureCard(c));
+            MISep(menu);
+            MI(menu, "Add to the encounter plan", () => { encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}."); });
+            int n = (int)beastQty.Value;
+            MI(menu, n == 1 ? "Drop one onto the battlefield" : $"Drop {n} onto the battlefield", () => AddCreatureToTracker(c, n));
+            MISep(menu);
+            MI(menu, "Copy its stat block", () => { Clipboard.SetText(CreatureText(c)); Log($"{c.name}'s stat block copied to the clipboard."); });
+        });
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
@@ -135,13 +149,32 @@ public partial class MainForm
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
     }
 
+    /// <summary>The same stat block as plain text, for pasting into notes or a chat window. It follows
+    /// <see cref="RenderCreature"/> line for line on purpose — a Keeper who copies what's on screen
+    /// should get what's on screen, not an abridgement of it.</summary>
+    static string CreatureText(Creature c)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine(c.name).AppendLine(c.tierText).AppendLine();
+        foreach (var p in c.lore) sb.AppendLine(p).AppendLine();
+        if (!string.IsNullOrEmpty(c.witness)) sb.AppendLine("“" + c.witness + "”").AppendLine();
+        if (!string.IsNullOrEmpty(c.found)) sb.AppendLine("FOUND — " + c.found).AppendLine();
+        void Stat(string k, string v) { if (!string.IsNullOrEmpty(v)) sb.AppendLine(k.ToUpperInvariant() + "  " + v); }
+        Stat("Defense", c.defense); Stat("Blood", c.blood); Stat("Speed", c.speed);
+        Stat("Saves", c.saves); Stat("Attacks", c.attacks); Stat("Special", c.special);
+        Stat("Dread", c.dread); Stat("The Mark", c.mark); Stat("Putting It Down", c.puttingItDown);
+        if (!string.IsNullOrEmpty(c.keeperNote)) sb.AppendLine().AppendLine("HOW TO PLAY IT").AppendLine(c.keeperNote);
+        return sb.ToString().TrimEnd();
+    }
+
     // ============================================================ ENCOUNTER TAB
     DataGridView encGrid;
     NumericUpDown encLevel, encQty;
     static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
-    ProgressBar encBar;
+    Panel encBar;
+    int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
 
     // a creature-name picker with type-ahead, shared by the Encounter and Tracker tabs
     static ComboBox CreaturePicker(int width)
@@ -179,8 +212,10 @@ public partial class MainForm
         encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         top.Controls.Add(encQty);
         top.Controls.Add(Btn("＋ Add", (s, e) => AddPickToEncounter(), 75, "Add it to the plan (or press Enter in the box)"));
-        top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85));
-        top.Controls.Add(Btn("Clear", (s, e) => { if (encounter.Count > 0 && Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); } }, 65));
+        top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85,
+            "Take the selected foe out of the encounter"));
+        top.Controls.Add(Btn("Clear", (s, e) => { if (encounter.Count > 0 && Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); } }, 65,
+            "Empty the encounter and start costing a new one"));
         top.Controls.Add(Btn("Send all → Tracker", (s, e) => { foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature); }, 150, "Put every listed creature on the battlefield"));
 
         encGrid = new DataGridView
@@ -207,10 +242,28 @@ public partial class MainForm
             if (name == "cost") e.Value = cost;
         };
         encGrid.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) ShowCreatureCard(encounter[e.RowIndex].Creature); };
+        Tip.SetToolTip(encGrid, "Double-click a creature for its stat block — right-click for what can be done with it");
+
+        GridMenu<EncounterPick>(encGrid, (menu, pick) =>
+        {
+            var beast = pick.Creature;
+            MIHead(menu, $"{beast.name} — Tier {Rules.Roman(beast.tier)}");
+            MI(menu, "Open the stat block", () => ShowCreatureCard(beast));
+            MISep(menu);
+            MI(menu, "Add another of these", () => { encounter.Add(new EncounterPick(beast)); RefreshEncounter(); Log($"Encounter: added {beast.name}."); });
+            MI(menu, "Send this one to the Tracker", () => AddCreatureToTracker(beast));
+            MISep(menu);
+            MI(menu, "Take it off the plan", () => { encounter.Remove(pick); RefreshEncounter(); });
+        });
 
         var bottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
         encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
-        encBar = new ProgressBar { Dock = DockStyle.Bottom, Height = 22, Maximum = 100 };
+        // Owner-drawn rather than a ProgressBar: a themed ProgressBar ignores ForeColor outright,
+        // so the bar could never agree with the verdict line above it. Drawing it also buys the
+        // budget tick — the mark that says where "a fair, hard fight" actually sits, so being
+        // over is something you can SEE, not just read.
+        encBar = new BufferedPanel { Dock = DockStyle.Bottom, Height = 22, BackColor = Color.FromArgb(243, 237, 221) };
+        encBar.Paint += (s, e) => PaintBudgetBar(e.Graphics, encBar.ClientRectangle);
         bottom.Controls.Add(encVerdict); bottom.Controls.Add(encBar);
 
         page.Controls.Add(encGrid);
@@ -242,7 +295,7 @@ public partial class MainForm
     void AddPickToEncounter()
     {
         var c = Db.Find((encPick.Text ?? "").Trim());
-        if (c == null) { Log("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         int n = (int)encQty.Value;
         for (int i = 0; i < n; i++) encounter.Add(new EncounterPick(c));
         RefreshEncounter();
@@ -255,18 +308,54 @@ public partial class MainForm
         encGrid.Refresh();
         int budget = 4 * Math.Max(1, party.Count);
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
-        string verdict = spend == 0 ? "Empty — add creatures above, or send them over from the Bestiary tab." :
-            spend < budget ? "Under budget — a fight they should win." :
-            spend == budget ? "On budget — a fair, hard fight." :
-            spend <= budget + 4 ? "Over budget — mean. Somebody bleeds." :
-            "WELL over budget — you had better mean it.";
-        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {verdict}";
-        encVerdict.ForeColor = spend > budget + 4 ? Blood : (spend > budget ? Color.FromArgb(150, 80, 20) : Ink);
-        if (encBar != null)
-        {
-            encBar.Maximum = Math.Max(budget * 2, Math.Max(spend, 1));
-            encBar.Value = Math.Min(spend, encBar.Maximum);
-        }
+        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {Rules.BudgetVerdict(spend, budget)}";
+        encVerdict.ForeColor = BudgetColor(spend, budget);
+        encSpend = spend; encBudget = budget;
+        encBar?.Invalidate();
+    }
+
+    /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can
+    /// never disagree. Green ONLY at exactly budget — that is the balanced fight, and it should be
+    /// the one reading on this tab you can spot without reading. Red the moment it goes over, at
+    /// any depth; the words are what say how far over.</summary>
+    public static Color BudgetColor(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
+    {
+        Rules.Weight.Exact    => Verdigris,   // perfectly balanced
+        Rules.Weight.Over     => Blood,
+        Rules.Weight.WellOver => Blood,
+        _                     => Ink,         // empty or under — safe, and not worth a color
+    };
+
+    /// <summary>The same reading, as a solid fill. Under budget takes a muted tan rather than the
+    /// text's Ink: a bar filled with near-black weighs heavier on the eye than the red one beside
+    /// it, which would make the safe state look like the loud one. Only over budget gets to shout.</summary>
+    public static Color BudgetFill(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
+    {
+        Rules.Weight.Exact    => Verdigris,
+        Rules.Weight.Over     => Blood,
+        Rules.Weight.WellOver => Blood,
+        _                     => Color.FromArgb(176, 163, 138),
+    };
+
+    /// <summary>The budget bar: a track, the spend filled in the verdict's own color, and a tick
+    /// standing at the budget so overspend is visible as distance past the mark.</summary>
+    void PaintBudgetBar(Graphics g, Rectangle r)
+    {
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        var track = new Rectangle(r.X, r.Y + 4, Math.Max(1, r.Width - 1), Math.Max(1, r.Height - 9));
+        using (var back = new SolidBrush(Color.FromArgb(232, 224, 205))) g.FillRectangle(back, track);
+
+        // The scale always shows twice the budget, so the tick sits mid-bar and there is room to
+        // run past it; a spend beyond that stretches the scale rather than pinning at the end.
+        int scale = Math.Max(Math.Max(encBudget * 2, encSpend), 1);
+        int fill = (int)Math.Round(track.Width * (double)Math.Min(encSpend, scale) / scale);
+        if (fill > 0)
+            using (var b = new SolidBrush(BudgetFill(encSpend, encBudget)))
+                g.FillRectangle(b, new Rectangle(track.X, track.Y, fill, track.Height));
+
+        int tick = track.X + (int)Math.Round(track.Width * (double)encBudget / scale);
+        using (var pen = new Pen(Ink, 2f)) g.DrawLine(pen, tick, r.Y + 1, tick, r.Bottom - 2);
+        using (var pen = new Pen(Color.FromArgb(150, 140, 120), 1f)) g.DrawRectangle(pen, track);
     }
 
     // ============================================================ TRACKER TAB
@@ -278,7 +367,7 @@ public partial class MainForm
     void AddPickToTracker()
     {
         var c = Db.Find((trkPick.Text ?? "").Trim());
-        if (c == null) { Log("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         AddCreatureToTracker(c, (int)trkQty.Value);
     }
 
@@ -389,6 +478,37 @@ public partial class MainForm
             { var p = party.FirstOrDefault(x => x.Name == t.Name); if (p != null) ShowSoulCard(p); }
         };
 
+        Tip.SetToolTip(trkGrid, "Double-click a combatant for their card — right-click for everything that can be done to them");
+
+        // The bar's actions, on the combatant itself. What's offered depends on who the row is:
+        // only a soul takes a Dread Check or has a Ledger, and only a creature has a stat block.
+        GridMenu<Combatant>(trkGrid, (menu, c) =>
+        {
+            MIHead(menu, c.Name is { Length: > 0 } ? c.Name : "This combatant");
+            MI(menu, "Begin their turn — 3 Beats, a clean MAP", () => BeginTurnForSelected());
+            MI(menu, "Strike…", () => StrikeDialog(), !c.Down);
+            if (c.IsPC) MI(menu, "Dread check…", () => DreadDialog());
+            MISep(menu);
+            MI(menu, $"Damage {trkAmount.Value}", () => AdjustCombatant(-1));
+            MI(menu, $"Heal {trkAmount.Value}", () => AdjustCombatant(+1), c.BloodMax == 0 || c.BloodCur < c.BloodMax);
+
+            var cond = new ToolStripMenuItem("Conditions");
+            foreach (var name in BookConditions)
+            {
+                string cd = name;
+                cond.DropDownItems.Add(Amp(cd), null, (s, e) => ApplyCondition(cd));
+            }
+            cond.DropDownItems.Add(new ToolStripSeparator());
+            var clear = cond.DropDownItems.Add("Clear all of them", null, (s, e) => ClearConditions());
+            clear.Enabled = !string.IsNullOrWhiteSpace(c.Conditions);
+            menu.Items.Add(cond);
+
+            MISep(menu);
+            if (!string.IsNullOrEmpty(c.Ref)) MI(menu, "Open the stat block", () => { if (Db.Find(c.Ref) is Creature b) ShowCreatureCard(b); });
+            else if (c.IsPC && SoulOf(c) is PartyMember soul) MI(menu, "Open the Ledger", () => ShowSoulCard(soul));
+            MI(menu, "Take them off the field", () => tracker.Remove(c));
+        });
+
         page.Controls.Add(trkGrid);
         page.Controls.Add(bar);
 
@@ -469,6 +589,11 @@ public partial class MainForm
     {
         trkSort = mode;
         try { trkGrid?.EndEdit(); } catch { }      // commit a half-typed Init before reading it
+        // Remember WHO the Keeper had selected — clearing the list below resets the grid's
+        // current row to the top, and every action that reads CurrentRow (Strike, Dread,
+        // Damage) would then silently act on whoever the sort floated to row 0 instead of the
+        // combatant the Keeper picked. Restore the same combatant after the reorder.
+        var keep = trkGrid?.CurrentRow?.DataBoundItem as Combatant;
         var sorted = (mode switch
         {
             TrkSort.InitDesc  => tracker.OrderByDescending(c => c.Init).ThenByDescending(c => c.IsPC).ThenBy(c => c.Name),
@@ -484,7 +609,25 @@ public partial class MainForm
         foreach (var c in sorted) tracker.Add(c);
         tracker.RaiseListChangedEvents = true;
         tracker.ResetBindings();
+        RestoreTrkSelection(keep);
         trkGrid?.Refresh();
+    }
+
+    // Re-seat the grid's current row on a specific combatant after the list was rebuilt, so the
+    // Keeper's selection survives a sort/roll-initiative. No match (it was removed) leaves the
+    // grid as-is rather than guessing.
+    void RestoreTrkSelection(Combatant keep)
+    {
+        if (trkGrid == null || keep == null) return;
+        int row = tracker.IndexOf(keep);
+        if (row < 0 || row >= trkGrid.Rows.Count) return;
+        try
+        {
+            trkGrid.ClearSelection();
+            trkGrid.CurrentCell = trkGrid.Rows[row].Cells[0];
+            trkGrid.Rows[row].Selected = true;
+        }
+        catch { /* grid mid-rebuild — the next click re-selects */ }
     }
 
     // Ad-hoc combatant: a named NPC, a hireling, an improvised foe — anything not in the
@@ -513,7 +656,7 @@ public partial class MainForm
 
     void ApplyCondition(string cond)
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         var set = c.Conditions.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
         // a valued condition supersedes its other steps (one Frightened, not three)
         string family = cond.Split(' ')[0];
@@ -526,7 +669,7 @@ public partial class MainForm
 
     void ClearConditions()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         c.Conditions = ""; trkGrid.Refresh();
         Log($"{c.Name}: conditions cleared.");
     }
@@ -537,7 +680,7 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
+        if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
         foreach (var c in tracker) c.Conditions = "";
@@ -574,7 +717,7 @@ public partial class MainForm
 
     void AdjustCombatant(int sign)
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         int v = (int)trkAmount.Value;
         int hi = c.BloodMax > 0 ? c.BloodMax : int.MaxValue;   // healing can't outrun the maximum
         c.BloodCur = Math.Clamp(c.BloodCur + sign * v, 0, hi);
@@ -590,7 +733,7 @@ public partial class MainForm
     // The selected combatant's turn begins: three Beats, the next Strike clean (Ch. XI).
     void BeginTurnForSelected()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         c.BeginTurn(); trkGrid.Refresh();
         Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
     }
@@ -600,24 +743,14 @@ public partial class MainForm
     // crit, and the damage after the target's DR — then spend the Beat and apply it.
     void StrikeDialog()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Log("Select the attacker first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Nope("Select the attacker first."); return; }
         var foes = tracker.Where(t => !ReferenceEquals(t, attacker)).ToList();
-        if (foes.Count == 0) { Log("Nothing on the field to strike."); return; }
+        if (foes.Count == 0) { Nope("Nothing on the field to strike."); return; }
 
         // A creature strikes with its OWN attacks, parsed from the Bestiary line; a soul (or a
         // hand-entered row) reaches for the posse's guns. The attacker's Ref names its creature.
         var sheet = SoulOf(attacker)?.Sheet;
-        var creature = string.IsNullOrEmpty(attacker.Ref) ? null : Db.Find(attacker.Ref);
-        List<CreatureAttack> catks = null; List<string> riders = null;
-        if (creature != null)
-        {
-            (catks, riders) = CreatureAttack.Parse(creature.attacks);
-            if (catks.Count == 0)   // an intangible or pure-rider foe: give it its tier's benchmark blow
-            {
-                var row = Rules.TierRow[Math.Clamp(creature.tier - 1, 0, Rules.TierRow.Length - 1)];
-                catks.Add(new CreatureAttack { Name = "its assault", Bonus = row.atk, Damage = row.dmg });
-            }
-        }
+        var (catks, riders, creature) = CombatMenu.For(attacker);
         bool asCreature = creature != null;
 
         bool hasSpecials = asCreature && (!string.IsNullOrWhiteSpace(creature.special) || riders.Count > 0);
@@ -698,6 +831,8 @@ public partial class MainForm
                 ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced)
                 : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList, forced);
             Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $"  — {catks[idx].Effect}." : ""));
+            // the Strike reads on the Dice tab's card too, graded like any other check
+            ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
         }
@@ -707,9 +842,9 @@ public partial class MainForm
     // ladder on a failure, Frightened on a critical failure — and, at 0 Nerve, the break table.
     void DreadDialog()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a soul first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a soul first."); return; }
         var soul = SoulOf(c);
-        if (soul == null) { Log("Dread Checks are for the posse — select a player's soul."); return; }
+        if (soul == null) { Nope("Dread Checks are for the posse — select a player's soul."); return; }
 
         using var f = new Form { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
@@ -740,6 +875,7 @@ public partial class MainForm
         {
             var o = Horror.DreadCheck(soul.Will, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
             Log($"{soul.Name}: {o.Line}");
+            ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
             if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
             if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
             if (soul.NerveCur == 0)
@@ -765,7 +901,7 @@ public partial class MainForm
         left.Controls.Add(Btn("A town, in three rolls", (s, e) => Gen(
             $"THE TOWN OF {Db.Pick("townFront").ToUpper()} {Db.Pick("townBack").ToUpper()}\n" +
             $"  What ails it:  {Db.Pick("townAils")}\n" +
-            $"  What it hides: {Db.Pick("townSecret")}"), 230));
+            $"  What it hides: {Db.Pick("townSecret")}"), 230, "Roll a town: its name, what ails it, what it hides"));
         // The city generator's four rolls answer the four questions the Keeper's Book (Ch. XIV)
         // says a city needs beyond a town's want/tell/secret: an industry quarter, a machine,
         // a wrong note, and something for a country posse to actually be hired for.
@@ -773,16 +909,16 @@ public partial class MainForm
             $"A CITY — {Db.Pick("cityQuarter").ToUpper()}\n" +
             $"  Who really runs it: {Db.Pick("cityMachine")}\n" +
             $"  Its wrong note:     {Db.Pick("cityWrongNote")}\n" +
-            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230));
+            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230, "Roll a city: its quarter, its machine, its wrong note, and work for a posse"));
         left.Controls.Add(Btn("A face, in four rolls", (s, e) => Gen(
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
-            $"  Tell:  {Db.Pick("npcTell")}"), 230));
-        left.Controls.Add(Btn("Bar talk — a rumor", (s, e) => Gen("RUMOR — " + Db.Pick("rumors")), 230));
-        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day) — " + Db.Pick("trailDay")), 230));
-        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night) — " + Db.Pick("trailNight")), 230));
-        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND — " + Db.Pick("plunder")), 230));
-        left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230));
+            $"  Tell:  {Db.Pick("npcTell")}"), 230, "Roll a face: a name, what they want, and the tell that gives them away"));
+        left.Controls.Add(Btn("Bar talk — a rumor", (s, e) => Gen("RUMOR — " + Db.Pick("rumors")), 230, "What they're saying in the saloon"));
+        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day) — " + Db.Pick("trailDay")), 230, "Something met on the trail between dawn and dusk"));
+        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night) — " + Db.Pick("trailNight")), 230, "Something met on the trail after dark"));
+        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND — " + Db.Pick("plunder")), 230, "What's worth carrying off"));
+        left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230, "A sign the country is wrong here"));
 
         left.Controls.Add(Heading("The Grounds — encounters by terrain"));
         // "The Hand Behind It" is the villain picker, not a terrain — in the dropdown it
@@ -804,17 +940,17 @@ public partial class MainForm
         foreach (var k in Db.Terrain.Keys) if (k != villainTable) terr.Items.Add(k);
         terr.SelectedIndex = 0;
         left.Controls.Add(terr);
-        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230));
+        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground — the safe-table rule is applied for you"));
         left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
             "Who's truly behind the trouble — the villain picker, its own table in the book"));
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
-        left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112));
+        left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112, "Copy everything rolled so far to the clipboard"));
         left.Controls.Add(Btn("Clear", (s, e) =>
         {
             if (genOut.TextLength == 0) return;
             if (Confirm("Clear the generator output?")) genOut.Clear();
-        }, 112));
+        }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
         split.Panel1.Controls.Add(left);
@@ -1270,11 +1406,11 @@ public partial class MainForm
 
         var clocksGroup = new GroupBox { Text = "Threads && clocks", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         var cbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
-        cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110));
-        cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90));
+        cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110, "Start a new thread of trouble, with a clock to run it down"));
+        cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
         cbar.Controls.Add(Btn("Clear threads", (s, e) =>
         {
-            if (clocks.Count == 0) { Log("No threads to clear."); return; }
+            if (clocks.Count == 0) { Nope("No threads to clear."); return; }
             if (Confirm($"Clear all {clocks.Count} thread(s) and their clocks for a fresh start?"))
             { clocks.Clear(); RefreshClocks(); Log("All threads cleared — the board is clean."); }
         }, 105, "Delete every thread and clock at once"));

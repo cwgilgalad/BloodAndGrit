@@ -165,7 +165,9 @@ public static class Pdf
     // ---------------------------------------------------------- the map page
     // One landscape Letter page, the map's primitives replayed as PDF vector
     // operators — the same model the screen and the SVG render, so all three match.
-    public static byte[] MapPdf(MapModel m)
+    /// <paramref name="overlay"/> is replayed last, over the finished survey — the Keeper's tactical
+    /// markers, when the Map tab was asked to include them. Null means the map alone.
+    public static byte[] MapPdf(MapModel m, IEnumerable<Prim> overlay = null)
     {
         const double pw = 792, ph = 612, margin = 22;
         double s = Math.Min((pw - 2 * margin) / m.W, (ph - 2 * margin) / m.H);
@@ -173,13 +175,17 @@ public static class Pdf
         double X(double x) => ox + x * s;
         double Y(double y) => ph - oy - y * s;
 
+        // Walked twice below — once to collect the alphas, once to draw — so it has to be a list,
+        // not a lazy Concat that would re-enumerate into a different set of ExtGState indices.
+        var prims = overlay == null ? m.P : m.P.Concat(overlay).ToList();
+
         // shared alpha states (PDF opacity lives in ExtGState resources, not operators)
-        var alphas = m.P.Where(p => p.Alpha < 0.999f).Select(p => Math.Round(p.Alpha, 3)).Distinct().OrderBy(a => a).ToList();
+        var alphas = prims.Where(p => p.Alpha < 0.999f).Select(p => Math.Round(p.Alpha, 3)).Distinct().OrderBy(a => a).ToList();
         string GsFor(float a) => alphas.IndexOf(Math.Round(a, 3)) is int i && i >= 0 ? $"/G{i} gs " : "";
 
         var c = new StringBuilder();
         const double k = 0.5523;                      // circle-by-Béziers constant
-        foreach (var p in m.P)
+        foreach (var p in prims)
         {
             string fill = p.Fill != null ? Rgb(p.Fill) + " rg " : "";
             string stroke = p.Stroke != null ? Rgb(p.Stroke) + " RG " + N(Math.Max(0.4, p.StrokeW * s)) + " w " : "";

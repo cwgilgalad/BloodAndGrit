@@ -9,8 +9,30 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.17.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.18.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
+
+**Rides — mounts & vehicles (v1.18.0):** the Posse tab is a `Split(Orientation.Horizontal, …)`
+with the posse above and *the corral & the yard* below (`TabsRides.cs`). `Ride` in `Core.cs` is
+an `INotifyPropertyChanged` model in a `BindingList<Ride>`; the roster is `Data/rides.json`
+(embedded like the rest), built by `Db.MakeRide`. New rides are named by `Db.FreeRideName` —
+the lowest FREE number, not a count of that type, or selling the middle of three mints a
+duplicate. Rides ride in `session.json` and go to the tracker as ordinary `Combatant`s.
+
+**Right-click menus (v1.18.0):** `GridMenu<T>` / `ListMenu<T>` + `MI`/`MISep`/`MIHead` in
+`MainForm.cs` wire a per-row menu onto every list (posse, rides, tracker, encounter, bestiary,
+roll log). They **select the row first, then build**, so each menu line calls the same handler
+the tab's button calls — a menu that reimplements a button is a menu that will disagree with it.
+That's why `SpendGrit`/`AdvanceMark`/`DeepenTaint`/`AddSoulToTracker`/`RenameRide`/`RideToTracker`
+exist as methods rather than button lambdas. `audit_ui.py` still passes (118 buttons).
+
+**Map marker ink (v1.18.0):** `MapInk` in `Core.cs` holds the book's color per kind, the Keeper's
+standing override (persisted as `Prefs.Data.MarkerInk`), the 10-color palette, and `Hex()` for the
+exporters. Plain ARGB ints, never `Color` — `Core.cs` must stay drawing-free for the smoke rig.
+`MapMarker.Argb` is one marker's own choice (0 = take the kind's). `MapGen.MarkerPrims` renders
+markers as `Prim`s and both writers take them as an **optional overlay** (`ToSvg(m, overlay)`,
+`Pdf.MapPdf(m, overlay)`) — never appended to the model, so the survey the Map tab holds is never
+mutated by an export. The **with markers** checkbox is off by default.
 
 **GritKeeper run modes (v1.17.0):** launch shows a chooser — `RunMode.Player` (a player's
 pared-down view: only New Soul / Dice / Reference tabs), `RunMode.KeeperDice` (Keeper rolls
