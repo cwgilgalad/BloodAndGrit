@@ -186,16 +186,19 @@ Ledger window keeps everything forever. **Copy sheet** takes the text anywhere, 
 (and the vice/lost/seen/moving flavor tables) nearly doubled, so generated and
 wizard-built souls repeat far less across a long campaign.
 
-**Reference** — a **Keeper's screen in eleven leaves**, paged with the ◀ ▶ buttons or
+**Reference** — a **Keeper's screen in thirteen leaves**, paged with the ◀ ▶ buttons or
 the Left/Right arrow keys, every leaf formatted as proper tables: the four degrees and
 the DC ladder · a turn in the Iron Code · Blood/Dying/Grievous Wounds with the Lasting
 Injury table · the complete **Conditions table from Appendix B** · the Nerve/Dread
 ladder and every way to recover Nerve · the Mark's six steps and the Taint clock (DCs
 13/16/20) · the eight Signs with costs and the Sign DC formula, plus Grit's five spends
-· the Threat-by-Tier benchmarks and the encounter budget · the book's **arms tables**
-(guns and steel, damage/cost/traits) · the **Goods & Provisions printed prices** · and
-skills, saves, and abilities. The arms, goods, signs, and skills leaves render live from
-`Data/chargen.json`, so they can never drift from the book.
+· the Miracles of the five Callings of Faith · the Threat-by-Tier benchmarks, the
+encounter budget, and the **safe-table rule with the sign-and-spoor table** (Survival DC
+and Dread Check by the thing's Tier) · the book's **arms tables** (guns and steel,
+damage/cost/traits) · the **Goods & Provisions printed prices** · skills, saves, and
+abilities · and running a scene in town. The arms, goods, signs, and skills leaves render
+live from `Data/chargen.json`, and the safe-table numbers from `Rules.SpoorRow`, so they
+can never drift from the books.
 
 **Session** — the Keeper's ledger (free-form notes, with a **Stamp the date** button
 for session headers) and **threads & clocks**: named progress clocks of 4/6/8 segments —

@@ -8,6 +8,25 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.20.1 — two stale facts fixed at the source rather than in the text (2026-07-26,
+  user-requested).** Both were noted at the end of the last release; both are the kind that come
+  back unless the thing that generates them changes.
+
+  - **The app told Keepers its reference screen held eleven leaves.** It has held thirteen since
+    v1.17.0 — Miracles and Running in Town were added and the prose describing the deck was not.
+    The count is now derived from `RefLeafTitles`, the one list the deck is built from, and every
+    mention interpolates it: the five-minute lesson, the README, the handoff doc. Adding a leaf
+    updates the prose by construction. `--selftest` builds the deck on purpose and checks every
+    title has a renderer beside it — **16/16 checks now, up from 13**.
+  - **`package.ps1` died on a file lock when GritKeeper was running from the delivered folder.**
+    It failed twice this session, two thirds of the way through a release, as a raw `Copy-Item`
+    access error naming no cause. It now looks for the process first, names it with its pid and
+    start time, and builds the zip from a staging tree so the release is unaffected — leaving the
+    running instance alone and saying plainly that `GritKeeper\app` stays on its old build until
+    it's closed. It also verifies the zip carries the exe, the README, and the source before
+    declaring itself ready, and prints the exact `gh release create` line for the version it just
+    packaged.
+
 - **Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 · GritKeeper v1.20.0 — sign and
   spoor, and a wording pass (2026-07-26, user-requested).**
 
