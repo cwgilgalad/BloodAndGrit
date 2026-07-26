@@ -8,9 +8,18 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.19.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
+GritKeeper app v1.20.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
+
+**Sign & spoor — the safe-table rule (v1.20.0):** the numbers live once, in `Rules.SpoorRow` /
+`SpoorRead` / `SpoorClockSegments` (`Core.cs`), and everything renders from there — the Reference
+deck's Long Odds leaf and the Generators tab's ground roll. The books carry the same table by
+hand (Bestiary → Appendix: The Grounds → *Sign & Spoor*; Keeper's Book Ch. IV → *The Safe-Table
+Rule*; Player's Book Ch. VIII under *Reading the country*). The claim that binds them is "the
+Dread DC is one rung below meeting the thing", and the smoke suite asserts exactly that against
+`Rules.TierRow[i-1].dread` — so a change to one Tier's Dread DC fails the build rather than
+quietly desynchronising book and app.
 
 **Map weather & landforms (v1.19.0):** `MapSpec.Weather` indexes `MapGen.Weathers` (0 = "as the
 sky wills"); `WeatherFor(pick, ti, rng)` resolves it against `WeatherByGround`, `WeatherLine`
@@ -164,9 +173,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.23 | 200 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.10 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.9 | 164 | none (150 creatures) |
+| The Player's Book | v2.24 | 200 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.11 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.10 | 166 | none (150 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -327,7 +336,7 @@ appears in more than one place, wire it this way: one source, generated outward,
 
 ---
 
-## The Player's Book (v2.23) — structure
+## The Player's Book (v2.24) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -377,7 +386,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.10) — structure
+## The Keeper's Book (v2.11) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -410,7 +419,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.9) — structure & conventions
+## The Bestiary (v2.10) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **150 creatures** by name (from every `<p class="cr-name">`,
@@ -493,7 +502,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.19.1) — the C# desktop app
+## GritKeeper (v1.20.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -666,7 +675,7 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   v1.6: **"The Hand Behind It" left the Grounds dropdown** — it's the villain picker,
   not a terrain, and read like a stray creature there (user-reported); it now has its
   own button under the terrain roller, same safe-table logic.
-- **Reference** — rebuilt in v1.4 as an **11-leaf paged Keeper's screen** (◀ ▶ buttons or
+- **Reference** — rebuilt in v1.4 as a paged Keeper's screen (**13 leaves** as of v1.20.0) (◀ ▶ buttons or
   Left/Right arrows — captured in `ProcessCmdKey` so focus doesn't matter; the deck wraps).
   Each leaf is monospace tables with Blood-red header bands (`RTbl` helper; last column
   word-wraps): four degrees + DC ladder, Iron Code, wounds + Lasting Injuries, the full
@@ -688,7 +697,7 @@ undo covers it, since snapshotting every keystroke would flood the stack.
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), and `Db` (loads the JSON data). |
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper (see below), the emblem/icon loaders + the `Watermark()` painter (v1.4; reworked v1.6 to center in whatever background space is free and scale with the window instead of being confined to a pane's bottom half), context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab (incl. the builder keypad + v1.6's `StyleRollLog` color-coded log), persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed, and (v1.6) the universal undo/redo engine (`CaptureUndo`/`Undo`/`Redo`). |
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
-| **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 11-leaf paged deck + `RTbl` table renderer), Session tabs. |
+| **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 13-leaf paged deck + `RTbl` table renderer), Session tabs. |
 | **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
 | **`TabsWizard.cs`** | (v1.5) The nine-step chargen wizard (`SoulWizard`, nested in MainForm) — collects an `AssembleSpec` for `CharGen.Assemble`. |
 | **`CharGen.cs`** | Chargen data model, `Generate` (random), `Assemble` (wizard spec, shared `ReckonNumbers`/edge-eligibility), `Validate`, text `Render`. Compiled into the smoke rig. |

@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.23 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.10 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.23)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.10)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.24 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.11 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.24)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.11)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.23</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.10</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.24</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.11</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.23 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.10 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.24 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.11 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -535,6 +535,23 @@ CH4 = f"""<!-- IV -->
   <strong>easy</strong> one; spend half again over for a <strong>hard</strong> one; double it for a
   <strong>deadly</strong> one someone may not walk away from &mdash; and tell the fiction so, with a sight, an omen,
   a dead man already on the ground, before the players commit.</p>
+
+  <h2 id="ix-safetable">The Safe-Table Rule</h2>
+  <p>There is a line past which the budget stops being arithmetic. A thing <strong>two or more Tiers over the
+  posse</strong> is not a hard fight; it is an execution, and no amount of clever play changes that. Put one in front of
+  a party and you have not raised the stakes &mdash; you have ended the campaign and taken the choice away from them.</p>
+  <p>So don't put it in front of them. <strong>It arrives as sign and spoor instead.</strong> <em>Spoor</em> is the
+  physical trace: track, scat, hair on wire, blood, a scrape on a tree at a height that ends the conversation.
+  <em>Sign</em> is everything wider &mdash; the kill, the silence where there were birds an hour ago, the stock that
+  will not go back in the barn. The party finds what it did. They do not find it.</p>
+  <p>That is a scene, not a shrug, and the Bestiary's <em>Sign &amp; Spoor</em> section runs it in full: a Survival
+  check to read the trace (DC 12 at Tier I up to DC 20 at Tier V), a Dread Check one rung below what meeting the thing
+  would cost, and the four degrees of what a good tracker actually learns. Then start a <strong>four-segment
+  clock</strong> and name it for the horror. Each fresh sign fills a segment; a full clock is the night it comes in the
+  flesh &mdash; by which time the posse is a Tier stronger, or holds a plan, or has decided to be somewhere else.</p>
+  <div class="keeper-note"><span class="kn-tag">Keeper's eye</span>This is the most useful rule in the book for pacing a
+  campaign, and it is easy to read as a restriction. It is the opposite. The thing they cannot fight is the thing they
+  will spend nine sessions getting ready to fight, and every clock segment you fill is a session that writes itself.</div>
 
   <h2>Building a Threat from Scratch</h2>
   <p>The Bestiary holds a hundred and fifty things to fight, and the country always has one more. To make your own,
@@ -2181,6 +2198,8 @@ KEEP_INDEX = [
     ("Afflictions", "fear"), ("Giving back Nerve", "fear"), ("The Mark (running)", "fear"),
     ("The Long Odds (building the fight)", "odds"), ("Threat by Tier", "odds"),
     ("Budgeting a fight", "odds"), ("Building a threat from scratch", "odds"),
+    ("The safe-table rule", "ix-safetable"), ("Sign &amp; spoor", "ix-safetable"),
+    ("Spoor (the trace, not the thing)", "ix-safetable"),
     ("The gunfight", "odds"), ("Morale &amp; the flight of men", "odds"),
     ("Pursuit", "odds"), ("The ground in a fight", "odds"),
     ("When the dice turn cruel", "odds"),

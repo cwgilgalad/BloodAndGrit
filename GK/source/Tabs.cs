@@ -1020,8 +1020,20 @@ public partial class MainForm
             var m = System.Text.RegularExpressions.Regex.Match(pick, @"^(.*?)\s*\(");
             var c = m.Success ? Db.Find(m.Groups[1].Value.Trim()) : null;
             int lvl = (int)(encLevel?.Value ?? 2);
+            // Flagging the rule was never enough on its own: it told the Keeper what NOT to run and
+            // left them to invent the scene. Roll it out here — how to read the sign, what it costs,
+            // and what to leave on the table — so the answer arrives with the problem.
             if (c != null && Rules.Cost(c.tier, lvl).spoor)
-                extra = $"\n  SAFE-TABLE RULE (vs party level {lvl}): two or more Tiers over the posse — it arrives as sign and spoor, not in the flesh.";
+            {
+                var sp = Rules.SpoorRow[Math.Clamp(c.tier - 1, 0, Rules.SpoorRow.Length - 1)];
+                extra = $"\n  SAFE-TABLE RULE (vs party level {lvl}): two or more Tiers over the posse."
+                      + "\n  It arrives as sign and spoor — the trace, not the thing."
+                      + $"\n    On the ground:  {sp.what}."
+                      + $"\n    Read it:        Survival DC {sp.readDc}."
+                      + $"\n    Dread Check:    {(sp.dreadDc == 0 ? "none — this one is only weather and teeth" : "DC " + sp.dreadDc)}."
+                      + $"\n    Then:           a {Rules.SpoorClockSegments}-segment clock. Each fresh sign fills one;"
+                      + "\n                    a full clock is the night it comes in the flesh.";
+            }
             Gen($"{t.ToUpper()} — {pick}{extra}");
         }
         var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -1391,7 +1403,32 @@ public partial class MainForm
             new[] { "A mook (a Tier or two down)",      "1" },
             new[] { "A standout (a Tier up)",           "8" });
         RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
-        RI(r, "The safe-table rule: a horror two or more Tiers over the posse arrives as sign and spoor, not in the flesh.");
+
+        RH(r, "The Safe-Table Rule — Sign & Spoor");
+        RT(r, "A horror two or more Tiers over the posse does not arrive in the flesh. It arrives as "
+             + "sign and spoor, and the scene is a reading rather than a fight.");
+        RI(r, "Spoor is the physical trace — track, scat, hair, blood, a scrape on a tree at a height "
+             + "that ends the conversation. Sign is everything wider: a kill, a silence, stock that "
+             + "will not go back in the barn.");
+        RTbl(r, new[] { 6, 9, 9, 46 },
+            new[] { "Tier", "Read it", "Dread", "What is left of it" },
+            Enumerable.Range(0, Rules.SpoorRow.Length).Select(i =>
+            {
+                var s = Rules.SpoorRow[i];
+                return new[] { Rules.Roman(i + 1), "Survival " + s.readDc,
+                               s.dreadDc == 0 ? "—" : "DC " + s.dreadDc, s.what };
+            }));
+        RT(r, "The Dread DC is one rung below meeting the thing itself: reading an aftermath is not "
+             + "standing in front of the animal. Nerve is lost off the usual ladder.");
+        RH(r, "Reading it — the four degrees");
+        RTbl(r, new[] { 18, 52 }, new[] { "Degree", "What the tracker gets" },
+            new[] { "CRITICAL SUCCESS", Rules.SpoorRead(3) },
+            new[] { "Success",          Rules.SpoorRead(2) },
+            new[] { "Failure",          Rules.SpoorRead(1) },
+            new[] { "CRITICAL FAILURE", Rules.SpoorRead(0) });
+        RI(r, $"Then it is a thread, not a funeral: start a {Rules.SpoorClockSegments}-segment clock on "
+             + "the Session tab. Every fresh sign of the same thing fills one. A full clock is the night "
+             + "it comes in the flesh — and by then the posse should be a Tier higher, or have a plan.");
     }
 
     void RefLeafArms(RichTextBox r)

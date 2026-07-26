@@ -55,7 +55,7 @@ public partial class MainForm : Form
     internal const string AppVersion = "1.17.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
-    internal const string PlayerBookVer = "2.23", KeeperBookVer = "2.10", BestiaryVer = "2.9";
+    internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
