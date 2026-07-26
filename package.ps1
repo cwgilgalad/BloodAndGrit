@@ -74,8 +74,16 @@ New-Item -ItemType Directory -Force -Path $destApp | Out-Null
 
 # --- 1. the signed exe into the deliverable's app/ (its runtime session.json never ships) ---
 Copy-Item $Exe (Join-Path $destApp "GritKeeper.exe") -Force
-Remove-Item (Join-Path $destApp "session.json") -ErrorAction SilentlyContinue
-Copy-Item (Join-Path $root "GritKeeper\README.md") (Join-Path $dest "README.md") -Force
+# Everything the app writes beside itself at runtime, out. session.json was already handled;
+# prefs.json was NOT, and it shipped in v1.20.1 carrying the packager's own run mode with
+# "Remember": true — so every download launched into someone else's table and never saw the
+# chooser. Anything the exe drops here belongs to the machine that ran it, not to the release.
+foreach ($dropping in "session.json", "prefs.json", "startup-error.txt", "selftest-report.txt") {
+    Remove-Item (Join-Path $destApp $dropping) -ErrorAction SilentlyContinue
+}
+# Only when staging: the delivered folder already holds its own README, and copying it onto
+# itself is an error rather than a no-op.
+if ($Staged) { Copy-Item (Join-Path $root "GritKeeper\README.md") (Join-Path $dest "README.md") -Force }
 Write-Host "  copied exe -> $(Split-Path -Leaf $dest)\app\"
 
 # --- 2. re-mirror the source (overwrite, not sync-and-diff — CLAUDE.md) ---
@@ -98,7 +106,12 @@ try {
     foreach ($must in @("app/GritKeeper.exe", "README.md", "source/Core.cs", "source/Data/creatures.json")) {
         if ($names -notcontains $must) { throw "the zip is missing $must" }
     }
+    # And nothing that belongs to this machine. A settings file that ships is worse than a
+    # missing one: it silently configures somebody else's first run.
+    $leaked = $names | Where-Object { $_ -match '^app/(?!GritKeeper\.exe$)' }
+    if ($leaked) { throw "the zip carries runtime state it should not: $($leaked -join ', ')" }
     Write-Host "  zip carries the exe, the README, and the full source ($($names.Count) entries)"
+    Write-Host "  app/ holds the exe and nothing else"
 } finally { $z.Dispose() }
 
 Write-Host ""
