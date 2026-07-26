@@ -360,9 +360,35 @@ public partial class MainForm
 
     // ============================================================ TRACKER TAB
     DataGridView trkGrid;
-    Label roundLbl;
+    Label roundLbl, trkTurnLbl;
     NumericUpDown trkAmount, trkQty;
     ComboBox trkPick;
+
+    // The acting row's ground — gold, so it reads as "this one is up" against the posse's green
+    // and the foes' rust without competing with the red a downed combatant wears.
+    static readonly Color ActingRow = Color.FromArgb(250, 240, 205);
+    Font trkBold;   // built once with the grid; CellFormatting runs on every paint
+    // One italic, shared: a Font handed to a Label isn't disposed with the Label, so building a
+    // fresh one every time the Strike dialog opens leaks a handle per fight.
+    static readonly Font DialogItalic = new("Segoe UI", 9f, FontStyle.Italic);
+
+    /// <summary>Say in words what the turn state is, because Beats and the MAP step are small
+    /// numbers in a wide grid and a Keeper pressing "Begin turn" deserves to see something answer.
+    /// </summary>
+    void UpdateTurnLine()
+    {
+        if (trkTurnLbl == null) return;
+        var c = tracker.FirstOrDefault(t => t.Acting);
+        if (c == null)
+        {
+            trkTurnLbl.Text = "no one's turn yet — select a combatant, then Begin turn";
+            trkTurnLbl.ForeColor = Color.FromArgb(122, 112, 96);
+            return;
+        }
+        trkTurnLbl.Text = $"{c.Name} is up — {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left"
+            + (c.Beats == 0 ? ", spent" : $", next Strike {c.NextStrike}");
+        trkTurnLbl.ForeColor = c.Beats == 0 ? Color.FromArgb(122, 112, 96) : Blood;
+    }
 
     void AddPickToTracker()
     {
@@ -377,6 +403,17 @@ public partial class MainForm
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         roundLbl = new Label { Text = "Round 1", Font = new Font("Segoe UI", 12f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 12, 0), AutoSize = true };
         bar.Controls.Add(roundLbl);
+        // The turn readout rides beside the round, fixed-width so a long name can't shove the
+        // button rows around, and it gets the row to itself.
+        trkTurnLbl = new Label
+        {
+            Width = 430, Height = 22, AutoSize = false, Font = new Font("Segoe UI", 9.5f, FontStyle.Italic),
+            TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(0, 0, 8, 0), AutoEllipsis = true
+        };
+        Tip.SetToolTip(trkTurnLbl, "Whose turn it is, what they have left to spend, and what the next Strike costs");
+        bar.Controls.Add(trkTurnLbl);
+        bar.SetFlowBreak(trkTurnLbl, true);
+        UpdateTurnLine();
         bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110, "Roll a d20 for every combatant and sort by it (Ctrl+I)"));
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
             ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
@@ -388,7 +425,9 @@ public partial class MainForm
             ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
             ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
         bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100, "Step to the next round (Ctrl+R)"));
-        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82, "The selected combatant's turn: 3 Beats, a clean MAP"));
+        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82,
+            "Hand the turn to the selected combatant: their Beats go back to 3, their next Strike is "
+            + "clean (no MAP), and their row lights gold as the one acting"));
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
         bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
         bar.Controls.Add(Lbl("  Amt:"));
@@ -425,11 +464,16 @@ public partial class MainForm
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false
         };
         StyleGrid(trkGrid);
+        trkBold = new Font(trkGrid.Font, FontStyle.Bold);
         void C(string prop, string head, int w, bool ro = false)
             => trkGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = prop, HeaderText = head, FillWeight = w, ReadOnly = ro });
         C("Init", "Init", 50); C("Name", "Name", 200, true); C("BloodCur", "Blood", 58);
         C("BloodMax", "/Max", 52, true); C("Defense", "Def", 48, true); C("Beats", "Beats", 46);
-        C("Conditions", "Conditions", 230);
+        C("NextStrike", "Next strike", 72, true);
+        C("Conditions", "Conditions", 200);
+        trkGrid.Columns[5].ToolTipText = "Beats left this turn — a Strike costs one. Begin turn puts them back to 3.";
+        trkGrid.Columns[6].ToolTipText = "What the next Strike this turn costs in MAP: clean, then −5, then −10 "
+            + "(an Agile weapon softens it to −4/−8). Begin turn makes it clean again.";
         // far-right Ledger button — posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
         trkGrid.Columns.Add(new DataGridViewButtonColumn
@@ -451,8 +495,10 @@ public partial class MainForm
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
             var c = tracker[e.RowIndex];
-            e.CellStyle.BackColor = c.Down ? DownRow : (c.IsPC ? PcRow : FoeRow);
+            // Down beats acting: a combatant who is bleeding out reads red even on their own turn.
+            e.CellStyle.BackColor = c.Down ? DownRow : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
             if (c.Down) e.CellStyle.ForeColor = Blood;
+            else if (c.Acting) e.CellStyle.Font = trkBold;   // cached: CellFormatting runs on every paint
         };
         trkGrid.CellEndEdit += (s, e) =>
         {
@@ -522,7 +568,7 @@ public partial class MainForm
         page.Controls.Add(hint);
         hint.BringToFront();
         hint.Visible = tracker.Count == 0;
-        tracker.ListChanged += (s, e) => hint.Visible = tracker.Count == 0;
+        tracker.ListChanged += (s, e) => { hint.Visible = tracker.Count == 0; UpdateTurnLine(); };
         Watermark(trkGrid, () => GridBottom(trkGrid));
         Watermark(hint, () => HintBottom(hint));
         return page;
@@ -570,6 +616,10 @@ public partial class MainForm
     {
         round++;
         if (roundLbl != null) roundLbl.Text = $"Round {round}";
+        // A new round means nobody has been handed the turn yet — the gold row would otherwise
+        // sit on last round's combatant and read as though they were still up.
+        foreach (var c in tracker) c.Acting = false;
+        trkGrid?.Refresh(); UpdateTurnLine();
         Log($"— Round {round} —");
     }
 
@@ -683,8 +733,9 @@ public partial class MainForm
         if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
-        foreach (var c in tracker) c.Conditions = "";
-        round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; trkGrid?.Refresh();
+        // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn
+        foreach (var c in tracker) { c.Conditions = ""; c.Beats = 3; c.MapStep = 1; c.Acting = false; }
+        round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; trkGrid?.Refresh(); UpdateTurnLine();
         Log("New fight — foes cleared, the posse holds the field, Round 1.");
     }
 
@@ -734,7 +785,8 @@ public partial class MainForm
     void BeginTurnForSelected()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
-        c.BeginTurn(); trkGrid.Refresh();
+        foreach (var t in tracker) t.Acting = false;   // one at a time; the last turn is over
+        c.BeginTurn(); trkGrid.Refresh(); UpdateTurnLine();
         Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
     }
 
@@ -754,13 +806,23 @@ public partial class MainForm
         bool asCreature = creature != null;
 
         bool hasSpecials = asCreature && (!string.IsNullOrWhiteSpace(creature.special) || riders.Count > 0);
-        int botY = hasSpecials ? 320 : 240;
-        using var f = new Form { Width = 430, Height = botY + 80, Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
-        Label L(string t, int top) => new() { Left = 16, Top = top + 3, Width = 92, Text = t };
-        var target = new ComboBox { Left = 112, Top = 15, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
+        // Everything below is laid out by measurement, not by guessed constants. The prose here
+        // changes with the run mode and with whether a creature or a soul is swinging, and the
+        // old fixed heights cut the last line of it — and the Beats count — off the right edge.
+        const int Pad = 16, CW = 500;   // left margin and the content width every row shares
+        using var f = new Form { Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        Label L(string t, int top) => new() { Left = Pad, Top = top + 3, Width = 92, Text = t };
+        // A block of prose sized to the words in it, so it can never be clipped at any DPI.
+        Label Para(string text, int top, Font font, Color fore)
+            => new()
+            {
+                Left = Pad, Top = top, Width = CW, Text = text, Font = font, ForeColor = fore,
+                Height = TextRenderer.MeasureText(text, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
+            };
+        var target = new ComboBox { Left = 112, Top = 15, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var t in foes) target.Items.Add(t.Name);
         target.SelectedIndex = 0;
-        var weapon = new ComboBox { Left = 112, Top = 51, Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
+        var weapon = new ComboBox { Left = 112, Top = 51, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
         if (asCreature)
             foreach (var a in catks)
                 weapon.Items.Add($"{a.Name}  +{a.Bonus} ({(a.DealsDamage ? a.Damage : "no dice")}{(a.Type != "blades" ? " " + a.Type : "")})"
@@ -769,9 +831,9 @@ public partial class MainForm
             foreach (var w in CharGen.D.weapons) weapon.Items.Add($"{w.name}  ({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})");
         var toHit = new NumericUpDown { Left = 112, Top = 87, Width = 70, Minimum = -20, Maximum = 40, Value = 0 };
         var dr = new NumericUpDown { Left = 112, Top = 123, Width = 70, Minimum = 0, Maximum = 40, Value = 0 };
-        var mapLbl = new Label { Left = 200, Top = 90, Width = 197, ForeColor = Blood };
+        var mapLbl = new Label { Left = 196, Top = 90, Width = Pad + CW - 196, Height = 20, ForeColor = Blood, AutoEllipsis = true };
         // Dice-and-books table: the Keeper rolls the d20 and enters it; the engine table rolls its own.
-        var d20 = new NumericUpDown { Left = 250, Top = 123, Width = 60, Minimum = 1, Maximum = 20, Value = 10 };
+        var d20 = new NumericUpDown { Left = 248, Top = 123, Width = 60, Minimum = 1, Maximum = 20, Value = 10 };
 
         // Prefill the to-hit — a creature's built-in bonus, or a soul's own off their sheet — and
         // re-figure it (and the MAP) when the chosen attack changes.
@@ -787,7 +849,10 @@ public partial class MainForm
                 agile = WeaponTraits.Parse(w.traits).Agile;
             }
             int map = IronCode.MapPenalty(attacker.MapStep, agile);
-            mapLbl.Text = $"MAP this Strike: {(map == 0 ? "none (clean)" : map.ToString())} · Beats left {attacker.Beats}";
+            mapLbl.Text = $"This Strike: {(map == 0 ? "clean, no MAP" : "MAP " + map)}  ·  "
+                + (attacker.Beats > 0
+                    ? $"{attacker.Beats} Beat{(attacker.Beats == 1 ? "" : "s")} left"
+                    : "no Beats left — Begin turn on the tracker");
         }
         // default a soul to the gun they carry if we can spot one, else the first attack
         int guess = asCreature ? -1
@@ -797,28 +862,50 @@ public partial class MainForm
         weapon.SelectedIndexChanged += (s, e) => Sync();
         Sync();
 
-        var ok = new Button { Text = "Strike ▸", Left = 214, Top = botY, Width = 90, DialogResult = DialogResult.OK };
-        var cancel = new Button { Text = "Close", Left = 310, Top = botY, Width = 84, DialogResult = DialogResult.Cancel };
+        var how = Para(
+            (EngineRolls ? "The engine rolls the d20 and reads the four degrees"
+                         : "You roll the d20 and enter it above; the engine reads the four degrees")
+            + ", applies the Multiple Attack Penalty at this combatant's step"
+            + (asCreature ? "" : " and the Fatal die on a critical hit")
+            + ", subtracts the target's DR, takes the Blood, and spends a Beat. Strike again to take "
+            + "the next one at higher MAP; Begin turn on the tracker gives the Beats back and makes "
+            + "the shot clean.", 160, f.Font, Ink);
+
         f.Controls.AddRange(new Control[] {
             L("Target:", 15), target, L(asCreature ? "Attack:" : "Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
-            L("Target DR:", 123), dr,
-            new Label { Left = 16, Top = 162, Width = 381, Height = 50, ForeColor = Ink,
-                Text = (EngineRolls ? "The engine rolls the d20" : "You roll the d20 and enter it; the engine")
-                     + ", reads the four degrees, applies the Multiple Attack Penalty at this combatant's step" + (asCreature ? "" : " and the Fatal die on a critical hit") + ", subtracts the target's DR, takes the Blood, and spends a Beat. Strike again for the next at MAP." },
-            ok, cancel });
+            L("Target DR:", 123), dr, how });
         if (!EngineRolls)
         {
-            f.Controls.Add(new Label { Left = 200, Top = 126, Width = 48, Text = "d20:", ForeColor = Blood, TextAlign = ContentAlignment.MiddleRight });
+            f.Controls.Add(new Label { Left = 196, Top = 126, Width = 48, Text = "d20:", ForeColor = Blood, TextAlign = ContentAlignment.MiddleRight });
             f.Controls.Add(d20);
         }
+
+        int y = how.Bottom + 12;
         if (hasSpecials)
         {
             var bits = new List<string>();
             if (!string.IsNullOrWhiteSpace(creature.special)) bits.Add(creature.special.Trim());
             foreach (var r in riders) bits.Add("• " + char.ToUpper(r[0]) + r.Substring(1));
-            f.Controls.Add(new Label { Left = 16, Top = 214, Width = 381, Text = "Its special work — narrate as it fights:", ForeColor = Blood, Font = new Font(Font, FontStyle.Italic) });
-            f.Controls.Add(new TextBox { Left = 16, Top = 234, Width = 381, Height = botY - 244, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, BorderStyle = BorderStyle.FixedSingle, BackColor = Paper, Text = string.Join("\r\n", bits) });
+            var head = Para("Its special work — narrate as it fights:", y, DialogItalic, Blood);
+            f.Controls.Add(head);
+            // Sized to the words, capped so a wordy horror can't push the buttons off a small
+            // screen — past the cap it scrolls.
+            string body = string.Join("\r\n", bits);
+            int wanted = TextRenderer.MeasureText(body, f.Font, new Size(CW - 8, 0), TextFormatFlags.WordBreak).Height + 12;
+            var box = new TextBox
+            {
+                Left = Pad, Top = head.Bottom + 4, Width = CW, Height = Math.Clamp(wanted, 56, 150),
+                Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical,
+                BorderStyle = BorderStyle.FixedSingle, BackColor = Paper, Text = body
+            };
+            f.Controls.Add(box);
+            y = box.Bottom + 14;
         }
+
+        var ok = new Button { Text = "Strike ▸", Left = Pad + CW - 182, Top = y, Width = 90, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Close", Left = Pad + CW - 84, Top = y, Width = 84, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { ok, cancel });
+        f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
         f.AcceptButton = ok;
 
         while (f.ShowDialog(this) == DialogResult.OK)
@@ -834,7 +921,8 @@ public partial class MainForm
             // the Strike reads on the Dice tab's card too, graded like any other check
             ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
-            trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
+            // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
+            trkGrid.Refresh(); UpdateTurnLine(); Sync();
         }
     }
 

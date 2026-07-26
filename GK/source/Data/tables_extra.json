@@ -9,7 +9,17 @@
   "Dutchman's",
   "Preacher's",
   "Cold",
-  "Jubilee"
+  "Jubilee",
+  "Hangtree",
+  "Ember",
+  "Pilgrim's",
+  "Tallow",
+  "Sorrow's",
+  "Ruin",
+  "Candle",
+  "Wormwood",
+  "Chapel",
+  "Ferryman's"
  ],
  "townBack": [
   "Ford",
@@ -21,7 +31,17 @@
   "Bluff",
   "Corners",
   "Mill",
-  "Wash"
+  "Wash",
+  "Cut",
+  "Sink",
+  "Diggings",
+  "Tanks",
+  "Hole",
+  "Reach",
+  "Sidings",
+  "Prospect",
+  "Bar",
+  "Meadows"
  ],
  "townAils": [
   "The bank failed and took every deed with it",
@@ -31,7 +51,15 @@
   "The telegraph line is down more than it is up; the repair crews quit",
   "A land agent is buying everything, sight unseen, cash on the barrel",
   "The salt has gone bitter in every cellar at once",
-  "The schoolhouse stands empty; the teacher walked west mid-lesson"
+  "The schoolhouse stands empty; the teacher walked west mid-lesson",
+  "Every clock in town keeps a different hour, and the depot keeps the worst of them",
+  "The stage stopped running in — it still runs out, full, twice a week",
+  "The mill burned in March; the whistle still blows shift change",
+  "Water rights went to a company nobody in the county has met",
+  "The doctor left, and the woman who took over his rooms will not give a name",
+  "Somebody paid off the whole town's debts at the bank in one morning, in gold",
+  "Cattle come off the north range with the brands healed over wrong",
+  "The elections were held twice, and both counts stood"
  ],
  "townSecret": [
   "The first founder is under the courthouse, and the town charter says why",
@@ -41,7 +69,15 @@
   "The line goes down whenever it tries to carry one particular name",
   "The agent's principal is a company; the company was dissolved in 1851",
   "It isn't the salt. It's the water under the salt, rising",
-  "The teacher read the children something out of the old survey journal, and the children remember it"
+  "The teacher read the children something out of the old survey journal, and the children remember it",
+  "The depot clock is the right one. The town has been running eleven minutes behind for years, and something uses the gap",
+  "The seats on the outbound stage are paid for in advance, by name, a month ahead",
+  "The whistle is honest — the mill has a night shift, and the night shift never signed on",
+  "The company is a name on a deed, and the deed is signed in a hand that predates the county",
+  "She is a doctor. She was struck off in two states for what she can do about dying",
+  "Every debt was bought, not paid. Somebody now holds a marker on every soul in town",
+  "The brands are healing wrong because the cattle are being re-marked out on the range, at night, by hand",
+  "Both counts stood because both slates of men are still holding office, and only one slate is seen in daylight"
  ],
  "npcGiven": [
   "Cyrus",
@@ -55,7 +91,19 @@
   "Cornelius",
   "Ruby",
   "August",
-  "Lavinia"
+  "Lavinia",
+  "Verity",
+  "Ignatius",
+  "Marisol",
+  "Barnabas",
+  "Winifred",
+  "Otho",
+  "Constancia",
+  "Micajah",
+  "Adelina",
+  "Tobias",
+  "Rosalio",
+  "Bess"
  ],
  "npcSurname": [
   "Bexley",
@@ -69,7 +117,19 @@
   "Ogden",
   "Purcell",
   "Ravenel",
-  "Stroud"
+  "Stroud",
+  "Ashcroft",
+  "Bidwell",
+  "Carrasco",
+  "Doubleday",
+  "Everly",
+  "Fairbank",
+  "Hargrove",
+  "Ingersoll",
+  "Loomis",
+  "Peredo",
+  "Quillen",
+  "Sandberg"
  ],
  "npcWant": [
   "A witness gone — paid, scared, or buried",
@@ -79,7 +139,15 @@
   "A gun that doesn't miss, and they've heard where one is buried",
   "Absolution from a particular man of God, and he's refused twice",
   "The party's horses — offered fair, then unfair, then desperate",
-  "To know if a name means anything to you, watching your face as you answer"
+  "To know if a name means anything to you, watching your face as you answer",
+  "A letter carried east, unopened, and burned if the party is followed",
+  "One night's honest sleep, and they will pay any price named for it",
+  "The body back — not the killer, not the money, the body",
+  "A guide over a pass that closed in '74 and is not on the new maps",
+  "Their brother talked out of a hanging he volunteered for",
+  "Someone to sit up with them until the sun comes back around",
+  "The deed to a place they have never seen and describe in detail",
+  "A photograph taken of an empty room, and they will explain why afterward"
  ],
  "npcTell": [
   "Laughs a half-beat after everyone else",
@@ -89,7 +157,15 @@
   "Flinches at church bells, covers it with a cough",
   "Feeds every stray in town and won't own a dog",
   "Wears mourning black for someone they won't name",
-  "Their shadow sits wrong in lamplight, and they stand where there isn't any"
+  "Their shadow sits wrong in lamplight, and they stand where there isn't any",
+  "Counts the party under their breath every time somebody walks in",
+  "Salts the doorway of any room they intend to sleep in",
+  "Answers to a name that is not the one they gave, and corrects nobody",
+  "Keeps their left hand gloved indoors, summer or winter",
+  "Reads lips across a crowded room and forgets to hide it",
+  "Sets a second cup at the table without noticing they have done it",
+  "Sings under their breath while lying, hymns only",
+  "Steps over the threshold with the right foot every time, and starts again if they get it wrong"
  ],
  "rumors": [
   "The stage line's paying triple for a driver on the north route; the last three quit at the same milepost",
@@ -115,7 +191,19 @@
   "The saloon's mirror shows the room a half-second behind everyone in it",
   "A well-dressed stranger's buying up debts nobody remembers owing",
   "The livery's new stallion won't let anyone ride him after dark, and the smith won't say why he keeps him anyway",
-  "Every Sunday the church is fuller than the town has people"
+  "Every Sunday the church is fuller than the town has people",
+  "The assay office has been paying out on ore nobody hauled in; the assayer signs for it himself",
+  "Three families on the north road put their stock up for sale the same Sunday and gave the same reason, word for word",
+  "There's a wagon on the freight road that passes every outfit and is never passed",
+  "The county recorder found a homestead entry filed for next spring, witnessed and stamped",
+  "A cavalry patrol rode a circuit twelve miles across and came back saying it took them four days",
+  "The ferry's been running short on the far bank — more get off than got on, and the count is always right on paper",
+  "Somebody's been leaving good money in the poor box and taking the candles",
+  "A gambler in the back room hasn't lost a hand since the spring, and won't play anybody twice",
+  "The hotel's third-floor rooms are let every night; the stairs to the third floor came out in '77",
+  "A surveyor's chain went missing off the courthouse wall, and fence lines have been moving since",
+  "The horses on the west range won't cross a line of ground you can't see, and the line is getting closer to town",
+  "There's a man buying photographs of the dead, top dollar, and only the ones taken before the burial"
  ],
  "trailDay": [
   "A survey stake driven where no line should run, ribbon still bright",
@@ -135,7 +223,17 @@
   "A herd of horses, unbranded, grazing wild, spooked by nothing anyone can see",
   "Heat shimmer that holds a shape too long to be heat",
   "A preacher's hat, crushed flat, half-buried, no body near it",
-  "Sign of a big cook-fire, days old, enough food scraps for thirty men, one bedroll"
+  "Sign of a big cook-fire, days old, enough food scraps for thirty men, one bedroll",
+  "A field of wheat standing green in a county that has had no rain since May",
+  "Three graves fresh-turned at a crossroads, headboards blank, spade still in the last one",
+  "A church bell hung in a cottonwood, rope reachable, no church within a day's ride",
+  "Cattle sign — thousands of them — crossing the trail at right angles, and no herd in living memory came that way",
+  "A rider on the ridge who keeps pace all afternoon and is on the other side by evening",
+  "Windmill turning, tank full, sweet water, and every trough scoured out with sand",
+  "A pile of boots, paired and set neat, at the edge of a dry lake",
+  "The wind stops. Not drops — stops — and the dust hangs where it was",
+  "A survey line of blazed trees running straight through standing rock",
+  "A stagecoach team grazing in harness, traces cut clean with a knife"
  ],
  "trailNight": [
   "The coffee tastes of river water; the barrel was filled at a well",
@@ -155,7 +253,17 @@
   "A second moon-shadow that doesn't match anybody's stance",
   "The coffee pot boils dry in minutes, however much water goes in",
   "Somebody's spurs jingle just outside the firelight, keeping time with nobody's steps",
-  "The night goes dead quiet, all at once, for exactly one held breath"
+  "The night goes dead quiet, all at once, for exactly one held breath",
+  "The fire burns green for a count of ten and comes back",
+  "A dog trots into camp, eats, and is gone by the time anybody thinks to ask whose it is",
+  "Somebody is humming the tune the party had stuck in their heads that afternoon",
+  "The horses face outward in a ring, and nothing they can smell is out there",
+  "Every canteen is full in the morning; nobody filled them",
+  "A light moves through the far timber at a walking pace, all night, never nearer, never farther",
+  "The watch swears the moon set twice",
+  "Something big walks the far side of the creek, keeping exactly the party's pace, and turns back at the ford",
+  "The bedrolls are all facing the same direction at dawn, and it is not the direction they were laid",
+  "A voice says one of the party's names, plainly, from the dark, in the voice of somebody buried"
  ],
  "plunder": [
   "A cavalry sabre, presentation-grade, engraved to a battle that history doesn't record",
@@ -175,7 +283,17 @@
   "A rancher's tally book, every brand crossed out but one",
   "A rosary, each bead a different faith's, strung on the same cord",
   "A land grant, stamped and legal, for ground currently underwater",
-  "A pocket watch that runs backward exactly one hour a day, no more"
+  "A pocket watch that runs backward exactly one hour a day, no more",
+  "A theodolite in a fitted case, brass unscratched, the eyepiece ground from something that isn't glass",
+  "$60 in double eagles, bright as minting, in a sack stiff with old river mud",
+  "A ledger of wages paid to thirty-one men on a crew that mustered twenty-eight",
+  "A quilt pieced from good cloth and one square of something that will not take dye",
+  "A doctor's bag, complete, the instruments honed past any use a living patient has",
+  "A deck of cards with fifty-three, and the extra one is a face nobody at the table admits to knowing",
+  "Two wedding rings soldered together, engraved inside with a date eleven years apart",
+  "A tin of photographs, all of the same stretch of empty country, dated across four decades",
+  "A bull's-eye lantern whose light shows nothing living",
+  "A cavalry guidon, colors sound, from a company that was struck from the rolls before the war"
  ],
  "omens": [
   "The team balks at the ford; the water runs clear over nothing",
@@ -199,7 +317,17 @@
   "The chickens roost at dawn instead of dusk, refusing to be moved",
   "A wedding ring turns up in the flour bin, engraved with a stranger's names",
   "The porch steps creak in order, heel to toe, when nobody's on them",
-  "A photograph in the parlor develops a new face in the back row each week"
+  "A photograph in the parlor develops a new face in the back row each week",
+  "The dogs in town all lie down at once, facing the same way, and stay down till dark",
+  "Milk sours in the pail between the barn and the kitchen door",
+  "A wagon wheel comes off square, hub and spokes whole, the nut still threaded on the axle",
+  "Every candle in the house leans toward the north wall",
+  "A hawk stoops at the party's shadow, misses, and does it again",
+  "The creek runs clear for a hundred yards and black for one",
+  "Somebody's boots are outside the door in the morning, laced, pointing in",
+  "The horses will not take the near ford, and take the far one at a run",
+  "A single crow is at every window of the house, and there is only one crow",
+  "Bread rises twice as high and tastes of iron"
  ],
  "terrain": {
   "The Trail & the Open Range": [
@@ -211,30 +339,47 @@
    "The Long Trail's End (IV) — the trail itself hunts",
    "The Coyote (a living beast)",
    "The Bison Bull (a living beast)",
-   "The Stampede (a living beast)"
+   "The Stampede (a living beast)",
+   "The Deserters (II)",
+   "The Feral Horse Band (II)",
+   "The Cattle Baron's Men (III)",
+   "The Longhorn Herd (III)",
+   "The Outlaw Gang (III)",
+   "The Wild Cattle of the Brasada (III)"
   ],
   "Rivers, Lakes & Swamps": [
    "The Razorback Shoat (II)",
    "The Bull Moose (a living beast)",
    "The Great Serpent (a living beast)",
    "The Wild Boar (a living beast)",
-   "The Old Tusker (a living beast)"
+   "The Old Tusker (a living beast)",
+   "The Water Moccasin (II)",
+   "The Boar Sounder (III)",
+   "The Flash Flood (III) — the wash comes down"
   ],
   "Towns, Homesteads & Haunted Houses": [
    "The Ash Child (II)",
    "The Cursed Man (II)",
    "The Flock of the Open Eye (II)",
-   "The Mesmerist (III)"
+   "The Mesmerist (III)",
+   "The Bounty Killer (III)",
+   "The Regulators (IV) — the law they brought is their own",
+   "The Outlaw Gang (III)"
   ],
   "Graveyards & Battlefields": [
    "The Bonepicker (I)",
    "The Resurrectionist (II)",
-   "The Tallyman (III) — collecting on the fallen"
+   "The Tallyman (III) — collecting on the fallen",
+   "The Deserters (II)",
+   "The Regulators (IV)"
   ],
   "Mines & Under the Earth": [
    "The Cold Spot (I)",
    "The Whisperer's Mouth (III)",
-   "The Badger (a living beast)"
+   "The Badger (a living beast)",
+   "The Snake Den (III)",
+   "The Porcupine (a living beast)",
+   "The Wolverine (II)"
   ],
   "Winter & the High Country": [
    "The Great Bear (a living beast)",
@@ -242,25 +387,40 @@
    "The Mountain That Walks (a living beast)",
    "The Black Bear (a living beast)",
    "The Gray Wolf (a living beast)",
-   "The Grizzly Bear (a living beast)"
+   "The Grizzly Bear (a living beast)",
+   "The Blizzard (IV) — the weather is the monster",
+   "The Golden Eagle (II)",
+   "The Rutting Buck (II)",
+   "The Sow and Cubs (II)",
+   "The Wolverine (II)",
+   "The Porcupine (a living beast)"
   ],
   "Desert & the Badlands": [
    "The Drought-Bringer (III)",
    "The Mummied Prospector (I)",
    "The Man-Eater (a living beast)",
    "The Bobcat (a living beast)",
-   "The Mountain Lion (a living beast)"
+   "The Mountain Lion (a living beast)",
+   "The Gila Monster (a living beast)",
+   "The Comancheros (II)",
+   "The Snake Den (III)",
+   "The Flash Flood (III) — the arroyo fills in a minute"
   ],
   "The Old Places": [
    "The Eye Between Stars (V)",
    "The Sermon Made Flesh (IV)",
-   "The Long Trail's End (IV)"
+   "The Long Trail's End (IV)",
+   "The Comancheros (II) — somebody got here first",
+   "The Snake Den (III)"
   ],
   "The Hand Behind It": [
    "The Skin-Walker (III) — wearing the man you trusted",
    "The Whisperer's Mouth (III) — the Patron needs hands",
    "The Sermon Made Flesh (IV) — the doctrine spreads itself",
-   "The Faceless Rider (IV) — it is only the herald"
+   "The Faceless Rider (IV) — it is only the herald",
+   "The Cattle Baron's Men (III) — the money hired the rest",
+   "The Bounty Killer (III) — a man, which is worse",
+   "The Regulators (IV) — they were sent, and they will be sent again"
   ]
  }
 }

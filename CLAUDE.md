@@ -9,8 +9,30 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.23 · Keeper's Book v2.10 · Bestiary v2.9 ·
-GritKeeper app v1.18.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.19.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
+
+**Map weather & landforms (v1.19.0):** `MapSpec.Weather` indexes `MapGen.Weathers` (0 = "as the
+sky wills"); `WeatherFor(pick, ti, rng)` resolves it against `WeatherByGround`, `WeatherLine`
+gives the cartouche's wording, and `DrawWeather` inks it over the hour on its own stream
+(`R(10)`) so forcing the sky moves nothing else — asserted. The resolved sky is on
+`MapModel.Weather`. Landforms (`mountain`, `range`, `ridge`, `bluff`, `butte`, `hoodoo`,
+`forest`, `pinestand`, `hills`, `marsh`, `orchard`, `spring`) are `Sym()` cases like any other.
+`GroundLandmarks(ti)` gives each ground its own named places; **those names are final** — they
+go into `ownName` and skip the "The Crooked …"/"Pryor's …" decorator, which is what produced
+"The Crooked The Wall". Weather ink is inset so no stroke lands past the neatline (a smoke test
+walks every sky). The cartouche is sized to the longer of title and subtitle.
+
+**Turn state on the tracker (v1.19.0):** `Combatant.Acting` (persisted) and the derived
+`NextStrike` ("clean" / "−5" / "−10"). `BeginTurn()` sets Beats 3, MapStep 1, Acting true;
+clearing everyone else is the caller's job (`BeginTurnForSelected`). The tracker shows it three
+ways — a gold bold row (`ActingRow` + the cached `trkBold`), a **Next strike** column, and
+`UpdateTurnLine()` beside the round. `NextRound` clears Acting.
+
+**Dialogs are measured, never laid out to constants (v1.19.0).** The Strike dialog's prose
+changes with the run mode and with creature-vs-soul, and fixed heights clipped it. `Para()`
+sizes a block with `TextRenderer.MeasureText`, everything below is placed off `.Bottom`, and
+`ClientSize` comes last. Do the same for any new dialog that carries variable text.
 
 **Rides — mounts & vehicles (v1.18.0):** the Posse tab is a `Split(Orientation.Horizontal, …)`
 with the posse above and *the corral & the yard* below (`TabsRides.cs`). `Ride` in `Core.cs` is
