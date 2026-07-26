@@ -37,6 +37,9 @@ public sealed class MapSpec
     public bool Trail = true, Rail, Town = true, Grid, Secrets;
     public int Landmarks = 5;
     public int Seed;
+    // The sky over the survey: an index into MapGen.Weathers, 0 = let the country decide.
+    // Appended last so every stored Scale/Time/Water index keeps its old meaning.
+    public int Weather;
 }
 
 // A named landmark the Keeper can pick up and move: its anchor (the symbol's
@@ -76,6 +79,10 @@ public sealed class MapModel
     public float[] RiverPts;
     public float RiverHalf;
     public float LakeX, LakeY, LakeR;
+
+    // The sky this survey was drawn under, resolved — so the app can say it in the roll log even
+    // when the Keeper left the choice to the country.
+    public string Weather = "";
 }
 
 public static class MapGen
@@ -94,6 +101,30 @@ public static class MapGen
     public static readonly string[] Times = { "First light", "High noon", "Dusk", "Dead of night" };
     public static readonly string[] Waters = { "As the land wills", "No water", "A creek", "A river", "A lake", "River & lake" };
 
+    /// <summary>The sky. Index 0 lets the country pick its own — the high country gets snow the
+    /// badlands never will — and the rest force it. Weather is half of what a day on the trail
+    /// actually is: the same county in a blizzard is a different map.</summary>
+    public static readonly string[] Weathers =
+    {
+        "As the sky wills", "Fair", "Sunny & hot", "Overcast", "Rain", "Thunderstorm",
+        "Fog", "Wind & dust", "Snow", "Blizzard", "Hail", "Hard freeze"
+    };
+
+    // What each ground is apt to get, weighted by repetition. Rolled on its own stream, so
+    // changing any other setting never reshuffles the sky.
+    static readonly int[][] WeatherByGround =
+    {
+        new[] { 1, 1, 2, 2, 3, 4, 7, 7, 5 },        // 0 open range — hot, windy, the odd storm
+        new[] { 1, 3, 3, 4, 4, 5, 6, 6, 2 },        // 1 river bottoms — wet and fogbound
+        new[] { 1, 1, 2, 3, 3, 4, 5, 7, 10 },       // 2 settled country
+        new[] { 1, 3, 3, 4, 6, 6, 5, 2, 11 },       // 3 graveyards & battlefields — grey and still
+        new[] { 1, 2, 3, 3, 4, 7, 10, 11, 5 },      // 4 mining country
+        new[] { 8, 8, 9, 9, 11, 3, 3, 1, 10 },      // 5 the high country — snow, and worse
+        new[] { 2, 2, 2, 1, 7, 7, 7, 5, 10 },       // 6 badlands — heat and blowing sand
+        new[] { 6, 6, 3, 3, 4, 1, 11, 5, 7 },       // 7 the old places — fog suits them
+        new[] { 3, 3, 4, 6, 6, 7, 1, 2, 5 },        // 8 a city ward — coal smoke and river fog
+    };
+
     // ---- palette (the books' frontier colors, map-toned) ----
     const string Ink = "#4a3826", Dark = "#3a2c1e", Blood = "#8f1d1d", Gold = "#967432";
     const string WaterEdge = "#7d98a1", WaterFill = "#b9cbcf", TrailBrown = "#7a5c38";
@@ -109,7 +140,8 @@ public static class MapGen
         // checking a box quietly regenerated a different countryside (user-reported).
         Random R(int salt) => new(unchecked(sp.Seed * 92821 + salt));
         Random rngWater = R(1), rngTrail = R(2), rngRail = R(3), rngTown = R(4),
-               rngLand = R(5), rngLm = R(6), rngHour = R(7), rngSecrets = R(8), rngName = R(9);
+               rngLand = R(5), rngLm = R(6), rngHour = R(7), rngSecrets = R(8), rngName = R(9),
+               rngSky = R(10);
 
         var m = new MapModel();
         var P = m.P;
@@ -379,16 +411,27 @@ public static class MapGen
         }
 
         // ---- the land itself ----
+        // Each ground's furniture. The landforms — hills, ridges, bluffs, peaks, whole ranges,
+        // stands of timber — are weighted by repetition rather than picked evenly, so a county
+        // reads as country with a shape to it instead of a scatter of one of everything.
         string[] kit = ti switch
         {
-            0 => new[] { "grass", "grass", "grass", "scrub", "scrub", "tree", "hill", "hill", "bones", "rock" },
-            1 => new[] { "reeds", "reeds", "deadtree", "deadtree", "tree", "tuft", "tuft", "rock", "grass" },
-            2 => new[] { "grass", "grass", "tree", "tree", "fence", "fence", "field", "hill", "scrub" },
-            3 => new[] { "grave", "grave", "grave", "deadtree", "grass", "grass", "trench", "rock", "scrub" },
-            4 => new[] { "mesa", "mesa", "rock", "rock", "rock", "mine", "tailing", "scrub", "deadtree" },
-            5 => new[] { "pine", "pine", "pine", "pine", "snowpeak", "snowpeak", "snowpeak", "rock", "deadtree" },
-            6 => new[] { "cactus", "cactus", "cactus", "mesa", "mesa", "dune", "dune", "bones", "bones", "scrub", "rock" },
-            _ => new[] { "stone", "stone", "stone", "ruin", "ruin", "deadtree", "deadtree", "mound", "tree", "grass" },
+            0 => new[] { "grass", "grass", "grass", "scrub", "scrub", "tree", "hill", "hill", "hills",
+                         "ridge", "bluff", "forest", "bones", "rock", "butte" },
+            1 => new[] { "reeds", "reeds", "deadtree", "deadtree", "tree", "tuft", "tuft", "rock", "grass",
+                         "marsh", "marsh", "forest", "spring", "hill" },
+            2 => new[] { "grass", "grass", "tree", "tree", "fence", "fence", "field", "field", "hill",
+                         "scrub", "orchard", "orchard", "forest", "hills", "spring" },
+            3 => new[] { "grave", "grave", "grave", "deadtree", "grass", "grass", "trench", "rock", "scrub",
+                         "mound", "hill", "forest" },
+            4 => new[] { "mesa", "mesa", "rock", "rock", "rock", "mine", "tailing", "scrub", "deadtree",
+                         "mountain", "ridge", "bluff", "hills", "hoodoo" },
+            5 => new[] { "pine", "pine", "pine", "pine", "snowpeak", "snowpeak", "snowpeak", "rock", "deadtree",
+                         "mountain", "mountain", "range", "bluff", "pinestand", "pinestand", "ridge" },
+            6 => new[] { "cactus", "cactus", "cactus", "mesa", "mesa", "dune", "dune", "bones", "bones",
+                         "scrub", "rock", "butte", "butte", "hoodoo", "hoodoo", "bluff", "ridge" },
+            _ => new[] { "stone", "stone", "stone", "ruin", "ruin", "deadtree", "deadtree", "mound", "tree",
+                         "grass", "hill", "forest", "hoodoo" },
         };
         if (city) kit = new[] { "stack", "stack", "depot", "pens", "church", "wharf", "stack", "pens" };
         int count = city ? 9 : (sp.Scale == 0 ? 16 : 30);
@@ -409,13 +452,17 @@ public static class MapGen
         }
 
         // ---- named landmarks ----
+        // What people build, anywhere — then what this particular country has in it. Splitting the
+        // two is the whole point: the high country's map should offer a Divide and a Notch, and the
+        // badlands' should offer a Butte, instead of every ground drawing from one flat list.
         var nouns = new List<(string sym, string noun)>
         {
             ("deadtree", "Hanging Tree"), ("rock", "Lookout"), ("well", "Well"), ("ruin", "Burned Homestead"),
             ("grave", "Boot Hill"), ("mine", "Diggings"), ("windmill", "Windmill"), ("corral", "Corral"),
             ("stone", "Standing Stones"), ("church", "Mission"), ("camp", "Cold Camp"), ("soddy", "Soddy"),
         };
-        if (riverPts != null || lake.r > 0) nouns.Add(("ford", "Ford"));
+        nouns.AddRange(GroundLandmarks(ti));
+        if (riverPts != null || lake.r > 0) { nouns.Add(("ford", "Ford")); nouns.Add(("ford", "Crossing")); }
         if (city)
             nouns = new List<(string sym, string noun)>
             {
@@ -503,6 +550,12 @@ public static class MapGen
             P.Add(new Prim { Kind = PrimKind.Circle, Pts = new[] { W - 178, 124, 15 }, Fill = bite });
         }
 
+        // ---- the weather ----
+        // Over the hour, because the sky is the nearer thing: a blizzard whitens noon and midnight
+        // alike. Drawn from its own stream so forcing rain doesn't move a single rock.
+        int wx = WeatherFor(sp.Weather, ti, rngSky);
+        DrawWeather(P, rngSky, wx, W, H);
+
         // ---- the Keeper's layer, in red ----
         if (sp.Secrets)
         {
@@ -543,7 +596,8 @@ public static class MapGen
             4 => "mining country", 5 => "the high country", 6 => "the badlands",
             8 => "a city ward", _ => "the old places"
         };
-        m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}";
+        m.Weather = Weathers[wx];
+        m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}  ·  {WeatherLine(wx)}";
         float cw = Math.Max(280, m.Title.Length * 12.5f + 40);
         P.Add(Rect(26, 26, cw, 78, "#f6efdd", Dark, 1.6f, 0.93f));
         P.Add(Rect(31, 31, cw - 10, 68, null, Dark, 0.7f));
@@ -573,6 +627,130 @@ public static class MapGen
         P.Add(TextP(40 + barLen / 2, sy + 16, barLabel + (sp.Grid ? $"   ·   squares are {GridLabel(sp.Scale)}" : ""), 9.5f, Dark, italic: true, anchor: 1));
 
         return m;
+    }
+
+    // ---------------------------------------------------------- the weather
+    /// <summary>Resolve the sky: an explicit pick stands, and 0 rolls one this ground would
+    /// actually get. Pure and seeded, so the same map number always draws the same day.</summary>
+    public static int WeatherFor(int pick, int ti, Random rng)
+    {
+        if (pick > 0 && pick < Weathers.Length) return pick;
+        var table = WeatherByGround[Math.Clamp(ti, 0, WeatherByGround.Length - 1)];
+        return table[rng.Next(table.Length)];
+    }
+
+    /// <summary>The sky in the cartouche's voice — a survey doesn't say "Wind &amp; dust".</summary>
+    public static string WeatherLine(int w) => w switch
+    {
+        1 => "fair", 2 => "clear and hot", 3 => "overcast", 4 => "rain",
+        5 => "thunder on the ridge", 6 => "fog to the ground", 7 => "wind and blowing dust",
+        8 => "snow falling", 9 => "a blizzard", 10 => "hail", 11 => "hard freeze", _ => "fair"
+    };
+
+    /// <summary>Ink the sky over everything else. Each is a wash plus its own marks, kept light —
+    /// the map still has to be read through it.</summary>
+    static void DrawWeather(List<Prim> P, Random rng, int w, float W, float H)
+    {
+        void Wash(string col, float a) => P.Add(Rect(0, 0, W, H, col, null, 0, a));
+        // A run of slanted strokes, thrown across the whole sheet: rain, snow on the wind, hail.
+        // Every stroke is started far enough in that its far end still lands on the paper — line
+        // ink past the edge shows up in the SVG viewBox and on the PDF page as a clipped stub.
+        void Slant(int n, float len, float lean, string col, float sw, float a)
+        {
+            float dx = lean * len, spanX = Math.Max(1f, W - Math.Abs(dx)), spanY = Math.Max(1f, H - len);
+            for (int i = 0; i < n; i++)
+            {
+                float x = (dx < 0 ? -dx : 0) + (float)rng.NextDouble() * spanX;
+                float y = (float)rng.NextDouble() * spanY;
+                P.Add(new Prim
+                {
+                    Kind = PrimKind.Line, Pts = new[] { x, y, x + dx, y + len },
+                    Stroke = col, StrokeW = sw, Alpha = a
+                });
+            }
+        }
+        void Specks(int n, float r, string col, float a)
+        {
+            for (int i = 0; i < n; i++)
+                P.Add(new Prim
+                {
+                    Kind = PrimKind.Circle,
+                    Pts = new[] { (float)rng.NextDouble() * W, (float)rng.NextDouble() * H, r * (0.6f + (float)rng.NextDouble()) },
+                    Fill = col, Alpha = a
+                });
+        }
+        // Long shallow curves — the shape wind and fog take on a surveyor's sheet. An Arc spans
+        // ±rx across and rises ry above its center, so the center is kept that far off the edges.
+        void Streaks(int n, float rx, float ry, string col, float sw, float a)
+        {
+            float spanX = Math.Max(1f, W - 2 * rx), spanY = Math.Max(1f, H - ry);
+            for (int i = 0; i < n; i++)
+                P.Add(new Prim
+                {
+                    Kind = PrimKind.Line, Alpha = a, Stroke = col, StrokeW = sw,
+                    Pts = Arc(rx + (float)rng.NextDouble() * spanX, ry + (float)rng.NextDouble() * spanY, rx, ry)
+                });
+        }
+
+        switch (w)
+        {
+            case 1:                                        // fair — a couple of high clouds, nothing more
+                Streaks(3, 60, 7, "#ffffff", 6f, 0.30f);
+                break;
+            case 2:                                        // clear and hot — a bleaching glare, heat off the ground
+                Wash("#ffe9a8", 0.13f);
+                Streaks(9, 26, 3, "#ffffff", 2f, 0.28f);
+                break;
+            case 3:                                        // overcast — the light goes flat and grey
+                Wash("#8b8f92", 0.17f);
+                Streaks(6, 70, 9, "#e8e9e6", 9f, 0.22f);
+                break;
+            case 4:                                        // rain
+                Wash("#6f7f8c", 0.16f);
+                Slant(150, 11, 0.32f, "#8fa6b4", 1f, 0.5f);
+                break;
+            case 5:                                        // thunderstorm — heavier, and a fork out of it
+                Wash("#4c5663", 0.24f);
+                Slant(230, 14, 0.42f, "#7f96a6", 1.2f, 0.55f);
+                float lx2 = W * (0.25f + (float)rng.NextDouble() * 0.5f);
+                P.Add(new Prim
+                {
+                    Kind = PrimKind.Line, Stroke = "#f6f0c8", StrokeW = 2.6f, Alpha = 0.9f,
+                    Pts = new[] { lx2, 20, lx2 - 16, H * 0.24f, lx2 + 10, H * 0.26f, lx2 - 12, H * 0.5f }
+                });
+                break;
+            case 6:                                        // fog to the ground — banded, and it eats the distance
+                Wash("#d8dcd8", 0.28f);
+                for (int i = 0; i < 7; i++)
+                {
+                    float y = H * (0.1f + 0.12f * i);
+                    P.Add(Rect(0, y, W, 20 + (float)rng.NextDouble() * 26, "#eef0ec", null, 0, 0.30f));
+                }
+                break;
+            case 7:                                        // wind and blowing dust
+                Wash("#c9a86a", 0.20f);
+                Streaks(26, 90, 11, "#e6cd9c", 2.4f, 0.45f);
+                Specks(40, 1.3f, "#a98c58", 0.5f);
+                break;
+            case 8:                                        // snow falling
+                Wash("#e9eef2", 0.26f);
+                Specks(200, 1.8f, "#ffffff", 0.85f);
+                break;
+            case 9:                                        // a blizzard — the map goes half-blind, which is the point,
+                Wash("#eef3f6", 0.34f);                    // but only half: the Keeper still has to run off it
+                Slant(200, 16, 0.75f, "#ffffff", 1.6f, 0.65f);
+                Specks(220, 2.1f, "#ffffff", 0.85f);
+                break;
+            case 10:                                       // hail
+                Wash("#7d8a92", 0.18f);
+                Slant(90, 9, 0.5f, "#a9bcc6", 1f, 0.45f);
+                Specks(110, 2.2f, "#f2f6f8", 0.9f);
+                break;
+            case 11:                                       // hard freeze — no weather falling, just the cold in the light
+                Wash("#b9cede", 0.22f);
+                Streaks(5, 80, 6, "#ffffff", 5f, 0.22f);
+                break;
+        }
     }
 
     static string ScaleLine(int s) => s switch
@@ -623,6 +801,61 @@ public static class MapGen
         "something buried here", "it dens here", "they watch the trail", "old blood in the ground",
         "the ground is wrong", "an ambush waiting", "the door under the hill", "what the well keeps",
         "sign of the beast", "a cache — powder and coin"
+    };
+
+    /// <summary>The named places this ground can offer beyond the ones people build everywhere —
+    /// its own landforms and the works that only belong in it. Drawn with the same symbols the
+    /// country is furnished with, so a landmark called The Divide is a mountain range, not a dot.
+    /// </summary>
+    static (string sym, string noun)[] GroundLandmarks(int ti) => ti switch
+    {
+        0 => new[]                                         // the open range
+        {
+            ("hills", "Twin Buttes"), ("ridge", "The Hogback"), ("bluff", "The Breaks"),
+            ("forest", "The Timber"), ("hill", "Signal Hill"), ("butte", "Lone Butte"),
+            ("spring", "The Springs"), ("corral", "Line Camp"),
+        },
+        1 => new[]                                         // rivers, lakes & swamps
+        {
+            ("marsh", "The Sloughs"), ("forest", "Cypress Stand"), ("spring", "Boiling Spring"),
+            ("wharf", "The Landing"), ("hill", "Island Mound"), ("marsh", "Drowned Ground"),
+            ("deadtree", "Snag Bend"),
+        },
+        2 => new[]                                         // towns, homesteads & haunted houses
+        {
+            ("orchard", "The Orchard"), ("forest", "The Woodlot"), ("field", "The Home Place"),
+            ("hills", "The Pastures"), ("spring", "Sweetwater"), ("fence", "The Section Line"),
+            ("hill", "Schoolhouse Hill"),
+        },
+        3 => new[]                                         // graveyards & battlefields
+        {
+            ("mound", "The Burial Mound"), ("trench", "The Works"), ("hill", "The High Ground"),
+            ("forest", "The Wood"), ("ridge", "The Sunken Road"), ("grave", "The Trench Graves"),
+        },
+        4 => new[]                                         // mines & under the earth
+        {
+            ("mountain", "The Peak"), ("hoodoo", "Cathedral Rock"), ("ridge", "The Lode"),
+            ("bluff", "The Highwall"), ("hills", "The Dumps"), ("tailing", "The Tailings"),
+            ("mine", "The Deep Shaft"), ("butte", "Chimney Rock"),
+        },
+        5 => new[]                                         // winter & the high country
+        {
+            ("range", "The Divide"), ("mountain", "Lonesome Peak"), ("bluff", "The Palisades"),
+            ("pinestand", "The Pinery"), ("ridge", "Devil's Backbone"), ("hills", "The Saddle"),
+            ("snowpeak", "The Notch"), ("pinestand", "Timber Camp"), ("mountain", "Bald Knob"),
+        },
+        6 => new[]                                         // desert & the badlands
+        {
+            ("butte", "Chimney Butte"), ("hoodoo", "The Goblins"), ("bluff", "The Wall"),
+            ("mesa", "The Mesa"), ("ridge", "The Spine"), ("dune", "The Sand Hills"),
+            ("spring", "The Tanks"), ("hills", "The Little Badlands"),
+        },
+        7 => new[]                                         // the old places
+        {
+            ("mound", "The Barrow"), ("hoodoo", "The Watcher"), ("forest", "The Old Wood"),
+            ("hill", "The Sleeping Hill"), ("stone", "The Ring"), ("ridge", "The Long Wall"),
+        },
+        _ => Array.Empty<(string, string)>(),
     };
 
     static string MapTitle(Random rng, int ti) => Choice(rng, TitleFirst) + " " + Choice(rng, TitleGeo[Math.Clamp(ti, 0, 8)]);
@@ -759,6 +992,68 @@ public static class MapGen
                 break;
             case "ford":
                 L(-8, -3, 8, -3, WaterEdge, 1.6f); L(-8, 1, 8, 1, WaterEdge, 1.6f); break;
+
+            // ---- landforms (v1.19) ----
+            // The country used to be hills, mesas and one snowy peak. A survey ought to be able
+            // to say "mountains here, a bluff along there, and timber the whole north half."
+            case "hills":                                  // a run of low swells, the far ones smaller
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = Arc(x - 8 * k, y + 2 * k, 11 * k, 5f * k), Stroke = Ink, StrokeW = 1.3f });
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = Arc(x + 7 * k, y + 2 * k, 13 * k, 6.5f * k), Stroke = Ink, StrokeW = 1.3f });
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = Arc(x - 1 * k, y - 3 * k, 9 * k, 4.5f * k), Stroke = Ink, StrokeW = 1f });
+                break;
+            case "mountain":                               // bare rock: a peak with a shadowed face
+                Pl("#a89c86", Dark, 1.3f, -15, 8, -3, -14, 6, 0, 15, 8);
+                Pl("#8d8271", null, 0, -3, -14, 6, 0, 1, 8, -3, 8);
+                L(-3, -14, -8, 0, Dark, 0.7f); break;
+            case "range":                                  // a whole range on the skyline, snow on top
+                Pl("#a89c86", Dark, 1.2f, -20, 8, -12, -6, -5, 2, 2, -11, 10, 1, 15, -4, 20, 8);
+                Pl("#eef1f2", null, 0, -12, -6, -8.5f, -1, -15.5f, -1);
+                Pl("#eef1f2", null, 0, 2, -11, 6, -4, -2, -4);
+                L(-12, -6, -16, 4, Dark, 0.6f); L(2, -11, -2, 2, Dark, 0.6f); break;
+            case "bluff":                                  // an escarpment, hachured down the drop
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { x - 16 * k, y - 3 * k, x - 6 * k, y - 5 * k, x + 4 * k, y - 2 * k, x + 16 * k, y - 4 * k }, Stroke = Ink, StrokeW = 1.6f });
+                for (float t = -15; t <= 15; t += 5) L(t, -4, t - 1, 3, Ink, 0.8f);
+                break;
+            case "ridge":                                  // a long spine, ticked on the steep side
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { x - 17 * k, y + 3 * k, x - 7 * k, y - 4 * k, x + 3 * k, y - 2 * k, x + 17 * k, y + 4 * k }, Stroke = Ink, StrokeW = 1.5f });
+                for (float t = -14; t <= 14; t += 4.6f) L(t, 0, t + 1.5f, 5, Ink, 0.7f);
+                break;
+            case "butte":                                  // narrower and taller than a mesa
+                Pl(Tan, Ink, 1.3f, -7, 8, -5, -12, 5, -12, 7, 8);
+                L(-5, -12, -6.5f, 8, Ink, 0.7f); L(5, -12, 6.5f, 8, Ink, 0.7f); break;
+            case "hoodoo":                                 // a balanced rock on its stem
+                Pl("#b7ab93", Ink, 1.1f, -6, -8, 6, -8, 4, -12, -4, -12);
+                Pl("#a99d85", Ink, 1f, -2.5f, -8, 2.5f, -8, 3.5f, 8, -3.5f, 8); break;
+            case "forest":                                 // a stand of hardwood, five crowns deep
+                foreach (var (dx, dy, r) in new[] { (-9f, 2f, 5f), (0f, 4f, 5.5f), (9f, 2f, 5f), (-4.5f, -4f, 5f), (4.5f, -4f, 5f) })
+                { C(dx, dy + 1.5f, r, Green, PineGreen, 1f); }
+                L(-9, 8, -9, 5, "#574433", 1.1f); L(0, 10, 0, 7, "#574433", 1.1f); L(9, 8, 9, 5, "#574433", 1.1f);
+                break;
+            case "pinestand":                              // timber: three firs shoulder to shoulder
+                for (int i2 = -1; i2 <= 1; i2++)
+                {
+                    float ox = i2 * 8f, oy = i2 == 0 ? -2f : 1f;
+                    Pl(PineGreen, "#46543e", 0.9f, ox, oy - 13, ox - 5.5f, oy + 2, ox + 5.5f, oy + 2);
+                    L(ox, oy + 6, ox, oy + 1, "#574433", 1.3f);
+                }
+                break;
+            case "marsh":                                  // standing water, drawn the surveyor's way
+                for (int r4 = -1; r4 <= 1; r4++)
+                {
+                    float yy = r4 * 4.5f;
+                    L(-11, yy, -4, yy, WaterEdge, 1.2f); L(0, yy, 7, yy, WaterEdge, 1.2f);
+                }
+                L(-7, -7, -7, -3, "#6c7c54", 1f); L(3, -7, 3, -3, "#6c7c54", 1f); break;
+            case "orchard":                                // planted rows — settled country, and money
+                for (int r5 = 0; r5 < 2; r5++)
+                    for (int c5 = 0; c5 < 4; c5++)
+                        C(-10.5f + c5 * 7, -4 + r5 * 8, 2.4f, Green, PineGreen, 0.8f);
+                break;
+            case "spring":                                 // water coming up out of the ground
+                C(0, 0, 3.2f, WaterFill, WaterEdge, 1.3f);
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = Arc(x, y + 5 * k, 9 * k, 3 * k), Stroke = WaterEdge, StrokeW = 1f });
+                P.Add(new Prim { Kind = PrimKind.Line, Pts = Arc(x, y + 8 * k, 13 * k, 4 * k), Stroke = WaterEdge, StrokeW = 0.8f });
+                break;
         }
     }
 
