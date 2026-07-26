@@ -4666,7 +4666,19 @@
    "Refugia",
    "Delphia",
    "Naomi",
-   "Willa"
+   "Willa",
+   "Clemency",
+   "Dovie",
+   "Eulalia",
+   "Georgiana",
+   "Leota",
+   "Minerva",
+   "Philomena",
+   "Rosalind",
+   "Theodosia",
+   "Verbena",
+   "Ardith",
+   "Marguerite"
   ],
   "givenMen": [
    "Amos",
@@ -4707,7 +4719,19 @@
    "Perfecto",
    "Guadalupe",
    "Jubal",
-   "Isham"
+   "Isham",
+   "Alonzo",
+   "Barnett",
+   "Dermot",
+   "Elbridge",
+   "Fletcher",
+   "Gaines",
+   "Hezekiah",
+   "Leander",
+   "Rutherford",
+   "Sylvanus",
+   "Rafferty",
+   "Ellsworth"
   ],
   "compass": [
    {
@@ -4767,7 +4791,19 @@
    "sleep, and what waits in it",
    "the whip hand, used more than it's needed",
    "a promise, easy given, hard kept",
-   "the dice, loaded or not"
+   "the dice, loaded or not",
+   "money, counted nightly, spent on nothing",
+   "confession, given to strangers and never a priest",
+   "the long shot nobody asked her to take",
+   "opium, and the four hours it buys",
+   "collecting — teeth, buttons, small things off the dead",
+   "arguing scripture with men who cannot win",
+   "wagering on anything with two outcomes",
+   "morphine, from a doctor's bag she still carries",
+   "walking off alone at night, every night",
+   "keeping score of every slight, in writing",
+   "borrowing what will not be returned",
+   "telling it better than it happened"
   ],
   "lost": [
    "the land, to a bank with better lawyers",
@@ -4785,7 +4821,19 @@
    "a wife, to a sickness with no cure and no name",
    "the taste for whiskey, and most everything after",
    "a son, to a war that ended before he came home",
-   "the house, burned for the insurance or the spite, nobody ever said which"
+   "the house, burned for the insurance or the spite, nobody ever said which",
+   "the mission, to a fire she was blamed for and did not set",
+   "a claim, to a partner's signature she taught him to write",
+   "her sight in one eye, to powder flash at close range",
+   "the herd, and with it the reason to keep the land",
+   "a father, to a rope, and the town watched",
+   "the language she was raised in; the school saw to that",
+   "twin brothers, on the same day, in different counties",
+   "the belief that a law had ever been meant for her",
+   "a homestead, to a survey that moved the line",
+   "the child she was carrying, on a wagon road in March",
+   "a congregation, all at once, and none of them said why",
+   "the years between nineteen and twenty-four; nobody will tell him"
   ],
   "seen": [
    "lights over the dry lake that walked against the wind",
@@ -4803,7 +4851,19 @@
    "a baptism where the water pulled back from the preacher's hand",
    "footprints in the dust that walked backward out of a locked room",
    "a wedding party, all in black, none of them speaking",
-   "the moon rise twice, an hour apart"
+   "the moon rise twice, an hour apart",
+   "a train pull in with every window fogged from the inside",
+   "the river freeze in one hour, from the bank inward",
+   "a coyote carry off a lantern, lit, and set it down again",
+   "hail fall on one field and stop at the fence line",
+   "her own handwriting in a ledger she had never opened",
+   "a house where every clock was set an hour ahead and running slow",
+   "the mission bell ring itself through a whole night of no wind",
+   "a herd part around ground that had nothing on it",
+   "a man walk out of a burning barn with his hat still on straight",
+   "the same drifter at three funerals in three counties",
+   "snow fall upward off the pass for a count of twenty",
+   "a child answer a question that had been asked in a locked room"
   ],
   "moving": [
    "a debt that gathers interest in more than money",
@@ -4821,7 +4881,19 @@
    "a debt owed to something that isn't a bank",
    "a wanted poster with the wrong face and the right name",
    "the last letter a dead man wrote, still being delivered",
-   "a claim jumper two towns back and closing"
+   "a claim jumper two towns back and closing",
+   "a name he took off a headstone, and the family found out",
+   "the deed to ground he has never seen and dreams of weekly",
+   "a marshal who has stopped filing reports about her",
+   "a brother's confession, sealed, to be opened at his death",
+   "the last of a congregation, still walking, still waiting on him",
+   "a bell that was hers and is now in somebody else's tower",
+   "the man who bought her indenture, and is still collecting",
+   "a photograph of a face she has to find before she forgets it",
+   "an oath sworn to a dying man who lied about his name",
+   "the ground her people are buried in, and who holds the paper on it",
+   "a song she only half remembers, and someone west of here knows the rest",
+   "the thing she let out, and has been walking after ever since"
   ],
   "fullNamesMen": [
    "Wong Kai-lun",

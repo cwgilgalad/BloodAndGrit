@@ -8,6 +8,38 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.19.1 — the last of the generators, and a repo/doc audit (2026-07-26,
+  user-requested).**
+
+  - **The city roller was the thinnest table set in the app** and the only one with no app-side
+    additions at all: 12,000 combinations against the town roller's million. Doubled every one of
+    its four tables — quarters (the brewery caves, the medical college, the freight tunnels), who
+    really runs it (the waterworks board, the undertakers' trust, the coroner), its wrong note,
+    and work for a posse. **192,000 combinations.**
+  - **The chargen flavor pools grew too** — a soul's vice 20 → 32, what they lost 16 → 28, what
+    they've seen 16 → 28, what moves them 16 → 28, and 12 more given names on each side. These
+    are what a soul reads like on the Ledger, and they were repeating over a long campaign.
+  - **Depth floors on every generator table and flavor pool**, asserted. `tables_extra.json` is
+    merged on top of the book's `tables.json`; if a re-extraction ever landed without it the app
+    would still boot and still roll, just from a much thinner deck and without saying so. Now
+    that fails the smoke suite instead. Likewise a new assertion that **every creature in the
+    Bestiary is reachable from some terrain table** — bar the White Bison, held back on purpose.
+  - **Repo audit.** Deleted a stale `GK/publish/GritKeeper.exe` (155 MB, 22 July, in a path the
+    release flow no longer uses) and five Jul-12 `BloodAndGritKeeper.*` files under the old
+    assembly name — the ones that made a stale v1.2.2 binary look like the app hanging. Deleted
+    `origin/session/2026-07-24-code-review`, fully merged and never cleaned up.
+  - **CLAUDE.md corrected on five counts** it had drifted on: the app section still said v1.11.0;
+    the build block still said `dotnet publish -c Release -o publish`, which is precisely what
+    diverted the v1.18.0 release into signing the previous version's exe; the deliverable was
+    listed at ~69 MB when compression is deliberately off and it is ~155 MB; the smoke count was
+    four releases stale; and it claimed three separate times that the 18 removed Player plates
+    were "still in `assets/`" and recoverable. They are not, and git has never tracked them.
+    The blind-build caveat is gone as well — the app runs here, and the two bugs this release
+    fixed were both invisible to assertions and obvious on sight.
+
+  Smoke suite **10,391 assertions, all green** (the total drifts by a few dozen run to run —
+  several sweeps assert once per random draw — so the number that matters is the zero).
+
 - **GritKeeper v1.19.0 — weather and real country on the maps, and a turn you can see
   (2026-07-26, user-requested).**
 
