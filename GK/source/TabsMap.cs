@@ -8,7 +8,7 @@ public partial class MainForm
     // The Trail Maps drafting table: set the ground, the scale, and the hour, and
     // MapGen draws a named frontier survey. The preview here, the SVG export, and
     // the PDF export all replay the same primitive list, so they always match.
-    ComboBox mapGround, mapScale, mapTime, mapWater;
+    ComboBox mapGround, mapScale, mapTime, mapWater, mapSky;
     CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets, mapMarkOut;
     NumericUpDown mapLm, mapSeed;
     MapPanel mapPanel;
@@ -131,6 +131,11 @@ public partial class MainForm
         mapTime = Combo(rowGen, MapGen.Times, 1, 100, "The hour sets the light — night maps come with stars and a moon");
         rowGen.Controls.Add(Lbl(" Water:"));
         mapWater = Combo(rowGen, MapGen.Waters, 0, 118, "Force a creek, river, or lake — or let the terrain decide");
+        rowGen.Controls.Add(Lbl(" Weather:"));
+        mapSky = Combo(rowGen, MapGen.Weathers, 0, 124,
+            "The sky over the survey — fair, overcast, rain, fog, blowing dust, snow, a blizzard. "
+            + "Left on “As the sky wills” the country picks what it would actually get: the high "
+            + "country gets snow, the badlands get heat and sand.");
         rowGen.Controls.Add(Lbl(" Landmarks:"));
         mapLm = new NumericUpDown { Minimum = 0, Maximum = 12, Value = 5, Width = 48, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(mapLm, "How many named places the survey marks");
@@ -227,7 +232,7 @@ public partial class MainForm
 
         // any knob turned redraws the same map under the new settings; the dice draw a new one
         void Redraw(object s, EventArgs e) { if (!mapBusy) MapDraw(false); }
-        foreach (var c in new Control[] { mapGround, mapTime, mapWater, mapTrail, mapRail, mapTown, mapGrid, mapSecrets })
+        foreach (var c in new Control[] { mapGround, mapTime, mapWater, mapSky, mapTrail, mapRail, mapTown, mapGrid, mapSecrets })
         {
             if (c is ComboBox cb) cb.SelectedIndexChanged += Redraw;
             else if (c is CheckBox ck) ck.CheckedChanged += Redraw;
@@ -257,6 +262,7 @@ public partial class MainForm
         Scale = mapScale.SelectedIndex,
         Time = mapTime.SelectedIndex,
         Water = mapWater.SelectedIndex,
+        Weather = mapSky.SelectedIndex,
         Trail = mapTrail.Checked, Rail = mapRail.Checked, Town = mapTown.Checked,
         Grid = mapGrid.Checked, Secrets = mapSecrets.Checked,
         Landmarks = (int)mapLm.Value,
@@ -285,7 +291,9 @@ public partial class MainForm
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
-        Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value}.");
+        // Name the sky as well as the map — when the Keeper leaves it on "as the sky wills", the
+        // country rolls its own, and they're owed the answer without squinting at the cartouche.
+        Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value} — {MapGen.WeatherLine(Array.IndexOf(MapGen.Weathers, curMap.Weather))}.");
         // Say it plainly when the survey wanted the town in the river and it was seated on the
         // bank instead — otherwise a map number that used to draw a town in the water quietly
         // draws it somewhere else, and that reads like a bug.

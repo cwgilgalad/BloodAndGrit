@@ -160,7 +160,7 @@ public class Combatant : INotifyPropertyChanged
 {
     string _name = "", _conditions = "", _ref = "", _pcId = "";
     int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1;
-    bool _isPC;
+    bool _isPC, _acting;
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -181,10 +181,21 @@ public class Combatant : INotifyPropertyChanged
     // (1 = clean, 2 = second at MAP, 3 = third). Reset when the combatant's turn comes round.
     public int Beats { get => _beats; set { _beats = Math.Clamp(value, 0, 9); On(); } }
     public int MapStep { get => _mapStep; set { _mapStep = Math.Clamp(value, 1, 9); On(); } }
+    /// <summary>Whose turn it is right now. Turn state like the Beats and the MAP step, and worth
+    /// keeping for the same reason: "Begin turn" changes numbers a Keeper can't see moving unless
+    /// the table lights the row it happened to.</summary>
+    public bool Acting { get => _acting; set { _acting = value; On(); } }
     [JsonIgnore] public bool Down => _bloodCur <= 0;
 
-    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean.</summary>
-    public void BeginTurn() { Beats = 3; MapStep = 1; }
+    /// <summary>What the NEXT Strike this turn costs in MAP, in one word for the tracker. An Agile
+    /// weapon softens it to −4/−8, which the Strike dialog figures once a weapon is picked; this is
+    /// the plain step, so a Keeper glancing at the field knows whether the shot is still clean.</summary>
+    [JsonIgnore] public string NextStrike => _mapStep <= 1 ? "clean" : _mapStep == 2 ? "−5" : "−10";
+
+    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean, and the
+    /// row lit as the one acting. Clearing everyone else is the caller's business — the model has
+    /// no idea who else is on the field.</summary>
+    public void BeginTurn() { Beats = 3; MapStep = 1; Acting = true; }
 
     /// <summary>Is this tracker row the given posse soul? By the stable PcId when it has one, else
     /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
