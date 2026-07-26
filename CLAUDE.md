@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
-GritKeeper app v1.20.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.20.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Sign & spoor — the safe-table rule (v1.20.0):** the numbers live once, in `Rules.SpoorRow` /
@@ -97,6 +97,20 @@ robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
 (`/XD bin obj publish` keeps the .NET build output out of the deliverable; robocopy exit
 codes 0–7 are success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and
 re-zip to `GritKeeper.zip`.
+
+**Counts that appear in prose must be derived, not typed (v1.20.1).** The app told Keepers its
+reference screen held eleven leaves for two releases while it held thirteen. `RefLeafCount` is now
+`RefLeafTitles.Length`, the deck is built by zipping those titles with the renderers, and every
+mention interpolates it (the five-minute lesson in `Menus.cs`, `GK/source/README.md`, this doc).
+`--selftest` builds the deck on purpose — tabs are realized lazily, so nothing else touches it —
+and checks each title has a renderer. Apply the same shape to any other number the prose quotes.
+
+**`package.ps1` handles a running app (v1.20.1).** If GritKeeper is running out of `GritKeeper\app\`
+it holds its own exe, and the copy step used to die on a raw file-lock error mid-release. The script
+now finds the process, names it with pid and start time, and falls back to a staging tree so the zip
+is still correct — the running instance is never touched, and it says plainly that `GritKeeper\app`
+stays on its old build until closed. Pass `-Staged` to force that path. It also verifies the zip's
+contents before declaring itself ready and prints the matching `gh release create` line.
 
 **This is now scripted: `sign.ps1` + `package.ps1`.** `sign.ps1` Authenticode-signs the
 published exe with the code-signing cert in `CurrentUser\My` (native
@@ -502,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.20.0) — the C# desktop app
+## GritKeeper (v1.20.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -675,7 +689,7 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   v1.6: **"The Hand Behind It" left the Grounds dropdown** — it's the villain picker,
   not a terrain, and read like a stray creature there (user-reported); it now has its
   own button under the terrain roller, same safe-table logic.
-- **Reference** — rebuilt in v1.4 as a paged Keeper's screen (**13 leaves** as of v1.20.0) (◀ ▶ buttons or
+- **Reference** — rebuilt in v1.4 as a paged Keeper's screen (**13 leaves**, counted from `RefLeafTitles`) (◀ ▶ buttons or
   Left/Right arrows — captured in `ProcessCmdKey` so focus doesn't matter; the deck wraps).
   Each leaf is monospace tables with Blood-red header bands (`RTbl` helper; last column
   word-wraps): four degrees + DC ladder, Iron Code, wounds + Lasting Injuries, the full
