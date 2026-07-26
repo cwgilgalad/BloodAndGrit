@@ -1,4 +1,4 @@
-namespace BloodAndGritKeeper;
+﻿namespace BloodAndGritKeeper;
 
 public partial class MainForm
 {
@@ -747,7 +747,7 @@ public partial class MainForm
                 foreach (var o in key == "compass" ? CharGen.CompassOptions() : CharGen.Flavor(key)) cb.Items.Add(o);
                 cb.Text = current ?? "";
                 row.Controls.Add(cb);
-                row.Controls.Add(Btn("🎲", (s, e) => cb.Text = (string)cb.Items[Rules.Rng.Next(cb.Items.Count)], 40));
+                row.Controls.Add(Btn("🎲", (s, e) => cb.Text = (string)cb.Items[Rules.Rng.Next(cb.Items.Count)], 40, "Let the dice choose this one"));
                 col.Controls.Add(row);
                 return cb;
             }

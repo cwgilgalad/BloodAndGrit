@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.Json;
 
 namespace BloodAndGritKeeper;
@@ -140,8 +140,12 @@ public partial class MainForm : Form
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
         statusLoaded = new ToolStripStatusLabel(StatusLoadedText()) { ForeColor = Ink };
         status.Items.Add(statusLoaded);
-        var spring = new ToolStripStatusLabel { Spring = true };
-        status.Items.Add(spring);
+        // The last thing that happened, said where the Keeper is looking. Every action already
+        // answered in the roll log — but the roll log lives on the Dice tab, so from the Posse or
+        // the Tracker a button that declined (nothing selected, no soul made yet) looked like a
+        // button that did nothing at all. That's the "some buttons don't work" report.
+        statusSay = new ToolStripStatusLabel("") { Spring = true, ForeColor = Ink, TextAlign = ContentAlignment.MiddleLeft };
+        status.Items.Add(statusSay);
         undoStatusBtn = new ToolStripButton("⟲ Undo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
         redoStatusBtn = new ToolStripButton("⟳ Redo") { Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text };
         undoStatusBtn.Click += (s, e) => Undo();
@@ -191,6 +195,7 @@ public partial class MainForm : Form
 
     // ---------------------------------------------------------- the table's mode
     ToolStripStatusLabel statusLoaded;
+    ToolStripStatusLabel statusSay;
 
     static string ModeLabel(RunMode m) => m switch
     {
@@ -238,7 +243,7 @@ public partial class MainForm : Form
     {
         using var f = new Form
         {
-            Text = "Blood & Grit — GritKeeper", Width = 560, Height = 430,
+            Text = "Blood & Grit — GritKeeper", Width = 560, Height = 470,
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterScreen,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = AppIcon != null, BackColor = Paper
         };
@@ -260,12 +265,18 @@ public partial class MainForm : Form
         var radios = new List<RadioButton>();
         foreach (var c in cards)
         {
+            // UseMnemonic off, or the ampersand in "dice & books" is swallowed as a keyboard
+            // mnemonic and the mode reads "Keeper — with dice  books" (the same trap the Labels
+            // hit back in v1.4).
             var rb = new RadioButton { Left = 24, Top = y, Width = 500, Height = 22, Text = c.head,
-                Font = new Font("Segoe UI Semibold", 10.5f), ForeColor = Ink, Checked = c.mode == current };
+                Font = new Font("Segoe UI Semibold", 10.5f), ForeColor = Ink, Checked = c.mode == current,
+                UseMnemonic = false };
             var mode = c.mode; rb.CheckedChanged += (s, e) => { if (rb.Checked) picked = mode; };
             f.Controls.Add(rb); radios.Add(rb);
-            f.Controls.Add(new Label { Left = 44, Top = y + 24, Width = 480, Height = 44, Text = c.blurb, ForeColor = Ink });
-            y += 84;
+            // 44px held three lines and the longest blurb runs to four — it was cut mid-sentence.
+            f.Controls.Add(new Label { Left = 44, Top = y + 24, Width = 480, Height = 58, Text = c.blurb,
+                ForeColor = Ink, UseMnemonic = false });
+            y += 96;
         }
         if (!radios.Any(r => r.Checked)) radios[2].Checked = true;
 
@@ -330,8 +341,50 @@ public partial class MainForm : Form
     }
 
     // ---------------------------------------------------------- shared helpers
+    /// <summary>The app is declining to act — nothing is selected, nothing has been made yet.
+    /// Says so in red on the status bar as well as in the log, so the refusal is visible from
+    /// whatever tab the button was pressed on.</summary>
+    void Nope(string s) { Log(s); Say(s, Blood); }
+
+    /// <summary>Put a line on the status bar. Called for every logged event, so the bar always
+    /// carries the last thing the app did.</summary>
+    void Say(string s, Color c)
+    {
+        if (statusSay == null) return;          // logged before the shell was built
+        statusSay.ForeColor = c;
+        statusSay.Text = s;
+        statusSay.ToolTipText = s;
+    }
+
+    Panel resultCard;
+    Label resultBig, resultSub;
+
+    /// <summary>Put a roll's outcome on the Dice tab's card: the headline big and graded by the
+    /// same colors the log uses, the working underneath it in plain words. Long headlines (a
+    /// degree name) step down a size rather than clipping.</summary>
+    void ShowResult(string big, string sub, Color c)
+    {
+        if (resultBig == null) return;              // rolled before the Dice tab was ever built
+        resultBig.Text = big;
+        resultBig.ForeColor = c;
+        resultBig.Font = new Font("Segoe UI", big.Length > 12 ? 18f : big.Length > 6 ? 24f : 30f, FontStyle.Bold);
+        resultSub.Text = sub;
+    }
+
+    /// The color a four-degrees result is read in — shared with the roll log so one outcome is
+    /// never gold in one place and rust in another.
+    static Color DegreeColor(string degree) => degree switch
+    {
+        "CRITICAL SUCCESS" => RollCritGood,
+        "CRITICAL FAILURE" => RollCritBad,
+        "Success"          => RollGood,
+        "Failure"          => RollBad,
+        _                  => RollNeutral,
+    };
+
     void Log(string s)
     {
+        Say(s, Ink);
         string line = $"[{DateTime.Now:HH:mm}] {s}";
         // The list is the record; the ListBox is a view of it that may not exist yet.
         logLines.Insert(0, line);
@@ -781,7 +834,7 @@ public partial class MainForm : Form
     void MovePC(int delta)
     {
         var p = SelectedPC();
-        if (p == null) { Log("Select a soul first."); return; }
+        if (p == null) { Nope("Select a soul first."); return; }
         int i = party.IndexOf(p), j = i + delta;
         if (j < 0 || j >= party.Count) return;
         int col = posseGrid.CurrentCell?.ColumnIndex ?? 0;
@@ -831,7 +884,7 @@ public partial class MainForm : Form
     void AdjustPC(int sign)
     {
         var p = SelectedPC();
-        if (p == null) { Log("Select a soul first."); return; }
+        if (p == null) { Nope("Select a soul first."); return; }
         int v = (int)adjAmount.Value;
         p.BloodCur = Math.Clamp(p.BloodCur + sign * v, 0, p.BloodMax);
         Log($"{p.Name} {(sign < 0 ? "takes" : "recovers")} {v} Blood → {p.BloodCur}/{p.BloodMax}" + (p.BloodCur == 0 ? "  — DOWN." : ""));
@@ -840,7 +893,7 @@ public partial class MainForm : Form
 
     void DreadCheckPC(PartyMember p)
     {
-        if (p == null) { Log("Select a soul first."); return; }
+        if (p == null) { Nope("Select a soul first."); return; }
         int dc = (int)dreadDc.Value, tier = (int)dreadTier.Value;
         int die = Rules.Rng.Next(1, 21);
         var (idx, deg, detail) = Rules.FourDegrees(die, p.Will, dc);
@@ -869,7 +922,7 @@ public partial class MainForm : Form
 
     void RestSoul(PartyMember p)
     {
-        if (p == null) { Log("Select a soul first."); return; }
+        if (p == null) { Nope("Select a soul first."); return; }
         p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax;
         MirrorToTracker(p); posseGrid?.Refresh();
         Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
@@ -1057,7 +1110,8 @@ public partial class MainForm : Form
         foreach (int n in new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 })
         {
             int digit = n;
-            opsPad.Controls.Add(Btn(digit.ToString(), (s, e) => ExprAppend(digit.ToString()), 40));
+            opsPad.Controls.Add(Btn(digit.ToString(), (s, e) => ExprAppend(digit.ToString()), 40,
+                $"Type {digit} into the modifier"));
         }
         opsPad.Controls.Add(Btn("⌫", (s, e) =>
         { if (exprBox.TextLength > 0) exprBox.Text = exprBox.Text[..^1]; ExprFocusEnd(); }, 40, "Backspace"));
@@ -1072,6 +1126,8 @@ public partial class MainForm : Form
                 int r = Rules.Rng.Next(1, d + 1);
                 AnimateDice(new() { (d, r, 1) });
                 Log($"d{d} → {r}");
+                ShowResult(r.ToString(), $"one d{d}" + (r == d ? " — the best face" : r == 1 ? " — a one" : ""),
+                    r == d ? RollCritGood : r == 1 ? RollCritBad : RollNeutral);
             }, 54, $"Roll one d{d} now"));
         left.Controls.Add(quick);
 
@@ -1087,7 +1143,8 @@ public partial class MainForm : Form
             var (_, deg, det) = Rules.FourDegrees(die, (int)modBox.Value, (int)dcBox.Value);
             AnimateDice(new() { (20, die, 1) });
             Log($"CHECK — {det} → {deg}");
-        }, 84));
+            ShowResult(deg, det, DegreeColor(deg));
+        }, 84, "Roll a d20 against the DC and read the four degrees"));
         left.Controls.Add(checkRow);
         left.Controls.Add(Lbl("Beat the DC by 10 (or nat 20) → critical success."));
         left.Controls.Add(Lbl("Miss by 10 (or nat 1) → critical failure."));
@@ -1106,6 +1163,22 @@ public partial class MainForm : Form
         var right = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
         var logHead = new Label { Text = "  Roll && event log", Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
+        // The last roll, said loud. The log is the record and the tray shows the dice, but the
+        // one thing a Keeper actually wants — what did it come to, and did it beat the DC — was
+        // a line of 9pt monospace among four hundred others (user-reported). It now gets its own
+        // card at the top of the pane, in the same colors the log grades by.
+        resultCard = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Color.FromArgb(252, 249, 240), Padding = new Padding(12, 6, 12, 6) };
+        resultSub = new Label { Dock = DockStyle.Bottom, Height = 22, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
+        resultBig = new Label { Dock = DockStyle.Fill, ForeColor = Ink, Font = new Font("Segoe UI", 30f, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
+        resultCard.Controls.Add(resultBig);
+        resultCard.Controls.Add(resultSub);
+        resultCard.Paint += (s, e) =>          // a hairline under the card, so it reads as its own thing
+        {
+            using var p = new Pen(Color.FromArgb(196, 181, 148), 1f);
+            e.Graphics.DrawLine(p, 0, resultCard.Height - 1, resultCard.Width, resultCard.Height - 1);
+        };
+        ShowResult("—", "Roll something and the result lands here.", Ink);
+
         diceTray = new DiceTray { Dock = DockStyle.Top, Height = 84, BackColor = Color.FromArgb(243, 237, 221) };
         diceTray.Paint += PaintDiceTray;
         diceTimer = new System.Windows.Forms.Timer { Interval = 40 };
@@ -1120,14 +1193,17 @@ public partial class MainForm : Form
         };
 
         var logBar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 40 };
-        logBar.Controls.Add(Btn("Copy log", (s, e) => { if (rollLog.Items.Count > 0) Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())); }, 90));
+        logBar.Controls.Add(Btn("Copy log", (s, e) => { if (rollLog.Items.Count > 0) Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())); }, 90,
+            "Copy every line of the log to the clipboard"));
         logBar.Controls.Add(Btn("Clear log", (s, e) =>
         {
             if (rollLog.Items.Count == 0) return;
             if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
             { rollLog.Items.Clear(); logLines.Clear(); }
-        }, 90));
-        right.Controls.Add(rollLog); right.Controls.Add(diceTray); right.Controls.Add(logHead); right.Controls.Add(logBar);
+        }, 90, "Wipe the log — the rolls themselves are already spent"));
+        // Added last among the top-docked children, so the card sits above the heading and the tray.
+        right.Controls.Add(rollLog); right.Controls.Add(diceTray); right.Controls.Add(logHead);
+        right.Controls.Add(resultCard); right.Controls.Add(logBar);
 
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(right);
@@ -1158,9 +1234,15 @@ public partial class MainForm : Form
     void RollExprBox()
     {
         var (t, br, dice) = Rules.RollExprFull(exprBox.Text);
-        if (br == "could not parse" || br == "empty") { Log($"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3."); return; }
+        if (br == "could not parse" || br == "empty")
+        {
+            Nope($"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3.");
+            ShowResult("?", $"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3.", Blood);
+            return;
+        }
         AnimateDice(dice);
         Log($"ROLL {exprBox.Text} → {t}   ({br})");
+        ShowResult(t.ToString(), br, RollNeutral);   // the breakdown already names the dice
     }
 
     // ---------------------------------------------------------- dialogs

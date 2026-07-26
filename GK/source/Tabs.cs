@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace BloodAndGritKeeper;
 
@@ -179,8 +179,10 @@ public partial class MainForm
         encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         top.Controls.Add(encQty);
         top.Controls.Add(Btn("＋ Add", (s, e) => AddPickToEncounter(), 75, "Add it to the plan (or press Enter in the box)"));
-        top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85));
-        top.Controls.Add(Btn("Clear", (s, e) => { if (encounter.Count > 0 && Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); } }, 65));
+        top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85,
+            "Take the selected foe out of the encounter"));
+        top.Controls.Add(Btn("Clear", (s, e) => { if (encounter.Count > 0 && Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); } }, 65,
+            "Empty the encounter and start costing a new one"));
         top.Controls.Add(Btn("Send all → Tracker", (s, e) => { foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature); }, 150, "Put every listed creature on the battlefield"));
 
         encGrid = new DataGridView
@@ -242,7 +244,7 @@ public partial class MainForm
     void AddPickToEncounter()
     {
         var c = Db.Find((encPick.Text ?? "").Trim());
-        if (c == null) { Log("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         int n = (int)encQty.Value;
         for (int i = 0; i < n; i++) encounter.Add(new EncounterPick(c));
         RefreshEncounter();
@@ -278,7 +280,7 @@ public partial class MainForm
     void AddPickToTracker()
     {
         var c = Db.Find((trkPick.Text ?? "").Trim());
-        if (c == null) { Log("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         AddCreatureToTracker(c, (int)trkQty.Value);
     }
 
@@ -536,7 +538,7 @@ public partial class MainForm
 
     void ApplyCondition(string cond)
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         var set = c.Conditions.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
         // a valued condition supersedes its other steps (one Frightened, not three)
         string family = cond.Split(' ')[0];
@@ -549,7 +551,7 @@ public partial class MainForm
 
     void ClearConditions()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         c.Conditions = ""; trkGrid.Refresh();
         Log($"{c.Name}: conditions cleared.");
     }
@@ -560,7 +562,7 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Log("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
+        if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
         foreach (var c in tracker) c.Conditions = "";
@@ -597,7 +599,7 @@ public partial class MainForm
 
     void AdjustCombatant(int sign)
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         int v = (int)trkAmount.Value;
         int hi = c.BloodMax > 0 ? c.BloodMax : int.MaxValue;   // healing can't outrun the maximum
         c.BloodCur = Math.Clamp(c.BloodCur + sign * v, 0, hi);
@@ -613,7 +615,7 @@ public partial class MainForm
     // The selected combatant's turn begins: three Beats, the next Strike clean (Ch. XI).
     void BeginTurnForSelected()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a combatant first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         c.BeginTurn(); trkGrid.Refresh();
         Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
     }
@@ -623,9 +625,9 @@ public partial class MainForm
     // crit, and the damage after the target's DR — then spend the Beat and apply it.
     void StrikeDialog()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Log("Select the attacker first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Nope("Select the attacker first."); return; }
         var foes = tracker.Where(t => !ReferenceEquals(t, attacker)).ToList();
-        if (foes.Count == 0) { Log("Nothing on the field to strike."); return; }
+        if (foes.Count == 0) { Nope("Nothing on the field to strike."); return; }
 
         // A creature strikes with its OWN attacks, parsed from the Bestiary line; a soul (or a
         // hand-entered row) reaches for the posse's guns. The attacker's Ref names its creature.
@@ -711,6 +713,8 @@ public partial class MainForm
                 ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced)
                 : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList, forced);
             Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $"  — {catks[idx].Effect}." : ""));
+            // the Strike reads on the Dice tab's card too, graded like any other check
+            ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh(); Sync();   // Beats/MAP moved on; keep the dialog live for a follow-up Strike
         }
@@ -720,9 +724,9 @@ public partial class MainForm
     // ladder on a failure, Frightened on a critical failure — and, at 0 Nerve, the break table.
     void DreadDialog()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Log("Select a soul first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a soul first."); return; }
         var soul = SoulOf(c);
-        if (soul == null) { Log("Dread Checks are for the posse — select a player's soul."); return; }
+        if (soul == null) { Nope("Dread Checks are for the posse — select a player's soul."); return; }
 
         using var f = new Form { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
@@ -753,6 +757,7 @@ public partial class MainForm
         {
             var o = Horror.DreadCheck(soul.Will, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
             Log($"{soul.Name}: {o.Line}");
+            ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
             if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
             if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
             if (soul.NerveCur == 0)
@@ -778,7 +783,7 @@ public partial class MainForm
         left.Controls.Add(Btn("A town, in three rolls", (s, e) => Gen(
             $"THE TOWN OF {Db.Pick("townFront").ToUpper()} {Db.Pick("townBack").ToUpper()}\n" +
             $"  What ails it:  {Db.Pick("townAils")}\n" +
-            $"  What it hides: {Db.Pick("townSecret")}"), 230));
+            $"  What it hides: {Db.Pick("townSecret")}"), 230, "Roll a town: its name, what ails it, what it hides"));
         // The city generator's four rolls answer the four questions the Keeper's Book (Ch. XIV)
         // says a city needs beyond a town's want/tell/secret: an industry quarter, a machine,
         // a wrong note, and something for a country posse to actually be hired for.
@@ -786,16 +791,16 @@ public partial class MainForm
             $"A CITY — {Db.Pick("cityQuarter").ToUpper()}\n" +
             $"  Who really runs it: {Db.Pick("cityMachine")}\n" +
             $"  Its wrong note:     {Db.Pick("cityWrongNote")}\n" +
-            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230));
+            $"  Work for a posse:   {Db.Pick("cityJob")}"), 230, "Roll a city: its quarter, its machine, its wrong note, and work for a posse"));
         left.Controls.Add(Btn("A face, in four rolls", (s, e) => Gen(
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
-            $"  Tell:  {Db.Pick("npcTell")}"), 230));
-        left.Controls.Add(Btn("Bar talk — a rumor", (s, e) => Gen("RUMOR — " + Db.Pick("rumors")), 230));
-        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day) — " + Db.Pick("trailDay")), 230));
-        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night) — " + Db.Pick("trailNight")), 230));
-        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND — " + Db.Pick("plunder")), 230));
-        left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230));
+            $"  Tell:  {Db.Pick("npcTell")}"), 230, "Roll a face: a name, what they want, and the tell that gives them away"));
+        left.Controls.Add(Btn("Bar talk — a rumor", (s, e) => Gen("RUMOR — " + Db.Pick("rumors")), 230, "What they're saying in the saloon"));
+        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day) — " + Db.Pick("trailDay")), 230, "Something met on the trail between dawn and dusk"));
+        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night) — " + Db.Pick("trailNight")), 230, "Something met on the trail after dark"));
+        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND — " + Db.Pick("plunder")), 230, "What's worth carrying off"));
+        left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230, "A sign the country is wrong here"));
 
         left.Controls.Add(Heading("The Grounds — encounters by terrain"));
         // "The Hand Behind It" is the villain picker, not a terrain — in the dropdown it
@@ -817,17 +822,17 @@ public partial class MainForm
         foreach (var k in Db.Terrain.Keys) if (k != villainTable) terr.Items.Add(k);
         terr.SelectedIndex = 0;
         left.Controls.Add(terr);
-        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230));
+        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground — the safe-table rule is applied for you"));
         left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
             "Who's truly behind the trouble — the villain picker, its own table in the book"));
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
-        left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112));
+        left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112, "Copy everything rolled so far to the clipboard"));
         left.Controls.Add(Btn("Clear", (s, e) =>
         {
             if (genOut.TextLength == 0) return;
             if (Confirm("Clear the generator output?")) genOut.Clear();
-        }, 112));
+        }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
         split.Panel1.Controls.Add(left);
@@ -1283,11 +1288,11 @@ public partial class MainForm
 
         var clocksGroup = new GroupBox { Text = "Threads && clocks", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         var cbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
-        cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110));
-        cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90));
+        cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110, "Start a new thread of trouble, with a clock to run it down"));
+        cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
         cbar.Controls.Add(Btn("Clear threads", (s, e) =>
         {
-            if (clocks.Count == 0) { Log("No threads to clear."); return; }
+            if (clocks.Count == 0) { Nope("No threads to clear."); return; }
             if (Confirm($"Clear all {clocks.Count} thread(s) and their clocks for a fresh start?"))
             { clocks.Clear(); RefreshClocks(); Log("All threads cleared — the board is clean."); }
         }, 105, "Delete every thread and clock at once"));
