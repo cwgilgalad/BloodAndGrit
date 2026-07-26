@@ -8,6 +8,44 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 · GritKeeper v1.20.0 — sign and
+  spoor, and a wording pass (2026-07-26, user-requested).**
+
+  - **The safe-table rule is a rule now, not a sentence.** It said a horror two or more Tiers over
+    the posse "arrives as sign and spoor, not in the flesh" and stopped there — which told a Keeper
+    what not to run and left them to invent the scene. The Bestiary's Grounds appendix gains a
+    **Sign &amp; Spoor** section that runs it: what the words mean, a Survival DC to read the trace
+    by the thing's Tier (12 at I up to 20 at V), a Dread Check **one rung below meeting the thing**
+    (nothing at Tier I — out here a cougar kills a calf), what is left on the ground at each Tier,
+    what each of the four degrees actually buys a tracker, and the **four-segment clock** that turns
+    the monster into a thread.
+  - **"Spoor" is finally defined.** It appeared in three books and the app without ever being
+    glossed. Spoor is the physical trace — track, scat, hair on wire, blood, a scrape on a tree at a
+    height that ends the conversation; sign is everything wider. Defined in the Player's Book under
+    Reading the country, in the Keeper's Book, and in the Bestiary.
+  - **The Keeper's Book never mentioned the rule at all** — the one chapter a Keeper reads to learn
+    how to build a fight. Ch. IV now carries **The Safe-Table Rule**, with the numbers and a
+    Keeper's-eye note on why it is a pacing tool rather than a restriction.
+  - **In the app:** a new **Safe-Table Rule — Sign &amp; Spoor** block on the Reference deck's Long
+    Odds leaf, rendered from `Rules.SpoorRow` so it cannot drift from the books; and rolling a ground
+    on the Generators tab now prints the whole scene — the trace, the Survival DC, the Dread Check,
+    the clock — instead of only flagging that the rule applies. Backed by `Rules.SpoorRow` /
+    `SpoorRead` / `SpoorClockSegments`, with the "one rung below" claim asserted against the book's
+    own Threat-by-Tier Dread DCs.
+  - **A wording pass over everything, and it found the fault in the app rather than the books.**
+    Every marker for machine-written prose was measured across all three books: negative
+    parallelism, stock vocabulary, conversational filler, rhetorical shapes, hedging density, triad
+    density, and sentence-length variance. The books came back clean — burstiness 0.91–1.52 against
+    a generated-text threshold near 0.45, hedging under 1.4 per thousand words, and zero hits on
+    every filler pattern. The **app-side table entries** were another matter: measured against the
+    book's own entries they ran 21–88% longer, every one of them, with single-clause entries
+    collapsing from 75% to 25%. Each carried a trailing clause explaining what it had already
+    implied. **129 entries rewritten** to the book's economy across all thirteen prose tables.
+
+  Smoke suite **10,418 assertions, all green**; books measure clean (200 / 101 / 166 pages, page
+  parity, zero true-scale clipping, zero mobile h-scroll, every anchor resolving); whitespace audit
+  shows no mid-flow gaps; PDFs regenerated and verified.
+
 - **GritKeeper v1.19.1 — the last of the generators, and a repo/doc audit (2026-07-26,
   user-requested).**
 
