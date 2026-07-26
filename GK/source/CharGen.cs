@@ -262,7 +262,11 @@ public static class CharGen
 
     static T Pick<T>(List<T> list) => list[Rules.Rng.Next(list.Count)];
 
-    static List<string> FlavorList(string key)
+    /// <summary>One of the colour pools in chargen.json — vices, what a soul lost, what they've
+    /// seen, what moves them, the gendered given names. Internal rather than private so the smoke
+    /// rig can hold each pool to a depth: a thin pool repeats over a campaign, and a pool that
+    /// silently emptied would still generate perfectly valid, identical souls.</summary>
+    internal static List<string> FlavorList(string key)
     {
         var l = new List<string>();
         foreach (var e in D.flavor.GetProperty(key).EnumerateArray()) l.Add(e.GetString());
