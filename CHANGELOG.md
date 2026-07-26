@@ -18,6 +18,18 @@ Desktop\Git repos.)
     mention interpolates it: the five-minute lesson, the README, the handoff doc. Adding a leaf
     updates the prose by construction. `--selftest` builds the deck on purpose and checks every
     title has a renderer beside it — **16/16 checks now, up from 13**.
+  - **The zip was shipping the packager's own `prefs.json`.** Found immediately after release, by
+    the zip-contents check added below — the very first in-place package it ran on. `package.ps1`
+    stripped the runtime `session.json` from `app/` and had never stripped `prefs.json`, so the
+    v1.20.1 asset carried `{"Mode": "KeeperDice", "Remember": true}`: every download would have
+    launched straight into someone else's run mode and never seen the chooser. The script now
+    clears every file the app writes beside itself, and **refuses to declare a zip ready if
+    `app/` holds anything but the exe**. The asset was rebuilt and re-uploaded; the exe itself is
+    byte-identical, so the version stands.
+  - **A stale `GK/source/sign.ps1`** (19 July) sat beside the root `sign.ps1` that supersedes it
+    (24 July, and the one the release flow documents), and shipped in every source bundle. Two
+    signing scripts, one of them out of date, is a trap. Removed — it is in git history at
+    `2e09118` if it is ever wanted.
   - **`package.ps1` died on a file lock when GritKeeper was running from the delivered folder.**
     It failed twice this session, two thirds of the way through a release, as a raw `Copy-Item`
     access error naming no cause. It now looks for the process first, names it with its pid and
