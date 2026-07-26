@@ -9,7 +9,7 @@ public partial class MainForm
     // MapGen draws a named frontier survey. The preview here, the SVG export, and
     // the PDF export all replay the same primitive list, so they always match.
     ComboBox mapGround, mapScale, mapTime, mapWater;
-    CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets;
+    CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets, mapMarkOut;
     NumericUpDown mapLm, mapSeed;
     MapPanel mapPanel;
     MapModel curMap;
@@ -37,6 +37,11 @@ public partial class MainForm
     int secDragIdx = -1;
     bool secDragMoved;
     readonly Dictionary<int, (float x, float y)> secEdits = new();
+
+    // The settlement moves by the same hand. There's only ever one, so it needs no key —
+    // just where the Keeper put it, held for as long as the map number holds.
+    bool townDrag, townDragMoved;
+    (float x, float y)? townEdit;
 
     // View state — zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
     // Wheel to zoom at the cursor, drag empty ground to pan, Fit to come home.
@@ -153,44 +158,62 @@ public partial class MainForm
             "Fit the whole survey back in the window"));
 
         // ---- row 3: at the table, then out the door ----
+        // The old label just read "✥ Landmarks", which named a thing rather than an action — you
+        // had to already know that pressing it let you move anything (user-reported). It now says
+        // what it does, and stays saying it while it's held down.
         lmEditBtn = new CheckBox
         {
-            Text = "✥ Landmarks", Appearance = Appearance.Button, AutoSize = false,
-            Width = 105, Height = 32, Margin = new Padding(3),
+            Text = "✥ Move things", Appearance = Appearance.Button, AutoSize = false,
+            Width = 118, Height = 32, Margin = new Padding(3),
             FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        Tip.SetToolTip(lmEditBtn, "Move the survey's own marks: while pressed, drag a named landmark — or a red " +
-            "Keeper's-layer mark, when shown — to reposition it; right-click one to put it back. " +
-            "Placements hold for this map number.");
+        Tip.SetToolTip(lmEditBtn, "Press to pick things up. While it's down, drag the town, any named landmark, " +
+            "or a red Keeper's-layer mark to a better spot — right-click one to put it back where the survey " +
+            "drew it. Placements hold for this map number, and exports carry them.");
         lmEditBtn.CheckedChanged += (s, e) =>
         {
             lmEditMode = lmEditBtn.Checked;
-            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; }
+            lmEditBtn.Text = lmEditMode ? "✥ Moving — on" : "✥ Move things";
+            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; townDrag = false; }
             mapPanel.Invalidate();
-            if (lmEditMode) Log("Placement: drag a named landmark (or a red secret, when shown); right-click to put it back.");
+            if (lmEditMode) Log("Moving is on: drag the town, a landmark, or a red secret. Right-click one to put it back.");
         };
         rowWork.Controls.Add(lmEditBtn);
         rowWork.Controls.Add(Btn("＋ Marker ▾", (s, e) => ShowMarkerMenu((Button)s), 100,
             "Place a marker — a posse soul, an NPC, or a creature — then drag it into position"));
         rowWork.Controls.Add(Btn("Tracker → Map", (s, e) => TrackerToMap(), 110,
             "Drop everyone on the Tracker onto the map — posse west, trouble east"));
+        rowWork.Controls.Add(Btn("Marker colors ▾", (s, e) => ShowKindInkMenu((Button)s), 112,
+            "Choose the ink for each kind of marker — and remember it. A single marker can also take " +
+            "a color of its own: right-click it on the map."));
         rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
         {
-            if (mapMarkers.Count == 0) { Log("No markers on the map."); return; }
+            if (mapMarkers.Count == 0) { Nope("No markers on the map."); return; }
             if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
             mapMarkers.Clear(); CaptureUndo(); mapPanel.Invalidate();
             Log("The map is cleared of markers.");
         }, 105, "Remove every marker from the map"));
         rowWork.Controls.Add(Sep());
         rowWork.Controls.Add(Lbl("Export:"));
+        // Markers are the table's business, not the survey's, so a saved map leaves them off unless
+        // the Keeper says otherwise — a map for the players shouldn't show them where the ambush is.
+        // The checkbox is here, beside the save buttons, because that's the moment the question comes up.
+        mapMarkOut = new CheckBox
+        { Text = "with markers", AutoSize = true, Margin = new Padding(2, 7, 6, 3), ForeColor = Ink, UseMnemonic = false };
+        Tip.SetToolTip(mapMarkOut, "Off, a saved SVG or PDF is the survey alone — the markers stay on screen. " +
+            "On, they're drawn onto the file too, in the colors shown here.");
+        rowWork.Controls.Add(mapMarkOut);
         rowWork.Controls.Add(Btn("Save SVG…", (s, e) => MapSaveSvg(), 95,
             "Save the map as a scalable SVG file — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Save PDF…", (s, e) => MapSavePdf(), 95,
             "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
-        { if (curMap != null) { Clipboard.SetText(MapGen.ToSvg(curMap)); Log("Map SVG copied to the clipboard."); } }, 90,
-            "Copy the SVG markup to the clipboard"));
+        {
+            if (curMap == null) return;
+            Clipboard.SetText(MapGen.ToSvg(curMap, MarkerOverlay()));
+            Log("Map SVG copied to the clipboard" + MarkerNote() + ".");
+        }, 90, "Copy the SVG markup to the clipboard"));
 
         mapPanel = new MapPanel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(236, 229, 212) };
         mapPanel.Paint += (s, e) =>
@@ -246,9 +269,9 @@ public partial class MainForm
         mapBusy = true;
         if (newSeed) mapSeed.Value = Rules.Rng.Next(0, 1000000);
         curMap = MapGen.Generate(MapSpecFromUi());
-        lmDragIdx = -1; secDragIdx = -1;                  // the model they pointed into is gone
+        lmDragIdx = -1; secDragIdx = -1; townDrag = false;   // the model they pointed into is gone
         int seed = (int)mapSeed.Value;
-        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); lmEditSeed = seed; }
+        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); townEdit = null; lmEditSeed = seed; }
         else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
         {
             for (int i = 0; i < curMap.Landmarks.Count; i++)
@@ -257,11 +280,35 @@ public partial class MainForm
             for (int i = 0; i < curMap.Secrets.Count; i++)
                 if (secEdits.TryGetValue(i, out var at))
                     MapGen.MoveSecret(curMap, i, at.x, at.y);
+            if (townEdit is (float tex, float tey)) MapGen.MoveTown(curMap, tex, tey);
         }
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
         Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value}.");
+        // Say it plainly when the survey wanted the town in the river and it was seated on the
+        // bank instead — otherwise a map number that used to draw a town in the water quietly
+        // draws it somewhere else, and that reads like a bug.
+        if (curMap.TownSeated && curMap.Town != null)
+            Log($"{curMap.Town.Name} was seated on the bank — the survey had it standing in the water.");
+    }
+
+    /// <summary>The markers as export ink, or null for "the survey alone". Null rather than an empty
+    /// list when the box is unchecked, so the writers take their no-overlay path outright.</summary>
+    List<Prim> MarkerOverlay()
+        => mapMarkOut != null && mapMarkOut.Checked && mapMarkers.Count > 0 && curMap != null
+            ? MapGen.MarkerPrims(mapMarkers, curMap.W, curMap.H)
+            : null;
+
+    /// <summary>What to say about the markers when a file is written. A map that quietly comes out
+    /// without the markers the Keeper spent ten minutes arranging is a map they'll assume is broken,
+    /// so the log says which way it went — and, when they're left off, where the switch is.</summary>
+    string MarkerNote()
+    {
+        if (mapMarkers.Count == 0) return "";
+        return mapMarkOut != null && mapMarkOut.Checked
+            ? $" — {mapMarkers.Count} marker(s) drawn on it"
+            : $" — the survey alone; {mapMarkers.Count} marker(s) stayed on screen (tick “with markers” to include them)";
     }
 
     static string MapSlug(string title) =>
@@ -279,8 +326,8 @@ public partial class MainForm
         if (d.ShowDialog(this) != DialogResult.OK) return;
         try
         {
-            File.WriteAllText(d.FileName, MapGen.ToSvg(curMap), new UTF8Encoding(false));
-            Log($"Map saved: {Path.GetFileName(d.FileName)}.");
+            File.WriteAllText(d.FileName, MapGen.ToSvg(curMap, MarkerOverlay()), new UTF8Encoding(false));
+            Log($"Map saved: {Path.GetFileName(d.FileName)}{MarkerNote()}.");
         }
         catch (Exception ex)
         {
@@ -300,8 +347,8 @@ public partial class MainForm
         if (d.ShowDialog(this) != DialogResult.OK) return;
         try
         {
-            File.WriteAllBytes(d.FileName, Pdf.MapPdf(curMap));
-            Log($"Map saved: {Path.GetFileName(d.FileName)} (landscape Letter).");
+            File.WriteAllBytes(d.FileName, Pdf.MapPdf(curMap, MarkerOverlay()));
+            Log($"Map saved: {Path.GetFileName(d.FileName)} (landscape Letter){MarkerNote()}.");
         }
         catch (Exception ex)
         {
@@ -324,8 +371,7 @@ public partial class MainForm
         foreach (var mk in mapMarkers)
         {
             float x = ox + Math.Clamp(mk.X, 0, m.W) * s, y = oy + Math.Clamp(mk.Y, 0, m.H) * s;
-            Color c = mk.Kind == "posse" ? Verdigris : mk.Kind == "npc" ? Gold : Blood;
-            using var b = new SolidBrush(c);
+            using var b = new SolidBrush(Color.FromArgb(MapInk.Of(mk)));
             g.FillEllipse(b, x - 8, y - 8, 16, 16);
             g.DrawEllipse(mk == dragMarker ? held : ink, x - 8, y - 8, 16, 16);
             var sz = g.MeasureString(mk.Label, f);
@@ -366,6 +412,9 @@ public partial class MainForm
                 secDragIdx = HitSecret(e.Location);
                 secDragMoved = false;
                 if (secDragIdx >= 0) { mapPanel.Invalidate(); return; }
+                // the town is tested last: a landmark standing in the town's streets is the
+                // smaller, more precise target, so it wins the click
+                if (HitTown(e.Location)) { townDrag = true; townDragMoved = false; mapPanel.Invalidate(); return; }
             }
             if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
             {
@@ -414,9 +463,20 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
+            if (townDrag && m.Town != null)
+            {
+                // a town needs more elbow room than a single mark — it carries its street and its name
+                float reach = MapGen.TownReach(mapScale.SelectedIndex);
+                float nx = Math.Clamp((e.X - ox) / sc, reach * 0.4f + 24, m.W - reach * 0.4f - 24);
+                float ny = Math.Clamp((e.Y - oy) / sc, 40, m.H - 72);
+                MapGen.MoveTown(m, nx, ny);
+                townDragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
             // nothing in hand — show what's grabbable under the cursor
             mapPanel.Cursor = HitMarker(e.Location) != null
-                || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0))
+                || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0 || HitTown(e.Location)))
                 ? Cursors.Hand : Cursors.Default;
         };
         mapPanel.MouseUp += (s, e) =>
@@ -427,12 +487,23 @@ public partial class MainForm
                 var mk = HitMarker(e.Location);
                 if (mk != null)
                 {
-                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    var menu = PopupMenu();
                     menu.Items.Add($"Rename {mk.Label}…", null, (ss, ee) =>
                     {
                         string n = AskLine("Rename the marker", mk.Label);
                         if (!string.IsNullOrWhiteSpace(n)) { mk.Label = n.Trim(); CaptureUndo(); mapPanel.Invalidate(); }
                     });
+                    menu.Items.Add(InkMenu($"Color — {MapInk.NameOf(MapInk.Of(mk))}", MapInk.Of(mk),
+                        mk.Argb == MapInk.Unset ? null : $"Back to the {mk.Kind} color",
+                        argb =>
+                        {
+                            mk.Argb = argb;
+                            CaptureUndo(); mapPanel.Invalidate();
+                            Log(argb == MapInk.Unset
+                                ? $"{mk.Label} goes back to the {mk.Kind} color."
+                                : $"{mk.Label} is drawn in {MapInk.NameOf(argb).ToLowerInvariant()} now.");
+                        }));
+                    menu.Items.Add(new ToolStripSeparator());
                     menu.Items.Add($"Remove {mk.Label}", null, (ss, ee) =>
                     { mapMarkers.Remove(mk); CaptureUndo(); mapPanel.Invalidate(); });
                     menu.Show(mapPanel, e.Location);
@@ -442,8 +513,35 @@ public partial class MainForm
                 {
                     var m2 = mapPanel.Model;
                     int li = HitLandmark(e.Location), si = li >= 0 ? -1 : HitSecret(e.Location);
-                    if (li < 0 && si < 0) return;
-                    var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+                    bool onTown = li < 0 && si < 0 && HitTown(e.Location);
+                    if (li < 0 && si < 0 && !onTown) return;
+                    if (onTown)
+                    {
+                        var town = m2.Town;
+                        var tmenu = PopupMenu();
+                        bool wet = MapGen.OnWater(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
+                        var dry = tmenu.Items.Add($"Move {town.Name} onto dry ground", null, (ss, ee) =>
+                        {
+                            var (nx, ny) = MapGen.DryGroundNear(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
+                            if (nx == town.X && ny == town.Y) { Nope($"{town.Name} already stands clear of the water."); return; }
+                            MapGen.MoveTown(m2, nx, ny);
+                            townEdit = (nx, ny);
+                            lmEditSeed = (int)mapSeed.Value;
+                            Log($"{town.Name} moved off the water.");
+                            mapPanel.Invalidate();
+                        });
+                        dry.Enabled = wet;
+                        if (!wet) dry.ToolTipText = "It's already on dry ground.";
+                        tmenu.Items.Add($"Put {town.Name} back where the survey drew it", null, (ss, ee) =>
+                        {
+                            MapGen.MoveTown(m2, town.GenX, town.GenY);
+                            townEdit = null;
+                            mapPanel.Invalidate();
+                        });
+                        tmenu.Show(mapPanel, e.Location);
+                        return;
+                    }
+                    var menu = PopupMenu();
                     if (li >= 0)
                     {
                         var lm = m2.Landmarks[li];
@@ -509,8 +607,31 @@ public partial class MainForm
                 }
                 secDragIdx = -1;
                 mapPanel.Invalidate();
+                return;
+            }
+            if (townDrag)
+            {
+                if (townDragMoved && mapPanel.Model?.Town != null)
+                {
+                    townEdit = (mapPanel.Model.Town.X, mapPanel.Model.Town.Y);
+                    lmEditSeed = (int)mapSeed.Value;
+                }
+                townDrag = false;
+                mapPanel.Invalidate();
             }
         };
+    }
+
+    // The town is grabbed anywhere in its seat — a broad target, since it's a broad thing.
+    bool HitTown(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m?.Town == null) return false;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        if (s <= 0) return false;
+        float x = ox + m.Town.X * s, y = oy + m.Town.Y * s;
+        float r = Math.Max(22f, MapGen.TownReach(mapScale.SelectedIndex) * 0.5f * s);
+        return (p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= r * r;
     }
 
     int HitSecret(Point p)
@@ -531,10 +652,34 @@ public partial class MainForm
     // the grab handle — and the one in hand rings solid. Off, the map stays clean.
     void DrawLandmarkHandles(Graphics g, MapModel m, Rectangle dest)
     {
-        if (!lmEditMode || (m.Landmarks.Count == 0 && m.Secrets.Count == 0)) return;
+        if (!lmEditMode) return;
         var (s, ox, oy) = MapXform(m, dest);
         if (s <= 0) return;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+        // A banner across the top while moving is on, so the mode is never a secret the Keeper
+        // has to remember they turned on.
+        using (var f = new Font("Segoe UI", 9f, FontStyle.Bold))
+        using (var band = new SolidBrush(Color.FromArgb(224, 244, 236, 210)))
+        using (var edge = new Pen(Gold, 1.4f))
+        using (var ink = new SolidBrush(Ink))
+        {
+            string hint = "Moving is on — drag the town, a landmark, or a red secret. Right-click one to put it back.";
+            var sz = g.MeasureString(hint, f);
+            float bw = sz.Width + 22, bx = dest.X + (dest.Width - bw) / 2, by = dest.Y + 6;
+            g.FillRectangle(band, bx, by, bw, sz.Height + 8);
+            g.DrawRectangle(edge, bx, by, bw, sz.Height + 8);
+            g.DrawString(hint, f, ink, bx + 11, by + 4);
+        }
+
+        // the town rings like everything else that can be picked up
+        if (m.Town != null)
+        {
+            float r = Math.Max(24f, MapGen.TownReach(mapScale.SelectedIndex) * 0.5f * s);
+            using var townRing = new Pen(Gold, townDrag ? 2.6f : 1.6f) { DashPattern = new[] { 5f, 3.5f } };
+            float tx = ox + m.Town.X * s, ty = oy + m.Town.Y * s;
+            g.DrawEllipse(townRing, tx - r, ty - r, r * 2, r * 2);
+        }
         using var ring = new Pen(Gold, 1.6f) { DashPattern = new[] { 3f, 2.5f } };
         using var held = new Pen(Gold, 2.6f);
         for (int i = 0; i < m.Landmarks.Count; i++)
@@ -569,7 +714,7 @@ public partial class MainForm
 
     void ShowMarkerMenu(Button host)
     {
-        var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 9.5f) };
+        var menu = PopupMenu();
         foreach (var p in party)
         {
             var soul = p;
@@ -581,6 +726,89 @@ public partial class MainForm
         menu.Items.Add("A creature…", null, (s, e) =>
         { string n = AskLine("Name the creature", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "creature"); });
         menu.Show(host, new Point(0, host.Height));
+    }
+
+    // ---------------------------------------------------------- marker ink
+    // Four riders all drawn the same verdigris are four dots the table argues about. A marker
+    // can take its own color, and a whole kind can be re-inked for good — the first travels in
+    // the session file with the marker, the second in prefs.json with the Keeper.
+
+    // Swatches live as long as the app does. The menus below are rebuilt on every right-click
+    // by design, and an Image handed to a ToolStripItem isn't reliably disposed with the item,
+    // so building them per click would leak a bitmap a click. The palette is ten colors; the
+    // rest of the cache is however many the Keeper mixes by hand, which is not a growth curve.
+    static readonly Dictionary<int, Image> swatchCache = new();
+
+    static Image Swatch(int argb)
+    {
+        if (swatchCache.TryGetValue(argb, out var img)) return img;
+        var bmp = new Bitmap(16, 16);
+        using (var g = Graphics.FromImage(bmp))
+        using (var b = new SolidBrush(Color.FromArgb(argb)))
+        using (var pen = new Pen(Color.FromArgb(96, 86, 70)))
+        { g.FillRectangle(b, 2, 2, 12, 12); g.DrawRectangle(pen, 2, 2, 12, 12); }
+        swatchCache[argb] = bmp;
+        return bmp;
+    }
+
+    /// <summary>The ink choices as a submenu: the palette with the current color ticked, a mixer for
+    /// anything else, and — when <paramref name="backLabel"/> is given — the way back to the default.
+    /// <paramref name="pick"/> receives the chosen ARGB, or <see cref="MapInk.Unset"/> for "back".</summary>
+    ToolStripMenuItem InkMenu(string head, int current, string backLabel, Action<int> pick)
+    {
+        var sub = new ToolStripMenuItem(Amp(head), Swatch(current));
+        foreach (var (name, argb) in MapInk.Palette)
+        {
+            int c = argb;
+            sub.DropDownItems.Add(new ToolStripMenuItem(name, Swatch(c), (s, e) => pick(c))
+            { Checked = c == current });
+        }
+        sub.DropDownItems.Add(new ToolStripSeparator());
+        sub.DropDownItems.Add("Mix another color…", null, (s, e) =>
+        {
+            using var d = new ColorDialog { Color = Color.FromArgb(current), FullOpen = true, AnyColor = true };
+            if (d.ShowDialog(this) == DialogResult.OK) pick(d.Color.ToArgb());
+        });
+        if (backLabel != null)
+            sub.DropDownItems.Add(Amp(backLabel), null, (s, e) => pick(MapInk.Unset));
+        return sub;
+    }
+
+    /// <summary>Re-ink a whole kind at once, and keep it. Markers that have taken a color of their
+    /// own are left alone — a soul the Keeper singled out shouldn't lose that to a sweep.</summary>
+    void ShowKindInkMenu(Button host)
+    {
+        var menu = PopupMenu();
+        foreach (var (kind, said) in new[] { ("posse", "The posse"), ("npc", "NPCs"), ("creature", "Creatures") })
+        {
+            string k = kind;
+            int cur = MapInk.KindColor(k);
+            menu.Items.Add(InkMenu($"{said} — {MapInk.NameOf(cur)}", cur,
+                cur == MapInk.BookColor(k) ? null : "Back to the book's color",
+                argb =>
+                {
+                    MapInk.SetKindColor(k, argb);
+                    SaveMarkerInk();
+                    mapPanel.Invalidate();
+                    Log($"{said} now drawn in {MapInk.NameOf(MapInk.KindColor(k)).ToLowerInvariant()} on the map.");
+                }));
+        }
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Put every kind back to the book's colors", null, (s, e) =>
+        {
+            MapInk.LoadKindColors(null);
+            SaveMarkerInk();
+            mapPanel.Invalidate();
+            Log("Marker colors are back to the book's.");
+        });
+        menu.Show(host, new Point(0, host.Height));
+    }
+
+    void SaveMarkerInk()
+    {
+        var d = Prefs.Load();          // read-modify-write: this file also holds the run mode
+        d.MarkerInk = MapInk.KindColors();
+        Prefs.Save(d);
     }
 
     void AddMarker(string label, string kind)

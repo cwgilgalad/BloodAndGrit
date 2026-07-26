@@ -51,7 +51,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("🧭 Wizard…", (s, e) => RunSoulWizard(), 100, "Build a custom character choice by choice, Ch. III's eight steps"));
         bar.Controls.Add(Btn("✎ Tweak", (s, e) =>
         {
-            if (lastSoul == null) { Log("Make a soul first."); return; }
+            if (lastSoul == null) { Nope("Make a soul first."); return; }
             if (TweakSheet(lastSoul, this))
             {
                 ShowSoul(lastSoul);
@@ -118,7 +118,7 @@ public partial class MainForm
 
     void SoulSavePdf()
     {
-        if (lastSoul == null) { Log("Make a soul first."); return; }
+        if (lastSoul == null) { Nope("Make a soul first."); return; }
         var s = lastSoul;
         using var d = new SaveFileDialog
         {
@@ -143,7 +143,7 @@ public partial class MainForm
 
     void SoulToPosse()
     {
-        if (lastSoul == null) { Log("Make a soul first."); return; }
+        if (lastSoul == null) { Nope("Make a soul first."); return; }
         var s = lastSoul;
         var p = new PartyMember
         {

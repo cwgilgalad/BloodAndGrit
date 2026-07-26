@@ -118,6 +118,35 @@ public class CreatureAttack
     }
 }
 
+/// <summary>Decides what a tracker row fights with — the one authority both the Strike dialog
+/// and its tests go through, so the two can never drift. A foe that resolves to a Bestiary
+/// entry uses THAT creature's own attacks; the posse and any hand-entered row reach for the
+/// shared weapon table. <c>IsPC</c> is authoritative: a player's soul is never treated as a
+/// creature, even if a stray Ref rode in on an old session, and a foe whose Ref no longer
+/// resolves falls back to weapons rather than throwing.</summary>
+public static class CombatMenu
+{
+    /// <summary>Does this combatant fight with a Bestiary creature's own attacks?</summary>
+    public static bool IsCreature(Combatant c) =>
+        c != null && !c.IsPC && !string.IsNullOrEmpty(c.Ref) && Db.Find(c.Ref) != null;
+
+    /// <summary>The creature's own attacks (with a tier-benchmark blow for a bodiless foe that
+    /// has no dice of its own), its riders, and the resolved Creature — or all null when this
+    /// row fights with the posse's weapons instead.</summary>
+    public static (List<CreatureAttack> attacks, List<string> riders, Creature creature) For(Combatant c)
+    {
+        var creature = IsCreature(c) ? Db.Find(c.Ref) : null;
+        if (creature == null) return (null, null, null);
+        var (atks, riders) = CreatureAttack.Parse(creature.attacks);
+        if (atks.Count == 0)   // an intangible or pure-rider foe: give it its tier's benchmark blow
+        {
+            var row = Rules.TierRow[Math.Clamp(creature.tier - 1, 0, Rules.TierRow.Length - 1)];
+            atks.Add(new CreatureAttack { Name = "its assault", Bonus = row.atk, Damage = row.dmg });
+        }
+        return (atks, riders, creature);
+    }
+}
+
 /// <summary>One line of Damage Reduction on a defender (Ch. XI): an amount and what it turns.
 /// <c>Vs</c> is "blades" | "small shot" | "ball" | "nonmagical" | "all".</summary>
 public record DrEntry(int Amount, string Vs);

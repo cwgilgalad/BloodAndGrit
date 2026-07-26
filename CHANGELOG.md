@@ -8,6 +8,43 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.18.0 — what the posse rides, a right-click on everything, and marker colors
+  that are the Keeper's own (2026-07-25, user-requested).** A session's worth of table feedback:
+
+  - **Mounts and vehicles are tracked.** The Posse tab gained a lower pane — *the corral & the
+    yard* — for what the posse rides, drives, or takes passage on: saddle horses, mules, the
+    stagecoach, freight and buckboard wagons, a ferry, a sternwheeler, the cars. Each carries its
+    own Blood, Defense, Speed, and capacity, takes a rider or a driver from the posse, can be hurt
+    and mended, and goes to the combat tracker like anything else that can be shot at. New
+    `Data/rides.json` roster and `Ride` model; a wrecked wagon or a downed horse reads red at a
+    glance, the same as the tracker.
+  - **Every list answers a right-click.** The posse, the corral, the tracker, the encounter plan,
+    the Bestiary, and the roll log now offer the actions available for the row under the cursor —
+    the same operations as the buttons above them, calling the same handlers, so the two can never
+    drift into disagreement. The row is selected before the menu draws, so what you point at is
+    what the app acts on. Three posse-bar handlers were pulled out of button lambdas into methods
+    for exactly that reason, and the Bestiary gained *copy the stat block as text*.
+  - **Marker colors on the trail map.** Four riders all drawn the same verdigris are four dots the
+    table argues about. A single marker can now take a color of its own (right-click it), and a
+    whole kind — the posse, NPCs, creatures — can be re-inked for good from **Marker colors ▾**;
+    the standing choice is kept in `prefs.json`, a marker's own choice travels in the session file.
+    Ten-color palette plus a mixer.
+  - **Markers can be exported, or not — your call.** A saved SVG or PDF used to be the survey
+    alone, silently: markers were screen-only and nothing said so. There is now a **with markers**
+    box beside the save buttons (off by default — a map for the players shouldn't show them where
+    the ambush is), and the log says either way which one you got.
+  - **A latent map bug, fixed.** `OnWater` measured to the river's *vertices* rather than its
+    channel, so a spot mid-stream on a long straight reach was called dry. It only ever worked
+    because callers passed a pad wider than the vertex spacing. Now true point-to-segment distance,
+    with a regression test that fails under the old code.
+  - Also: naming a new ride took the lowest free number instead of a count (selling the middle
+    horse of three no longer mints a duplicate); a `ContextMenuStrip`+`Font` leak on every
+    right-click across five sites; the budget bar is double-buffered; `Prefs.Save` reads before it
+    writes, so setting the run mode can't drop preferences it doesn't know about.
+
+  Smoke suite **10,113 assertions, all green** (+~140 this release); self-test 13/13; the button
+  audit reports 118 buttons, every one with a handler and a tooltip.
+
 - **GritKeeper v1.17.0 — creatures fight with their own attacks, cities read right, and three
   ways to run the table (2026-07-25, user-requested).** Three changes, all from table feedback:
 
