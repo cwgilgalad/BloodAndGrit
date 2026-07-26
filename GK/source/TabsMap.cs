@@ -186,7 +186,7 @@ public partial class MainForm
             "Drop everyone on the Tracker onto the map — posse west, trouble east"));
         rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
         {
-            if (mapMarkers.Count == 0) { Log("No markers on the map."); return; }
+            if (mapMarkers.Count == 0) { Nope("No markers on the map."); return; }
             if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
             mapMarkers.Clear(); CaptureUndo(); mapPanel.Invalidate();
             Log("The map is cleared of markers.");
@@ -481,7 +481,7 @@ public partial class MainForm
                         var dry = tmenu.Items.Add($"Move {town.Name} onto dry ground", null, (ss, ee) =>
                         {
                             var (nx, ny) = MapGen.DryGroundNear(m2, town.X, town.Y, MapGen.TownReach(mapScale.SelectedIndex));
-                            if (nx == town.X && ny == town.Y) { Log($"{town.Name} already stands clear of the water."); return; }
+                            if (nx == town.X && ny == town.Y) { Nope($"{town.Name} already stands clear of the water."); return; }
                             MapGen.MoveTown(m2, nx, ny);
                             townEdit = (nx, ny);
                             lmEditSeed = (int)mapSeed.Value;
