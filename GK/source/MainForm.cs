@@ -802,6 +802,35 @@ public partial class MainForm : Form
         return sc;
     }
 
+    // ---- a soul's gender ----
+    // The box has always accepted anything typed into it; nothing ever said so, so in practice it
+    // offered two choices. "Other…" is a prompt rather than a value — picking it clears the box and
+    // hands over the caret — and CleanGender makes sure the prompt can never be stored as an answer.
+    static readonly object[] GenderChoices = { "Woman", "Man", CharGen.GenderOther };
+
+    /// <summary>The gender picker, built the same way everywhere it appears — the wizard and the
+    /// hand-tweak sheet — so the three choices and the fact that you may write your own never drift
+    /// apart between them.</summary>
+    static ComboBox GenderBox(string current, int width = 110)
+    {
+        var box = new ComboBox
+        {
+            Width = width, DropDownStyle = ComboBoxStyle.DropDown,
+            Text = CharGen.CleanGender(current), Margin = new Padding(3, 5, 3, 3)
+        };
+        box.Items.AddRange(GenderChoices);
+        Tip.SetToolTip(box, "Woman, Man, or write your own — this box takes any text. "
+            + "Woman and Man draw given names from their own lists; anything else draws from all of them.");
+        box.SelectedIndexChanged += (s, e) =>
+        {
+            if (box.SelectedItem as string != CharGen.GenderOther) return;
+            box.SelectedIndex = -1;      // the prompt is not the answer
+            box.Text = "";
+            box.Focus();
+        };
+        return box;
+    }
+
     void StyleGrid(DataGridView g)
     {
         g.BorderStyle = BorderStyle.None;

@@ -324,6 +324,50 @@ foreach (var (table, floor) in new[]
     }
 }
 
+// ---- a soul's gender, including one the lists were not written for ----
+{
+    CharGen.Load();
+    // The two named genders draw from their own pools; anything else must draw from all of them
+    // rather than falling down the "not Woman" branch into the men's list, which is what it did.
+    var seenOther = new HashSet<string>();
+    for (int i = 0; i < 600; i++) seenOther.Add(CharGen.FullName("Two-Spirit"));
+    T("gender: a custom gender still gets a full name", seenOther.All(n => n.Trim().Length > 2));
+    T("gender: and gets more than one of them", seenOther.Count > 20);
+
+    var womenWhole = CharGen.Flavor("fullNamesWomen");
+    var menWhole = CharGen.Flavor("fullNamesMen");
+    if (womenWhole.Count > 0 && menWhole.Count > 0)
+    {
+        // Over 600 draws at a 12% whole-name rate, a custom gender should reach BOTH pools.
+        var custom = new List<string>();
+        for (int i = 0; i < 1200; i++) custom.Add(CharGen.FullName("Nonbinary"));
+        T("gender: a custom gender reaches the women's whole-name pool", custom.Any(womenWhole.Contains));
+        T("gender: and the men's", custom.Any(menWhole.Contains));
+
+        // The two named ones stay exclusive — the fix must not blur them together.
+        var asWoman = new List<string>();
+        for (int i = 0; i < 1200; i++) asWoman.Add(CharGen.FullName("Woman"));
+        T("gender: a woman never draws a man's whole name", !asWoman.Any(n => menWhole.Contains(n) && !womenWhole.Contains(n)));
+    }
+
+    T("gender: the 'Other…' prompt is never stored as a value", CharGen.CleanGender("Other…") == "");
+    T("gender: an ordinary answer is kept, trimmed", CharGen.CleanGender("  Two-Spirit  ") == "Two-Spirit");
+    T("gender: null is blank, not a crash", CharGen.CleanGender(null) == "");
+    T("gender: Woman and Man come through untouched",
+        CharGen.CleanGender("Woman") == "Woman" && CharGen.CleanGender("Man") == "Man");
+
+    // A hand-built soul keeps whatever gender it was given, all the way onto the sheet.
+    var spec = new CharGen.AssembleSpec { Level = 1, Calling = "Drifter", Origin = "Frontier-Born", Gender = "Two-Spirit", Name = "Wren Ashby" };
+    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.Scores[a] = 12;
+    try
+    {
+        var built = CharGen.Assemble(spec);
+        T("gender: a hand-built soul keeps the gender it was given", built.Gender == "Two-Spirit");
+        T("gender: and the name it was given", built.Name == "Wren Ashby");
+    }
+    catch (Exception ex) { T($"gender: hand-built soul assembles ({ex.GetType().Name})", false); }
+}
+
 // ---- whose turn it is, and when the round is spent ----
 {
     Combatant C(string n, int init, bool acted = false, int blood = 10) =>
