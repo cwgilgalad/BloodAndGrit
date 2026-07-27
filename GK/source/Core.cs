@@ -158,9 +158,9 @@ public class PartyMember : INotifyPropertyChanged
 
 public class Combatant : INotifyPropertyChanged
 {
-    string _name = "", _conditions = "", _ref = "", _pcId = "";
-    int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1;
-    bool _isPC, _acting;
+    string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "";
+    int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1, _lastDelta, _signFilled;
+    bool _isPC, _acting, _isSign;
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -185,12 +185,72 @@ public class Combatant : INotifyPropertyChanged
     /// keeping for the same reason: "Begin turn" changes numbers a Keeper can't see moving unless
     /// the table lights the row it happened to.</summary>
     public bool Acting { get => _acting; set { _acting = value; On(); } }
-    [JsonIgnore] public bool Down => _bloodCur <= 0;
+
+    /// <summary>This row is the TRACE of a creature, not the creature — the safe-table rule made
+    /// runnable (Bestiary, Appendix: The Grounds). A horror two or more Tiers over the posse takes
+    /// the field like this: nothing to shoot, a Survival check to read, Nerve to be lost reading it,
+    /// and a clock that fills toward the night it finally arrives. <see cref="Ref"/> still names the
+    /// creature, so its Tier — and with it every DC — is derived rather than stored twice.</summary>
+    public bool IsSign { get => _isSign; set { _isSign = value; On(); OnDerived(); } }
+
+    /// <summary>How many segments of this thread's clock are filled. Each fresh sign of the same
+    /// thing fills one; a full clock (<see cref="Rules.SpoorClockSegments"/>) is the night it comes
+    /// in the flesh.</summary>
+    public int SignFilled
+    {
+        get => _signFilled;
+        set { _signFilled = Math.Clamp(value, 0, Rules.SpoorClockSegments); On(); OnDerived(); }
+    }
+
+    /// <summary>What just happened to this combatant, in the two or three characters a Keeper can
+    /// read across a wide grid mid-fight — "−7", "+5", "PUT DOWN". Deliberately NOT saved: it is
+    /// commentary on the last action, not state, and a reloaded session has no last action.</summary>
+    [JsonIgnore] public string LastNote { get => _lastNote; set { _lastNote = value ?? ""; On(); } }
+
+    /// <summary>Which way <see cref="LastNote"/> went — −1 harm, +1 mending, 0 nothing — so the
+    /// grid can color it without parsing the words back out.</summary>
+    [JsonIgnore] public int LastDelta { get => _lastDelta; set { _lastDelta = value; On(); } }
+
+    [JsonIgnore] public bool Down => !_isSign && _bloodCur <= 0;
 
     /// <summary>What the NEXT Strike this turn costs in MAP, in one word for the tracker. An Agile
     /// weapon softens it to −4/−8, which the Strike dialog figures once a weapon is picked; this is
     /// the plain step, so a Keeper glancing at the field knows whether the shot is still clean.</summary>
-    [JsonIgnore] public string NextStrike => _mapStep <= 1 ? "clean" : _mapStep == 2 ? "−5" : "−10";
+    [JsonIgnore] public string NextStrike => _isSign ? "—" : _mapStep <= 1 ? "clean" : _mapStep == 2 ? "−5" : "−10";
+
+    /// <summary>The spoor clock as the tracker paints it in words — filled segments, then empty.
+    /// Blank for anything with blood in it.</summary>
+    [JsonIgnore]
+    public string SignClock => !_isSign ? ""
+        : new string('▮', _signFilled) + new string('▯', Rules.SpoorClockSegments - _signFilled);
+
+    /// <summary>A sign whose clock has filled: the thread is spent, and the thing arrives.</summary>
+    [JsonIgnore] public bool SignFull => _isSign && _signFilled >= Rules.SpoorClockSegments;
+
+    void OnDerived()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SignClock)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NextStrike)));
+    }
+
+    /// <summary>Take Blood off, or put it back, and leave the tracker a note about it. One method
+    /// rather than a clamp at each call site, because every route to a wound — the Strike engine,
+    /// the Damage button, the right-click menu — owes the Keeper the same visible answer.</summary>
+    public void Wound(int delta, string note = null)
+    {
+        if (_isSign) return;
+        int hi = _bloodMax > 0 ? _bloodMax : int.MaxValue;
+        int was = _bloodCur;
+        BloodCur = Math.Clamp(_bloodCur + delta, 0, hi);
+        int moved = _bloodCur - was;
+        LastDelta = Math.Sign(moved);
+        LastNote = note ?? (moved == 0 ? (delta < 0 ? "no effect" : "already full")
+                          : Down ? $"−{Math.Abs(moved)} — DOWN"
+                          : (moved > 0 ? "+" : "−") + Math.Abs(moved));
+    }
+
+    /// <summary>Forget what last happened here — a new round is a clean page.</summary>
+    public void ClearLast() { LastDelta = 0; LastNote = ""; }
 
     /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean, and the
     /// row lit as the one acting. Clearing everyone else is the caller's business — the model has
@@ -426,6 +486,17 @@ public static class Rules
         (18, 16, "A killed party, and one survivor who will not go back"),
         (20, 20, "A place unmade — ground, weather, and the people in it, all wrong together"),
     };
+
+    /// <summary>The sign a creature of this Tier leaves: the Survival DC to read it, the Dread DC
+    /// reading it costs, and what is actually on the ground. Clamped, so an off-book Tier still
+    /// answers rather than throwing at the table.</summary>
+    public static (int readDc, int dreadDc, string what) SpoorFor(int creatureTier)
+        => SpoorRow[Math.Clamp(creatureTier - 1, 0, SpoorRow.Length - 1)];
+
+    /// <summary>Does the safe-table rule apply — is this thing so far over the posse that it may
+    /// only appear as sign and spoor? The one authority; <see cref="Cost"/> decides it, and both
+    /// the Encounter tab's verdict and the Tracker's refusal to put it on the field read this.</summary>
+    public static bool SignOnly(int creatureTier, int partyLevel) => Cost(creatureTier, partyLevel).spoor;
 
     /// <summary>What a Survival check against <see cref="SpoorRow"/> buys, by degree — the same
     /// ordered 0–3 scale <see cref="FourDegrees"/> returns.</summary>

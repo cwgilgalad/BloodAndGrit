@@ -306,7 +306,9 @@ public static class CombatFlow
         string line;
         if (res.Strike.Hit)
         {
-            target.BloodCur = Math.Max(0, target.BloodCur - res.AfterDR);
+            // Through Wound rather than straight at BloodCur, so the tracker's "Last" column shows
+            // an engine-resolved hit exactly the way it shows a hand-typed one. One route in.
+            target.Wound(-res.AfterDR);
             string drNote = res.Damage != null && res.AfterDR != res.Damage.Total
                 ? $" ({res.Damage.Total} − DR)" : "";
             line = $"{who}{mapNote}: {res.Strike.DegreeName}{(res.Strike.Crit ? " —" : "")} "
@@ -315,6 +317,8 @@ public static class CombatFlow
         }
         else
         {
+            target.LastDelta = 0;
+            target.LastNote = res.Strike.Jam ? "jam" : "missed";
             line = $"{who}{mapNote}: {res.Strike.DegreeName} — "
                  + (res.Strike.Jam ? "the iron JAMS (clear it: Interact + Repair)." : "a miss.");
         }

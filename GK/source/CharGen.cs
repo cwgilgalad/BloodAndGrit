@@ -192,6 +192,19 @@ public static class CharGen
     /// <summary>A weak save: a third of your level, rounding down.</summary>
     public static int WeakSave(int level) => level / 3;
 
+    /// <summary>What a soul adds to a skill check (Player's Book Ch. VIII): the keyed ability's
+    /// modifier alone while untrained, and once trained, that plus your level plus the rank's
+    /// bonus — +2 trained, +4 expert, +6 master. The ability a skill is keyed to comes from the
+    /// data, not from a second list here, so the Ledger's tick and this number always agree.</summary>
+    public static int SkillBonus(CharacterSheet s, string skill)
+    {
+        if (s == null || string.IsNullOrEmpty(skill)) return 0;
+        var def = D?.skills?.Find(k => string.Equals(k.name, skill, StringComparison.OrdinalIgnoreCase));
+        int mod = def != null && s.Scores != null && s.Scores.TryGetValue(def.ability, out int score) ? Mod(score) : 0;
+        int rank = s.SkillRanks != null && s.SkillRanks.TryGetValue(def?.name ?? skill, out int r) ? r : 0;
+        return rank <= 0 ? mod : mod + s.Level + rank * 2;
+    }
+
     // ---- the Rank spine, shared by Signs (Ch. XIII) and Miracles (Ch. VI) ----
 
     /// <summary>The highest Rank a soul of this level may reach: Rank 1 at 1st, then a new Rank at
