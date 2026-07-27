@@ -9,7 +9,8 @@
         1.  cd GK\source; dotnet publish -c Release        # produces the self-contained exe
         2.  <your sign step>  (sign.ps1 / signtool with your .pfx)  on the published exe
         3.  .\package.ps1                                   # this script -> GritKeeper.zip
-        4.  upload GritKeeper.zip to the GitHub Release, paste RELEASE_NOTES_v1.16.2.md
+        4.  upload GritKeeper.zip to the GitHub Release, paste RELEASE_NOTES_vX.Y.Z.md
+            (a local scratch file — git-ignored, like the zip; the text lives on the Release)
 
     -Exe    path to the (signed) published exe; defaults to the standard publish output.
     -Force  package even if the exe is not Authenticode-signed (for a local test build only).

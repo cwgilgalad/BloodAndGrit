@@ -119,8 +119,11 @@ reachable). `package.ps1` then copies the signed exe into `GritKeeper\app\` (dro
 runtime `session.json`), re-mirrors `GritKeeper\source`, and writes `GritKeeper.zip` — refusing
 an unsigned exe unless you pass `-Force` (a local test build). So a release is:
 `dotnet publish -c Release` → `.\sign.ps1` → `.\package.ps1` → upload the zip with the matching
-`RELEASE_NOTES_vX.Y.Z.md`. The zip, the `app/` exe, and the `source/` mirror are all git-ignored
-(release assets, never committed).
+`RELEASE_NOTES_vX.Y.Z.md`. The zip, the `app/` exe, the `source/` mirror **and the notes file
+itself** are all git-ignored (release assets, never committed). The notes file is scratch: write
+it, paste it into the Release, leave it on disk. Once published, the text lives on the Release
+and the durable history lives in `CHANGELOG.md` — a copy in the repo root is a third place to
+drift. (Seven had accumulated there by v1.20.1; removed 2026-07-27.)
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
 builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
