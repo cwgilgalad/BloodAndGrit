@@ -56,7 +56,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.24.0";
+    internal const string AppVersion = "1.24.1";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
     internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
@@ -652,6 +652,60 @@ public partial class MainForm : Form
     {
         public BufferedPanel() { DoubleBuffered = true; ResizeRedraw = true; }
     }
+
+    // ---- weight on a toolbar ----
+    // Btn is FlatStyle.System, which hands painting to the theme and quietly IGNORES BackColor and
+    // FlatAppearance — so a button cannot be emphasised by setting those on it. Both variants below
+    // switch to FlatStyle.Flat, which is the only way to actually colour a WinForms button.
+
+    /// <summary>The one action a bar exists for, painted so a hand finds it without reading. Use it
+    /// once per bar: two primaries is none.</summary>
+    static Button PrimaryBtn(string text, EventHandler onClick, int w = 120, string tip = null)
+    {
+        var b = Btn(text, onClick, w, tip);
+        b.FlatStyle = FlatStyle.Flat;
+        b.UseVisualStyleBackColor = false;
+        b.BackColor = Blood;
+        b.ForeColor = Paper;
+        b.Font = new Font(b.Font, FontStyle.Bold);
+        b.FlatAppearance.BorderColor = Color.FromArgb(92, 24, 22);
+        b.FlatAppearance.BorderSize = 1;
+        b.FlatAppearance.MouseOverBackColor = Color.FromArgb(150, 44, 40);
+        return b;
+    }
+
+    /// <summary>An action that throws work away. It is not hidden and it is not shouted — it simply
+    /// stops looking like the button beside it, so it is never pressed by muscle memory.</summary>
+    static Button DangerBtn(string text, EventHandler onClick, int w = 120, string tip = null)
+    {
+        var b = Btn(text, onClick, w, tip);
+        b.FlatStyle = FlatStyle.Flat;
+        b.UseVisualStyleBackColor = false;
+        b.BackColor = Color.FromArgb(240, 229, 225);
+        b.ForeColor = Blood;
+        b.FlatAppearance.BorderColor = Color.FromArgb(201, 172, 164);
+        b.FlatAppearance.BorderSize = 1;
+        b.FlatAppearance.MouseOverBackColor = Color.FromArgb(228, 208, 202);
+        return b;
+    }
+
+    /// <summary>The ground a cell you can type into stands on: the row's own colour, lifted toward
+    /// paper. Every row in these grids already carries meaning in its background — posse green, foe
+    /// rust, acting gold, down red — so "you may edit this" cannot be another flat colour without
+    /// destroying that. Lifting whatever colour the row already has keeps both readable at once, and
+    /// it composes with a row colour added later without anyone remembering this exists.</summary>
+    static Color Writable(Color c) => Color.FromArgb(
+        c.R + (255 - c.R) * 42 / 100,
+        c.G + (255 - c.G) * 42 / 100,
+        c.B + (255 - c.B) * 42 / 100);
+
+    /// <summary>A hairline between groups of buttons. Related things sit together and unrelated
+    /// things do not, which is most of what makes a crowded bar readable.</summary>
+    static Control BarSep(int gap = 7) => new Panel
+    {
+        Width = 1, Height = 22, BackColor = Color.FromArgb(206, 194, 170),
+        Margin = new Padding(gap, 8, gap, 4)
+    };
 
     static Label Lbl(string t, int w = 0)
     {

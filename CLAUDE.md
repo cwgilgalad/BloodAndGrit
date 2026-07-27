@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.24.0) — the C# desktop app
+## GritKeeper (v1.24.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -656,6 +656,18 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   names Ch. IX — "clean" is the book's own word and the column never said which rule it came from
   (user-reported). Grid headers no longer flash Windows selection-blue when their column holds the
   current cell.
+  v1.24.1 — **the bar is grouped and the grid says what you may type in.** The action bar reads left
+  to right as a sentence, hairlined into groups by `BarSep()`: *the turn* (▶ Next turn · Begin turn ·
+  Next round) ‖ *resolving* (Strike · Dread · ✦ Work) ‖ *adjusting* (Amt · Damage · Heal) ‖ *Restore*;
+  then, on the second row, *ordering & filling the field* ‖ — after a wider gap — the three that
+  **throw work away** (✕ Remove · New fight · Clear field), which now wear `DangerBtn` rather than
+  looking exactly like ＋ Add beside them. `PrimaryBtn` / `DangerBtn` exist because **`Btn` is
+  `FlatStyle.System`, which silently ignores `BackColor` and `FlatAppearance`** — both variants switch
+  to `FlatStyle.Flat`, the only way to actually colour a WinForms button. In the grid, an editable
+  column carries **✎** in its header and its cells stand on ground lifted 42% toward paper by
+  `Writable(color)` — applied *after* the row colour, so it composes with posse green / foe rust /
+  acting gold / down red instead of replacing them. Only the Tracker gets this: every column on the
+  Posse grid is editable, so marking all eighteen would be noise.
 - **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine
   Grounds) × scale (gunfight → weeks of trail) × hour × water, with trail/rail/settlement/
   grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
