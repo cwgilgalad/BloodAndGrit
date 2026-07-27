@@ -1576,6 +1576,36 @@ foreach (var terrain in MapGen.Terrains)
         string tail = System.Text.Encoding.Latin1.GetString(pdf, Math.Max(0, pdf.Length - 32), Math.Min(32, pdf.Length));
         T($"map PDF structural: {terrain} @ {scale}", head.StartsWith("%PDF-1.4") && tail.Contains("%%EOF") && pdf.Length > 2000);
     }
+// ---- a settlement set down in open country (v1.25.0) ----
+// Before this, a rolled city could only be drawn as a ward, so "what is AROUND it" had no answer.
+// SettingTerrains is derived from Terrains rather than typed out again, so the guard that matters
+// is that it tracks the source list and drops exactly the one country that is not a setting.
+{
+    T("setting terrains: the Lamplit City is not ground you stand a town on",
+        !MapGen.SettingTerrains.Contains("The Lamplit City"));
+    T("setting terrains: everything else survives",
+        MapGen.SettingTerrains.Length == MapGen.Terrains.Length - 1);
+    T("setting terrains: order follows the source list, so a rolled index is stable",
+        MapGen.SettingTerrains.SequenceEqual(MapGen.Terrains.Where(t => t != "The Lamplit City")));
+    T("setting terrains: the open range and the badlands are both offered",
+        MapGen.SettingTerrains.Contains("The Trail & the Open Range")
+        && MapGen.SettingTerrains.Contains("Desert & the Badlands"));
+
+    // Every setting must actually draw a named settlement at county scale — that IS the feature.
+    int county = Array.IndexOf(MapGen.Scales, "A county (a day's ride)");
+    T("setting terrains: the county scale still exists to set them in", county >= 0);
+    foreach (var ground in MapGen.SettingTerrains)
+    {
+        var m = MapGen.Generate(new MapSpec
+        { Terrain = ground, Scale = county, Seed = 4242, Landmarks = 5, Town = true, PlaceName = "Perdition Wells" });
+        T($"a town stands in {ground}", m?.Town != null && m.Town.Name.Contains("Perdition"));
+    }
+
+    // A city ward is the other half: the place itself, at the scale you walk it.
+    var ward = MapGen.Generate(new MapSpec
+    { Terrain = "The Lamplit City", Scale = Array.IndexOf(MapGen.Scales, "A city ward (blocks)"), Seed = 4242, Town = true, PlaceName = "Ashpit Quarter" });
+    T("a ward still draws as the whole sheet", ward != null && ward.P.Count > 20);
+}
 {
     var spec = new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 777 };
     T("same seed, same map", MapGen.ToSvg(MapGen.Generate(spec)) == MapGen.ToSvg(MapGen.Generate(spec)));

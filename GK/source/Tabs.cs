@@ -1888,10 +1888,36 @@ public partial class MainForm
 
         // The two "→ Map" buttons are built first so the roll handlers can wake them, and they
         // start asleep: a button that sends nowhere is worse than no button.
-        var townToMap = Btn("→ Map — survey this town", (s, e) => SendPlaceToMap(genLastTown, city: false), 230,
-            "Draw a map of the town just rolled — its name goes on the survey");
-        var cityToMap = Btn("→ Map — survey this ward", (s, e) => SendPlaceToMap(genLastCity, city: true), 230,
-            "Draw a city-ward map of the quarter just rolled — blocks, avenues, and the depot");
+        //
+        // Each is a menu rather than a single action because a settlement is two maps, not one.
+        // The streets answer "what is in here"; the county answers "what is around it, and how far".
+        // A city could only ever be drawn as a ward before v1.25.0, so the second question — the one
+        // a posse riding toward it actually has — had no answer at all.
+        (string, EventHandler)[] PlaceMenu(bool city)
+        {
+            string Place() => city ? genLastCity : genLastTown;
+            var items = new List<(string, EventHandler)>
+            {
+                (city ? "The ward itself — blocks and avenues" : "The town itself — its streets",
+                    (s, e) => SendPlaceToMap(Place(), city, PlaceView.Itself)),
+                ("-", null),
+                ("In its country — roll the ground",
+                    (s, e) => SendPlaceToMap(Place(), city, PlaceView.InItsCountry)),
+                ("Or set it down in…", null),      // null handler = a greyed heading, not a choice
+            };
+            foreach (var t in MapGen.SettingTerrains)
+            {
+                string ground = t;                 // captured per item, not per loop
+                items.Add(("    " + ground,
+                    (s, e) => SendPlaceToMap(Place(), city, PlaceView.InItsCountry, ground)));
+            }
+            return items.ToArray();
+        }
+
+        var townToMap = MenuBtn("→ Map — this town ▾", 230,
+            "Survey the town just rolled — its streets, or the country it stands in", PlaceMenu(false));
+        var cityToMap = MenuBtn("→ Map — this city ▾", 230,
+            "Survey the city just rolled — its ward, or the country it stands in", PlaceMenu(true));
         townToMap.Enabled = cityToMap.Enabled = false;
 
         left.Controls.Add(Btn("A town, in three rolls", (s, e) =>

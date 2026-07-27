@@ -2,6 +2,13 @@ using System.Text;
 
 namespace BloodAndGritKeeper;
 
+/// <summary>How a rolled settlement is put on the map. A place is two different maps depending on
+/// which question the table is asking. <see cref="Itself"/> is the map you walk — streets, blocks,
+/// the depot, the doors you can kick in. <see cref="InItsCountry"/> is the map you ride, where the
+/// whole settlement shrinks to one mark and what matters is the ground around it: how far the next
+/// water is, what the posse has to cross, where a thing could be waiting.</summary>
+internal enum PlaceView { Itself, InItsCountry }
+
 public partial class MainForm
 {
     // ============================================================ MAP TAB
@@ -291,11 +298,15 @@ public partial class MainForm
         PlaceName = mapName?.Text ?? ""
     };
 
-    /// <summary>Draw a survey of a place the Keeper has already rolled up elsewhere — the town or
-    /// the city ward from the Generators tab. A city arrives as a ward of the Lamplit City because
-    /// that is the only scale a city name means anything at; a town keeps whatever country the
-    /// Keeper had set, since a town sits on the ground the campaign is already crossing.</summary>
-    internal void SendPlaceToMap(string placeName, bool city)
+    /// <summary>Draw a survey of a place the Keeper has already rolled up on the Generators tab.
+    ///
+    /// Both scales are offered for both kinds of settlement, which is the point: before v1.25.0 a
+    /// city could ONLY be drawn as a ward, so there was no way to ask "and what is around it?" —
+    /// the one question a posse riding toward a city actually has. Now either can be surveyed as
+    /// itself or set down in open country, and the country can be rolled or named.</summary>
+    /// <param name="terrain">The ground to set it in. Null rolls one — "surprise me" being most
+    /// of what a generator is for. Ignored unless the view is <see cref="PlaceView.InItsCountry"/>.</param>
+    internal void SendPlaceToMap(string placeName, bool city, PlaceView view = PlaceView.Itself, string terrain = null)
     {
         if (string.IsNullOrWhiteSpace(placeName)) { Nope("Roll a town or a city first."); return; }
         // Realizes the tab if this is its first visit — and says so plainly if this table is being
@@ -304,16 +315,38 @@ public partial class MainForm
 
         mapBusy = true;
         mapName.Text = placeName.Trim();
-        if (city)
+        string ground;
+
+        if (view == PlaceView.InItsCountry)
         {
-            mapGround.SelectedIndex = Array.IndexOf(MapGen.Terrains, "The Lamplit City");
+            // One mark on open ground, a day's ride across. The settlement is still drawn (mapTown
+            // below) — it is simply no longer the whole sheet.
+            ground = terrain ?? MapGen.SettingTerrains[Rules.Rng.Next(MapGen.SettingTerrains.Length)];
+            mapScale.SelectedIndex = Array.IndexOf(MapGen.Scales, "A county (a day's ride)");
+            mapGrid.Checked = false;
+        }
+        else if (city)
+        {
+            ground = "The Lamplit City";
             mapScale.SelectedIndex = Array.IndexOf(MapGen.Scales, "A city ward (blocks)");
             mapGrid.Checked = false;
         }
+        else
+        {
+            // A town you can walk, where the buildings are the map rather than a dot on it.
+            ground = "Towns, Homesteads & Haunted Houses";
+            mapScale.SelectedIndex = Array.IndexOf(MapGen.Scales, "A homestead (half a mile)");
+        }
+
+        mapGround.SelectedIndex = Math.Max(0, Array.IndexOf(MapGen.Terrains, ground));
         mapTown.Checked = true;                // a place with a name is a place that is drawn
         mapBusy = false;
         MapDraw(true);                         // a new place is a new survey, not a relabelled old one
-        Log($"{(city ? "The ward" : "The town")} of {mapName.Text} — surveyed as map N° {(int)mapSeed.Value}.");
+
+        string what = view == PlaceView.InItsCountry
+            ? $"{mapName.Text} and the country around it — {ground.ToLowerInvariant()}"
+            : city ? $"The ward of {mapName.Text}" : $"The town of {mapName.Text}";
+        Log($"{what} — surveyed as map N° {(int)mapSeed.Value}.");
     }
 
     internal void MapDraw(bool newSeed)
