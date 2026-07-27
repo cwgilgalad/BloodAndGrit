@@ -307,9 +307,30 @@ public static class CharGen
     // whole-name pool and are drawn complete, surname draw skipped.
     public static string FullName(string gender)
     {
-        var whole = Flavor(gender == "Woman" ? "fullNamesWomen" : "fullNamesMen");
+        // A gender the lists are not written for draws from BOTH whole-name pools, the same way
+        // GivenFor falls back to the mixed given-name list. The old ternary sent every gender that
+        // was not exactly "Woman" down the men's branch, so a soul whose player wrote their own
+        // gender got a man's whole name one time in eight.
+        var whole = gender == "Woman" ? Flavor("fullNamesWomen")
+                  : gender == "Man" ? Flavor("fullNamesMen")
+                  : Flavor("fullNamesWomen").Concat(Flavor("fullNamesMen")).ToList();
         if (whole.Count > 0 && Rules.Rng.Next(100) < 12) return Pick(whole);
         return GivenFor(gender) + " " + Db.Pick("npcSurname");
+    }
+
+    /// <summary>The prompt the gender picker offers beside Woman and Man. It is an invitation to
+    /// type, never an answer — <see cref="CleanGender"/> is what guarantees it can't be stored as
+    /// one. It lives here rather than on the form so the rule holds for every caller and the smoke
+    /// rig can hold it to that.</summary>
+    public const string GenderOther = "Other…";
+
+    /// <summary>Tidy what came out of a gender box: trimmed, and never the prompt itself. A soul's
+    /// gender is free text — the two the name lists are written for are not the only two allowed,
+    /// they are only the two with their own pools of given names.</summary>
+    public static string CleanGender(string gender)
+    {
+        string t = (gender ?? "").Trim();
+        return t == GenderOther ? "" : t;
     }
 
     static string GivenFor(string gender) => gender switch

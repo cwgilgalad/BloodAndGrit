@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.23.0) — the C# desktop app
+## GritKeeper (v1.24.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -826,7 +826,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈12,066 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈12,084 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)

@@ -184,8 +184,7 @@ public partial class MainForm
             wName = new TextBox { Width = 260, Text = charName, Margin = new Padding(3, 5, 3, 3) };
             row2.Controls.Add(wName);
             row2.Controls.Add(Lbl("  Gender:"));
-            wGender = new ComboBox { Width = 110, DropDownStyle = ComboBoxStyle.DropDown, Text = charGender, Margin = new Padding(3, 5, 3, 3) };
-            wGender.Items.AddRange(new object[] { "Woman", "Man" });
+            wGender = GenderBox(charGender);
             row2.Controls.Add(wGender);
             row2.Controls.Add(Btn("🎲", (s, e) =>
             {
@@ -204,7 +203,7 @@ public partial class MainForm
             int newLevel = (int)wLevel.Value; int newMethod = wMethod.SelectedIndex;
             if (newLevel != level) { increasePicks.Clear(); edgePicks.Clear(); gunPicks.Clear(); signPicks.Clear(); boostPicks.Clear(); }
             if (newMethod != methodIdx) { abilityPick.Clear(); pool.Clear(); }
-            level = newLevel; methodIdx = newMethod; charName = wName.Text.Trim(); charGender = wGender.Text.Trim();
+            level = newLevel; methodIdx = newMethod; charName = wName.Text.Trim(); charGender = CharGen.CleanGender(wGender.Text);
             return true;
         }
 

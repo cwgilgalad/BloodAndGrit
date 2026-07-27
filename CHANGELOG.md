@@ -8,6 +8,32 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.24.0 — a soul's gender is a box you can write in, and it says so (2026-07-26,
+  user-requested).** Asked for a custom option alongside Woman and Man.
+
+  - **It was already free text — nothing ever said so.** Both gender pickers (the wizard's step 1 and
+    the ✎ hand-tweak sheet) were `ComboBoxStyle.DropDown`, so anything typed was accepted and stored.
+    But the list offered two items and no hint, so in practice the app offered two choices. The list
+    now reads **Woman · Man · Other…**, where *Other…* is a prompt rather than a value: picking it
+    clears the box and hands over the caret. `CharGen.CleanGender` guarantees the prompt itself can
+    never be stored as an answer, and both read sites go through it.
+  - **One picker, built one way.** `MainForm.GenderBox` replaces the two hand-rolled combos, so the
+    choices, the tooltip and the clearing behaviour cannot drift apart between the wizard and the
+    tweak sheet.
+  - **A real bug behind it: a custom gender drew a man's name.** `CharGen.FullName` chose its
+    whole-name pool with `gender == "Woman" ? fullNamesWomen : fullNamesMen`, so *every* gender that
+    was not exactly "Woman" fell down the men's branch — a soul whose player wrote their own gender
+    got a man's whole name roughly one time in eight. It now draws from **both** pools in that case,
+    matching what `GivenFor` already did correctly with the given-name lists. Woman and Man keep
+    their own pools exactly as before.
+  - **Smoke: 12,084 passing, 0 failing.** A custom gender is proved to reach both whole-name pools
+    over 1,200 draws while a woman still never draws a man-only whole name; the prompt is proved
+    unstorable; and a hand-built soul is proved to carry a written-in gender through `Assemble` onto
+    a `Validate`-clean sheet.
+  - Note: `CharGen.Generate` still rolls Woman or Man for a randomly dealt soul, which is what the
+    name lists are written for. Writing your own is a choice made about a particular soul, not
+    something to roll.
+
 - **GritKeeper v1.23.0 — the combat loop becomes one action, and the round keeps itself (2026-07-26,
   user-requested).** The ask was that the Tracker's combat feel as intuitive as it can, and that the
   round be kept automatically with the Keeper still able to edit it. The bar had thirteen buttons of
