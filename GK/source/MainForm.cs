@@ -56,7 +56,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.22.0";
+    internal const string AppVersion = "1.23.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
     internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
@@ -136,6 +136,9 @@ public partial class MainForm : Form
                 else if (e.KeyCode == Keys.H) { AdjustCombatant(+1); Did(); }
                 else if (e.KeyCode == Keys.I) { RollInitiative(); Did(); }
                 else if (e.KeyCode == Keys.R) { NextRound(); Did(); }
+                // The loop key: hand on the turn, and let the round follow. Space because it is the
+                // one a hand already resting on the keyboard can find without looking down.
+                else if (e.KeyCode == Keys.Space) { NextTurn(); Did(); }
             }
             else if (page == "Bestiary" && e.KeyCode == Keys.F)
             { beastSearch.Focus(); beastSearch.SelectAll(); Did(); }
@@ -807,6 +810,11 @@ public partial class MainForm : Form
         g.ColumnHeadersDefaultCellStyle.BackColor = Blood;
         g.ColumnHeadersDefaultCellStyle.ForeColor = Paper;
         g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+        // A header whose column holds the current cell otherwise paints in Windows' own selection
+        // blue — the one colour in the app that belongs to no palette here, and it moves around the
+        // header row as the selection does, which reads as a fault rather than a highlight.
+        g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Blood;
+        g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Paper;
         g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
         g.ColumnHeadersHeight = 30;
         g.RowTemplate.Height = 28;
@@ -1627,7 +1635,7 @@ public partial class MainForm : Form
                 if (c.IsSign) signs.Add(c); else tracker.Add(c);
             foreach (var c in s.Signs ?? new()) { c.IsSign = true; signs.Add(c); }
             round = Math.Max(1, s.Round);
-            if (roundLbl != null) roundLbl.Text = $"Round {round}";
+            ShowRound();
             foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
             mapMarkers.Clear();
             mapMarkers.AddRange(s.MapMarkers ?? new());

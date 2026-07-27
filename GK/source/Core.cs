@@ -160,7 +160,7 @@ public class Combatant : INotifyPropertyChanged
 {
     string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "";
     int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1, _lastDelta, _signFilled;
-    bool _isPC, _acting, _isSign;
+    bool _isPC, _acting, _isSign, _hasActed;
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -252,10 +252,15 @@ public class Combatant : INotifyPropertyChanged
     /// <summary>Forget what last happened here — a new round is a clean page.</summary>
     public void ClearLast() { LastDelta = 0; LastNote = ""; }
 
-    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean, and the
-    /// row lit as the one acting. Clearing everyone else is the caller's business — the model has
-    /// no idea who else is on the field.</summary>
-    public void BeginTurn() { Beats = 3; MapStep = 1; Acting = true; }
+    /// <summary>Have they already had their turn this round? Kept so the app can track the round
+    /// itself instead of asking the Keeper to — and so the field can show, at a glance, who is
+    /// still to go. Persisted: a fight in progress survives a restart, and so must this.</summary>
+    public bool HasActed { get => _hasActed; set { _hasActed = value; On(); } }
+
+    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean, the row
+    /// lit as the one acting, and their turn marked spent for the round. Clearing everyone else is
+    /// the caller's business — the model has no idea who else is on the field.</summary>
+    public void BeginTurn() { Beats = 3; MapStep = 1; Acting = true; HasActed = true; }
 
     /// <summary>Is this tracker row the given posse soul? By the stable PcId when it has one, else
     /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
@@ -698,6 +703,23 @@ public static class Rules
     /// budget and the safe-table rule are both measured against. One authority, so "two Tiers over"
     /// means the same arithmetic wherever the app says it.</summary>
     public static int PartyTier(int partyLevel) => Math.Max(1, (partyLevel + 1) / 2);
+
+    // ---- whose turn it is, and when the round is over ----
+
+    /// <summary>Can this one still be handed a turn this round? A trace takes none, someone bleeding
+    /// out takes none, and nobody takes two.</summary>
+    public static bool CanAct(Combatant c) => c != null && !c.HasActed && !c.Down && !c.IsSign;
+
+    /// <summary>Who is up next: the highest initiative among those who have not gone yet. Null when
+    /// everyone who could act has, which is the same thing as the round being over — so the app can
+    /// keep the round itself rather than asking the Keeper to remember to press a button.</summary>
+    public static Combatant NextUp(IEnumerable<Combatant> field)
+        => field?.Where(CanAct).OrderByDescending(c => c.Init).ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+
+    /// <summary>Is the round spent? Only if somebody could have acted in the first place — an empty
+    /// field, or one where everyone is down, is not a round that just ended over and over.</summary>
+    public static bool RoundSpent(IEnumerable<Combatant> field)
+        => field != null && field.Any(c => !c.Down && !c.IsSign) && NextUp(field) == null;
 
     // ---- what a Sign or a Miracle costs to work (Player's Book Ch. XIII and Ch. VI) ----
 
