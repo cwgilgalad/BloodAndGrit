@@ -779,6 +779,47 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
                                       ("givenWomen", 50), ("givenMen", 51) })
     T($"flavor pool [{pool}] is at least {floor} deep", CharGen.FlavorList(pool).Count >= floor);
 
+// ---- SkillBonus: the number the Read Sign dialog puts in front of the Keeper ----
+// It prefills the Survival bonus for every sign & spoor reading, so a wrong answer here is a
+// wrong DC check at the table, silently, every time.
+{
+    T("skills: Survival is a real skill keyed to RES — the Read Sign dialog asks for it by name",
+        cg.skills.Any(k => k.name == "Survival" && k.ability == "RES"));
+
+    var sheet = new CharacterSheet { Level = 5, Scores = new() { ["RES"] = 16, ["STR"] = 8, ["WIT"] = 10 } };
+    T("skillBonus: untrained is the keyed ability alone", CharGen.SkillBonus(sheet, "Survival") == 3);
+    foreach (var (rank, name, want) in new[] { (1, "trained", 3 + 5 + 2), (2, "expert", 3 + 5 + 4), (3, "master", 3 + 5 + 6) })
+    {
+        sheet.SkillRanks["Survival"] = rank;
+        T($"skillBonus: {name} is the modifier, the level, and the rank", CharGen.SkillBonus(sheet, "Survival") == want);
+    }
+
+    // Keyed to the ability the DATA names, not to a second list inside SkillBonus — the whole
+    // reason the method reads the definition rather than carrying its own table.
+    foreach (var k in cg.skills)
+    {
+        var s2 = new CharacterSheet { Level = 3, Scores = new() { [k.ability] = 18 } };
+        T($"skillBonus: [{k.name}] reads its own ability ({k.ability})", CharGen.SkillBonus(s2, k.name) == 4);
+        s2.SkillRanks[k.name] = 2;
+        T($"skillBonus: [{k.name}] trained to expert adds level and rank", CharGen.SkillBonus(s2, k.name) == 4 + 3 + 4);
+    }
+
+    T("skillBonus: a null sheet is nothing, not a crash", CharGen.SkillBonus(null, "Survival") == 0);
+    T("skillBonus: so is a nameless skill", CharGen.SkillBonus(sheet, "") == 0);
+    T("skillBonus: an unknown skill falls back to no ability rather than throwing",
+        CharGen.SkillBonus(sheet, "Basket Weaving") == 0);
+    T("skillBonus: a sheet with no scores answers zero",
+        CharGen.SkillBonus(new CharacterSheet { Level = 4 }, "Survival") == 0);
+
+    // A generated soul's Survival bonus and the Ledger's own tick have to agree, since the dialog
+    // shows one and the sheet shows the other.
+    var soul = CharGen.Generate(6, false, "Marshal");
+    int rank6 = soul.SkillRanks != null && soul.SkillRanks.TryGetValue("Survival", out int r6) ? r6 : 0;
+    int want6 = rank6 <= 0 ? CharGen.Mod(soul.Scores["RES"])
+                           : CharGen.Mod(soul.Scores["RES"]) + soul.Level + rank6 * 2;
+    T("skillBonus: agrees with a generated soul's own sheet", CharGen.SkillBonus(soul, "Survival") == want6);
+}
+
 // ============================================================ THE IRON CODE ENGINE (Ch. XI)
 // Property-based proof that the adjudicator matches the printed gun rules.
 {

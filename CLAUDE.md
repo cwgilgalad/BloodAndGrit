@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.20.1) — the C# desktop app
+## GritKeeper (v1.21.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -612,6 +612,17 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   combatant from Appendix B's list), New fight (clear foes, keep the posse, back to Round 1),
   and Clear field (full wipe).** Foes arrive three ways: the Bestiary `× N` → Tracker, the
   v1.2 **Foe type-ahead box (× N) directly on the Tracker bar**, or ＋ Add by hand.
+  v1.21: **the safe-table rule runs here.** Every route onto the field funnels through
+  `AddCreatureToTracker`, which asks `Rules.SignOnly(tier, partyLevel)` first; a horror two or
+  more Tiers over the posse offers **sign & spoor** instead of itself. A sign row is a different
+  kind of thing — italic name, cold ground, no Blood, no turn, nothing to Strike or be Struck —
+  and its Blood column carries a **4-segment spoor clock** instead of a bar. **Read sign ▸**
+  (or its right-click menu) runs the scene: a Survival check at the Tier's DC prefilled from the
+  reader's own sheet via `CharGen.SkillBonus`, the four degrees, the Dread it costs (one rung
+  below meeting the thing; nothing at Tier I), and one more segment. A full clock offers to swap
+  the trace for the creature. Also v1.21: a **Blood bar** behind every Blood number (green/gold/
+  red), a **"Last"** column saying what just happened to each row (cleared at the top of a round,
+  never persisted), and **✚ Restore ▾** — selected soul / the posse / everyone on the field.
 - **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine
   Grounds) × scale (gunfight → weeks of trail) × hour × water, with trail/rail/settlement/
   grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
@@ -782,7 +793,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈10,390 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈11,271 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)
