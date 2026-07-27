@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.21.0) — the C# desktop app
+## GritKeeper (v1.22.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -628,6 +628,21 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   Also v1.21: a **Blood bar** behind every Blood number (green/gold/
   red), a **"Last"** column saying what just happened to each row (cleared at the top of a round,
   never persisted), and **✚ Restore ▾** — selected soul / the posse / everyone on the field.
+  v1.22: **Signs, Miracles and creature powers are tracked where they land.** `✦ Work ▸` (and the
+  row's right-click) opens *Work a Sign or Miracle*: who works it, what, on whom, for how many
+  rounds, and whether to spend the cost. **A soul offers only what is on their sheet**
+  (`SignsKnown` / `MiraclesKnown` resolved against `CharGen.D`); **a creature offers the power its
+  Bestiary `special` line names** (`Rules.ParsePower` — all 150 entries are written
+  "Short name. What it does."); anything else is hand-named. `Rules.ParseCost` pulls the printed
+  cost apart ("1 Beat · 2 Nerve · Will save" → action, Nerve, Faith, Blood, Mark, save, and the
+  one "or N Blood" alternative), so working it **spends the real pools** — Nerve for a Sign, the
+  Calling's pool for a Miracle — and asks before overspending rather than refusing. The effect
+  rides on the **target** as `Combatant.Worked` (a `WorkedEffect` carrying name, kind, rank,
+  **who worked it**, cost, effect text, rounds left, and the round it started), painted as chips
+  in the **Worked** column — ✦ Sign, ✝ Miracle, ◈ a creature's own — with the whole of each one
+  a hover away and endable from the right-click menu. `Next round` ticks every counted effect and
+  logs each one that runs out by name; `RoundsLeft = -1` means "until it is ended", which is what
+  the book's "for a scene" and "for an hour" actually are.
 - **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine
   Grounds) × scale (gunfight → weeks of trail) × hour × water, with trail/rail/settlement/
   grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
@@ -798,7 +813,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈11,271 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈12,046 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)
