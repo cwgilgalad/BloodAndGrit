@@ -614,13 +614,18 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   v1.2 **Foe type-ahead box (× N) directly on the Tracker bar**, or ＋ Add by hand.
   v1.21: **the safe-table rule runs here.** Every route onto the field funnels through
   `AddCreatureToTracker`, which asks `Rules.SignOnly(tier, partyLevel)` first; a horror two or
-  more Tiers over the posse offers **sign & spoor** instead of itself. A sign row is a different
-  kind of thing — italic name, cold ground, no Blood, no turn, nothing to Strike or be Struck —
-  and its Blood column carries a **4-segment spoor clock** instead of a bar. **Read sign ▸**
-  (or its right-click menu) runs the scene: a Survival check at the Tier's DC prefilled from the
-  reader's own sheet via `CharGen.SkillBonus`, the four degrees, the Dread it costs (one rung
-  below meeting the thing; nothing at Tier I), and one more segment. A full clock offers to swap
-  the trace for the creature. Also v1.21: a **Blood bar** behind every Blood number (green/gold/
+  more Tiers over the posse offers to go on the **trail** instead of the field, through a dialog
+  that names both outcomes (ON THE TRAIL / ON THE FIELD) and what each costs.
+  **A sign is NOT a tracker row** — it lives in its own `signs` BindingList (persisted as
+  `GameSession.Signs`; traces saved inside `Tracker` migrate out on load) and draws in the
+  **THREADS ON THE TRAIL** strip docked between the action bar and the grid. The strip is hidden
+  outright when `signs` is empty. One card per thread: name, what is on the ground, Tier, Survival
+  and Dread DCs, the clock as boxes **and** as "2 of 4", and its own **Read it ▸** — which runs a
+  Survival check at the Tier's DC prefilled from the reader's sheet via `CharGen.SkillBonus`, the
+  four degrees, the Dread it costs (one rung below meeting the thing; nothing at Tier I), and one
+  more segment. A full clock offers to swap the trace for the creature. Rebuild the strip with
+  `RefreshThreads()` after anything that touches `signs` or a clock.
+  Also v1.21: a **Blood bar** behind every Blood number (green/gold/
   red), a **"Last"** column saying what just happened to each row (cleared at the top of a round,
   never persisted), and **✚ Restore ▾** — selected soul / the posse / everyone on the field.
 - **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine

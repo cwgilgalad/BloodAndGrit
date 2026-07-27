@@ -8,6 +8,10 @@ public partial class MainForm : Form
     // shared state
     readonly BindingList<PartyMember> party = new();
     readonly BindingList<Combatant> tracker = new();
+    // The threads on the trail. Deliberately NOT part of `tracker`: a sign takes no initiative and
+    // no turn, and a row in the initiative order that can never act is a row the Keeper learns to
+    // skip. See the Threads strip above the Tracker grid.
+    readonly BindingList<Combatant> signs = new();
     readonly BindingList<Ride> rides = new();          // the corral and the yard — see TabsRides.cs
     readonly BindingList<EncounterPick> encounter = new();
     readonly BindingList<CampaignClock> clocks = new();
@@ -182,6 +186,7 @@ public partial class MainForm : Form
         // native per-field undo instead — snapshotting every keystroke would flood the stack.
         party.ListChanged += (s, e) => CaptureUndo();
         tracker.ListChanged += (s, e) => CaptureUndo();
+        signs.ListChanged += (s, e) => { CaptureUndo(); RefreshThreads(); };
         encounter.ListChanged += (s, e) => CaptureUndo();
         clocks.ListChanged += (s, e) => CaptureUndo();
         rides.ListChanged += (s, e) => CaptureUndo();
@@ -1562,7 +1567,7 @@ public partial class MainForm : Form
         Party = party.ToList(), Clocks = clocks.ToList(), Notes = notesBox?.Text ?? notesText,
         EncounterCreatures = encounter.Select(x => x.Creature.name).ToList(),
         PartyLevelHint = (int)(encLevel?.Value ?? partyLevelHint),
-        Tracker = tracker.ToList(), Round = round,
+        Tracker = tracker.ToList(), Signs = signs.ToList(), Round = round,
         MapMarkers = mapMarkers.ToList(),
         Rides = rides.ToList()
     };
@@ -1603,7 +1608,7 @@ public partial class MainForm : Form
                 if (!w.IsDisposed) w.Close();
             soulWindows.Clear();
 
-            party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear(); rides.Clear();
+            party.Clear(); clocks.Clear(); encounter.Clear(); tracker.Clear(); rides.Clear(); signs.Clear();
             foreach (var p in s.Party ?? new()) party.Add(p);
             foreach (var c in s.Clocks ?? new()) clocks.Add(c);
             notesText = s.Notes ?? "";
@@ -1615,15 +1620,20 @@ public partial class MainForm : Form
                 partyLevelHint = Math.Clamp(s.PartyLevelHint, 1, 10);
                 if (encLevel != null) encLevel.Value = partyLevelHint;
             }
-            foreach (var c in s.Tracker ?? new()) tracker.Add(c);   // a fight in progress survives a restart
+            // A fight in progress survives a restart — and the threads on the trail with it. Traces
+            // saved before Signs existed still sit in Tracker; they come out here rather than being
+            // left to draw a dead row in the initiative order forever.
+            foreach (var c in s.Tracker ?? new())
+                if (c.IsSign) signs.Add(c); else tracker.Add(c);
+            foreach (var c in s.Signs ?? new()) { c.IsSign = true; signs.Add(c); }
             round = Math.Max(1, s.Round);
             if (roundLbl != null) roundLbl.Text = $"Round {round}";
             foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
             mapMarkers.Clear();
             mapMarkers.AddRange(s.MapMarkers ?? new());
             mapPanel?.Invalidate();
-            RefreshClocks(); RefreshEncounter();
-            posseGrid?.Refresh(); trkGrid?.Refresh();
+            RefreshClocks(); RefreshEncounter(); RefreshThreads();
+            posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
         }
         finally { suppressUndo = prevSuppress; }
         undoBaseline = JsonSerializer.Serialize(Snapshot());   // re-synced whichever path called this
