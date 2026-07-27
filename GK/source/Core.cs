@@ -951,4 +951,107 @@ public static class Db
 
     public static Creature Find(string name) =>
         Creatures.FirstOrDefault(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Pick a table entry that isn't <paramref name="notThis"/>, so an adventure never
+    /// rolls the same line into two of its slots and reads like the dice got stuck. Gives up after
+    /// a few tries rather than looping forever on a one-entry table.</summary>
+    static string PickDistinct(string table, params string[] notThis)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            var s = Pick(table);
+            if (!notThis.Contains(s)) return s;
+        }
+        return Pick(table);
+    }
+
+    /// <summary>Roll a whole adventure rather than one more line off one more table.
+    ///
+    /// The variety is deliberately multiplicative and the parts are rolled independently, because
+    /// that is what makes the same monster read as a different job twice: a Wendigo that is
+    /// <i>collecting, and there is a list</i> is not the Wendigo that <i>only takes what is freely
+    /// given</i>. The trouble comes out of the Bestiary rather than a table of adjectives, so what
+    /// gets rolled is a thing with a stat block the Keeper can put straight on the Tracker.</summary>
+    /// <param name="partyLevel">Used to keep the trouble in the posse's weight class. 0 or less
+    /// takes the whole Bestiary, which is what "surprise me, and God help them" looks like.</param>
+    public static Adventure RollAdventure(int partyLevel = 0)
+    {
+        var town = $"{Pick("townFront")} {Pick("townBack")}";
+
+        // Tier-appropriate where possible: the party's own tier, or one either side of it, so the
+        // fight is a fight. Falls back to the whole Bestiary rather than returning nothing when a
+        // tier is thinly populated — an adventure with no trouble in it is not an adventure.
+        var pool = Creatures.AsEnumerable();
+        if (partyLevel > 0)
+        {
+            int tier = Rules.PartyTier(partyLevel);
+            var near = Creatures.Where(c => Math.Abs(c.tier - tier) <= 1).ToList();
+            if (near.Count > 0) pool = near;
+        }
+        var list = pool.ToList();
+        var beast = list.Count > 0 ? list[Rules.Rng.Next(list.Count)] : null;
+
+        return new Adventure
+        {
+            Title = $"{Pick("advTitleA")} {Pick("advTitleB")}",
+            Shape = Pick("advShape"),
+            Hook = Pick("advHook"),
+            TownName = town,
+            Ails = Pick("townAils"),
+            Rumor = Pick("rumors"),
+            Trouble = beast?.name ?? "something the Bestiary has not named",
+            TroubleTier = beast?.tier ?? 0,
+            Truth = PickDistinct("advTruth"),
+            Turn = Pick("advTurn"),
+            Omen = Pick("omens"),
+            NpcName = $"{Pick("npcGiven")} {Pick("npcSurname")}",
+            NpcWant = Pick("npcWant"),
+            NpcTell = Pick("npcTell"),
+            Clock = Pick("advClock"),
+            ClockSegments = 4 + Rules.Rng.Next(3) * 2,   // 4, 6 or 8 — the app's own clock sizes
+            Reward = Pick("advReward"),
+            Plunder = Pick("plunder"),
+        };
+    }
+}
+
+/// <summary>One rolled adventure: the parts a Keeper needs before a session and nothing they can
+/// look up mid-scene. Kept as data rather than a formatted string so the Generators tab can render
+/// it AND hand the pieces to the rest of the app — the town to the Map, the clock to a Thread, the
+/// trouble to the Tracker.</summary>
+public sealed class Adventure
+{
+    public string Title = "", Shape = "", Hook = "", TownName = "", Ails = "", Rumor = "";
+    public string Trouble = "", Truth = "", Turn = "", Omen = "";
+    public string NpcName = "", NpcWant = "", NpcTell = "";
+    public string Clock = "", Reward = "", Plunder = "";
+    public int ClockSegments = 6;
+    public int TroubleTier;
+
+    /// <summary>The adventure as the Keeper reads it off the tab. Written in the order it gets used
+    /// at the table: what it is and how it arrives, then where, then what is actually true, then the
+    /// turn, and only then the bookkeeping.</summary>
+    public string Sheet() =>
+        $"{Title.ToUpperInvariant()}\n" +
+        $"  The shape of it:  {Shape}\n" +
+        $"  How it finds you: {Hook}\n" +
+        $"\n" +
+        $"  Where:            {TownName}\n" +
+        $"  What ails it:     {Ails}\n" +
+        $"  What they say:    {Rumor}\n" +
+        $"\n" +
+        $"  The trouble:      {Trouble}{(TroubleTier > 0 ? $"  (Tier {TroubleTier})" : "")}\n" +
+        $"  The truth of it:  {Truth}\n" +
+        $"  The turn:         {Turn}\n" +
+        $"  An omen first:    {Omen}\n" +
+        $"\n" +
+        // The tell gets its own labelled line rather than a sentence around it: the table is written
+        // in bare third person ("Counts things — coins, exits, your party"), so any pronoun put in
+        // front of it disagrees with the verb — "they wears something of the child's".
+        $"  In the way:       {NpcName} — wants {char.ToLowerInvariant(NpcWant[0])}{NpcWant.Substring(1)}\n" +
+        $"  Their tell:       {NpcTell}\n" +
+        $"\n" +
+        $"  If nobody moves:  {Clock}   [{ClockSegments}-segment clock]\n" +
+        $"  What's in it:     {Reward}\n" +
+        $"  On the body:      {Plunder}";
 }
