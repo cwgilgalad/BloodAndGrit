@@ -8,6 +8,38 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.26.0 — the Generators roll a whole adventure, not one more line (2026-07-27,
+  user-requested, "expand it enough so that there are a wide variety").** Every other button in
+  that column rolls one line off one table and leaves the joining to the Keeper. This one rolls
+  the joins as well.
+
+  - **An adventure, whole.** One click gives a titled scenario: the *shape* of the trouble (a hunt,
+    a siege, a haunting, a quarantine, a bargain, a drowning…), how it *finds* the posse, the town
+    and what ails it, what they're saying, **the trouble itself**, the truth underneath, the turn
+    that lands when the table thinks it has the shape of it, an omen to open on, whoever stands in
+    the way, what happens if nobody moves — and what's in it.
+  - **The trouble is a real creature, not an adjective.** It comes out of the Bestiary at the
+    posse's own tier ±1, so what gets rolled is a thing with a stat block that can go straight onto
+    the Tracker. Set the party level on the tab and the weight class follows; leave it at zero and
+    the whole Bestiary is in play.
+  - **The truth is rolled apart from the monster, which is where the variety actually lives.** A
+    Wendigo that *is collecting, and there is a list* is not the Wendigo that *only takes what is
+    freely given* — same stat block, different session. Eight new tables, **156 entries**, and the
+    independently-rolled parts alone give a bit over **49 million** combinations before the town,
+    the face, the omen and 150-odd creatures multiply it again.
+  - **It hands the pieces to the app rather than leaving them in a text box.** *→ Thread* puts
+    "if nobody moves" on the Ledger as a running clock at the size it rolled (4, 6 or 8 segments —
+    the sizes the app actually draws). *→ Map* surveys its town, either as streets or set down in
+    open country, using the v1.25.0 menu. A scenario the Keeper has to retype at midnight is a
+    scenario they won't use.
+  - **Caught by reading the output rather than by a green tick:** the tell was being fitted into a
+    sentence — "you'll notice they *wears* something of the child's". The table is written in bare
+    third person, so any pronoun in front of it disagrees with the verb. It gets its own labelled
+    line now. The suite also carried a hard-coded "17 simple tables" canary, which the eight new
+    tables tripped; it says 25 and explains itself.
+  - 29 new assertions, 12,102 → **12,131** — including that 400 consecutive rolls come back
+    near-all distinct, and that the trouble suits the posse at every level from 1 to 10.
+
 - **GritKeeper v1.25.0 — a rolled place can be surveyed twice: itself, and the country it stands
   in (2026-07-27, user-requested).** The Generators tab could already send a town or a city to the
   Map. It could only ever send it *one way*, and for a city that way was wrong.
