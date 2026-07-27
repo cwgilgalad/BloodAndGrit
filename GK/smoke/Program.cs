@@ -356,16 +356,23 @@ foreach (var (table, floor) in new[]
     T("gender: Woman and Man come through untouched",
         CharGen.CleanGender("Woman") == "Woman" && CharGen.CleanGender("Man") == "Man");
 
-    // A hand-built soul keeps whatever gender it was given, all the way onto the sheet.
-    var spec = new CharGen.AssembleSpec { Level = 1, Calling = "Drifter", Origin = "Frontier-Born", Gender = "Two-Spirit", Name = "Wren Ashby" };
-    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.Scores[a] = 12;
-    try
-    {
-        var built = CharGen.Assemble(spec);
-        T("gender: a hand-built soul keeps the gender it was given", built.Gender == "Two-Spirit");
-        T("gender: and the name it was given", built.Name == "Wren Ashby");
-    }
-    catch (Exception ex) { T($"gender: hand-built soul assembles ({ex.GetType().Name})", false); }
+    // A hand-built soul keeps whatever gender it was given, all the way onto the sheet — the road
+    // the wizard walks. Calling and Origin come from the data so this never fails on a renamed one.
+    var gCal = CharGen.D.callings[0];
+    var gOrg = CharGen.D.origins.First(o => !(gCal.group == "Faith" && o.notFaith));
+    var spec = new CharGen.AssembleSpec
+    { Level = 1, Calling = gCal.name, Origin = gOrg.name, Rolled = true, Gender = "Two-Spirit", Name = "Wren Ashby" };
+    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.PreGiftScores[a] = 12;
+    var built = CharGen.Assemble(spec);
+    T("gender: a hand-built soul keeps the gender it was given", built.Gender == "Two-Spirit");
+    T("gender: and the name it was given", built.Name == "Wren Ashby");
+    T("gender: and is still a legal sheet", CharGen.Validate(built).Count == 0);
+
+    // The wizard's road with the gender left empty still yields a soul — the assembler rolls one
+    // rather than shipping a blank, which is what it has always done for an unanswered step.
+    var blank = new CharGen.AssembleSpec { Level = 1, Calling = gCal.name, Origin = gOrg.name, Rolled = true };
+    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) blank.PreGiftScores[a] = 12;
+    T("gender: an unanswered gender is filled in, not left blank", CharGen.Assemble(blank).Gender is { Length: > 0 });
 }
 
 // ---- whose turn it is, and when the round is spent ----
