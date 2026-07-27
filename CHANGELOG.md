@@ -8,6 +8,48 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.22.0 — Signs, Miracles and creature powers tracked where they land (2026-07-26,
+  user-requested).** The books have carried two power systems since the beginning — Signs (Ch. XIII)
+  and Miracles (Ch. VI), on a shared five-Rank spine — and the app knew them only well enough to put
+  them on a character sheet. Nothing tracked one once it was worked. The request was for **cause and
+  effect, on the part of both posse members and creatures**, and this is that.
+
+  - **The effect rides on whoever it landed on.** `Combatant.Worked` holds a list of `WorkedEffect` —
+    name, kind, rank, **who worked it**, the printed cost, what it does, the rounds left, and the
+    round it started. The question a Keeper asks mid-fight is "what is on *him*?", so that is where
+    the answer lives; the cause travels inside the effect rather than being left to memory. They
+    paint as chips in a new **Worked** column — **✦** Sign, **✝** Miracle, **◈** a creature's own —
+    with the rounds left in brackets. The chips are deliberately terse; the whole of each effect is
+    a hover away, and endable from the row's right-click menu, one at a time or all at once.
+  - **A soul offers only what they have learned.** The picker reads `SignsKnown` / `MiraclesKnown`
+    off the sheet and resolves each against the data for its rank, cost and text — a Gunhand offers
+    nothing but a hand-named effect, and says so. **A creature offers the power its own stat block
+    names**: `Rules.ParsePower` splits the Bestiary `special` line, every one of the 150 of which is
+    written "Short name. What it does."
+  - **The cost is real.** `Rules.ParseCost` takes the printed line apart — "1 Beat · 2 Nerve · Will
+    save" → the action, the Nerve, the Faith, the Blood, the Mark, the save, and the single "or 6
+    Blood" alternative the book offers in one place — so working a Sign spends Nerve and working a
+    Miracle spends the Calling's pool, off the worker's own sheet. It **asks before overspending
+    rather than refusing**: the Keeper may be running something the pools do not model, and the
+    book's numbers are theirs to overrule.
+  - **Rounds tick, and say so.** `Next round` counts every timed effect down and logs each one that
+    runs out **by name and by who worked it** — an effect that vanished off a chip silently is one
+    the table keeps playing anyway. `RoundsLeft = -1` means "until it is ended", which is what the
+    book's "for a scene", "for an hour" and "for the next day" actually are; those never expire on
+    their own, and the Keeper ends them by hand.
+  - **Smoke: 12,046 passing, 0 failing** (from 11,332). The two parsers are held against the real
+    data rather than samples: **every one of the 40 Signs and 40 Miracles** must name its action,
+    must not be paid in the other side's currency, and must sit on the five-Rank spine; **every one
+    of the 150 creatures** must yield a named power short enough to be a chip and keep its effect
+    text. Plus the hand-checked cost shapes ("and" charges both, "or" charges the first and remembers
+    the way out, an unparseable line keeps its words rather than throwing), the effect clock
+    (counting down, expiring, open-ended ones never expiring), and a session round-trip proving an
+    effect survives save and load with its cause and cost intact.
+  - Verified by rendering and by driving it: the demo posse's Hexer offered her two real Signs with
+    the parsed cost and her live Nerve beside it, working one put the chip on her row, spent 1 Nerve
+    (17 → 16), and the effect came back off disk with its source, cost and starting round. One
+    layout clip caught and fixed in the duration note.
+
 - **GritKeeper v1.21.0 — the safe-table rule becomes a thing you can run, and the field says what
   just happened (2026-07-26, user-requested).** v1.20.0 put the Sign & Spoor rule in the books. This
   puts it in the app's hands, and then — on the user's word that it still did not read as intuitive —
