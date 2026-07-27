@@ -8,6 +8,60 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.21.0 — the safe-table rule becomes a thing you can run, and the field says what
+  just happened (2026-07-26, user-requested).** v1.20.0 put the Sign & Spoor rule in the books. This
+  puts it in the app's hands, and then — on the user's word that it still did not read as intuitive —
+  moves it out of the place it did not belong.
+
+  - **Threads on the trail, not rows on the field.** A sign first arrived as a row in the initiative
+    order with no Blood, no turn, and Init 0. It worked, and it was wrong: a line in a list of things
+    that take turns, which could never take one, is a line a Keeper learns to skip past. Signs now
+    live in `GameSession.Signs` and draw in their own **THREADS ON THE TRAIL** strip above the grid —
+    one card each, carrying the name, what is on the ground, the Tier, the Survival and Dread DCs,
+    the clock, and its own **Read it ▸**. The strip hides itself outright when the trail is clear, so
+    a table that never meets the rule never sees it. Sessions saved with traces inside `Tracker`
+    migrate across on load.
+  - **The clock says "2 of 4".** Four small boxes told nobody anything — reported by the user as
+    exactly that. The boxes remain, and the count beside them is now the part that does the teaching,
+    with the strip's own caption saying what the whole band is for: *too far over the posse to meet
+    in the flesh. Read them; they take no turn.*
+  - **The rule's entry dialog names where the thing goes.** It offered "Sign & spoor" against "In
+    the flesh" and left the Keeper to work out what either did. It now sets out both outcomes under
+    headings — **ON THE TRAIL (what the book does)** and **ON THE FIELD (overrule the rule)** — each
+    saying where the creature lands, what reading it costs, and, for the overrule, the Blood and
+    Defense it brings and that at this level it is very likely a funeral. The buttons say **Put it on
+    the trail** / **Put it on the field**.
+  - **`Rules.PartyTier`** extracted from inside `Cost`, so "three Tiers over a posse of level 2" is
+    the same arithmetic in the dialog as in the encounter budget rather than a second copy of
+    `(level + 1) / 2`.
+  - **A thread whose creature no longer resolves says so.** The lookup falls back to Tier I — the
+    gentlest row on the table — and left unsaid that reads as a real reading. A re-extraction that
+    renames a creature can orphan a saved thread, so the card now names the missing creature instead.
+  - **In the fight itself:** a **Blood bar** behind every Blood number (green above two thirds, gold,
+    red below a third), a **"Last"** column saying what just happened to each row — the damage, the
+    healing, the moment they went down — coloured by direction and cleared at the top of each round,
+    and **✚ Restore ▾** for the selected soul, the posse, or everyone on the field. Every route to a
+    wound now goes through one `Combatant.Wound`, including the Strike engine, so an engine-resolved
+    hit and a hand-typed one leave the same visible answer.
+  - **Generators → Map.** A rolled town or city ward can be sent straight to the Map tab to be
+    surveyed under its own name (`MapSpec.PlaceName`); the naming roll is still made, so naming a
+    place never rearranges the country under it.
+  - **Four stale facts fixed.** `AppVersion` had read **1.17.0** since v1.17 — the About box has been
+    lying about the version for four releases. The same box carried hard-typed book editions (v2.15 /
+    v2.7 / v2.7, nine editions behind) a foot away from the three constants the status bar reads
+    correctly; it now interpolates them, so it cannot drift again. `GK/source/README.md` claimed app
+    1.11.0 and books v2.16/v2.8/v2.8. And the Tracker's round label was built with the literal text
+    "Round 1": the tab is lazy, so a session auto-loaded mid-fight set `round` before the label
+    existed, and the label was the only thing in the app still saying Round 1 on the fight's third.
+  - **Smoke: 11,329 passing, 0 failing** (from ~10,390). New: `SignOnly` agreeing with `Cost` across
+    every Tier × level, `PartyTier`'s whole ladder, `ReadSign` across every Tier × d20 face with a
+    monotonicity sweep on the Survival bonus, the sign half of `Combatant` (clock clamping, no
+    wounding a trace, `Down` never true for one), `Wound`'s notes and clamps, and **`CharGen.SkillBonus`
+    against every skill in the data** — the number that prefills every sign reading, which had none.
+  - Verified by rendering: the strip, both cards, the entry dialog, and the read dialog captured with
+    `PrintWindow` and looked at; migration proved by loading a session with a trace in the old place
+    and one in the new.
+
 - **GritKeeper v1.20.1 — two stale facts fixed at the source rather than in the text (2026-07-26,
   user-requested).** Both were noted at the end of the last release; both are the kind that come
   back unless the thing that generates them changes.

@@ -40,6 +40,12 @@ public sealed class MapSpec
     // The sky over the survey: an index into MapGen.Weathers, 0 = let the country decide.
     // Appended last so every stored Scale/Time/Water index keeps its old meaning.
     public int Weather;
+
+    /// <summary>What this place is called, when the Keeper already knows — the town rolled on the
+    /// Generators tab, or a name typed on the Map bar. Empty means the survey names it itself. It
+    /// replaces the drawn name only; the roll that would have produced one is still made, so
+    /// naming a place never redraws the country under it.</summary>
+    public string PlaceName = "";
 }
 
 // A named landmark the Keeper can pick up and move: its anchor (the symbol's
@@ -323,7 +329,11 @@ public static class MapGen
         // ---- the settlement ----
         // The town's name and ground are claimed whether or not it's shown, so toggling
         // Settlement adds/removes only the town's own ink — the land never reshuffles.
-        string townName = TownName(rngTown, ti);
+        // The roll is made either way. Taking the name from the spec INSTEAD of the draw would
+        // leave rngTown one step behind, and the street grid it goes on to lay out would come out
+        // different — so a Keeper who named their town would find the country under it rearranged.
+        string rolled = TownName(rngTown, ti);
+        string townName = string.IsNullOrWhiteSpace(sp.PlaceName) ? rolled : sp.PlaceName.Trim();
         blocked.Add((tx, ty, sp.Scale == 0 ? 150 : 95));
         if (sp.Town && city)
         {

@@ -11,6 +11,7 @@ public partial class MainForm
     ComboBox mapGround, mapScale, mapTime, mapWater, mapSky;
     CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets, mapMarkOut;
     NumericUpDown mapLm, mapSeed;
+    TextBox mapName;
     MapPanel mapPanel;
     MapModel curMap;
     bool mapBusy;
@@ -145,6 +146,26 @@ public partial class MainForm
         Tip.SetToolTip(mapSeed, "The map's number — the same seed and settings always draw the same map");
         rowGen.Controls.Add(mapSeed);
         rowGen.Controls.Add(Btn("🎲 New map", (s, e) => MapDraw(true), 92, "Draw a fresh map on a new seed (Ctrl+G)"));
+        rowGen.SetFlowBreak(rowGen.Controls[rowGen.Controls.Count - 1], true);
+        // A place the Keeper has already named — usually rolled on the Generators tab and sent
+        // over. Empty means the survey names it, which is what it did before this box existed.
+        rowGen.Controls.Add(Lbl("Name:"));
+        mapName = new TextBox { Width = 210, Margin = new Padding(3, 6, 3, 3) };
+        Tip.SetToolTip(mapName, "Name this place yourself — the town's name on a county map, the ward's on a city map. "
+            + "Leave it empty and the survey names it. Roll a town or a city on the Generators tab and press "
+            + "“→ Map” to fill this in.");
+        // Redraw when the Keeper is DONE typing, not per keystroke: every redraw writes a line to
+        // the roll log, and "Coffin Wells" typed a letter at a time would write eleven of them.
+        mapName.Leave += (s, e) => { if (!mapBusy) MapDraw(false); };
+        mapName.KeyDown += (s, e) =>
+        {
+            if (e.KeyCode != Keys.Enter) return;
+            e.SuppressKeyPress = true;
+            if (!mapBusy) MapDraw(false);
+        };
+        rowGen.Controls.Add(mapName);
+        rowGen.Controls.Add(Btn("Clear name", (s, e) => mapName.Text = "", 88,
+            "Give the naming back to the survey"));
 
         // ---- row 2: what's shown, and how close ----
         rowView.Controls.Add(Lbl("Show:"));
@@ -266,8 +287,34 @@ public partial class MainForm
         Trail = mapTrail.Checked, Rail = mapRail.Checked, Town = mapTown.Checked,
         Grid = mapGrid.Checked, Secrets = mapSecrets.Checked,
         Landmarks = (int)mapLm.Value,
-        Seed = (int)mapSeed.Value
+        Seed = (int)mapSeed.Value,
+        PlaceName = mapName?.Text ?? ""
     };
+
+    /// <summary>Draw a survey of a place the Keeper has already rolled up elsewhere — the town or
+    /// the city ward from the Generators tab. A city arrives as a ward of the Lamplit City because
+    /// that is the only scale a city name means anything at; a town keeps whatever country the
+    /// Keeper had set, since a town sits on the ground the campaign is already crossing.</summary>
+    internal void SendPlaceToMap(string placeName, bool city)
+    {
+        if (string.IsNullOrWhiteSpace(placeName)) { Nope("Roll a town or a city first."); return; }
+        // Realizes the tab if this is its first visit — and says so plainly if this table is being
+        // run in a player's view, where there is no Map tab to send anything to.
+        if (!ShowTab("Map") || mapName == null) { Nope("The Map is a Keeper's tab — switch tables under the Table menu."); return; }
+
+        mapBusy = true;
+        mapName.Text = placeName.Trim();
+        if (city)
+        {
+            mapGround.SelectedIndex = Array.IndexOf(MapGen.Terrains, "The Lamplit City");
+            mapScale.SelectedIndex = Array.IndexOf(MapGen.Scales, "A city ward (blocks)");
+            mapGrid.Checked = false;
+        }
+        mapTown.Checked = true;                // a place with a name is a place that is drawn
+        mapBusy = false;
+        MapDraw(true);                         // a new place is a new survey, not a relabelled old one
+        Log($"{(city ? "The ward" : "The town")} of {mapName.Text} — surveyed as map N° {(int)mapSeed.Value}.");
+    }
 
     internal void MapDraw(bool newSeed)
     {

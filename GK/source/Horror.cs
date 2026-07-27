@@ -64,4 +64,31 @@ public static class Horror
         int r = forcedRoll ?? Rules.Rng.Next(1, 7);
         return new BreakOutcome(r, r == 6, BreakTable[r - 1]);
     }
+
+    // ---- the safe-table rule, resolved: reading what a thing left behind ----
+
+    public record SignOutcome(int Die, int Mod, int Tier, int ReadDc, int DreadDc,
+        int Degree, string DegreeName, string What, string Learned, string Detail)
+    {
+        /// <summary>Every reading is a fresh sign, so every reading fills a segment — including a
+        /// bad one. The clock measures how often the posse has crossed this thing's trail, not how
+        /// well they read it; what the roll decides is what they take away from the crossing.</summary>
+        public bool FillsClock => true;
+
+        public string Line => $"Reads the sign (Survival DC {ReadDc}): {DegreeName}. {Learned}";
+    }
+
+    /// <summary>Read the sign a Tier-<paramref name="tier"/> thing left (Bestiary, Appendix: The
+    /// Grounds). A Survival check against the Tier's read DC, and the four degrees decide what the
+    /// tracker takes away — everything, the direction, a bad feeling, or a reading that is simply
+    /// backward. The Dread the reading costs comes back with the outcome rather than being rolled
+    /// here: it is the reader's save, and the caller knows who is reading.</summary>
+    public static SignOutcome ReadSign(int survivalMod, int tier, int? forcedDie = null)
+    {
+        var (readDc, dreadDc, what) = Rules.SpoorFor(tier);
+        int die = forcedDie ?? Rules.Rng.Next(1, 21);
+        var (idx, name, detail) = Rules.FourDegrees(die, survivalMod, readDc);
+        return new SignOutcome(die, survivalMod, tier, readDc, dreadDc, idx, name,
+                               what, Rules.SpoorRead(idx), detail);
+    }
 }
