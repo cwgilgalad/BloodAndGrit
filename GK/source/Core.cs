@@ -261,6 +261,90 @@ public class Combatant : INotifyPropertyChanged
     /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
     public bool IsSoul(PartyMember p)
         => _isPC && p != null && (!string.IsNullOrEmpty(_pcId) ? _pcId == p.Id : _name == p.Name);
+
+    // ---- Signs, Miracles, and creature powers currently working on this one ----
+
+    /// <summary>What is working ON this combatant right now — the effect half of a Sign (Ch. XIII),
+    /// a Miracle (Ch. VI), or a creature's own power. Kept on the target rather than on the worker
+    /// because the question a Keeper asks mid-fight is "what is on HIM?", and an effect outlives the
+    /// turn that caused it. Who caused it rides along inside each entry.</summary>
+    public List<WorkedEffect> Worked { get; set; } = new();
+
+    /// <summary>The chips the tracker paints in the Worked column: the mark of the kind, the name,
+    /// and the rounds left. Short on purpose — the whole of it is a tooltip and a right-click away,
+    /// and a column a Keeper has to stop and read is a column they stop reading.</summary>
+    [JsonIgnore]
+    public string WorkedChips => Worked == null || Worked.Count == 0 ? ""
+        : string.Join("  ", Worked.Select(w => w.Chip));
+
+    /// <summary>Put an effect on this one, and say so.</summary>
+    public void Work(WorkedEffect e)
+    {
+        if (e == null) return;
+        (Worked ??= new()).Add(e);
+        On(nameof(WorkedChips));
+    }
+
+    /// <summary>Take an effect off — it ran out, or it was ended.</summary>
+    public void Unwork(WorkedEffect e)
+    {
+        if (e == null || Worked == null) return;
+        Worked.Remove(e);
+        On(nameof(WorkedChips));
+    }
+
+    /// <summary>A round has passed: everything counting down loses one, and anything that reaches
+    /// zero comes off. Effects set to last indefinitely (<see cref="WorkedEffect.RoundsLeft"/> below
+    /// zero) are untouched — "for a scene" and "until you end it" are the book's most common
+    /// durations, and a clock that silently expired them would be worse than no clock.</summary>
+    public List<WorkedEffect> TickWorked()
+    {
+        var done = new List<WorkedEffect>();
+        if (Worked == null) return done;
+        foreach (var w in Worked.ToList())
+        {
+            if (w.RoundsLeft < 0) continue;
+            w.RoundsLeft--;
+            if (w.RoundsLeft <= 0) { done.Add(w); Worked.Remove(w); }
+        }
+        if (done.Count > 0) On(nameof(WorkedChips));
+        return done;
+    }
+}
+
+/// <summary>One Sign, Miracle, or creature power in play: what it is, who worked it, what it cost,
+/// what it does, and how long it has left. The cause and the effect travel together — an effect
+/// whose source is forgotten is a note a Keeper cannot adjudicate.</summary>
+public class WorkedEffect
+{
+    public string Name { get; set; } = "";
+    /// <summary>"Sign" (Ch. XIII) · "Miracle" (Ch. VI) · "Power" (a creature's own).</summary>
+    public string Kind { get; set; } = "Sign";
+    public int Rank { get; set; }
+    /// <summary>Who worked it — the cause. A name, not a reference: the worker may leave the field,
+    /// or die, and the thing they did is still on the target.</summary>
+    public string Source { get; set; } = "";
+    /// <summary>The cost exactly as the book prints it, e.g. "1 Beat · 2 Nerve · Will save".</summary>
+    public string Cost { get; set; } = "";
+    /// <summary>What it does, in the book's own words.</summary>
+    public string Effect { get; set; } = "";
+    /// <summary>Rounds remaining, or −1 for "until it is ended" — a scene, an hour, a day.</summary>
+    public int RoundsLeft { get; set; } = -1;
+    /// <summary>The round it was worked on, so the log and the tooltip can say when.</summary>
+    public int SinceRound { get; set; } = 1;
+
+    [JsonIgnore] public string Mark => Kind == "Miracle" ? "✝" : Kind == "Power" ? "◈" : "✦";
+    [JsonIgnore] public string Duration => RoundsLeft < 0 ? "—" : $"{RoundsLeft} rd" + (RoundsLeft == 1 ? "" : "s");
+    [JsonIgnore] public string Chip => $"{Mark} {Name}" + (RoundsLeft < 0 ? "" : $" ({RoundsLeft})");
+
+    /// <summary>The whole of it, for a tooltip or a menu: cause, cost, effect, and when it ends.</summary>
+    [JsonIgnore]
+    public string Full =>
+        $"{Mark} {Name} — {Kind}" + (Rank > 0 ? $", Rank {Rank}" : "") + "\n"
+        + $"Worked by {(string.IsNullOrWhiteSpace(Source) ? "someone" : Source)}, round {SinceRound}\n"
+        + (string.IsNullOrWhiteSpace(Cost) ? "" : $"Cost: {Cost}\n")
+        + $"Ends: {(RoundsLeft < 0 ? "when it is ended by hand" : $"in {Duration}")}\n\n"
+        + Effect;
 }
 
 public class CampaignClock : INotifyPropertyChanged
@@ -614,6 +698,79 @@ public static class Rules
     /// budget and the safe-table rule are both measured against. One authority, so "two Tiers over"
     /// means the same arithmetic wherever the app says it.</summary>
     public static int PartyTier(int partyLevel) => Math.Max(1, (partyLevel + 1) / 2);
+
+    // ---- what a Sign or a Miracle costs to work (Player's Book Ch. XIII and Ch. VI) ----
+
+    /// <summary>The price of working one, pulled apart from the line the book prints. Signs are paid
+    /// in Nerve, Miracles from the Calling's Faith pool, and a few of the worst ask for Blood or a
+    /// point of Mark on top. <paramref name="OrBlood"/> carries the one alternative the book offers
+    /// ("3 Nerve or 6 Blood") rather than flattening it away.</summary>
+    public record PowerCost(string Time, int Nerve, int Faith, int Blood, int Mark, int OrBlood, string Save)
+    {
+        /// <summary>Does working this ask anything a soul has to actually spend?</summary>
+        public bool Spends => Nerve > 0 || Faith > 0 || Blood > 0 || Mark > 0;
+        public bool HasSave => !string.IsNullOrEmpty(Save);
+    }
+
+    /// <summary>Read a printed cost line — "1 Beat · 2 Nerve · Will save" — into what it actually
+    /// takes. Everything is optional and the order is the book's, so an unparseable line yields a
+    /// cost of nothing rather than throwing at the table: the Keeper still sees the printed string.
+    /// </summary>
+    public static PowerCost ParseCost(string cost)
+    {
+        string time = ""; int nerve = 0, faith = 0, blood = 0, mark = 0, orBlood = 0; string save = "";
+        foreach (var raw in (cost ?? "").Split('·', StringSplitOptions.RemoveEmptyEntries))
+        {
+            string seg = raw.Trim();
+            if (seg.Length == 0) continue;
+
+            var saveM = System.Text.RegularExpressions.Regex.Match(seg, @"^(Will|Fortitude|Reflex)\s+save$",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (saveM.Success) { save = saveM.Groups[1].Value; continue; }
+
+            // "5 Nerve and 1 Mark", "3 Nerve or 6 Blood", "2 Faith" — every number-and-currency pair
+            // in the segment, with "or" remembered so the alternative isn't silently charged as well.
+            var pairs = System.Text.RegularExpressions.Regex.Matches(seg, @"(\d+)\s*(Nerve|Faith|Blood|Mark)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (pairs.Count == 0) { if (time.Length == 0) time = seg; continue; }
+
+            bool alternative = seg.Contains(" or ", StringComparison.OrdinalIgnoreCase);
+            for (int i = 0; i < pairs.Count; i++)
+            {
+                int n = int.Parse(pairs[i].Groups[1].Value);
+                string what = pairs[i].Groups[2].Value.ToLowerInvariant();
+                // In "3 Nerve or 6 Blood" the FIRST is the price and the second the way out.
+                if (alternative && i > 0) { if (what == "blood") orBlood = n; continue; }
+                switch (what)
+                {
+                    case "nerve": nerve += n; break;
+                    case "faith": faith += n; break;
+                    case "blood": blood += n; break;
+                    case "mark":  mark  += n; break;
+                }
+            }
+        }
+        return new PowerCost(time, nerve, faith, blood, mark, orBlood, save);
+    }
+
+    /// <summary>A creature's power, pulled off its Bestiary <c>special</c> line. Every one of the
+    /// 150 entries is written "Short name. What it does.", so the lead phrase is the name and the
+    /// rest is the effect. A line that doesn't follow it still yields one power, named by its own
+    /// opening words, rather than nothing.</summary>
+    public static (string name, string effect) ParsePower(string special)
+    {
+        string s = (special ?? "").Trim();
+        if (s.Length == 0) return ("", "");
+        int stop = s.IndexOf(". ", StringComparison.Ordinal);
+        if (stop <= 0 || stop > 60)
+        {
+            // No lead-in: name it by its first few words so the chip still says something.
+            var words = s.Split(' ');
+            string lead = string.Join(" ", words.Take(Math.Min(4, words.Length))).TrimEnd(',', '.', ';');
+            return (lead, s);
+        }
+        return (s.Substring(0, stop).Trim(), s.Substring(stop + 2).Trim());
+    }
 
     public static (int cost, string role, bool spoor) Cost(int creatureTier, int partyLevel)
     {

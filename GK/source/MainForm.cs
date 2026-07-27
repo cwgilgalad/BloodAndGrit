@@ -56,7 +56,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.21.0";
+    internal const string AppVersion = "1.22.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
     internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
