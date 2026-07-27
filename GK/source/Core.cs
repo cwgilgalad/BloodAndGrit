@@ -721,6 +721,27 @@ public static class Rules
     public static bool RoundSpent(IEnumerable<Combatant> field)
         => field != null && field.Any(c => !c.Down && !c.IsSign) && NextUp(field) == null;
 
+    /// <summary>Wipe everything the last fight left on a survivor: conditions, spent Beats, position
+    /// in the order, and every Sign or Miracle still working on them. Blood is deliberately NOT
+    /// touched — wounds carry between fights, and the Posse tab's Rest is what heals them.
+    ///
+    /// This lives here rather than inline in the Tracker because it is the exact seam a bug walked
+    /// through: New fight was written before Worked effects and the sign strip existed, and being UI
+    /// code no test could reach it, so it silently stopped resetting everything a fight leaves
+    /// behind. Out here the smoke suite holds it to its word.</summary>
+    public static void ResetForNewFight(IEnumerable<Combatant> survivors)
+    {
+        if (survivors == null) return;
+        foreach (var c in survivors)
+        {
+            if (c == null) continue;
+            c.Conditions = ""; c.Beats = 3; c.MapStep = 1;
+            c.Acting = false; c.HasActed = false;
+            c.ClearLast();
+            foreach (var w in c.Worked.ToList()) c.Unwork(w);
+        }
+    }
+
     // ---- what a Sign or a Miracle costs to work (Player's Book Ch. XIII and Ch. VI) ----
 
     /// <summary>The price of working one, pulled apart from the line the book prints. Signs are paid

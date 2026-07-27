@@ -56,7 +56,14 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.24.1";
+    /// <summary>The app's version, read off the assembly so it cannot drift from the csproj.
+    /// It did drift, badly: this was a hand-typed constant that reached "1.24.1" while
+    /// &lt;Version&gt; in BloodAndGritKeeper.csproj sat four releases back at 1.20.1. Since
+    /// package.ps1 names the release tag from the built exe's FileVersion, a release cut from
+    /// that tree would have gone out as gritkeeper-v1.20.1, on top of a tag that already
+    /// existed. One number, in the csproj, and nowhere else.</summary>
+    internal static string AppVersion =>
+        typeof(MainForm).Assembly.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{v.Build}" : "0.0.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
     internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
@@ -189,7 +196,7 @@ public partial class MainForm : Form
         // native per-field undo instead — snapshotting every keystroke would flood the stack.
         party.ListChanged += (s, e) => CaptureUndo();
         tracker.ListChanged += (s, e) => CaptureUndo();
-        signs.ListChanged += (s, e) => { CaptureUndo(); RefreshThreads(); };
+        signs.ListChanged += (s, e) => { CaptureUndo(); RefreshSigns(); };
         encounter.ListChanged += (s, e) => CaptureUndo();
         clocks.ListChanged += (s, e) => CaptureUndo();
         rides.ListChanged += (s, e) => CaptureUndo();
@@ -1723,7 +1730,7 @@ public partial class MainForm : Form
             mapMarkers.Clear();
             mapMarkers.AddRange(s.MapMarkers ?? new());
             mapPanel?.Invalidate();
-            RefreshClocks(); RefreshEncounter(); RefreshThreads();
+            RefreshClocks(); RefreshEncounter(); RefreshSigns();
             posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
         }
         finally { suppressUndo = prevSuppress; }
