@@ -360,7 +360,9 @@ public partial class MainForm
 
     // ============================================================ TRACKER TAB
     DataGridView trkGrid;
-    Label roundLbl, trkTurnLbl;
+    Label trkTurnLbl;
+    NumericUpDown roundBox;      // the round, kept by the app and correctable by hand
+    bool roundBusy;              // true while ShowRound writes it, so the edit handler doesn't echo
     FlowLayoutPanel threadsPanel;   // the Threads strip; hidden entirely when nothing is out there
     NumericUpDown trkAmount, trkQty;
     ComboBox trkPick;
@@ -370,6 +372,8 @@ public partial class MainForm
     static readonly Color ActingRow = Color.FromArgb(250, 240, 205);
     // A sign & spoor row: cold and bloodless, so it never reads as one more body to shoot at.
     static readonly Color SignRow = Color.FromArgb(234, 238, 240);
+    // Faded ink for a combatant who has already taken their turn this round.
+    static readonly Color Spent = Color.FromArgb(150, 142, 128);
     Font trkBold;   // built once with the grid; CellFormatting runs on every paint
 
     // The Blood bar's three states. Green while they can take it, gold once it hurts, red when the
@@ -425,14 +429,20 @@ public partial class MainForm
     {
         if (trkTurnLbl == null) return;
         var c = tracker.FirstOrDefault(t => t.Acting);
+        int left = tracker.Count(Rules.CanAct);
         if (c == null)
         {
-            trkTurnLbl.Text = "no one's turn yet — select a combatant, then Begin turn";
+            trkTurnLbl.Text = tracker.Count == 0 ? "nobody on the field yet"
+                : Rules.NextUp(tracker) is Combatant up ? $"press Next turn — {up.Name} is up first"
+                : "the round is spent — Next turn starts the next one";
             trkTurnLbl.ForeColor = Color.FromArgb(122, 112, 96);
             return;
         }
+        // What is up, and what is still to come: the second half is the part that stops a Keeper
+        // counting rows to work out whether the round is nearly over.
         trkTurnLbl.Text = $"{c.Name} is up — {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left"
-            + (c.Beats == 0 ? ", spent" : $", next Strike {c.NextStrike}");
+            + (c.Beats == 0 ? ", spent" : $", next Strike {c.NextStrike}")
+            + (left == 0 ? "  ·  last of the round" : $"  ·  {left} still to go");
         trkTurnLbl.ForeColor = c.Beats == 0 ? Color.FromArgb(122, 112, 96) : Blood;
     }
 
@@ -447,11 +457,31 @@ public partial class MainForm
     {
         var page = new TabPage("Tracker") { BackColor = Paper };
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
-        // Built from the live round, not from "1": the Tracker tab is lazy, so a session auto-loaded
-        // mid-fight built this label AFTER ApplySession had already set `round` — and the label was
-        // the only thing that said Round 1 while the fight was on its third.
-        roundLbl = new Label { Text = $"Round {round}", Font = new Font("Segoe UI", 12f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 12, 0), AutoSize = true };
-        bar.Controls.Add(roundLbl);
+        // The round is the app's to keep — it advances itself as the turns are taken — but it stays
+        // a number the Keeper can reach. A spinner says "you may change this" the way a label never
+        // does, and the value is read live so a lazily-built tab never shows Round 1 on a fight's
+        // third (which is exactly what the old hard-coded label did).
+        bar.Controls.Add(new Label
+        {
+            Text = "Round", Font = new Font("Segoe UI", 12f, FontStyle.Bold), ForeColor = Blood,
+            Padding = new Padding(0, 6, 4, 0), AutoSize = true
+        });
+        roundBox = new NumericUpDown
+        {
+            Minimum = 1, Maximum = 999, Value = Math.Clamp(round, 1, 999), Width = 62,
+            Font = new Font("Segoe UI", 11f, FontStyle.Bold), ForeColor = Blood,
+            Margin = new Padding(0, 5, 12, 3), TextAlign = HorizontalAlignment.Center
+        };
+        Tip.SetToolTip(roundBox, "The round. The app advances it as the field takes its turns — "
+            + "set it by hand if the table has got ahead of it.");
+        roundBox.ValueChanged += (s, e) =>
+        {
+            if (roundBusy) return;
+            round = (int)roundBox.Value;
+            Log($"— Round {round} (set by hand) —");
+            UpdateTurnLine();
+        };
+        bar.Controls.Add(roundBox);
         // The turn readout rides beside the round, fixed-width so a long name can't shove the
         // button rows around, and it gets the row to itself.
         trkTurnLbl = new Label
@@ -482,10 +512,21 @@ public partial class MainForm
             ("-", null),
             ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
             ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
-        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100, "Step to the next round (Ctrl+R)"));
+        // The one thing a Keeper presses over and over, made to look like it. Everything else on
+        // this bar is an exception to the loop; this IS the loop, and it carries the round with it.
+        var nextTurn = Btn("▶  Next turn", (s, e) => NextTurn(), 108,
+            "Hand the turn to whoever is up next by initiative, and roll the round over when the "
+            + "field has all gone (Ctrl+Space)");
+        nextTurn.Font = new Font(nextTurn.Font, FontStyle.Bold);
+        nextTurn.BackColor = Color.FromArgb(233, 224, 201);
+        nextTurn.FlatAppearance.BorderColor = Blood;
+        nextTurn.FlatAppearance.BorderSize = 2;
+        bar.Controls.Add(nextTurn);
+        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100,
+            "Step to the next round by hand — Next turn does this for you when everyone has gone (Ctrl+R)"));
         bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82,
-            "Hand the turn to the selected combatant: their Beats go back to 3, their next Strike is "
-            + "clean (no MAP), and their row lights gold as the one acting"));
+            "Hand the turn to the SELECTED combatant, out of initiative order: their Beats go back to "
+            + "3, their next Strike is clean (no MAP), and their row lights gold as the one acting"));
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
         bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
         bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
@@ -515,7 +556,7 @@ public partial class MainForm
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
         bar.Controls.Add(Btn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant (or press Delete)"));
         bar.Controls.Add(Btn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
+        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -541,10 +582,14 @@ public partial class MainForm
             + "Cleared at the top of each round.");
         C("Defense", "Def", 46, true); C("Beats", "Beats", 44, false,
             "Beats left this turn — a Strike costs one. Begin turn puts them back to 3.");
-        C("NextStrike", "Next strike", 68, true,
-            "What the next Strike this turn costs in MAP: clean, then −5, then −10 "
-            + "(an Agile weapon softens it to −4/−8). Begin turn makes it clean again.");
-        C("Conditions", "Conditions", 128);
+        // The header names the RULE, not just the column. "clean" is the Player's Book's own word
+        // (Ch. IX: "Your first Strike in a turn is clean"), but a Keeper reading it cold has no way
+        // to know that or what to look up — reported by the user, who asked what it meant.
+        C("NextStrike", "Next strike (MAP)", 96, true,
+            "The Multiple Attack Penalty — Player's Book Ch. IX. Your first Strike in a turn is "
+            + "\"clean\" (no penalty); the second takes −5, the third −10. An Agile weapon softens "
+            + "it to −4/−8. Begin turn resets it to clean.");
+        C("Conditions", "Conditions", 110);
         C("WorkedChips", "Worked", 150, true,
             "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
             + "creature's own, with the rounds left. Hover for who worked it and what it does; "
@@ -588,6 +633,9 @@ public partial class MainForm
             e.CellStyle.BackColor = c.Down ? DownRow : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
             if (c.Down) e.CellStyle.ForeColor = Blood;
             else if (c.Acting) e.CellStyle.Font = trkBold;   // cached: CellFormatting runs on every paint
+            // Already gone this round: faded, so "who is still to go" is something the Keeper SEES
+            // rather than something they hold in their head and lose track of on round four.
+            else if (c.HasActed) e.CellStyle.ForeColor = Spent;
 
             string col = trkGrid.Columns[e.ColumnIndex].Name;
             // The "Last" cell is the whole point of the column: it has to be readable as harm or
@@ -761,10 +809,46 @@ public partial class MainForm
         Log("Initiative rolled for the field.");
     }
 
+    /// <summary>Put the round on the bar without the spinner treating it as the Keeper's own edit.
+    /// Everything that moves the round goes through here, so the number and the box never disagree.
+    /// </summary>
+    void ShowRound()
+    {
+        round = Math.Max(1, round);
+        if (roundBox == null) return;
+        roundBusy = true;
+        roundBox.Value = Math.Clamp(round, roundBox.Minimum, roundBox.Maximum);
+        roundBusy = false;
+    }
+
+    /// <summary>Hand the turn to whoever is up next, and let the round look after itself. When the
+    /// field has all gone, this rolls the round over and starts the next one on its first
+    /// combatant — so a Keeper running a fight presses one thing, over and over, and never has to
+    /// remember to advance a counter. Ctrl+Space, and the primary button on the bar.</summary>
+    void NextTurn()
+    {
+        if (tracker.Count == 0) { Nope("Nobody on the field."); return; }
+        if (Rules.NextUp(tracker) == null)
+        {
+            if (!tracker.Any(t => !t.Down)) { Nope("Everyone on the field is down — the fight is over."); return; }
+            NextRound();                       // clears HasActed, so NextUp answers again below
+        }
+        var up = Rules.NextUp(tracker);
+        if (up == null) return;
+        foreach (var t in tracker) t.Acting = false;
+        up.BeginTurn();
+        // Follow the turn with the selection, so Strike, Dread and Work all act on the one who is up
+        // without the Keeper hunting for their row first.
+        var row = trkGrid?.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ReferenceEquals(r.DataBoundItem, up));
+        if (row != null) { trkGrid.ClearSelection(); row.Selected = true; trkGrid.CurrentCell = row.Cells[1]; }
+        trkGrid?.Refresh(); UpdateTurnLine();
+        Log($"{up.Name}'s turn — 3 Beats, a clean shot.");
+    }
+
     void NextRound()
     {
         round++;
-        if (roundLbl != null) roundLbl.Text = $"Round {round}";
+        ShowRound();
         // A new round means nobody has been handed the turn yet — the gold row would otherwise
         // sit on last round's combatant and read as though they were still up. The "Last" notes go
         // with it: they answer "what just happened", and at the top of a round nothing has.
@@ -772,7 +856,7 @@ public partial class MainForm
         // effect that vanished off a chip without a word is one the table keeps playing anyway.
         foreach (var c in tracker)
         {
-            c.Acting = false; c.ClearLast();
+            c.Acting = false; c.HasActed = false; c.ClearLast();
             foreach (var done in c.TickWorked())
                 Log($"{done.Name} ends on {c.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
         }
@@ -922,12 +1006,12 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; return; }
+        if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; ShowRound(); return; }
         if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
         foreach (var f in foes) tracker.Remove(f);
         // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn
-        foreach (var c in tracker) { c.Conditions = ""; c.Beats = 3; c.MapStep = 1; c.Acting = false; c.ClearLast(); }
-        round = 1; if (roundLbl != null) roundLbl.Text = "Round 1"; trkGrid?.Refresh(); UpdateTurnLine();
+        foreach (var c in tracker) { c.Conditions = ""; c.Beats = 3; c.MapStep = 1; c.Acting = false; c.HasActed = false; c.ClearLast(); }
+        round = 1; ShowRound(); trkGrid?.Refresh(); UpdateTurnLine();
         Log("New fight — foes cleared, the posse holds the field, Round 1.");
     }
 

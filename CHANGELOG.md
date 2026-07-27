@@ -8,6 +8,38 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.23.0 — the combat loop becomes one action, and the round keeps itself (2026-07-26,
+  user-requested).** The ask was that the Tracker's combat feel as intuitive as it can, and that the
+  round be kept automatically with the Keeper still able to edit it. The bar had thirteen buttons of
+  identical weight, and the two or three pressed every single turn looked exactly like *Clear field*.
+
+  - **▶ Next turn** — one action for the whole loop. It hands the turn to whoever is up next by
+    initiative and, when the field has all gone, **rolls the round over and starts the next one**, so
+    the round is a consequence of play rather than a button the Keeper must remember. Ctrl+Space, and
+    the only accented button on the bar: the loop should look like the loop. It carries the grid
+    selection with it, so Strike, Dread and ✦ Work act on whoever is up without hunting for the row.
+    *Begin turn* stays for handing the turn out of order, and now says so.
+  - **The round is a spinner, not a label.** The app keeps it; the Keeper can reach in and correct it
+    when the table has got ahead. (This also retires the last of the hard-coded "Round 1" string.)
+  - **Who has already gone is visible.** Rows that have taken their turn fade; the turn line counts
+    what is left ("· 2 still to go"). Turn order stops being something held in the head and lost
+    track of on round four — recognition instead of recall.
+  - **`Rules.NextUp` / `CanAct` / `RoundSpent`** carry the logic as pure functions over
+    `Combatant.HasActed` (persisted, so a fight reloaded mid-round resumes mid-round). Someone
+    bleeding out is skipped rather than holding the round open forever; a trace is never up whatever
+    its initiative; an all-down or empty field is not a round ending over and over; and initiative
+    ties break by name so the same field always yields the same order.
+  - **"clean" now says which rule it is.** A Keeper asked what the word meant in the Next-strike
+    column. It is the Player's Book's own — Ch. IX: *"Your first Strike in a turn is clean"* — but the
+    column never named the rule, so there was nothing to look up. The header reads **Next strike
+    (MAP)** and the tooltip cites the chapter and the whole ladder.
+  - **Grid headers stop flashing Windows blue.** A header whose column held the current cell painted
+    in the system selection colour — the one colour in the app belonging to no palette here, moving
+    around the header row as the selection did. Fixed in `StyleGrid`, so every grid gets it.
+  - **Smoke: 12,066 passing, 0 failing.** The turn order is proved end to end: first up, each in
+    sequence, the round spent only when everyone who could act has, clearing it puts everyone back,
+    the downed skipped, traces excluded, ties stable, and `HasActed` surviving save and load.
+
 - **GritKeeper v1.22.0 — Signs, Miracles and creature powers tracked where they land (2026-07-26,
   user-requested).** The books have carried two power systems since the beginning — Signs (Ch. XIII)
   and Miracles (Ch. VI), on a shared five-Rank spine — and the app knew them only well enough to put
