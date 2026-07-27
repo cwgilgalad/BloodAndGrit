@@ -8,6 +8,30 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.25.0 — a rolled place can be surveyed twice: itself, and the country it stands
+  in (2026-07-27, user-requested).** The Generators tab could already send a town or a city to the
+  Map. It could only ever send it *one way*, and for a city that way was wrong.
+
+  - **A city could only be drawn as a ward.** `SendPlaceToMap` forced The Lamplit City at block
+    scale for anything rolled as a city, so the map you got was avenues and a depot. There was no
+    way at all to ask the other question — *what is around it, and how far* — which is the only
+    question a posse riding toward a city actually has. A town, meanwhile, inherited whatever
+    ground happened to be set on the Map tab, which is to say it was luck.
+  - **Both scales, for both kinds of place.** The two → Map buttons are drop-downs now. **The town
+    itself / the ward itself** draws the place you walk — streets, blocks, the depot. **In its
+    country** shrinks the whole settlement to one mark on open ground a day's ride across, and you
+    can either roll the ground or name it: the open range, rivers and swamps, graveyards, mines,
+    the high country, the badlands, the Old Places. Same rolled name on both, so the town in the
+    desert and the streets of that town are recognizably the same place.
+  - **The list of countries is derived, not typed.** `MapGen.SettingTerrains` is `Terrains` minus
+    The Lamplit City — which is not ground you stand a town on; it *is* the town, at another
+    scale. A country added to the Grounds later is offered as a setting without anyone remembering
+    this list exists.
+  - **Put where the tests can reach it,** on the lesson v1.24.2 paid for: the derivation lives in
+    `MapGen.cs`, which the smoke suite compiles. Thirteen new assertions, and they check the thing
+    that matters rather than the plumbing — every one of the eight settings really does draw a
+    *named settlement* at county scale, and the ward still fills its sheet. 12,089 → **12,102**.
+
 - **GritKeeper v1.24.2 — New fight actually starts a new fight (2026-07-27, user-reported:
   "I don't think the 'new fight' button is working in the tracking").** It was working, in the
   sense that the handler ran. It just no longer did what its name promised, and the audit that

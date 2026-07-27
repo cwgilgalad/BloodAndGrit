@@ -99,6 +99,13 @@ public static class MapGen
         "Graveyards & Battlefields", "Mines & Under the Earth", "Winter & the High Country",
         "Desert & the Badlands", "The Old Places", "The Lamplit City"
     };
+    /// <summary>The countries a settlement can be set down in: every terrain except the Lamplit
+    /// City, which is not ground you stand a town on — it IS the town, at a different scale.
+    /// Derived from <see cref="Terrains"/> rather than typed out again, so a country added later
+    /// is offered as a setting without anyone remembering this list exists.</summary>
+    public static readonly string[] SettingTerrains =
+        Terrains.Where(t => t != "The Lamplit City").ToArray();
+
     // The city ward is appended rather than slotted in by size, so every stored or
     // remembered Scale index keeps meaning what it meant before Ch. XIV existed.
     public static readonly string[] Scales =
