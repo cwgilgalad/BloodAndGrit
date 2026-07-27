@@ -434,8 +434,7 @@ public partial class MainForm
         };
 
         var name = new TextBox { Text = s.Name, Margin = new Padding(3, 5, 3, 3) };
-        var gender = new ComboBox { Text = s.Gender ?? "", DropDownStyle = ComboBoxStyle.DropDown, Margin = new Padding(3, 5, 3, 3) };
-        gender.Items.AddRange(new object[] { "Woman", "Man" });
+        var gender = GenderBox(s.Gender);
         Pair("Name", name, "Gender", gender);
 
         var scores = new Dictionary<string, NumericUpDown>();
@@ -524,7 +523,7 @@ public partial class MainForm
             t == null ? new() : t.Text.Split('\n').Select(x => x.Trim('\r').Trim()).Where(x => x.Length > 0).ToList();
 
         s.Name = string.IsNullOrWhiteSpace(name.Text) ? s.Name : name.Text.Trim();
-        s.Gender = gender.Text.Trim();
+        s.Gender = CharGen.CleanGender(gender.Text);
         foreach (var a in abs) s.Scores[a] = (int)scores[a].Value;
         s.Blood = (int)blood.Value; s.Defense = (int)defense.Value;
         s.Fort = (int)fort.Value; s.Ref = (int)reff.Value; s.Will = (int)will.Value;

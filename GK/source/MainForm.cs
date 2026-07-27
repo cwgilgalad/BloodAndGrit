@@ -56,7 +56,7 @@ public partial class MainForm : Form
     ToolStripMenuItem undoMenuItem, redoMenuItem;
     ToolStripButton undoStatusBtn, redoStatusBtn;
 
-    internal const string AppVersion = "1.23.0";
+    internal const string AppVersion = "1.24.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
     internal const string PlayerBookVer = "2.24", KeeperBookVer = "2.11", BestiaryVer = "2.10";
@@ -800,6 +800,35 @@ public partial class MainForm : Form
         }
         sc.SizeChanged += Apply;
         return sc;
+    }
+
+    // ---- a soul's gender ----
+    // The box has always accepted anything typed into it; nothing ever said so, so in practice it
+    // offered two choices. "Other…" is a prompt rather than a value — picking it clears the box and
+    // hands over the caret — and CleanGender makes sure the prompt can never be stored as an answer.
+    static readonly object[] GenderChoices = { "Woman", "Man", CharGen.GenderOther };
+
+    /// <summary>The gender picker, built the same way everywhere it appears — the wizard and the
+    /// hand-tweak sheet — so the three choices and the fact that you may write your own never drift
+    /// apart between them.</summary>
+    static ComboBox GenderBox(string current, int width = 110)
+    {
+        var box = new ComboBox
+        {
+            Width = width, DropDownStyle = ComboBoxStyle.DropDown,
+            Text = CharGen.CleanGender(current), Margin = new Padding(3, 5, 3, 3)
+        };
+        box.Items.AddRange(GenderChoices);
+        Tip.SetToolTip(box, "Woman, Man, or write your own — this box takes any text. "
+            + "Woman and Man draw given names from their own lists; anything else draws from all of them.");
+        box.SelectedIndexChanged += (s, e) =>
+        {
+            if (box.SelectedItem as string != CharGen.GenderOther) return;
+            box.SelectedIndex = -1;      // the prompt is not the answer
+            box.Text = "";
+            box.Focus();
+        };
+        return box;
     }
 
     void StyleGrid(DataGridView g)
