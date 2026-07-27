@@ -240,6 +240,15 @@ foreach (var (table, floor) in new[]
         for (int lvl = 1; lvl <= 10; lvl++)
             T($"spoor: SignOnly agrees with Cost (T{tier} vs level {lvl})",
                 Rules.SignOnly(tier, lvl) == Rules.Cost(tier, lvl).spoor);
+    // PartyTier is the ladder both the budget and the safe-table rule are measured against, so
+    // "two Tiers over" has to mean the same arithmetic in the dialog as in Cost.
+    foreach (var (lvl, want) in new[] { (1, 1), (2, 1), (3, 2), (4, 2), (5, 3), (6, 3), (7, 4), (8, 4), (9, 5), (10, 5) })
+        T($"spoor: a level-{lvl} posse stands at Tier {want}", Rules.PartyTier(lvl) == want);
+    for (int tier = 1; tier <= 5; tier++)
+        for (int lvl = 1; lvl <= 10; lvl++)
+            T($"spoor: the rule fires exactly when the gap is 2+ (T{tier} vs level {lvl})",
+                Rules.SignOnly(tier, lvl) == (tier - Rules.PartyTier(lvl) >= 2));
+
     for (int tier = 1; tier <= 5; tier++)
         T($"spoor: SpoorFor(T{tier}) is that Tier's own row", Rules.SpoorFor(tier) == Rules.SpoorRow[tier - 1]);
     T("spoor: an off-book Tier still answers rather than throwing",

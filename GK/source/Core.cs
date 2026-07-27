@@ -432,6 +432,13 @@ public class GameSession
     public List<string> EncounterCreatures { get; set; } = new();
     public int PartyLevelHint { get; set; } = 2;
     public List<Combatant> Tracker { get; set; } = new();
+
+    /// <summary>Sign &amp; spoor — the threads on the trail, kept apart from the field because they
+    /// are not on it. A trace takes no initiative and no turn, so putting it in <see cref="Tracker"/>
+    /// made the Keeper read past a row that could never act. Sessions written before this list
+    /// existed carry their traces inside Tracker; ApplySession moves them across on load.</summary>
+    public List<Combatant> Signs { get; set; } = new();
+
     public int Round { get; set; } = 1;
     public List<MapMarker> MapMarkers { get; set; } = new();
     public List<Ride> Rides { get; set; } = new();
@@ -603,9 +610,14 @@ public static class Rules
 
     /// Encounter cost of a creature vs the party: even=4, mook=1, standout=8.
     /// Party tier = ceil(level/2). A creature 2+ tiers above the party trips the safe-table rule.
+    /// <summary>What Tier a posse of this level stands at — ceil(level/2), the ladder the encounter
+    /// budget and the safe-table rule are both measured against. One authority, so "two Tiers over"
+    /// means the same arithmetic wherever the app says it.</summary>
+    public static int PartyTier(int partyLevel) => Math.Max(1, (partyLevel + 1) / 2);
+
     public static (int cost, string role, bool spoor) Cost(int creatureTier, int partyLevel)
     {
-        int pt = Math.Max(1, (partyLevel + 1) / 2);
+        int pt = PartyTier(partyLevel);
         if (creatureTier >= pt + 2) return (8, "BEYOND the party — sign & spoor only (safe-table rule)", true);
         if (creatureTier >  pt)     return (8, "Standout", false);
         if (creatureTier == pt)     return (4, "Even foe", false);
