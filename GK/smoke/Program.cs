@@ -415,6 +415,33 @@ foreach (var (table, floor) in new[]
     withSign[0].BeginTurn();
     T("turn: and does not hold the round open", Rules.RoundSpent(withSign));
 
+    // ---- what a new fight must leave behind ----
+    // Regression, 2026-07-27: "New fight" was written before Worked effects and the sign strip
+    // existed and never learned about either, so a Keeper pressed it and the previous fight's
+    // Signs and Miracles walked into the next one. It read as a dead button. Blood is the one
+    // thing that MUST survive — wounds carry between fights; Rest is what heals them.
+    var survivor = C("Ruth", 12);
+    survivor.Conditions = "Bleeding, Prone";
+    survivor.Beats = 0; survivor.MapStep = 4; survivor.Acting = true; survivor.HasActed = true;
+    survivor.Wound(6);
+    int bloodAfterFight = survivor.BloodCur;
+    survivor.Work(new WorkedEffect { Name = "Hand of the Almighty", Kind = "Miracle", Rank = 2, Source = "Padre", RoundsLeft = -1 });
+    survivor.Work(new WorkedEffect { Name = "Wither", Kind = "Sign", Rank = 1, Source = "Hexer", RoundsLeft = 3 });
+    T("new fight: the fight left effects working", survivor.Worked.Count == 2);
+
+    Rules.ResetForNewFight(new List<Combatant> { survivor });
+    T("new fight: conditions are wiped", survivor.Conditions == "");
+    T("new fight: Beats are back to 3", survivor.Beats == 3);
+    T("new fight: nobody is mid-turn", !survivor.Acting && !survivor.HasActed);
+    T("new fight: everyone is back in the order", Rules.CanAct(survivor));
+    T("new fight: the map step resets", survivor.MapStep == 1);
+    T("new fight: nothing is still working — the whole point of the fix", survivor.Worked.Count == 0);
+    T("new fight: an effect with no duration ends too, not just the timed one", !survivor.Worked.Any(w => w.RoundsLeft == -1));
+    T("new fight: but Blood carries over — wounds are not healed by a new fight", survivor.BloodCur == bloodAfterFight);
+    bool nullFieldOk = true;
+    try { Rules.ResetForNewFight(null); } catch { nullFieldOk = false; }
+    T("new fight: a null field is survivable", nullFieldOk);
+
     // Ties break by name, so the same field always yields the same order rather than a wobble.
     var tied = new List<Combatant> { C("Silas", 11), C("Anni", 11), C("Ruth", 11) };
     T("turn: an initiative tie breaks by name", Rules.NextUp(tied).Name == "Anni");

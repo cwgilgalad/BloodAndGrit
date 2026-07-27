@@ -363,7 +363,7 @@ public partial class MainForm
     Label trkTurnLbl;
     NumericUpDown roundBox;      // the round, kept by the app and correctable by hand
     bool roundBusy;              // true while ShowRound writes it, so the edit handler doesn't echo
-    FlowLayoutPanel threadsPanel;   // the Threads strip; hidden entirely when nothing is out there
+    FlowLayoutPanel signPanel;   // the sign strip; hidden entirely when nothing is out there
     NumericUpDown trkAmount, trkQty;
     ComboBox trkPick;
 
@@ -569,7 +569,7 @@ public partial class MainForm
         bar.Controls.Add(BarSep(18));
         bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant from the field (or press Delete)"));
         bar.Controls.Add(DangerBtn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(DangerBtn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
+        bar.Controls.Add(DangerBtn("Clear field", (s, e) => { if ((tracker.Count > 0 || signs.Count > 0) && Confirm("Clear the whole battlefield?")) { tracker.Clear(); signs.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and the sign on the trail, and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -768,18 +768,18 @@ public partial class MainForm
             MI(menu, "Take them off the field", () => tracker.Remove(c));
         });
 
-        // Docking is resolved last-added-first, so the Threads strip goes on AFTER the grid and
+        // Docking is resolved last-added-first, so the sign strip goes on AFTER the grid and
         // BEFORE the bar: the bar takes the top, threads take the band under it, the grid the rest.
-        threadsPanel = new FlowLayoutPanel
+        signPanel = new FlowLayoutPanel
         {
             Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
             FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Visible = false,
             Padding = new Padding(8, 6, 8, 8), BackColor = SignRow
         };
         page.Controls.Add(trkGrid);
-        page.Controls.Add(threadsPanel);
+        page.Controls.Add(signPanel);
         page.Controls.Add(bar);
-        RefreshThreads();
+        RefreshSigns();
 
         // empty-state hint — the tracker fills from OTHER tabs, which is invisible until told
         var hint = new Label
@@ -830,8 +830,13 @@ public partial class MainForm
 
     void RollInitiative()
     {
-        foreach (var c in tracker) c.Init = Rules.Rng.Next(1, 21);
+        // Rolling initiative is the top of a fight: the order is fresh, so nobody has gone yet.
+        // This method predates HasActed, so without the reset the "spent" greying and the acting
+        // row carried over from the last fight into the new order — the field showed souls as
+        // already done on a round that had not started.
+        foreach (var c in tracker) { c.Init = Rules.Rng.Next(1, 21); c.Acting = false; c.HasActed = false; }
         SortTracker(TrkSort.InitDesc);
+        UpdateTurnLine();
         Log("Initiative rolled for the field.");
     }
 
@@ -1032,13 +1037,28 @@ public partial class MainForm
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
-        if (foes.Count == 0) { Nope("No foes on the field to clear."); round = 1; ShowRound(); return; }
-        if (!Confirm($"New fight? Clears {foes.Count} foe(s), keeps the posse, resets to Round 1.")) return;
+        int working = tracker.Sum(c => c.Worked.Count);
+        // An encounter is not just the foes standing in it. The signs on the trail are the spoor of
+        // the fight now ending, and the Worked effects are Signs and Miracles riding on the people
+        // who survived it — both belong to the encounter and both must go. Until v1.24.2 only the
+        // foes did, so on a field of signs alone the button appeared to do nothing at all, and after
+        // a normal fight the threads strip and every active effect walked into the next one.
+        if (foes.Count == 0 && signs.Count == 0 && working == 0)
+        { Nope("Nothing to clear — no foes, no sign on the trail, nothing still working."); round = 1; ShowRound(); return; }
+
+        var bits = new List<string>();
+        if (foes.Count > 0) bits.Add($"{foes.Count} foe(s)");
+        if (signs.Count > 0) bits.Add($"{signs.Count} sign(s) on the trail");
+        if (working > 0) bits.Add($"{working} effect(s) still working");
+        if (!Confirm($"New fight? Clears {string.Join(", ", bits)}, keeps the posse, resets to Round 1.")) return;
+
         foreach (var f in foes) tracker.Remove(f);
-        // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn
-        foreach (var c in tracker) { c.Conditions = ""; c.Beats = 3; c.MapStep = 1; c.Acting = false; c.HasActed = false; c.ClearLast(); }
+        signs.Clear();
+        // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn,
+        // and nothing still working from the last one (Rules.ResetForNewFight, so it is testable)
+        Rules.ResetForNewFight(tracker);
         round = 1; ShowRound(); trkGrid?.Refresh(); UpdateTurnLine();
-        Log("New fight — foes cleared, the posse holds the field, Round 1.");
+        Log("New fight — foes cleared, the trail wiped, the posse holds the field, Round 1.");
     }
 
     /// <summary>The name a trace goes on the field under. "Sign of the Wendigo" rather than "Sign of
@@ -1071,38 +1091,38 @@ public partial class MainForm
             + $". A {Rules.SpoorClockSegments}-segment clock; a full one is the night it comes in the flesh.");
     }
 
-    // ---- the Threads strip: what is out there, above the field, where nothing takes a turn ----
+    // ---- the sign strip: what is out there, above the field, where nothing takes a turn ----
 
-    /// <summary>Rebuild the Threads strip from <see cref="signs"/>. Hidden outright when the trail
+    /// <summary>Rebuild the sign strip from <see cref="signs"/>. Hidden outright when the trail
     /// is clear, so a table that never meets the safe-table rule never sees a band of empty chrome.
     /// Everything the rule needs a Keeper to know is spelled out here in words — the clock says
     /// "2 of 4" and not just four boxes, because four boxes taught nobody anything.</summary>
-    void RefreshThreads()
+    void RefreshSigns()
     {
-        if (threadsPanel == null) return;
-        threadsPanel.SuspendLayout();
-        foreach (Control old in threadsPanel.Controls.Cast<Control>().ToList()) { threadsPanel.Controls.Remove(old); old.Dispose(); }
+        if (signPanel == null) return;
+        signPanel.SuspendLayout();
+        foreach (Control old in signPanel.Controls.Cast<Control>().ToList()) { signPanel.Controls.Remove(old); old.Dispose(); }
 
-        if (signs.Count == 0) { threadsPanel.Visible = false; threadsPanel.ResumeLayout(); return; }
+        if (signs.Count == 0) { signPanel.Visible = false; signPanel.ResumeLayout(); return; }
 
         var head = new Label
         {
-            Text = "THREADS ON THE TRAIL — too far over the posse to meet in the flesh. Read them; they take no turn.",
+            Text = "SIGN ON THE TRAIL — too far over the posse to meet in the flesh. Read them; they take no turn.",
             AutoSize = false, Width = 980, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
-        threadsPanel.Controls.Add(head);
-        threadsPanel.SetFlowBreak(head, true);
-        foreach (var sign in signs.ToList()) threadsPanel.Controls.Add(ThreadCard(sign));
+        signPanel.Controls.Add(head);
+        signPanel.SetFlowBreak(head, true);
+        foreach (var sign in signs.ToList()) signPanel.Controls.Add(SignCard(sign));
 
-        threadsPanel.Visible = true;
-        threadsPanel.ResumeLayout();
+        signPanel.Visible = true;
+        signPanel.ResumeLayout();
     }
 
     /// <summary>One thread, said plainly: what it is, how near it is, what is on the ground, what
     /// reading it costs, and the button that reads it. A Keeper should be able to run the whole
     /// rule off this card without having read the appendix.</summary>
-    Control ThreadCard(Combatant sign)
+    Control SignCard(Combatant sign)
     {
         var beast = Db.Find(sign.Ref);
         int tier = beast?.tier ?? 1;
@@ -1182,7 +1202,7 @@ public partial class MainForm
     void AfterClockMoved(Combatant sign, Creature beast)
     {
         Log($"{sign.Name}: the clock stands at {sign.SignFilled} of {Rules.SpoorClockSegments}.");
-        RefreshThreads();
+        RefreshSigns();
         if (sign.SignFull) SignArrives(sign, beast);
     }
 
@@ -1212,7 +1232,7 @@ public partial class MainForm
         // Both outcomes named by WHERE they put the thing, because that is the part a Keeper is
         // actually choosing between and the part the old wording left them to infer.
         var optA = Para("ON THE TRAIL  (what the book does)", head.Bottom + 12, DialogBold, Ink);
-        var bodyA = Para($"It goes on the Threads strip above the field — nothing to shoot, nothing that takes a "
+        var bodyA = Para($"It goes on the sign strip above the field — nothing to shoot, nothing that takes a "
                        + $"turn. On the ground: {what.ToLowerInvariant()}. Reading it is a Survival check at DC "
                        + $"{readDc}" + (dreadDc == 0 ? " and costs no Nerve" : $", and costs the reader a Dread Check at DC {dreadDc}")
                        + $". Each reading fills 1 of {Rules.SpoorClockSegments} segments; a full clock is the night "
@@ -1629,7 +1649,7 @@ public partial class MainForm
             dcLine.Text = $"Survival DC {readDc}  ·  "
                 + (dreadDc == 0 ? "no Dread — this one is only weather and teeth" : $"Dread DC {dreadDc} for the reader")
                 + $"  ·  clock {sign.SignFilled} of {Rules.SpoorClockSegments}";
-            posseGrid?.Refresh(); trkGrid?.Refresh(); RefreshThreads();
+            posseGrid?.Refresh(); trkGrid?.Refresh(); RefreshSigns();
 
             if (sign.SignFull) { SignArrives(sign, beast); break; }
         }
@@ -1652,7 +1672,7 @@ public partial class MainForm
             AddCreatureToTracker(beast, 1, skipSafeTable: true);   // the rule has already run its course
             Log($"{beast.name} comes in the flesh. The safe table is over.");
         }
-        RefreshThreads(); trkGrid?.Refresh(); UpdateTurnLine();
+        RefreshSigns(); trkGrid?.Refresh(); UpdateTurnLine();
     }
 
     // ---- Signs, Miracles, and creature powers: working one, and what it costs ----

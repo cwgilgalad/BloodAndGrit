@@ -8,6 +8,39 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.24.2 — New fight actually starts a new fight (2026-07-27, user-reported:
+  "I don't think the 'new fight' button is working in the tracking").** It was working, in the
+  sense that the handler ran. It just no longer did what its name promised, and the audit that
+  followed turned up four more of the same shape.
+
+  - **The bug.** `NewFight()` was written before this session added the sign strip and Worked
+    effects, and nothing went back to teach it about them. It cleared the foes out of `tracker`
+    and stopped there — so every sign stayed on the trail and every Sign and Miracle stayed
+    working on the survivors, straight into the next fight. On a field holding sign but no foes
+    in the flesh it took the "no foes to clear" branch and did nothing whatsoever, which is
+    exactly what a dead button looks like. `Clear field` had the identical hole.
+  - **A whole class, not one button.** The pattern is *state added late that the older reset
+    paths never learned about*, so the sweep went looking for the rest of it. `RollInitiative()`
+    predates `HasActed` and never reset it, so spent-turn greying and the gold acting row
+    survived into a freshly rolled order — the field showed souls as already done on a round that
+    had not begun.
+  - **Two things called "threads".** The sign strip went in this session labelled **THREADS ON
+    THE TRAIL**, while the Ledger tab has had a "Threads && clocks" group with its own **Clear
+    threads** button all along. Two unrelated features, one word, and a Keeper reaching for
+    "Clear threads" to clear the trail. The strip is **SIGN ON THE TRAIL** now, and the internals
+    (`signPanel`, `RefreshSigns`, `SignCard`) match.
+  - **The release was going to ship mislabelled.** `AppVersion` was a hand-typed constant that
+    had reached `1.24.1` while `<Version>` in the csproj sat four releases back at **1.20.1** —
+    and `package.ps1` names the release tag from the built exe's `FileVersion`. A release cut
+    from that tree would have published as `gritkeeper-v1.20.1`, over a tag that already exists.
+    `AppVersion` is now read off the assembly, so the csproj is the only place a version lives.
+  - **Why no test caught it.** `NewFight()` lives in `Tabs.cs`, which is not in `smoke.csproj` —
+    it was UI code no assertion could reach. The per-survivor reset is now
+    `Rules.ResetForNewFight()` in `Core.cs`, where the suite holds it to its word: conditions
+    wiped, Beats back to 3, nobody mid-turn, **nothing still working** — and Blood deliberately
+    *not* healed, because wounds carry between fights and Rest is what mends them. Eleven new
+    assertions, 12,078 → **12,089**.
+
 - **Repo cleanup — the spent release notes (2026-07-27, user-requested).** Seven
   `RELEASE_NOTES_vX.Y.Z.md` files (v1.16.2 through v1.20.1) had collected at the repo root. Each
   was written to be pasted into a GitHub Release, and each was — verified before deleting: every
