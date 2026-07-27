@@ -8,6 +8,24 @@ Desktop\Git repos.)
 
 ---
 
+- **Repo cleanup — the spent release notes (2026-07-27, user-requested).** Seven
+  `RELEASE_NOTES_vX.Y.Z.md` files (v1.16.2 through v1.20.1) had collected at the repo root. Each
+  was written to be pasted into a GitHub Release, and each was — verified before deleting: every
+  one of the seven matches the body of its published Release exactly. So the file was a third
+  copy of text that already lives in two better places, the Release and this changelog, and the
+  third copy is the one that drifts.
+
+  - **The rule already existed; the notes just weren't covered by it.** CLAUDE.md has said since
+    v1.16.2 that the zip, the `app/` exe and the `source/` mirror are git-ignored release assets,
+    never committed. The notes file is the same kind of thing and was the only one being
+    committed. `.gitignore` now carries `RELEASE_NOTES_v*.md`, and CLAUDE.md says so.
+  - **Nothing was lost.** The text is on all seven Releases, the history is here, and the files
+    remain in git history. Write the next one, paste it, leave it on disk.
+  - **`package.ps1` stopped naming a stale file.** Its help text told you to paste
+    `RELEASE_NOTES_v1.16.2.md` — frozen at whatever version was current when the line was
+    written, four versions before the last one that used it. It says `vX.Y.Z` now, matching the
+    line the script already generates at the end of a run.
+
 - **GritKeeper v1.24.1 — the bar is grouped, and the grid says what you may type in (2026-07-26,
   user-requested).** The last two items off the UX pass.
 

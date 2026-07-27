@@ -20,6 +20,12 @@ GritKeeper.zip
 # generated mirror like app/: overwritten from GK/source as a step of packaging, never
 # hand-edited, never carried between sessions in git. GK/source is the only source of truth.
 GritKeeper/source/
+# Per-release notes are a release asset like the zip: written to be pasted into the GitHub
+# Release, and redundant the moment it is published — the text then lives on the Release and
+# the history lives in CHANGELOG.md. Seven of them (v1.16.2–v1.20.1) accumulated at the repo
+# root before this rule; they were removed on 2026-07-27, and are still recoverable from git
+# history and from the Releases themselves. Write the next one, paste it, let it stay local.
+RELEASE_NOTES_v*.md
 
 # --- per-table runtime state (the Keeper's live session, not project source) ---
 session.json
