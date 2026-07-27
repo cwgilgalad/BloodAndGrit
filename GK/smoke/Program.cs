@@ -324,6 +324,58 @@ foreach (var (table, floor) in new[]
     }
 }
 
+// ---- whose turn it is, and when the round is spent ----
+{
+    Combatant C(string n, int init, bool acted = false, int blood = 10) =>
+        new() { Name = n, Init = init, HasActed = acted, BloodCur = blood, BloodMax = 10 };
+
+    var field = new List<Combatant> { C("Coyote", 8), C("Ruth", 19), C("Silas", 14) };
+    T("turn: the highest initiative is up first", Rules.NextUp(field).Name == "Ruth");
+    T("turn: nobody has gone, so the round is not spent", !Rules.RoundSpent(field));
+
+    field[1].BeginTurn();
+    T("turn: beginning a turn marks it taken", field[1].HasActed && field[1].Acting);
+    T("turn: and the next one down is up", Rules.NextUp(field).Name == "Silas");
+    field[2].BeginTurn();
+    T("turn: then the last", Rules.NextUp(field).Name == "Coyote");
+    field[0].BeginTurn();
+    T("turn: with everyone gone, nobody is up", Rules.NextUp(field) == null);
+    T("turn: and the round is spent", Rules.RoundSpent(field));
+
+    foreach (var c in field) c.HasActed = false;
+    T("turn: clearing the round puts everyone back in it", Rules.NextUp(field).Name == "Ruth" && !Rules.RoundSpent(field));
+
+    // A combatant bleeding out is skipped rather than blocking the round forever.
+    field[1].Wound(-99);
+    T("turn: someone down cannot act", field[1].Down && !Rules.CanAct(field[1]));
+    T("turn: so the turn passes them by", Rules.NextUp(field).Name == "Silas");
+    field[2].BeginTurn(); field[0].BeginTurn();
+    T("turn: a round ends with the downed one never having gone", Rules.RoundSpent(field));
+
+    // A field where everyone is down is not a round ending over and over.
+    var allDown = new List<Combatant> { C("a", 5), C("b", 3) };
+    foreach (var c in allDown) c.Wound(-99);
+    T("turn: an all-down field is not a spent round", !Rules.RoundSpent(allDown));
+    T("turn: an empty field is not one either", !Rules.RoundSpent(new List<Combatant>()));
+
+    // A trace never takes a turn — it is not on the field to take one.
+    var withSign = new List<Combatant> { C("Ruth", 12), new() { Name = "Sign of it", IsSign = true, Init = 99 } };
+    T("turn: a trace is never up, whatever its initiative", Rules.NextUp(withSign).Name == "Ruth");
+    withSign[0].BeginTurn();
+    T("turn: and does not hold the round open", Rules.RoundSpent(withSign));
+
+    // Ties break by name, so the same field always yields the same order rather than a wobble.
+    var tied = new List<Combatant> { C("Silas", 11), C("Anni", 11), C("Ruth", 11) };
+    T("turn: an initiative tie breaks by name", Rules.NextUp(tied).Name == "Anni");
+    tied.First(x => x.Name == "Anni").BeginTurn();
+    T("turn: and keeps breaking the same way", Rules.NextUp(tied).Name == "Ruth");
+
+    // HasActed rides along in a saved session — a fight reloaded mid-round resumes mid-round.
+    var saved = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
+        System.Text.Json.JsonSerializer.Serialize(field[2]));
+    T("turn: who has gone survives save and load", saved.HasActed == field[2].HasActed);
+}
+
 // ---- Nerve-loss ladder ----
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)
