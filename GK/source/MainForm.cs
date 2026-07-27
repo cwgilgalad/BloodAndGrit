@@ -244,6 +244,21 @@ public partial class MainForm : Form
         if (tabsCtl.TabPages.Count > 0) { tabsCtl.SelectedIndex = 0; RealizeTab(tabsCtl.SelectedTab); }
     }
 
+    /// <summary>Bring a tab to the front by name, realizing it if this is its first visit. Returns
+    /// false when the current run mode doesn't show that tab at all — a player's view has no Map,
+    /// and a feature that hands work across to one has to be able to find that out politely.</summary>
+    internal bool ShowTab(string title)
+    {
+        for (int i = 0; i < tabsCtl.TabPages.Count; i++)
+            if (tabsCtl.TabPages[i].Text == title)
+            {
+                tabsCtl.SelectedIndex = i;
+                RealizeTab(tabsCtl.TabPages[i]);
+                return true;
+            }
+        return false;
+    }
+
     /// <summary>Switch modes live from the menu: re-lay the tabs, refresh the status line, and record
     /// the choice so the next launch remembers it. The roll behavior follows <see cref="EngineRolls"/>
     /// on the next Strike or Dread Check — no restart needed.</summary>

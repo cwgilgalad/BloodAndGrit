@@ -232,6 +232,87 @@ foreach (var (table, floor) in new[]
     // The rule only fires where Rules.Cost says it does — two or more Tiers over the posse.
     T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
     T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
+
+    // SignOnly is the one authority the Tracker asks before it puts anything on the field. If it
+    // ever answered differently from the Encounter tab's cost verdict, the two halves of the app
+    // would disagree about the same rule in front of the same table.
+    for (int tier = 1; tier <= 5; tier++)
+        for (int lvl = 1; lvl <= 10; lvl++)
+            T($"spoor: SignOnly agrees with Cost (T{tier} vs level {lvl})",
+                Rules.SignOnly(tier, lvl) == Rules.Cost(tier, lvl).spoor);
+    for (int tier = 1; tier <= 5; tier++)
+        T($"spoor: SpoorFor(T{tier}) is that Tier's own row", Rules.SpoorFor(tier) == Rules.SpoorRow[tier - 1]);
+    T("spoor: an off-book Tier still answers rather than throwing",
+        Rules.SpoorFor(0) == Rules.SpoorRow[0] && Rules.SpoorFor(99) == Rules.SpoorRow[4]);
+
+    // ---- reading a sign: Horror.ReadSign ----
+    for (int tier = 1; tier <= 5; tier++)
+    {
+        var row = Rules.SpoorFor(tier);
+        for (int die = 1; die <= 20; die++)
+        {
+            var o = Horror.ReadSign(0, tier, die);
+            T($"read sign: T{tier} d{die} carries its Tier's DCs", o.ReadDc == row.readDc && o.DreadDc == row.dreadDc);
+            T($"read sign: T{tier} d{die} says what is on the ground", o.What == row.what);
+            T($"read sign: T{tier} d{die} reads the same degree the d20 does",
+                o.Degree == Rules.FourDegrees(die, 0, row.readDc).idx);
+            T($"read sign: T{tier} d{die} learns what that degree buys", o.Learned == Rules.SpoorRead(o.Degree));
+            T($"read sign: T{tier} d{die} fills a segment either way", o.FillsClock);
+            T($"read sign: T{tier} d{die} has a line to log", !string.IsNullOrWhiteSpace(o.Line));
+        }
+        // A better tracker reads more: at a fixed die, raising the bonus never lowers the degree.
+        int last = -1;
+        for (int mod = -5; mod <= 20; mod++)
+        {
+            int deg = Horror.ReadSign(mod, tier, 10).Degree;
+            T($"read sign: T{tier} a bigger Survival bonus never reads worse (+{mod})", deg >= last);
+            last = deg;
+        }
+    }
+
+    // ---- a sign on the field: the Combatant half ----
+    {
+        var sign = new Combatant { Name = "Sign of the Wendigo", Ref = "The Wendigo", IsSign = true };
+        T("sign: a trace with no Blood is not 'Down' — it was never up", !sign.Down);
+        T("sign: a trace has no next Strike", sign.NextStrike == "—");
+        T("sign: an empty clock draws all empty", sign.SignClock == new string('▯', Rules.SpoorClockSegments));
+        T("sign: a fresh trace is not full", !sign.SignFull);
+        sign.Wound(-99);
+        T("sign: a trace cannot be wounded", sign.BloodCur == 0 && sign.LastNote == "");
+        for (int i = 1; i <= Rules.SpoorClockSegments; i++)
+        {
+            sign.SignFilled = i;
+            T($"sign: clock at {i} draws {i} filled", sign.SignClock.Count(ch => ch == '▮') == i);
+            T($"sign: clock at {i} is {Rules.SpoorClockSegments} segments wide", sign.SignClock.Length == Rules.SpoorClockSegments);
+        }
+        T("sign: a filled clock is the night it comes", sign.SignFull);
+        sign.SignFilled = 99;
+        T("sign: the clock cannot be overfilled", sign.SignFilled == Rules.SpoorClockSegments);
+        sign.SignFilled = -3;
+        T("sign: nor run backward past empty", sign.SignFilled == 0);
+    }
+
+    // ---- Wound: one route in, and the note the tracker shows ----
+    {
+        var c = new Combatant { Name = "Ruth", BloodCur = 20, BloodMax = 20 };
+        c.Wound(-7);
+        T("wound: takes the Blood", c.BloodCur == 13);
+        T("wound: notes what it cost", c.LastNote == "−7" && c.LastDelta == -1);
+        c.Wound(+5);
+        T("wound: mends", c.BloodCur == 18 && c.LastNote == "+5" && c.LastDelta == 1);
+        c.Wound(+99);
+        T("wound: healing stops at the maximum", c.BloodCur == 20);
+        c.Wound(+5);
+        T("wound: and says so when there is nothing to mend", c.LastNote == "already full" && c.LastDelta == 0);
+        c.Wound(-500);
+        T("wound: cannot go below nothing", c.BloodCur == 0);
+        T("wound: and calls it what it is", c.Down && c.LastNote.Contains("DOWN"));
+        c.ClearLast();
+        T("wound: a new round is a clean page", c.LastNote == "" && c.LastDelta == 0);
+        var noMax = new Combatant { Name = "a wall", BloodCur = 5, BloodMax = 0 };
+        noMax.Wound(+40);
+        T("wound: no maximum means healing is not capped", noMax.BloodCur == 45);
+    }
 }
 
 // ---- Nerve-loss ladder ----
