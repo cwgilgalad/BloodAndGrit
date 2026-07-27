@@ -488,6 +488,9 @@ public partial class MainForm
             + "clean (no MAP), and their row lights gold as the one acting"));
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
         bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
+        bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
+            "Work a Sign, a Miracle, or a creature's own power: who works it, on whom, what it costs "
+            + "them, and how many rounds it lasts"));
         bar.Controls.Add(Lbl("  Amt:"));
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
         bar.Controls.Add(trkAmount);
@@ -541,7 +544,11 @@ public partial class MainForm
         C("NextStrike", "Next strike", 68, true,
             "What the next Strike this turn costs in MAP: clean, then −5, then −10 "
             + "(an Agile weapon softens it to −4/−8). Begin turn makes it clean again.");
-        C("Conditions", "Conditions", 186);
+        C("Conditions", "Conditions", 128);
+        C("WorkedChips", "Worked", 150, true,
+            "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
+            + "creature's own, with the rounds left. Hover for who worked it and what it does; "
+            + "right-click to end one.");
         // far-right Ledger button — posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
         trkGrid.Columns.Add(new DataGridViewButtonColumn
@@ -590,6 +597,19 @@ public partial class MainForm
                 e.CellStyle.ForeColor = c.LastDelta < 0 ? Blood : Verdigris;
                 e.CellStyle.Font = trkBold;
             }
+            // Something worked on you is a fact about the fight, not a status you shrug off — it
+            // reads in the ink the app already uses for the uncanny.
+            if (col == "WorkedChips" && c.Worked is { Count: > 0 }) e.CellStyle.ForeColor = Verdigris;
+        };
+        // The chips are deliberately terse, so the whole of each effect — who worked it, what it
+        // cost, what it does, when it ends — lives one hover away rather than in a wider column.
+        trkGrid.CellToolTipTextNeeded += (s, e) =>
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= tracker.Count || e.ColumnIndex < 0) return;
+            if (trkGrid.Columns[e.ColumnIndex].Name != "WorkedChips") return;
+            var c = tracker[e.RowIndex];
+            if (c.Worked is { Count: > 0 })
+                e.ToolTipText = string.Join("\n\n──────────\n\n", c.Worked.Select(w => w.Full));
         };
         trkGrid.CellEndEdit += (s, e) =>
         {
@@ -640,6 +660,33 @@ public partial class MainForm
             var clear = cond.DropDownItems.Add("Clear all of them", null, (s, e) => ClearConditions());
             clear.Enabled = !string.IsNullOrWhiteSpace(c.Conditions);
             menu.Items.Add(cond);
+
+            // What is working on them, and the way to end it. The whole of each effect hangs off
+            // its own item as a tooltip, so ending the right one never means guessing from a chip.
+            MI(menu, "Work a Sign or Miracle…", () => WorkPowerDialog(c));
+            if (c.Worked is { Count: > 0 })
+            {
+                var wk = new ToolStripMenuItem($"Working on them ({c.Worked.Count})");
+                foreach (var w in c.Worked.ToList())
+                {
+                    var effect = w;   // captured per item, not per loop
+                    var item = new ToolStripMenuItem(Amp($"End {effect.Chip}")) { ToolTipText = effect.Full };
+                    item.Click += (s, e) =>
+                    {
+                        c.Unwork(effect); trkGrid.Refresh();
+                        Log($"{effect.Name} is ended on {c.Name}.");
+                    };
+                    wk.DropDownItems.Add(item);
+                }
+                wk.DropDownItems.Add(new ToolStripSeparator());
+                wk.DropDownItems.Add("End all of them", null, (s, e) =>
+                {
+                    int n = c.Worked.Count;
+                    foreach (var w in c.Worked.ToList()) c.Unwork(w);
+                    trkGrid.Refresh(); Log($"Everything working on {c.Name} ends — {n} in all.");
+                });
+                menu.Items.Add(wk);
+            }
 
             MISep(menu);
             if (!string.IsNullOrEmpty(c.Ref)) MI(menu, "Open the stat block", () => { if (Db.Find(c.Ref) is Creature b) ShowCreatureCard(b); });
@@ -721,7 +768,14 @@ public partial class MainForm
         // A new round means nobody has been handed the turn yet — the gold row would otherwise
         // sit on last round's combatant and read as though they were still up. The "Last" notes go
         // with it: they answer "what just happened", and at the top of a round nothing has.
-        foreach (var c in tracker) { c.Acting = false; c.ClearLast(); }
+        // Worked effects lose a round here too, and anything that runs out says so by name — an
+        // effect that vanished off a chip without a word is one the table keeps playing anyway.
+        foreach (var c in tracker)
+        {
+            c.Acting = false; c.ClearLast();
+            foreach (var done in c.TickWorked())
+                Log($"{done.Name} ends on {c.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
+        }
         trkGrid?.Refresh(); UpdateTurnLine();
         Log($"— Round {round} —");
     }
@@ -1489,6 +1543,201 @@ public partial class MainForm
             Log($"{beast.name} comes in the flesh. The safe table is over.");
         }
         RefreshThreads(); trkGrid?.Refresh(); UpdateTurnLine();
+    }
+
+    // ---- Signs, Miracles, and creature powers: working one, and what it costs ----
+
+    /// <summary>One thing a combatant could work, gathered from wherever that combatant's powers
+    /// actually live — a soul's own known lists, or a creature's Bestiary line.</summary>
+    sealed record Workable(string Name, string Kind, int Rank, string Cost, string Effect);
+
+    /// <summary>What this combatant can work. A posse soul offers exactly what is written on their
+    /// sheet — Signs from Ch. XIII, Miracles from Ch. VI, nothing they have not learned. A creature
+    /// offers the power its own stat block names. Anything else is typed by hand, because the
+    /// Keeper is allowed to invent and the app should not be the reason they cannot.</summary>
+    List<Workable> WorkablesFor(Combatant c)
+    {
+        var list = new List<Workable>();
+        if (c == null) return list;
+
+        if (SoulOf(c)?.Sheet is CharacterSheet sheet)
+        {
+            foreach (var name in sheet.SignsKnown ?? new())
+                if (CharGen.D?.signs?.Find(x => x.name == name) is CgSign sg)
+                    list.Add(new Workable(sg.name, "Sign", sg.rank, sg.cost, sg.desc));
+            foreach (var name in sheet.MiraclesKnown ?? new())
+                if (CharGen.D?.miracles?.Find(x => x.name == name) is CgMiracle mi)
+                    list.Add(new Workable(mi.name, "Miracle", mi.rank, mi.cost, mi.desc));
+        }
+        else if (Db.Find(c.Ref) is Creature beast && !string.IsNullOrWhiteSpace(beast.special))
+        {
+            var (nm, eff) = Rules.ParsePower(beast.special);
+            if (nm.Length > 0) list.Add(new Workable(nm, "Power", 0, "", eff));
+        }
+        return list;
+    }
+
+    /// <summary>Work a Sign, a Miracle, or a creature's own power onto someone, and keep the cause
+    /// with the effect. The cost comes off the worker, the effect goes onto the target, and the
+    /// tracker carries both until it runs out or is ended.</summary>
+    void WorkPowerDialog(Combatant preferredWorker = null)
+    {
+        if (tracker.Count == 0) { Nope("Nobody on the field to work anything."); return; }
+
+        const int Pad = 16, CW = 500;
+        using var f = new Form
+        {
+            Text = "Work a Sign or Miracle", FormBorderStyle = FormBorderStyle.FixedDialog,
+            StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
+            ShowIcon = false, BackColor = Paper
+        };
+        Label L(string t, int top) => new() { Left = Pad, Top = top + 4, Width = 100, Text = t };
+
+        var folk = tracker.ToList();
+        var who = new ComboBox { Left = Pad + 104, Top = Pad, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var t in folk) who.Items.Add(t.Name);
+        who.SelectedIndex = Math.Max(0, folk.IndexOf(preferredWorker ?? folk[0]));
+        var whoLbl = L("Who works it:", Pad);
+        var whoNote = new Label { Left = Pad + 104, Top = who.Bottom + 3, Width = CW - 104, Height = 17, ForeColor = Gold, Font = DialogItalic, AutoEllipsis = true };
+
+        var what = new ComboBox { Left = Pad + 104, Top = whoNote.Bottom + 6, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList };
+        var whatLbl = L("What:", whoNote.Bottom + 2);
+        var freeName = new TextBox { Left = Pad + 104, Top = what.Bottom + 6, Width = CW - 104, Enabled = false, PlaceholderText = "name it yourself" };
+
+        var detail = new TextBox
+        {
+            Left = Pad, Top = freeName.Bottom + 8, Width = CW, Height = 88, Multiline = true, ReadOnly = true,
+            ScrollBars = ScrollBars.Vertical, BackColor = Color.FromArgb(250, 246, 236), BorderStyle = BorderStyle.FixedSingle
+        };
+
+        var onWhom = new ComboBox { Left = Pad + 104, Top = detail.Bottom + 10, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList };
+        onWhom.Items.Add("— everyone on the field —");
+        foreach (var t in folk) onWhom.Items.Add(t.Name);
+        onWhom.SelectedIndex = 1;
+        var onLbl = L("On whom:", detail.Bottom + 6);
+
+        var rounds = new NumericUpDown { Left = Pad + 104, Top = onWhom.Bottom + 8, Width = 70, Minimum = 0, Maximum = 99, Value = 0 };
+        var roundsLbl = L("Lasts:", onWhom.Bottom + 5);
+        var roundsNote = new Label
+        {
+            Left = Pad + 182, Top = onWhom.Bottom + 11, Width = CW - 182, Height = 18, ForeColor = Ink, Font = DialogItalic,
+            Text = "rounds — 0 = until ended by hand"
+        };
+
+        var spend = new CheckBox { Left = Pad, Top = rounds.Bottom + 8, Width = CW, Height = 22, Checked = true };
+
+        // ---- what the pickers say to each other ----
+        List<Workable> options = new();
+        void SyncWhat()
+        {
+            var worker = folk[Math.Max(0, who.SelectedIndex)];
+            options = WorkablesFor(worker);
+            what.Items.Clear();
+            foreach (var o in options) what.Items.Add($"{(o.Kind == "Miracle" ? "✝" : o.Kind == "Power" ? "◈" : "✦")} {o.Name}"
+                                                    + (o.Rank > 0 ? $"  (R{o.Rank})" : ""));
+            what.Items.Add("— something else —");
+            what.SelectedIndex = 0;
+
+            var soul = SoulOf(worker);
+            whoNote.Text = soul?.Sheet is CharacterSheet sh
+                ? $"{sh.Calling}, level {sh.Level} — {options.Count(o => o.Kind == "Sign")} Signs, "
+                  + $"{options.Count(o => o.Kind == "Miracle")} Miracles known"
+                : soul != null ? "no sheet on this soul — name what they work by hand"
+                : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
+                : "an ad-hoc combatant — name what they work by hand";
+        }
+        void SyncDetail()
+        {
+            bool custom = what.SelectedIndex >= options.Count;
+            freeName.Enabled = custom;
+            var worker = folk[Math.Max(0, who.SelectedIndex)];
+            if (custom)
+            {
+                detail.Text = "Something the book does not print, or a power this app has not been told about. "
+                            + "Name it, set how long it lasts, and it rides on the target like any other.";
+                spend.Text = "Spend nothing — a hand-named effect has no printed cost";
+                spend.Checked = false; spend.Enabled = false;
+                return;
+            }
+            var o = options[what.SelectedIndex];
+            var pc = Rules.ParseCost(o.Cost);
+            detail.Text = $"{o.Kind}{(o.Rank > 0 ? $", Rank {o.Rank}" : "")}"
+                        + (string.IsNullOrWhiteSpace(o.Cost) ? "" : $"   ·   {o.Cost}")
+                        + (pc.HasSave ? $"   ·   the target rolls a {pc.Save} save" : "")
+                        + "\r\n\r\n" + o.Effect;
+
+            var soul = SoulOf(worker);
+            if (!pc.Spends || soul == null)
+            {
+                spend.Text = pc.Spends ? "Spend the cost — only a posse soul keeps the pools it comes out of"
+                                       : "Costs nothing to work";
+                spend.Checked = false; spend.Enabled = false;
+                return;
+            }
+            var bits = new List<string>();
+            if (pc.Nerve > 0) bits.Add($"{pc.Nerve} Nerve (has {soul.NerveCur})");
+            if (pc.Faith > 0) bits.Add($"{pc.Faith} {(string.IsNullOrWhiteSpace(soul.PoolName) ? "Faith" : soul.PoolName)} (has {soul.PoolCur})");
+            if (pc.Blood > 0) bits.Add($"{pc.Blood} Blood");
+            if (pc.Mark > 0) bits.Add($"{pc.Mark} Mark");
+            spend.Enabled = true; spend.Checked = true;
+            spend.Text = "Spend it from " + soul.Name + " — " + string.Join(", ", bits)
+                       + (pc.OrBlood > 0 ? $"   (or {pc.OrBlood} Blood instead)" : "");
+        }
+        who.SelectedIndexChanged += (s, e) => { SyncWhat(); SyncDetail(); };
+        what.SelectedIndexChanged += (s, e) => SyncDetail();
+        SyncWhat(); SyncDetail();
+
+        var go = new Button { Text = "Work it ▸", Left = Pad + CW - 198, Top = spend.Bottom + 12, Width = 100, Height = 32, DialogResult = DialogResult.OK };
+        var close = new Button { Text = "Close", Left = Pad + CW - 92, Top = go.Top, Width = 92, Height = 32, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail,
+                                            onLbl, onWhom, roundsLbl, rounds, roundsNote, spend, go, close });
+        f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
+        f.AcceptButton = go; f.CancelButton = close;
+
+        while (f.ShowDialog(this) == DialogResult.OK)
+        {
+            var worker = folk[Math.Max(0, who.SelectedIndex)];
+            bool custom = what.SelectedIndex >= options.Count;
+            string name = custom ? freeName.Text.Trim() : options[what.SelectedIndex].Name;
+            if (name.Length == 0) { Nope("Name what is being worked."); continue; }
+
+            var o = custom ? new Workable(name, "Sign", 0, "", "Worked by hand at the table.") : options[what.SelectedIndex];
+            var pc = Rules.ParseCost(o.Cost);
+            var soul = SoulOf(worker);
+
+            // Ask before overspending rather than refusing: the Keeper may be running a thing the
+            // pools do not model, and the book's numbers are theirs to overrule.
+            if (spend.Checked && soul != null)
+            {
+                var short_ = new List<string>();
+                if (pc.Nerve > soul.NerveCur) short_.Add($"{pc.Nerve} Nerve but has {soul.NerveCur}");
+                if (pc.Faith > soul.PoolCur) short_.Add($"{pc.Faith} from the pool but has {soul.PoolCur}");
+                if (short_.Count > 0 && !Confirm($"{soul.Name} cannot pay: needs {string.Join("; ", short_)}. Work it anyway?"))
+                    continue;
+                if (pc.Nerve > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - pc.Nerve);
+                if (pc.Faith > 0) soul.PoolCur = Math.Max(0, soul.PoolCur - pc.Faith);
+                if (pc.Mark > 0) soul.Mark += pc.Mark;
+                if (pc.Blood > 0) { worker.Wound(-pc.Blood, $"−{pc.Blood} working it"); soul.BloodCur = worker.BloodCur; }
+            }
+
+            int left = rounds.Value == 0 ? -1 : (int)rounds.Value;
+            var targets = onWhom.SelectedIndex == 0 ? folk : new List<Combatant> { folk[onWhom.SelectedIndex - 1] };
+            foreach (var t in targets)
+                t.Work(new WorkedEffect
+                {
+                    Name = o.Name, Kind = o.Kind, Rank = o.Rank, Source = worker.Name,
+                    Cost = o.Cost, Effect = o.Effect, RoundsLeft = left, SinceRound = round
+                });
+
+            string onWho = onWhom.SelectedIndex == 0 ? "everyone on the field" : targets[0].Name;
+            Log($"{worker.Name} works {o.Name} ({o.Kind.ToLowerInvariant()}) on {onWho}"
+                + (left < 0 ? " — until it is ended" : $" — {left} round" + (left == 1 ? "" : "s"))
+                + (pc.HasSave ? $". {(onWhom.SelectedIndex == 0 ? "Each" : targets[0].Name)} rolls a {pc.Save} save." : "."));
+            ShowResult(o.Name, $"{worker.Name} → {onWho}"
+                + (pc.HasSave ? $"\n{pc.Save} save to resist." : ""), Verdigris);
+
+            posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
+        }
     }
 
     // ============================================================ GENERATORS TAB

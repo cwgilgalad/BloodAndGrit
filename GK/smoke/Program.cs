@@ -829,6 +829,107 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     T("skillBonus: agrees with a generated soul's own sheet", CharGen.SkillBonus(soul, "Survival") == want6);
 }
 
+// ---- Signs, Miracles, and what working one costs (Ch. XIII / Ch. VI) ----
+{
+    // Hand-checked shapes first, so a regression names the case it broke rather than a count.
+    var a = Rules.ParseCost("1 Beat · 2 Nerve · Will save");
+    T("cost: time, Nerve and a save all read", a.Time == "1 Beat" && a.Nerve == 2 && a.Save == "Will" && a.HasSave);
+    T("cost: and nothing it did not say", a.Faith == 0 && a.Blood == 0 && a.Mark == 0 && a.OrBlood == 0);
+
+    var b = Rules.ParseCost("One minute · 5 Nerve and 1 Mark");
+    T("cost: 'and' charges both", b.Nerve == 5 && b.Mark == 1 && b.Time == "One minute" && !b.HasSave);
+
+    var c = Rules.ParseCost("1 Beat · 3 Nerve or 6 Blood");
+    T("cost: 'or' charges the first and remembers the way out", c.Nerve == 3 && c.OrBlood == 6 && c.Blood == 0);
+
+    var d = Rules.ParseCost("1 Beat · 1 Faith · Fortitude save");
+    T("cost: a Miracle is paid in Faith", d.Faith == 1 && d.Nerve == 0 && d.Save == "Fortitude");
+
+    var e = Rules.ParseCost("Free · 1 Nerve");
+    T("cost: a free action still costs Nerve", e.Time == "Free" && e.Nerve == 1 && e.Spends);
+
+    var f = Rules.ParseCost("1 Beat · 0 Faith");
+    T("cost: nothing to spend is not a spend", !f.Spends && f.Faith == 0);
+
+    T("cost: an empty line is a cost of nothing, not a crash", !Rules.ParseCost(null).Spends && !Rules.ParseCost("").Spends);
+    T("cost: an unparseable line keeps its words as the time", Rules.ParseCost("whenever you like").Time == "whenever you like");
+
+    // Then the whole printed table: every Sign and Miracle in the data has to come apart cleanly,
+    // because the Work dialog quotes what it parsed and spends what it found.
+    int signsCosting = 0, miraclesCosting = 0;
+    foreach (var sg in CharGen.D.signs)
+    {
+        var pc = Rules.ParseCost(sg.cost);
+        T($"cost: Sign [{sg.name}] names its action", pc.Time.Length > 0);
+        T($"cost: Sign [{sg.name}] is not paid in Faith", pc.Faith == 0);
+        T($"cost: Sign [{sg.name}] has a rank on the spine", sg.rank >= 1 && sg.rank <= 5);
+        if (pc.Spends) signsCosting++;
+    }
+    foreach (var mi in CharGen.D.miracles)
+    {
+        var pc = Rules.ParseCost(mi.cost);
+        T($"cost: Miracle [{mi.name}] names its action", pc.Time.Length > 0);
+        T($"cost: Miracle [{mi.name}] is not paid in Nerve", pc.Nerve == 0);
+        T($"cost: Miracle [{mi.name}] has a rank on the spine", mi.rank >= 1 && mi.rank <= 5);
+        if (pc.Spends) miraclesCosting++;
+    }
+    T($"cost: nearly every Sign costs something ({signsCosting}/{CharGen.D.signs.Count})",
+        signsCosting >= CharGen.D.signs.Count - 2);
+    T($"cost: nearly every Miracle costs something ({miraclesCosting}/{CharGen.D.miracles.Count})",
+        miraclesCosting >= CharGen.D.miracles.Count - 2);
+
+    // ---- creature powers off the Bestiary line ----
+    foreach (var cr in Db.Creatures)
+    {
+        var (nm, eff) = Rules.ParsePower(cr.special);
+        if (string.IsNullOrWhiteSpace(cr.special)) continue;
+        T($"power: [{cr.name}] yields a named power", nm.Length > 0);
+        T($"power: [{cr.name}]'s power name is short enough to be a chip", nm.Length <= 60);
+        T($"power: [{cr.name}] keeps the effect text", eff.Length > 0);
+    }
+    var (wn, we) = Rules.ParsePower("Killing cold & the call. A blizzard rides with it.");
+    T("power: the lead phrase is the name", wn == "Killing cold & the call");
+    T("power: and the rest is what it does", we == "A blizzard rides with it.");
+    T("power: an empty line yields nothing, not a crash", Rules.ParsePower(null).name == "");
+
+    // ---- an effect on a combatant: the clock, and coming off it ----
+    {
+        var target = new Combatant { Name = "Ruth", BloodCur = 20, BloodMax = 20 };
+        T("worked: nothing on her reads as nothing", target.WorkedChips == "");
+        target.Work(new WorkedEffect { Name = "Hobble", Kind = "Sign", Rank = 1, Source = "Hexer", RoundsLeft = 2, SinceRound = 3 });
+        target.Work(new WorkedEffect { Name = "Shield of the Word", Kind = "Miracle", Rank = 2, Source = "Padre", RoundsLeft = -1 });
+        T("worked: two chips, both named", target.WorkedChips.Contains("Hobble") && target.WorkedChips.Contains("Shield of the Word"));
+        T("worked: a Sign and a Miracle wear different marks", target.Worked[0].Mark == "✦" && target.Worked[1].Mark == "✝");
+        T("worked: a counted effect shows its rounds", target.Worked[0].Chip.Contains("(2)"));
+        T("worked: an open-ended one shows none", !target.Worked[1].Chip.Contains("("));
+        T("worked: the full text carries cause and end",
+            target.Worked[0].Full.Contains("Hexer") && target.Worked[0].Full.Contains("round 3"));
+
+        var doneA = target.TickWorked();
+        T("worked: one round down, nothing expired yet", doneA.Count == 0 && target.Worked[0].RoundsLeft == 1);
+        var doneB = target.TickWorked();
+        T("worked: the counted one runs out", doneB.Count == 1 && doneB[0].Name == "Hobble");
+        T("worked: and comes off her", target.Worked.Count == 1 && target.Worked[0].Name == "Shield of the Word");
+        for (int i = 0; i < 20; i++) target.TickWorked();
+        T("worked: an open-ended effect never expires on its own", target.Worked.Count == 1);
+        target.Unwork(target.Worked[0]);
+        T("worked: ended by hand, it is gone", target.Worked.Count == 0 && target.WorkedChips == "");
+
+        var creaturePower = new WorkedEffect { Name = "The call", Kind = "Power", Source = "The Wendigo" };
+        T("worked: a creature's power wears its own mark", creaturePower.Mark == "◈");
+    }
+
+    // Effects survive a session round-trip — an effect lost on save is a rule the table forgets.
+    {
+        var c2 = new Combatant { Name = "Silas" };
+        c2.Work(new WorkedEffect { Name = "Witch-Sight", Kind = "Sign", Rank = 1, Source = "Hexer", RoundsLeft = 4, Cost = "Free · 1 Nerve" });
+        var round = System.Text.Json.JsonSerializer.Deserialize<Combatant>(System.Text.Json.JsonSerializer.Serialize(c2));
+        T("worked: survives save and load", round.Worked.Count == 1 && round.Worked[0].Name == "Witch-Sight");
+        T("worked: with its cause and cost intact",
+            round.Worked[0].Source == "Hexer" && round.Worked[0].Cost == "Free · 1 Nerve" && round.Worked[0].RoundsLeft == 4);
+    }
+}
+
 // ============================================================ THE IRON CODE ENGINE (Ch. XI)
 // Property-based proof that the adjudicator matches the printed gun rules.
 {
