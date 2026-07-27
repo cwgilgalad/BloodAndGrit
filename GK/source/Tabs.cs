@@ -491,9 +491,42 @@ public partial class MainForm
         };
         Tip.SetToolTip(trkTurnLbl, "Whose turn it is, what they have left to spend, and what the next Strike costs");
         bar.Controls.Add(trkTurnLbl);
-        // Putting the field back on its feet between fights. It rides at the top, beside the round,
-        // because it is the thing a Keeper reaches for when a scene ENDS — not one more combat
-        // action to hunt for among the combat actions.
+        bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
+        UpdateTurnLine();
+
+        // ---- row 2: the turn you are taking ----
+        // The bar used to be thirteen buttons of identical weight in no particular order, so the
+        // three pressed every single turn looked exactly like the one that wipes the field. It now
+        // reads left to right as a sentence: whose turn → what they do → what it costs them → and
+        // then, set apart, putting the field back together.
+        // The one thing a Keeper presses over and over, painted like it. Everything else on this bar
+        // is an exception to the loop; this IS the loop, and it carries the round with it.
+        bar.Controls.Add(PrimaryBtn("▶  Next turn", (s, e) => NextTurn(), 112,
+            "Hand the turn to whoever is up next by initiative, and roll the round over when the "
+            + "field has all gone (Ctrl+Space)"));
+        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82,
+            "Hand the turn to the SELECTED combatant, out of initiative order: their Beats go back to "
+            + "3, their next Strike is clean (no MAP), and their row lights gold as the one acting"));
+        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100,
+            "Step to the next round by hand — Next turn does this for you when everyone has gone (Ctrl+R)"));
+
+        bar.Controls.Add(BarSep());
+        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
+        bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
+        bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
+            "Work a Sign, a Miracle, or a creature's own power: who works it, on whom, what it costs "
+            + "them, and how many rounds it lasts"));
+
+        bar.Controls.Add(BarSep());
+        bar.Controls.Add(Lbl("Amt:"));
+        trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
+        bar.Controls.Add(trkAmount);
+        bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80, "Subtract the Amt from the selected combatant (Ctrl+D)"));
+        bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65, "Add the Amt to the selected combatant (Ctrl+H)"));
+
+        bar.Controls.Add(BarSep());
+        // Putting the field back on its feet: what a Keeper reaches for when a scene ENDS, so it
+        // sits at the end of the doing-things row rather than among the combat actions.
         bar.Controls.Add(MenuBtn("✚ Restore ▾", 118,
             "Put Blood — and, for the posse, Nerve — back to full",
             ("Selected combatant — Blood to full", (s, e) => RestoreSelected()),
@@ -501,7 +534,8 @@ public partial class MainForm
             ("-", null),
             ("Everyone on the field — Blood to full", (s, e) => RestoreField())));
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
-        UpdateTurnLine();
+
+        // ---- row 3: the field itself — ordering it, filling it, and clearing it ----
         bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110, "Roll a d20 for every combatant and sort by it (Ctrl+I)"));
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
             ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
@@ -512,33 +546,8 @@ public partial class MainForm
             ("-", null),
             ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
             ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
-        // The one thing a Keeper presses over and over, made to look like it. Everything else on
-        // this bar is an exception to the loop; this IS the loop, and it carries the round with it.
-        var nextTurn = Btn("▶  Next turn", (s, e) => NextTurn(), 108,
-            "Hand the turn to whoever is up next by initiative, and roll the round over when the "
-            + "field has all gone (Ctrl+Space)");
-        nextTurn.Font = new Font(nextTurn.Font, FontStyle.Bold);
-        nextTurn.BackColor = Color.FromArgb(233, 224, 201);
-        nextTurn.FlatAppearance.BorderColor = Blood;
-        nextTurn.FlatAppearance.BorderSize = 2;
-        bar.Controls.Add(nextTurn);
-        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100,
-            "Step to the next round by hand — Next turn does this for you when everyone has gone (Ctrl+R)"));
-        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82,
-            "Hand the turn to the SELECTED combatant, out of initiative order: their Beats go back to "
-            + "3, their next Strike is clean (no MAP), and their row lights gold as the one acting"));
-        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
-        bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
-        bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
-            "Work a Sign, a Miracle, or a creature's own power: who works it, on whom, what it costs "
-            + "them, and how many rounds it lasts"));
-        bar.Controls.Add(Lbl("  Amt:"));
-        trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
-        bar.Controls.Add(trkAmount);
-        bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80, "Subtract the Amt from the selected combatant (Ctrl+D)"));
-        bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65, "Add the Amt to the selected combatant (Ctrl+H)"));
-        bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
+        bar.Controls.Add(BarSep());
         bar.Controls.Add(Lbl("Foe:"));
         trkPick = CreaturePicker(200);
         Tip.SetToolTip(trkPick, "Any creature in the Bestiary — type a few letters, then Add");
@@ -554,9 +563,13 @@ public partial class MainForm
         condItems.Add(("-", null));
         condItems.Add(("— Clear all —", (s, e) => ClearConditions()));
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
-        bar.Controls.Add(Btn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant (or press Delete)"));
-        bar.Controls.Add(Btn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(Btn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
+
+        // Everything past this line throws work away. A wider gap and a different face, so the hand
+        // that means "＋ Add" never lands on "Clear field" — they were adjacent and identical before.
+        bar.Controls.Add(BarSep(18));
+        bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant from the field (or press Delete)"));
+        bar.Controls.Add(DangerBtn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
+        bar.Controls.Add(DangerBtn("Clear field", (s, e) => { if (tracker.Count > 0 && Confirm("Clear the whole battlefield?")) { tracker.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -570,17 +583,27 @@ public partial class MainForm
         // Columns carry their property name as their Name too, so everything downstream — the bar
         // painter, the tooltips, the button column — asks for a column by what it MEANS rather
         // than by an index that shifts the moment a column is inserted.
+        // An editable column says so twice: ✎ in the header, and a cell lifted toward paper in the
+        // body (see CellFormatting). Nothing in the grid distinguished the four columns you may type
+        // in from the six you may not, so the only way to find out was to try.
         void C(string prop, string head, int w, bool ro = false, string tip = null)
             => trkGrid.Columns.Add(new DataGridViewTextBoxColumn
-            { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = w, ReadOnly = ro, ToolTipText = tip ?? "" });
-        C("Init", "Init", 50); C("Name", "Name", 190, true); C("BloodCur", "Blood", 62, false,
+            {
+                DataPropertyName = prop, Name = prop, FillWeight = w, ReadOnly = ro,
+                HeaderText = ro ? head : head + " ✎",
+                ToolTipText = ro ? (tip ?? "")
+                    : (string.IsNullOrEmpty(tip) ? "" : tip + "\n\n") + "You can type in this column — click and type, or press F2."
+            });
+        // Widths allow for the ✎ on the editable ones — "Beats ✎" does not fit the 44 that plain
+        // "Beats" did, and a clipped header is worse than no marker at all.
+        C("Init", "Init", 58); C("Name", "Name", 172, true); C("BloodCur", "Blood", 68, false,
             "Blood left, drawn as a bar behind the number — full green, hurt gold, near death red. "
             + "On a sign & spoor row it is the spoor clock instead.");
         C("BloodMax", "/Max", 48, true);
         C("LastNote", "Last", 74, true,
             "What just happened here — the damage taken, the healing done, the moment they went down. "
             + "Cleared at the top of each round.");
-        C("Defense", "Def", 46, true); C("Beats", "Beats", 44, false,
+        C("Defense", "Def", 46, true); C("Beats", "Beats", 66, false,
             "Beats left this turn — a Strike costs one. Begin turn puts them back to 3.");
         // The header names the RULE, not just the column. "clean" is the Player's Book's own word
         // (Ch. IX: "Your first Strike in a turn is clean"), but a Keeper reading it cold has no way
@@ -631,6 +654,9 @@ public partial class MainForm
             var c = tracker[e.RowIndex];
             // Down beats acting: a combatant who is bleeding out reads red even on their own turn.
             e.CellStyle.BackColor = c.Down ? DownRow : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
+            // A cell you can type in stands on lighter ground than one you cannot — applied after
+            // the row colour so it lifts whatever that row happens to be wearing.
+            if (!trkGrid.Columns[e.ColumnIndex].ReadOnly) e.CellStyle.BackColor = Writable(e.CellStyle.BackColor);
             if (c.Down) e.CellStyle.ForeColor = Blood;
             else if (c.Acting) e.CellStyle.Font = trkBold;   // cached: CellFormatting runs on every paint
             // Already gone this round: faded, so "who is still to go" is something the Keeper SEES
