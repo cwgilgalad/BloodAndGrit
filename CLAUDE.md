@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.22.0) — the C# desktop app
+## GritKeeper (v1.23.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -643,6 +643,19 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   a hover away and endable from the right-click menu. `Next round` ticks every counted effect and
   logs each one that runs out by name; `RoundsLeft = -1` means "until it is ended", which is what
   the book's "for a scene" and "for an hour" actually are.
+  v1.23 — **the combat loop, made one action.** **▶ Next turn** (Ctrl+Space, and the one accented
+  button on the bar) hands the turn to whoever is up next by initiative and **rolls the round over
+  by itself** when the field has all gone, so a Keeper presses one thing over and over and never
+  advances a counter. It carries the grid selection with it, so Strike / Dread / ✦ Work all act on
+  whoever is up without hunting for their row. `Combatant.HasActed` (persisted) is the spine:
+  `Rules.NextUp` / `Rules.CanAct` / `Rules.RoundSpent` are the pure logic — the downed are skipped,
+  traces never counted, initiative ties broken by name so the order never wobbles. The **round is a
+  spinner**, not a label: the app keeps it, the Keeper can correct it. Rows that have already gone
+  are **faded**, so "who is still to go" is seen rather than remembered, and the turn line counts
+  them ("· 2 still to go"). The Next-strike column is headed **"Next strike (MAP)"** and its tooltip
+  names Ch. IX — "clean" is the book's own word and the column never said which rule it came from
+  (user-reported). Grid headers no longer flash Windows selection-blue when their column holds the
+  current cell.
 - **Map** *(v1.5 — "Trail Maps")* — seeded procedural frontier surveys: ground (the nine
   Grounds) × scale (gunfight → weeks of trail) × hour × water, with trail/rail/settlement/
   grid/Keeper's-secrets toggles. Deterministic per seed (note the map's N° to get it
@@ -813,7 +826,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈12,046 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈12,066 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)
