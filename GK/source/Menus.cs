@@ -335,7 +335,9 @@ public partial class MainForm
         };
         var ver = new Label
         {
-            Text = $"Version {AppVersion}\nPlayer's Book v2.15  ·  Keeper's Book v2.7  ·  Bestiary v2.7",
+            // Interpolated, never typed: the About box had drifted nine book editions behind the
+            // status bar, which reads the same three constants a foot away from here.
+            Text = $"Version {AppVersion}\nPlayer's Book v{PlayerBookVer}  ·  Keeper's Book v{KeeperBookVer}  ·  Bestiary v{BestiaryVer}",
             AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
             Left = 0, Top = 212, Width = 504, Height = 40, ForeColor = Ink
         };

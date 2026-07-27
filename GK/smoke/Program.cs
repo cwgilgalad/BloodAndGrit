@@ -232,6 +232,96 @@ foreach (var (table, floor) in new[]
     // The rule only fires where Rules.Cost says it does — two or more Tiers over the posse.
     T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
     T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
+
+    // SignOnly is the one authority the Tracker asks before it puts anything on the field. If it
+    // ever answered differently from the Encounter tab's cost verdict, the two halves of the app
+    // would disagree about the same rule in front of the same table.
+    for (int tier = 1; tier <= 5; tier++)
+        for (int lvl = 1; lvl <= 10; lvl++)
+            T($"spoor: SignOnly agrees with Cost (T{tier} vs level {lvl})",
+                Rules.SignOnly(tier, lvl) == Rules.Cost(tier, lvl).spoor);
+    // PartyTier is the ladder both the budget and the safe-table rule are measured against, so
+    // "two Tiers over" has to mean the same arithmetic in the dialog as in Cost.
+    foreach (var (lvl, want) in new[] { (1, 1), (2, 1), (3, 2), (4, 2), (5, 3), (6, 3), (7, 4), (8, 4), (9, 5), (10, 5) })
+        T($"spoor: a level-{lvl} posse stands at Tier {want}", Rules.PartyTier(lvl) == want);
+    for (int tier = 1; tier <= 5; tier++)
+        for (int lvl = 1; lvl <= 10; lvl++)
+            T($"spoor: the rule fires exactly when the gap is 2+ (T{tier} vs level {lvl})",
+                Rules.SignOnly(tier, lvl) == (tier - Rules.PartyTier(lvl) >= 2));
+
+    for (int tier = 1; tier <= 5; tier++)
+        T($"spoor: SpoorFor(T{tier}) is that Tier's own row", Rules.SpoorFor(tier) == Rules.SpoorRow[tier - 1]);
+    T("spoor: an off-book Tier still answers rather than throwing",
+        Rules.SpoorFor(0) == Rules.SpoorRow[0] && Rules.SpoorFor(99) == Rules.SpoorRow[4]);
+
+    // ---- reading a sign: Horror.ReadSign ----
+    for (int tier = 1; tier <= 5; tier++)
+    {
+        var row = Rules.SpoorFor(tier);
+        for (int die = 1; die <= 20; die++)
+        {
+            var o = Horror.ReadSign(0, tier, die);
+            T($"read sign: T{tier} d{die} carries its Tier's DCs", o.ReadDc == row.readDc && o.DreadDc == row.dreadDc);
+            T($"read sign: T{tier} d{die} says what is on the ground", o.What == row.what);
+            T($"read sign: T{tier} d{die} reads the same degree the d20 does",
+                o.Degree == Rules.FourDegrees(die, 0, row.readDc).idx);
+            T($"read sign: T{tier} d{die} learns what that degree buys", o.Learned == Rules.SpoorRead(o.Degree));
+            T($"read sign: T{tier} d{die} fills a segment either way", o.FillsClock);
+            T($"read sign: T{tier} d{die} has a line to log", !string.IsNullOrWhiteSpace(o.Line));
+        }
+        // A better tracker reads more: at a fixed die, raising the bonus never lowers the degree.
+        int last = -1;
+        for (int mod = -5; mod <= 20; mod++)
+        {
+            int deg = Horror.ReadSign(mod, tier, 10).Degree;
+            T($"read sign: T{tier} a bigger Survival bonus never reads worse (+{mod})", deg >= last);
+            last = deg;
+        }
+    }
+
+    // ---- a sign on the field: the Combatant half ----
+    {
+        var sign = new Combatant { Name = "Sign of the Wendigo", Ref = "The Wendigo", IsSign = true };
+        T("sign: a trace with no Blood is not 'Down' — it was never up", !sign.Down);
+        T("sign: a trace has no next Strike", sign.NextStrike == "—");
+        T("sign: an empty clock draws all empty", sign.SignClock == new string('▯', Rules.SpoorClockSegments));
+        T("sign: a fresh trace is not full", !sign.SignFull);
+        sign.Wound(-99);
+        T("sign: a trace cannot be wounded", sign.BloodCur == 0 && sign.LastNote == "");
+        for (int i = 1; i <= Rules.SpoorClockSegments; i++)
+        {
+            sign.SignFilled = i;
+            T($"sign: clock at {i} draws {i} filled", sign.SignClock.Count(ch => ch == '▮') == i);
+            T($"sign: clock at {i} is {Rules.SpoorClockSegments} segments wide", sign.SignClock.Length == Rules.SpoorClockSegments);
+        }
+        T("sign: a filled clock is the night it comes", sign.SignFull);
+        sign.SignFilled = 99;
+        T("sign: the clock cannot be overfilled", sign.SignFilled == Rules.SpoorClockSegments);
+        sign.SignFilled = -3;
+        T("sign: nor run backward past empty", sign.SignFilled == 0);
+    }
+
+    // ---- Wound: one route in, and the note the tracker shows ----
+    {
+        var c = new Combatant { Name = "Ruth", BloodCur = 20, BloodMax = 20 };
+        c.Wound(-7);
+        T("wound: takes the Blood", c.BloodCur == 13);
+        T("wound: notes what it cost", c.LastNote == "−7" && c.LastDelta == -1);
+        c.Wound(+5);
+        T("wound: mends", c.BloodCur == 18 && c.LastNote == "+5" && c.LastDelta == 1);
+        c.Wound(+99);
+        T("wound: healing stops at the maximum", c.BloodCur == 20);
+        c.Wound(+5);
+        T("wound: and says so when there is nothing to mend", c.LastNote == "already full" && c.LastDelta == 0);
+        c.Wound(-500);
+        T("wound: cannot go below nothing", c.BloodCur == 0);
+        T("wound: and calls it what it is", c.Down && c.LastNote.Contains("DOWN"));
+        c.ClearLast();
+        T("wound: a new round is a clean page", c.LastNote == "" && c.LastDelta == 0);
+        var noMax = new Combatant { Name = "a wall", BloodCur = 5, BloodMax = 0 };
+        noMax.Wound(+40);
+        T("wound: no maximum means healing is not capped", noMax.BloodCur == 45);
+    }
 }
 
 // ---- Nerve-loss ladder ----
@@ -697,6 +787,47 @@ var cg = CharGen.D;
 foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28), ("moving", 28),
                                       ("givenWomen", 50), ("givenMen", 51) })
     T($"flavor pool [{pool}] is at least {floor} deep", CharGen.FlavorList(pool).Count >= floor);
+
+// ---- SkillBonus: the number the Read Sign dialog puts in front of the Keeper ----
+// It prefills the Survival bonus for every sign & spoor reading, so a wrong answer here is a
+// wrong DC check at the table, silently, every time.
+{
+    T("skills: Survival is a real skill keyed to RES — the Read Sign dialog asks for it by name",
+        cg.skills.Any(k => k.name == "Survival" && k.ability == "RES"));
+
+    var sheet = new CharacterSheet { Level = 5, Scores = new() { ["RES"] = 16, ["STR"] = 8, ["WIT"] = 10 } };
+    T("skillBonus: untrained is the keyed ability alone", CharGen.SkillBonus(sheet, "Survival") == 3);
+    foreach (var (rank, name, want) in new[] { (1, "trained", 3 + 5 + 2), (2, "expert", 3 + 5 + 4), (3, "master", 3 + 5 + 6) })
+    {
+        sheet.SkillRanks["Survival"] = rank;
+        T($"skillBonus: {name} is the modifier, the level, and the rank", CharGen.SkillBonus(sheet, "Survival") == want);
+    }
+
+    // Keyed to the ability the DATA names, not to a second list inside SkillBonus — the whole
+    // reason the method reads the definition rather than carrying its own table.
+    foreach (var k in cg.skills)
+    {
+        var s2 = new CharacterSheet { Level = 3, Scores = new() { [k.ability] = 18 } };
+        T($"skillBonus: [{k.name}] reads its own ability ({k.ability})", CharGen.SkillBonus(s2, k.name) == 4);
+        s2.SkillRanks[k.name] = 2;
+        T($"skillBonus: [{k.name}] trained to expert adds level and rank", CharGen.SkillBonus(s2, k.name) == 4 + 3 + 4);
+    }
+
+    T("skillBonus: a null sheet is nothing, not a crash", CharGen.SkillBonus(null, "Survival") == 0);
+    T("skillBonus: so is a nameless skill", CharGen.SkillBonus(sheet, "") == 0);
+    T("skillBonus: an unknown skill falls back to no ability rather than throwing",
+        CharGen.SkillBonus(sheet, "Basket Weaving") == 0);
+    T("skillBonus: a sheet with no scores answers zero",
+        CharGen.SkillBonus(new CharacterSheet { Level = 4 }, "Survival") == 0);
+
+    // A generated soul's Survival bonus and the Ledger's own tick have to agree, since the dialog
+    // shows one and the sheet shows the other.
+    var soul = CharGen.Generate(6, false, "Marshal");
+    int rank6 = soul.SkillRanks != null && soul.SkillRanks.TryGetValue("Survival", out int r6) ? r6 : 0;
+    int want6 = rank6 <= 0 ? CharGen.Mod(soul.Scores["RES"])
+                           : CharGen.Mod(soul.Scores["RES"]) + soul.Level + rank6 * 2;
+    T("skillBonus: agrees with a generated soul's own sheet", CharGen.SkillBonus(soul, "Survival") == want6);
+}
 
 // ============================================================ THE IRON CODE ENGINE (Ch. XI)
 // Property-based proof that the adjudicator matches the printed gun rules.
