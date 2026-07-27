@@ -8,6 +8,34 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.24.1 — the bar is grouped, and the grid says what you may type in (2026-07-26,
+  user-requested).** The last two items off the UX pass.
+
+  - **The action bar reads as a sentence now.** It was thirteen buttons of identical weight in no
+    useful order. Hairline separators (`BarSep()`) group it: *the turn* — ▶ Next turn · Begin turn ·
+    Next round — then *resolving* (Strike · Dread · ✦ Work), then *adjusting* (Amt · Damage · Heal),
+    then Restore; and on the second row, ordering and filling the field.
+  - **Destructive actions stopped looking like their neighbours.** ✕ Remove, New fight and Clear
+    field sat immediately beside ＋ Foe and ＋ Add, identical in every respect, so the only thing
+    standing between "add a combatant" and "wipe the battlefield" was aim. They now sit after a
+    wider gap and wear `DangerBtn` — paler ground, Blood-red text. Not hidden and not shouted; just
+    no longer reachable by muscle memory.
+  - **A genuine trap found on the way: `Btn` is `FlatStyle.System`,** which hands painting to the
+    theme and **silently ignores `BackColor` and `FlatAppearance`**. The v1.23.0 accent on ▶ Next
+    turn was therefore doing nothing — what looked like emphasis in the screenshots was the focus
+    ring, since the button had just been invoked. `PrimaryBtn` and `DangerBtn` switch to
+    `FlatStyle.Flat`, which is the only way to actually colour a WinForms button, and Next turn is
+    now genuinely the one weighted control on the bar.
+  - **The grid says which columns you can type in.** Four of the Tracker's ten are editable and
+    nothing distinguished them, so the only way to find out was to try. Editable columns carry **✎**
+    in the header, their tooltips say so, and their cells stand on ground lifted 42% toward paper by
+    `Writable(color)` — applied *after* the row colour, so it lifts posse green, foe rust, acting
+    gold or down red rather than flattening the meaning those already carry. Column widths grew to
+    fit the marker; "Beats ✎" does not fit the 44 that plain "Beats" did, and a clipped header is
+    worse than no marker. Deliberately Tracker-only: every column on the Posse grid is editable, so
+    marking all eighteen would be noise rather than information.
+  - No logic changed; smoke holds at 12,077 passing, 0 failing. Verified by rendering.
+
 - **GritKeeper v1.24.0 — a soul's gender is a box you can write in, and it says so (2026-07-26,
   user-requested).** Asked for a custom option alongside Woman and Man.
 
