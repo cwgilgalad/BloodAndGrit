@@ -165,7 +165,10 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
     }
 }
 
-T("17 simple tables", Db.Simple.Count == 17);
+// A canary that the data files really loaded: a missing or malformed tables file shows up here as
+// a count rather than as an empty generator three menus deep. 17 through v1.25.0; the adventure
+// generator added eight (shape, hook, truth, turn, clock, reward, and the two title halves).
+T($"25 simple tables (got {Db.Simple.Count})", Db.Simple.Count == 25);
 // The city generator (Keeper's Book Ch. XIV) is data-driven off these four; a missing
 // one is a KeyNotFoundException on the Generators tab, not a quiet blank.
 foreach (var t in new[] { "cityQuarter", "cityMachine", "cityWrongNote", "cityJob" })
@@ -1576,6 +1579,66 @@ foreach (var terrain in MapGen.Terrains)
         string tail = System.Text.Encoding.Latin1.GetString(pdf, Math.Max(0, pdf.Length - 32), Math.Min(32, pdf.Length));
         T($"map PDF structural: {terrain} @ {scale}", head.StartsWith("%PDF-1.4") && tail.Contains("%%EOF") && pdf.Length > 2000);
     }
+// ---- a whole adventure, rolled (v1.26.0) ----
+{
+    var a = Db.RollAdventure(6);
+    T("adventure: it has a name", !string.IsNullOrWhiteSpace(a.Title));
+    foreach (var (field, val) in new[]
+    {
+        ("shape", a.Shape), ("hook", a.Hook), ("town", a.TownName), ("ails", a.Ails),
+        ("rumor", a.Rumor), ("trouble", a.Trouble), ("truth", a.Truth), ("turn", a.Turn),
+        ("omen", a.Omen), ("npc", a.NpcName), ("clock", a.Clock), ("reward", a.Reward),
+    })
+        T($"adventure: {field} is filled in", !string.IsNullOrWhiteSpace(val));
+
+    T("adventure: the clock is a size the app actually draws",
+        a.ClockSegments == 4 || a.ClockSegments == 6 || a.ClockSegments == 8);
+    T("adventure: the sheet carries the town and the trouble",
+        a.Sheet().Contains(a.TownName) && a.Sheet().Contains(a.Trouble));
+    T("adventure: the trouble is a real creature out of the Bestiary",
+        Db.Find(a.Trouble) != null);
+
+    // The trouble must be in the posse's weight class, or the generator is just a random monster.
+    for (int lvl = 1; lvl <= 10; lvl++)
+    {
+        int tier = Rules.PartyTier(lvl);
+        bool ok = true;
+        for (int i = 0; i < 60; i++)
+        {
+            var roll = Db.RollAdventure(lvl);
+            var beast = Db.Find(roll.Trouble);
+            if (beast != null && Math.Abs(beast.tier - tier) > 1) { ok = false; break; }
+        }
+        T($"adventure: the trouble suits a level-{lvl} posse (tier {tier} ± 1)", ok);
+    }
+
+    // Variety is the whole ask. 400 rolls should not be visibly repeating itself.
+    var seen = new HashSet<string>();
+    var titles = new HashSet<string>();
+    var troubles = new HashSet<string>();
+    for (int i = 0; i < 400; i++)
+    {
+        var adv = Db.RollAdventure(6);
+        seen.Add($"{adv.Shape}|{adv.Hook}|{adv.Truth}|{adv.Turn}|{adv.Trouble}|{adv.Clock}");
+        titles.Add(adv.Title);
+        troubles.Add(adv.Trouble);
+    }
+    T($"adventure: 400 rolls are near-all distinct ({seen.Count})", seen.Count >= 395);
+    T($"adventure: titles vary ({titles.Count} in 400)", titles.Count >= 150);
+    T($"adventure: the trouble varies ({troubles.Count} distinct creatures)", troubles.Count >= 10);
+    T("adventure: level 0 opens the whole Bestiary", Db.RollAdventure(0) != null);
+
+    // Print two so a human can judge whether it reads like the books rather than like a form.
+    Console.WriteLine();
+    Console.WriteLine("sample adventures —");
+    for (int i = 0; i < 2; i++)
+    {
+        foreach (var line in Db.RollAdventure(6).Sheet().Split('\n'))
+            Console.WriteLine("  " + line.TrimEnd());
+        Console.WriteLine();
+    }
+}
+
 // ---- a settlement set down in open country (v1.25.0) ----
 // Before this, a rolled city could only be drawn as a ward, so "what is AROUND it" had no answer.
 // SettingTerrains is derived from Terrains rather than typed out again, so the guard that matters

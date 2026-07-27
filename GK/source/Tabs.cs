@@ -1877,6 +1877,7 @@ public partial class MainForm
     // place to survey. A rolled town that can't be drawn is a rolled town the Keeper writes on
     // a napkin — this is the seam between "what's here" and "what it looks like".
     string genLastTown, genLastCity;
+    Adventure genLastAdv;
 
     TabPage BuildGeneratorsTab()
     {
@@ -1893,9 +1894,8 @@ public partial class MainForm
         // The streets answer "what is in here"; the county answers "what is around it, and how far".
         // A city could only ever be drawn as a ward before v1.25.0, so the second question — the one
         // a posse riding toward it actually has — had no answer at all.
-        (string, EventHandler)[] PlaceMenu(bool city)
+        (string, EventHandler)[] PlaceMenu(Func<string> Place, bool city)
         {
-            string Place() => city ? genLastCity : genLastTown;
             var items = new List<(string, EventHandler)>
             {
                 (city ? "The ward itself — blocks and avenues" : "The town itself — its streets",
@@ -1915,9 +1915,11 @@ public partial class MainForm
         }
 
         var townToMap = MenuBtn("→ Map — this town ▾", 230,
-            "Survey the town just rolled — its streets, or the country it stands in", PlaceMenu(false));
+            "Survey the town just rolled — its streets, or the country it stands in",
+            PlaceMenu(() => genLastTown, false));
         var cityToMap = MenuBtn("→ Map — this city ▾", 230,
-            "Survey the city just rolled — its ward, or the country it stands in", PlaceMenu(true));
+            "Survey the city just rolled — its ward, or the country it stands in",
+            PlaceMenu(() => genLastCity, true));
         townToMap.Enabled = cityToMap.Enabled = false;
 
         left.Controls.Add(Btn("A town, in three rolls", (s, e) =>
@@ -1942,6 +1944,33 @@ public partial class MainForm
                 $"  Work for a posse:   {Db.Pick("cityJob")}");
         }, 230, "Roll a city: its quarter, its machine, its wrong note, and work for a posse"));
         left.Controls.Add(cityToMap);
+        // ---- a whole adventure ----
+        // The rest of this column rolls one line at a time and leaves the joining to the Keeper.
+        // This one rolls the joins as well: a shape, a hook, a place, a trouble out of the Bestiary,
+        // the truth under it, the turn, and a clock — then hands the pieces to the parts of the app
+        // that can actually run them, because a scenario that stays in a text box is a scenario the
+        // Keeper has to retype at midnight.
+        var advToThread = Btn("→ Thread — start its clock", (s, e) =>
+        {
+            if (genLastAdv == null) return;
+            clocks.Add(new CampaignClock { Name = genLastAdv.Clock, Segments = genLastAdv.ClockSegments });
+            RefreshClocks();
+            Log($"Thread started — “{genLastAdv.Clock}”, {genLastAdv.ClockSegments} segments.");
+        }, 230, "Put what happens if nobody moves on the Ledger as a running clock");
+        var advToMap = MenuBtn("→ Map — its town ▾", 230,
+            "Survey the adventure's town — its streets, or the country it stands in",
+            PlaceMenu(() => genLastAdv?.TownName, false));
+        advToThread.Enabled = advToMap.Enabled = false;
+
+        left.Controls.Add(Btn("An adventure, whole", (s, e) =>
+        {
+            genLastAdv = Db.RollAdventure((int)(encLevel?.Value ?? partyLevelHint));
+            advToThread.Enabled = advToMap.Enabled = true;
+            Gen(genLastAdv.Sheet());
+        }, 230, "Roll a whole scenario: its shape, the hook, the place, the trouble, the truth under it, the turn, and a clock"));
+        left.Controls.Add(advToThread);
+        left.Controls.Add(advToMap);
+
         left.Controls.Add(Btn("A face, in four rolls", (s, e) => Gen(
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
