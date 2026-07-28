@@ -116,6 +116,17 @@ static class Program
                             $"GUI: the Keeper's screen builds all {MainForm.RefLeafCount} leaves "
                             + $"(built {mf.RefDeckLength})");
                 }
+
+                // The soul wizard's nine steps, built for a spread of Callings that between them
+                // reach every optional page — the Signs, the Miracles, the Gunhand's second Edge
+                // column, a subpath and a standing Calling choice. Level 9 opens all of them.
+                foreach (var (cal, org) in new[]
+                    { ("Gunhand", "The Outlaw"), ("Hexer", "The Homesteader"),
+                      ("Preacher", "The Freed"), ("Witch", "The Drifter") })
+                {
+                    int pages = MainForm.BuildWizardStepsForSelfTest(cal, org, 9);
+                    Chk(pages >= 8, $"GUI: the soul wizard builds every step for a {cal} ({pages} pages)");
+                }
             }
             catch (Exception ux)
             {
