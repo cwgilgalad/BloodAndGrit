@@ -8,6 +8,58 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.27.0 — the Ledger's figures, the wizard's tooltips, and buying more than one
+  (2026-07-27, all three user-reported).**
+
+  - **The Ledger's type is fixed, and the cause was the font, not the layout.** Three faults, one
+    screenshot: the subtitle read "A Reckoning of **OneSoul**", Speed read "**3o ft**", and a long
+    name was cut off mid-word. Each was measured before it was fixed, with a side-by-side render.
+    - *The collapsed word space* was `TextRenderingHint.AntiAliasGridFit`. Hinting rounds every
+      glyph advance to a whole pixel, and at 9.5pt Georgia italic that rounds the word space away
+      entirely; at 14pt it doesn't, which is why it looked intermittent. The sheet now paints under
+      plain `AntiAlias`, and `PerformLayoutPass` measures under the same hint — measuring under one
+      and painting under another is how a scroll height comes to disagree with the ink.
+    - *The "3o"* is Georgia doing exactly what it was designed to do: it is a **text-figure** face,
+      so 3 4 5 7 9 hang below the baseline and 0 1 2 sit at x-height. Beautiful in a sentence,
+      unreadable in a stat column. GDI+ can't ask a font for its lining-figure set, so the figures
+      are now set in `NumFace` — the first installed serif that has lining figures (Cambria,
+      else Palatino Linotype, else Times New Roman, else Georgia). **Prose keeps Georgia**: text
+      figures inside running text are correct typography and match the printed book. The line is
+      drawn at the stat boxes, the ability boxes and the Mark, which is where figures are read off
+      and compared.
+    - *The cut-off name* was a one-step shrink-to-fit that could still overflow, after which the
+      next box simply painted over the tail — so the text looked truncated by nothing. `FieldBox`
+      now steps down through all three cuts and, failing that, trims with an ellipsis inside a
+      bounding rectangle, so a value can never leave its own box. **Labels got the same treatment**
+      (found by rendering the fix: "BLOOD / MAX" was running under Defense), and give up a word
+      before they give up their size — "BLOOD", not "BLOOD /…".
+  - **The soul wizard explains itself.** Every control and every list row now carries a tooltip,
+    built out of the same `chargen.json` the sheet is built from, so a tip can't drift from the
+    rule it describes: what each of the six abilities actually buys, what a Calling's die and saves
+    and Sign-working mean, an Origin's boon and burden, a skill's ability and what training buys,
+    an Edge's effect *and its requirements* (which the detail line never showed), a Sign's Rank,
+    cost and effect, what each of the Four Questions is asking for. `ItemTips` gives a `ListBox` or
+    `CheckedListBox` per-row tips, which WinForms has none of.
+  - **You can buy more than one of a thing.** The general store was a plain checklist — one
+    lantern, one box of cartridges, one pistol, ever. Highlight a line and set the number; the
+    label, the price and the coin follow. Asking for more than the coin covers **walks the number
+    back to what it covers** rather than refusing. The count is carried as repeated entries, so
+    `Validate`'s coin ledger — which already priced gear by counting — keeps its single authority
+    over the arithmetic and needed no change; the only rule edit was dropping the guard that
+    refused an item already owned. `CharGen.Tally` is the one place that turns those entries back
+    into lines ("Lantern × 3"), shared by the Ledger, the text sheet and the printed sheet.
+    A second suit of armor is bought and paid for, and worn once — asserted.
+  - **The store list stopped stuttering.** Several Ch. X price-list keys carry the price inside the
+    name, which read "Cow pony ($25) — $25" and would have read worse with a count beside it. The
+    key is still what the rules look the item up by; only the shown name loses the parenthetical.
+  - **Verification.** Smoke suite **12,147 passing, 0 failing** (new: quantity reaches the sheet,
+    the coin ledger still balances at every count, armor DR doesn't stack, `Tally` ordering and
+    counting). Self-test **20/20** — including a new GUI check, in the `BuildReferenceTab` mould,
+    that **builds all nine wizard steps** for a Gunhand, Hexer, Preacher and Witch, which between
+    them reach every optional page. Wizard pages are realized lazily, so a step that throws on
+    construction was previously only findable by a person clicking Next. The Ledger fixes were
+    confirmed by rendering the real control at 540px and 900px and looking at it.
+
 - **GritKeeper v1.26.0 — the Generators roll a whole adventure, not one more line (2026-07-27,
   user-requested, "expand it enough so that there are a wide variety").** Every other button in
   that column rolls one line off one table and leaves the joining to the Keeper. This one rolls

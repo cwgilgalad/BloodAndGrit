@@ -1476,6 +1476,44 @@ for (int i = 0; i < 100; i++)
     if (i == 0) T("assemble honors the given name", sheet.Name == "Test Soul");
 }
 
+// ---- buying more than one of a thing (wizard, 2026-07-27) ----
+// The count is carried as repeated entries, so the coin ledger prices it by counting and
+// Validate keeps its one authority over the arithmetic. Prove the money is right, the sheet
+// stays legal, and a second suit of armor buys no second helping of DR.
+{
+    var cheap = cg.gearPrices.OrderBy(kv => kv.Value).First(kv => cg.armor.All(a => a.gear != kv.Key));
+    foreach (int qty in new[] { 1, 2, 5 })
+    {
+        var spec = new CharGen.AssembleSpec { Level = 1, Calling = "Gunhand", Origin = "The Outlaw", Rolled = true };
+        foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.PreGiftScores[a] = 12;
+        spec.CoinRolled = 6 * cg.callings.First(c => c.name == "Gunhand").coin.mult * 6;   // the top of the range, so the coin never binds
+        for (int i = 0; i < qty; i++) spec.BuyGear.Add(cheap.Key);
+        var sheet = CharGen.Assemble(spec);
+        int held = sheet.Gear.Count(g => g == cheap.Key);
+        T($"buy × {qty}: {qty} of \"{cheap.Key}\" reach the sheet (held {held})", held >= qty);
+        var v = CharGen.Validate(sheet);
+        T($"buy × {qty}: sheet stays conformant" + (v.Count > 0 ? " — " + v[0] : ""), v.Count == 0);
+        T($"buy × {qty}: the tally says so", CharGen.Tally(sheet.Gear).Any(l => qty == 1 ? l == cheap.Key : l == $"{cheap.Key} × {held}"));
+    }
+
+    // two of the same armor: bought and paid for twice, worn once
+    var suit = cg.armor.OrderBy(a => a.cost).First();
+    var aspec = new CharGen.AssembleSpec { Level = 1, Calling = "Gunhand", Origin = "The Outlaw", Rolled = true, CoinRolled = 6 * 20 * 6 };
+    foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) aspec.PreGiftScores[a] = 12;
+    aspec.BuyGear.Add(suit.gear); aspec.BuyGear.Add(suit.gear);
+    var ash = CharGen.Assemble(aspec);
+    var av = CharGen.Validate(ash);
+    T("buy × 2 armor: still conformant" + (av.Count > 0 ? " — " + av[0] : ""), av.Count == 0);
+    T("buy × 2 armor: DR does not stack", ash.DrBlades == suit.drBlades && ash.DrShot == suit.drShot);
+}
+
+// Tally: order of first appearance, a count only where there is one to give
+T("tally keeps first-appearance order",
+    CharGen.Tally(new[] { "Rope", "Candle", "Rope", "Lantern", "Rope" })
+           .SequenceEqual(new[] { "Rope × 3", "Candle", "Lantern" }));
+T("tally leaves singles alone", CharGen.Tally(new[] { "Rope" }).SequenceEqual(new[] { "Rope" }));
+T("tally of nothing is nothing", CharGen.Tally(Array.Empty<string>()).Count == 0);
+
 // ---- levelling up: append exactly one level, keep the levels below stable, stay conformant ----
 foreach (var c in cg.callings)
     foreach (bool rolled in new[] { false, true })

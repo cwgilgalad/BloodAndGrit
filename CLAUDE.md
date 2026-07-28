@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
-GritKeeper app v1.20.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.27.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **Sign & spoor — the safe-table rule (v1.20.0):** the numbers live once, in `Rules.SpoorRow` /
@@ -519,7 +519,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.24.1) — the C# desktop app
+## GritKeeper (v1.27.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -734,6 +734,16 @@ undo covers it, since snapshotting every keystroke would flood the stack.
   v1.6: the `chargen.json` flavor pools (`givenWomen`/`givenMen`/`vices`/`lost`/`seen`/
   `moving`) nearly doubled (16→30 names each, 8–10→16–20 flavor lines each), so generated
   and wizard-built souls repeat far less over a long campaign.
+  v1.27 (both user-asked): **the wizard's every control and list row carries a tooltip**, written
+  out of `chargen.json` rather than typed, so a tip can't drift from the rule — abilities, the
+  Calling's die/saves/Signs, an Origin's boon and burden, a skill's ability, an Edge's effect
+  **and its requirements**, a Sign's Rank and cost, what each of the Four Questions asks. And
+  **the general store sells more than one of a thing**: highlight a line, set the number, and the
+  label, price and coin follow; asking for more than the coin covers walks the number back rather
+  than refusing. The count rides as **repeated `Gear`/`WeaponsCarried` entries**, which is why
+  `Validate`'s coin ledger needed no change — it already priced gear by counting — and
+  **`CharGen.Tally` is the single place** those entries become lines again ("Lantern × 3"), shared
+  by the Ledger, the text sheet and the PDF. Buying a second suit of armor grants no second DR.
 - **Generators** — every Ch. XII rollable table (town/NPC/rumor/trail/plunder/omen) plus
   all nine Grounds terrain tables and the Hand Behind It villain picker, safe-table rule
   applied automatically. v1.2: **every table expanded** with new results in the book's voice
@@ -772,9 +782,9 @@ undo covers it, since snapshotting every keystroke would flood the stack.
 | **`Menus.cs`** | (v1.4) The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box. |
 | **`Tabs.cs`** | Bestiary, Encounter, Tracker, Generators, Reference (the 13-leaf paged deck + `RTbl` table renderer), Session tabs. |
 | **`TabsChargen.cs`** | The New Soul tab (generate / wizard / tweak buttons, → Posse, PDF export) + the ✎ Tweak dialog. |
-| **`TabsWizard.cs`** | (v1.5) The nine-step chargen wizard (`SoulWizard`, nested in MainForm) — collects an `AssembleSpec` for `CharGen.Assemble`. |
+| **`TabsWizard.cs`** | (v1.5) The nine-step chargen wizard (`SoulWizard`, nested in MainForm) — collects an `AssembleSpec` for `CharGen.Assemble`. v1.27: every control and list row carries a tooltip built from `chargen.json` (`Tipped`/`ItemTips`/`AbilityTip`/`EdgeTip`/`SignTip`/`SkillTip`); the general store sells **more than one of a thing** (`StoreItem` + the qty spinner); `RealizeEveryStep` builds all nine pages for `--selftest`. |
 | **`CharGen.cs`** | Chargen data model, `Generate` (random), `Assemble` (wizard spec, shared `ReckonNumbers`/edge-eligibility), `Validate`, text `Render`. Compiled into the smoke rig. |
-| **`Ledger.cs`** | (v1.5) `LedgerView` — the book's Ledger sheet as an owner-drawn, zoomable control — plus the per-soul pop-out windows (`ShowSoulCard`) and sheet↔member sync. |
+| **`Ledger.cs`** | (v1.5) `LedgerView` — the book's Ledger sheet as an owner-drawn, zoomable control — plus the per-soul pop-out windows (`ShowSoulCard`) and sheet↔member sync. v1.27: paints under `AntiAlias` (not GridFit), sets **figures in `NumFace`** (a lining-figure serif) while prose keeps Georgia, and fits every label and value inside its own box. |
 | **`MapGen.cs`** | (v1.5) Trail Maps generator — pure, no WinForms types (compiled into the smoke rig); emits `Prim` lists + `ToSvg`. |
 | **`TabsMap.cs`** | (v1.5) The Map tab UI + the GDI primitive replayer. |
 | **`Pdf.cs`** | (v1.5) From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
@@ -812,6 +822,29 @@ The exe writes only `session.json` beside itself (via `AppContext.BaseDirectory`
 GitHub via **Releases** (`gh release …`), not committed — the binary is git-ignored. The
 `GritKeeper.zip` (exe + full `source/` tree + `README.md`) is the source bundle.
 
+### Known landmine: drawn text — the hint, the figures, and the box (v1.27.0)
+
+Three separate traps, all found in one screenshot of the Ledger, all worth avoiding in any new
+owner-drawn surface (`TabsMap.cs` replays primitives the same way):
+
+- **`TextRenderingHint.AntiAliasGridFit` eats word spaces at small sizes.** Hinting rounds each
+  glyph advance to a whole pixel, and Georgia's word space at 9.5pt rounds to nothing — the
+  subtitle rendered "A Reckoning of **OneSoul**". It looks intermittent because it clears up by
+  ~14pt. Use plain `AntiAlias` for body-size drawn text. **And measure under the same hint you
+  paint under** — `PerformLayoutPass` used a fresh `Graphics` with the default hint, which is how
+  a measured height comes to disagree with the ink.
+- **Georgia is a text-figure face.** Its 3 4 5 7 9 descend and its 0 1 2 sit at x-height, so "30"
+  reads as "3o" and a column of numbers doesn't line up. GDI+ has no way to request a font's
+  lining-figure set, so **figures are drawn in a different face** — `LedgerView.NumFace`, the
+  first installed of Cambria / Palatino Linotype / Times New Roman. Note `FirstInstalled` exists
+  because GDI+ **silently substitutes Microsoft Sans Serif** for a missing family; the substitute
+  reports its own name, which is the only way to detect it. Keep prose in Georgia — text figures
+  are correct inside running text, and the printed book uses them.
+- **`DrawString(text, font, brush, x, y)` has no width and will not stop.** Overflow just gets
+  painted over by whatever is drawn next, which reads as a truncation with no cause. Draw into a
+  `RectangleF` with a trimming `StringFormat`, and shrink through the real cuts first. This
+  applies to **labels as much as values** — "BLOOD / MAX" was the one that got missed.
+
 ### Known landmine: SplitContainer must not get geometry at construction time
 **Hit once, cost a full crash-on-launch on real Windows — avoid repeating.** Setting
 `SplitterDistance`/`Panel1MinSize`/`Panel2MinSize` on a `SplitContainer` *before* it's been
@@ -841,7 +874,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈12,084 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈12,147 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)

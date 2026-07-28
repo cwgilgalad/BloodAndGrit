@@ -46,9 +46,40 @@ public sealed class LedgerView : Panel
     public void Clear() { sheet = null; member = null; Warnings.Clear(); Invalidate(); }
     public bool IsEmpty => sheet == null && member == null;
 
+    // Hinting the glyphs to the pixel grid rounds every advance width to a whole pixel, and at
+    // the sizes this sheet uses that rounds Georgia's word space away to nothing: the subtitle
+    // rendered "A Reckoning of OneSoul" (user-reported, 2026-07-27). Plain AntiAlias positions
+    // on the sub-pixel and keeps the spaces. Proved with a side-by-side render at 9.5pt before
+    // the change — GridFit collapses the space, AntiAlias does not, at every zoom below ~1.4.
+    const System.Drawing.Text.TextRenderingHint TextHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+    // ---- the two faces ----
+    // Georgia is a *text-figure* face: its 3 4 5 7 9 hang below the baseline and its 0 1 2 sit
+    // at x-height. Lovely in a sentence, wrong in a stat box — "30 ft" reads as "3o ft" and no
+    // two numbers in a column line up (user-reported, 2026-07-27). GDI+ has no way to ask a font
+    // for its lining-figure set, so the figures are set in a different face: the first installed
+    // serif that has lining figures by default. Prose stays Georgia, where text figures belong.
+    static readonly string NumFace = FirstInstalled("Cambria", "Palatino Linotype", "Times New Roman");
+    static string FirstInstalled(params string[] names)
+    {
+        foreach (var n in names)
+        {
+            try
+            {
+                using var probe = new Font(n, 10f);
+                // GDI+ silently substitutes Microsoft Sans Serif for a missing family, and the
+                // substitute reports its own name — so a matching Name means it really is installed.
+                if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
+            }
+            catch { /* a broken font file shouldn't cost us the sheet */ }
+        }
+        return "Georgia";
+    }
+
     // ---- fonts, minted per zoom level (cached so paint never allocates) ----
     float cachedZoom = -1;
-    Font fTitle, fSub, fLabel, fValue, fValueB, fSmall, fBig, fWarn;
+    Font fTitle, fSub, fLabel, fLabelSm, fValue, fValueB, fSmall, fTiny, fBig, fWarn;
+    Font fNum, fNumB, fNumSm, fNumTiny;
     void MintFonts()
     {
         if (Math.Abs(cachedZoom - zoom) < 0.001f) return;
@@ -56,12 +87,25 @@ public sealed class LedgerView : Panel
         fTitle  = new Font("Georgia", 21f * zoom, FontStyle.Bold);
         fSub    = new Font("Georgia", 9.5f * zoom, FontStyle.Italic);
         fLabel  = new Font("Georgia", 7.6f * zoom, FontStyle.Bold);
+        fLabelSm = new Font("Georgia", 6.5f * zoom, FontStyle.Bold);
         fValue  = new Font("Georgia", 10f * zoom);
         fValueB = new Font("Georgia", 10f * zoom, FontStyle.Bold);
         fSmall  = new Font("Georgia", 8.4f * zoom);
+        fTiny   = new Font("Georgia", 7.1f * zoom);
         fBig    = new Font("Georgia", 12.5f * zoom, FontStyle.Bold);
         fWarn   = new Font("Segoe UI", 8.8f * zoom, FontStyle.Bold);
+        // the figure cuts, one per prose cut, so shrink-to-fit steps down in step with them
+        fNum     = new Font(NumFace, 10f * zoom);
+        fNumB    = new Font(NumFace, 10f * zoom, FontStyle.Bold);
+        fNumSm   = new Font(NumFace, 8.4f * zoom);
+        fNumTiny = new Font(NumFace, 7.1f * zoom);
     }
+
+    // A value is drawn inside its box, never past it — trimmed with an ellipsis as the last
+    // resort, so an over-long entry can't slide under the neighbouring box and look truncated
+    // by nothing (the Gender box used to paint over the tail of "Ruth "Six-Finger" Calloway").
+    static readonly StringFormat FitFmt = new(StringFormat.GenericDefault)
+    { Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap, LineAlignment = StringAlignment.Center };
 
     int contentHeight = 400;
     void PerformLayoutPass()
@@ -70,6 +114,7 @@ public sealed class LedgerView : Panel
         MintFonts();
         using var bmp = new Bitmap(1, 1);
         using var g = Graphics.FromImage(bmp);
+        g.TextRenderingHint = TextHint;   // measure under the hint we paint under, or the two disagree
         contentHeight = Draw(g, measureOnly: true);
         AutoScrollMinSize = new Size(0, contentHeight + (int)(24 * zoom));
     }
@@ -80,7 +125,7 @@ public sealed class LedgerView : Panel
         MintFonts();
         e.Graphics.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+        e.Graphics.TextRenderingHint = TextHint;
         Draw(e.Graphics, measureOnly: false);
     }
 
@@ -107,21 +152,39 @@ public sealed class LedgerView : Panel
         void TextCenter(string t, Font f, Color c, float cx, float yy)
         { if (!measureOnly) g.DrawString(t, f, GetBrush(c), cx - TextW(t, f) / 2, yy); }
 
-        // a bordered field box with a small-caps-style label and a value
-        float FieldBox(float x, float yy, float bw, string label, string value, bool valueBold = false)
+        // a bordered field box with a small-caps-style label and a value.
+        // `figures` picks the lining-figure face — on for anything that is a number to be read
+        // off and compared down a column, off for words.
+        float FieldBox(float x, float yy, float bw, string label, string value, bool valueBold = false, bool figures = false, string shortLabel = null)
         {
             float bh = 40 * zoom;
             if (!measureOnly)
             {
                 g.FillRectangle(GetBrush(FieldBg), x, yy, bw, bh);
                 g.DrawRectangle(GetPen(Rule), x, yy, bw, bh);
-                g.DrawString(label.ToUpperInvariant(), fLabel, GetBrush(Oxblood), x + 5 * zoom, yy + 3 * zoom);
-                var vf = valueBold ? fValueB : fValue;
                 var vt = value ?? "";
-                // shrink-to-fit rather than clip a long value
-                var use = vf;
-                if (TextW(vt, vf) > bw - 8 * zoom) use = fSmall;
-                g.DrawString(vt, use, GetBrush(Ink), x + 5 * zoom, yy + bh - (use == fSmall ? 15 : 19) * zoom - 2 * zoom);
+                float innerW = bw - 10 * zoom;
+                // the label gets the same treatment as the value — "BLOOD / MAX" is wider than a
+                // sixth of a narrow sheet and used to run under the Defense box beside it. It
+                // gives up its second word before it gives up its size, and only ever trims as a
+                // last resort: "BLOOD" reads; "BLOOD /…" reads like a bug.
+                var lt = label.ToUpperInvariant();
+                var lf = fLabel;
+                if (TextW(lt, lf) > innerW && shortLabel != null) lt = shortLabel.ToUpperInvariant();
+                if (TextW(lt, lf) > innerW) lf = fLabelSm;
+                g.DrawString(lt, lf, GetBrush(Oxblood),
+                    new RectangleF(x + 5 * zoom, yy + 2 * zoom, innerW, 13 * zoom), FitFmt);
+                // shrink through all three cuts before trimming — one step was not enough at the
+                // pop-out window's width, which is where the clipped name came from.
+                var cuts = figures
+                    ? new[] { valueBold ? fNumB : fNum, fNumSm, fNumTiny }
+                    : new[] { valueBold ? fValueB : fValue, fSmall, fTiny };
+                var use = cuts[0];
+                foreach (var f in cuts) { use = f; if (TextW(vt, f) <= innerW) break; }
+                // the value sits in the lower band of the box, centred on it, so the cut it ends
+                // up at doesn't shift its baseline
+                var box = new RectangleF(x + 5 * zoom, yy + 14 * zoom, innerW, bh - 16 * zoom);
+                g.DrawString(vt, use, GetBrush(Ink), box, FitFmt);
             }
             return bh;
         }
@@ -193,7 +256,7 @@ public sealed class LedgerView : Panel
         float rowH = FieldBox(x0, y, nW, "Name", name, valueBold: true);
         FieldBox(x0 + nW + gap, y, gW, "Gender", gender);
         FieldBox(x0 + nW + gW + gap * 2, y, cW, "Calling", calling);
-        FieldBox(x0 + nW + gW + cW + gap * 3, y, lW, "Level", level.ToString());
+        FieldBox(x0 + nW + gW + cW + gap * 3, y, lW, "Level", level.ToString(), figures: true, shortLabel: "Lvl");
         FieldBox(x0 + nW + gW + cW + lW + gap * 4, y, oW, "Origin", origin);
         y += rowH + gap;
 
@@ -216,14 +279,14 @@ public sealed class LedgerView : Panel
                 {
                     int sc = sheet.Scores[abKeys[i]];
                     string val = $"{sc} ({S(CharGen.Mod(sc))})";
-                    g.DrawString(val, fValueB, GetBrush(Ink), ax + (aW - TextW(val, fValueB)) / 2, y + aH - 22 * zoom);
+                    g.DrawString(val, fNumB, GetBrush(Ink), ax + (aW - TextW(val, fNumB)) / 2, y + aH - 22 * zoom);
                 }
                 else if (abKeys[i] == "RES" && member != null)
                 {
                     // Nerve = RES + level, so RES is recoverable from the table row
                     int res = member.NerveMax - member.Level;
                     string val = $"{res} ({S(CharGen.Mod(res))})";
-                    g.DrawString(val, fValueB, GetBrush(Ink), ax + (aW - TextW(val, fValueB)) / 2, y + aH - 22 * zoom);
+                    g.DrawString(val, fNumB, GetBrush(Ink), ax + (aW - TextW(val, fNumB)) / 2, y + aH - 22 * zoom);
                 }
                 else
                 {
@@ -238,20 +301,21 @@ public sealed class LedgerView : Panel
         string atkTxt = sheet != null
             ? $"G {S(sheet.Attack + CharGen.Mod(sheet.Scores["DEX"]))} · M {S(sheet.Attack + CharGen.Mod(sheet.Scores["STR"]))}"
             : "—";
-        FieldBox(x0,                  y, sW, "Blood / Max", bloodTxt, valueBold: true);
-        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "—");
-        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "—");
-        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : "—");
-        FieldBox(x0 + (sW + gap) * 4, y, sW, "Attack", atkTxt);
-        FieldBox(x0 + (sW + gap) * 5, y, sW, "Grit", grit.ToString());
+        FieldBox(x0,                  y, sW, "Blood / Max", bloodTxt, valueBold: true, figures: true, shortLabel: "Blood");
+        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "—", figures: true);
+        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "—", figures: true);
+        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : "—", figures: true);
+        FieldBox(x0 + (sW + gap) * 4, y, sW, "Attack", atkTxt, figures: true);
+        FieldBox(x0 + (sW + gap) * 5, y, sW, "Grit", grit.ToString(), figures: true);
         y += 40 * zoom + gap;
 
         // ---- row: saves / nerve ----
         float vW = (w - gap * 3) / 4;
-        FieldBox(x0,                  y, vW, "Fortitude Save", S(fort));
-        FieldBox(x0 + (vW + gap),     y, vW, "Reflex Save", S(rf));
-        FieldBox(x0 + (vW + gap) * 2, y, vW, "Will Save", S(wl));
-        FieldBox(x0 + (vW + gap) * 3, y, vW, "Nerve / Max", nerveTxt, valueBold: true);
+        // "Fort. Save" rather than "Fort." so the row still reads as three saves when it shrinks
+        FieldBox(x0,                  y, vW, "Fortitude Save", S(fort), figures: true, shortLabel: "Fort. Save");
+        FieldBox(x0 + (vW + gap),     y, vW, "Reflex Save", S(rf), figures: true, shortLabel: "Reflex");
+        FieldBox(x0 + (vW + gap) * 2, y, vW, "Will Save", S(wl), figures: true, shortLabel: "Will");
+        FieldBox(x0 + (vW + gap) * 3, y, vW, "Nerve / Max", nerveTxt, valueBold: true, figures: true, shortLabel: "Nerve");
         y += 40 * zoom + gap + 2 * zoom;
 
         // ---- the Mark ----
@@ -270,7 +334,7 @@ public sealed class LedgerView : Panel
                 g.DrawRectangle(pen, r.X, r.Y, r.Width, r.Height);
                 string n = i.ToString();
                 var col = i <= mark ? Color.White : InkSoft;
-                g.DrawString(n, fSmall, GetBrush(col), r.X + (mb - TextW(n, fSmall)) / 2, r.Y + (mb - fSmall.GetHeight(g)) / 2);
+                g.DrawString(n, fNumSm, GetBrush(col), r.X + (mb - TextW(n, fNumSm)) / 2, r.Y + (mb - fNumSm.GetHeight(g)) / 2);
             }
         }
         if (member != null && member.Taint > 0)
@@ -372,10 +436,10 @@ public sealed class LedgerView : Panel
             var gear = new List<(string, bool)>();
             if (sheet != null)
             {
-                foreach (var wpn in sheet.WeaponsCarried) gear.Add(("• " + wpn, true));
+                foreach (var wpn in CharGen.Tally(sheet.WeaponsCarried)) gear.Add(("• " + wpn, true));
                 gear.Add(("• " + (string.IsNullOrEmpty(sheet.ArmorWorn)
                     ? "Armor: none" : CharGen.ArmorLine(sheet)), true));
-                foreach (var it in sheet.Gear) gear.Add(("• " + it, false));
+                foreach (var it in CharGen.Tally(sheet.Gear)) gear.Add(("• " + it, false));
                 gear.Add((" ", false));
                 gear.Add(($"Coin — rolled ${sheet.CoinRolled:0}, ${sheet.CoinLeft:0.##} left", true));
             }

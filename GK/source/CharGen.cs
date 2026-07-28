@@ -247,6 +247,23 @@ public static class CharGen
              : owned.OrderByDescending(a => a.drBlades).ThenByDescending(a => a.drShot).First();
     }
 
+    /// <summary>A kit list read back the way a person would say it: one line per distinct thing,
+    /// in the order it was acquired, with a count on anything held more than once ("Lantern × 3").
+    /// Gear and weapons are stored one entry per item so the coin ledger can price them by
+    /// counting; this is the single place that turns those entries back into lines, so the
+    /// Ledger, the text sheet and the printed sheet can never tally them differently.</summary>
+    public static List<string> Tally(IEnumerable<string> items)
+    {
+        var order = new List<string>();
+        var count = new Dictionary<string, int>();
+        foreach (var it in items)
+        {
+            if (count.TryGetValue(it, out var n)) count[it] = n + 1;
+            else { count[it] = 1; order.Add(it); }
+        }
+        return order.Select(it => count[it] > 1 ? $"{it} × {count[it]}" : it).ToList();
+    }
+
     /// <summary>How a soul's armor reads — one phrasing, used by the sheet, the ledger, the posse
     /// notes and the printed page alike. Empty when they are standing in nothing but a shirt.</summary>
     public static string ArmorLine(CharacterSheet s) => string.IsNullOrEmpty(s.ArmorWorn)
@@ -651,9 +668,13 @@ public static class CharGen
             if (w != null && left >= w.cost)
             { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) — ${w.cost}"); }
         }
+        // One entry per thing owned, repeats and all — a soul may want three lanterns or a
+        // dozen candles, and the wizard now lets them buy that (2026-07-27). The coin ledger in
+        // Validate already sums Gear entry by entry, so a repeat prices itself with no other
+        // change; ArmorFrom takes the best single suit, so a second duster grants no second DR.
         foreach (var gn in spec.BuyGear)
         {
-            if (D.gearPrices.TryGetValue(gn, out var price) && left >= price && !s.Gear.Contains(gn))
+            if (D.gearPrices.TryGetValue(gn, out var price) && left >= price)
             { left -= price; s.Gear.Add(gn); }
         }
         s.CoinLeft = Math.Round(left, 2);
@@ -1258,7 +1279,7 @@ public static class CharGen
         sb.AppendLine();
 
         sb.AppendLine($"GEAR   (rolled ${s.CoinRolled:0} {cal.coin.note}{(cal.coin.note != "" ? ", " : "")}${s.CoinLeft:0.##} left)");
-        foreach (var g in s.Gear) sb.AppendLine("   " + g);
+        foreach (var g in Tally(s.Gear)) sb.AppendLine("   " + g);
         sb.AppendLine();
 
         sb.AppendLine("THE FOUR QUESTIONS");
