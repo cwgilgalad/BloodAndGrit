@@ -163,6 +163,70 @@ public partial class MainForm
         static FlowLayoutPanel Column() => new()
         { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Padding = new Padding(2) };
 
+        // ---- telling the player what a thing is ----
+        // The wizard's lists are the book's own vocabulary, and a player meeting "Hedge Magic" or
+        // "Salt & Iron" for the first time had nothing to go on but the name. Every list row and
+        // every control now says what it is on hover, out of the same data the sheet is built
+        // from, so a tip can never drift from the rule it describes. (User-asked, 2026-07-27.)
+        static T Tipped<T>(T c, string tip) where T : Control
+        { if (!string.IsNullOrEmpty(tip)) Tip.SetToolTip(c, Wrap(tip)); return c; }
+
+        /// A tooltip is drawn as one long line unless it is broken by hand.
+        static string Wrap(string t, int width = 84)
+        {
+            if (string.IsNullOrEmpty(t)) return t;
+            var sb = new System.Text.StringBuilder();
+            foreach (var para in t.Split('\n'))
+            {
+                int line = 0;
+                foreach (var word in para.Split(' '))
+                {
+                    if (line > 0 && line + word.Length + 1 > width) { sb.Append('\n'); line = 0; }
+                    else if (line > 0) { sb.Append(' '); line++; }
+                    sb.Append(word); line += word.Length;
+                }
+                sb.Append('\n');
+            }
+            return sb.ToString().TrimEnd('\n');
+        }
+
+        /// Per-row tooltips for a ListBox or CheckedListBox. WinForms has none of its own, so
+        /// follow the pointer and re-point the shared ToolTip whenever it crosses into a new row.
+        static void ItemTips(ListBox lb, Func<int, string> textFor)
+        {
+            int shown = -2;
+            lb.MouseMove += (s, e) =>
+            {
+                int i = lb.IndexFromPoint(e.Location);
+                if (i == shown) return;
+                shown = i;
+                Tip.SetToolTip(lb, i >= 0 && i < lb.Items.Count ? Wrap(textFor(i)) : "");
+            };
+            lb.MouseLeave += (s, e) => { shown = -2; Tip.SetToolTip(lb, ""); };
+        }
+
+        // ---- the book's own words for each kind of thing, for the tips above ----
+        static string SkillTip(CgSkill sk) =>
+            $"{sk.name} — rolled on {sk.ability}. Trained adds your level to the roll; untrained is the bare ability modifier. "
+          + "Expert and Master come later, from the skill increases at 3rd, 5th, 7th and 9th.";
+
+        static string EdgeTip(string name)
+        {
+            var e = CharGen.EdgeByName(name);
+            if (e == null) return name == LetBook ? "Leave this slot alone and the book deals it at the end, by the generator's own rules." : null;
+            var req = new List<string>();
+            if (e.reqAbility != null) req.AddRange(e.reqAbility.Select(kv => $"{kv.Key} {kv.Value}+"));
+            if (e.reqEdge != null) req.Add("after " + e.reqEdge);
+            if (e.reqTrained != null) req.Add("trained in " + e.reqTrained);
+            if (e.calling != null) req.Add(e.calling + " only");
+            return $"{e.name}  ({e.group})\n{e.desc}"
+                 + (string.IsNullOrWhiteSpace(e.effect) ? "" : "\nEffect: " + e.effect)
+                 + (req.Count > 0 ? "\nRequires: " + string.Join(", ", req) : "");
+        }
+
+        static string SignTip(CgSign sg) =>
+            $"{sg.name} — Rank {sg.rank}, on the {sg.list} list.\nCost: {sg.cost}\n{sg.desc}";
+
         // ============================================== 1 · basics
         NumericUpDown wLevel; ComboBox wMethod, wGender; TextBox wName;
         Control BuildBasics()
