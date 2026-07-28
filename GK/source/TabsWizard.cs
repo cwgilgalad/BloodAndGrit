@@ -17,6 +17,16 @@ public partial class MainForm
         }
     }
 
+    /// <summary>Self-test hook, the Reference deck's <see cref="BuildReferenceTab"/> pattern applied
+    /// to the wizard: build every step that applies to this Calling and count them. Wizard pages are
+    /// realized lazily — nothing else in the self-test would touch them, and a step that throws on
+    /// construction is otherwise only found by a person clicking Next.</summary>
+    internal static int BuildWizardStepsForSelfTest(string calling, string origin, int level)
+    {
+        using var wiz = new SoulWizard();
+        return wiz.RealizeEveryStep(calling, origin, level);
+    }
+
     sealed class SoulWizard : Form
     {
         public CharacterSheet Result;
@@ -37,7 +47,7 @@ public partial class MainForm
         HashSet<string> signPicks = new();
         string subpathPick, choicePick;
         double coinRolled = -1;
-        readonly HashSet<string> buyPicks = new();
+        readonly Dictionary<string, int> buyPicks = new();    // what's in the basket → how many of it
         string lost = "", seen = "", vice = "", moving = "", compass = "";
 
         static readonly string[] AbKeys = { "STR", "DEX", "CON", "WIT", "RES", "PRE" };
@@ -74,6 +84,9 @@ public partial class MainForm
             back = new Button { Text = "◂ Back", Width = 88, Height = 32 };
             next.Click += (s, e) => GoNext();
             back.Click += (s, e) => GoBack();
+            Tipped(next, "On to the next step. What this one asks for is checked first — anything the book insists on has to be settled before you move.");
+            Tipped(back, "Back a step. Nothing you've chosen is lost; steps that don't apply to this soul are skipped over.");
+            Tipped(cancel, "Close the wizard and build nothing.");
             bar.Controls.Add(cancel); bar.Controls.Add(next); bar.Controls.Add(back);
             Controls.Add(host); Controls.Add(header); Controls.Add(bar);
             CancelButton = cancel;
@@ -91,6 +104,18 @@ public partial class MainForm
                 ("9 · The person",             BuildPerson,    CollectPerson,    () => true),
             };
             ShowStep(0);
+        }
+
+        /// Walk every applicable step's builder for the given soul. The choices are seeded
+        /// directly rather than collected, because collect() is allowed to stop and ask the user
+        /// a question and a self-test has nobody to answer it.
+        internal int RealizeEveryStep(string calling, string origin, int lvl)
+        {
+            calName = calling; orgName = origin; level = lvl;
+            int built = 0;
+            for (int i = 0; i < steps.Length; i++)
+                if (steps[i].applicable()) { ShowStep(i); built++; }
+            return built;
         }
 
         void ShowStep(int i)
@@ -137,8 +162,12 @@ public partial class MainForm
                 Signs = signPicks.ToList(),
                 Subpath = subpathPick, CallingChoice = choicePick,
                 CoinRolled = coinRolled > 0 ? coinRolled : null,
-                BuyWeapons = buyPicks.Where(n => CharGen.D.weapons.Any(w => w.name == n)).ToList(),
-                BuyGear = buyPicks.Where(n => CharGen.D.gearPrices.ContainsKey(n)).ToList(),
+                // Assemble buys one entry at a time and prices each, so a count of three goes
+                // down as the same name three times — which is also how the sheet stores it.
+                BuyWeapons = buyPicks.Where(kv => CharGen.D.weapons.Any(w => w.name == kv.Key))
+                                     .SelectMany(kv => Enumerable.Repeat(kv.Key, kv.Value)).ToList(),
+                BuyGear = buyPicks.Where(kv => CharGen.D.gearPrices.ContainsKey(kv.Key))
+                                  .SelectMany(kv => Enumerable.Repeat(kv.Key, kv.Value)).ToList(),
                 Name = charName, Gender = charGender, Compass = compass,
                 Lost = lost, Seen = seen, Vice = vice, Moving = moving
             };
@@ -224,6 +253,19 @@ public partial class MainForm
                  + (req.Count > 0 ? "\nRequires: " + string.Join(", ", req) : "");
         }
 
+        /// What each ability actually buys, in the book's terms — the six one-liners the sheet
+        /// never has room for.
+        static string AbilityTip(string key) => key switch
+        {
+            "STR" => "Strength — hauling, holding, and what a swung or thrust weapon does. Carries the Fortitude save's partner in a brawl.",
+            "DEX" => "Dexterity — aim, balance and speed of hand. Sets Defense, Initiative, and what a gun hits with.",
+            "CON" => "Constitution — wind and endurance. Sets the Fortitude save, and every level's Blood roll adds its modifier.",
+            "WIT" => "Wits — sharpness and schooling. Adds to how many skills the Calling trains, and to noticing what is wrong with a room.",
+            "RES" => "Resolve — nerve in the older sense. Sets the Will save, and Nerve itself is Resolve plus level — the stat the dark spends.",
+            "PRE" => "Presence — bearing and force of person. Carries talking, leading, lying, and the Callings that work on people.",
+            _ => key
+        };
+
         static string SignTip(CgSign sg) =>
             $"{sg.name} — Rank {sg.rank}, on the {sg.list} list.\nCost: {sg.cost}\n{sg.desc}";
 
@@ -236,16 +278,24 @@ public partial class MainForm
             var row1 = new FlowLayoutPanel { AutoSize = true };
             row1.Controls.Add(Lbl("Level:"));
             wLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Value = level, Width = 56, Margin = new Padding(3, 6, 3, 3) };
+            Tipped(wLevel, "How experienced this soul already is. 1 is a fresh character; the wizard walks every "
+                + "level up to this one, so a higher number means more Edges, more skill increases, more Blood — and more steps to answer. "
+                + "Changing it clears the Edge, skill-increase, Sign and boost picks, since which of those you get depends on it.");
             row1.Controls.Add(wLevel);
             row1.Controls.Add(Lbl("   Abilities by:"));
             wMethod = new ComboBox { Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
             wMethod.Items.AddRange(new object[] { "The Honest Array (15 14 13 12 10 8)", "The Gamble (roll 4d6, drop lowest)", "Set the scores by hand" });
             wMethod.SelectedIndex = methodIdx;
+            Tipped(wMethod, "How the six ability scores are found (Ch. III).\n"
+                + "• The Honest Array — everyone gets the same six numbers to arrange. Fair, and no one is born unlucky.\n"
+                + "• The Gamble — roll 4d6 and drop the lowest die, six times. Swingier; you may end up better or worse than the array.\n"
+                + "• By hand — type the scores yourself. The sheet is still checked, but nothing stops you being generous.");
             row1.Controls.Add(wMethod);
             col.Controls.Add(row1);
             var row2 = new FlowLayoutPanel { AutoSize = true };
             row2.Controls.Add(Lbl("Name:"));
             wName = new TextBox { Width = 260, Text = charName, Margin = new Padding(3, 5, 3, 3) };
+            Tipped(wName, "What they are called. Leave it blank and a frontier name is dealt at the end, matched to the gender if one is set.");
             row2.Controls.Add(wName);
             row2.Controls.Add(Lbl("  Gender:"));
             wGender = GenderBox(charGender);
@@ -280,6 +330,17 @@ public partial class MainForm
             var row = new FlowLayoutPanel { AutoSize = true };
             wCalList = new ListBox { Width = 220, Height = 330, Font = new Font("Segoe UI", 9.5f) };
             foreach (var c in CharGen.D.callings.OrderBy(c => c.group).ThenBy(c => c.name)) wCalList.Items.Add(c.name);
+            ItemTips(wCalList, i =>
+            {
+                var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.Items[i]);
+                if (c == null) return null;
+                return $"{c.name} — a Calling of the {c.group}. Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
+                     + $"trains {c.trainedSkills} skills plus your WIT modifier; leans on {string.Join(", ", c.keyAbilities.Take(2))}."
+                     + (c.signsKnownAt != null ? " Works the Signs of Ch. XIII." : "")
+                     + (c.miracleLists != null ? " Works Miracles, paid from its own pool." : "")
+                     + (c.bonusCombatEdgeAtOdd ? " Takes a bonus combat Edge at every odd level." : "")
+                     + (c.startMark > 0 ? $" Begins already at Mark {c.startMark}." : "");
+            });
             var detail = new Label { Width = 440, Height = 330, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
             wCalList.SelectedIndexChanged += (s, e) =>
             {
@@ -322,10 +383,20 @@ public partial class MainForm
             var row = new FlowLayoutPanel { AutoSize = true };
             wOrgList = new ListBox { Width = 220, Height = 300, Font = new Font("Segoe UI", 9.5f) };
             foreach (var o in CharGen.D.origins.Where(o => !(isFaith && o.notFaith))) wOrgList.Items.Add(o.name);
+            ItemTips(wOrgList, i =>
+            {
+                var o = CharGen.D.origins.FirstOrDefault(x => x.name == (string)wOrgList.Items[i]);
+                if (o == null) return null;
+                return $"{o.name} — {o.line}\n"
+                     + (o.gifts.Count > 0 ? "Gifts " + string.Join(", ", o.gifts.Select(kv => $"{kv.Key} +{kv.Value}")) + ". " : "")
+                     + (o.trained.Count > 0 ? "Trained free in " + string.Join(", ", o.trained) + ". " : "")
+                     + $"\nBoon: {o.boon}\nBurden: {o.burden}";
+            });
             var detail = new Label { Width = 440, Height = 300, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
             var choiceRow = new FlowLayoutPanel { AutoSize = true };
             choiceRow.Controls.Add(Lbl("Either/or skill:"));
             wOrgChoice = new ComboBox { Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+            Tipped(wOrgChoice, "This Origin trains one of these two, your pick — it comes free and does not count against the Calling's trained skills.");
             choiceRow.Controls.Add(wOrgChoice);
             wOrgList.SelectedIndexChanged += (s, e) =>
             {
@@ -377,6 +448,7 @@ public partial class MainForm
                     var row = new FlowLayoutPanel { AutoSize = true };
                     row.Controls.Add(Lbl(AbNames[i] + $" ({AbKeys[i]}):", 150));
                     var n = new NumericUpDown { Minimum = 3, Maximum = 18, Width = 60, Value = handScores.TryGetValue(AbKeys[i], out var v) ? Math.Clamp(v, 3, 18) : 10, Margin = new Padding(3, 5, 3, 3) };
+                    Tipped(n, AbilityTip(AbKeys[i]) + "\n10–11 is an ordinary person; every 2 points above or below moves the modifier by 1.");
                     wAbNums[AbKeys[i]] = n;
                     row.Controls.Add(n);
                     var gift = Org?.gifts.TryGetValue(AbKeys[i], out var g) == true ? g : 0;
@@ -428,6 +500,7 @@ public partial class MainForm
                     var cb = new ComboBox { Width = 70, DropDownStyle = ComboBoxStyle.DropDownList, Margin = new Padding(3, 5, 3, 3) };
                     foreach (var v in pool.Distinct().OrderByDescending(x => x)) cb.Items.Add(v.ToString());
                     if (abilityPick.TryGetValue(key, out var prev)) cb.SelectedItem = prev;
+                    Tipped(cb, AbilityTip(key) + "\nGive it one value from the pool — every value must be used exactly as often as it appears.");
                     wAbCombos[key] = cb;
                     row.Controls.Add(cb);
                     var gift = Org?.gifts.TryGetValue(key, out var g) == true ? g : 0;
@@ -448,6 +521,8 @@ public partial class MainForm
                     var cb = new ComboBox { Width = 130, DropDownStyle = ComboBoxStyle.DropDownList, Margin = new Padding(3, 5, 3, 3) };
                     cb.Items.AddRange(AbKeys.Cast<object>().ToArray());
                     cb.SelectedItem = i < boostPicks.Count ? boostPicks[i] : Cal.keyAbilities[0];
+                    Tipped(cb, $"At {boostLevels[i]}th level one ability rises by 1. Worth spending on an odd score — it is the even numbers "
+                        + "that move the modifier. Everything derived from it (Defense, saves, Nerve, Blood) is re-reckoned for you.");
                     wBoostCombos.Add(cb);
                     row.Controls.Add(cb);
                     col.Controls.Add(row);
@@ -522,12 +597,15 @@ public partial class MainForm
             wSkillCount = Cap("");
             col.Controls.Add(wSkillCount);
             wSkillList = new CheckedListBox { Width = 340, Height = 300, CheckOnClick = true, Font = new Font("Segoe UI", 9.5f) };
+            var shelf = new List<CgSkill>();
             foreach (var sk in CharGen.D.skills)
             {
                 if (free.Contains(sk.name)) continue;
+                shelf.Add(sk);
                 int idx = wSkillList.Items.Add($"{sk.name} ({sk.ability})");
                 if (skillPicks.Contains(sk.name)) wSkillList.SetItemChecked(idx, true);
             }
+            ItemTips(wSkillList, i => SkillTip(shelf[i]));
             void Refresh() => wSkillCount.Text = $"Picked {wSkillList.CheckedItems.Count} of {count}";
             wSkillList.ItemCheck += (s, e) =>
             {
@@ -552,6 +630,8 @@ public partial class MainForm
                     cb.Items.Add(LetBook);
                     foreach (var sk in CharGen.D.skills) cb.Items.Add(sk.name);
                     cb.SelectedItem = i < increasePicks.Count && cb.Items.Contains(increasePicks[i]) ? increasePicks[i] : LetBook;
+                    Tipped(cb, $"The step earned at {levels[i]}th level. Name an untrained skill to train it, a trained one to make it Expert, "
+                        + "or (from 7th) an Expert one to make it Master. If the pick turns out to be impossible on this sheet, the book re-draws it.");
                     wIncCombos.Add(cb);
                     row.Controls.Add(cb);
                     col.Controls.Add(row);
@@ -624,9 +704,12 @@ public partial class MainForm
                 {
                     var edge = CharGen.EdgeByName(cb.SelectedItem as string);
                     wEdgeDetail.Text = edge != null ? $"{edge.name} — {edge.desc}" : "";
+                    // the tip carries what the detail line leaves out — the effect and the requirements
+                    Tip.SetToolTip(cb, Wrap(EdgeTip(cb.SelectedItem as string) ?? ""));
                     RefillAll();
                 };
                 cb.DropDown += (s, e) => RefillAll();
+                Tip.SetToolTip(cb, Wrap(EdgeTip(cb.SelectedItem as string) ?? ""));
                 return cb;
             }
 
@@ -685,6 +768,7 @@ public partial class MainForm
                     int idx = wSignList.Items.Add($"{sg.name} ({sg.cost})");
                     if (signPicks.Contains(sg.name)) wSignList.SetItemChecked(idx, true);
                 }
+                ItemTips(wSignList, i => SignTip(CharGen.D.signs[i]));
                 void Refresh() => wSignCount.Text = $"Picked {wSignList.CheckedItems.Count} of {signs}  (any left unpicked are dealt at the end)";
                 wSignList.ItemCheck += (s, e) =>
                 {
@@ -700,6 +784,8 @@ public partial class MainForm
                 col.Controls.Add(Cap($"The {Cal.subpath.section} (chosen at 3rd)"));
                 wSubpath = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
                 foreach (var o in Cal.subpath.options) wSubpath.Items.Add(o.name);
+                Tipped(wSubpath, $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept — "
+                    + "the boon it grants is printed below as you move through the list.");
                 wSubpath.SelectedItem = subpathPick != null && wSubpath.Items.Contains(subpathPick) ? subpathPick : wSubpath.Items[0];
                 var detail = new Label { AutoSize = true, MaximumSize = new Size(690, 0), ForeColor = Ink, Font = new Font("Segoe UI", 9f), Padding = new Padding(0, 4, 0, 0) };
                 wSubpath.SelectedIndexChanged += (s, e) =>
@@ -713,6 +799,7 @@ public partial class MainForm
                 col.Controls.Add(Cap(Cal.choice.label));
                 wChoice = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
                 foreach (var o in Cal.choice.options) wChoice.Items.Add(o);
+                Tipped(wChoice, $"{Cal.choice.label} — the {Cal.name}'s own standing choice, made at 1st level and written on the sheet.");
                 wChoice.SelectedItem = choicePick != null && wChoice.Items.Contains(choicePick) ? choicePick : wChoice.Items[0];
                 col.Controls.Add(wChoice);
             }
@@ -729,12 +816,33 @@ public partial class MainForm
         }
 
         // ============================================== 8 · outfit
-        CheckedListBox wBuyList; Label wCoinLbl;
-        readonly Dictionary<string, double> buyCost = new();
+        /// One line on the general store's shelf. The list holds these rather than formatted
+        /// strings, so the item's name is read back off the object instead of cut out of its own
+        /// label — a name containing the separator used to take the whole purchase with it.
+        sealed class StoreItem
+        {
+            public string Name; public double Cost; public string Detail; public bool IsWeapon;
+            public int Qty = 1;
+            public static string Money(double v) => v < 1 ? $"{v * 100:0}¢" : $"${v:0.##}";
+
+            /// Several of Ch. X's price-list keys carry the price inside the name itself
+            /// ("Cow pony ($25)"), which read as a stutter beside the column price and reads
+            /// worse once a count is added. The key is what the rules look the item up by, so
+            /// only the shown name loses it.
+            public string Shown => System.Text.RegularExpressions.Regex
+                .Replace(Name, @"\s*\((?:\$[\d.,]+|[\d.,]+¢)\)$", "");
+
+            public override string ToString() =>
+                $"{Shown}{(Qty > 1 ? $"  × {Qty}" : "")} — {Money(Cost * Qty)}"
+              + (Qty > 1 ? $" ({Money(Cost)} ea.)" : "")
+              + (string.IsNullOrEmpty(Detail) ? "" : "   " + Detail);
+        }
+
+        CheckedListBox wBuyList; Label wCoinLbl; NumericUpDown wQty;
+        bool qtySuppress;                       // re-labelling a row re-enters ItemCheck; don't recurse
         Control BuildOutfit()
         {
             var col = Column();
-            buyCost.Clear();
             if (coinRolled <= 0)
                 coinRolled = Enumerable.Range(0, Cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * Cal.coin.mult;
             wCoinLbl = Cap("");
@@ -742,56 +850,140 @@ public partial class MainForm
             rollRow.Controls.Add(Btn("🎲 Re-roll the coin", (s, e) =>
             {
                 coinRolled = Enumerable.Range(0, Cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * Cal.coin.mult;
+                qtySuppress = true;
                 foreach (int i in wBuyList.CheckedIndices.Cast<int>().ToList()) wBuyList.SetItemChecked(i, false);
+                qtySuppress = false;
                 RefreshCoin();
-            }, 140, $"{Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}"));
+            }, 140, $"Roll the starting coin again — {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}. Everything in the basket is put back."));
             col.Controls.Add(wCoinLbl);
             col.Controls.Add(rollRow);
             var kit = Cal.coin.kit.Concat(Org?.gear ?? new List<string>()).ToList();
             if (kit.Count > 0)
                 col.Controls.Add(Note("Comes free with the Calling and Origin: " + string.Join(" · ", kit)));
             col.Controls.Add(Cap("At the general store (printed prices)"));
-            wBuyList = new CheckedListBox { Width = 520, Height = 280, CheckOnClick = true, Font = new Font("Segoe UI", 9f) };
+            col.Controls.Add(Note("Tick a line to buy it. To take more than one — a second pistol, a dozen candles — highlight the "
+                + "line and set the number below; the price and what's left of the coin follow along."));
+
+            wBuyList = new CheckedListBox { Width = 560, Height = 260, CheckOnClick = true, Font = new Font("Segoe UI", 9f) };
             foreach (var w in CharGen.D.weapons.OrderBy(w => w.kind == "gun" ? 0 : 1).ThenBy(w => w.name))
             {
                 if (w.cost <= 0) continue;
-                string label = $"{w.name} — ${w.cost:0}   ({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})";
-                buyCost[label] = w.cost;
-                int idx = wBuyList.Items.Add(label);
-                if (buyPicks.Contains(w.name)) wBuyList.SetItemChecked(idx, true);
+                var it = new StoreItem
+                {
+                    Name = w.name, Cost = w.cost, IsWeapon = true,
+                    Detail = $"({w.dmg}{(string.IsNullOrEmpty(w.traits) ? "" : ", " + w.traits)})",
+                    Qty = buyPicks.TryGetValue(w.name, out var qw) ? qw : 1
+                };
+                int idx = wBuyList.Items.Add(it);
+                if (buyPicks.ContainsKey(w.name)) wBuyList.SetItemChecked(idx, true);
             }
             foreach (var kv in CharGen.D.gearPrices.OrderBy(kv => kv.Key))
             {
-                string label = $"{kv.Key} — {(kv.Value < 1 ? $"{kv.Value * 100:0}¢" : $"${kv.Value:0.##}")}";
-                buyCost[label] = kv.Value;
-                int idx = wBuyList.Items.Add(label);
-                if (buyPicks.Contains(kv.Key)) wBuyList.SetItemChecked(idx, true);
+                var it = new StoreItem
+                {
+                    Name = kv.Key, Cost = kv.Value,
+                    Qty = buyPicks.TryGetValue(kv.Key, out var qg) ? qg : 1
+                };
+                int idx = wBuyList.Items.Add(it);
+                if (buyPicks.ContainsKey(kv.Key)) wBuyList.SetItemChecked(idx, true);
             }
+            ItemTips(wBuyList, i => StoreTip((StoreItem)wBuyList.Items[i]));
+
             wBuyList.ItemCheck += (s, e) =>
             {
-                if (e.NewValue == CheckState.Checked)
-                {
-                    double spent = wBuyList.CheckedItems.Cast<string>().Sum(x => buyCost[x]);
-                    if (spent + buyCost[(string)wBuyList.Items[e.Index]] > coinRolled) e.NewValue = CheckState.Unchecked;
-                }
+                if (qtySuppress) return;
+                if (e.NewValue == CheckState.Checked && SpentIf(e.Index, ((StoreItem)wBuyList.Items[e.Index]).Qty) > coinRolled)
+                    e.NewValue = CheckState.Unchecked;      // can't afford it — the tick doesn't take
                 BeginInvoke(RefreshCoin);
             };
+            wBuyList.SelectedIndexChanged += (s, e) => SyncQtyBox();
             col.Controls.Add(wBuyList);
+
+            var qtyRow = new FlowLayoutPanel { AutoSize = true };
+            qtyRow.Controls.Add(Lbl("Of the highlighted line, take:"));
+            wQty = new NumericUpDown { Minimum = 1, Maximum = 99, Value = 1, Width = 60, Margin = new Padding(3, 5, 3, 3) };
+            Tipped(wQty, "How many of the highlighted line to buy. Setting it above 1 buys the line if it isn't bought already. "
+                + "If the coin won't stretch to the number asked for, it falls back to the most that will.");
+            wQty.ValueChanged += (s, e) => ApplyQty();
+            qtyRow.Controls.Add(wQty);
+            qtyRow.Controls.Add(Lbl("   (each one is charged at the printed price)"));
+            col.Controls.Add(qtyRow);
+
+            SyncQtyBox();
             RefreshCoin();
             return col;
         }
+
+        static string StoreTip(StoreItem it) =>
+            it == null ? null
+          : it.IsWeapon
+            ? $"{it.Shown} — {StoreItem.Money(it.Cost)} each. {it.Detail}\nBought more than once, each is carried separately: "
+              + "a brace of pistols is two guns, not one gun fired twice."
+            : $"{it.Shown} — {StoreItem.Money(it.Cost)} each."
+              + (CharGen.D.armor.FirstOrDefault(a => a.gear == it.Name) is { } ar
+                 ? $"\nThis is armor: DR {ar.drBlades} vs blades, DR {ar.drShot} vs small shot"
+                   + (ar.defense != 0 ? $", Defense {ar.defense:+0;−0}" : "") + (ar.speed != 0 ? $", Speed {ar.speed:+0;−0} ft" : "")
+                   + ".\nA second suit grants nothing — only the best one worn counts."
+                 : "");
+
+        /// What the basket costs if row <paramref name="index"/> were held at <paramref name="qty"/>.
+        double SpentIf(int index, int qty)
+        {
+            double total = 0;
+            for (int i = 0; i < wBuyList.Items.Count; i++)
+            {
+                var it = (StoreItem)wBuyList.Items[i];
+                bool taken = i == index ? true : wBuyList.GetItemChecked(i);
+                if (taken) total += it.Cost * (i == index ? qty : it.Qty);
+            }
+            return total;
+        }
+
+        void SyncQtyBox()
+        {
+            if (wQty == null || wBuyList?.SelectedItem is not StoreItem it) return;
+            qtySuppress = true;
+            wQty.Value = Math.Clamp(it.Qty, (int)wQty.Minimum, (int)wQty.Maximum);
+            qtySuppress = false;
+        }
+
+        void ApplyQty()
+        {
+            if (qtySuppress || wBuyList?.SelectedIndex is not int idx || idx < 0) return;
+            var it = (StoreItem)wBuyList.Items[idx];
+            int want = (int)wQty.Value;
+            // walk the number back to whatever the coin actually covers rather than refusing outright
+            while (want > 1 && SpentIf(idx, want) > coinRolled) want--;
+            it.Qty = want;
+            qtySuppress = true;
+            if (want != (int)wQty.Value) wQty.Value = want;
+            bool afford = SpentIf(idx, want) <= coinRolled;
+            wBuyList.Items[idx] = it;                       // re-read ToString() for the new count
+            wBuyList.SetItemChecked(idx, afford);           // asking for some of a thing buys it
+            wBuyList.SelectedIndex = idx;
+            qtySuppress = false;
+            RefreshCoin();
+        }
+
+        double Spent() => wBuyList == null ? 0
+            : Enumerable.Range(0, wBuyList.Items.Count)
+                .Where(i => wBuyList.GetItemChecked(i))
+                .Sum(i => ((StoreItem)wBuyList.Items[i]).Cost * ((StoreItem)wBuyList.Items[i]).Qty);
+
         void RefreshCoin()
         {
-            double spent = wBuyList?.CheckedItems.Cast<string>().Sum(x => buyCost[x]) ?? 0;
+            double spent = Spent();
             wCoinLbl.Text = $"Rolled ${coinRolled:0} {Cal.coin.note} — spent ${spent:0.##}, ${coinRolled - spent:0.##} left";
         }
+
         bool CollectOutfit()
         {
             buyPicks.Clear();
-            foreach (string item in wBuyList.CheckedItems)
+            for (int i = 0; i < wBuyList.Items.Count; i++)
             {
-                string name = item.Substring(0, item.LastIndexOf(" — "));
-                buyPicks.Add(name);
+                if (!wBuyList.GetItemChecked(i)) continue;
+                var it = (StoreItem)wBuyList.Items[i];
+                buyPicks[it.Name] = Math.Max(1, it.Qty);
             }
             return true;
         }
@@ -809,6 +1001,15 @@ public partial class MainForm
                 var cb = new ComboBox { Width = 460, DropDownStyle = ComboBoxStyle.DropDown, Margin = new Padding(3, 5, 3, 3) };
                 foreach (var o in key == "compass" ? CharGen.CompassOptions() : CharGen.Flavor(key)) cb.Items.Add(o);
                 cb.Text = current ?? "";
+                Tipped(cb, key switch
+                {
+                    "lost"    => "What did you lose? The thing that is already gone when play starts — it is what the Keeper reaches for when the game needs to hurt.",
+                    "seen"    => "What have you seen? The reason you believe in the dark when the sensible people don't.",
+                    "vices"   => "What is your vice? Where the money and the good sense go. Grit is easier to spend when a soul has somewhere to fall.",
+                    "moving"  => "What keeps you moving? The one thing that gets a frightened person back on the trail.",
+                    "compass" => "Which way the soul points — the standing lean the Keeper reads you by. Not a rule, a promise about who this is.",
+                    _ => null
+                } + "\nPick from the book's table, write your own, or leave it blank to have it dealt at the end.");
                 row.Controls.Add(cb);
                 row.Controls.Add(Btn("🎲", (s, e) => cb.Text = (string)cb.Items[Rules.Rng.Next(cb.Items.Count)], 40, "Let the dice choose this one"));
                 col.Controls.Add(row);
