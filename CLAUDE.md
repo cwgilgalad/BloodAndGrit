@@ -909,6 +909,17 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
   Book Appendix E; secrets-annotated Keeper map + full gazetteer in the Keeper's Book Ch. XIII).
   See `perdition_map.py`. Could still grow into a thin fourth book if you want more territory.
+- **Discord / online play** — proposed but not built; see **`DESIGN-online-play.md`** (2026-07-27).
+  Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
+  (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
+  LAN-hosted responsive page served by the app itself or Discord-as-state-surface → a full VTT
+  (recommended against; the Trail Maps SVG already drops into Owlbear/Foundry/Roll20 today). The
+  **enabling refactor is worth doing on its own merits**: `GK/smoke` already compiles six
+  WinForms-free files by hand-listed `<Compile Include>`, and making those a real
+  `BloodAndGrit.Rules` class library both kills that drift risk and gives a Linux-runnable engine.
+  Two gotchas recorded there: `Rules.Rng` is a process-wide static that `Reseed` swaps wholesale
+  (fine for one table, a hazard for two), and webhook URLs / bot tokens are bearer credentials
+  that belong in `prefs.json`, never `session.json`.
 - A one-sheet **"teach it in ten minutes"** player handout.
 - **Higher-level play support** — the Advancement chapter is thin past level 5.
 - **The Keeper's Table** got its first full visual pass on 2026-07-09 (Claude Code CLI
