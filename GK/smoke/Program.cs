@@ -655,6 +655,21 @@ foreach (var (table, floor) in new[]
         && reloaded.Scars[0].Name == "Gut-Shot" && reloaded.Scars[1].Kind == "Affliction");
     var older = System.Text.Json.JsonSerializer.Deserialize<PartyMember>("{\"Name\":\"Ruth\"}");
     T("scars: a soul saved before them loads with none, not a null", older.Scars is { Count: 0 });
+
+    // The Afflictions are the Keeper's Book's own d10, transcribed — not a list the app made up.
+    T("affliction: the d10 table has ten entries", Rules.Afflictions.Length == 10);
+    T("affliction: in the book's order",
+        Rules.Afflictions[0].name == "The Shakes" && Rules.Afflictions[9].name == "The Hollow");
+    T("affliction: every one says what it costs", Rules.Afflictions.All(a => a.cost.Length > 20));
+    bool affOk = true; var affSeen = new HashSet<string>();
+    for (int i = 0; i < 900; i++)
+    {
+        var (d, n, c) = Rules.RollAffliction();
+        if (d < 1 || d > 10 || Rules.Afflictions[d - 1].name != n || Rules.Afflictions[d - 1].cost != c) affOk = false;
+        affSeen.Add(n);
+    }
+    T("affliction: a roll is always a real row of the table", affOk);
+    T("affliction: and all ten can come up", affSeen.Count == 10);
 }
 
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
