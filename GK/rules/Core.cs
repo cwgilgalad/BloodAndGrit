@@ -853,6 +853,33 @@ public static class Rules
         return (d, LastingInjuries[d - 1]);
     }
 
+    /// <summary>The ten Afflictions and what each one costs, transcribed from the Keeper's Book
+    /// Ch. III ("Afflictions — the Scars That Stay"). The app had a hand-invented list of
+    /// suggestions here for about an hour, which is exactly the mistake this project keeps
+    /// closing: the book already had a d10, so the book's d10 is what the app offers.</summary>
+    public static readonly (string name, string cost)[] Afflictions =
+    {
+        ("The Shakes",       "−2 to anything fine or steady-handed while under any strain"),
+        ("Night Terrors",    "No Nerve returns from sleep alone — only by a fire, in company, or in drink"),
+        ("The Long Stare",   "−2 to be trusted or read by folk; they see the haunt on you"),
+        ("A Compulsion",     "A small rite — counting, salt, a rhyme — must be done, or be Shaken until it is"),
+        ("The Cold",         "Never quite warm again; −2 against cold and against fear"),
+        ("Faithless",        "The old comforts — prayer, ward, hymn — no longer steady you as they did"),
+        ("The Whisper",      "You hear it now; once a session it tells you something true, to earn a lie later"),
+        ("Brittle Nerve",    "Begin each session at −2 maximum Nerve until it heals"),
+        ("Marked in Dreams", "The dark knows where you sleep; count your Taint exposure one step worse"),
+        ("The Hollow",       "A piece did not come back; −1 to one ability score until you are made whole"),
+    };
+
+    /// <summary>Roll one off the d10, as the Affliction, what it costs, and the die that found it.
+    /// </summary>
+    public static (int die, string name, string cost) RollAffliction()
+    {
+        int d = Rng.Next(1, Afflictions.Length + 1);
+        var a = Afflictions[d - 1];
+        return (d, a.name, a.cost);
+    }
+
     // ---- whose turn it is, and when the round is over ----
 
     /// <summary>A roll for a place in the order. The Player's Book is plain about what this is —

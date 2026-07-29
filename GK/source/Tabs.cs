@@ -1643,8 +1643,14 @@ public partial class MainForm
             if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
             if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
             // The engine has worked out that this one leaves a mark since v1.x and nothing ever
-            // read the flag. Now it asks, and what the Keeper names goes on the soul for good.
-            if (o.Affliction) RecordScar(soul, "Affliction", "");
+            // read the flag. Now it rolls the book's d10 and offers to write it down for good.
+            if (o.Affliction)
+            {
+                var (d10, aff, cost) = Rules.RollAffliction();
+                Log($"{soul.Name} does not come back whole — Affliction, d10 {d10}: {aff}. {cost}");
+                ShowResult("AFFLICTION", $"{soul.Name}: {aff}\n{cost}", Blood);
+                RecordScar(soul, "Affliction", aff);
+            }
             if (soul.NerveCur == 0)
             {
                 var bk = Horror.Break();
@@ -1710,14 +1716,23 @@ public partial class MainForm
         {
             Left = Pad + 74, Top = say.Bottom + 9, Width = CW - 74, DropDownStyle = ComboBoxStyle.DropDown
         };
+        // Both lists are the BOOK's, not the app's: the d6 of Lasting Injuries (Ch. XI) and the
+        // d10 of Afflictions (Keeper's Book Ch. III). Still a free-text combo, because the
+        // Keeper's Book says plainly to "roll one, or choose the one that bites deepest".
         if (kind == "Injury") name.Items.AddRange(Rules.LastingInjuries.Cast<object>().ToArray());
-        else name.Items.AddRange(new object[]
-        { "Sleepless", "Afraid of the dark", "Will not go underground", "Talks to someone who is not there",
-          "Cannot abide the sound of it", "Flinches from the Marked", "Drinks now" });
+        else name.Items.AddRange(Rules.Afflictions.Select(a => (object)a.name).ToArray());
         name.Text = suggested;
 
         var noteLbl = new Label { Left = Pad, Top = name.Bottom + 12, Width = 70, Text = "Note:" };
         var note = new TextBox { Left = Pad + 74, Top = name.Bottom + 9, Width = CW - 74, Height = 54, Multiline = true };
+        // Picking one of the book's ten fills in what it costs, so the note is the rule rather
+        // than a blank the Keeper has to go and look up mid-scene.
+        if (kind == "Affliction")
+            name.SelectedIndexChanged += (s, e) =>
+            {
+                int i = name.SelectedIndex;
+                if (i >= 0 && i < Rules.Afflictions.Length) note.Text = Rules.Afflictions[i].cost;
+            };
         var whenLbl = new Label { Left = Pad, Top = note.Bottom + 12, Width = 70, Text = "When:" };
         var when = new TextBox { Left = Pad + 74, Top = note.Bottom + 9, Width = 180, Text = DateTime.Now.ToString("d MMM yyyy") };
 
@@ -2799,6 +2814,18 @@ public partial class MainForm
             new[] { "III",  "1d6" },
             new[] { "IV–V", "1d10" });
         RI(r, "Familiarity is the death of dread — the same sight costs nothing the second time.");
+
+        // Rendered from Rules.Afflictions, which is the Keeper's Book's own d10 — the app rolls
+        // off that same list when a Dread Check leaves a scar, so the printed table and the roller
+        // cannot part company.
+        RH(r, "Afflictions — the Scars That Stay  (Keeper's Book, Ch. III)");
+        RTbl(r, new[] { 4, 17, 58 }, new[] { "d10", "The Affliction", "What it costs" },
+            Rules.Afflictions.Select((a, i) => new[] { (i + 1).ToString(), a.name, a.cost }));
+        RT(r, "Rolled on a true Break, a horror beheld at DC 25, or a Mark step that should cost more "
+             + "than the rest. They heal slowly and seldom on their own — a season of safety, a true "
+             + "sanctification, an Alienist's care, or facing down the thing that caused it.");
+        RI(r, "An Affliction is a story hook, not a punishment. The app writes it onto the soul's "
+             + "Scars, and the Posse tab's right-click menu strikes it off when it is earned.");
 
         RH(r, "Recovering Nerve");
         RTbl(r, new[] { 44, 30 }, new[] { "The remedy", "It restores" },
