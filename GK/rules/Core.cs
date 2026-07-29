@@ -32,6 +32,14 @@ public static class Prefs
         /// book. A single marker's own color travels in the session file with the marker; this
         /// is the standing choice that outlives any one session.
         public Dictionary<string, int> MarkerInk { get; set; } = new();
+
+        /// <summary>Has this machine been shown around? False on a fresh install, which is what
+        /// makes the first launch offer the tour. Set once the tour is finished OR declined, so
+        /// nobody is asked twice — a walkthrough that keeps offering itself is a walkthrough
+        /// people learn to dismiss without reading. Help ▸ Show me around re-runs it on purpose.
+        /// Deliberately in prefs.json, not session.json: it belongs to the person at the keyboard,
+        /// not to the game they happen to have loaded.</summary>
+        public bool ToldTheTour { get; set; }
     }
 
     static string PathTo => Path.Combine(AppContext.BaseDirectory, "prefs.json");
@@ -138,6 +146,22 @@ public class PartyMember : INotifyPropertyChanged
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
+
+    /// <summary>What this soul carries out of the bad nights and does not put down: Lasting
+    /// Injuries (Ch. XI — "they do not heal with rest alone; they take a Sawbones, time, and
+    /// sometimes a graveyard") and Afflictions (Keeper's Book Ch. III — "the scars that stay").
+    ///
+    /// Both were in the app already and neither could be written down. The Reference deck printed
+    /// the injury table, <see cref="Horror.DreadCheck"/> worked out whether a failure carried an
+    /// Affliction and returned a flag no screen ever read, and a soul had nowhere to put either —
+    /// so the one thing the game says is permanent lived on somebody's notepad, in the app whose
+    /// whole promise is that nothing has to.</summary>
+    public List<Scar> Scars { get; set; } = new();
+
+    /// <summary>The scars as one line for the posse grid — "2: Gut-Shot, Sleepless".</summary>
+    [JsonIgnore]
+    public string ScarLine => Scars is not { Count: > 0 } ? ""
+        : $"{Scars.Count}: " + string.Join(", ", Scars.Select(s => s.Name));
 
     // The full character sheet, when this soul came out of the New Soul tab (generated,
     // wizard-built, or tweaked). Null for hand-entered rows; the Ledger window shows a
@@ -323,6 +347,27 @@ public class Combatant : INotifyPropertyChanged
         if (done.Count > 0) On(nameof(WorkedChips));
         return done;
     }
+}
+
+/// <summary>A mark a soul does not get to put down: a Lasting Injury off the d6 (Ch. XI) or an
+/// Affliction out of a bad Dread Check (Keeper's Book Ch. III). Deliberately a plain record with a
+/// free-text note — the books name the six injuries and leave the Afflictions to the table, so the
+/// app names what it knows and lets the Keeper write the rest.</summary>
+public class Scar
+{
+    /// <summary>"Injury" or "Affliction" — which of the two ledgers this belongs on.</summary>
+    public string Kind { get; set; } = "Injury";
+    public string Name { get; set; } = "";
+    /// <summary>How it happened, or what it costs at the table. The Keeper's own words.</summary>
+    public string Note { get; set; } = "";
+    /// <summary>The session date, as the Keeper stamped it, or whatever they typed.</summary>
+    public string When { get; set; } = "";
+
+    [JsonIgnore] public string Mark => Kind == "Affliction" ? "☾" : "✚";
+    [JsonIgnore]
+    public string Full => $"{Mark} {Name} — {Kind}"
+        + (string.IsNullOrWhiteSpace(When) ? "" : $", {When}")
+        + (string.IsNullOrWhiteSpace(Note) ? "" : $"\n{Note}");
 }
 
 /// <summary>One Sign, Miracle, or creature power in play: what it is, who worked it, what it cost,
@@ -783,6 +828,30 @@ public static class Rules
     /// budget and the safe-table rule are both measured against. One authority, so "two Tiers over"
     /// means the same arithmetic wherever the app says it.</summary>
     public static int PartyTier(int partyLevel) => Math.Max(1, (partyLevel + 1) / 2);
+
+    // ---- the marks that do not wash off (Player's Book Ch. XI · Keeper's Book Ch. III) ----
+
+    /// <summary>The six Lasting Injuries, in the book's own d6 order. Lives here rather than typed
+    /// into the Reference leaf so the printed table and the roller are the same six words — the
+    /// leaf renders from this list, and rolling one picks out of it.</summary>
+    public static readonly string[] LastingInjuries =
+    { "Bloody Gash", "Cracked Ribs", "Maimed Hand", "Lamed Leg", "Ruined Eye or Ear", "Gut-Shot" };
+
+    /// <summary>The Fortitude DC a terrible blow demands, per the Reference leaf and Ch. XI.</summary>
+    public const int GrievousDc = 15;
+
+    /// <summary>Was that a terrible blow? "One hit for half maximum Blood or more, or any critical
+    /// hit" (Ch. XI). Printed on the Keeper's screen since v1.4 and implemented nowhere until
+    /// v1.29.0 — the app read the rule out to the Keeper and then left them to remember it.</summary>
+    public static bool IsGrievous(int damage, int bloodMax, bool crit)
+        => damage > 0 && (crit || (bloodMax > 0 && damage * 2 >= bloodMax));
+
+    /// <summary>Roll one off the d6 table, as the injury and the die that found it.</summary>
+    public static (int die, string injury) RollInjury()
+    {
+        int d = Rng.Next(1, LastingInjuries.Length + 1);
+        return (d, LastingInjuries[d - 1]);
+    }
 
     // ---- whose turn it is, and when the round is over ----
 

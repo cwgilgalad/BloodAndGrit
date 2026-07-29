@@ -63,6 +63,9 @@ public partial class MainForm
         help.DropDownItems.Add(Item("The &five-minute lesson", (s, e) => ShowLesson(), Keys.F1));
         help.DropDownItems.Add(Item("&Keyboard shortcuts", (s, e) => ShowShortcuts()));
         help.DropDownItems.Add(new ToolStripSeparator());
+        help.DropDownItems.Add(Item("Show me a&round", (s, e) => StartTour()));
+        help.DropDownItems.Add(new ToolStripSeparator());
+        help.DropDownItems.Add(Item("What it &needs to run…", (s, e) => ShowRequirements()));
         help.DropDownItems.Add(Item("&About GritKeeper…", (s, e) => ShowAbout()));
         menu.Items.Add(help);
 
@@ -169,9 +172,19 @@ public partial class MainForm
         void I(string s) { rtf.SelectionFont = new Font("Segoe UI", 9.7f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n\n"); }
 
         H("GritKeeper, in five minutes");
-        I("Everything a Keeper reaches for mid-scene, in ten tabs. Ctrl+1 through Ctrl+9 jump straight to them, " +
-          "Ctrl+0 to the tenth. Nothing here invents rules — every number, table, and creature is taken " +
-          "word-for-word from the books.");
+        // The count is READ, not typed, and the shortcut sentence follows it. It said "ten tabs …
+        // Ctrl+0 to the tenth" to everybody, including a player's table, which shows three — so a
+        // player was told about seven tabs they do not have and seven shortcuts that do nothing.
+        // Same lesson as the Keeper's screen leaf count: a number in prose has to be derived.
+        int shown = tabsCtl?.TabPages.Count ?? allTabs.Count;
+        string spelled = shown switch
+        { 1 => "one", 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six",
+          7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten", _ => shown.ToString() };
+        I($"Everything a Keeper reaches for mid-scene, in {spelled} tab{(shown == 1 ? "" : "s")}. "
+          + (shown >= 10 ? "Ctrl+1 through Ctrl+9 jump straight to them, Ctrl+0 to the tenth. "
+                         : $"Ctrl+1 through Ctrl+{shown} jump straight to them. ")
+          + "Nothing here invents rules — every number, table, and creature is taken "
+          + "word-for-word from the books.");
 
         H("1 · Seat the posse  (Posse)");
         T("The party sheet. Add each soul's Blood, Defense, saves, Nerve, Grit, Mark, and Taint — or click straight " +
@@ -188,8 +201,10 @@ public partial class MainForm
           "add dice (click one twice and it stacks: d6, 2d6, 3d6), the digits and ＋/− build the modifier. The dice " +
           "tumble in the tray and land on the true results — every die wears its color (green d4, blue d6, orange d8, " +
           "white d10, yellow d12, red d20, purple d100), best faces ring gold and a 1 rings black. Below that, the " +
-          "d20 checker rolls a full four-degrees check against a DC. Everything the app ever rolls — here or on any " +
-          "other tab — lands in the log on the right, so there is always a paper trail.");
+          "d20 checker rolls a full four-degrees check against a DC. Everything the app rolls — here or on any " +
+          "other tab — lands in the log on the right, so the whole night is on the record. The log belongs to " +
+          "the sitting, though: it is not part of the saved session and starts clean next launch, so Copy log " +
+          "is how you keep one.");
 
         H("3 · Know your horrors  (Bestiary)");
         T("All 150 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
@@ -312,7 +327,8 @@ public partial class MainForm
         M("  Left / Right      Turn the deck (or click ◀ ▶)");
         M("");
         H("Everything else");
-        M("  Hover any button — every control carries a tooltip.");
+        M("  Hover a button — every one of them carries a tooltip (audit_ui.py holds them to it).");
+        M("  Grid headers and the columns you may type in carry one too.");
 
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
         win.Controls.Add(Pad(rtf, 18));
@@ -351,9 +367,85 @@ public partial class MainForm
             AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
             Left = 0, Top = 260, Width = 504, Height = 80, ForeColor = Ink
         };
+        var reqs = new LinkLabel
+        {
+            Text = "What it needs to run", AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
+            Left = 0, Top = 318, Width = 504, Height = 22, LinkColor = Blood, ActiveLinkColor = Gold
+        };
+        reqs.LinkClicked += (s, e) => ShowRequirements();
         var ok = new Button { Text = "Ride on", Left = 208, Top = 344, Width = 88, DialogResult = DialogResult.OK };
-        f.Controls.AddRange(new Control[] { pic, title, ver, blurb, ok });
+        f.Controls.AddRange(new Control[] { pic, title, ver, blurb, reqs, ok });
         f.AcceptButton = ok; f.CancelButton = ok;
+        f.ShowDialog(this);
+    }
+
+    /// <summary>What the app actually needs, on the back of the box. Written from what the build
+    /// really is rather than from ambition: a self-contained win-x64 single file, so 64-bit Windows
+    /// and no .NET install; a window that refuses to go below 1040x640; and a folder it can WRITE
+    /// to, because the session, the preferences and the crash report all land beside the exe.
+    ///
+    /// Every line here is a promise. Nothing goes on this list that the app cannot do — the app
+    /// spent two releases telling people they could play on a phone.</summary>
+    void ShowRequirements()
+    {
+        using var f = new Form
+        {
+            Width = 560, Height = 520, Text = "GritKeeper — what it needs",
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
+        };
+        var rtf = new RichTextBox
+        {
+            ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
+            Left = 18, Top = 14, Width = 508, Height = 412
+        };
+        void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 11.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
+        void L(string k, string v)
+        {
+            rtf.SelectionFont = new Font("Consolas", 9.5f, FontStyle.Bold); rtf.SelectionColor = Ink;
+            rtf.AppendText("  " + k.PadRight(13));
+            rtf.SelectionFont = new Font("Consolas", 9.5f); rtf.SelectionColor = Ink;
+            rtf.AppendText(v + "\n");
+        }
+        void N(string s) { rtf.SelectionFont = new Font("Segoe UI", 9.5f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n"); }
+
+        H("Minimum");
+        L("System",   "Windows 10 (version 1607) or Windows 11, 64-bit");
+        L("Processor", "Any x64 processor");
+        L("Memory",   "2 GB RAM");
+        L("Disk",     "400 MB free — the app is ~155 MB and unpacks its");
+        L("",         "own libraries to your TEMP folder on first run");
+        L("Display",  "1280 × 720. The window will not go below 1040 × 640");
+        L("Input",    "Keyboard and mouse");
+        L("Other",    "None. No .NET install, no internet, no account,");
+        L("",         "no administrator rights, nothing to configure");
+        rtf.AppendText("\n");
+
+        H("Recommended");
+        L("Memory",   "4 GB RAM");
+        L("Display",  "1920 × 1080 — the tracker and the Ledger both");
+        L("",         "breathe better with the room");
+        L("Printing", "Any printer, for the PDFs it writes (character");
+        L("",         "sheets and trail maps). Not required to play");
+        rtf.AppendText("\n");
+
+        H("One thing that matters");
+        N("  Put the folder somewhere you can write to — your Desktop, your Documents,");
+        N("  a USB stick. GritKeeper saves the table beside its own exe (session.json,");
+        N("  prefs.json), so a read-only place like Program Files will not hold your game.");
+        rtf.AppendText("\n");
+
+        H("What it is not");
+        N("  A Windows desktop program, and only that. It does not run on macOS, Linux,");
+        N("  a phone or a tablet, there is no browser version, and it does not connect");
+        N("  players over a network — one machine at the table, usually the Keeper's.");
+        N("  (The three books are PDFs. Those open on anything, phone included — it is");
+        N("  the app that is Windows-only, not the game.)");
+
+        var ok = new Button { Text = "Ride on", Left = 232, Top = 440, Width = 88, DialogResult = DialogResult.OK };
+        f.Controls.AddRange(new Control[] { rtf, ok });
+        f.AcceptButton = ok; f.CancelButton = ok;
+        rtf.SelectionStart = 0; rtf.ScrollToCaret();
         f.ShowDialog(this);
     }
 }

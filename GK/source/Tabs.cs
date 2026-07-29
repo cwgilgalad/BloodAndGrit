@@ -1591,6 +1591,12 @@ public partial class MainForm
             // the Strike reads on the Dice tab's card too, graded like any other check
             ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
+            // A terrible blow. The rule has been printed on the Keeper's screen since v1.4 and was
+            // implemented nowhere — the app read it out and then left the Keeper to remember it in
+            // the middle of a fight, which is the one moment nobody remembers anything.
+            if (SoulOf(tgt) is PartyMember hurt
+                && Rules.IsGrievous(rep.Res.AfterDR, tgt.BloodMax, rep.Res.Strike.Crit))
+                OfferGrievous(hurt, tgt, rep.Res.AfterDR, rep.Res.Strike.Crit);
             // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
             trkGrid.Refresh(); UpdateTurnLine(); Sync();
         }
@@ -1636,6 +1642,9 @@ public partial class MainForm
             ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
             if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
             if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
+            // The engine has worked out that this one leaves a mark since v1.x and nothing ever
+            // read the flag. Now it asks, and what the Keeper names goes on the soul for good.
+            if (o.Affliction) RecordScar(soul, "Affliction", "");
             if (soul.NerveCur == 0)
             {
                 var bk = Horror.Break();
@@ -1644,6 +1653,88 @@ public partial class MainForm
             }
             posseGrid?.Refresh(); trkGrid?.Refresh();
         }
+    }
+
+    /// <summary>A blow bad enough to leave something behind (Ch. XI): half the soul's maximum Blood
+    /// in one hit, or any critical. Fortitude save at DC 15 — the engine table rolls it, the
+    /// dice-and-books table is asked for it — and on a failure the d6 says what it cost.</summary>
+    void OfferGrievous(PartyMember soul, Combatant row, int damage, bool crit)
+    {
+        string why = crit ? "a critical hit" : $"{damage} in one blow, against {row.BloodMax} Blood";
+        if (!Confirm($"A terrible blow — {why}.\n\n{soul.Name} makes a Fortitude save at DC {Rules.GrievousDc} "
+                   + "or takes a Lasting Injury. Roll it?")) return;
+
+        int die = AskDie($"{soul.Name}'s Fortitude save against DC {Rules.GrievousDc} — what did the d20 come up?")
+                  ?? Rules.Rng.Next(1, 21);
+        var (idx, deg, detail) = Rules.FourDegrees(die, soul.Fort, Rules.GrievousDc);
+        if (idx > 1)   // 2 = success, 3 = critical success
+        {
+            Log($"{soul.Name} rides it out — Fortitude {detail} → {deg}. No lasting injury.");
+            ShowResult(deg, $"{soul.Name} rides out a terrible blow.", Verdigris);
+            return;
+        }
+        var (d6, injury) = Rules.RollInjury();
+        Log($"{soul.Name} — Fortitude {detail} → {deg}. Lasting Injury, d6 {d6}: {injury}.");
+        ShowResult("LASTING INJURY", $"{soul.Name}: {injury}", Blood);
+        RecordScar(soul, "Injury", injury);
+    }
+
+    /// <summary>Write a mark onto a soul that they do not get to put down — a Lasting Injury off
+    /// the d6, or an Affliction out of a Dread Check that went badly. Prefilled with what the app
+    /// knows and editable, because the books name the six injuries and deliberately leave the
+    /// Afflictions to the table: "the scars that stay" is a prompt, not a list.</summary>
+    void RecordScar(PartyMember soul, string kind, string suggested)
+    {
+        if (soul == null) return;
+        const int Pad = 16, CW = 420;
+        using var f = new Form
+        {
+            Text = kind == "Affliction" ? "A scar that stays" : "A Lasting Injury",
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
+        };
+        string blurb = kind == "Affliction"
+            ? $"{soul.Name} came out of that changed. An Affliction is not a condition — it does not "
+              + "wear off, and it is yours to name: a fear of the dark, a stammer, a thing they will "
+              + "not do any more. Keeper's Book, Ch. III."
+            : $"{soul.Name} took a terrible blow. A Lasting Injury does not heal with rest alone — it "
+              + "takes a Sawbones, time, and sometimes a graveyard. Player's Book, Ch. XI.";
+        var say = new Label
+        {
+            Left = Pad, Top = Pad, Width = CW, ForeColor = Ink,
+            Height = TextRenderer.MeasureText(blurb, f.Font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 6,
+            Text = blurb
+        };
+        var nameLbl = new Label { Left = Pad, Top = say.Bottom + 12, Width = 70, Text = "What:" };
+        var name = new ComboBox
+        {
+            Left = Pad + 74, Top = say.Bottom + 9, Width = CW - 74, DropDownStyle = ComboBoxStyle.DropDown
+        };
+        if (kind == "Injury") name.Items.AddRange(Rules.LastingInjuries.Cast<object>().ToArray());
+        else name.Items.AddRange(new object[]
+        { "Sleepless", "Afraid of the dark", "Will not go underground", "Talks to someone who is not there",
+          "Cannot abide the sound of it", "Flinches from the Marked", "Drinks now" });
+        name.Text = suggested;
+
+        var noteLbl = new Label { Left = Pad, Top = name.Bottom + 12, Width = 70, Text = "Note:" };
+        var note = new TextBox { Left = Pad + 74, Top = name.Bottom + 9, Width = CW - 74, Height = 54, Multiline = true };
+        var whenLbl = new Label { Left = Pad, Top = note.Bottom + 12, Width = 70, Text = "When:" };
+        var when = new TextBox { Left = Pad + 74, Top = note.Bottom + 9, Width = 180, Text = DateTime.Now.ToString("d MMM yyyy") };
+
+        var ok = new Button { Text = "Write it down", Left = Pad + CW - 226, Top = when.Bottom + 16, Width = 120, Height = 30, DialogResult = DialogResult.OK };
+        var skip = new Button { Text = "Let it go", Left = Pad + CW - 100, Top = ok.Top, Width = 100, Height = 30, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { say, nameLbl, name, noteLbl, note, whenLbl, when, ok, skip });
+        f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
+        f.AcceptButton = ok; f.CancelButton = skip;
+
+        if (f.ShowDialog(this) != DialogResult.OK) { Log($"{soul.Name} — the {kind.ToLowerInvariant()} was not written down."); return; }
+        string what = name.Text.Trim();
+        if (what.Length == 0) what = kind == "Affliction" ? "Something changed" : "A lasting hurt";
+        soul.Scars ??= new();
+        soul.Scars.Add(new Scar { Kind = kind, Name = what, Note = note.Text.Trim(), When = when.Text.Trim() });
+        CaptureUndo();
+        posseGrid?.Refresh();
+        Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}.");
     }
 
     /// <summary>Read a sign & spoor row: a Survival check at the Tier's DC, what the four degrees
@@ -1908,7 +1999,17 @@ public partial class MainForm
         // What it actually rolls, and what the table decides about the save. The old dialog knew a
         // working might force a save and said so in one line of prose; it never rolled the 3d6 the
         // Sign is FOR, so every damaging working was resolved on somebody's paper anyway.
-        var rollIt = new CheckBox { Left = Pad, Top = lasts.Bottom + 10, Width = CW, Height = 22, Visible = false };
+        var rollIt = new CheckBox { Left = Pad, Top = lasts.Bottom + 10, Width = CW - 96, Height = 22, Visible = false };
+        // At a dice-and-books table the Keeper rolls their own dice, so the app must ask for the
+        // number rather than make one up. Same bargain as the Strike and Dread dialogs (AskDie):
+        // the engine table gets its dice rolled for it, the dice table gets asked. Without this the
+        // one dialog that rolls Signs would have quietly ignored the mode the whole app runs on.
+        var rolled = new NumericUpDown
+        {
+            Left = Pad + CW - 88, Top = lasts.Bottom + 8, Width = 88, Minimum = 0, Maximum = 999, Value = 0,
+            Visible = false, TextAlign = HorizontalAlignment.Center
+        };
+        Tip.SetToolTip(rolled, "The total you rolled on the dice this working calls for");
         var saved = new ComboBox { Left = Pad + 104, Top = rollIt.Bottom + 4, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList, Visible = false };
         saved.Items.AddRange(new object[] { "they failed the save — it lands in full", "they made it — half", "they made it — none at all" });
         saved.SelectedIndex = 0;
@@ -2009,7 +2110,7 @@ public partial class MainForm
             rounds.Top = lasts.Top; roundsNote.Top = lasts.Top + 3;
 
             y = lasts.Bottom;
-            if (rollIt.Visible) { rollIt.Top = y + 10; y = rollIt.Bottom; }
+            if (rollIt.Visible) { rollIt.Top = y + 10; rolled.Top = y + 8; y = rollIt.Bottom; }
             if (saved.Visible) { saved.Top = y + 4; savedLbl.Top = saved.Top + 4; y = saved.Bottom; }
 
             spend.Top = y + 8;
@@ -2044,7 +2145,7 @@ public partial class MainForm
                 detail.Text = "Something the book does not print, or a power this app has not been told about. "
                             + "Name it, say who it lands on and how long it holds, and it rides on them like any other.";
                 backlash.Visible = false;
-                rollIt.Visible = saved.Visible = savedLbl.Visible = false;
+                rollIt.Visible = rolled.Visible = saved.Visible = savedLbl.Visible = false;
                 SyncTargets(null, worker);
                 SyncEnds(Rules.WorkEnds.UntilEnded, 0);
                 spend.Text = "Spend nothing — a hand-named effect has no printed cost";
@@ -2076,10 +2177,15 @@ public partial class MainForm
 
             rollIt.Visible = w.Resolves;
             rollIt.Checked = w.Resolves;
-            rollIt.Text = w.Heal.Length > 0 ? $"Roll {w.Heal} and mend them now"
-                        : w.Nerve.Length > 0 ? $"Roll {w.Nerve} Nerve and apply it now"
-                        : w.Ongoing.Length > 0 ? $"Roll the first {w.Ongoing} now — it repeats each round"
-                        : $"Roll {w.Damage} and apply it now";
+            string dice = w.Heal.Length > 0 ? w.Heal : w.Nerve.Length > 0 ? w.Nerve
+                        : w.Ongoing.Length > 0 ? w.Ongoing : w.Damage;
+            string verb = w.Heal.Length > 0 ? "and mend them now"
+                        : w.Nerve.Length > 0 ? "Nerve and apply it now"
+                        : w.Ongoing.Length > 0 ? "now — it repeats each round"
+                        : "and apply it now";
+            rollIt.Text = EngineRolls ? $"Roll {dice} {verb}" : $"Apply {dice} {verb} — you rolled:";
+            rolled.Visible = w.Resolves && !EngineRolls;
+            if (rolled.Visible && rolled.Value == 0) rolled.Value = Math.Clamp(Rules.RollExpr(dice).total, 1, 999);
             saved.Visible = savedLbl.Visible = w.Resolves && (w.SaveForHalf || w.HasSave);
 
             var soul = SoulOf(worker);
@@ -2102,7 +2208,7 @@ public partial class MainForm
 
         f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail, backlash,
                                             onLbl, onWhom, lastsLbl, lasts, rounds, roundsNote,
-                                            rollIt, savedLbl, saved, spend, go, close });
+                                            rollIt, rolled, savedLbl, saved, spend, go, close });
         f.AcceptButton = go; f.CancelButton = close;
 
         // Wired and driven only once the buttons exist, because Relayout places them and sizes the
@@ -2169,8 +2275,9 @@ public partial class MainForm
                 int band = saved.Visible ? saved.SelectedIndex : 0;   // 0 failed · 1 half · 2 none
                 string expr = w.Heal.Length > 0 ? w.Heal : w.Nerve.Length > 0 ? w.Nerve
                             : w.Ongoing.Length > 0 ? w.Ongoing : w.Damage;
-                int rolled = Rules.RollExpr(expr).total;
-                int applied = band == 2 ? 0 : band == 1 ? Math.Max(1, rolled / 2) : rolled;
+                // The engine table's dice are the app's; the dice table's are the Keeper's.
+                int total = EngineRolls ? Rules.RollExpr(expr).total : (int)rolled.Value;
+                int applied = band == 2 ? 0 : band == 1 ? Math.Max(1, total / 2) : total;
                 string saveWord = band == 2 ? " — saved, and it does nothing"
                                 : band == 1 ? $" — saved for half, {applied}" : "";
 
@@ -2178,13 +2285,13 @@ public partial class MainForm
                 {
                     foreach (var t in targets)
                     { t.Wound(applied, $"+{applied} mended"); if (SoulOf(t) is PartyMember mp) mp.BloodCur = t.BloodCur; }
-                    note = $"{expr} → {rolled} healed{saveWord}";
+                    note = $"{expr} → {total} healed{saveWord}";
                 }
                 else if (w.Nerve.Length > 0)
                 {
                     foreach (var t in targets)
                         if (SoulOf(t) is PartyMember np) np.NerveCur = Math.Min(np.NerveMax, np.NerveCur + applied);
-                    note = $"{expr} → {rolled} Nerve{saveWord}";
+                    note = $"{expr} → {total} Nerve{saveWord}";
                 }
                 else
                 {
@@ -2196,9 +2303,9 @@ public partial class MainForm
                         int back = Math.Max(1, applied / 2);
                         worker.Wound(back, $"+{back} drawn");
                         if (SoulOf(worker) is PartyMember wp) wp.BloodCur = worker.BloodCur;
-                        note = $"{expr} → {rolled}{saveWord}, {back} drawn back to {worker.Name}";
+                        note = $"{expr} → {total}{saveWord}, {back} drawn back to {worker.Name}";
                     }
-                    else note = $"{expr} → {rolled}{saveWord}";
+                    else note = $"{expr} → {total}{saveWord}";
                 }
             }
 
@@ -2610,17 +2717,17 @@ public partial class MainForm
         RTbl(r, new[] { 16, 66 }, new[] { "State", "The rule" },
             new[] { "0 Blood",      "Dying and Bleeding; unconscious" },
             new[] { "Death",        "Comes at −CON" },
-            new[] { "A terrible blow", "One hit for half maximum Blood or more, or any critical hit → Fortitude save DC 15 (higher for terrible weapons) or take a Lasting Injury" });
+            new[] { "A terrible blow", $"One hit for half maximum Blood or more, or any critical hit → Fortitude save DC {Rules.GrievousDc} (higher for terrible weapons) or take a Lasting Injury" });
 
         RH(r, "Lasting Injuries");
+        // Rendered from Rules.LastingInjuries, not typed here — the app rolls off that same list
+        // when a terrible blow lands, and a printed table that could disagree with the roller is
+        // the exact drift this project keeps closing.
         RTbl(r, new[] { 3, 60 }, new[] { "d6", "Injury" },
-            new[] { "1", "Bloody Gash" },
-            new[] { "2", "Cracked Ribs" },
-            new[] { "3", "Maimed Hand" },
-            new[] { "4", "Lamed Leg" },
-            new[] { "5", "Ruined Eye or Ear" },
-            new[] { "6", "Gut-Shot" });
+            Rules.LastingInjuries.Select((n, i) => new[] { (i + 1).ToString(), n }));
         RT(r, "Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard.");
+        RI(r, "The app keeps them: a terrible blow offers the save, and what it costs goes on the "
+             + "soul's Scars, beside any Affliction a Dread Check leaves. Posse tab, Scars column.");
 
         RH(r, "Nonlethal");
         RT(r, "Declare before the roll that you strike nonlethally; fists and a club do so by default; most other arms " +
