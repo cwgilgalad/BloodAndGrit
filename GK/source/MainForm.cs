@@ -125,6 +125,10 @@ public partial class MainForm : Form
         // browse-y generator buttons (Tab+Space already serves them).
         KeyDown += (s, e) =>
         {
+            // Esc ends the tour from the app side too, so it can be dismissed whichever of the
+            // two windows has focus. A walkthrough you can only close from itself is a trap.
+            if (e.KeyCode == Keys.Escape && tourWindow != null && !tourWindow.IsDisposed)
+            { tourWindow.Close(); e.Handled = true; return; }
             if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
             { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; return; }
             if (e.Control && e.KeyCode == Keys.D0 && tabs.TabPages.Count >= 10)
@@ -219,6 +223,12 @@ public partial class MainForm : Form
         suppressUndo = false;
         RefreshUndoRedoButtons();
         FormClosing += (s, e) => AutoSave();
+
+        // The welcome, once the window is really up. Shown here rather than in the constructor
+        // because the tour parks its callout beside actual controls and needs their real screen
+        // rectangles — before the form is shown there are none. Fires once per machine; the
+        // answer, either way, is remembered in prefs.json.
+        Shown += (s, e) => OfferTourOnFirstRun();
 
         // Complete the two-way Blood sync: a direct cell edit on the Posse grid must reach
         // the Tracker the same way the Damage/Heal buttons do — and the encounter budget
@@ -975,13 +985,19 @@ public partial class MainForm : Form
         StyleGrid(posseGrid);
         void Col(string prop, string head, int weight, bool ro = false)
             => posseGrid.Columns.Add(new DataGridViewTextBoxColumn
-            { DataPropertyName = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
+            { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
         Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Gender", "Gender", 70); Col("Level", "Lv", 40);
         Col("BloodCur", "Blood", 55); Col("BloodMax", "/Max", 50); Col("Defense", "Def", 45);
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
         Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
         Col("PoolCur", "Pool", 46); Col("PoolMax", "/Max", 45);
-        Col("Mark", "Mark", 48); Col("Taint", "Taint", 48); Col("Notes", "Notes", 140);
+        Col("Mark", "Mark", 48); Col("Taint", "Taint", 48);
+        // What they carry out of the bad nights. Read-only and derived: a Lasting Injury and an
+        // Affliction are added through the engine that produced them (a terrible blow, a Dread
+        // Check that went badly) or by hand from the right-click menu, so the column reports the
+        // ledger rather than being a second place to type into it. Hover for the whole of each.
+        Col("ScarLine", "Scars", 110, ro: true);
+        Col("Notes", "Notes", 130);
         // far-right Ledger button — one click to the soul's character sheet
         posseGrid.Columns.Add(new DataGridViewButtonColumn
         { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
@@ -1021,11 +1037,56 @@ public partial class MainForm : Form
 
         // Everything the bar above can do to one soul, on the soul itself. The row is selected by
         // GridMenu before this runs, so each line calls the very same handler the button does.
+        // The Scars cell is terse on purpose — a count and the names. The whole of each one, with
+        // how it happened and when, hangs off the hover rather than off a wider column.
+        posseGrid.CellToolTipTextNeeded += (s, e) =>
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= party.Count || e.ColumnIndex < 0) return;
+            if (posseGrid.Columns[e.ColumnIndex].Name != "ScarLine") return;
+            var p = party[e.RowIndex];
+            e.ToolTipText = p.Scars is { Count: > 0 }
+                ? string.Join("\n\n──────────\n\n", p.Scars.Select(sc => sc.Full))
+                : "Nothing lasting yet. A terrible blow or a Dread Check gone badly writes here, "
+                  + "and so does the right-click menu.";
+        };
+        posseGrid.CellFormatting += (s, e) =>
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= party.Count || e.ColumnIndex < 0) return;
+            if (posseGrid.Columns[e.ColumnIndex].Name == "ScarLine" && party[e.RowIndex].Scars is { Count: > 0 })
+                e.CellStyle.ForeColor = Blood;
+        };
+
         GridMenu<PartyMember>(posseGrid, (menu, p) =>
         {
             MIHead(menu, p.Name is { Length: > 0 } ? p.Name : "This soul");
             MI(menu, "Open the Ledger", () => ShowSoulCard(p));
             MI(menu, "Read and edit the note…", () => ExpandNotes(p));
+            MISep(menu);
+            // The two things the game says are permanent. Written here by hand for anything the
+            // engine did not produce — an old wound the character arrived with, a scar from a
+            // scene that was played out rather than rolled.
+            MI(menu, "Write down a Lasting Injury…", () => RecordScar(p, "Injury", ""));
+            MI(menu, "Write down an Affliction…", () => RecordScar(p, "Affliction", ""));
+            if (p.Scars is { Count: > 0 })
+            {
+                var scars = new ToolStripMenuItem($"What they carry ({p.Scars.Count})");
+                foreach (var sc in p.Scars.ToList())
+                {
+                    var mark = sc;   // captured per item, not per loop
+                    var item = new ToolStripMenuItem(Amp($"Healed / let go: {mark.Mark} {mark.Name}")) { ToolTipText = mark.Full };
+                    item.Click += (s, e) =>
+                    {
+                        // A Lasting Injury CAN be got rid of — "a Sawbones, time, and sometimes a
+                        // graveyard" — so there has to be a way to strike one off. Asked about
+                        // first, because the whole point of the ledger is that it does not slip.
+                        if (!Confirm($"Strike {mark.Name} off {p.Name}'s ledger? It is meant to last.")) return;
+                        p.Scars.Remove(mark); CaptureUndo(); posseGrid?.Refresh();
+                        Log($"{p.Name} is clear of it — {mark.Name}.");
+                    };
+                    scars.DropDownItems.Add(item);
+                }
+                menu.Items.Add(scars);
+            }
             MISep(menu);
             MI(menu, $"Damage {adjAmount.Value}", () => AdjustPC(-1));
             MI(menu, $"Heal {adjAmount.Value}", () => AdjustPC(+1));
@@ -1131,10 +1192,18 @@ public partial class MainForm : Form
 
         bar.Controls.Add(Btn("New session", (s, e) =>
         {
-            if (!Confirm("Start a new session? Refills every soul's Nerve and resets Grit to 3.")) return;
-            foreach (var p in party) { p.NerveCur = p.NerveMax; p.Grit = 3; }
-            Log("New session — Nerve refilled and Grit reset to 3 for the whole posse.");
-        }, 100, "Refill Nerve and reset Grit for everyone"));
+            if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, and refreshes the "
+                       + "faith pool for every soul. Blood is not healed — that is what Rest is for.")) return;
+            // Grit is "three per soul, refreshed each session" (Ch. XIII) and Nerve comes back with
+            // safety. The faith pool "refreshes with the dawn" (Ch. VI), and a new session opens on
+            // a new day — leaving it out meant a Padre sat down to every session with an empty pool
+            // while the Gunhand beside them got full Nerve, and the only way to fix it was a long
+            // rest they had not earned. Blood is deliberately untouched: wounds carry.
+            foreach (var p in party) { p.NerveCur = p.NerveMax; p.Grit = 3; p.PoolCur = p.PoolMax; }
+            int faithful = party.Count(p => p.PoolMax > 0);
+            Log("New session — Nerve refilled and Grit reset to 3 for the whole posse"
+                + (faithful > 0 ? $", and the faith pool refreshed for {faithful} of them." : "."));
+        }, 100, "Refill Nerve, reset Grit, and refresh the faith pool for everyone"));
         bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest — restore Blood and Nerve to full",
             ("Whole posse — heal to full", (s, e) => RestPosse()),
             ("Selected soul — heal to full", (s, e) => RestSoul(SelectedPC()))));
@@ -1225,7 +1294,12 @@ public partial class MainForm : Form
     {
         if (p == null) { Nope("Select a soul first."); return; }
         int dc = (int)dreadDc.Value, tier = (int)dreadTier.Value;
-        int die = Rules.Rng.Next(1, 21);
+        // The same rule, resolved the same way, whichever tab you are standing on. The Tracker's
+        // Dread dialog has always asked a dice-and-books table for the die it rolled; this one
+        // rolled its own regardless, so a Keeper running from the physical books got the engine's
+        // d20 here and their own d20 two tabs over — for the identical check.
+        int die = AskDie($"{p.Name}'s Will save against Dread DC {dc} — what did the d20 come up?")
+                  ?? Rules.Rng.Next(1, 21);
         var (idx, deg, detail) = Rules.FourDegrees(die, p.Will, dc);
         if (idx <= 1)                                       // 0 = crit fail, 1 = fail
         {
@@ -1291,11 +1365,17 @@ public partial class MainForm : Form
         if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
         if (who[0] == null) { Nope("Select a soul first."); return; }
 
+        // A dice-and-books table rolls its own recovery too. Asked ONCE for the whole posse rather
+        // than once a soul: "a week of true peace" is one remedy applied to everybody, and six
+        // dialogs in a row for one line of the book is how a Keeper learns to use the other mode.
+        int? forced = expr == null ? null
+            : AskDie($"The {expr} for {(wholePosse ? "the posse" : who[0].Name)} {doing} — what did it come up?");
+
         foreach (var p in who)
         {
             int before = p.NerveCur;
             if (expr == null) p.NerveCur = p.NerveMax;
-            else p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + Rules.RollExpr(expr).total);
+            else p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (forced ?? Rules.RollExpr(expr).total));
             int back = p.NerveCur - before;
             Log(back == 0
                 ? $"{p.Name} {doing} — Nerve already steady at {p.NerveCur}/{p.NerveMax}."

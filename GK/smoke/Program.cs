@@ -615,6 +615,48 @@ foreach (var (table, floor) in new[]
     T("working: junk text yields a reading rather than a throw", workingSurvivesJunk);
 }
 
+// ---- the marks that do not wash off (Ch. XI · Keeper's Book Ch. III) ----
+// Printed on the Keeper's screen since v1.4 and implemented nowhere until v1.29.0.
+{
+    T("grievous: half maximum Blood in one blow is a terrible blow", Rules.IsGrievous(10, 20, false));
+    T("grievous: and so is more than half", Rules.IsGrievous(14, 20, false));
+    T("grievous: a scratch is not", !Rules.IsGrievous(9, 20, false));
+    T("grievous: but ANY critical is, however small", Rules.IsGrievous(1, 99, true));
+    T("grievous: no damage is never a terrible blow", !Rules.IsGrievous(0, 20, true));
+    T("grievous: a target with no Blood maximum cannot be measured against one",
+        !Rules.IsGrievous(5, 0, false));
+    T("grievous: the DC is the book's fifteen", Rules.GrievousDc == 15);
+
+    T("injury: the d6 table has six entries", Rules.LastingInjuries.Length == 6);
+    T("injury: in the book's order", Rules.LastingInjuries[0] == "Bloody Gash" && Rules.LastingInjuries[5] == "Gut-Shot");
+    bool injuryInRange = true, sawGash = false, sawGut = false;
+    for (int i = 0; i < 600; i++)
+    {
+        var (d, name) = Rules.RollInjury();
+        if (d < 1 || d > 6 || Rules.LastingInjuries[d - 1] != name) injuryInRange = false;
+        if (name == "Bloody Gash") sawGash = true;
+        if (name == "Gut-Shot") sawGut = true;
+    }
+    T("injury: a roll is always a real row of the table", injuryInRange);
+    T("injury: and the whole table can come up", sawGash && sawGut);
+
+    // A scar is the one thing on a soul that has to survive the night, so it has to survive the file.
+    var scarred = new PartyMember { Name = "Anni Halvorsen", BloodMax = 12, BloodCur = 12 };
+    scarred.Scars.Add(new Scar { Kind = "Injury", Name = "Gut-Shot", Note = "the mine, at the ladder", When = "3 Aug" });
+    scarred.Scars.Add(new Scar { Kind = "Affliction", Name = "Will not go underground" });
+    T("scars: the grid line names them all", scarred.ScarLine == "2: Gut-Shot, Will not go underground");
+    T("scars: an unscarred soul shows nothing", new PartyMember().ScarLine.Length == 0);
+    T("scars: an injury and an affliction wear different marks",
+        scarred.Scars[0].Mark == "✚" && scarred.Scars[1].Mark == "☾");
+    T("scars: the whole of one reads back", scarred.Scars[0].Full.Contains("at the ladder"));
+    var reloaded = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
+        System.Text.Json.JsonSerializer.Serialize(scarred));
+    T("scars: they survive save and load", reloaded.Scars.Count == 2
+        && reloaded.Scars[0].Name == "Gut-Shot" && reloaded.Scars[1].Kind == "Affliction");
+    var older = System.Text.Json.JsonSerializer.Deserialize<PartyMember>("{\"Name\":\"Ruth\"}");
+    T("scars: a soul saved before them loads with none, not a null", older.Scars is { Count: 0 });
+}
+
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)
 {

@@ -5,11 +5,43 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10).
 
-**App version 1.24.1.**
+---
+
+## System requirements
+
+**Minimum**
+
+| | |
+|---|---|
+| **System** | Windows 10 (version 1607) or Windows 11, **64-bit** |
+| **Processor** | Any x64 processor |
+| **Memory** | 2 GB RAM |
+| **Disk** | 400 MB free — the app is ~155 MB and unpacks its own libraries into your `%TEMP%` folder the first time each new build runs |
+| **Display** | 1280 × 720. The window will not shrink below 1040 × 640 |
+| **Input** | Keyboard and mouse |
+| **Other** | None. No .NET install, no internet connection, no account, no administrator rights, nothing to configure |
+
+**Recommended**
+
+| | |
+|---|---|
+| **Memory** | 4 GB RAM |
+| **Display** | 1920 × 1080 — the Tracker and the Ledger both breathe better with the room |
+| **Printing** | Any printer, for the PDFs it writes (character sheets and trail maps). Not required to play |
+
+**One thing that matters:** put the folder somewhere you can **write** to — your Desktop,
+your Documents, a USB stick. GritKeeper saves the table beside its own exe (`session.json`,
+`prefs.json`), so a read-only location like `C:\Program Files` will not hold your game.
+
+**What it is not.** GritKeeper is a Windows desktop program and only that. It does not run
+on macOS, Linux, a phone or a tablet; there is no browser version; and it does not connect
+players over a network — one machine at the table, usually the Keeper's. (The three books
+are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
+the game.)
 
 ---
 
-## Running it (Windows laptop)
+## Running it
 
 **No installation required.** This build is fully self-contained — the .NET runtime is
 bundled inside the app folder.
@@ -181,7 +213,7 @@ proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
 
 Every sheet is validated against `Data/chargen.json` before it's shown. **→ Posse**
 seats the soul at the table — the full sheet rides along into `session.json`, so their
-Ledger window keeps everything forever. **Copy sheet** takes the text anywhere, and
+Ledger window still has all of it next session. **Copy sheet** takes the text anywhere, and
 *(v1.5)* **Save PDF…** writes a printable Letter sheet. *(v1.6)* The given-name pools
 (and the vice/lost/seen/moving flavor tables) nearly doubled, so generated and
 wizard-built souls repeat far less across a long campaign.

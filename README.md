@@ -59,8 +59,8 @@ the math, keep every character's ledger — so the only thing anyone at the tabl
 the story. Or ignore the app entirely and run it old-school with paper and a fistful of dice.
 Your table, your call (see the three **modes of play** under the app, below).
 
-*(The three books are self-contained HTML and read well on anything, phone included. GritKeeper
-is a Windows desktop application — one machine at the table, usually the Keeper's.)*
+*(The three books are PDFs — they open on anything, phone included. GritKeeper is a Windows
+desktop application: one machine at the table, usually the Keeper's.)*
 
 ## The books
 
@@ -101,6 +101,27 @@ beside itself and reloads it on launch.
 The app's creature and table data is machine-extracted from the rendered Bestiary, so what it
 tells you is word-for-word what the book says — and every creature fights with **its own** claws,
 bite, and special tricks, adjudicated straight from its stat block, not with the party's guns.
+
+### What it needs to run
+
+| | Minimum | Recommended |
+|---|---|---|
+| **System** | Windows 10 (version 1607) or Windows 11, **64-bit** | Windows 11 |
+| **Processor** | Any x64 processor | — |
+| **Memory** | 2 GB RAM | 4 GB RAM |
+| **Disk** | 400 MB free (the app is ~155 MB and unpacks its own libraries to `%TEMP%` on each new build's first run) | — |
+| **Display** | 1280 × 720 (the window will not shrink below 1040 × 640) | 1920 × 1080 |
+| **Input** | Keyboard and mouse | — |
+| **Other** | Nothing. No .NET install, no internet, no account, no administrator rights | A printer, only if you want the character-sheet and trail-map PDFs on paper |
+
+**Put it somewhere you can write to** — Desktop, Documents, a USB stick. GritKeeper saves the
+table beside its own exe (`session.json`, `prefs.json`), so a read-only location like
+`C:\Program Files` will not hold your game.
+
+**What it is not.** A Windows desktop program and only that: no macOS, no Linux, no phone or
+tablet, no browser version, and no network play — one machine at the table, usually the
+Keeper's. The books are PDFs and open on anything; it's the app that's Windows-only, not the
+game.
 
 **Three ways to sit down.** GritKeeper asks how you're running the table the moment it opens, and
 you can switch any time from the **Table** menu:
