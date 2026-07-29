@@ -54,10 +54,13 @@ strange charm the dead prospector was clutching — power for a step on the Mark
 every session, is the game.
 
 **You do not need to be a numbers person, or even own dice.** Blood & Grit ships with a companion
-app, **GritKeeper**, that can run the whole rules engine for you — roll the dice, do the math,
-keep every character's ledger — so a table can play on a back porch or a phone with nothing but
+app for Windows, **GritKeeper**, that can run the whole rules engine for you — roll the dice, do
+the math, keep every character's ledger — so the only thing anyone at the table has to bring is
 the story. Or ignore the app entirely and run it old-school with paper and a fistful of dice.
 Your table, your call (see the three **modes of play** under the app, below).
+
+*(The three books are self-contained HTML and read well on anything, phone included. GritKeeper
+is a Windows desktop application — one machine at the table, usually the Keeper's.)*
 
 ## The books
 
@@ -108,8 +111,8 @@ you can switch any time from the **Table** menu:
   is your referee and ledger. Tell it the die you rolled and it reads the degrees, the penalties,
   the damage, and the DR, and keeps everyone's Blood and Nerve straight.
 - **Keeper — on the engine** — no dice on the table, no sheets to keep. GritKeeper rolls
-  everything — to-hit, damage, Dread — so the whole game can be played anywhere, on a phone or a
-  porch, with nobody tracking a thing by hand.
+  everything — to-hit, damage, Dread — so the whole game runs with nobody tracking a thing by
+  hand.
 
 ---
 

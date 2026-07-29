@@ -298,17 +298,20 @@ public class Combatant : INotifyPropertyChanged
         On(nameof(WorkedChips));
     }
 
-    /// <summary>A round has passed: everything counting down loses one, and anything that reaches
-    /// zero comes off. Effects set to last indefinitely (<see cref="WorkedEffect.RoundsLeft"/> below
-    /// zero) are untouched — "for a scene" and "until you end it" are the book's most common
-    /// durations, and a clock that silently expired them would be worse than no clock.</summary>
+    /// <summary>A round has passed: everything counted in rounds loses one, and anything that
+    /// reaches zero comes off. Only workings whose duration IS a round count are touched — "for a
+    /// scene", "until dawn" and "until it is doctored" are the book's commonest durations and a
+    /// combat round is the wrong unit for all three, so a clock that silently expired them would be
+    /// worse than no clock. The <see cref="WorkedEffect.Ends"/> test is belt to RoundsLeft's braces:
+    /// the two must agree, and this is the place where a disagreement would cost a Keeper an effect.
+    /// </summary>
     public List<WorkedEffect> TickWorked()
     {
         var done = new List<WorkedEffect>();
         if (Worked == null) return done;
         foreach (var w in Worked.ToList())
         {
-            if (w.RoundsLeft < 0) continue;
+            if (w.RoundsLeft < 0 || w.Ends != Rules.WorkEnds.Rounds) continue;
             w.RoundsLeft--;
             if (w.RoundsLeft <= 0) { done.Add(w); Worked.Remove(w); }
         }
@@ -333,23 +336,91 @@ public class WorkedEffect
     public string Cost { get; set; } = "";
     /// <summary>What it does, in the book's own words.</summary>
     public string Effect { get; set; } = "";
-    /// <summary>Rounds remaining, or −1 for "until it is ended" — a scene, an hour, a day.</summary>
+    /// <summary>Rounds remaining, or −1 for anything the tracker does not count down. Note that −1
+    /// is NOT the same as "the Keeper ends it by hand": a scene, an hour and until-dawn all ride at
+    /// −1 because a combat round is the wrong unit for them, and <see cref="Ends"/> is what says
+    /// which of them this one actually is. Conflating the two is exactly what made every long
+    /// working read as "until it is ended by hand" on the chip.</summary>
     public int RoundsLeft { get; set; } = -1;
     /// <summary>The round it was worked on, so the log and the tooltip can say when.</summary>
     public int SinceRound { get; set; } = 1;
 
-    [JsonIgnore] public string Mark => Kind == "Miracle" ? "✝" : Kind == "Power" ? "◈" : "✦";
-    [JsonIgnore] public string Duration => RoundsLeft < 0 ? "—" : $"{RoundsLeft} rd" + (RoundsLeft == 1 ? "" : "s");
-    [JsonIgnore] public string Chip => $"{Mark} {Name}" + (RoundsLeft < 0 ? "" : $" ({RoundsLeft})");
+    /// <summary>Who it landed on, as the reader worked it out from the printed text.</summary>
+    public Rules.WorkShape Shape { get; set; } = Rules.WorkShape.Unclear;
+    /// <summary>The radius the book printed, when it printed one.</summary>
+    public int AreaFeet { get; set; }
+    /// <summary>What actually ends it — the fact <see cref="RoundsLeft"/> cannot carry.</summary>
+    public Rules.WorkEnds Ends { get; set; } = Rules.WorkEnds.UntilEnded;
+    /// <summary>What working it costs the worker when it goes wrong. Signs all carry one, Miracles
+    /// none. It used to sit buried in the middle of <see cref="Effect"/>, which is where a Keeper
+    /// looks last and needs it first.</summary>
+    public string Backlash { get; set; } = "";
+    /// <summary>What happened when it was worked — the dice that were actually rolled and who they
+    /// landed on ("14 damage, saved for half → 7"). The book says what a working does; this says
+    /// what it did, which is the half the table argues about an hour later.</summary>
+    public string Note { get; set; } = "";
 
-    /// <summary>The whole of it, for a tooltip or a menu: cause, cost, effect, and when it ends.</summary>
+    [JsonIgnore] public string Mark => Kind == "Miracle" ? "✝" : Kind == "Power" ? "◈" : "✦";
+
+    /// <summary>How long is left, in the unit the book used rather than in rounds it never mentioned.
+    /// </summary>
+    [JsonIgnore]
+    public string Duration => Ends switch
+    {
+        Rules.WorkEnds.Rounds when RoundsLeft > 0 => $"{RoundsLeft} rd" + (RoundsLeft == 1 ? "" : "s"),
+        Rules.WorkEnds.Rounds     => "spent",
+        Rules.WorkEnds.NextTurn   => "to their next turn",
+        Rules.WorkEnds.Scene      => "the scene",
+        Rules.WorkEnds.Hour       => "an hour",
+        Rules.WorkEnds.Day        => "a day",
+        Rules.WorkEnds.UntilDawn  => "until dawn",
+        Rules.WorkEnds.Instant    => "done",
+        _                         => "until ended",
+    };
+
+    /// <summary>The terse tag in the grid's Worked column. A counted working shows its count; the
+    /// rest show the word the book used, because "(scene)" and "(dawn)" tell a Keeper something and
+    /// a bare name tells them nothing about when to stop applying it.</summary>
+    [JsonIgnore]
+    public string Chip => $"{Mark} {Name}" + Ends switch
+    {
+        Rules.WorkEnds.Rounds     => $" ({RoundsLeft})",
+        Rules.WorkEnds.NextTurn   => " (turn)",
+        Rules.WorkEnds.Scene      => " (scene)",
+        Rules.WorkEnds.Hour       => " (hour)",
+        Rules.WorkEnds.Day        => " (day)",
+        Rules.WorkEnds.UntilDawn  => " (dawn)",
+        _                         => "",
+    };
+
+    /// <summary>The whole of it, for a tooltip or a menu: what it is, who caused it, who it landed
+    /// on, what it cost, what it did, when it stops — and, for a Sign, what it costs the worker
+    /// when it turns on them.</summary>
     [JsonIgnore]
     public string Full =>
         $"{Mark} {Name} — {Kind}" + (Rank > 0 ? $", Rank {Rank}" : "") + "\n"
         + $"Worked by {(string.IsNullOrWhiteSpace(Source) ? "someone" : Source)}, round {SinceRound}\n"
+        + $"Lands: {ShapeLine}\n"
         + (string.IsNullOrWhiteSpace(Cost) ? "" : $"Cost: {Cost}\n")
-        + $"Ends: {(RoundsLeft < 0 ? "when it is ended by hand" : $"in {Duration}")}\n\n"
-        + Effect;
+        + $"Ends: {Duration}\n"
+        + (string.IsNullOrWhiteSpace(Note) ? "" : $"Rolled: {Note}\n")
+        + "\n" + Effect
+        + (string.IsNullOrWhiteSpace(Backlash) ? "" : $"\n\nBacklash: {Backlash}");
+
+    /// <summary>Who it landed on, in words. Mirrors <see cref="Rules.Working.ShapeLine"/>; kept here
+    /// too because a saved session carries the shape and not the working it was read from.</summary>
+    [JsonIgnore]
+    public string ShapeLine => Shape switch
+    {
+        Rules.WorkShape.Self        => "the worker",
+        Rules.WorkShape.OneCreature => "one creature",
+        Rules.WorkShape.Ally        => "one willing soul",
+        Rules.WorkShape.Area        => AreaFeet > 0 ? $"everything within {AreaFeet} feet" : "everything nearby",
+        Rules.WorkShape.Place       => "a place, a thing, or nobody at all",
+        Rules.WorkShape.Counter     => "another working",
+        Rules.WorkShape.Trait       => "nothing — this is what it IS",
+        _                           => "whoever the Keeper said",
+    };
 }
 
 public class CampaignClock : INotifyPropertyChanged
@@ -806,6 +877,278 @@ public static class Rules
             }
         }
         return new PowerCost(time, nerve, faith, blood, mark, orBlood, save);
+    }
+
+    // ---- what a working actually DOES (Ch. XIII, Ch. VI, and every creature's special line) ----
+
+    /// <summary>Who or what a working lands on. The tracker asked one question — "on whom?" — and
+    /// offered one combatant or the whole field, which fits perhaps half of the eighty workings in
+    /// the two chapters. Witch-Sight is worked on yourself. The Tally is a question put to the dark
+    /// and lands on nobody. Ward of the Threshold is chalked across a doorway. Salt &amp; Iron
+    /// catches everything within ten feet, friends included, which is not the same as everyone on
+    /// the field. Naming the shapes lets the app stop pretending they are one shape.</summary>
+    public enum WorkShape
+    {
+        /// <summary>The worker, and only the worker.</summary>
+        Self,
+        /// <summary>One creature the worker picks out.</summary>
+        OneCreature,
+        /// <summary>One willing soul — a companion held, healed, or steadied.</summary>
+        Ally,
+        /// <summary>Everything inside a radius, which the book prints in feet and does not sort
+        /// into friend and foe.</summary>
+        Area,
+        /// <summary>A doorway, a wall, a camp, a journey, a question put to the dark — something
+        /// that is not a combatant at all.</summary>
+        Place,
+        /// <summary>Another working, not a person: Unmake the Working, and anything like it.</summary>
+        Counter,
+        /// <summary>Not worked on anybody — something a creature simply IS. Every one of the 150
+        /// Bestiary <c>special</c> lines is written this way ("Does not stop. Ignores pain, fear,
+        /// and being bloodied"), and not one of them carries a die or a save. The dialog used to
+        /// ask who a creature's nature was being worked on and how many rounds it would last, which
+        /// are both the wrong question about a thing that is simply true of it.</summary>
+        Trait,
+        /// <summary>The printed text does not say plainly enough to guess. A first-class answer,
+        /// deliberately — a wrong shape confidently asserted is worse at the table than an honest
+        /// "you tell me", because the Keeper stops reading and trusts it.</summary>
+        Unclear,
+    }
+
+    /// <summary>When a working stops. Rounds are the only one the old model could hold, so a Sign
+    /// that lasts a scene and a Sign that lasts until somebody pulls the nail out both showed up on
+    /// the chip as "until it is ended by hand" — true of neither.</summary>
+    public enum WorkEnds
+    {
+        /// <summary>It happens and it is over: damage dealt, a wound closed, a question answered.</summary>
+        Instant,
+        /// <summary>A counted number of rounds. The tracker ticks these.</summary>
+        Rounds,
+        /// <summary>Until the worker's next turn.</summary>
+        NextTurn,
+        /// <summary>For the scene — the book's most common duration, and not a round count.</summary>
+        Scene,
+        /// <summary>An hour.</summary>
+        Hour,
+        /// <summary>A day.</summary>
+        Day,
+        /// <summary>Until dawn. A ward, a vigil, a soul held at the edge.</summary>
+        UntilDawn,
+        /// <summary>Until something is done about it — the nail pulled, the wound doctored, the
+        /// promise kept. Nothing the app can count, and it should not pretend to.</summary>
+        UntilEnded,
+    }
+
+    /// <summary>One working, read out of the words the book prints. Every facet here is derived from
+    /// <see cref="Text"/> rather than stored beside it, which is the same bargain
+    /// <see cref="WeaponTraits"/> and <see cref="CreatureAttack"/> already strike: the printed line
+    /// stays the single source of truth, the data files do not grow a parallel schema to fall out of
+    /// step with, and a re-transcription of the chapter cannot silently disagree with the app.
+    ///
+    /// The parse INFORMS; it never restricts. Everything it works out is a default the Keeper can
+    /// overrule at the dialog, because eighty hand-written English sentences will not all yield to a
+    /// reader and the ones that do not are exactly the interesting ones.</summary>
+    public record Working(
+        string Name, string Kind, int Rank, string Cost, string Text,
+        WorkShape Shape, int AreaFeet,
+        WorkEnds Ends, int Rounds,
+        string Damage, string Ongoing, string Heal, string Nerve,
+        bool SaveForHalf, string Save,
+        bool DrainsToWorker,
+        string Effect, string Backlash)
+    {
+        /// <summary>Does anything here need dice rolled and applied to somebody?</summary>
+        public bool Resolves => Damage.Length > 0 || Heal.Length > 0 || Nerve.Length > 0;
+
+        /// <summary>Is there a Backlash clause printed at all? Every Sign has one; no Miracle does.
+        /// </summary>
+        public bool HasBacklash => Backlash.Length > 0;
+
+        /// <summary>Does the Backlash actually cost anything? Salt &amp; Iron's reads "None. This is
+        /// the kindest Sign in the book, and the weakest" — words a Keeper should still get, and a
+        /// warning the app should not raise. The two questions are not the same one, so the text is
+        /// kept whole and the warning is asked for separately.</summary>
+        public bool BacklashBites => Backlash.Length > 0
+            && !Backlash.StartsWith("None", StringComparison.OrdinalIgnoreCase);
+
+        public bool HasSave => Save.Length > 0;
+
+        /// <summary>Who it lands on, in the words a Keeper would use.</summary>
+        public string ShapeLine => Shape switch
+        {
+            WorkShape.Self        => "on the worker",
+            WorkShape.OneCreature => "on one creature",
+            WorkShape.Ally        => "on one willing soul",
+            WorkShape.Area        => AreaFeet > 0 ? $"on everything within {AreaFeet} feet" : "on everything nearby",
+            WorkShape.Place       => "on a place, a thing, or nobody at all",
+            WorkShape.Counter     => "on another working",
+            WorkShape.Trait       => "nothing to target — this is what it IS",
+            _                     => "the book does not say plainly — your call",
+        };
+
+        /// <summary>Something a creature simply has, rather than something worked on anybody.</summary>
+        public bool IsTrait => Shape == WorkShape.Trait;
+
+        /// <summary>How long, in the words the book used.</summary>
+        public string EndsLine => Ends switch
+        {
+            WorkEnds.Instant    => "at once — nothing to carry",
+            WorkEnds.Rounds     => $"{Rounds} round" + (Rounds == 1 ? "" : "s"),
+            WorkEnds.NextTurn   => "until the worker's next turn",
+            WorkEnds.Scene      => "for the scene",
+            WorkEnds.Hour       => "for an hour",
+            WorkEnds.Day        => "for a day",
+            WorkEnds.UntilDawn  => "until dawn",
+            _                   => "until something ends it",
+        };
+    }
+
+    static readonly Dictionary<string, int> SpelledFeet = new(StringComparer.OrdinalIgnoreCase)
+    { ["five"]=5, ["ten"]=10, ["fifteen"]=15, ["twenty"]=20, ["thirty"]=30, ["forty"]=40, ["fifty"]=50, ["sixty"]=60, ["hundred"]=100 };
+
+    static string Dice(string text, params string[] patterns)
+    {
+        foreach (var p in patterns)
+        {
+            var m = System.Text.RegularExpressions.Regex.Match(text, p,
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (m.Success) return m.Groups[1].Value.ToLowerInvariant();
+        }
+        return "";
+    }
+
+    static bool Has(string text, string pattern) =>
+        System.Text.RegularExpressions.Regex.IsMatch(text, pattern,
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>Read a printed working into its parts. <paramref name="workerLevel"/> resolves the
+    /// durations the book scales — "a round per two levels" is a real number once you know whose
+    /// turn it is, and a chip that said "a round per two levels" would be making the Keeper do the
+    /// arithmetic the app exists to do.</summary>
+    public static Working ReadWorking(string name, string kind, int rank, string cost, string text, int workerLevel = 1)
+    {
+        string all = (text ?? "").Trim();
+
+        // Every one of the forty Signs ends on a "Backlash:" clause and not one of the forty
+        // Miracles does — which is the two chapters agreeing with the Reference deck's own line
+        // that faith does not bite back. It was being buried mid-paragraph in a blob of effect
+        // text; it is the half a Keeper needs when the working goes wrong, so it comes out whole.
+        string effect = all, backlash = "";
+        int bl = all.IndexOf("Backlash:", StringComparison.OrdinalIgnoreCase);
+        if (bl >= 0)
+        {
+            effect = all.Substring(0, bl).Trim();
+            backlash = all.Substring(bl + "Backlash:".Length).Trim();
+        }
+
+        var pc = ParseCost(cost);
+
+        // --- the radius, where the book prints one ---
+        int feet = 0;
+        var ft = System.Text.RegularExpressions.Regex.Match(effect, @"within\s+(\w+)\s+feet",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (ft.Success)
+        {
+            string n = ft.Groups[1].Value;
+            if (!int.TryParse(n, out feet) && SpelledFeet.TryGetValue(n, out int spelled)) feet = spelled;
+        }
+
+        // --- dice, in the order that keeps them from stealing each other ---
+        // Nerve first: "restore 1d6 of their Nerve" and "buy 1d6 Nerve" both read as damage to a
+        // pattern that only looks for a number and a die. Healing next, for the same reason —
+        // "heal a touched ally 2d6" is not 2d6 taken off anybody, and a mending Miracle scored as
+        // damage is the worst single thing this reader could get wrong.
+        string nerve = Dice(effect, @"(\d+d\d+)\s+(?:of\s+(?:their|your|his|her)\s+)?Nerve", @"Nerve\D{0,12}(\d+d\d+)");
+        string heal  = Dice(effect,
+            @"(?:heal|treat|mend|knit|poultice)\w*\s+[^.]{0,48}?(\d+d\d+)",
+            @"wake\s+with\s+(\d+d\d+)\s+Blood",
+            @"(\d+d\d+)\s+Blood\s+back");
+        string ongoing = Dice(effect, @"(\d+d\d+)\s+each\s+round");
+        // Damage only competes for a die once healing and Nerve have taken theirs. Note the verb
+        // list has no bare "for": "Treat a wound for 1d8" is the Green Hand mending somebody, and
+        // a lone "for" scored it as a die of damage AND a die of healing at the same time.
+        string damage = "";
+        if (ongoing.Length == 0 && heal.Length == 0 && nerve.Length == 0)
+            damage = Dice(effect, @"(?:takes?|deals?|dealing|suffers?|strikes?\s+for)\s+(?:an\s+extra\s+|an\s+additional\s+|a\s+further\s+)?(\d+d\d+)",
+                                  @"extra\s+(\d+d\d+)");
+        // A die that is none of the above is still a die the Keeper will want rolled.
+        if (damage.Length == 0 && ongoing.Length == 0 && heal.Length == 0 && nerve.Length == 0)
+            damage = Dice(effect, @"(\d+d\d+)");
+
+        bool half = Has(effect, @"saves?\s+for\s+half|save\s+for\s+half");
+        bool drains = Has(effect, @"gives?\s+half\s+of\s+it\s+to\s+you|and\s+gives\s+half|takes?\s+.{0,24}\s+from\s+.{0,30}\s+and\s+gives");
+
+        // --- how long ---
+        // Ordered most specific first: "a round per two levels" has to beat the bare "round", and
+        // "until dawn" has to beat the general "until".
+        WorkEnds ends; int rounds = 0;
+        if (Has(effect, @"rounds?\s+per\s+two\s+levels"))
+        { ends = WorkEnds.Rounds; rounds = Math.Max(1, workerLevel / 2); }
+        else if (Has(effect, @"until\s+(?:your|their|the worker's)\s+next\s+turn")) ends = WorkEnds.NextTurn;
+        else if (Has(effect, @"until\s+(?:dawn|sunrise|morning)")) ends = WorkEnds.UntilDawn;
+        else if (Has(effect, @"for\s+one\s+night|for\s+a\s+night|that\s+night\b")) ends = WorkEnds.UntilDawn;
+        // "until it is doctored" beats "this scene" on purpose. Rot the Wound reads "A wound you
+        // dealt this scene will not close … until it is doctored, bound, or dead" — the scene is
+        // when the wound was made, not when the Sign lets go, and taking the first phrase that
+        // matched put it off the field a scene early.
+        else if (Has(effect, @"until\s+it\s+is|until\s+the\s+\w+\s+is|until\s+they|cannot\s+be\s+taken\s+back")) ends = WorkEnds.UntilEnded;
+        else if (Has(effect, @"for\s+(?:a|the|this)\s+scene|for\s+the\s+scene|this\s+scene|the\s+scene\s+ends")) ends = WorkEnds.Scene;
+        else if (Has(effect, @"for\s+(?:an|one)\s+hour|lasting\s+an\s+hour|lasts?\s+an\s+hour")) ends = WorkEnds.Hour;
+        else if (Has(effect, @"for\s+the\s+next\s+day|for\s+a\s+(?:full\s+)?day")) ends = WorkEnds.Day;
+        else
+        {
+            var rd = System.Text.RegularExpressions.Regex.Match(effect, @"(?:for\s+)?(?:one|two|three|\d+)\s+rounds?",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (rd.Success)
+            {
+                ends = WorkEnds.Rounds;
+                rounds = rd.Value.Contains("one", StringComparison.OrdinalIgnoreCase) ? 1
+                       : rd.Value.Contains("two", StringComparison.OrdinalIgnoreCase) ? 2
+                       : rd.Value.Contains("three", StringComparison.OrdinalIgnoreCase) ? 3
+                       : int.TryParse(System.Text.RegularExpressions.Regex.Match(rd.Value, @"\d+").Value, out int r) ? r : 1;
+            }
+            // Nothing said how long, so: dice and no duration is a thing that happens and is over.
+            else ends = (damage.Length > 0 || heal.Length > 0 || nerve.Length > 0) && ongoing.Length == 0
+                        ? WorkEnds.Instant : WorkEnds.UntilEnded;
+        }
+
+        // --- who it lands on ---
+        // Strongest signals first, and Unclear rather than a guess when none of them fire. A save
+        // in the printed cost is the surest sign there IS somebody else in it: nothing saves
+        // against its own worker.
+        WorkShape shape;
+        // A creature's own line comes off its stat block, and the Bestiary writes those as what a
+        // thing IS, never as something it works on somebody: no dice, no save, no radius in any of
+        // the 150. So unless this particular line plainly reaches out and touches someone, it is a
+        // trait, and the dialog stops asking a question it has no answer to.
+        if (string.Equals(kind, "Power", StringComparison.OrdinalIgnoreCase)
+            && feet == 0 && !pc.HasSave && damage.Length == 0 && ongoing.Length == 0
+            && heal.Length == 0 && nerve.Length == 0)
+            shape = WorkShape.Trait;
+        else if (feet > 0 || Has(effect, @"\bEach\s+(?:lesser|creature|soul|of them)|Every\s+creature|every\s+ally|every\s+uncanny|\bAllies\s+who|the\s+party\b|in\s+the\s+camp\b"))
+            shape = WorkShape.Area;
+        else if (Has(effect, @"another'?s?\s+Sign|End\s+another|their\s+Sign\s+DC|unmakes\s+the\s+lower"))
+            shape = WorkShape.Counter;
+        else if (Has(effect, @"your\s+familiar|year\s+of\s+your\s+own\s+life|\byou\s+work\b|as\s+though\s+you\s+were|wear\s+it\s+for"))
+            shape = WorkShape.Self;
+        else if (Has(effect, @"across\s+a\s+doorway|on\s+a\s+wall|Lay\s+your\s+palm|Ask\s+the\s+dark|Put\s+a\s+question|Bless\s+a\s+journey|out\s+of\s+the\s+dark|wherever\s+they\s+are|the\s+ground\s+splits|that\s+country|\ba\s+house\b|(?:its|that)\s+roof|a\s+place\s+is|into\s+a\s+(?:cord|draught)|Call\s+up\b|the\s+weather\b|upon\s+a\s+place|a\s+grave\b|patch\s+of\s+ground|Sanctify|spirits\s+of\s+(?:a|that)\s+(?:place|ground)|ammunition|Undo\s+one"))
+            shape = WorkShape.Place;
+        else if (Has(effect, @"\bally\b|\ballies\b|companion|another\s+soul|\ba\s+soul\b|one\s+soul\s+who|(?:wounded|hurt|mortally\s+hurt)\s+soul|their\s+Frightened|a\s+dying\b|the\s+dying\b|Take\s+an\s+ally"))
+            shape = WorkShape.Ally;
+        else if (pc.HasSave || Has(effect, @"One\s+living\s+creature|\ba\s+creature\b|Name\s+a\s+creature|one\s+creature|Point\s+and\s+name|the\s+creature\b|\ba\s+thing\b"))
+            shape = WorkShape.OneCreature;
+        else if (Has(effect, @"\byou\s+(?:see|are|arrive|wear|speak|hold|take)\b|off\s+you\b|your\s+own\s+arm|your\s+hand|at\s+your\s+word|Wear\s+the\s+face|buy\s+\d+d\d+\s+Nerve"))
+            shape = WorkShape.Self;
+        // A working that mends is a working somebody stands still for. When nothing else in the
+        // text said who, healing dice are the tell — better than shrugging.
+        else if (heal.Length > 0) shape = WorkShape.Ally;
+        else shape = WorkShape.Unclear;
+
+        return new Working(name ?? "", kind ?? "Sign", rank, cost ?? "", all,
+            shape, feet, ends, rounds,
+            damage, ongoing, heal, nerve,
+            half, pc.Save ?? "", drains,
+            effect, backlash);
     }
 
     /// <summary>A creature's power, pulled off its Bestiary <c>special</c> line. Every one of the

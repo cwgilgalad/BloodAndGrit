@@ -483,6 +483,125 @@ foreach (var (table, floor) in new[]
 }
 
 // ---- Nerve-loss ladder ----
+// ---- reading a working: what a Sign, a Miracle or a creature's power actually DOES ----
+// The old model held one shape — a target and a round count — and eighty hand-written workings do
+// not have one shape. These assertions are the guard on the reader that pulls the real shapes out
+// of the printed text. Named workings are checked by hand where the answer is known for certain;
+// everything else is held to a floor, so a re-transcription of either chapter that quietly stops
+// parsing fails here instead of at somebody's table.
+{
+    var signs = CharGen.D.signs.Select(s => Rules.ReadWorking(s.name, "Sign", s.rank, s.cost, s.desc, 6)).ToList();
+    var mirs  = CharGen.D.miracles.Select(m => Rules.ReadWorking(m.name, "Miracle", m.rank, m.cost, m.desc, 6)).ToList();
+    var all   = signs.Concat(mirs).ToList();
+    Rules.Working W(string n) => all.First(x => x.Name == n);
+
+    T("working: every Sign and Miracle is read", all.Count == 80);
+
+    // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
+    // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
+    T("working: all forty Signs carry a Backlash", signs.All(w => w.HasBacklash));
+    T("working: no Miracle does — faith does not bite back", mirs.All(w => !w.HasBacklash));
+    T("working: a Backlash is lifted clear of the effect text",
+        !W("Witch-Sight").Effect.Contains("Backlash", StringComparison.OrdinalIgnoreCase)
+        && W("Witch-Sight").Backlash.Length > 0);
+    T("working: a Backlash printed as 'None' still keeps its words",
+        W("Salt & Iron").HasBacklash && W("Salt & Iron").Backlash.Contains("kindest"));
+    T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
+    // Four of the forty print "Backlash: None" and then say something about why. The other
+    // thirty-six cost the worker something, and those are the ones the app should warn about.
+    T("working: thirty-six of the forty actually bite", signs.Count(w => w.BacklashBites) == 36);
+
+    // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
+    // the two chapters give it up entirely.
+    T("working: every one of the eighty resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
+
+    // The shapes the old dialog could not express at all.
+    T("working: Witch-Sight is worked on the worker", W("Witch-Sight").Shape == Rules.WorkShape.Self);
+    T("working: The Tally lands on nobody", W("The Tally").Shape == Rules.WorkShape.Place);
+    T("working: Ward of the Threshold is a place", W("Ward of the Threshold").Shape == Rules.WorkShape.Place);
+    T("working: Unmake the Working targets a working", W("Unmake the Working").Shape == Rules.WorkShape.Counter);
+    T("working: Borrowed Breath is worked on a companion", W("Borrowed Breath").Shape == Rules.WorkShape.Ally);
+    T("working: The Crimson Word picks one creature", W("The Crimson Word").Shape == Rules.WorkShape.OneCreature);
+
+    // An area is a radius in feet, not "everyone on the field" — the book's areas catch friends.
+    T("working: Salt & Iron reaches ten feet",
+        W("Salt & Iron").Shape == Rules.WorkShape.Area && W("Salt & Iron").AreaFeet == 10);
+    T("working: The Grasping Dark reaches twenty", W("The Grasping Dark").AreaFeet == 20);
+    T("working: Open the Vein of the World reaches thirty", W("Open the Vein of the World").AreaFeet == 30);
+    T("working: every radius the book prints is read", all.Count(w => w.AreaFeet > 0) >= 3);
+
+    // Mending must never be read as harm. This is the single worst thing the reader could get
+    // wrong, and "Treat a wound for 1d8" plus "heal a touched ally 2d6" both used to score as damage.
+    T("working: Borrowed Breath heals 2d8", W("Borrowed Breath").Heal == "2d8" && W("Borrowed Breath").Damage.Length == 0);
+    T("working: The Green Hand treats a wound for 1d8", W("The Green Hand").Heal == "1d8" && W("The Green Hand").Damage.Length == 0);
+    T("working: The Altar Call heals 2d6", W("The Altar Call").Heal == "2d6" && W("The Altar Call").Damage.Length == 0);
+    T("working: The Life Shared spreads 2d8 across an area",
+        W("The Life Shared").Heal == "2d8" && W("The Life Shared").Shape == Rules.WorkShape.Area);
+    T("working: Extreme Unction wakes them on 1d6", W("Extreme Unction").Heal == "1d6");
+    T("working: no working both heals and harms with the same die",
+        all.All(w => w.Heal.Length == 0 || w.Damage.Length == 0));
+
+    // Nerve is its own currency and is neither harm nor healing.
+    T("working: The Unburdening restores 1d6 Nerve", W("The Unburdening").Nerve == "1d6");
+    T("working: Coin of Pain buys 1d6 Nerve", W("Coin of Pain").Nerve == "1d6");
+
+    // Damage, ongoing damage, and save-for-half.
+    T("working: The Crimson Word deals 3d6", W("The Crimson Word").Damage == "3d6");
+    T("working: Open the Vein deals 6d8 and saves for half",
+        W("Open the Vein of the World").Damage == "6d8" && W("Open the Vein of the World").SaveForHalf);
+    T("working: The Reckoning Fire deals 6d6 across an area",
+        W("The Reckoning Fire").Damage == "6d6" && W("The Reckoning Fire").Shape == Rules.WorkShape.Area);
+    T("working: Rot the Wound is 1d6 EACH ROUND, not once",
+        W("Rot the Wound").Ongoing == "1d6" && W("Rot the Wound").Damage.Length == 0);
+    T("working: and it lasts until something is done about it",
+        W("Rot the Wound").Ends == Rules.WorkEnds.UntilEnded);
+    T("working: The Hungering Hand takes 2d6 and gives half back",
+        W("The Hungering Hand").Damage == "2d6" && W("The Hungering Hand").DrainsToWorker);
+
+    // Durations the old round-counter could not hold.
+    T("working: Witch-Sight lasts a scene", W("Witch-Sight").Ends == Rules.WorkEnds.Scene);
+    T("working: Cold Lamp lasts an hour", W("Cold Lamp").Ends == Rules.WorkEnds.Hour);
+    T("working: Ward of the Threshold holds until dawn", W("Ward of the Threshold").Ends == Rules.WorkEnds.UntilDawn);
+    T("working: The Blessing of the Road runs a day", W("The Blessing of the Road").Ends == Rules.WorkEnds.Day);
+    T("working: The Crimson Word is over when it is done", W("The Crimson Word").Ends == Rules.WorkEnds.Instant);
+    T("working: every duration the two chapters print is represented",
+        all.Select(w => w.Ends).Distinct().Count() >= 6);
+
+    // "A round per two levels" is arithmetic the app exists to do — a chip saying "a round per
+    // two levels" would be handing it straight back to the Keeper.
+    var stillL6 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
+        CharGen.D.signs.First(s => s.name == "The Stilling").desc, 6);
+    var stillL10 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
+        CharGen.D.signs.First(s => s.name == "The Stilling").desc, 10);
+    T("working: The Stilling scales with the worker — 3 rounds at 6th",
+        stillL6.Ends == Rules.WorkEnds.Rounds && stillL6.Rounds == 3);
+    T("working: and 5 rounds at 10th", stillL10.Rounds == 5);
+    T("working: it never scales below one round",
+        Rules.ReadWorking("x", "Sign", 1, "", "held for one round per two levels", 1).Rounds >= 1);
+
+    // The save the cost line prints is the save the target rolls.
+    T("working: a printed save reaches the working", W("The Stilling").Save == "Will");
+    T("working: at least twenty workings ask for one", all.Count(w => w.HasSave) >= 20);
+
+    // A creature's power is a standing TRAIT, not something worked on anybody. All 150 Bestiary
+    // special lines are written that way and not one carries a die, a save, or a radius — so the
+    // dialog must stop asking who it is being worked on and for how long.
+    var powers = Db.Creatures.Where(c => !string.IsNullOrWhiteSpace(c.special))
+        .Select(c => { var (n, e) = Rules.ParsePower(c.special); return Rules.ReadWorking(n, "Power", 0, "", e, 6); })
+        .ToList();
+    T("working: every creature's special line is read", powers.Count == 150);
+    T("working: a creature's power reads as a trait, not a targeting",
+        powers.Count(w => w.IsTrait) >= 140);
+    T("working: a trait has nothing to roll", powers.Where(w => w.IsTrait).All(w => !w.Resolves));
+    T("working: and every one is still named", powers.All(w => w.Name.Length > 0));
+
+    // Junk in, no throw out: the reader runs at the table and must never be the thing that dies.
+    bool workingSurvivesJunk = true;
+    foreach (var junk in new[] { null, "", "   ", "Backlash:", "3d6", "·····", "within  feet" })
+        try { Rules.ReadWorking("x", "Sign", 1, junk, junk, 3); } catch { workingSurvivesJunk = false; }
+    T("working: junk text yields a reading rather than a throw", workingSurvivesJunk);
+}
+
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)
 {
