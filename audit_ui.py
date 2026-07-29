@@ -26,11 +26,23 @@ if hasattr(sys.stdout, "reconfigure"):
 SRC = Path(__file__).resolve().parent / "GK" / "source"
 
 # helper -> (min args, index of the handler arg or None, index of the tooltip arg)
+# PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
+# their CALL SITES deserve the same audit as any other button. They were missing here, so five
+# of the tracker's buttons were never checked at all.
 HELPERS = {
-    "Btn":     (2, 1, 3),
-    "MenuBtn": (3, None, 2),
-    "DieBtn":  (4, 2, 4),
+    "Btn":        (2, 1, 3),
+    "PrimaryBtn": (2, 1, 3),
+    "DangerBtn":  (2, 1, 3),
+    "MenuBtn":    (3, None, 2),
+    "DieBtn":     (4, 2, 4),
 }
+
+# The parameter names the wrappers forward under. A call whose arguments ARE these names is one
+# helper handing off to another inside its own definition, not a button on a bar — it has no
+# literal tooltip because it is passing along whatever its caller gave it. Reported as two
+# findings for two releases (MainForm.cs:672 and :688, PrimaryBtn and DangerBtn calling Btn),
+# which is exactly how a cheap audit teaches people to ignore it.
+FORWARDED = {"text", "onClick", "w", "tip"}
 
 
 def split_args(text):
@@ -100,15 +112,18 @@ def main():
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
-        text = re.sub(r"static\s+Button\s+(Btn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
+        text = re.sub(r"static\s+Button\s+(Btn|PrimaryBtn|DangerBtn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
         for helper, (minargs, hidx, tidx) in HELPERS.items():
             for line, args in calls(text, helper):
                 counts[path.name] = counts.get(path.name, 0) + 1
                 where = f"{path.name}:{line}"
                 label = args[0] if args else "?"
-                # MenuBtn builds its own face by calling Btn(text, null, w, tip) and then wires
-                # the drop-down itself — that one null handler is the helper working as intended.
-                if helper == "Btn" and args[:1] == ["text"] and len(args) > 3 and args[1] == "null":
+                # One helper handing off to another inside its own definition: MenuBtn builds its
+                # face with Btn(text, null, w, tip) and wires the drop-down itself; PrimaryBtn and
+                # DangerBtn call Btn(text, onClick, w, tip) and then re-paint it. Every argument is
+                # a forwarded parameter name, so there is no literal here to check and no button
+                # here to count.
+                if helper == "Btn" and len(args) > 3 and all(a in FORWARDED or a == "null" for a in args):
                     counts[path.name] -= 1
                     continue
                 if len(args) < minargs:

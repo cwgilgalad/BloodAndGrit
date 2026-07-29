@@ -595,6 +595,19 @@ foreach (var (table, floor) in new[]
     T("working: a trait has nothing to roll", powers.Where(w => w.IsTrait).All(w => !w.Resolves));
     T("working: and every one is still named", powers.All(w => w.Name.Length > 0));
 
+    // A working saved before the shapes and durations existed carries a round count and nothing
+    // else. It must still tick, and it must still read as a round count — the first cut of this
+    // gated the tick on Ends as well, which would have frozen every effect in every session
+    // anybody had already saved.
+    var oldSave = System.Text.Json.JsonSerializer.Deserialize<WorkedEffect>(
+        "{\"Name\":\"The Stilling\",\"Kind\":\"Sign\",\"RoundsLeft\":2,\"SinceRound\":1}");
+    var carrier = new Combatant { Name = "Silas", BloodCur = 10, BloodMax = 10 };
+    carrier.Work(oldSave);
+    T("worked: a pre-v1.29 effect still says how many rounds it has", oldSave.Chip.EndsWith("(2)"));
+    carrier.TickWorked();
+    T("worked: and it still counts down", oldSave.RoundsLeft == 1);
+    T("worked: and it still runs out", carrier.TickWorked().Count == 1 && carrier.Worked.Count == 0);
+
     // Junk in, no throw out: the reader runs at the table and must never be the thing that dies.
     bool workingSurvivesJunk = true;
     foreach (var junk in new[] { null, "", "   ", "Backlash:", "3d6", "·····", "within  feet" })

@@ -1992,11 +1992,12 @@ public partial class MainForm
         /// clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
         /// off the previous control's Bottom, and set ClientSize last.
         ///
-        /// EVERY early return out of SyncDetail has to come through here. It did not, once: the
-        /// "— something else —" branch returned without reflowing, so a Gunhand — who knows no
-        /// Signs and no Miracles, and therefore only ever sees that branch — opened this dialog at
-        /// the WinForms default 300x300 with the buttons off the bottom edge. It built, it passed
-        /// the smoke suite, and it was only caught by taking a picture of it.
+        /// SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
+        /// paths somebody remembered. It was written the other way first, and the "— something
+        /// else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
+        /// and so only ever sees that branch, opened this dialog at the WinForms default 300x300
+        /// with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
+        /// it was caught by taking a picture of it. The wrapper is why it cannot happen again.
         void Relayout()
         {
             backlash.Top = detail.Bottom + 6;
@@ -2030,7 +2031,10 @@ public partial class MainForm
             rounds.Visible = roundsNote.Visible = counted;
         };
 
-        void SyncDetail()
+        // The wrapper: whatever the body does, and whichever way it returns, the form gets measured.
+        void SyncDetail() { SyncDetailBody(); Relayout(); }
+
+        void SyncDetailBody()
         {
             bool custom = what.SelectedIndex >= options.Count;
             freeName.Enabled = custom;
@@ -2045,7 +2049,6 @@ public partial class MainForm
                 SyncEnds(Rules.WorkEnds.UntilEnded, 0);
                 spend.Text = "Spend nothing — a hand-named effect has no printed cost";
                 spend.Checked = false; spend.Enabled = false;
-                Relayout();          // every path out of here must size the form — see below
                 return;
             }
             var o = options[what.SelectedIndex];
@@ -2085,7 +2088,6 @@ public partial class MainForm
                 spend.Text = pc.Spends ? "Spend the cost — only a posse soul keeps the pools it comes out of"
                                        : "Costs nothing to work";
                 spend.Checked = false; spend.Enabled = false;
-                Relayout();
                 return;
             }
             var bits = new List<string>();
@@ -2096,7 +2098,6 @@ public partial class MainForm
             spend.Enabled = true; spend.Checked = true;
             spend.Text = "Spend it from " + soul.Name + " — " + string.Join(", ", bits)
                        + (pc.OrBlood > 0 ? $"   (or {pc.OrBlood} Blood instead)" : "");
-            Relayout();
         }
 
         f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail, backlash,
