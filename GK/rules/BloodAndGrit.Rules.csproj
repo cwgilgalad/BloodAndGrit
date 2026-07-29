@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- The game itself: dice, the four degrees, chargen, the Iron Code, horror, maps, PDFs.
+         Plain net8.0 with NO WinForms reference, so it runs anywhere .NET runs — Linux
+         included. That is not an aspiration; it is what GK/smoke has been proving on every
+         build for months by compiling exactly these six files against a net8.0 target.
+
+         This project exists so that fact is STRUCTURAL rather than a convention. Before it,
+         smoke.csproj carried a hand-listed <Compile Include="..\source\Foo.cs" /> per file —
+         a list that could silently fall out of date with what the app actually contained. Add
+         a seventh headless file, forget to list it, and it simply went untested forever. A
+         project reference cannot drift that way. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <AssemblyName>BloodAndGrit.Rules</AssemblyName>
+    <!-- The namespace stays BloodAndGritKeeper, as everywhere else in this tree: the six files
+         declare it, the app and the smoke rig consume it unqualified, and embedded-resource
+         names derive from it. Only the assembly's own name is new. -->
+    <RootNamespace>BloodAndGritKeeper</RootNamespace>
+
+    <!-- Deliberately NO <Version> here. The one version in the project lives in
+         BloodAndGritKeeper.csproj and MainForm.AppVersion reads it back off the app assembly;
+         package.ps1 names the release tag from the built exe's FileVersion. A second version
+         number in a second csproj is exactly the drift that cost four mislabelled releases
+         once already. This library ships inside the exe and is not versioned separately. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The rules data travels with the rules. This is forced, not stylistic: Db.ReadData
+         resolves resources off typeof(Db).Assembly, and Db lives in Core.cs — so once Core.cs
+         is here, the JSON must be embedded HERE or the published single-file exe finds nothing
+         and silently falls back to a Data/ folder on disk that a standalone exe does not have.
+         Matching is by EndsWith(fileName), so the resource-name prefix does not matter. -->
+    <EmbeddedResource Include="Data\creatures.json" />
+    <EmbeddedResource Include="Data\tables.json" />
+    <EmbeddedResource Include="Data\tables_extra.json" />
+    <EmbeddedResource Include="Data\chargen.json" />
+    <EmbeddedResource Include="Data\rides.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- CharGen.FlavorList is an internal helper, and the smoke rig asserts a depth floor on
+         every flavor pool through it (Program.cs) so that a re-extraction which drops
+         tables_extra.json fails loudly instead of quietly rolling from a thinner deck. That
+         test is worth keeping and the method is not worth making public for it. -->
+    <InternalsVisibleTo Include="smoke" />
+  </ItemGroup>
+
+</Project>
