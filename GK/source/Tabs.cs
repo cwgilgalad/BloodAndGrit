@@ -1791,31 +1791,42 @@ public partial class MainForm
     // ---- Signs, Miracles, and creature powers: working one, and what it costs ----
 
     /// <summary>One thing a combatant could work, gathered from wherever that combatant's powers
-    /// actually live — a soul's own known lists, or a creature's Bestiary line.</summary>
-    sealed record Workable(string Name, string Kind, int Rank, string Cost, string Effect);
+    /// actually live — a soul's own known lists, or a creature's Bestiary line — together with what
+    /// the printed text says it DOES (<see cref="Rules.ReadWorking"/>): who it lands on, how long it
+    /// holds, what dice it rolls, and what it costs the worker when it turns on them.</summary>
+    sealed record Workable(string Name, string Kind, int Rank, string Cost, string Effect, Rules.Working Read);
 
     /// <summary>What this combatant can work. A posse soul offers exactly what is written on their
     /// sheet — Signs from Ch. XIII, Miracles from Ch. VI, nothing they have not learned. A creature
     /// offers the power its own stat block names. Anything else is typed by hand, because the
-    /// Keeper is allowed to invent and the app should not be the reason they cannot.</summary>
+    /// Keeper is allowed to invent and the app should not be the reason they cannot.
+    ///
+    /// The worker's level rides along because the book scales some durations by it — "one round per
+    /// two levels" is a real number once you know whose Sign it is, and the app is what should be
+    /// doing that arithmetic.</summary>
     List<Workable> WorkablesFor(Combatant c)
     {
         var list = new List<Workable>();
         if (c == null) return list;
+        var sheet = SoulOf(c)?.Sheet;
+        int lvl = Math.Max(1, sheet?.Level ?? 1);
 
-        if (SoulOf(c)?.Sheet is CharacterSheet sheet)
+        Workable Make(string n, string kind, int rank, string cost, string desc)
+            => new(n, kind, rank, cost, desc, Rules.ReadWorking(n, kind, rank, cost, desc, lvl));
+
+        if (sheet is CharacterSheet sh)
         {
-            foreach (var name in sheet.SignsKnown ?? new())
+            foreach (var name in sh.SignsKnown ?? new())
                 if (CharGen.D?.signs?.Find(x => x.name == name) is CgSign sg)
-                    list.Add(new Workable(sg.name, "Sign", sg.rank, sg.cost, sg.desc));
-            foreach (var name in sheet.MiraclesKnown ?? new())
+                    list.Add(Make(sg.name, "Sign", sg.rank, sg.cost, sg.desc));
+            foreach (var name in sh.MiraclesKnown ?? new())
                 if (CharGen.D?.miracles?.Find(x => x.name == name) is CgMiracle mi)
-                    list.Add(new Workable(mi.name, "Miracle", mi.rank, mi.cost, mi.desc));
+                    list.Add(Make(mi.name, "Miracle", mi.rank, mi.cost, mi.desc));
         }
         else if (Db.Find(c.Ref) is Creature beast && !string.IsNullOrWhiteSpace(beast.special))
         {
             var (nm, eff) = Rules.ParsePower(beast.special);
-            if (nm.Length > 0) list.Add(new Workable(nm, "Power", 0, "", eff));
+            if (nm.Length > 0) list.Add(Make(nm, "Power", 0, "", eff));
         }
         return list;
     }
@@ -1853,21 +1864,61 @@ public partial class MainForm
             ScrollBars = ScrollBars.Vertical, BackColor = Color.FromArgb(250, 246, 236), BorderStyle = BorderStyle.FixedSingle
         };
 
-        var onWhom = new ComboBox { Left = Pad + 104, Top = detail.Bottom + 10, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList };
-        onWhom.Items.Add("— everyone on the field —");
-        foreach (var t in folk) onWhom.Items.Add(t.Name);
-        onWhom.SelectedIndex = 1;
-        var onLbl = L("On whom:", detail.Bottom + 6);
-
-        var rounds = new NumericUpDown { Left = Pad + 104, Top = onWhom.Bottom + 8, Width = 70, Minimum = 0, Maximum = 99, Value = 0 };
-        var roundsLbl = L("Lasts:", onWhom.Bottom + 5);
-        var roundsNote = new Label
+        // The Backlash gets its own field, in the ink the app uses for what the dark costs you. It
+        // used to sit in the middle of the effect blob above, which is where a Keeper looks last
+        // and needs it first — and forty of the eighty workings have one.
+        var backlash = new TextBox
         {
-            Left = Pad + 182, Top = onWhom.Bottom + 11, Width = CW - 182, Height = 18, ForeColor = Ink, Font = DialogItalic,
-            Text = "rounds — 0 = until ended by hand"
+            Left = Pad, Top = detail.Bottom + 6, Width = CW, Height = 40, Multiline = true, ReadOnly = true,
+            ScrollBars = ScrollBars.Vertical, BackColor = Color.FromArgb(252, 244, 242),
+            ForeColor = Blood, BorderStyle = BorderStyle.FixedSingle, Visible = false
         };
 
-        var spend = new CheckBox { Left = Pad, Top = rounds.Bottom + 8, Width = CW, Height = 22, Checked = true };
+        var onWhom = new ComboBox { Left = Pad + 104, Top = backlash.Bottom + 10, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList };
+        var onLbl = L("On whom:", backlash.Bottom + 6);
+
+        // Duration is the book's word, not a round count. Eleven of the eighty last "for a scene",
+        // six until dawn, five a day — and every one of them showed on the chip as "until it is
+        // ended by hand", which is true of none of them. The reader prefills this; the Keeper can
+        // still say otherwise, because a ruling at the table beats a parser every time.
+        var lasts = new ComboBox { Left = Pad + 104, Top = onWhom.Bottom + 8, Width = 178, DropDownStyle = ComboBoxStyle.DropDownList };
+        var lastsKinds = new[] { Rules.WorkEnds.Rounds, Rules.WorkEnds.NextTurn, Rules.WorkEnds.Scene,
+                                 Rules.WorkEnds.Hour, Rules.WorkEnds.Day, Rules.WorkEnds.UntilDawn,
+                                 Rules.WorkEnds.UntilEnded, Rules.WorkEnds.Instant };
+        foreach (var k in lastsKinds)
+            lasts.Items.Add(k switch
+            {
+                Rules.WorkEnds.Rounds     => "a number of rounds",
+                Rules.WorkEnds.NextTurn   => "until their next turn",
+                Rules.WorkEnds.Scene      => "for the scene",
+                Rules.WorkEnds.Hour       => "for an hour",
+                Rules.WorkEnds.Day        => "for a day",
+                Rules.WorkEnds.UntilDawn  => "until dawn",
+                Rules.WorkEnds.Instant    => "at once — nothing to carry",
+                _                         => "until something ends it",
+            });
+        var lastsLbl = L("Lasts:", onWhom.Bottom + 5);
+        var rounds = new NumericUpDown { Left = lasts.Right + 8, Top = lasts.Top, Width = 62, Minimum = 1, Maximum = 99, Value = 1 };
+        var roundsNote = new Label
+        {
+            Left = rounds.Right + 6, Top = lasts.Top + 3, Width = Math.Max(20, CW - (rounds.Right + 6 - Pad)),
+            Height = 18, ForeColor = Ink, Font = DialogItalic, Text = "rounds"
+        };
+
+        // What it actually rolls, and what the table decides about the save. The old dialog knew a
+        // working might force a save and said so in one line of prose; it never rolled the 3d6 the
+        // Sign is FOR, so every damaging working was resolved on somebody's paper anyway.
+        var rollIt = new CheckBox { Left = Pad, Top = lasts.Bottom + 10, Width = CW, Height = 22, Visible = false };
+        var saved = new ComboBox { Left = Pad + 104, Top = rollIt.Bottom + 4, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList, Visible = false };
+        saved.Items.AddRange(new object[] { "they failed the save — it lands in full", "they made it — half", "they made it — none at all" });
+        saved.SelectedIndex = 0;
+        var savedLbl = new Label { Left = Pad, Top = rollIt.Bottom + 8, Width = 100, Text = "The save:", Visible = false };
+
+        var spend = new CheckBox { Left = Pad, Top = saved.Bottom + 8, Width = CW, Height = 22, Checked = true };
+        // Declared here rather than at the bottom because Relayout places them and sizes the form
+        // off where they land, and a local function cannot reach a local declared after it.
+        var go = new Button { Text = "Work it ▸", Left = Pad + CW - 198, Width = 100, Height = 32, DialogResult = DialogResult.OK };
+        var close = new Button { Text = "Close", Left = Pad + CW - 92, Width = 92, Height = 32, DialogResult = DialogResult.Cancel };
 
         // ---- what the pickers say to each other ----
         List<Workable> options = new();
@@ -1889,6 +1940,96 @@ public partial class MainForm
                 : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
                 : "an ad-hoc combatant — name what they work by hand";
         }
+        /// <summary>Re-shape the "on whom" list for the working now selected. The old list offered
+        /// one combatant or "everyone on the field" and nothing else, which fits about half the
+        /// book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
+        /// lands on nobody, and Salt &amp; Iron catches everything within ten feet — friends included,
+        /// which is not the same list as everyone in the fight. The right entry is preselected; the
+        /// whole roster stays on offer underneath it, because the parse is advice, not a gate.
+        void SyncTargets(Rules.Working w, Combatant worker)
+        {
+            onWhom.Items.Clear();
+            switch (w?.Shape)
+            {
+                case Rules.WorkShape.Trait:
+                    onWhom.Items.Add("— nothing to target: this is what it IS —");
+                    break;
+                case Rules.WorkShape.Self:
+                    onWhom.Items.Add($"— {worker.Name}, who is working it —");
+                    break;
+                case Rules.WorkShape.Area:
+                    onWhom.Items.Add(w.AreaFeet > 0
+                        ? $"— everything within {w.AreaFeet} feet (friends too) —"
+                        : "— everything nearby (friends too) —");
+                    break;
+                case Rules.WorkShape.Place:
+                    onWhom.Items.Add("— a place, a thing, or nobody at all —");
+                    break;
+                case Rules.WorkShape.Counter:
+                    onWhom.Items.Add("— another working, not a person —");
+                    break;
+                default:
+                    onWhom.Items.Add("— everyone on the field —");
+                    break;
+            }
+            foreach (var t in folk) onWhom.Items.Add(t.Name);
+            // Self lands on the worker; a shape that names a creature starts on somebody other than
+            // the worker if there is one, since almost nobody Stills themselves.
+            int pick = w?.Shape switch
+            {
+                Rules.WorkShape.Self => 1 + Math.Max(0, folk.IndexOf(worker)),
+                Rules.WorkShape.OneCreature or Rules.WorkShape.Ally =>
+                    1 + Math.Max(0, folk.FindIndex(t => !ReferenceEquals(t, worker))),
+                _ => 0,
+            };
+            onWhom.SelectedIndex = Math.Clamp(pick, 0, onWhom.Items.Count - 1);
+        }
+
+        /// <summary>Stack everything below the effect box off whatever is actually showing, and size
+        /// the form to what came out. The dialog's height genuinely changes with the working now —
+        /// a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
+        /// neither — so a layout pinned to constants would leave a hole under half the workings and
+        /// clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
+        /// off the previous control's Bottom, and set ClientSize last.
+        ///
+        /// EVERY early return out of SyncDetail has to come through here. It did not, once: the
+        /// "— something else —" branch returned without reflowing, so a Gunhand — who knows no
+        /// Signs and no Miracles, and therefore only ever sees that branch — opened this dialog at
+        /// the WinForms default 300x300 with the buttons off the bottom edge. It built, it passed
+        /// the smoke suite, and it was only caught by taking a picture of it.
+        void Relayout()
+        {
+            backlash.Top = detail.Bottom + 6;
+            backlash.Height = 40;
+            int y = (backlash.Visible ? backlash.Bottom : detail.Bottom) + 10;
+
+            onWhom.Top = y; onLbl.Top = y + 4;
+            lasts.Top = onWhom.Bottom + 8; lastsLbl.Top = lasts.Top + 4;
+            rounds.Top = lasts.Top; roundsNote.Top = lasts.Top + 3;
+
+            y = lasts.Bottom;
+            if (rollIt.Visible) { rollIt.Top = y + 10; y = rollIt.Bottom; }
+            if (saved.Visible) { saved.Top = y + 4; savedLbl.Top = saved.Top + 4; y = saved.Bottom; }
+
+            spend.Top = y + 8;
+            go.Top = close.Top = spend.Bottom + 12;
+            f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
+        }
+
+        void SyncEnds(Rules.WorkEnds e, int n)
+        {
+            int i = Array.IndexOf(lastsKinds, e);
+            lasts.SelectedIndex = i < 0 ? Array.IndexOf(lastsKinds, Rules.WorkEnds.UntilEnded) : i;
+            if (n > 0) rounds.Value = Math.Clamp(n, rounds.Minimum, rounds.Maximum);
+            bool counted = e == Rules.WorkEnds.Rounds;
+            rounds.Visible = roundsNote.Visible = counted;
+        }
+        lasts.SelectedIndexChanged += (s, e) =>
+        {
+            bool counted = lasts.SelectedIndex >= 0 && lastsKinds[lasts.SelectedIndex] == Rules.WorkEnds.Rounds;
+            rounds.Visible = roundsNote.Visible = counted;
+        };
+
         void SyncDetail()
         {
             bool custom = what.SelectedIndex >= options.Count;
@@ -1897,17 +2038,46 @@ public partial class MainForm
             if (custom)
             {
                 detail.Text = "Something the book does not print, or a power this app has not been told about. "
-                            + "Name it, set how long it lasts, and it rides on the target like any other.";
+                            + "Name it, say who it lands on and how long it holds, and it rides on them like any other.";
+                backlash.Visible = false;
+                rollIt.Visible = saved.Visible = savedLbl.Visible = false;
+                SyncTargets(null, worker);
+                SyncEnds(Rules.WorkEnds.UntilEnded, 0);
                 spend.Text = "Spend nothing — a hand-named effect has no printed cost";
                 spend.Checked = false; spend.Enabled = false;
+                Relayout();          // every path out of here must size the form — see below
                 return;
             }
             var o = options[what.SelectedIndex];
+            var w = o.Read;
             var pc = Rules.ParseCost(o.Cost);
-            detail.Text = $"{o.Kind}{(o.Rank > 0 ? $", Rank {o.Rank}" : "")}"
-                        + (string.IsNullOrWhiteSpace(o.Cost) ? "" : $"   ·   {o.Cost}")
-                        + (pc.HasSave ? $"   ·   the target rolls a {pc.Save} save" : "")
-                        + "\r\n\r\n" + o.Effect;
+
+            // The header line now says the three things the Keeper is about to be asked about —
+            // who it lands on, how long it holds, and what dice it rolls — instead of only the cost.
+            var facts = new List<string> { w.Kind + (o.Rank > 0 ? $", Rank {o.Rank}" : "") };
+            if (!string.IsNullOrWhiteSpace(o.Cost)) facts.Add(o.Cost);
+            facts.Add(w.ShapeLine);
+            facts.Add(w.EndsLine);
+            if (w.Damage.Length > 0) facts.Add($"{w.Damage} damage" + (w.SaveForHalf ? ", save for half" : ""));
+            if (w.Ongoing.Length > 0) facts.Add($"{w.Ongoing} each round");
+            if (w.Heal.Length > 0) facts.Add($"heals {w.Heal}");
+            if (w.Nerve.Length > 0) facts.Add($"{w.Nerve} Nerve");
+            if (w.HasSave) facts.Add($"{w.Save} save");
+            detail.Text = string.Join("   ·   ", facts) + "\r\n\r\n" + w.Effect;
+
+            backlash.Visible = w.HasBacklash;
+            if (w.HasBacklash) backlash.Text = "Backlash: " + w.Backlash;
+
+            SyncTargets(w, worker);
+            SyncEnds(w.Ends, w.Rounds);
+
+            rollIt.Visible = w.Resolves;
+            rollIt.Checked = w.Resolves;
+            rollIt.Text = w.Heal.Length > 0 ? $"Roll {w.Heal} and mend them now"
+                        : w.Nerve.Length > 0 ? $"Roll {w.Nerve} Nerve and apply it now"
+                        : w.Ongoing.Length > 0 ? $"Roll the first {w.Ongoing} now — it repeats each round"
+                        : $"Roll {w.Damage} and apply it now";
+            saved.Visible = savedLbl.Visible = w.Resolves && (w.SaveForHalf || w.HasSave);
 
             var soul = SoulOf(worker);
             if (!pc.Spends || soul == null)
@@ -1915,6 +2085,7 @@ public partial class MainForm
                 spend.Text = pc.Spends ? "Spend the cost — only a posse soul keeps the pools it comes out of"
                                        : "Costs nothing to work";
                 spend.Checked = false; spend.Enabled = false;
+                Relayout();
                 return;
             }
             var bits = new List<string>();
@@ -1925,17 +2096,19 @@ public partial class MainForm
             spend.Enabled = true; spend.Checked = true;
             spend.Text = "Spend it from " + soul.Name + " — " + string.Join(", ", bits)
                        + (pc.OrBlood > 0 ? $"   (or {pc.OrBlood} Blood instead)" : "");
+            Relayout();
         }
+
+        f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail, backlash,
+                                            onLbl, onWhom, lastsLbl, lasts, rounds, roundsNote,
+                                            rollIt, savedLbl, saved, spend, go, close });
+        f.AcceptButton = go; f.CancelButton = close;
+
+        // Wired and driven only once the buttons exist, because Relayout places them and sizes the
+        // form off where they land.
         who.SelectedIndexChanged += (s, e) => { SyncWhat(); SyncDetail(); };
         what.SelectedIndexChanged += (s, e) => SyncDetail();
         SyncWhat(); SyncDetail();
-
-        var go = new Button { Text = "Work it ▸", Left = Pad + CW - 198, Top = spend.Bottom + 12, Width = 100, Height = 32, DialogResult = DialogResult.OK };
-        var close = new Button { Text = "Close", Left = Pad + CW - 92, Top = go.Top, Width = 92, Height = 32, DialogResult = DialogResult.Cancel };
-        f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail,
-                                            onLbl, onWhom, roundsLbl, rounds, roundsNote, spend, go, close });
-        f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
-        f.AcceptButton = go; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
@@ -1944,7 +2117,11 @@ public partial class MainForm
             string name = custom ? freeName.Text.Trim() : options[what.SelectedIndex].Name;
             if (name.Length == 0) { Nope("Name what is being worked."); continue; }
 
-            var o = custom ? new Workable(name, "Sign", 0, "", "Worked by hand at the table.") : options[what.SelectedIndex];
+            var o = custom
+                ? new Workable(name, "Sign", 0, "", "Worked by hand at the table.",
+                               Rules.ReadWorking(name, "Sign", 0, "", "Worked by hand at the table."))
+                : options[what.SelectedIndex];
+            var w = o.Read;
             var pc = Rules.ParseCost(o.Cost);
             var soul = SoulOf(worker);
 
@@ -1963,21 +2140,89 @@ public partial class MainForm
                 if (pc.Blood > 0) { worker.Wound(-pc.Blood, $"−{pc.Blood} working it"); soul.BloodCur = worker.BloodCur; }
             }
 
-            int left = rounds.Value == 0 ? -1 : (int)rounds.Value;
-            var targets = onWhom.SelectedIndex == 0 ? folk : new List<Combatant> { folk[onWhom.SelectedIndex - 1] };
+            // Duration is whatever the Keeper left in the box — prefilled from the book, theirs to
+            // override. Only a round count is a number the tracker counts down; everything else
+            // rides at −1 and says so in its own words on the chip.
+            var ends = lastsKinds[Math.Max(0, lasts.SelectedIndex)];
+            int left = ends == Rules.WorkEnds.Rounds ? (int)rounds.Value : -1;
+
+            // The first entry is the shape's own answer — "everything within ten feet", "nobody at
+            // all", "the worker". Beyond a Trait or a Place, that means the whole field; a Trait or
+            // a Place lands on nothing and simply gets recorded against the worker so there is a
+            // note of it somewhere.
+            bool shapeEntry = onWhom.SelectedIndex == 0;
+            bool landsNowhere = shapeEntry && (w.Shape == Rules.WorkShape.Trait
+                                            || w.Shape == Rules.WorkShape.Place
+                                            || w.Shape == Rules.WorkShape.Counter);
+            var targets = !shapeEntry ? new List<Combatant> { folk[onWhom.SelectedIndex - 1] }
+                        : landsNowhere ? new List<Combatant> { worker }
+                        : w.Shape == Rules.WorkShape.Self ? new List<Combatant> { worker }
+                        : folk;
+
+            // Roll what it does, once, and share the one result out — an area Sign is one working,
+            // not one per body, and rolling per target would make a 6d8 crack in the ground land
+            // differently on two people standing in the same hole.
+            string note = "";
+            if (rollIt.Visible && rollIt.Checked)
+            {
+                int band = saved.Visible ? saved.SelectedIndex : 0;   // 0 failed · 1 half · 2 none
+                string expr = w.Heal.Length > 0 ? w.Heal : w.Nerve.Length > 0 ? w.Nerve
+                            : w.Ongoing.Length > 0 ? w.Ongoing : w.Damage;
+                int rolled = Rules.RollExpr(expr).total;
+                int applied = band == 2 ? 0 : band == 1 ? Math.Max(1, rolled / 2) : rolled;
+                string saveWord = band == 2 ? " — saved, and it does nothing"
+                                : band == 1 ? $" — saved for half, {applied}" : "";
+
+                if (w.Heal.Length > 0)
+                {
+                    foreach (var t in targets)
+                    { t.Wound(applied, $"+{applied} mended"); if (SoulOf(t) is PartyMember mp) mp.BloodCur = t.BloodCur; }
+                    note = $"{expr} → {rolled} healed{saveWord}";
+                }
+                else if (w.Nerve.Length > 0)
+                {
+                    foreach (var t in targets)
+                        if (SoulOf(t) is PartyMember np) np.NerveCur = Math.Min(np.NerveMax, np.NerveCur + applied);
+                    note = $"{expr} → {rolled} Nerve{saveWord}";
+                }
+                else
+                {
+                    foreach (var t in targets)
+                    { t.Wound(-applied, $"−{applied}"); if (SoulOf(t) is PartyMember dp) dp.BloodCur = t.BloodCur; }
+                    // The Hungering Hand and its kin: half of what was taken goes to the worker.
+                    if (w.DrainsToWorker && applied > 0)
+                    {
+                        int back = Math.Max(1, applied / 2);
+                        worker.Wound(back, $"+{back} drawn");
+                        if (SoulOf(worker) is PartyMember wp) wp.BloodCur = worker.BloodCur;
+                        note = $"{expr} → {rolled}{saveWord}, {back} drawn back to {worker.Name}";
+                    }
+                    else note = $"{expr} → {rolled}{saveWord}";
+                }
+            }
+
             foreach (var t in targets)
                 t.Work(new WorkedEffect
                 {
                     Name = o.Name, Kind = o.Kind, Rank = o.Rank, Source = worker.Name,
-                    Cost = o.Cost, Effect = o.Effect, RoundsLeft = left, SinceRound = round
+                    Cost = o.Cost, Effect = w.Effect, RoundsLeft = left, SinceRound = round,
+                    Shape = w.Shape, AreaFeet = w.AreaFeet, Ends = ends,
+                    Backlash = w.Backlash, Note = note
                 });
 
-            string onWho = onWhom.SelectedIndex == 0 ? "everyone on the field" : targets[0].Name;
-            Log($"{worker.Name} works {o.Name} ({o.Kind.ToLowerInvariant()}) on {onWho}"
-                + (left < 0 ? " — until it is ended" : $" — {left} round" + (left == 1 ? "" : "s"))
-                + (pc.HasSave ? $". {(onWhom.SelectedIndex == 0 ? "Each" : targets[0].Name)} rolls a {pc.Save} save." : "."));
+            string onWho = !shapeEntry ? targets[0].Name
+                         : landsNowhere ? "no one — it is not that kind of working"
+                         : w.Shape == Rules.WorkShape.Self ? worker.Name
+                         : w.Shape == Rules.WorkShape.Area
+                             ? (w.AreaFeet > 0 ? $"everything within {w.AreaFeet} feet" : "everything nearby")
+                             : "everyone on the field";
+            Log($"{worker.Name} works {o.Name} ({o.Kind.ToLowerInvariant()}) on {onWho} — "
+                + $"{new WorkedEffect { Ends = ends, RoundsLeft = left }.Duration}"
+                + (note.Length > 0 ? $". {note}" : "")
+                + (pc.HasSave && !rollIt.Checked ? $". {(targets.Count > 1 ? "Each" : targets[0].Name)} rolls a {pc.Save} save." : "."));
             ShowResult(o.Name, $"{worker.Name} → {onWho}"
-                + (pc.HasSave ? $"\n{pc.Save} save to resist." : ""), Verdigris);
+                + (note.Length > 0 ? $"\n{note}" : "")
+                + (pc.HasSave && !rollIt.Checked ? $"\n{pc.Save} save to resist." : ""), Verdigris);
 
             posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
         }

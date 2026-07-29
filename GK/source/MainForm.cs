@@ -154,7 +154,8 @@ public partial class MainForm : Form
         };
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
-        statusLoaded = new ToolStripStatusLabel(Amp(StatusLoadedText())) { ForeColor = Ink };
+        statusLoaded = new ToolStripStatusLabel(Amp(StatusLoadedText()))
+        { ForeColor = Ink, ToolTipText = StatusLoadedText() };
         status.Items.Add(statusLoaded);
         // The last thing that happened, said where the Keeper is looking. Every action already
         // answered in the roll log — but the roll log lives on the Dice tab, so from the Posse or
@@ -165,12 +166,19 @@ public partial class MainForm : Form
         // Undo and Redo are pinned here rather than on a tab so they're reachable wherever the
         // Keeper is working. Flat text in a status bar reads as a caption, though, not as
         // something you can press (user-reported) — so they wear a raised face and a border.
+        //
+        // They are RIGHT-ALIGNED, and that is the whole point of this arrangement. Added in normal
+        // order they landed between the "what just happened" line and the shortcut hints, so two
+        // buttons sat in the middle of a sentence and clipped the end off it — "Sent 6 soul(s) to
+        // the tracker" was cut short by the Undo button parked against it (user-reported). Actions
+        // belong at the end of a status bar, not through the middle of the status.
         ToolStripButton UndoBtn(string text, string tip, Action go)
         {
             var b = new ToolStripButton(text)
             {
                 Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text, ToolTipText = tip,
                 BackColor = Color.FromArgb(238, 230, 210), ForeColor = Ink,
+                Alignment = ToolStripItemAlignment.Right,
                 Margin = new Padding(3, 2, 3, 2), Padding = new Padding(7, 1, 7, 1),
                 Font = new Font("Segoe UI", 9f, FontStyle.Bold)
             };
@@ -186,9 +194,12 @@ public partial class MainForm : Form
         undoStatusBtn = UndoBtn("⟲ Undo", "Undo the last change — the posse, the corral, the tracker, "
             + "the encounter, the threads (Ctrl+Z)", Undo);
         redoStatusBtn = UndoBtn("⟳ Redo", "Redo the last undone change (Ctrl+Y)", Redo);
-        status.Items.Add(undoStatusBtn);
+        // Right-aligned items are laid out from the right edge inward in the order they are added,
+        // so Redo goes on FIRST to end up rightmost and the pair still reads Undo-then-Redo.
         status.Items.Add(redoStatusBtn);
-        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min") { ForeColor = Gold });
+        status.Items.Add(undoStatusBtn);
+        status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min")
+        { ForeColor = Gold, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
         Controls.Add(status);
 
         // Universal undo/redo: any add/remove/edit to the posse, tracker, encounter, or
@@ -314,7 +325,7 @@ public partial class MainForm : Form
             (RunMode.KeeperDice,   "Keeper — with dice & books",
                 "You roll real dice and run from the books. GritKeeper is your referee and ledger: enter the die you rolled and it reads the degrees, the penalties, the damage, and keeps everyone's Blood and Nerve."),
             (RunMode.KeeperEngine, "Keeper — on the engine",
-                "No dice on the table, no ledgers to keep. GritKeeper rolls it all — to-hit, damage, Dread — so you can play on a phone, on a porch, anywhere."),
+                "No dice on the table, no ledgers to keep. GritKeeper rolls it all — to-hit, damage, Dread — so the only thing anyone has to bring is the story."),
         };
         int y = 56;
         var radios = new List<RadioButton>();
