@@ -2,7 +2,7 @@
 """The book↔data drift guard — the last seam in the single-source discipline.
 
 The rest of the chain is already self-checking: the GritKeeper app reads every number from
-`GK/source/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
+`GK/rules/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
 the data and the app can never quietly disagree (the smoke suite fails first). The one seam left
 to a human hand is the *printed book* — the Player's Book prints seventeen Calling tables that I
 transcribe into chargen.json. This checks that transcription automatically: it parses the built
@@ -32,7 +32,7 @@ def weak(level):    return level // 3
 
 
 def load_data():
-    d = json.loads((ROOT / "GK/source/Data/chargen.json").read_text(encoding="utf-8"))
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
     out = {}
     for c in d["callings"]:
         out[c["name"]] = {

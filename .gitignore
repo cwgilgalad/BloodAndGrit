@@ -2,6 +2,8 @@
 GK/source/bin/
 GK/source/obj/
 GK/source/publish/
+GK/rules/bin/
+GK/rules/obj/
 GK/smoke/bin/
 GK/smoke/obj/
 # Never commit the published exe. Dropping ReadyToRun and single-file compression in
@@ -20,6 +22,9 @@ GritKeeper.zip
 # generated mirror like app/: overwritten from GK/source as a step of packaging, never
 # hand-edited, never carried between sessions in git. GK/source is the only source of truth.
 GritKeeper/source/
+# Same story for the rules library, mirrored beside source/ since v1.28.0 (the app's
+# ProjectReference points at ..\rules\, so the two must ship as siblings).
+GritKeeper/rules/
 # Per-release notes are a release asset like the zip: written to be pasted into the GitHub
 # Release, and redundant the moment it is published — the text then lives on the Release and
 # the history lives in CHANGELOG.md. Seven of them (v1.16.2–v1.20.1) accumulated at the repo

@@ -9,8 +9,20 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
-GritKeeper app v1.27.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.28.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
+
+**The rules are their own library (v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
+`net8.0` class library — no WinForms — holding the six headless files (`Core.cs`, `CharGen.cs`,
+`IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`) **and the five `Data/*.json`**. `GK/source` is
+the WinForms app on top of it; it and `GK/smoke` both reach it by `<ProjectReference>`. This
+replaced `smoke.csproj`'s hand-listed `<Compile Include>` per file, which could silently fall out
+of step with what the app contained — a seventh headless file, unlisted, went untested forever.
+**The JSON had to move with `Core.cs` and this is forced, not stylistic:** `Db.ReadData` resolves
+resources off `typeof(Db).Assembly`, so embedding it anywhere but beside `Db` makes the lookup
+find nothing and fall back to a `Data/` folder a standalone exe doesn't have — a break that shows
+up only in the published build. `CharGen.FlavorList` stays `internal`; the smoke rig reaches it
+through `<InternalsVisibleTo Include="smoke" />`.
 
 **Sign & spoor — the safe-table rule (v1.20.0):** the numbers live once, in `Rules.SpoorRow` /
 `SpoorRead` / `SpoorClockSegments` (`Core.cs`), and everything renders from there — the Reference
@@ -93,7 +105,11 @@ copy of `GK/source` (git-ignored since 2026-07-23, same as `GritKeeper/app/`) �
 and rewrite it from the master tree every package:
 ```powershell
 robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
+robocopy GK\rules  GritKeeper\rules  /MIR /XD bin obj publish
 ```
+Both trees, and they ship as **siblings** — the app's `<ProjectReference>` points at `..\rules\`,
+so flattening or renaming either one leaves the delivered source unable to build. `package.ps1`
+does both in a loop and its zip check asserts `rules/Core.cs` and `rules/Data/creatures.json`.
 (`/XD bin obj publish` keeps the .NET build output out of the deliverable; robocopy exit
 codes 0–7 are success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and
 re-zip to `GritKeeper.zip`.
@@ -256,7 +272,7 @@ Each book's cheapest editable form is **bolded**.
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
-| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/source/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
+| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
 
@@ -532,9 +548,18 @@ delivered folder **`GritKeeper/`**, zip **`GritKeeper.zip`** (were
 file-dialog filters, crash-report captions) were also renamed in v1.6.0.
 
 ### Source-tree layout (IMPORTANT — read before editing the app)
-There are **two** app directories under `BloodAndGrit/`. The working/master tree is **`GK/`**:
-`GK/source/` (the `.cs`, `.csproj`, `Data/`) and `GK/smoke/` (the headless logic-test project).
-**Edit `GK/source`, build/test in `GK/`.**
+The working/master tree is **`GK/`**, and since v1.28.0 it holds **three** projects:
+`GK/rules/` (the `net8.0` rules library — the six headless `.cs` files and `Data/*.json`),
+`GK/source/` (the WinForms app: the UI `.cs`, its `.csproj`, `app.ico`, `Assets/`), and
+`GK/smoke/` (the headless logic-test project). The app and the smoke rig both reference the
+library. **Edit `GK/rules` for rules and data, `GK/source` for UI; build/test in `GK/`.**
+
+**Which tree does a change belong in?** If the smoke rig should be able to test it, it goes in
+`GK/rules` — that is now the whole criterion, and it is enforced by the compiler rather than by
+remembering to add a line to `smoke.csproj`. Anything touching `System.Windows.Forms` or
+`System.Drawing` cannot go there and belongs in `GK/source`. (This is why `Rules.ResetForNewFight`,
+`MapGen.SettingTerrains` and `Db.RollAdventure` live where they do — logic that sat in `Tabs.cs`
+was untestable, and that is exactly how the v1.24.2 `NewFight()` bug escaped.)
 
 **The build output is `GK/source/bin/Release/net8.0-windows/win-x64/` — RID-qualified, and the
 assembly is named `GritKeeper`, not `BloodAndGritKeeper`.** The published single file lands in
@@ -914,9 +939,9 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
   LAN-hosted responsive page served by the app itself or Discord-as-state-surface → a full VTT
   (recommended against; the Trail Maps SVG already drops into Owlbear/Foundry/Roll20 today). The
-  **enabling refactor is worth doing on its own merits**: `GK/smoke` already compiles six
-  WinForms-free files by hand-listed `<Compile Include>`, and making those a real
-  `BloodAndGrit.Rules` class library both kills that drift risk and gives a Linux-runnable engine.
+  The enabling refactor is **DONE (v1.28.0)**: `GK/rules/BloodAndGrit.Rules.csproj` is a real
+  `net8.0` class library, so the drift risk is gone and there is a Linux-runnable engine to build
+  a bot or a server against. Every remaining rung is still unbuilt and undecided.
   Two gotchas recorded there: `Rules.Rng` is a process-wide static that `Reseed` swaps wholesale
   (fine for one table, a hazard for two), and webhook URLs / bot tokens are bearer credentials
   that belong in `prefs.json`, never `session.json`.

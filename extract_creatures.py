@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Extract KT/source/Data/creatures.json from a built bestiary.html.
+"""Extract GK/rules/Data/creatures.json from a built bestiary.html.
 
 Faithfulness gate: run first against the pre-editorial bestiary.html and diff
 the output against the existing creatures.json — they must match structurally
 before the new HTML's output is trusted.
 
-Usage: python extract_creatures.py bestiary.html KT/source/Data/creatures.json
+Usage: python extract_creatures.py bestiary.html GK/rules/Data/creatures.json
 """
 import html as H
 import json
