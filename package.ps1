@@ -88,9 +88,14 @@ if ($Staged) { Copy-Item (Join-Path $root "GritKeeper\README.md") (Join-Path $de
 Write-Host "  copied exe -> $(Split-Path -Leaf $dest)\app\"
 
 # --- 2. re-mirror the source (overwrite, not sync-and-diff — CLAUDE.md) ---
-robocopy "GK\source" (Join-Path $dest "source") /MIR /XD bin obj publish /NFL /NDL /NJH /NJS | Out-Null
-if ($LASTEXITCODE -ge 8) { throw "robocopy failed ($LASTEXITCODE)" }
-Write-Host "  re-mirrored GK\source -> $(Split-Path -Leaf $dest)\source"
+# Two trees since v1.28.0: the WinForms app and the rules library it references. They ship as
+# SIBLINGS because that is how they sit in GK/, and the app's <ProjectReference> points at
+# ..\rules\ — flatten or rename either one and the delivered source no longer builds.
+foreach ($tree in "source", "rules") {
+    robocopy "GK\$tree" (Join-Path $dest $tree) /MIR /XD bin obj publish /NFL /NDL /NJH /NJS | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "robocopy failed on GK\$tree ($LASTEXITCODE)" }
+    Write-Host "  re-mirrored GK\$tree -> $(Split-Path -Leaf $dest)\$tree"
+}
 
 # --- 3. zip the whole deliverable ---
 $zip = Join-Path $root "GritKeeper.zip"
@@ -104,7 +109,9 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $z = [IO.Compression.ZipFile]::OpenRead($zip)
 try {
     $names = $z.Entries.FullName
-    foreach ($must in @("app/GritKeeper.exe", "README.md", "source/Core.cs", "source/Data/creatures.json")) {
+    foreach ($must in @("app/GritKeeper.exe", "README.md", "source/MainForm.cs",
+                        "rules/Core.cs", "rules/Data/creatures.json",
+                        "rules/BloodAndGrit.Rules.csproj")) {
         if ($names -notcontains $must) { throw "the zip is missing $must" }
     }
     # And nothing that belongs to this machine. A settings file that ships is worse than a
