@@ -282,6 +282,10 @@ public partial class MainForm : Form
         if (mode == Mode) return;
         Mode = mode;
         ApplyModeTabs();
+        // The Reference deck is dealt per mode — the Keeper's leaves are not in a player's — and the
+        // tab is built once and reused, so switching tables has to re-deal it. Only when it has
+        // actually been opened: tabs are lazy, and building it here would defeat that.
+        if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
         if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
         Log($"Table set to {ModeLabel(mode)}.");
@@ -931,7 +935,12 @@ public partial class MainForm : Form
                 }
             }
         };
-        g.CellEndEdit += (s, e) => g.Rows[e.RowIndex].ErrorText = "";
+        // Bounds-checked: an edit that is still open when the list underneath is rebuilt (Undo,
+        // Load session, New fight) ends against a row index that no longer exists, and clearing the
+        // error text on a row that has gone throws out of an event handler — which is a crash, not
+        // a caught error.
+        g.CellEndEdit += (s, e) =>
+        { if (e.RowIndex >= 0 && e.RowIndex < g.Rows.Count) g.Rows[e.RowIndex].ErrorText = ""; };
     }
 
     // ============================================================ POSSE TAB
@@ -1321,7 +1330,8 @@ public partial class MainForm : Form
             return false;
         }
         tracker.Add(new Combatant
-        { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense });
+        { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax,
+          Defense = p.Defense, Init = ArrivalInit(p.Sheet) });
         if (!quiet) Log($"{p.Name} takes the field.");
         return true;
     }

@@ -109,12 +109,21 @@ static class Program
                     using var mf = new MainForm(mode);
                     Chk(mf != null && mf.Mode == mode, $"GUI: the WinForms graph constructs in {mode} mode");
                     // Tabs are realized lazily, so build the Reference deck on purpose: it proves
-                    // every leaf's title has a renderer beside it, and that the count the app's own
-                    // prose quotes is the count it actually holds.
+                    // every leaf's title has a renderer and an audience flag beside it, and that the
+                    // count the app's own prose quotes is the count it actually holds.
+                    //
+                    // Per mode, because the deck is dealt per mode: a Keeper gets the whole screen,
+                    // and a player's table must come up SHORT — the two Keeper's-Book leaves are not
+                    // theirs to read. A filter that quietly stopped filtering would look like nothing
+                    // at all at the table, so it is asserted from both ends.
+                    int want = MainForm.RefLeafCountFor(mode);
                     using (var refPage = mf.BuildReferenceTab())
-                        Chk(mf.RefDeckLength == MainForm.RefLeafCount,
-                            $"GUI: the Keeper's screen builds all {MainForm.RefLeafCount} leaves "
+                        Chk(mf.RefDeckLength == want,
+                            $"GUI: the {mode} screen builds all {want} of its leaves "
                             + $"(built {mf.RefDeckLength})");
+                    if (mode == RunMode.Player)
+                        Chk(want < MainForm.RefLeafCount,
+                            $"GUI: a player's screen is the shorter deck ({want} of {MainForm.RefLeafCount} leaves)");
                 }
 
                 // The soul wizard's nine steps, built for a spread of Callings that between them
