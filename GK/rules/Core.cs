@@ -302,16 +302,21 @@ public class Combatant : INotifyPropertyChanged
     /// reaches zero comes off. Only workings whose duration IS a round count are touched — "for a
     /// scene", "until dawn" and "until it is doctored" are the book's commonest durations and a
     /// combat round is the wrong unit for all three, so a clock that silently expired them would be
-    /// worse than no clock. The <see cref="WorkedEffect.Ends"/> test is belt to RoundsLeft's braces:
-    /// the two must agree, and this is the place where a disagreement would cost a Keeper an effect.
-    /// </summary>
+    /// worse than no clock.
+    ///
+    /// The test is on <see cref="WorkedEffect.RoundsLeft"/> alone and deliberately NOT also on
+    /// <see cref="WorkedEffect.Ends"/>. Adding Ends as a second condition looked like belt and
+    /// braces and was actually a migration bug: an effect saved before v1.29.0 carries no Ends at
+    /// all, deserializes to the default, and would have quietly stopped counting down in every
+    /// session anybody had already saved. RoundsLeft is the field that has always meant "counted",
+    /// so it stays the one that decides.</summary>
     public List<WorkedEffect> TickWorked()
     {
         var done = new List<WorkedEffect>();
         if (Worked == null) return done;
         foreach (var w in Worked.ToList())
         {
-            if (w.RoundsLeft < 0 || w.Ends != Rules.WorkEnds.Rounds) continue;
+            if (w.RoundsLeft < 0) continue;
             w.RoundsLeft--;
             if (w.RoundsLeft <= 0) { done.Add(w); Worked.Remove(w); }
         }
@@ -362,36 +367,40 @@ public class WorkedEffect
 
     [JsonIgnore] public string Mark => Kind == "Miracle" ? "✝" : Kind == "Power" ? "◈" : "✦";
 
-    /// <summary>How long is left, in the unit the book used rather than in rounds it never mentioned.
-    /// </summary>
+    /// <summary>How long is left, in the unit the book used rather than in rounds it never
+    /// mentioned. <see cref="RoundsLeft"/> wins when it is counting, because that is the field the
+    /// tracker actually ticks and an effect saved before v1.29.0 has a round count and no
+    /// <see cref="Ends"/> — it still has to read correctly.</summary>
     [JsonIgnore]
-    public string Duration => Ends switch
-    {
-        Rules.WorkEnds.Rounds when RoundsLeft > 0 => $"{RoundsLeft} rd" + (RoundsLeft == 1 ? "" : "s"),
-        Rules.WorkEnds.Rounds     => "spent",
-        Rules.WorkEnds.NextTurn   => "to their next turn",
-        Rules.WorkEnds.Scene      => "the scene",
-        Rules.WorkEnds.Hour       => "an hour",
-        Rules.WorkEnds.Day        => "a day",
-        Rules.WorkEnds.UntilDawn  => "until dawn",
-        Rules.WorkEnds.Instant    => "done",
-        _                         => "until ended",
-    };
+    public string Duration =>
+        RoundsLeft > 0 ? $"{RoundsLeft} rd" + (RoundsLeft == 1 ? "" : "s")
+      : RoundsLeft == 0 ? "spent"
+      : Ends switch
+        {
+            Rules.WorkEnds.NextTurn   => "to their next turn",
+            Rules.WorkEnds.Scene      => "the scene",
+            Rules.WorkEnds.Hour       => "an hour",
+            Rules.WorkEnds.Day        => "a day",
+            Rules.WorkEnds.UntilDawn  => "until dawn",
+            Rules.WorkEnds.Instant    => "done",
+            _                         => "until ended",
+        };
 
     /// <summary>The terse tag in the grid's Worked column. A counted working shows its count; the
     /// rest show the word the book used, because "(scene)" and "(dawn)" tell a Keeper something and
     /// a bare name tells them nothing about when to stop applying it.</summary>
     [JsonIgnore]
-    public string Chip => $"{Mark} {Name}" + Ends switch
-    {
-        Rules.WorkEnds.Rounds     => $" ({RoundsLeft})",
-        Rules.WorkEnds.NextTurn   => " (turn)",
-        Rules.WorkEnds.Scene      => " (scene)",
-        Rules.WorkEnds.Hour       => " (hour)",
-        Rules.WorkEnds.Day        => " (day)",
-        Rules.WorkEnds.UntilDawn  => " (dawn)",
-        _                         => "",
-    };
+    public string Chip => $"{Mark} {Name}" +
+        (RoundsLeft >= 0 ? $" ({RoundsLeft})"
+       : Ends switch
+        {
+            Rules.WorkEnds.NextTurn   => " (turn)",
+            Rules.WorkEnds.Scene      => " (scene)",
+            Rules.WorkEnds.Hour       => " (hour)",
+            Rules.WorkEnds.Day        => " (day)",
+            Rules.WorkEnds.UntilDawn  => " (dawn)",
+            _                         => "",
+        });
 
     /// <summary>The whole of it, for a tooltip or a menu: what it is, who caused it, who it landed
     /// on, what it cost, what it did, when it stops — and, for a Sign, what it costs the worker
