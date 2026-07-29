@@ -16,7 +16,7 @@
     <!-- The ONLY version in the project. MainForm.AppVersion reads it back off the assembly,
          and package.ps1 names the release tag from the built exe's FileVersion — so this number
          is what ships, whatever any other file says. Bump it with every release. -->
-    <Version>1.27.0</Version>
+    <Version>1.28.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -78,16 +78,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Embedded (not copied) so the published exe is a TRUE single-file standalone: one .exe,
-         no Data/ folder required beside it. Db.ReadData loads these from the assembly, and
-         falls back to Data/ on disk for the smoke rig / dev build. -->
-    <EmbeddedResource Include="Data\creatures.json" />
-    <EmbeddedResource Include="Data\tables.json" />
-    <EmbeddedResource Include="Data\tables_extra.json" />
-    <EmbeddedResource Include="Data\chargen.json" />
-    <EmbeddedResource Include="Data\rides.json" />
+    <!-- The game's rules, and the JSON they read, now live in their own WinForms-free library
+         (GK/rules) that this app and the smoke rig both reference. Everything in this project
+         is the Windows UI on top of it. The Data\*.json embedding moved there with Core.cs,
+         because Db.ReadData resolves resources off typeof(Db).Assembly — see that csproj.
+         The published exe is still a true single-file standalone: PublishSingleFile bundles
+         this DLL, and its embedded resources go with it. -->
+    <ProjectReference Include="..\rules\BloodAndGrit.Rules.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- window/title-bar icon + the faint emblem watermark, loaded from the assembly so
-         the single-file exe stays truly single-file -->
+         the single-file exe stays truly single-file. These stay here: they are the app's
+         face, not the game's rules. -->
     <EmbeddedResource Include="app.ico" />
     <EmbeddedResource Include="Assets\emblem.png" />
   </ItemGroup>

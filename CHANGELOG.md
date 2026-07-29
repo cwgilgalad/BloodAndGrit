@@ -8,6 +8,47 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.28.0 — the rules are their own library now (2026-07-28).**
+
+  A structural change with **no behavior change**: the game and the Windows UI became two
+  projects instead of one. Nothing a Keeper can see moved; the exe is still a single
+  self-contained file and still holds all its data inside itself.
+
+  - **`GK/rules/BloodAndGrit.Rules.csproj`** — a plain `net8.0` class library, no WinForms
+    reference at all, holding the six headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`,
+    `Horror.cs`, `MapGen.cs`, `Pdf.cs`) and the five `Data/*.json`. `GK/source` is now the
+    WinForms app on top of it; both it and `GK/smoke` reach it by `<ProjectReference>`.
+  - **Why now, and why it was worth doing on its own merits.** `smoke.csproj` carried a
+    hand-listed `<Compile Include="..\source\Foo.cs" />` for each of the six — a list that
+    could silently fall out of step with what the app actually contained. Add a seventh
+    headless file, forget to list it, and it went untested forever with nothing to say so.
+    A project reference cannot drift that way. It also makes "the rules are one thing, the UI
+    is another" structural rather than a convention, which is the discipline this project
+    already insists on for every number it prints.
+  - **The data had to move with `Core.cs`, and that is forced, not stylistic.** `Db.ReadData`
+    resolves embedded resources off `typeof(Db).Assembly`. Leave the JSON embedded in the app
+    while `Db` lives in the library and the lookup finds nothing, then falls back to a `Data/`
+    folder on disk that a standalone exe does not have — a failure that would appear only in
+    the published build, never in a dev run. The JSON is embedded in the library instead, and
+    the comment in `Core.cs` now says which assembly pins it.
+  - **The smoke rig no longer copies `Data/*.json` beside its binary.** It doesn't need to:
+    the assembly it now loads carries them. `CharGen.FlavorList` stays `internal` and the rig
+    still reaches it, via `<InternalsVisibleTo Include="smoke" />` — the flavor-pool depth
+    floors were worth keeping and were not worth widening the API for.
+  - **`package.ps1` mirrors both trees, as siblings** (`source/` and `rules/`), because the
+    app's project reference points at `..\rules\` — flatten either and the delivered source
+    stops building. Its zip check now asserts `rules/Core.cs`,
+    `rules/Data/creatures.json` and the library csproj are present, not the old
+    `source/Core.cs`. `verify_rules.py` reads `GK/rules/Data/chargen.json`.
+  - **Verified:** library builds 0/0 on `net8.0` with no WinForms; app builds 0/0; smoke
+    **12,144 passed, 0 failed**; `dotnet publish` still yields one 155 MB self-contained exe;
+    that exe's `--selftest` passes 20/20, which is the real proof the embedded JSON still
+    resolves once the library is bundled inside the single file; `verify_rules.py` 697
+    cross-checks, 0 drift.
+  - **What this unblocks** (see `DESIGN-online-play.md`): a rules engine that runs on Linux,
+    which every rung of the Discord/online-play ladder needs before it needs anything else.
+    Still not built, and this commit takes no position on whether it should be.
+
 - **GritKeeper v1.27.0 — the Ledger's figures, the wizard's tooltips, and buying more than one
   (2026-07-27, all three user-reported).**
 

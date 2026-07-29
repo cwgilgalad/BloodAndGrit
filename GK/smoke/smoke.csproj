@@ -9,12 +9,12 @@
     <RollForward>LatestMajor</RollForward>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\source\Core.cs" />
-    <Compile Include="..\source\CharGen.cs" />
-    <Compile Include="..\source\IronCode.cs" />
-    <Compile Include="..\source\Horror.cs" />
-    <Compile Include="..\source\MapGen.cs" />
-    <Compile Include="..\source\Pdf.cs" />
-    <None Include="..\source\Data\*.json" Link="Data\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Was a hand-listed <Compile Include="..\source\Foo.cs" /> for each of the six headless
+         files, plus a copy of Data\*.json into the output for Db.ReadData's on-disk fallback.
+         Both are gone: the six files are the rules library now, so this rig tests whatever that
+         library contains rather than whatever someone remembered to list here, and the JSON is
+         embedded in that assembly — which is the one typeof(Db).Assembly resolves to — so
+         nothing needs copying beside the test binary. -->
+    <ProjectReference Include="..\rules\BloodAndGrit.Rules.csproj" />
   </ItemGroup>
 </Project>

@@ -901,9 +901,13 @@ public static class Db
         }
     }
 
-    // The JSON data is EMBEDDED in the app assembly so the published exe is a TRUE single-file
-    // standalone (one .exe, no Data/ folder needed beside it). Falls back to Data/ on disk for
-    // the dev build and the smoke rig, whose assemblies don't carry the embedded copies.
+    // The JSON data is EMBEDDED in THIS assembly — the rules library, the one that also holds
+    // Db — so the published exe is a TRUE single-file standalone (one .exe, no Data/ folder
+    // beside it) and the smoke rig reads the same bytes without anything being copied next to
+    // it. Note the resource lookup below keys off typeof(Db).Assembly, which is what pins the
+    // JSON to this project: embed it anywhere else and this silently finds nothing.
+    // The on-disk fallback is a courtesy for a host that wants to override the data without
+    // rebuilding; neither the app nor the smoke rig relies on it any more.
     public static string ReadDataFile(string fileName) => ReadData(fileName);
 
     static string ReadData(string fileName)
