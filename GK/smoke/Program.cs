@@ -455,6 +455,31 @@ foreach (var (table, floor) in new[]
     var saved = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
         System.Text.Json.JsonSerializer.Serialize(field[2]));
     T("turn: who has gone survives save and load", saved.HasActed == field[2].HasActed);
+
+    // ---- initiative is a Notice check (Player's Book Ch. XI) ----
+    // The tracker rolled a bare d20 for everyone until v1.29.0 while the app's own Reference deck
+    // printed the rule. Two things have to hold: the die is still a d20, and the bonus is really
+    // added — and the floor at 1 has to hold, or a negative bonus mints a "0" that the tracker
+    // reads as "has not rolled yet".
+    bool initInBand = true, initFloored = true, initMoved = false;
+    for (int i = 0; i < 4000; i++)
+    {
+        int plain = Rules.RollInitiative(0);
+        if (plain < 1 || plain > 20) initInBand = false;
+        if (Rules.RollInitiative(-9) < 1) initFloored = false;
+        if (Rules.RollInitiative(5) > 20) initMoved = true;      // the bonus reaches past a bare d20
+    }
+    T("initiative: an unmodified roll is a d20", initInBand);
+    T("initiative: a bonus actually moves the result", initMoved);
+    T("initiative: never lands on 0, which means 'not rolled yet'", initFloored);
+
+    // The bonus itself comes off the sheet's Notice skill and nowhere else, so the tracker cannot
+    // drift onto a different skill than the rule names.
+    var scout = CharGen.Generate(6, false, "Mountain Man");
+    T("initiative: the bonus is exactly the sheet's Notice bonus",
+        CharGen.InitiativeBonus(scout) == CharGen.SkillBonus(scout, "Notice"));
+    T("initiative: no sheet, no bonus — a creature rolls the plain die",
+        CharGen.InitiativeBonus(null) == 0);
 }
 
 // ---- Nerve-loss ladder ----

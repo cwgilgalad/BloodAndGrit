@@ -176,6 +176,24 @@ public partial class MainForm
     Panel encBar;
     int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
 
+    /// <summary>One line of a creature picker. The list used to hold bare names, which left out the
+    /// single fact the two tabs that use it are FOR: a creature's Tier is the whole of the encounter
+    /// budget (Long Odds) and the whole of the safe-table rule, and picking blind meant costing the
+    /// fight only after the thing was already on the plan. User-asked.
+    ///
+    /// <see cref="ToString"/> is what the type-ahead matches and what lands in the box when a line is
+    /// picked, so it keeps the NAME first — autocomplete matches on a prefix, and a leading "Tier IV"
+    /// would make every creature untypeable. <see cref="Sep"/> is what <see cref="PickedCreature"/>
+    /// cuts the name back out at.</summary>
+    sealed class CreatureLine
+    {
+        public const string Sep = "  ·  ";
+        public Creature C { get; }
+        public string TierText { get; }
+        public CreatureLine(Creature c) { C = c; TierText = "Tier " + Rules.Roman(c.tier); }
+        public override string ToString() => C.name + Sep + TierText;
+    }
+
     // a creature-name picker with type-ahead, shared by the Encounter and Tracker tabs
     static ComboBox CreaturePicker(int width)
     {
@@ -184,10 +202,45 @@ public partial class MainForm
             Width = width, DropDownStyle = ComboBoxStyle.DropDown,
             AutoCompleteMode = AutoCompleteMode.SuggestAppend,
             AutoCompleteSource = AutoCompleteSource.ListItems,
-            Margin = new Padding(3, 5, 3, 3)
+            Margin = new Padding(3, 5, 3, 3),
+            // Owner-drawn so the Tier can sit hard against the right edge in its own ink. Padding the
+            // string instead would not line up: the list is drawn in a proportional font, where a run
+            // of spaces is not a column.
+            DrawMode = DrawMode.OwnerDrawFixed
         };
-        foreach (var c in Db.Creatures.OrderBy(c => c.name)) box.Items.Add(c.name);
+        foreach (var c in Db.Creatures.OrderBy(c => c.name)) box.Items.Add(new CreatureLine(c));
+        box.DrawItem += (s, e) =>
+        {
+            e.DrawBackground();
+            if (e.Index < 0 || e.Index >= box.Items.Count) return;
+            var line = (CreatureLine)box.Items[e.Index];
+            bool sel = (e.State & DrawItemState.Selected) != 0;
+            var r = e.Bounds; r.Inflate(-3, 0);
+            const TextFormatFlags mid = TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix;
+            TextRenderer.DrawText(e.Graphics, line.TierText, box.Font, r,
+                sel ? SystemColors.HighlightText : Gold, mid | TextFormatFlags.Right);
+            // The name is drawn second and clipped short of the Tier, so a long name eats into its
+            // own ellipsis rather than painting through the number the list was added for.
+            var nameBox = new Rectangle(r.X, r.Y,
+                Math.Max(10, r.Width - TextRenderer.MeasureText(line.TierText, box.Font).Width - 12), r.Height);
+            TextRenderer.DrawText(e.Graphics, line.C.name, box.Font, nameBox,
+                sel ? SystemColors.HighlightText : Ink, mid | TextFormatFlags.Left | TextFormatFlags.EndEllipsis);
+            e.DrawFocusRectangle();
+        };
         return box;
+    }
+
+    /// <summary>The creature a picker is sitting on. Resolved from the TEXT rather than the selected
+    /// item, because the text is what the Keeper can see and it stays right after they type over a
+    /// selection — a stale SelectedItem is exactly how a picker comes to add something other than
+    /// what it is showing. The Tier suffix the list appends is cut back off, and a bare name typed
+    /// by hand still resolves, so nobody has to know the list decorates itself.</summary>
+    static Creature PickedCreature(ComboBox box)
+    {
+        string t = (box?.Text ?? "").Trim();
+        int cut = t.IndexOf('·');
+        if (cut > 0) t = t.Substring(0, cut).Trim();
+        return t.Length == 0 ? null : Db.Find(t);
     }
 
     TabPage BuildEncounterTab()
@@ -205,7 +258,8 @@ public partial class MainForm
 
         top.Controls.Add(Lbl("Add a creature:"));
         encPick = CreaturePicker(230);
-        Tip.SetToolTip(encPick, "Type a few letters or pick from the list, then Add");
+        Tip.SetToolTip(encPick, "Type a few letters or pick from the list, then Add. Every line "
+            + "carries its creature's Tier — that is what the cost below is reckoned from.");
         encPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToEncounter(); e.SuppressKeyPress = true; } };
         top.Controls.Add(encPick);
         top.Controls.Add(Lbl(" ×"));
@@ -294,7 +348,7 @@ public partial class MainForm
 
     void AddPickToEncounter()
     {
-        var c = Db.Find((encPick.Text ?? "").Trim());
+        var c = PickedCreature(encPick);
         if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         int n = (int)encQty.Value;
         for (int i = 0; i < n; i++) encounter.Add(new EncounterPick(c));
@@ -448,7 +502,7 @@ public partial class MainForm
 
     void AddPickToTracker()
     {
-        var c = Db.Find((trkPick.Text ?? "").Trim());
+        var c = PickedCreature(trkPick);
         if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         AddCreatureToTracker(c, (int)trkQty.Value);
     }
@@ -536,7 +590,9 @@ public partial class MainForm
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
         // ---- row 3: the field itself — ordering it, filling it, and clearing it ----
-        bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110, "Roll a d20 for every combatant and sort by it (Ctrl+I)"));
+        bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110,
+            "Roll for the whole field and sort by it (Ctrl+I). Initiative is a Notice check "
+            + "(Ch. XI), so a soul with a sheet adds their Notice bonus."));
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
             ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
             ("Initiative — low to high", (s, e) => SortTracker(TrkSort.InitAsc)),
@@ -550,7 +606,8 @@ public partial class MainForm
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Lbl("Foe:"));
         trkPick = CreaturePicker(200);
-        Tip.SetToolTip(trkPick, "Any creature in the Bestiary — type a few letters, then Add");
+        Tip.SetToolTip(trkPick, "Any creature in the Bestiary, each line showing its Tier — type a "
+            + "few letters, then Add. A thing two Tiers over the posse goes on the trail, not the field.");
         trkPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToTracker(); e.SuppressKeyPress = true; } };
         bar.Controls.Add(trkPick);
         bar.Controls.Add(Lbl(" ×"));
@@ -567,7 +624,7 @@ public partial class MainForm
         // Everything past this line throws work away. A wider gap and a different face, so the hand
         // that means "＋ Add" never lands on "Clear field" — they were adjacent and identical before.
         bar.Controls.Add(BarSep(18));
-        bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); }, 85, "Remove the selected combatant from the field (or press Delete)"));
+        bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => RemoveSelectedCombatant(), 85, "Remove the selected combatant from the field (or press Delete). A posse soul is asked about first."));
         bar.Controls.Add(DangerBtn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
         bar.Controls.Add(DangerBtn("Clear field", (s, e) => { if ((tracker.Count > 0 || signs.Count > 0) && Confirm("Clear the whole battlefield?")) { tracker.Clear(); signs.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and the sign on the trail, and reset to Round 1"));
 
@@ -687,15 +744,34 @@ public partial class MainForm
         };
         trkGrid.CellEndEdit += (s, e) =>
         {
+            // Guard the row index. An edit can still be open when the list underneath is rebuilt —
+            // Undo and Redo are form-level shortcuts that work mid-edit, and Load session and New
+            // fight both empty the tracker — and WinForms then ends the edit against a row that is
+            // gone. The Posse grid has always had this guard; this one did not, so the throw took
+            // the whole app down in the middle of a fight, which is the worst possible moment.
+            if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
             var c = tracker[e.RowIndex];
             if (c.BloodMax > 0 && c.BloodCur > c.BloodMax) c.BloodCur = c.BloodMax;
-            if (c.IsPC) { var p = party.FirstOrDefault(x => x.Name == c.Name); if (p != null) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); } }
+            // SoulOf, not a match on Name. The mirror is keyed to the soul's stable id precisely so
+            // it survives a rename (see SoulOf); this site still matched by name, so typing Blood
+            // straight into the grid quietly stopped reaching a renamed soul while the Damage button
+            // beside it went on working — the two disagreed and neither said so.
+            if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh();
         };
         trkGrid.KeyDown += (s, e) =>
         {
-            if (e.KeyCode == Keys.Delete && !trkGrid.IsCurrentCellInEditMode)
-            { if (trkGrid.CurrentRow?.DataBoundItem is Combatant c) tracker.Remove(c); e.Handled = true; }
+            if (e.KeyCode != Keys.Delete || trkGrid.IsCurrentCellInEditMode) return;
+            e.Handled = true;
+            // Delete on the Conditions cell CLEARS the cell, which is what a grid does everywhere
+            // else in Windows. It used to take the whole combatant off the field instead — and rows
+            // are full-select here, so nothing on screen distinguished the cell being deleted from
+            // the row being deleted. Reaching to wipe a stale "Frightened 2" cost you the foe.
+            if (trkGrid.CurrentCell?.OwningColumn?.Name == "Conditions"
+                && trkGrid.CurrentRow?.DataBoundItem is Combatant cc
+                && !string.IsNullOrWhiteSpace(cc.Conditions))
+            { cc.Conditions = ""; trkGrid.Refresh(); Log($"{cc.Name}: conditions cleared."); return; }
+            RemoveSelectedCombatant();
         };
         // double-click opens the combatant's card: foes get their Bestiary stat block,
         // posse members get their Ledger — the same windows the source tabs open
@@ -705,8 +781,9 @@ public partial class MainForm
             var t = tracker[e.RowIndex];
             if (!string.IsNullOrEmpty(t.Ref))
             { var c = Db.Find(t.Ref); if (c != null) ShowCreatureCard(c); }
-            else if (t.IsPC)
-            { var p = party.FirstOrDefault(x => x.Name == t.Name); if (p != null) ShowSoulCard(p); }
+            // SoulOf, for the same reason as the Blood mirror above: a name match left a renamed
+            // soul's row opening nothing at all on a double-click, with no error to explain it.
+            else if (SoulOf(t) is PartyMember p) ShowSoulCard(p);
         };
 
         Tip.SetToolTip(trkGrid, "Double-click a combatant for their card — right-click for everything that can be done to them");
@@ -765,7 +842,7 @@ public partial class MainForm
             MISep(menu);
             if (!string.IsNullOrEmpty(c.Ref)) MI(menu, "Open the stat block", () => { if (Db.Find(c.Ref) is Creature b) ShowCreatureCard(b); });
             else if (c.IsPC && SoulOf(c) is PartyMember soul) MI(menu, "Open the Ledger", () => ShowSoulCard(soul));
-            MI(menu, "Take them off the field", () => tracker.Remove(c));
+            MI(menu, "Take them off the field", () => RemoveSelectedCombatant());
         });
 
         // Docking is resolved last-added-first, so the sign strip goes on AFTER the grid and
@@ -828,16 +905,52 @@ public partial class MainForm
         win.Show(this);
     }
 
+    /// <summary>Take the selected combatant off the field. One method rather than three lambdas,
+    /// because the bar's ✕ Remove, the Delete key and the right-click line all mean the same thing
+    /// and had each written it out separately — which is how the Delete key came to skip the
+    /// question the others should have been asking too.</summary>
+    void RemoveSelectedCombatant()
+    {
+        if (trkGrid?.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        // A foe coming off the field is the routine end of a fight and is not worth a dialog. A
+        // posse soul is not routine — it is one keystroke from the arrow that got you to the row,
+        // and the soul's whole turn state goes with it. The Posse tab has always asked before
+        // removing a soul; the tracker never did.
+        if (c.IsPC && !Confirm($"Take {c.Name} off the field? Their Posse sheet is untouched.")) return;
+        tracker.Remove(c);
+    }
+
+    /// <summary>The initiative a combatant walks in on. Zero while nobody has rolled — the tracker's
+    /// own word for "not in the order yet" — but once the field HAS rolled, a new arrival rolls with
+    /// it. Landing every mid-fight arrival at 0 put it at the bottom of an order everyone else had a
+    /// d20 for, so the thing that just kicked the door in went last, every single time.</summary>
+    internal int ArrivalInit(CharacterSheet sheet = null)
+        => tracker.Any(t => t.Init != 0) ? Rules.RollInitiative(CharGen.InitiativeBonus(sheet)) : 0;
+
     void RollInitiative()
     {
         // Rolling initiative is the top of a fight: the order is fresh, so nobody has gone yet.
         // This method predates HasActed, so without the reset the "spent" greying and the acting
         // row carried over from the last fight into the new order — the field showed souls as
         // already done on a round that had not started.
-        foreach (var c in tracker) { c.Init = Rules.Rng.Next(1, 21); c.Acting = false; c.HasActed = false; }
+        //
+        // And it is a NOTICE check (Player's Book Ch. XI), which this rolled as a bare d20 for
+        // eleven releases while the app's own Reference deck printed the rule two tabs away. A soul
+        // with a sheet now brings their Notice bonus; a creature or a hand-entered NPC has none in
+        // its stat block, so it keeps the plain die rather than being handed an invented number.
+        int scouted = 0;
+        foreach (var c in tracker)
+        {
+            int bonus = CharGen.InitiativeBonus(SoulOf(c)?.Sheet);
+            if (bonus != 0) scouted++;
+            c.Init = Rules.RollInitiative(bonus);
+            c.Acting = false; c.HasActed = false;
+        }
         SortTracker(TrkSort.InitDesc);
         UpdateTurnLine();
-        Log("Initiative rolled for the field.");
+        Log(scouted == 0
+            ? "Initiative rolled for the field."
+            : $"Initiative rolled for the field — a Notice check, with {scouted} soul(s) adding their own bonus.");
     }
 
     /// <summary>Put the round on the bar without the spinner treating it as the Keeper's own edit.
@@ -971,7 +1084,7 @@ public partial class MainForm
         if (f.ShowDialog(this) == DialogResult.OK && !string.IsNullOrWhiteSpace(name.Text))
         {
             int b = (int)blood.Value;
-            tracker.Add(new Combatant { Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value, IsPC = pc.Checked });
+            tracker.Add(new Combatant { Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value, IsPC = pc.Checked, Init = ArrivalInit() });
             Log($"Tracker: {name.Text.Trim()} added by hand ({b} Blood).");
         }
     }
@@ -1277,7 +1390,7 @@ public partial class MainForm
             {
                 Name = bare ? c.name : $"{c.name} #{k}",
                 BloodCur = c.BloodValue, BloodMax = c.BloodValue,
-                Defense = c.DefenseValue, Ref = c.name
+                Defense = c.DefenseValue, Ref = c.name, Init = ArrivalInit()
             });
         }
         Log(count == 1
@@ -2063,8 +2176,39 @@ public partial class MainForm
         "Skills, Saves & Abilities", "Running in Town",
     };
 
+    /// <summary>Which leaves are the KEEPER's side of the screen, paired with the titles above.
+    /// A player's table gets a rules reference; it does not get the Keeper's book. The two marked
+    /// here are the two whose content comes wholly out of the Keeper's Book and appears nowhere in
+    /// the Player's Book at all (checked against the built HTML, not judged by eye):
+    ///
+    ///   The Long Odds   — Keeper's Book Ch. IV. Threat by Tier is every creature's Defense, Attack,
+    ///                     Blood, saves, damage and Dread DC before the posse has met one; the
+    ///                     encounter budget is the Keeper's dial for how hard tonight is; and the
+    ///                     safe-table rule tells a player which horrors the app will refuse to put
+    ///                     in front of them. Reading it is reading the answers.
+    ///   Running in Town — Keeper's Book Ch. XIV, and the leaf's own header says so. It is running
+    ///                     advice end to end ("charge for it; never forbid it", how a city cult
+    ///                     incorporates, how the last scene usually goes), which is craft for the
+    ///                     chair, not a rule anyone at the table plays by.
+    ///
+    /// Everything else stays: the DC ladder, the Nerve-loss-by-Tier table and the rest all print in
+    /// the Player's Book, so hiding them would be keeping a player from their own book.</summary>
+    static readonly bool[] RefLeafKeeperOnly =
+    {
+        false, false, false, false,
+        false, false, false, false,
+        true,  false, false,
+        false, true,
+    };
+
     /// <summary>How many leaves the Keeper's screen holds — derived, never typed twice.</summary>
     internal static int RefLeafCount => RefLeafTitles.Length;
+
+    /// <summary>How many leaves a given table's screen holds. Derived from the same two arrays for
+    /// the same reason the total is: the five-minute lesson quotes this number and a player must not
+    /// be told to look for a leaf their deck does not carry.</summary>
+    internal static int RefLeafCountFor(RunMode mode)
+        => mode == RunMode.Player ? RefLeafKeeperOnly.Count(k => !k) : RefLeafTitles.Length;
 
     /// <summary>The deck as actually built. Zero until the Reference tab is realized (tabs are
     /// lazy); <c>--selftest</c> builds it on purpose to check the titles and the renderers agree.
@@ -2139,8 +2283,20 @@ public partial class MainForm
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
 
-        // Paired with RefLeafTitles, in that order. Kept as two lists so the titles can be a
-        // static the prose reads without constructing a form.
+        BuildRefDeck();
+        referencePage.Controls.Add(Pad(refView, 14));
+        referencePage.Controls.Add(bar);
+        RefShow(0);
+        return referencePage;
+    }
+
+    /// <summary>Deal the deck for the table this app is running. Split out of the tab build so a mode
+    /// switched live from the Table menu re-deals rather than leaving a player looking at the deck a
+    /// Keeper was handed.</summary>
+    void BuildRefDeck()
+    {
+        // Paired with RefLeafTitles and RefLeafKeeperOnly, in that order. Kept as separate lists so
+        // the titles can be a static the prose reads without constructing a form.
         var leaves = new Action<RichTextBox>[]
         {
             RefLeafRoll, RefLeafIronCode, RefLeafWounds, RefLeafConditions,
@@ -2148,16 +2304,13 @@ public partial class MainForm
             RefLeafLongOdds, RefLeafArms, RefLeafGoods,
             RefLeafSkills, RefLeafCity,
         };
-        if (leaves.Length != RefLeafTitles.Length)
+        if (leaves.Length != RefLeafTitles.Length || RefLeafKeeperOnly.Length != RefLeafTitles.Length)
             throw new InvalidOperationException(
-                $"Reference deck: {RefLeafTitles.Length} titles against {leaves.Length} leaves — "
-                + "add the title beside the renderer.");
-        refDeck = RefLeafTitles.Zip(leaves, (t, r) => (t, r)).ToArray();
-
-        referencePage.Controls.Add(Pad(refView, 14));
-        referencePage.Controls.Add(bar);
-        RefShow(0);
-        return referencePage;
+                $"Reference deck: {RefLeafTitles.Length} titles against {leaves.Length} leaves and "
+                + $"{RefLeafKeeperOnly.Length} audience flags — add the title AND the flag beside the renderer.");
+        refDeck = RefLeafTitles.Zip(leaves, (t, r) => (t, r))
+            .Where((_, i) => Mode != RunMode.Player || !RefLeafKeeperOnly[i])
+            .ToArray();
     }
 
     void RefShow(int i)

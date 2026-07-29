@@ -706,6 +706,18 @@ public static class Rules
 
     // ---- whose turn it is, and when the round is over ----
 
+    /// <summary>A roll for a place in the order. The Player's Book is plain about what this is —
+    /// "Initiative: a Notice check" — and the tracker rolled a bare d20 for everyone for eleven
+    /// releases, so a Scout with Notice +9 took their place in the line exactly as often as the
+    /// bandit beside them. The bonus comes from the roller's sheet where there is one
+    /// (<see cref="CharGen.InitiativeBonus"/>); a creature has no skill ranks in its stat block, so
+    /// it passes 0 and rolls the plain die rather than being handed a number the book never gave it.
+    ///
+    /// Floored at 1 on purpose: a low-Wits soul can carry a negative bonus, and 0 is the value the
+    /// tracker uses to mean "has not rolled yet". A rolled 0 and an unrolled 0 must not look alike.
+    /// </summary>
+    public static int RollInitiative(int noticeBonus) => Math.Max(1, Rng.Next(1, 21) + noticeBonus);
+
     /// <summary>Can this one still be handed a turn this round? A trace takes none, someone bleeding
     /// out takes none, and nobody takes two.</summary>
     public static bool CanAct(Combatant c) => c != null && !c.HasActed && !c.Down && !c.IsSign;

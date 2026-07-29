@@ -235,9 +235,13 @@ public partial class MainForm
           "tweaked rather than arguing). → Posse seats them at the table; Copy sheet takes the text anywhere.");
 
         H("9 · The rules at your elbow  (Reference)");
-        T($"A Keeper's screen in {RefLeafCount} leaves — the four degrees, the DC ladder, the Iron Code, wounds, " +
-          "every condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, Miracles, the Long Odds and " +
-          "the safe-table rule, running in town, and the book's own arms, goods, and skills tables. Turn the deck " +
+        // Both the count and the contents follow the table. A player's deck leaves out the two
+        // Keeper's-Book leaves, and prose that listed them anyway would send a player hunting the
+        // deck for something that is deliberately not in it.
+        T($"A Keeper's screen in {RefLeafCountFor(Mode)} leaves — the four degrees, the DC ladder, the Iron Code, wounds, " +
+          "every condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, Miracles, " +
+          (Mode == RunMode.Player ? "" : "the Long Odds and the safe-table rule, running in town, ") +
+          "and the book's own arms, goods, and skills tables. Turn the deck " +
           "with the ◀ ▶ buttons or the Left and Right arrow keys. When a ruling is needed and the book is across " +
           "the room, it's here.");
 
