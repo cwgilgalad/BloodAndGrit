@@ -1052,6 +1052,23 @@ and every one is recoverable from history.
 | `add_index.py` | **untracked** | Dead: a one-shot against `player-src.html`, a file retired 2026-07-18, marked "do not re-run" since. |
 
 The repo is **PUBLIC and stays public** — that is deliberate; don't offer to change it.
+
+**Landmine, hit on 2026-07-29: `git rm --cached` on a session branch DELETES THE FILE when that
+branch is merged.** `--cached` only touches the index, so on the branch the working file survives
+and everything looks right. But what the commit records is *the path being removed from the tree* —
+and merging that into `main`, where the file is still tracked, makes git perform a real
+working-tree deletion. All six files above vanished off the disk at the `--no-ff` merge, including
+`autosync.ps1` (breaking the scheduled backup) and `.claude/commands/session-start.md`.
+
+Recovery, and the right way to do it byte-exactly — `Set-Content` on a piped `git cat-file` is NOT
+byte-exact, because PowerShell's string pipeline rewrites the line endings:
+```powershell
+git checkout <pre-merge-sha> -- <paths>     # restores the working file exactly (and stages it)
+git reset -q HEAD -- <paths>                # unstage, so HEAD keeps "deleted" and the file stays
+```
+Then confirm with `git hash-object <path>` against `git rev-parse <sha>:<path>` — equal hashes or it
+isn't restored. **Next time: untrack on `main` directly, or re-verify every untracked path is still
+on disk AFTER the merge, not just after the `rm --cached`.**
 - **HRHS Scripts is local-only by design** — no remote, never push it to GitHub. Every other
   repo syncs to `github.com/cwgilgalad`.
 
