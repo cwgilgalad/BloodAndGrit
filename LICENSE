@@ -1,0 +1,92 @@
+Blood & Grit — the game and the app
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+(CC BY-NC-SA 4.0)
+
+Copyright (c) 2026 Cole Williams. All rights not granted below are reserved.
+
+
+================================================================================
+THE SHORT VERSION
+================================================================================
+
+You are free to:
+
+  SHARE    — copy and redistribute this work in any medium or format
+  ADAPT    — remix, transform, and build upon it
+
+Under these terms:
+
+  ATTRIBUTION     — credit "Blood & Grit by Cole Williams", link to this
+                    license, and say if you changed anything.
+  NONCOMMERCIAL   — you may NOT use it for commercial purposes. Play it, run it
+                    at your table, study it, fork it, teach with it, write for
+                    it — but do not sell it, sell access to it, or build a
+                    commercial product on it.
+  SHAREALIKE      — if you build on it, release your version under this same
+                    license, so it stays as open as you found it.
+
+No additional restrictions: you may not apply legal terms or technological
+measures that legally restrict others from doing anything this license permits.
+
+
+================================================================================
+WHAT THIS COVERS
+================================================================================
+
+Everything in this repository, both halves of it:
+
+  THE GAME
+    * The Player's Book, The Keeper's Book, and The Bestiary — text, tables,
+      stat blocks and layout, in every form they ship in: the built HTML, the
+      PDFs, and the prose embedded as strings inside build_player.py,
+      build_keeper.py and build_bestiary.py.
+    * assets/ — the cover emblem.
+
+  THE SOFTWARE
+    * GK/ — GritKeeper: the C#/.NET rules library, the WinForms app, the test
+      suite, and the JSON data under GK/rules/Data/.
+    * The Python build pipeline and verification tools (build_*.py,
+      nav_tools.py, perdition_map.py, pag_patch.py, make_pdf.py,
+      extract_creatures.py, update_readme.py, verify_rules.py, measure_*.py,
+      audit_*.py).
+    * sign.ps1, package.ps1, and the GritKeeper/ packaged mirror.
+
+
+================================================================================
+THE FULL LICENSE
+================================================================================
+
+This file is a human-readable summary of, and not a substitute for, the license.
+The authoritative legal text is published by Creative Commons and governs:
+
+  Deed (plain language):
+    https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+  Legal code (the binding document):
+    https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+To the extent anything in this file conflicts with that legal code, the legal
+code controls.
+
+A note for the avoidance of doubt: because the NonCommercial term restricts
+commercial use, this is a SOURCE-AVAILABLE license, not an open-source license
+as the Open Source Initiative defines the term — every OSI-approved license
+permits commercial use. This restriction is intentional. Creative Commons also
+notes that its licenses are designed for creative works rather than software; a
+standard software license (MIT, Apache-2.0) would be the conventional choice for
+GK/ and the Python tools if the commercial restriction were ever relaxed.
+
+
+================================================================================
+A NOTE ON LINEAGE
+================================================================================
+
+Blood & Grit's resolution system is a d20 hybrid whose shape was informed by
+Pathfinder 2E — four degrees of success, three saves, an ability-modifier
+spine. Game MECHANICS are not themselves copyrightable in the United States;
+only their particular expression is, and every word of expression here is
+original to this project. Nerve, the Mark, Taint, Grit as written here, the Iron
+Code, the Signs and Miracles, the 150 creatures and all of the setting are this
+game's own. No text from any other publisher's work is reproduced here, and this
+project is not affiliated with, endorsed by, or derived from the content of any
+other publisher.
