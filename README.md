@@ -1,5 +1,7 @@
 # Blood & Grit
 
+[![verify](https://github.com/cwgilgalad/BloodAndGrit/actions/workflows/verify.yml/badge.svg)](https://github.com/cwgilgalad/BloodAndGrit/actions/workflows/verify.yml)
+
 **A roleplaying game of the haunted frontier.**
 
 The West as it actually was — bad water, worse men, a long ride to anywhere — with something
@@ -165,6 +167,23 @@ python measure_book.py bestiary.html
 python verify_rules.py                  # book ↔ data ↔ formula: the Calling tables can't drift
 python audit_whitespace.py <book.html>  # optional: list pages with large bottom gaps
 ```
+
+### What runs on every push
+
+`.github/workflows/verify.yml` runs the same checks on a clean machine: the app builds with
+warnings-as-errors, the **~12,000-assertion logic suite**, the in-app self-test in all three run
+modes (which also fails on any control that carries no tooltip), a publish of the self-contained
+single file **and a self-test of that** — the one thing a dev build can't prove, since the embedded
+data resolves differently inside the bundle — plus the 697 book↔data↔formula cross-checks, the
+static UI audit, and a check that the builds are idempotent and the committed HTML matches a fresh
+build. The page-geometry tools are deliberately left out: pagination is environment-dependent by
+design, so a cloud runner would measure a different page count and fail for no useful reason.
+
+### A note on the commit log
+
+Commits titled `autosync(session/…): <timestamp>` are a scheduled 30-minute backup of whatever
+session branch is checked out — they exist so work is never lost between commits, not as
+hand-authored history. The real record is [CHANGELOG.md](CHANGELOG.md) and the merge commits.
 
 **GritKeeper app sync:** whenever Bestiary creature content changes, re-extract the
 app's data with `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`

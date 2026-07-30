@@ -1,0 +1,42 @@
+# Line endings, declared rather than left to each clone's core.autocrlf. Without this, whether a
+# file lands LF or CRLF depends on the machine that cloned it, which is how a diff comes to show
+# every line of a file nobody touched.
+* text=auto
+
+*.cs      text diff=csharp
+*.csproj  text
+*.py      text diff=python
+*.ps1     text
+*.md      text
+*.json    text
+*.html    text diff=html
+*.css     text
+*.js      text
+# Shell scripts MUST be LF. A CRLF `#!/bin/bash` fails on Debian with "bad interpreter: no such
+# file or directory" — a real break, not a cosmetic one, for anything meant to run on Linux.
+*.sh      text eol=lf
+
+*.pdf     binary
+*.png     binary
+*.ico     binary
+*.zip     binary
+
+# ---------------------------------------------------------------- generated, not written --------
+# GitHub's language bar is computed from BYTES, and these three built files are 1.46 MB of it — so
+# the repo reported itself as "HTML 42%" while the work in it is ~16,000 lines of C# and ~10,000 of
+# Python. They are build OUTPUT: `build_player.py` carries the Player's Book as an embedded string
+# and emits blood-and-grit.html; the other two builders read that and emit theirs. Nobody edits
+# them (CLAUDE.md: "never hand-edit the generated HTML"), so marking them generated is a statement
+# of fact, not a thumb on the scale. It also collapses them in diffs and pull requests, which is
+# what you want from a half-megabyte single-line-ish artifact.
+blood-and-grit.html   linguist-generated=true
+keeper-handbook.html  linguist-generated=true
+bestiary.html         linguist-generated=true
+
+# The PDFs are printed from the built HTML by make_pdf.py — same story, and diffing them is noise.
+Blood-and-Grit-Players-Book.pdf  linguist-generated=true
+Blood-and-Grit-Keepers-Book.pdf  linguist-generated=true
+Blood-and-Grit-Bestiary.pdf      linguist-generated=true
+
+# The delivered app tree is a robocopy mirror of GK/source + GK/rules, regenerated every package.
+GritKeeper/**  linguist-generated=true
