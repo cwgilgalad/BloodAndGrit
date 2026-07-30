@@ -25,6 +25,12 @@ GritKeeper/source/
 # Same story for the rules library, mirrored beside source/ since v1.28.0 (the app's
 # ProjectReference points at ..\rules\, so the two must ship as siblings).
 GritKeeper/rules/
+# And the license pair, copied in by package.ps1 from the repo root at v1.29.1 so the ZIP carries
+# them. Copies, not sources — tracking them would put a second LICENSE in the repo that has to be
+# kept in step with the first, which is the same duplicate-tracked-copy mistake GritKeeper/source/
+# was. The root LICENSE and NOTICE are the only real ones.
+GritKeeper/LICENSE
+GritKeeper/NOTICE
 # Per-release notes are a release asset like the zip: written to be pasted into the GitHub
 # Release, and redundant the moment it is published — the text then lives on the Release and
 # the history lives in CHANGELOG.md. Seven of them (v1.16.2–v1.20.1) accumulated at the repo

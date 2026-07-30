@@ -906,7 +906,20 @@ install and no `Data/` folder beside it**. `Db.ReadData` loads the JSON from the
 falls back to `Data/` on disk for the smoke rig / dev build (whose assemblies aren't embedded).
 The exe writes only `session.json` beside itself (via `AppContext.BaseDirectory`). Published on
 GitHub via **Releases** (`gh release …`), not committed — the binary is git-ignored. The
-`GritKeeper.zip` (exe + full `source/` tree + `README.md`) is the source bundle.
+`GritKeeper.zip` (exe + full `source/` tree + `README.md` + `LICENSE` + `NOTICE`) is the source
+bundle.
+
+**A Linux package is planned** (decided 2026-07-29). The engine half has been done
+since v1.28.0: `GK/rules` is a plain `net8.0` library with no Windows reference — it is exactly what
+the headless smoke rig builds and runs against — so the rules, chargen, map generator and PDF writer
+all run on Linux today. What a Linux build has to answer is the **UI**: `GK/source` is
+`net8.0-windows` + WinForms and cannot cross that line, so this means a second front-end against the
+same library, not a port. Anything added to the rules library from here should stay drawing-free and
+WinForms-free for that reason — already the rule, see *"Which tree does a change belong in?"*.
+**Until something ships, every mention of it says "planned" and gives no date**: the standing rule
+that the app never promises what it cannot keep applies to a roadmap as much as to a feature. The
+places that now carry the note, and must be kept in step, are `README.md`, `GK/source/README.md`,
+and the app's own **Help ▸ What it needs to run** (`ShowRequirements` in `Menus.cs`).
 
 ### Known landmine: drawn text — the hint, the figures, and the box (v1.27.0)
 
@@ -1054,10 +1067,10 @@ change them all:
 
 ### What GitHub carries (BloodAndGrit — standing rule, 2026-07-29)
 
-**Only the three books, GritKeeper, and the files that build or check them.** The user's words:
-*"on GitHub, only the files necessary to support the three game books and GritKeeper should
-remain."* Applied 2026-07-29 by `git rm --cached` + `.gitignore`, so every file stayed on disk
-and every one is recoverable from history.
+**Only the three books, GritKeeper, and the files that build or check them** — *"on GitHub, only
+the files necessary to support the three game books and GritKeeper should remain."* Applied
+2026-07-29 by `git rm --cached` + `.gitignore`, so every file stayed on disk and every one is
+recoverable from history.
 
 | Group | Verdict | Why |
 |---|---|---|
