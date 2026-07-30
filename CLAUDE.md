@@ -9,10 +9,10 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
-GritKeeper app v1.28.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.29.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
-**The rules are their own library (v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
+**The rules are their own library (since v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
 `net8.0` class library — no WinForms — holding the six headless files (`Core.cs`, `CharGen.cs`,
 `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`) **and the five `Data/*.json`**. `GK/source` is
 the WinForms app on top of it; it and `GK/smoke` both reach it by `<ProjectReference>`. This
@@ -49,6 +49,53 @@ walks every sky). The cartouche is sized to the longer of title and subtitle.
 clearing everyone else is the caller's job (`BeginTurnForSelected`). The tracker shows it three
 ways — a gold bold row (`ActingRow` + the cached `trkBold`), a **Next strike** column, and
 `UpdateTurnLine()` beside the round. `NextRound` clears Acting.
+
+**Every control says what it is, and it is a failing check (v1.29.0).** `--selftest` walks all ten
+realized tabs and every step of the wizard **for all seventeen Callings**, and fails on any
+interactive control carrying no tooltip. One walker, shared (`MainForm.WalkForTips` / `WantsTip`) —
+a wizard held to one standard and ten tabs held to another is two standards, and the looser one wins.
+`ButtonBase` rather than `Button` so checkboxes count; containers are walked *through* but anything
+that wants a tip is never walked *into* (a `NumericUpDown` holds its own TextBox and spin buttons).
+Prose labels are exempt; a caption carrying a **live number** is not prose and opts in with
+`Tag = "readout"`. **What this caught that reading the source did not:** `ItemTips` set a list's
+tooltip only from `MouseMove`, so all five wizard lists had *no* resting tip and cleared themselves
+over the blank ground below the last row — meaning the two lists that silently refuse a click (past
+the trained-skill cap, past what the coin covers) never said why. `ItemTips` now takes a `resting`
+tip that is the list's own instructions.
+
+**Every modal dialog answers Esc (v1.29.0).** Wiring `AcceptButton` and leaving `CancelButton` unset
+compiles, looks finished, and produces a modal that ignores the one key everybody presses first —
+which reads as a hung window, not as a firm question. Four had drifted that way, two of them the
+**Strike and Dread** dialogs. Where cancelling is meaningless (the die prompt, the run-mode chooser),
+point `CancelButton` at the commit button: Esc should still close the thing, and doing what the title
+bar's ✕ already does is honest. `audit_ui.py` checks every locally-built Form that is `ShowDialog`n
+(18 of them). **Button order:** commit LEFT, Cancel RIGHT — and in a `FlowDirection.RightToLeft` bar
+that means adding **Cancel first**.
+
+**The tab strip is owner-drawn (v1.29.0),** for one reason: under the Windows visual style the
+selected tab differed from the other nine by a couple of pixels of height and nothing else, so the
+app's answer to "which of the ten am I on" was almost invisible. `StyleTabs` paints the live tab on
+`Paper` under a 3px `Blood` rule with its name in bold Blood; the rest sit back on `TabRest`.
+`TabDrawMode.OwnerDrawFixed` still lets the control size each tab to its own text — the ten labels
+are ten different lengths — and nothing here touches the pages.
+
+**Contrast is a palette decision, not a per-site one (v1.29.0).** `Gold` measures ~3.5:1 on `Paper`,
+which is right for a heading and too light for a sentence — and the app sets whole explanatory
+paragraphs in it. **`GoldDeep`** is the same hue carried to ~5:1: use `Gold` for headings and short
+labels, `GoldDeep` for anything that is a sentence. **`Faint`** replaced a hand-written
+`Color.FromArgb(122,112,96)` for "nothing is happening yet" ink. Also: **do not use ⧖ (U+29D6)** —
+it is not in Segoe UI on this machine and renders as "≥". The glyphs that do render are
+▶ ▾ ◀ ▸ ◂ ✕ ＋ ✎ ✦ ✝ ◈ ✚ ✥ ⟲ ⟳ 🔍 🎲 🧭.
+
+**The turn hourglass (v1.29.0)** — `TurnClock` in the rules library is pure and is FED elapsed
+milliseconds by its caller, which is the only reason a five-minute turn can be tested in a
+millisecond; `HourglassView` in `GK/source` is ink and nothing else. Three deliberate choices worth
+keeping: it is **opt-in** (`Prefs.Data.TurnTimer`, off by default); its **length is a preference**,
+not session state, because it is a house rule about how a table plays; and it **never acts on the
+game** — it logs and turns red, and does not end a turn or take a Beat, because nothing in the books
+says a slow player loses their action. The sand level drops by **√time**, so the *area* the eye reads
+as "how much is left" falls off linearly. The animation timer runs only while sand is actually
+falling (`SyncTicker`).
 
 **Dialogs are measured, never laid out to constants (v1.19.0).** The Strike dialog's prose
 changes with the run mode and with creature-vs-soul, and fixed heights clipped it. `Para()`
@@ -268,7 +315,7 @@ Each book's cheapest editable form is **bolded**.
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
 | **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). |
 | `add_detail.py` | One-shot that already baked earlier additions into the builds. **Do not re-run.** |
-| `add_index.py` | One-shot that baked the v2.9 Index into `player-src.html` (anchor ids, index section, TOC line, `.ix` CSS, version cascade). Guarded against re-running, but **do not re-run** anyway. |
+| ~~`add_index.py`~~ | Dead one-shot (baked the v2.9 Index into `player-src.html`, a file retired 2026-07-18). Still on disk, **git-ignored since 2026-07-29**, do not re-run. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
@@ -535,7 +582,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.27.0) — the C# desktop app
+## GritKeeper (v1.29.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -934,7 +981,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
   Book Appendix E; secrets-annotated Keeper map + full gazetteer in the Keeper's Book Ch. XIII).
   See `perdition_map.py`. Could still grow into a thin fourth book if you want more territory.
-- **Discord / online play** — proposed but not built; see **`DESIGN-online-play.md`** (2026-07-27).
+- **Discord / online play** — proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
   LAN-hosted responsive page served by the app itself or Discord-as-state-surface → a full VTT
@@ -982,7 +1029,29 @@ change them all:
 - `autosync.ps1` + `register_autosync_task.ps1` are canonical and identical in every repo.
   The "<folder name> AutoSync" scheduled task (every 30 min + at logon) auto-commits the
   checked-out branch and pushes only when an `origin` remote exists. `autosync.log` is
-  git-ignored.
+  git-ignored. **As of 2026-07-29 the two scripts are also git-IGNORED in BloodAndGrit** (see
+  the rule below) — they are still identical on disk and still run; that repo simply doesn't
+  publish them. If the same is wanted in TideWatch and DebForge, it has to be done there too,
+  or "identical in every repo" quietly stops being true of what's tracked.
+
+### What GitHub carries (BloodAndGrit — standing rule, 2026-07-29)
+
+**Only the three books, GritKeeper, and the files that build or check them.** The user's words:
+*"on GitHub, only the files necessary to support the three game books and GritKeeper should
+remain."* Applied 2026-07-29 by `git rm --cached` + `.gitignore`, so every file stayed on disk
+and every one is recoverable from history.
+
+| Group | Verdict | Why |
+|---|---|---|
+| The 3 PDFs + 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
+| `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
+| `measure_index.py`, `measure_book.py`, `verify_rules.py`, `audit_whitespace.py`, `audit_ui.py` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
+| `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones — the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
+| `DESIGN-online-play.md`, `editorial-denials.md` | **untracked** | Process, not product: an unbuilt proposal and a log of declined edits. The proposal's substance is summarized in the roadmap below, so nothing is lost. |
+| `autosync.ps1`, `register_autosync_task.ps1`, `.claude/` | **untracked** | This laptop's setup — a backup task and a session command. They build nothing. |
+| `add_index.py` | **untracked** | Dead: a one-shot against `player-src.html`, a file retired 2026-07-18, marked "do not re-run" since. |
+
+The repo is **PUBLIC and stays public** — that is deliberate; don't offer to change it.
 - **HRHS Scripts is local-only by design** — no remote, never push it to GitHub. Every other
   repo syncs to `github.com/cwgilgalad`.
 

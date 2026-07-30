@@ -26,11 +26,23 @@ if hasattr(sys.stdout, "reconfigure"):
 SRC = Path(__file__).resolve().parent / "GK" / "source"
 
 # helper -> (min args, index of the handler arg or None, index of the tooltip arg)
+# PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
+# their CALL SITES deserve the same audit as any other button. They were missing here, so five
+# of the tracker's buttons were never checked at all.
 HELPERS = {
-    "Btn":     (2, 1, 3),
-    "MenuBtn": (3, None, 2),
-    "DieBtn":  (4, 2, 4),
+    "Btn":        (2, 1, 3),
+    "PrimaryBtn": (2, 1, 3),
+    "DangerBtn":  (2, 1, 3),
+    "MenuBtn":    (3, None, 2),
+    "DieBtn":     (4, 2, 4),
 }
+
+# The parameter names the wrappers forward under. A call whose arguments ARE these names is one
+# helper handing off to another inside its own definition, not a button on a bar — it has no
+# literal tooltip because it is passing along whatever its caller gave it. Reported as two
+# findings for two releases (MainForm.cs:672 and :688, PrimaryBtn and DangerBtn calling Btn),
+# which is exactly how a cheap audit teaches people to ignore it.
+FORWARDED = {"text", "onClick", "w", "tip"}
 
 
 def split_args(text):
@@ -90,25 +102,45 @@ def calls(src, helper):
         yield src.count("\n", 0, m.start()) + 1, split_args(src[start:i - 1])
 
 
+def dialogs(text):
+    """Yield (line_no, var_name, body) for each locally-built Form that is shown MODALLY.
+
+    The scope of one dialog is taken as everything from its `new Form` to the next one (or the
+    end of the file), which is exact enough here: these are built, filled and shown inside a
+    single method, one per method. A Form that is never `ShowDialog`n is a pop-out window (a
+    creature card, a soul's Ledger, the tour's callout) and is deliberately not audited.
+    """
+    marks = [(m.start(), m.group(1), text.count("\n", 0, m.start()) + 1)
+             for m in re.finditer(r"(?:using\s+)?var\s+(\w+)\s*=\s*new\s+Form\b", text)]
+    for i, (pos, name, line) in enumerate(marks):
+        end = marks[i + 1][0] if i + 1 < len(marks) else len(text)
+        body = text[pos:end]
+        if re.search(r"\b" + name + r"\.ShowDialog\b", body):
+            yield line, name, body
+
+
 def main():
     quiet = "--quiet" in sys.argv
     if not SRC.is_dir():
         print(f"no source tree at {SRC}")
         return 2
 
-    findings, counts = [], {}
+    findings, counts, dlgcount = [], {}, 0
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
-        text = re.sub(r"static\s+Button\s+(Btn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
+        text = re.sub(r"static\s+Button\s+(Btn|PrimaryBtn|DangerBtn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
         for helper, (minargs, hidx, tidx) in HELPERS.items():
             for line, args in calls(text, helper):
                 counts[path.name] = counts.get(path.name, 0) + 1
                 where = f"{path.name}:{line}"
                 label = args[0] if args else "?"
-                # MenuBtn builds its own face by calling Btn(text, null, w, tip) and then wires
-                # the drop-down itself — that one null handler is the helper working as intended.
-                if helper == "Btn" and args[:1] == ["text"] and len(args) > 3 and args[1] == "null":
+                # One helper handing off to another inside its own definition: MenuBtn builds its
+                # face with Btn(text, null, w, tip) and wires the drop-down itself; PrimaryBtn and
+                # DangerBtn call Btn(text, onClick, w, tip) and then re-paint it. Every argument is
+                # a forwarded parameter name, so there is no literal here to check and no button
+                # here to count.
+                if helper == "Btn" and len(args) > 3 and all(a in FORWARDED or a == "null" for a in args):
                     counts[path.name] -= 1
                     continue
                 if len(args) < minargs:
@@ -130,11 +162,25 @@ def main():
                         if re.search(r",\s*null\s*\)\s*$", item):
                             findings.append(f"{where}  MenuBtn({label}) — a menu item with no handler")
 
+        # ---- modal dialogs must answer Esc ----
+        # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
+        # compiles, looks finished, and produces a modal that ignores the one key everybody presses
+        # first — which reads as a hung window rather than as a firm question. Four had drifted that
+        # way by v1.28.0, two of them the Strike and Dread dialogs a Keeper opens most in a fight.
+        # Where cancelling makes no sense, point CancelButton at the commit button: Esc should still
+        # close the thing, and doing what the title-bar ✕ already does is honest.
+        for line, name, body in dialogs(text):
+            dlgcount += 1
+            if not re.search(r"\b" + name + r"\.CancelButton\s*=", body):
+                findings.append(f"{path.name}:{line}  the dialog built as `{name}` sets no "
+                                "CancelButton — Esc does nothing in it")
+
     if not quiet:
         print("buttons per file")
         for name in sorted(counts):
             print(f"  {name:<18} {counts[name]}")
         print(f"  {'TOTAL':<18} {sum(counts.values())}")
+        print(f"\nmodal dialogs checked for an Esc route: {dlgcount}")
         print()
 
     if findings:
@@ -142,7 +188,7 @@ def main():
         for f in findings:
             print("  " + f)
         return 1
-    print("every button has a handler and a tooltip.")
+    print("every button has a handler and a tooltip; every modal dialog answers Esc.")
     return 0
 
 

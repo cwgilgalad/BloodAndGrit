@@ -147,7 +147,7 @@ public partial class MainForm
     void RideToTracker(Ride r)
     {
         tracker.Add(new Combatant
-        { Name = r.Name, BloodCur = r.BloodCur, BloodMax = r.BloodMax, Defense = r.Defense, IsPC = false });
+        { Name = r.Name, BloodCur = r.BloodCur, BloodMax = r.BloodMax, Defense = r.Defense, IsPC = false, Init = ArrivalInit() });
         Log($"{r.Name} is on the field.");
     }
 

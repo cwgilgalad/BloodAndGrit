@@ -501,15 +501,10 @@ public partial class MainForm
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => ledger.Zoom -= 0.15f, 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => ledger.Zoom += 0.15f, 46, "Larger text"));
-        bar.Controls.Add(Btn("→ Tracker", (s, e) =>
-        {
-            if (!tracker.Any(t => t.IsPC && t.Name == p.Name))
-            {
-                tracker.Add(new Combatant { Name = p.Name, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax, Defense = p.Defense });
-                Log($"{p.Name} takes the field.");
-            }
-            else Log($"{p.Name} is already on the field.");
-        }, 95, "Put this soul onto the combat tracker"));
+        // Through AddSoulToTracker, not a second copy of it. This wrote its own row — no PcId, and
+        // an "already there?" test that matched on Name — so a soul renamed after joining the posse
+        // arrived twice, and the row this made was the one the Blood mirror could not find.
+        bar.Controls.Add(Btn("→ Tracker", (s, e) => AddSoulToTracker(p), 95, "Put this soul onto the combat tracker"));
         if (p.Sheet != null)
         {
             bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(p, win), 90, "Advance this soul one level"));

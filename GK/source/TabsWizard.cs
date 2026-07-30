@@ -1,4 +1,4 @@
-﻿namespace BloodAndGritKeeper;
+namespace BloodAndGritKeeper;
 
 public partial class MainForm
 {
@@ -20,11 +20,16 @@ public partial class MainForm
     /// <summary>Self-test hook, the Reference deck's <see cref="BuildReferenceTab"/> pattern applied
     /// to the wizard: build every step that applies to this Calling and count them. Wizard pages are
     /// realized lazily — nothing else in the self-test would touch them, and a step that throws on
-    /// construction is otherwise only found by a person clicking Next.</summary>
-    internal static int BuildWizardStepsForSelfTest(string calling, string origin, int level)
+    /// construction is otherwise only found by a person clicking Next.
+    /// <para>It also returns every control on those pages that carries no tooltip. The wizard's tips
+    /// ARE its manual — a player meeting "Hedge Magic" has nothing else to go on — so a step added
+    /// later with a bare ComboBox on it teaches nothing, and that silence is invisible at the table.
+    /// Counting them here makes it a failing check instead of a thing somebody notices.</para></summary>
+    internal static (int Pages, List<string> Untipped) BuildWizardStepsForSelfTest(string calling, string origin, int level)
     {
         using var wiz = new SoulWizard();
-        return wiz.RealizeEveryStep(calling, origin, level);
+        int pages = wiz.RealizeEveryStep(calling, origin, level);
+        return (pages, wiz.Untipped);
     }
 
     sealed class SoulWizard : Form
@@ -114,9 +119,14 @@ public partial class MainForm
             calName = calling; orgName = origin; level = lvl;
             int built = 0;
             for (int i = 0; i < steps.Length; i++)
-                if (steps[i].applicable()) { ShowStep(i); built++; }
+                if (steps[i].applicable()) { ShowStep(i); built++; AuditStep(steps[i].title); }
             return built;
         }
+
+        /// <summary>Controls on the realized steps that say nothing on hover, as "step · control".</summary>
+        internal readonly List<string> Untipped = new();
+
+        void AuditStep(string title) => WalkForTips(host, title, Untipped);
 
         void ShowStep(int i)
         {
@@ -184,10 +194,16 @@ public partial class MainForm
         static Label Note(string t) => new()
         {
             Text = t, AutoSize = true, MaximumSize = new Size(690, 0),
-            Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = Gold, Padding = new Padding(0, 4, 0, 6)
+            Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = GoldDeep, Padding = new Padding(0, 4, 0, 6)
         };
-        static Label Cap(string t) => new()
-        { Text = t, AutoSize = true, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold), ForeColor = Ink, Padding = new Padding(0, 8, 4, 2) };
+        /// A bold caption. <paramref name="readout"/> marks one that carries a LIVE number rather
+        /// than prose — the pool, the picked-of counts, the coin. Those are held to the same
+        /// say-what-you-are standard as the controls; see <see cref="WantsTip"/>.
+        static Label Cap(string t, bool readout = false) => new()
+        {
+            Text = t, AutoSize = true, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold), ForeColor = Ink,
+            Padding = new Padding(0, 8, 4, 2), Tag = readout ? "readout" : null
+        };
 
         static FlowLayoutPanel Column() => new()
         { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Padding = new Padding(2) };
@@ -221,17 +237,28 @@ public partial class MainForm
 
         /// Per-row tooltips for a ListBox or CheckedListBox. WinForms has none of its own, so
         /// follow the pointer and re-point the shared ToolTip whenever it crosses into a new row.
-        static void ItemTips(ListBox lb, Func<int, string> textFor)
+        ///
+        /// <paramref name="resting"/> is what the list says when the pointer is NOT on a row — over
+        /// the blank ground below the last item, or before it has moved at all. It used to be
+        /// nothing, which made every list here the one thing on its step that explained itself only
+        /// by accident: the rows described a Calling or a skill beautifully and the list never said
+        /// what it wanted from you. That matters most on the two lists that REFUSE a click — tick
+        /// past the cap, or past what the coin covers, and the tick simply doesn't take, with no
+        /// word anywhere as to why. So the resting tip is the list's own instructions, and a row's
+        /// tip is laid over it.
+        static void ItemTips(ListBox lb, Func<int, string> textFor, string resting = null)
         {
             int shown = -2;
+            string floor = Wrap(resting ?? "");
+            Tip.SetToolTip(lb, floor);
             lb.MouseMove += (s, e) =>
             {
                 int i = lb.IndexFromPoint(e.Location);
                 if (i == shown) return;
                 shown = i;
-                Tip.SetToolTip(lb, i >= 0 && i < lb.Items.Count ? Wrap(textFor(i)) : "");
+                Tip.SetToolTip(lb, i >= 0 && i < lb.Items.Count ? Wrap(textFor(i)) : floor);
             };
-            lb.MouseLeave += (s, e) => { shown = -2; Tip.SetToolTip(lb, ""); };
+            lb.MouseLeave += (s, e) => { shown = -2; Tip.SetToolTip(lb, floor); };
         }
 
         // ---- the book's own words for each kind of thing, for the tips above ----
@@ -340,7 +367,12 @@ public partial class MainForm
                      + (c.miracleLists != null ? " Works Miracles, paid from its own pool." : "")
                      + (c.bonusCombatEdgeAtOdd ? " Takes a bonus combat Edge at every odd level." : "")
                      + (c.startMark > 0 ? $" Begins already at Mark {c.startMark}." : "");
-            });
+            },
+            "What this soul does for a living — the single choice the rest of the sheet hangs off. It sets "
+          + "the Hit Die that rolls Blood, which two saves are strong, how many skills are trained, and "
+          + "whether they work Signs or Miracles at all. Grouped by the three kinds: the Worldly, the "
+          + "Faithful, and the Old Dark.\nHover a name for its numbers; the panel to the right carries the "
+          + "whole of it. Changing it later clears the picks that depended on it.");
             var detail = new Label { Width = 440, Height = 330, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
             wCalList.SelectedIndexChanged += (s, e) =>
             {
@@ -391,7 +423,11 @@ public partial class MainForm
                      + (o.gifts.Count > 0 ? "Gifts " + string.Join(", ", o.gifts.Select(kv => $"{kv.Key} +{kv.Value}")) + ". " : "")
                      + (o.trained.Count > 0 ? "Trained free in " + string.Join(", ", o.trained) + ". " : "")
                      + $"\nBoon: {o.boon}\nBurden: {o.burden}";
-            });
+            },
+            "Where they come from — the second half of who this is. An Origin gives ability points, trains "
+          + "a skill or two free of the Calling's allowance, sometimes hands over gear, and always carries "
+          + "one boon and one burden.\nHover a name for the whole of it. There is no wrong pick here: every "
+          + "Origin goes with every Calling, save one — the Gambler is barred to the Callings of Faith.");
             var detail = new Label { Width = 440, Height = 300, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
             var choiceRow = new FlowLayoutPanel { AutoSize = true };
             choiceRow.Controls.Add(Lbl("Either/or skill:"));
@@ -470,7 +506,14 @@ public partial class MainForm
                     pool = pool.OrderByDescending(x => x).ToList();
                     abilityPick.Clear();
                 }
-                wPoolLbl = Cap("The pool:  " + string.Join("  ", pool));
+                wPoolLbl = Tipped(Cap("The pool:  " + string.Join("  ", pool), readout: true),
+                    "The six numbers this soul has to spend, before the Origin's gifts are added on top. "
+                  + (methodIdx == 0
+                        ? "The Honest Array — the same six for everybody, so nobody is born unlucky."
+                        : "Rolled 4d6 and dropped the lowest die, six times, and sorted highest first. Re-roll "
+                        + "above if the dice were unkind; that clears what you have assigned.")
+                  + "\nAssign each one to an ability below. All six must be used, and a value that appears "
+                  + "twice must be assigned twice.");
                 col.Controls.Add(wPoolLbl);
                 var noteRow = new FlowLayoutPanel { AutoSize = true };
                 if (methodIdx == 1)
@@ -594,7 +637,10 @@ public partial class MainForm
             int count = TrainCount();
             col.Controls.Add(Note($"The {calName} trains {count} skill(s) — the Calling's {Cal.trainedSkills} plus your WIT modifier ({WitMod():+0;−0})." +
                 (free.Count > 0 ? $"  The Origin's own — {string.Join(", ", free)} — come free." : "")));
-            wSkillCount = Cap("");
+            wSkillCount = Tipped(Cap("", readout: true),
+                $"How many of the {count} trained skills you have ticked. It must read {count} of {count} "
+              + "before the wizard will move on — this is the one step in the book with an exact number "
+              + "rather than an allowance.");
             col.Controls.Add(wSkillCount);
             wSkillList = new CheckedListBox { Width = 340, Height = 300, CheckOnClick = true, Font = new Font("Segoe UI", 9.5f) };
             var shelf = new List<CgSkill>();
@@ -605,7 +651,12 @@ public partial class MainForm
                 int idx = wSkillList.Items.Add($"{sk.name} ({sk.ability})");
                 if (skillPicks.Contains(sk.name)) wSkillList.SetItemChecked(idx, true);
             }
-            ItemTips(wSkillList, i => SkillTip(shelf[i]));
+            ItemTips(wSkillList, i => SkillTip(shelf[i]),
+                $"The skills this soul is trained in — tick exactly {count}, no more. Trained means you add "
+              + "your whole level to the roll; untrained is the bare ability modifier and nothing else.\n"
+              + "The count is watched: once you have ticked all " + count + ", a further tick will not take. "
+              + "Untick something first. Anything the Origin trains free is already off this list.\n"
+              + "Hover a line for which ability rolls it.");
             void Refresh() => wSkillCount.Text = $"Picked {wSkillList.CheckedItems.Count} of {count}";
             wSkillList.ItemCheck += (s, e) =>
             {
@@ -760,7 +811,10 @@ public partial class MainForm
             if (signs > 0)
             {
                 col.Controls.Add(Cap($"Signs known — pick {signs}"));
-                wSignCount = Cap("");
+                wSignCount = Tipped(Cap("", readout: true),
+                    $"How many of this soul's {signs} Signs you have chosen yourself. Unlike the skills you "
+                  + "may leave this short and move on: every Sign you don't pick is dealt at the end from "
+                  + "the lists this Calling may draw on, at the Ranks this level has opened.");
                 col.Controls.Add(wSignCount);
                 wSignList = new CheckedListBox { Width = 480, Height = Math.Min(220, 40 + CharGen.D.signs.Count * 18), CheckOnClick = true, Font = new Font("Segoe UI", 9.5f) };
                 foreach (var sg in CharGen.D.signs)
@@ -768,7 +822,12 @@ public partial class MainForm
                     int idx = wSignList.Items.Add($"{sg.name} ({sg.cost})");
                     if (signPicks.Contains(sg.name)) wSignList.SetItemChecked(idx, true);
                 }
-                ItemTips(wSignList, i => SignTip(CharGen.D.signs[i]));
+                ItemTips(wSignList, i => SignTip(CharGen.D.signs[i]),
+                    $"The Signs this soul already knows — tick up to {signs}. Each is listed with what it "
+                  + "costs to work; hover one for its Rank, its list, and what it does.\nA tick past "
+                  + $"{signs} will not take — untick something first. Unlike the skills you may stop short: "
+                  + "whatever you leave unpicked is dealt at the end from the lists this Calling is allowed, "
+                  + "at the Ranks this level has opened.");
                 void Refresh() => wSignCount.Text = $"Picked {wSignList.CheckedItems.Count} of {signs}  (any left unpicked are dealt at the end)";
                 wSignList.ItemCheck += (s, e) =>
                 {
@@ -845,7 +904,11 @@ public partial class MainForm
             var col = Column();
             if (coinRolled <= 0)
                 coinRolled = Enumerable.Range(0, Cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * Cal.coin.mult;
-            wCoinLbl = Cap("");
+            wCoinLbl = Tipped(Cap("", readout: true),
+                $"The money this soul starts with — {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}, rolled "
+              + "for you — against what is in the basket, and what is left. Whatever is left stays on the "
+              + "sheet as coin in their pocket; there is no requirement to spend it. The store below will not "
+              + "let the basket pass this number.");
             var rollRow = new FlowLayoutPanel { AutoSize = true };
             rollRow.Controls.Add(Btn("🎲 Re-roll the coin", (s, e) =>
             {
@@ -887,7 +950,12 @@ public partial class MainForm
                 int idx = wBuyList.Items.Add(it);
                 if (buyPicks.ContainsKey(kv.Key)) wBuyList.SetItemChecked(idx, true);
             }
-            ItemTips(wBuyList, i => StoreTip((StoreItem)wBuyList.Items[i]));
+            ItemTips(wBuyList, i => StoreTip((StoreItem)wBuyList.Items[i]),
+                "The general store, at Chapter X's printed prices — guns and blades first, then goods, both "
+              + "alphabetical. Tick a line to buy it.\nA tick the rolled coin will not cover does not take: "
+              + "that is the refusal, not a stuck checkbox. To take more than one of something, highlight the "
+              + "line and set the number below.\nNothing here is compulsory — coin left unspent stays on the "
+              + "sheet as money. Hover a line for its price, its damage and traits, and whether it is armor.");
 
             wBuyList.ItemCheck += (s, e) =>
             {

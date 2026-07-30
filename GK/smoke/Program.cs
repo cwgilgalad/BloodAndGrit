@@ -455,9 +455,305 @@ foreach (var (table, floor) in new[]
     var saved = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
         System.Text.Json.JsonSerializer.Serialize(field[2]));
     T("turn: who has gone survives save and load", saved.HasActed == field[2].HasActed);
+
+    // ---- initiative is a Notice check (Player's Book Ch. XI) ----
+    // The tracker rolled a bare d20 for everyone until v1.29.0 while the app's own Reference deck
+    // printed the rule. Two things have to hold: the die is still a d20, and the bonus is really
+    // added — and the floor at 1 has to hold, or a negative bonus mints a "0" that the tracker
+    // reads as "has not rolled yet".
+    bool initInBand = true, initFloored = true, initMoved = false;
+    for (int i = 0; i < 4000; i++)
+    {
+        int plain = Rules.RollInitiative(0);
+        if (plain < 1 || plain > 20) initInBand = false;
+        if (Rules.RollInitiative(-9) < 1) initFloored = false;
+        if (Rules.RollInitiative(5) > 20) initMoved = true;      // the bonus reaches past a bare d20
+    }
+    T("initiative: an unmodified roll is a d20", initInBand);
+    T("initiative: a bonus actually moves the result", initMoved);
+    T("initiative: never lands on 0, which means 'not rolled yet'", initFloored);
+
+    // The bonus itself comes off the sheet's Notice skill and nowhere else, so the tracker cannot
+    // drift onto a different skill than the rule names.
+    var scout = CharGen.Generate(6, false, "Mountain Man");
+    T("initiative: the bonus is exactly the sheet's Notice bonus",
+        CharGen.InitiativeBonus(scout) == CharGen.SkillBonus(scout, "Notice"));
+    T("initiative: no sheet, no bonus — a creature rolls the plain die",
+        CharGen.InitiativeBonus(null) == 0);
+}
+
+// ---- the turn hourglass (v1.29.0) ----
+// The clock is pure and fed elapsed milliseconds by its caller, which is the whole reason a
+// five-minute turn can be run here in a millisecond. What has to hold: it counts down and stops at
+// the floor, the sand's fraction tracks the time rather than the ticks, the face never lies about
+// how much is left, and a held glass does not quietly keep draining.
+{
+    var g = new TurnClock();
+    T("glass: a fresh glass holds the default five minutes",
+        g.PresetSeconds == 300 && g.PresetSeconds == TurnClock.DefaultSeconds);
+    T("glass: full, still, and not yet through", !g.Running && !g.Expired && g.Spent == 0 && g.Face == "5:00");
+
+    T("glass: a still glass does not drain", !g.Tick(5000) && g.LeftMs == 300_000);
+
+    g.Start();
+    T("glass: started, it is running", g.Running && !g.Expired);
+    g.Tick(60_000);
+    T("glass: a minute gone reads 4:00", g.Face == "4:00");
+    T("glass: a minute gone is a fifth of the sand", Math.Abs(g.Spent - 0.2) < 1e-9);
+
+    g.Pause();
+    g.Tick(60_000);
+    T("glass: a HELD glass does not drain", g.Face == "4:00" && !g.Running);
+
+    // Run it out in the small steps the animation really uses, not one big jump.
+    g.Start();
+    bool rang = false;
+    for (int i = 0; i < 10_000 && !g.Expired; i++) if (g.Tick(60)) rang = true;
+    T("glass: it runs out, and says so exactly once", g.Expired && rang);
+    T("glass: through, it stops running rather than counting past zero", !g.Running && g.LeftMs == 0);
+    T("glass: through, it reads 0:00 and all the sand is down", g.Face == "0:00" && g.Spent == 1);
+    T("glass: an expired glass rings only once", !g.Tick(60));
+
+    // Rounding UP: 1 ms left is still "0:01", never "0:00". A timer that shows zero for a whole
+    // second before it fires reads as a broken timer.
+    var nearly = new TurnClock { PresetSeconds = 10 };
+    nearly.Start(); nearly.Tick(9_999);
+    T("glass: a millisecond left still reads 0:01", nearly.Face == "0:01" && !nearly.Expired);
+
+    // Start on a spent glass turns it over rather than doing nothing — otherwise the button is dead
+    // exactly when a Keeper reaches for it.
+    var again = new TurnClock { PresetSeconds = 5 };
+    again.Start(); again.Tick(5_000);
+    again.Start();
+    T("glass: starting a spent glass fills it again", again.Running && !again.Expired && again.Spent == 0);
+
+    // Changing the house rule mid-session must not cut the running turn short — but must take
+    // effect on a glass nobody is using.
+    var live = new TurnClock { PresetSeconds = 300 };
+    live.Start(); live.Tick(10_000);
+    live.PresetSeconds = 600;
+    T("glass: a new length leaves the RUNNING turn alone", live.LeftMs == 290_000);
+    live.Pause();
+    live.PresetSeconds = 120;
+    T("glass: a new length re-loads a held glass", live.LeftMs == 120_000);
+
+    T("glass: the length is clamped to something a table could use",
+        new TurnClock { PresetSeconds = 0 }.PresetSeconds == 5
+        && new TurnClock { PresetSeconds = 999_999 }.PresetSeconds == 3600);
+
+    T("glass: reset fills it and stops it", live.Running == false && Reset(live));
+    static bool Reset(TurnClock c) { c.Start(); c.Tick(1000); c.Reset(); return !c.Running && c.Spent == 0; }
+
+    // Every preset the menu offers must spell out as something a person would say out loud, and the
+    // default has to be one of them — a default missing from its own list is a default nobody can
+    // get back to after changing it.
+    T("glass: six presets are offered", TurnClock.Presets.Length == 6);
+    T("glass: the default is one of the presets", TurnClock.Presets.Contains(TurnClock.DefaultSeconds));
+    T("glass: the presets are in order, and all usable",
+        TurnClock.Presets.Zip(TurnClock.Presets.Skip(1)).All(p => p.First < p.Second)
+        && TurnClock.Presets.All(s => s >= 5 && s <= 3600));
+    T("glass: whole minutes are spelled in words", TurnClock.Spell(60) == "1 minute"
+        && TurnClock.Spell(300) == "5 minutes" && TurnClock.Spell(900) == "15 minutes");
+    T("glass: an odd length is spelled as a clock", TurnClock.Spell(90) == "1:30");
+
+    // It is a preference, not session state: a house rule outlives the fight it was set during.
+    var pd = new Prefs.Data();
+    T("glass: off until asked for, and five minutes when it is", !pd.TurnTimer && pd.TurnSeconds == 300);
+    var round2 = System.Text.Json.JsonSerializer.Deserialize<Prefs.Data>(
+        System.Text.Json.JsonSerializer.Serialize(new Prefs.Data { TurnTimer = true, TurnSeconds = 600 }));
+    T("glass: the house rule survives save and load", round2.TurnTimer && round2.TurnSeconds == 600);
 }
 
 // ---- Nerve-loss ladder ----
+// ---- reading a working: what a Sign, a Miracle or a creature's power actually DOES ----
+// The old model held one shape — a target and a round count — and eighty hand-written workings do
+// not have one shape. These assertions are the guard on the reader that pulls the real shapes out
+// of the printed text. Named workings are checked by hand where the answer is known for certain;
+// everything else is held to a floor, so a re-transcription of either chapter that quietly stops
+// parsing fails here instead of at somebody's table.
+{
+    var signs = CharGen.D.signs.Select(s => Rules.ReadWorking(s.name, "Sign", s.rank, s.cost, s.desc, 6)).ToList();
+    var mirs  = CharGen.D.miracles.Select(m => Rules.ReadWorking(m.name, "Miracle", m.rank, m.cost, m.desc, 6)).ToList();
+    var all   = signs.Concat(mirs).ToList();
+    Rules.Working W(string n) => all.First(x => x.Name == n);
+
+    T("working: every Sign and Miracle is read", all.Count == 80);
+
+    // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
+    // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
+    T("working: all forty Signs carry a Backlash", signs.All(w => w.HasBacklash));
+    T("working: no Miracle does — faith does not bite back", mirs.All(w => !w.HasBacklash));
+    T("working: a Backlash is lifted clear of the effect text",
+        !W("Witch-Sight").Effect.Contains("Backlash", StringComparison.OrdinalIgnoreCase)
+        && W("Witch-Sight").Backlash.Length > 0);
+    T("working: a Backlash printed as 'None' still keeps its words",
+        W("Salt & Iron").HasBacklash && W("Salt & Iron").Backlash.Contains("kindest"));
+    T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
+    // Four of the forty print "Backlash: None" and then say something about why. The other
+    // thirty-six cost the worker something, and those are the ones the app should warn about.
+    T("working: thirty-six of the forty actually bite", signs.Count(w => w.BacklashBites) == 36);
+
+    // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
+    // the two chapters give it up entirely.
+    T("working: every one of the eighty resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
+
+    // The shapes the old dialog could not express at all.
+    T("working: Witch-Sight is worked on the worker", W("Witch-Sight").Shape == Rules.WorkShape.Self);
+    T("working: The Tally lands on nobody", W("The Tally").Shape == Rules.WorkShape.Place);
+    T("working: Ward of the Threshold is a place", W("Ward of the Threshold").Shape == Rules.WorkShape.Place);
+    T("working: Unmake the Working targets a working", W("Unmake the Working").Shape == Rules.WorkShape.Counter);
+    T("working: Borrowed Breath is worked on a companion", W("Borrowed Breath").Shape == Rules.WorkShape.Ally);
+    T("working: The Crimson Word picks one creature", W("The Crimson Word").Shape == Rules.WorkShape.OneCreature);
+
+    // An area is a radius in feet, not "everyone on the field" — the book's areas catch friends.
+    T("working: Salt & Iron reaches ten feet",
+        W("Salt & Iron").Shape == Rules.WorkShape.Area && W("Salt & Iron").AreaFeet == 10);
+    T("working: The Grasping Dark reaches twenty", W("The Grasping Dark").AreaFeet == 20);
+    T("working: Open the Vein of the World reaches thirty", W("Open the Vein of the World").AreaFeet == 30);
+    T("working: every radius the book prints is read", all.Count(w => w.AreaFeet > 0) >= 3);
+
+    // Mending must never be read as harm. This is the single worst thing the reader could get
+    // wrong, and "Treat a wound for 1d8" plus "heal a touched ally 2d6" both used to score as damage.
+    T("working: Borrowed Breath heals 2d8", W("Borrowed Breath").Heal == "2d8" && W("Borrowed Breath").Damage.Length == 0);
+    T("working: The Green Hand treats a wound for 1d8", W("The Green Hand").Heal == "1d8" && W("The Green Hand").Damage.Length == 0);
+    T("working: The Altar Call heals 2d6", W("The Altar Call").Heal == "2d6" && W("The Altar Call").Damage.Length == 0);
+    T("working: The Life Shared spreads 2d8 across an area",
+        W("The Life Shared").Heal == "2d8" && W("The Life Shared").Shape == Rules.WorkShape.Area);
+    T("working: Extreme Unction wakes them on 1d6", W("Extreme Unction").Heal == "1d6");
+    T("working: no working both heals and harms with the same die",
+        all.All(w => w.Heal.Length == 0 || w.Damage.Length == 0));
+
+    // Nerve is its own currency and is neither harm nor healing.
+    T("working: The Unburdening restores 1d6 Nerve", W("The Unburdening").Nerve == "1d6");
+    T("working: Coin of Pain buys 1d6 Nerve", W("Coin of Pain").Nerve == "1d6");
+
+    // Damage, ongoing damage, and save-for-half.
+    T("working: The Crimson Word deals 3d6", W("The Crimson Word").Damage == "3d6");
+    T("working: Open the Vein deals 6d8 and saves for half",
+        W("Open the Vein of the World").Damage == "6d8" && W("Open the Vein of the World").SaveForHalf);
+    T("working: The Reckoning Fire deals 6d6 across an area",
+        W("The Reckoning Fire").Damage == "6d6" && W("The Reckoning Fire").Shape == Rules.WorkShape.Area);
+    T("working: Rot the Wound is 1d6 EACH ROUND, not once",
+        W("Rot the Wound").Ongoing == "1d6" && W("Rot the Wound").Damage.Length == 0);
+    T("working: and it lasts until something is done about it",
+        W("Rot the Wound").Ends == Rules.WorkEnds.UntilEnded);
+    T("working: The Hungering Hand takes 2d6 and gives half back",
+        W("The Hungering Hand").Damage == "2d6" && W("The Hungering Hand").DrainsToWorker);
+
+    // Durations the old round-counter could not hold.
+    T("working: Witch-Sight lasts a scene", W("Witch-Sight").Ends == Rules.WorkEnds.Scene);
+    T("working: Cold Lamp lasts an hour", W("Cold Lamp").Ends == Rules.WorkEnds.Hour);
+    T("working: Ward of the Threshold holds until dawn", W("Ward of the Threshold").Ends == Rules.WorkEnds.UntilDawn);
+    T("working: The Blessing of the Road runs a day", W("The Blessing of the Road").Ends == Rules.WorkEnds.Day);
+    T("working: The Crimson Word is over when it is done", W("The Crimson Word").Ends == Rules.WorkEnds.Instant);
+    T("working: every duration the two chapters print is represented",
+        all.Select(w => w.Ends).Distinct().Count() >= 6);
+
+    // "A round per two levels" is arithmetic the app exists to do — a chip saying "a round per
+    // two levels" would be handing it straight back to the Keeper.
+    var stillL6 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
+        CharGen.D.signs.First(s => s.name == "The Stilling").desc, 6);
+    var stillL10 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
+        CharGen.D.signs.First(s => s.name == "The Stilling").desc, 10);
+    T("working: The Stilling scales with the worker — 3 rounds at 6th",
+        stillL6.Ends == Rules.WorkEnds.Rounds && stillL6.Rounds == 3);
+    T("working: and 5 rounds at 10th", stillL10.Rounds == 5);
+    T("working: it never scales below one round",
+        Rules.ReadWorking("x", "Sign", 1, "", "held for one round per two levels", 1).Rounds >= 1);
+
+    // The save the cost line prints is the save the target rolls.
+    T("working: a printed save reaches the working", W("The Stilling").Save == "Will");
+    T("working: at least twenty workings ask for one", all.Count(w => w.HasSave) >= 20);
+
+    // A creature's power is a standing TRAIT, not something worked on anybody. All 150 Bestiary
+    // special lines are written that way and not one carries a die, a save, or a radius — so the
+    // dialog must stop asking who it is being worked on and for how long.
+    var powers = Db.Creatures.Where(c => !string.IsNullOrWhiteSpace(c.special))
+        .Select(c => { var (n, e) = Rules.ParsePower(c.special); return Rules.ReadWorking(n, "Power", 0, "", e, 6); })
+        .ToList();
+    T("working: every creature's special line is read", powers.Count == 150);
+    T("working: a creature's power reads as a trait, not a targeting",
+        powers.Count(w => w.IsTrait) >= 140);
+    T("working: a trait has nothing to roll", powers.Where(w => w.IsTrait).All(w => !w.Resolves));
+    T("working: and every one is still named", powers.All(w => w.Name.Length > 0));
+
+    // A working saved before the shapes and durations existed carries a round count and nothing
+    // else. It must still tick, and it must still read as a round count — the first cut of this
+    // gated the tick on Ends as well, which would have frozen every effect in every session
+    // anybody had already saved.
+    var oldSave = System.Text.Json.JsonSerializer.Deserialize<WorkedEffect>(
+        "{\"Name\":\"The Stilling\",\"Kind\":\"Sign\",\"RoundsLeft\":2,\"SinceRound\":1}");
+    var carrier = new Combatant { Name = "Silas", BloodCur = 10, BloodMax = 10 };
+    carrier.Work(oldSave);
+    T("worked: a pre-v1.29 effect still says how many rounds it has", oldSave.Chip.EndsWith("(2)"));
+    carrier.TickWorked();
+    T("worked: and it still counts down", oldSave.RoundsLeft == 1);
+    T("worked: and it still runs out", carrier.TickWorked().Count == 1 && carrier.Worked.Count == 0);
+
+    // Junk in, no throw out: the reader runs at the table and must never be the thing that dies.
+    bool workingSurvivesJunk = true;
+    foreach (var junk in new[] { null, "", "   ", "Backlash:", "3d6", "·····", "within  feet" })
+        try { Rules.ReadWorking("x", "Sign", 1, junk, junk, 3); } catch { workingSurvivesJunk = false; }
+    T("working: junk text yields a reading rather than a throw", workingSurvivesJunk);
+}
+
+// ---- the marks that do not wash off (Ch. XI · Keeper's Book Ch. III) ----
+// Printed on the Keeper's screen since v1.4 and implemented nowhere until v1.29.0.
+{
+    T("grievous: half maximum Blood in one blow is a terrible blow", Rules.IsGrievous(10, 20, false));
+    T("grievous: and so is more than half", Rules.IsGrievous(14, 20, false));
+    T("grievous: a scratch is not", !Rules.IsGrievous(9, 20, false));
+    T("grievous: but ANY critical is, however small", Rules.IsGrievous(1, 99, true));
+    T("grievous: no damage is never a terrible blow", !Rules.IsGrievous(0, 20, true));
+    T("grievous: a target with no Blood maximum cannot be measured against one",
+        !Rules.IsGrievous(5, 0, false));
+    T("grievous: the DC is the book's fifteen", Rules.GrievousDc == 15);
+
+    T("injury: the d6 table has six entries", Rules.LastingInjuries.Length == 6);
+    T("injury: in the book's order", Rules.LastingInjuries[0] == "Bloody Gash" && Rules.LastingInjuries[5] == "Gut-Shot");
+    bool injuryInRange = true, sawGash = false, sawGut = false;
+    for (int i = 0; i < 600; i++)
+    {
+        var (d, name) = Rules.RollInjury();
+        if (d < 1 || d > 6 || Rules.LastingInjuries[d - 1] != name) injuryInRange = false;
+        if (name == "Bloody Gash") sawGash = true;
+        if (name == "Gut-Shot") sawGut = true;
+    }
+    T("injury: a roll is always a real row of the table", injuryInRange);
+    T("injury: and the whole table can come up", sawGash && sawGut);
+
+    // A scar is the one thing on a soul that has to survive the night, so it has to survive the file.
+    var scarred = new PartyMember { Name = "Anni Halvorsen", BloodMax = 12, BloodCur = 12 };
+    scarred.Scars.Add(new Scar { Kind = "Injury", Name = "Gut-Shot", Note = "the mine, at the ladder", When = "3 Aug" });
+    scarred.Scars.Add(new Scar { Kind = "Affliction", Name = "Will not go underground" });
+    T("scars: the grid line names them all", scarred.ScarLine == "2: Gut-Shot, Will not go underground");
+    T("scars: an unscarred soul shows nothing", new PartyMember().ScarLine.Length == 0);
+    T("scars: an injury and an affliction wear different marks",
+        scarred.Scars[0].Mark == "✚" && scarred.Scars[1].Mark == "☾");
+    T("scars: the whole of one reads back", scarred.Scars[0].Full.Contains("at the ladder"));
+    var reloaded = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
+        System.Text.Json.JsonSerializer.Serialize(scarred));
+    T("scars: they survive save and load", reloaded.Scars.Count == 2
+        && reloaded.Scars[0].Name == "Gut-Shot" && reloaded.Scars[1].Kind == "Affliction");
+    var older = System.Text.Json.JsonSerializer.Deserialize<PartyMember>("{\"Name\":\"Ruth\"}");
+    T("scars: a soul saved before them loads with none, not a null", older.Scars is { Count: 0 });
+
+    // The Afflictions are the Keeper's Book's own d10, transcribed — not a list the app made up.
+    T("affliction: the d10 table has ten entries", Rules.Afflictions.Length == 10);
+    T("affliction: in the book's order",
+        Rules.Afflictions[0].name == "The Shakes" && Rules.Afflictions[9].name == "The Hollow");
+    T("affliction: every one says what it costs", Rules.Afflictions.All(a => a.cost.Length > 20));
+    bool affOk = true; var affSeen = new HashSet<string>();
+    for (int i = 0; i < 900; i++)
+    {
+        var (d, n, c) = Rules.RollAffliction();
+        if (d < 1 || d > 10 || Rules.Afflictions[d - 1].name != n || Rules.Afflictions[d - 1].cost != c) affOk = false;
+        affSeen.Add(n);
+    }
+    T("affliction: a roll is always a real row of the table", affOk);
+    T("affliction: and all ten can come up", affSeen.Count == 10);
+}
+
 T("tier 1 loss = 1",  Rules.NerveLoss(1).roll() == 1);
 for (int i = 0; i < 100; i++)
 {

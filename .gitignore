@@ -39,6 +39,27 @@ startup-error.txt
 # --- autosync noise ---
 autosync.log
 
+# --- local-only: what GitHub carries is the three books, GritKeeper, and what supports them ---
+# Standing rule from 2026-07-29 (user's): the public repo holds the deliverables and the files
+# that BUILD or CHECK them — nothing else. These six stay on this disk, still doing their jobs;
+# they were untracked with `git rm --cached`, so they are recoverable from history if wanted.
+#   * the machine's own setup — a scheduled backup task and a Claude Code session command; they
+#     build nothing and describe this laptop, not the game. (Note the cross-repo convention in
+#     CLAUDE.md: autosync.ps1 is meant to be identical in every Desktop\Git repo. It still is on
+#     disk — it is simply no longer PUBLISHED from this one.)
+autosync.ps1
+register_autosync_task.ps1
+.claude/
+#   * process records: an unbuilt design proposal and a log of editorial findings that were
+#     declined. Both are conversation, not product. The online-play proposal's substance — the
+#     four rungs and the two credential/RNG gotchas — is summarized in CLAUDE.md's roadmap so
+#     nothing is lost by the file being local.
+DESIGN-online-play.md
+editorial-denials.md
+#   * a dead one-shot: add_index.py baked the v2.9 Index into a source file that no longer exists
+#     (player-src.html, retired 2026-07-18) and has been marked "do not re-run" ever since.
+add_index.py
+
 # --- python / editor debris ---
 __pycache__/
 *.pyc
