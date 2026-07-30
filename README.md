@@ -218,3 +218,14 @@ strings current with the books. See `CLAUDE.md` for the full standing rule.
 **Version cascade:** bumping the Player's Book version means updating the hard-coded match
 strings in `build_keeper.py` and `build_bestiary.py` too (do the Keeper/Bestiary own-version
 replacements *before* the Player cascade so e.g. `v2.10` isn't corrupted). See `CLAUDE.md`.
+
+## License
+
+**[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)** — the game and the app
+alike. See [LICENSE](LICENSE).
+
+Play it, run it at your table, read the code, fork it, write for it, teach with it. **Credit it,
+keep your version under the same license, and don't sell it** — no commercial use, which is a
+deliberate choice and makes this source-available rather than open source in the OSI sense.
+
+Copyright © 2026 Cole Williams.
