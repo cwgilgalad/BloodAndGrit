@@ -176,8 +176,17 @@ modes (which also fails on any control that carries no tooltip), a publish of th
 single file **and a self-test of that** — the one thing a dev build can't prove, since the embedded
 data resolves differently inside the bundle — plus the 697 book↔data↔formula cross-checks, the
 static UI audit, and a check that the builds are idempotent and the committed HTML matches a fresh
-build. The page-geometry tools are deliberately left out: pagination is environment-dependent by
-design, so a cloud runner would measure a different page count and fail for no useful reason.
+build, and that this repo's own prose still reads as written rather than generated. The
+page-geometry tools are deliberately left out: pagination is environment-dependent by design, so a
+cloud runner would measure a different page count and fail for no useful reason.
+
+```bash
+python audit_ai_tells.py --commits 40   # burstiness + AI-cadence scan over the docs and commit log
+```
+
+Measured on this repository: README 0.82 · CLAUDE.md 0.78 · CHANGELOG 0.80 · commit messages 0.63,
+against 0.55+ for human-like. Quoted book text is reported separately and never fails — the books'
+voice is not that audit's business, and it has [its own](#verify-headless-edge).
 
 ### A note on the commit log
 

@@ -399,6 +399,20 @@ Regenerating overwrites the three PDFs in place.)*
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python verify_rules.py` parses the built Player's Book and checks its
   seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
+- **The prose reads as written** — `python audit_ai_tells.py --commits 40`. The books have had this
+  standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
+  the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
+  sentence length; 0.55+ human-like, under 0.45 is the tell) and a scan for generated cadences,
+  **negative parallelism** above all. Currently README 0.82 · CLAUDE.md 0.78 · CHANGELOG 0.80 ·
+  commit messages 0.63, zero hard tells.
+  Three things about that script are worth not re-learning: its markup stripping is
+  **length-preserving**, because collapsing spans made every reported line number fiction and sent
+  you to rewrite innocent prose; **quoted** spans are reported apart and never fail, since both real
+  hits were the books' own rules text quoted back into a changelog and rewriting either would
+  falsify the record; and the quote pattern takes **double quotes only**, because admitting the
+  apostrophe makes "don't … it's" read as a quoted span and *masks* genuine tells — the one failure
+  mode worse than a false positive. Proper nouns that collide with corporate vocabulary
+  (`Vital Breath`, `landscape-Letter`) are blanked before the soft-word count.
 
 ### One source of truth, and disagreement is a failing test
 
