@@ -1029,10 +1029,14 @@ change them all:
 - `autosync.ps1` + `register_autosync_task.ps1` are canonical and identical in every repo.
   The "<folder name> AutoSync" scheduled task (every 30 min + at logon) auto-commits the
   checked-out branch and pushes only when an `origin` remote exists. `autosync.log` is
-  git-ignored. **As of 2026-07-29 the two scripts are also git-IGNORED in BloodAndGrit** (see
-  the rule below) — they are still identical on disk and still run; that repo simply doesn't
-  publish them. If the same is wanted in TideWatch and DebForge, it has to be done there too,
-  or "identical in every repo" quietly stops being true of what's tracked.
+  git-ignored. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three
+  repos** (BloodAndGrit, TideWatch, DebForge). They are still on disk, still byte-identical,
+  and still run; they are simply not published, because they describe this laptop rather than
+  any of the software. "Identical in every repo" therefore holds of the files AND of what is
+  tracked. Verify with `Get-FileHash` across the three before editing either one.
+- **Untrack on `main`, never on a session branch.** See the landmine below: `git rm --cached` on a
+  branch reads as harmless and turns into a real working-tree delete at merge time. TideWatch and
+  DebForge were done directly on `main` for exactly this reason.
 
 ### What GitHub carries (BloodAndGrit — standing rule, 2026-07-29)
 
