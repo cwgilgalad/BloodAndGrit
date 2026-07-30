@@ -458,6 +458,17 @@ public partial class MainForm
         N("  players over a network — one machine at the table, usually the Keeper's.");
         N("  (The three books are PDFs. Those open on anything, phone included — it is");
         N("  the app that is Windows-only, not the game.)");
+        rtf.AppendText("\n");
+
+        // A Linux build is INTENDED, not shipped. Worded as a plan and nothing more, because this
+        // screen exists to stop the app claiming what it cannot do — the standing rule is that no
+        // promise is made to a player or Keeper that the current build cannot keep. "Planned" is a
+        // statement about intent, which is honest; a date or a "coming soon" would not be.
+        H("Planned, not here yet");
+        N("  A Linux package is intended. The game's rules already build and run as a");
+        N("  plain .NET library with no Windows dependency, which is the hard half of");
+        N("  that job — but the window you are looking at is Windows Forms, and until");
+        N("  there is something to download, treat this as an intention and not a date.");
 
         var ok = new Button { Text = "Ride on", Left = 232, Top = 440, Width = 88, DialogResult = DialogResult.OK };
         f.Controls.AddRange(new Control[] { rtf, ok });

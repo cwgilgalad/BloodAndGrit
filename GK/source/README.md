@@ -39,6 +39,11 @@ players over a network — one machine at the table, usually the Keeper's. (The 
 are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
 the game.)
 
+**Planned, not here yet: a Linux package.** The rules are already a plain `net8.0` library with
+no Windows dependency (`GK/rules` — it is what the headless test suite runs against), so the
+engine half needs nothing. The window is Windows Forms, and that is the half a Linux build has
+to answer. Treat this as an intention, not a date: there is nothing to download yet.
+
 ---
 
 ## Running it

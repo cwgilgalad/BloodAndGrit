@@ -61,6 +61,23 @@ HARD = [
     (r"\bin conclusion\b", "\"in conclusion\""),
     (r"\b(?:let'?s|we'?ll) (?:dive|jump) (?:in|into)\b", "\"let's dive in\""),
     (r"\bnavigat(?:e|ing) the (?:complex|complexities|landscape|world)\b", "\"navigating the landscape\""),
+    # An assistant describing its operator in the third person. Nothing gives the game away faster
+    # in a doc that is otherwise written in the first person — CLAUDE.md opens with "How I like to
+    # work" and "I direct in plain words", so "user's stated plan" a thousand lines later reads as a
+    # different author entirely. Caught by eye, not by this scan, which is why it is here now.
+    # The established `(user-reported)` / `(user-asked)` parentheticals are house convention and are
+    # deliberately NOT matched: they credit where a fix came from and read as a normal changelog note.
+    # "the" is OPTIONAL, and that is the whole point: the phrase that prompted this pattern was
+    # "(user's stated plan, 2026-07-29)" with no article at all, and the first version of the regex
+    # required one and sailed straight past it. A guard written from memory of the problem instead of
+    # from the actual text is a guard that does not fire.
+    # The POSSESSIVE is required, and it is the discriminator. "user's stated plan" is an assistant
+    # narrating its operator; "Two user request batches in one session" is a changelog crediting
+    # where the work came from, which is this project's house convention and appears throughout the
+    # history. Dropping the apostrophe to catch the first flagged four of the second.
+    (r"\b(?:the\s+)?user's\s+(?:stated|request|wish|intent|preference|instruction|words|plan|goal)", "assistant register (\"user's …\")"),
+    (r"\b(?:per|as (?:per|requested by)|according to) the user\b", "assistant register (\"per the user\")"),
+    (r"\bthe user (?:wants|asked me|requested|would like|prefers|has asked)\b", "assistant register (\"the user wants …\")"),
 ]
 
 # ---- soft tells: counted and reported, never failed over ----------------------------------------

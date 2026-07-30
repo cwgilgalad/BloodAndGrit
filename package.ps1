@@ -97,6 +97,19 @@ foreach ($tree in "source", "rules") {
     Write-Host "  re-mirrored GK\$tree -> $(Split-Path -Leaf $dest)\$tree"
 }
 
+# --- 2b. the license travels with the source ---
+# The zip carries ~26,000 lines of source, and until v1.29.1 it carried no license at all: anyone
+# who downloaded a release got the whole codebase with nothing saying what they were allowed to do
+# with it. An unlicensed archive is worse than an unlicensed repo, because the archive is what
+# leaves the site and it takes no context with it. Both files ride along now, and the check below
+# asserts it, so a future release cannot quietly drop them again.
+foreach ($legal in "LICENSE", "NOTICE") {
+    $src = Join-Path $root $legal
+    if (-not (Test-Path $src)) { throw "$legal is missing from the repo root — the zip must ship it" }
+    Copy-Item $src (Join-Path $dest $legal) -Force
+}
+Write-Host "  copied LICENSE + NOTICE -> $(Split-Path -Leaf $dest)\"
+
 # --- 3. zip the whole deliverable ---
 $zip = Join-Path $root "GritKeeper.zip"
 Remove-Item $zip -ErrorAction SilentlyContinue
@@ -111,7 +124,8 @@ try {
     $names = $z.Entries.FullName
     foreach ($must in @("app/GritKeeper.exe", "README.md", "source/MainForm.cs",
                         "rules/Core.cs", "rules/Data/creatures.json",
-                        "rules/BloodAndGrit.Rules.csproj")) {
+                        "rules/BloodAndGrit.Rules.csproj",
+                        "LICENSE", "NOTICE")) {
         if ($names -notcontains $must) { throw "the zip is missing $must" }
     }
     # And nothing that belongs to this machine. A settings file that ships is worse than a

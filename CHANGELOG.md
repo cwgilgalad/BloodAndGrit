@@ -8,6 +8,65 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.29.1 — the release carries its own license, and the repository says what it
+  is (2026-07-29).**
+
+  No change to the app itself: the exe is functionally identical to v1.29.0 and the version moves
+  only so the shipped archive can be told apart from the one before it. Everything here is about
+  what leaves the building.
+
+  - **The zip ships `LICENSE` and `NOTICE`.** It carries ~26,000 lines of source and, until now,
+    nothing at all saying what anyone was allowed to do with them. **An unlicensed archive is worse
+    than an unlicensed repository**, because the archive is the thing that leaves the site and it
+    takes no context with it — no README, no repo page, no license tab. `package.ps1` copies both
+    files in and its pre-upload check now asserts their presence, so a later release cannot quietly
+    drop them. 29 entries → 31.
+  - **The project is licensed: CC BY-NC-SA 4.0**, over the game and the app alike (user's choice,
+    including the NonCommercial term). `LICENSE` is the verbatim legal code as published by Creative
+    Commons — downloaded rather than written out, because a legal document recited approximately is
+    worse than none — and `NOTICE` carries the plain-language summary, which parts of the repository
+    fall on the game side and which on the software side, and the Pathfinder 2E lineage note.
+    Recorded plainly in both: NonCommercial makes this **source-available, not open source** as the
+    OSI defines it, since every OSI-approved license permits commercial use. Note that GitHub's
+    sidebar will read "Other" for this and there is no fixing it — its detector uses
+    choosealicense.com's set, which deliberately excludes the NC variants. Our `LICENSE` is
+    byte-identical to the canonical text (438 of 438 lines); the label is GitHub's policy, not a
+    defect.
+  - **The repository stopped calling itself an HTML project.** GitHub computes its language bar from
+    *bytes*, and the three **built** book files are 1.46 MB of them — so the bar read "HTML 42%" over
+    ~16,000 lines of C# and ~10,000 of Python. A new `.gitattributes` marks them, the PDFs and the
+    `GritKeeper/` mirror as `linguist-generated`, which is a statement of fact (nothing hand-edits
+    them) and collapses half-megabyte artifacts in diffs as a bonus. Result: HTML gone, Python 50.7%,
+    C# 48.8%.
+  - **Line endings are declared.** There was no `.gitattributes` at all, so whether a file landed LF
+    or CRLF depended on the machine that cloned it — the source of the "LF will be replaced by CRLF"
+    warning on nearly every commit. `*.sh` is pinned to LF, which is correctness rather than
+    cosmetics: a CRLF shebang fails on Debian with "bad interpreter". Applied across all four
+    `Desktop\Git` repos.
+  - **A CI workflow** (`.github/workflows/verify.yml`) running the checks this project already had
+    and nobody could see: the build with warnings-as-errors, the ~12,000-assertion logic suite, the
+    self-test in all three run modes, **a publish of the self-contained single file and a self-test
+    of that** — the one failure a dev build cannot show, since `Db.ReadData` resolves embedded
+    resources off `typeof(Db).Assembly` — plus the 697 cross-checks, the UI audit, an idempotent-build
+    check and a check that the committed HTML matches a fresh build. The Playwright page-geometry
+    tools are deliberately excluded: pagination is environment-dependent by design, so a cloud runner
+    would measure a different page count and fail for no useful reason.
+  - **`audit_ai_tells.py`** — the reads-like-a-person standard, which the books have always had,
+    extended to the repository's own prose. Burstiness plus a scan for generated cadences. The docs
+    came back clean (README 0.85 · CLAUDE.md 0.79 · CHANGELOG 0.80 · commit messages 0.63, against
+    0.55+ for human-like). Three defects in its first version are recorded in CLAUDE.md, because each
+    made the tool lie — most importantly that it **excused quoted spans as "somebody else's
+    cadence"**, which was circular: what these docs quote is the books, written by the same hand.
+    Removing that excuse and pointing the scan at the books found **eighteen negative-parallelism
+    constructions** it had been waving through. Those are book content and are fixed in the next
+    release, at source in the build scripts.
+  - **Repository presentation:** descriptions filled where empty, topics added, and the README now
+    explains that `autosync(session/…): <timestamp>` commits are a scheduled 30-minute backup rather
+    than hand-authored history.
+  - Verified: build 0/0 with `-warnaserror` · smoke **12,248 passed, 0 failed** · self-test 36/36 on
+    the published single file · `audit_ui.py` 127 buttons and 18 dialogs clean · `verify_rules.py`
+    697 cross-checks, 0 drift · zip 31 entries, signed and timestamped. No book content changed.
+
 - **GritKeeper v1.29.0 — what a Sign actually does, what a wound leaves behind, and a glass
   on the table (2026-07-29).**
 
