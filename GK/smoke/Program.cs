@@ -482,6 +482,88 @@ foreach (var (table, floor) in new[]
         CharGen.InitiativeBonus(null) == 0);
 }
 
+// ---- the turn hourglass (v1.29.0) ----
+// The clock is pure and fed elapsed milliseconds by its caller, which is the whole reason a
+// five-minute turn can be run here in a millisecond. What has to hold: it counts down and stops at
+// the floor, the sand's fraction tracks the time rather than the ticks, the face never lies about
+// how much is left, and a held glass does not quietly keep draining.
+{
+    var g = new TurnClock();
+    T("glass: a fresh glass holds the default five minutes",
+        g.PresetSeconds == 300 && g.PresetSeconds == TurnClock.DefaultSeconds);
+    T("glass: full, still, and not yet through", !g.Running && !g.Expired && g.Spent == 0 && g.Face == "5:00");
+
+    T("glass: a still glass does not drain", !g.Tick(5000) && g.LeftMs == 300_000);
+
+    g.Start();
+    T("glass: started, it is running", g.Running && !g.Expired);
+    g.Tick(60_000);
+    T("glass: a minute gone reads 4:00", g.Face == "4:00");
+    T("glass: a minute gone is a fifth of the sand", Math.Abs(g.Spent - 0.2) < 1e-9);
+
+    g.Pause();
+    g.Tick(60_000);
+    T("glass: a HELD glass does not drain", g.Face == "4:00" && !g.Running);
+
+    // Run it out in the small steps the animation really uses, not one big jump.
+    g.Start();
+    bool rang = false;
+    for (int i = 0; i < 10_000 && !g.Expired; i++) if (g.Tick(60)) rang = true;
+    T("glass: it runs out, and says so exactly once", g.Expired && rang);
+    T("glass: through, it stops running rather than counting past zero", !g.Running && g.LeftMs == 0);
+    T("glass: through, it reads 0:00 and all the sand is down", g.Face == "0:00" && g.Spent == 1);
+    T("glass: an expired glass rings only once", !g.Tick(60));
+
+    // Rounding UP: 1 ms left is still "0:01", never "0:00". A timer that shows zero for a whole
+    // second before it fires reads as a broken timer.
+    var nearly = new TurnClock { PresetSeconds = 10 };
+    nearly.Start(); nearly.Tick(9_999);
+    T("glass: a millisecond left still reads 0:01", nearly.Face == "0:01" && !nearly.Expired);
+
+    // Start on a spent glass turns it over rather than doing nothing — otherwise the button is dead
+    // exactly when a Keeper reaches for it.
+    var again = new TurnClock { PresetSeconds = 5 };
+    again.Start(); again.Tick(5_000);
+    again.Start();
+    T("glass: starting a spent glass fills it again", again.Running && !again.Expired && again.Spent == 0);
+
+    // Changing the house rule mid-session must not cut the running turn short — but must take
+    // effect on a glass nobody is using.
+    var live = new TurnClock { PresetSeconds = 300 };
+    live.Start(); live.Tick(10_000);
+    live.PresetSeconds = 600;
+    T("glass: a new length leaves the RUNNING turn alone", live.LeftMs == 290_000);
+    live.Pause();
+    live.PresetSeconds = 120;
+    T("glass: a new length re-loads a held glass", live.LeftMs == 120_000);
+
+    T("glass: the length is clamped to something a table could use",
+        new TurnClock { PresetSeconds = 0 }.PresetSeconds == 5
+        && new TurnClock { PresetSeconds = 999_999 }.PresetSeconds == 3600);
+
+    T("glass: reset fills it and stops it", live.Running == false && Reset(live));
+    static bool Reset(TurnClock c) { c.Start(); c.Tick(1000); c.Reset(); return !c.Running && c.Spent == 0; }
+
+    // Every preset the menu offers must spell out as something a person would say out loud, and the
+    // default has to be one of them — a default missing from its own list is a default nobody can
+    // get back to after changing it.
+    T("glass: six presets are offered", TurnClock.Presets.Length == 6);
+    T("glass: the default is one of the presets", TurnClock.Presets.Contains(TurnClock.DefaultSeconds));
+    T("glass: the presets are in order, and all usable",
+        TurnClock.Presets.Zip(TurnClock.Presets.Skip(1)).All(p => p.First < p.Second)
+        && TurnClock.Presets.All(s => s >= 5 && s <= 3600));
+    T("glass: whole minutes are spelled in words", TurnClock.Spell(60) == "1 minute"
+        && TurnClock.Spell(300) == "5 minutes" && TurnClock.Spell(900) == "15 minutes");
+    T("glass: an odd length is spelled as a clock", TurnClock.Spell(90) == "1:30");
+
+    // It is a preference, not session state: a house rule outlives the fight it was set during.
+    var pd = new Prefs.Data();
+    T("glass: off until asked for, and five minutes when it is", !pd.TurnTimer && pd.TurnSeconds == 300);
+    var round2 = System.Text.Json.JsonSerializer.Deserialize<Prefs.Data>(
+        System.Text.Json.JsonSerializer.Serialize(new Prefs.Data { TurnTimer = true, TurnSeconds = 600 }));
+    T("glass: the house rule survives save and load", round2.TurnTimer && round2.TurnSeconds == 600);
+}
+
 // ---- Nerve-loss ladder ----
 // ---- reading a working: what a Sign, a Miracle or a creature's power actually DOES ----
 // The old model held one shape — a target and a round count — and eighty hand-written workings do

@@ -57,6 +57,23 @@ public partial class MainForm
         ModeItem("&Player's table", RunMode.Player);
         ModeItem("Keeper — &dice && books", RunMode.KeeperDice);
         ModeItem("Keeper — on the &engine", RunMode.KeeperEngine);
+
+        // The turn glass is a house rule about how this table plays, so it belongs on the Table
+        // menu and not only on the Tracker's own bar — it is the kind of thing settled before
+        // anyone sits down, by someone who has not opened the Tracker yet. It appears on the two
+        // Keeper tables because the Tracker does; a player's table has no field to time.
+        if (ShowsTab("Tracker"))
+        {
+            table.DropDownItems.Add(new ToolStripSeparator());
+            var glass = new ToolStripMenuItem("The turn &glass") { Checked = TurnTimerOn };
+            glass.Click += (s, e) => { ShowTurnTimer(!TurnTimerOn); RebuildMenu(); };
+            glass.ToolTipText = "Put an hourglass on the Tracker that times the posse's turn, or take it away";
+            table.DropDownItems.Add(glass);
+            var howLong = new ToolStripMenuItem("How long is a &turn…");
+            howLong.Click += (s, e) => AskTurnLength();
+            howLong.ToolTipText = "Set how long a posse's turn runs — five minutes unless you say otherwise";
+            table.DropDownItems.Add(howLong);
+        }
         menu.Items.Add(table);
 
         var help = new ToolStripMenuItem("&Help");

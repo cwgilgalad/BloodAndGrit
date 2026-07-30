@@ -8,6 +8,96 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.29.0 — what a Sign actually does, what a wound leaves behind, and a glass
+  on the table (2026-07-29).**
+
+  The largest release since the app got its Tracker. Four strands: the Signs and Miracles
+  system learned to describe itself, wounds and fright now leave a permanent mark on a soul,
+  every control in the app says what it is (checked, not intended), and the Tracker can put a
+  turn timer in front of the posse.
+
+  - **Creature Tiers in the Encounter and Tracker pickers** (user-asked). Every line in the
+    type-ahead now reads `The Wendigo  ·  Tier IV  ·  The Old Dark`, owner-drawn through one
+    shared `CreatureLine`/`CreaturePicker` so the two bars can't disagree. The Tier is the whole
+    basis of the budget math and of the safe-table rule, and it was the one thing the picker
+    didn't show.
+  - **The working model — what a Sign, a Miracle or a creature's power DOES** (user-asked; the
+    old model held one shape and eighty hand-written workings do not have one shape).
+    `Rules.Working` now carries a `WorkShape` (Self · OneCreature · Ally · Area · Place ·
+    Counter · **Trait** · Unclear), a `WorkEnds` (Instant · Rounds · NextTurn · Scene · Hour ·
+    Day · UntilDawn · UntilEnded), damage, ongoing, healing, Nerve, a save-for-half, whether it
+    drains the worker, and its Backlash — all read out of the book's own printed text by
+    `Rules.ReadWorking`, so nothing is transcribed twice.
+    - The reader was tuned **empirically, not by assertion**: all 80 workings and 150 creature
+      powers were dumped and read by hand until nothing came back `Unclear`, and the dump was
+      then converted into permanent assertions and deleted. Dice are claimed in the order
+      Nerve → Heal → Ongoing → Damage, and the damage verb list deliberately has no bare
+      "for", because "Treat a wound for 1d8" was scoring as both damage and healing.
+    - `WorkShape.Trait` came out of the data: **zero** of the 150 creature `special` lines carry
+      dice, a save or a radius, so the old dialog's "on whom, for how many rounds" was a
+      category error for every one of them.
+    - `HasBacklash` is split from `BacklashBites` — four of the forty Signs print a Backlash of
+      "None", *Salt & Iron*'s being "None. This is the kindest Sign in the book, and the weakest."
+    - The Work dialog reshapes itself to the working: targets appear only where there is a
+      target, the duration picker offers what the text actually says, and the Backlash is
+      printed in Blood ink where it can't be missed.
+  - **Wounds and fright leave a mark.** A hit that takes half a soul's Blood or lands as a crit
+    is **grievous** (`Rules.IsGrievous`) and offers a Fortitude save at DC 15 against a **Lasting
+    Injury**; a critically failed Dread Check now rolls the Keeper's Book Ch. III **d10 of
+    Afflictions**. Both land on the sheet as `Scar`s, shown on the Posse grid with ✚ and ☾ marks
+    and a hover for the whole list. The Afflictions table is `Rules.Afflictions` — an earlier
+    draft of this invented its own list of suggestions while the book already had a d10, which
+    is exactly the single-source violation this project keeps closing.
+  - **Initiative is a Notice check** (Player's Book Ch. XI). The Tracker rolled a bare d20 for
+    everyone while the app's own Reference deck printed the rule. `Rules.RollInitiative` adds the
+    bonus and floors the result at 1, because a rolled 0 is indistinguishable from "not rolled".
+  - **The turn hourglass** (user-asked), on the Tracker, **opt-in and off by default**. An
+    owner-drawn glass whose sand really falls — the level drops by √time so the *area* the eye
+    reads falls off linearly — beside an m:ss face and a Glass ▾ menu. A posse's turn defaults to
+    **five minutes** (ten is one click away, any length from five seconds to an hour is allowed),
+    the top of each round turns it over, and the length lives in `prefs.json` because it is a
+    house rule about how this table plays, not state belonging to one fight. **It never acts on
+    the game**: it logs and turns red, and does not end a turn or take a Beat, because nothing in
+    the books says a slow player loses their action. The clock itself (`TurnClock`) is pure and in
+    the rules library, so the smoke rig runs a five-minute turn in a millisecond.
+  - **Every control says what it is — and it is now a failing check.** `--selftest` walks all ten
+    realized tabs and every step of the wizard for **all seventeen Callings**, and fails on any
+    interactive control with no tooltip. It found 13 silent controls on the tabs and, in the
+    wizard, something reading the source would not have caught: **all five list boxes had no
+    resting tooltip at all** — `ItemTips` only spoke once the pointer was already on a row, and
+    cleared itself over the blank ground below the last one. So the two lists that silently
+    *refuse* a click (past the trained-skill cap, past what the coin covers) never said why.
+    Lists now carry their own instructions, with a row's tip laid over them.
+  - **Every modal dialog answers Esc.** Four had drifted into wiring `AcceptButton` and leaving
+    `CancelButton` unset — including **Strike and Dread**, the two a Keeper opens most in a fight.
+    A modal that ignores Esc reads as a hung window. `audit_ui.py` now checks all 18 of them.
+    Where cancelling is meaningless (the die prompt, the run-mode chooser) Esc does what the title
+    bar's ✕ already did. The Level-up dialog's buttons were also the one pair in the app laid out
+    Cancel-first; they now read `[Level up] [Cancel]` like everything else.
+  - **Contrast and accents** (user-asked). The **selected tab was near-invisible** — under the
+    Windows visual style it differed from the other nine by a couple of pixels of height. The
+    strip is now owner-drawn: the live tab stands on Paper under a 3px Blood rule with its name in
+    bold Blood, the rest sit back on a darker ground. Grid lines and the alternating row stripe
+    were both a shade off Paper (the stripe differed by four points of blue); both are now
+    visible. Blood bars went from 150 to 190 alpha. Two palette entries were added for contrast
+    rather than meaning — `GoldDeep` (~5:1 on Paper, for the explanatory paragraphs that were set
+    in Gold at ~3.5:1) and `Faint` — and the ⧖ glyph was dropped because it is not in the font
+    and rendered as "≥".
+  - **Reference deck knows its audience.** Two leaves are the Keeper's alone; a player's screen is
+    now the shorter deck, asserted from both ends so a filter that stopped filtering fails the
+    build rather than looking like nothing at all.
+  - **Minimum system requirements** (user-asked), the way a PC-game box carried them —
+    Help ▸ What it needs to run — plus a sweep for promises the app cannot keep. The books are
+    PDFs, not a phone app, and the roll log does not keep everything forever.
+  - **A first-run walkthrough with an opt-out** (user-asked): 14 tooltip callouts that follow the
+    feature they describe, mode-aware, Esc-closable from either window, offered once.
+  - **Tracker fixes** a player would have hit: a guarded `CellEndEdit`, Delete clearing Conditions,
+    the posse mirror finding its soul by id, and `→ Tracker` from the Ledger going through the same
+    path as every other route onto the field.
+  - Verified: build 0 warnings / 0 errors · smoke **12,248 passed, 0 failed** · self-test 36/36 ·
+    `audit_ui.py` 127 buttons and 18 dialogs, no findings · `verify_rules.py` 697 cross-checks, no
+    drift. **No book content changed, so no book version moved and no PDF was regenerated.**
+
 - **GritKeeper v1.28.0 — the rules are their own library now (2026-07-28).**
 
   A structural change with **no behavior change**: the game and the Windows UI became two

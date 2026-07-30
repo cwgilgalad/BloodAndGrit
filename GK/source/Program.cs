@@ -124,18 +124,42 @@ static class Program
                     if (mode == RunMode.Player)
                         Chk(want < MainForm.RefLeafCount,
                             $"GUI: a player's screen is the shorter deck ({want} of {MainForm.RefLeafCount} leaves)");
+
+                    // Every control on every tab must say what it is — see MainForm's tip audit.
+                    // Once per mode: the Player board is a different set of tabs, not a subset of
+                    // the same objects, so a tip missed there is missed for the person least likely
+                    // to know the rules already.
+                    if (mode == RunMode.KeeperEngine)
+                    {
+                        var quiet = mf.AuditTabTips();
+                        foreach (var q in quiet) Line("       silent: " + q);
+                        Chk(quiet.Count == 0, $"GUI: every control on all ten tabs says what it is ({quiet.Count} silent)");
+                    }
                 }
 
-                // The soul wizard's nine steps, built for a spread of Callings that between them
-                // reach every optional page — the Signs, the Miracles, the Gunhand's second Edge
-                // column, a subpath and a standing Calling choice. Level 9 opens all of them.
-                foreach (var (cal, org) in new[]
-                    { ("Gunhand", "The Outlaw"), ("Hexer", "The Homesteader"),
-                      ("Preacher", "The Freed"), ("Witch", "The Drifter") })
+                // The soul wizard's nine steps, built for EVERY Calling at level 9 — the level that
+                // opens all of them (both ability boosts, all four skill increases, five Edges, the
+                // subpath, the full Sign allowance). Four hand-picked Callings used to stand in for
+                // the seventeen on the grounds that they reached every optional page between them.
+                // That was true of the pages and false of what is ON them: the tip sweep below is
+                // per-control, so a Calling left out is a Calling whose own standing choice, coin
+                // line and Sign list nobody checked. Seventeen wizards cost a second, headless.
+                //
+                // The Outlaw for all of them: the only Calling/Origin bar in the book is the Gambler
+                // against the Callings of Faith, and this isn't it.
+                int wizards = 0, silent = 0;
+                foreach (var cal in CharGen.D.callings.Select(c => c.name))
                 {
-                    int pages = MainForm.BuildWizardStepsForSelfTest(cal, org, 9);
+                    var (pages, untipped) = MainForm.BuildWizardStepsForSelfTest(cal, "The Outlaw", 9);
+                    wizards++;
                     Chk(pages >= 8, $"GUI: the soul wizard builds every step for a {cal} ({pages} pages)");
+                    // The wizard's tooltips are its manual — see BuildWizardStepsForSelfTest.
+                    silent += untipped.Count;
+                    if (untipped.Count > 0)
+                        Line($"  FAIL GUI: a {cal}'s wizard has {untipped.Count} silent control(s): "
+                             + string.Join("; ", untipped));
                 }
+                Chk(silent == 0, $"GUI: every control on all {wizards} Callings' wizards says what it is");
             }
             catch (Exception ux)
             {

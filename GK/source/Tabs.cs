@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace BloodAndGritKeeper;
 
@@ -38,10 +38,17 @@ public partial class MainForm
         Tip.SetToolTip(beastSearch, "Filter by name or where it's found (Ctrl+F jumps here)");
         filters.Controls.Add(beastSearch);
         beastTier = new ComboBox { Width = 90, DropDownStyle = ComboBoxStyle.DropDownList };
+        Tip.SetToolTip(beastTier, "Show one Tier only. A creature's Tier is what makes it a fair, hard fight "
+            + "for a posse of twice that many levels — Tier II is written for four 4th-level souls. Two Tiers "
+            + "over the posse and the app will offer it as a sign on the trail instead of a thing on the field.");
         beastTier.Items.AddRange(new object[] { "Any tier", "Tier I", "Tier II", "Tier III", "Tier IV", "Tier V" });
         beastTier.SelectedIndex = 0; beastTier.SelectedIndexChanged += (s, e) => FilterBeasts();
         filters.Controls.Add(beastTier);
         beastChapter = new ComboBox { Width = 215, DropDownStyle = ComboBoxStyle.DropDownList };
+        Tip.SetToolTip(beastChapter, "Show one chapter of the Bestiary only — the dead, cursed beasts, men "
+            + "and their shapes, spirits, weather, the Old Dark, and the two mundane chapters.\nBeasts of the "
+            + "Living World and Hard Men & Hard Country are the ordinary half: they cost no Nerve and never "
+            + "move the Mark, which is what lets a Keeper run a slow burn before anything gets up that shouldn't.");
         beastChapter.Items.Add("All chapters");
         foreach (var ch in Db.Creatures.Select(c => c.chapter).Distinct()) beastChapter.Items.Add(ch);
         beastChapter.SelectedIndex = 0; beastChapter.SelectedIndexChanged += (s, e) => FilterBeasts();
@@ -264,6 +271,8 @@ public partial class MainForm
         top.Controls.Add(encPick);
         top.Controls.Add(Lbl(" ×"));
         encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
+        Tip.SetToolTip(encQty, "How many of that creature to cost into the plan at once. Six wolves is six "
+            + "lines of budget, not one — which is the whole point of costing a fight before running it.");
         top.Controls.Add(encQty);
         top.Controls.Add(Btn("＋ Add", (s, e) => AddPickToEncounter(), 75, "Add it to the plan (or press Enter in the box)"));
         top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85,
@@ -447,7 +456,7 @@ public partial class MainForm
         if (w > 0)
         {
             var ink = frac >= 0.66f ? Verdigris : frac >= 0.33f ? Gold : Blood;
-            using var b = new SolidBrush(Color.FromArgb(150, ink));   // the number has to stay legible on it
+            using var b = new SolidBrush(Color.FromArgb(190, ink));   // the number has to stay legible on it
             g.FillRectangle(b, new Rectangle(r.X, r.Y, w, r.Height));
         }
         using var pen = new Pen(BarEdge, 1f);
@@ -489,7 +498,7 @@ public partial class MainForm
             trkTurnLbl.Text = tracker.Count == 0 ? "nobody on the field yet"
                 : Rules.NextUp(tracker) is Combatant up ? $"press Next turn — {up.Name} is up first"
                 : "the round is spent — Next turn starts the next one";
-            trkTurnLbl.ForeColor = Color.FromArgb(122, 112, 96);
+            trkTurnLbl.ForeColor = Faint;
             return;
         }
         // What is up, and what is still to come: the second half is the part that stops a Keeper
@@ -497,7 +506,7 @@ public partial class MainForm
         trkTurnLbl.Text = $"{c.Name} is up — {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left"
             + (c.Beats == 0 ? ", spent" : $", next Strike {c.NextStrike}")
             + (left == 0 ? "  ·  last of the round" : $"  ·  {left} still to go");
-        trkTurnLbl.ForeColor = c.Beats == 0 ? Color.FromArgb(122, 112, 96) : Blood;
+        trkTurnLbl.ForeColor = c.Beats == 0 ? Faint : Blood;
     }
 
     void AddPickToTracker()
@@ -505,6 +514,220 @@ public partial class MainForm
         var c = PickedCreature(trkPick);
         if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
         AddCreatureToTracker(c, (int)trkQty.Value);
+    }
+
+    // ============================================================ THE TURN HOURGLASS
+    // A posse that takes twenty minutes to decide who opens the door is a fight with no shape to
+    // it, so the Tracker can put a glass on the table: the posse's turn gets a fixed length, the
+    // sand falls where everyone can see it, and the round rolls it over by itself.
+    //
+    // Three deliberate choices:
+    //   * OPT-IN. Off until asked for. A table that never wanted timing should never find itself
+    //     timed, and a countdown nobody agreed to is pressure, not a tool.
+    //   * The LENGTH is a preference, not session state — it is a house rule about how this table
+    //     plays, so it lives in prefs.json and is set before anyone sits down. Five minutes by
+    //     default; ten is one click away, and any length from five seconds to an hour is allowed.
+    //   * It NEVER acts on the game. It logs when the sand runs out and it turns red. It does not
+    //     end a turn, spend a Beat, or take a Beat away. Nothing in the books says a slow player
+    //     loses their action, so the app must not invent it — and a timer that silently ended
+    //     someone's turn would be the one feature here that could lose a Keeper's work.
+    //
+    // The clock itself is pure and lives in the rules library (Rules' TurnClock), so the smoke rig
+    // can run a five-minute turn in a millisecond. This half is ink, one Windows timer, and wiring.
+    TurnClock turnClock;
+    HourglassView turnGlass;
+    Label turnFace;
+    System.Windows.Forms.Timer turnTicker;
+    readonly List<Control> turnGlassParts = new();
+
+    /// The glass, its face, and its own little menu — handed back as a list so the caller decides
+    /// where on the bar they land. They ride at the end of the ROUND row on purpose: "how far
+    /// through the round are we" and "how much of the turn is left" are the same question, and
+    /// putting the answer anywhere else makes a Keeper look in two places for it.
+    IEnumerable<Control> BuildTurnGlass()
+    {
+        var prefs = Prefs.Load();
+        turnClock = new TurnClock { PresetSeconds = prefs.TurnSeconds };
+
+        turnGlass = new HourglassView(turnClock) { Margin = new Padding(4, 3, 4, 3) };
+        turnGlass.Click += (s, e) => ToggleTurnGlass();
+        Tip.SetToolTip(turnGlass, "The posse's turn, running out. Click the glass to start or hold it.\n"
+            + "It resets and starts itself at the top of every round. When the sand is through it says "
+            + "so in the log and turns red — it never ends anyone's turn or takes a Beat away. That is "
+            + "still the Keeper's call.");
+
+        turnFace = new Label
+        {
+            AutoSize = false, Width = 52, Height = 24, TextAlign = ContentAlignment.MiddleLeft,
+            Font = new Font("Segoe UI", 11f, FontStyle.Bold), ForeColor = Gold,
+            Margin = new Padding(0, 8, 2, 3), Tag = "readout"      // a live number: it must say what it is
+        };
+        Tip.SetToolTip(turnFace, "How much of the posse's turn is left, counting down. Set the length "
+            + "from the Glass menu beside it, or from Table ▸ The turn glass.");
+
+        var menu = MenuBtn("Glass ▾", 74, "Start, hold or reset the turn glass, and set how long a turn is",
+            ("Start / hold  (click the glass)", (s, e) => ToggleTurnGlass()),
+            ("Reset to a full glass", (s, e) => { turnClock.Reset(); SyncTicker(); ShowTurnGlass(); Say("The turn glass is full again.", Gold); }),
+            ("-", null),
+            ("— How long is a turn —", null),
+            (TurnPresetLabel(0), (s, e) => SetTurnLength(TurnClock.Presets[0])),
+            (TurnPresetLabel(1), (s, e) => SetTurnLength(TurnClock.Presets[1])),
+            (TurnPresetLabel(2), (s, e) => SetTurnLength(TurnClock.Presets[2])),
+            (TurnPresetLabel(3), (s, e) => SetTurnLength(TurnClock.Presets[3])),
+            (TurnPresetLabel(4), (s, e) => SetTurnLength(TurnClock.Presets[4])),
+            (TurnPresetLabel(5), (s, e) => SetTurnLength(TurnClock.Presets[5])),
+            ("Some other length…", (s, e) => AskTurnLength()),
+            ("-", null),
+            ("Put the glass away", (s, e) => ShowTurnTimer(false)));
+
+        // One timer for the whole feature, started only when the glass is on show. 60 ms is about
+        // 16 frames a second — enough that sand looks like it is falling, cheap enough that a
+        // Keeper with the Tracker open all evening never notices it.
+        turnTicker = new System.Windows.Forms.Timer { Interval = 60 };
+        turnTicker.Tick += (s, e) =>
+        {
+            if (turnClock.Tick(turnTicker.Interval))
+                Log($"The posse's turn is through — {TurnClock.Spell(turnClock.PresetSeconds)} gone.");
+            turnGlass.Advance();
+            ShowTurnFace();
+        };
+
+        turnGlassParts.Clear();
+        turnGlassParts.Add(BarSep());
+        turnGlassParts.Add(turnGlass);
+        turnGlassParts.Add(turnFace);
+        turnGlassParts.Add(menu);
+        ShowTurnTimer(prefs.TurnTimer, quiet: true);
+        return turnGlassParts;
+    }
+
+    static string TurnPresetLabel(int i) => TurnClock.Spell(TurnClock.Presets[i])
+        + (TurnClock.Presets[i] == TurnClock.DefaultSeconds ? "   (the default)" : "");
+
+    /// <summary>Show or hide the whole glass, and remember the answer. Also reachable from the Table
+    /// menu, so it can be settled before a session as well as during one.</summary>
+    internal void ShowTurnTimer(bool on, bool quiet = false)
+    {
+        if (turnGlass == null) { Prefs.Save(WithTurn(Prefs.Load(), on, null)); return; }
+        foreach (var c in turnGlassParts) c.Visible = on;
+        if (!on) { turnClock.Pause(); turnClock.Reset(); }
+        SyncTicker();
+        ShowTurnGlass();
+        if (!quiet) Prefs.Save(WithTurn(Prefs.Load(), on, null));   // the quiet call IS the saved state
+        if (!quiet) Say(on
+            ? $"The turn glass is on the table — {TurnClock.Spell(turnClock.PresetSeconds)} to a turn."
+            : "The turn glass is put away.", Gold);
+    }
+
+    /// <summary>Whether the glass is on the table. Falls back to the saved preference, because the
+    /// Table menu can ask this before the Tracker tab has ever been opened — tabs fill themselves
+    /// on first selection, so there is no glass to interrogate until then.</summary>
+    internal bool TurnTimerOn => turnGlassParts.Count > 0 ? turnGlassParts[0].Visible : Prefs.Load().TurnTimer;
+
+    static Prefs.Data WithTurn(Prefs.Data d, bool? on, int? seconds)
+    {
+        if (on.HasValue) d.TurnTimer = on.Value;
+        if (seconds.HasValue) d.TurnSeconds = seconds.Value;
+        return d;
+    }
+
+    /// The animation timer runs only while sand is actually falling. A 16-frames-a-second repaint
+    /// of a held glass costs nothing visible and does nothing useful, and the Tracker is the tab
+    /// most likely to be left open all evening.
+    void SyncTicker()
+    {
+        if (turnTicker != null) turnTicker.Enabled = TurnTimerOn && turnClock.Running;
+    }
+
+    void ToggleTurnGlass()
+    {
+        turnClock.Toggle();
+        SyncTicker();
+        ShowTurnGlass();
+        Say(turnClock.Running
+            ? $"The turn glass is running — {turnClock.Face} left."
+            : turnClock.Expired ? "The turn glass is through." : $"The turn glass is held at {turnClock.Face}.",
+            turnClock.Expired ? Blood : Gold);
+    }
+
+    /// <summary>Set how long a turn is and keep it for next time. Does not disturb a turn already
+    /// running — see TurnClock.PresetSeconds.</summary>
+    internal void SetTurnLength(int seconds)
+    {
+        if (turnClock == null) { Prefs.Save(WithTurn(Prefs.Load(), null, seconds)); return; }
+        turnClock.PresetSeconds = seconds;
+        Prefs.Save(WithTurn(Prefs.Load(), null, turnClock.PresetSeconds));
+        ShowTurnGlass();
+        Say($"A posse's turn is now {TurnClock.Spell(turnClock.PresetSeconds)}."
+            + (turnClock.Running ? " The turn already running keeps the length it started with." : ""), Gold);
+    }
+
+    /// A length of the Keeper's own choosing, in whole seconds, measured rather than laid out.
+    /// Reachable from the Table menu before the Tracker has ever been built, so it reads the
+    /// current length off the saved preference when there is no glass yet to ask.
+    internal void AskTurnLength()
+    {
+        int current = turnClock?.PresetSeconds ?? Prefs.Load().TurnSeconds;
+        using var f = new Form
+        {
+            Text = "How long is a turn?", FormBorderStyle = FormBorderStyle.FixedDialog,
+            StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
+            ShowIcon = false, BackColor = Paper
+        };
+        const int Pad = 16, CW = 380;
+        string prose = "How long the posse gets to take its turn. The glass never ends a turn by "
+            + "itself — it only shows the time going, and says so in the log when it is through.";
+        var say = new Label
+        {
+            Left = Pad, Top = Pad, Width = CW, ForeColor = Ink, Text = prose,
+            Height = TextRenderer.MeasureText(prose, f.Font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
+        };
+        var mins = new NumericUpDown
+        {
+            Left = Pad, Top = say.Bottom + 12, Width = 70, Minimum = 0, Maximum = 60,
+            Value = current / 60
+        };
+        Tip.SetToolTip(mins, "Whole minutes.");
+        var secs = new NumericUpDown
+        {
+            Left = mins.Right + 56, Top = mins.Top, Width = 70, Minimum = 0, Maximum = 59,
+            Value = current % 60
+        };
+        Tip.SetToolTip(secs, "And seconds on top. Five seconds is the shortest turn the glass will keep.");
+        var ok = new Button { Text = "That's a turn", Left = Pad + CW - 210, Top = mins.Bottom + 16, Width = 110, Height = 30, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Cancel", Left = Pad + CW - 92, Top = ok.Top, Width = 92, Height = 30, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[]
+        {
+            say, mins, new Label { Left = mins.Right + 6, Top = mins.Top + 4, Width = 46, Text = "minutes", ForeColor = Ink },
+            secs, new Label { Left = secs.Right + 6, Top = secs.Top + 4, Width = 54, Text = "seconds", ForeColor = Ink },
+            ok, cancel
+        });
+        f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
+        f.AcceptButton = ok; f.CancelButton = cancel;
+        if (f.ShowDialog(this) != DialogResult.OK) return;
+        SetTurnLength(Math.Max(5, (int)mins.Value * 60 + (int)secs.Value));
+    }
+
+    /// The top of a round turns the glass over — that IS the posse's turn beginning. Called from
+    /// NextRound so the one path the app uses to roll a round over is the one that resets it.
+    void TurnOverTheGlass()
+    {
+        if (turnClock == null || !TurnTimerOn) return;
+        turnClock.Reset();
+        turnClock.Start();
+        SyncTicker();
+        ShowTurnGlass();
+    }
+
+    void ShowTurnGlass() { ShowTurnFace(); turnGlass?.Invalidate(); }
+
+    void ShowTurnFace()
+    {
+        if (turnFace == null) return;
+        turnFace.Text = turnClock.Face;
+        turnFace.ForeColor = turnClock.Expired ? Blood
+            : turnClock.Running ? (turnClock.LeftMs <= 30_000 ? Color.FromArgb(150, 70, 30) : Ink)
+            : Gold;
     }
 
     TabPage BuildTrackerTab()
@@ -545,6 +768,7 @@ public partial class MainForm
         };
         Tip.SetToolTip(trkTurnLbl, "Whose turn it is, what they have left to spend, and what the next Strike costs");
         bar.Controls.Add(trkTurnLbl);
+        foreach (var c in BuildTurnGlass()) bar.Controls.Add(c);
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
         UpdateTurnLine();
 
@@ -574,6 +798,9 @@ public partial class MainForm
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Lbl("Amt:"));
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
+        Tip.SetToolTip(trkAmount, "How much Blood the Damage and Heal buttons beside it move. Neither runs "
+            + "past 0 or past the maximum, and a posse soul's row here and on the Posse tab are the same "
+            + "number — change it in one place and it changes in both.");
         bar.Controls.Add(trkAmount);
         bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80, "Subtract the Amt from the selected combatant (Ctrl+D)"));
         bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65, "Add the Amt to the selected combatant (Ctrl+H)"));
@@ -612,6 +839,8 @@ public partial class MainForm
         bar.Controls.Add(trkPick);
         bar.Controls.Add(Lbl(" ×"));
         trkQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
+        Tip.SetToolTip(trkQty, "How many of that foe to put on the field at once. Each arrives as its own "
+            + "row with its own Blood and its own initiative, numbered so you can tell them apart.");
         bar.Controls.Add(trkQty);
         bar.Controls.Add(Btn("＋ Foe", (s, e) => AddPickToTracker(), 70, "Drop it straight onto the field"));
         bar.Controls.Add(Btn("＋ Add", (s, e) => AddCustomCombatant(), 90, "Add an ad-hoc combatant or NPC by hand"));
@@ -1005,6 +1234,7 @@ public partial class MainForm
                 Log($"{done.Name} ends on {c.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
         }
         trkGrid?.Refresh(); UpdateTurnLine();
+        TurnOverTheGlass();               // a new round is a new posse turn — see the hourglass block
         Log($"— Round {round} —");
     }
 
@@ -1132,7 +1362,10 @@ public partial class MainForm
         var ok = new Button { Text = "That's the roll", Left = Pad + CW - 120, Top = d20.Top - 2, Width = 120, Height = 30, DialogResult = DialogResult.OK };
         f.Controls.AddRange(new Control[] { say, d20, ok });
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
-        f.AcceptButton = ok;
+        // Esc closes it the same way the title bar's ✕ already did — by taking the number that is
+        // showing. There is no cancelling this one: the caller is mid-resolution and needs a die
+        // either way, and a modal that ignores Esc reads as a hung window, not as a firm question.
+        f.AcceptButton = ok; f.CancelButton = ok;
         f.ShowDialog(this);
         return (int)d20.Value;
     }
@@ -1576,7 +1809,7 @@ public partial class MainForm
         var cancel = new Button { Text = "Close", Left = Pad + CW - 84, Top = y, Width = 84, DialogResult = DialogResult.Cancel };
         f.Controls.AddRange(new Control[] { ok, cancel });
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
-        f.AcceptButton = ok;
+        f.AcceptButton = ok; f.CancelButton = cancel;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
@@ -1633,7 +1866,7 @@ public partial class MainForm
             f.Controls.Add(new Label { Left = 250, Top = 176, Width = 82, Text = "d20 rolled:", ForeColor = Blood });
             f.Controls.Add(d20);
         }
-        f.AcceptButton = check;
+        f.AcceptButton = check; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
@@ -2493,6 +2726,10 @@ public partial class MainForm
         var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var k in Db.Terrain.Keys) if (k != villainTable) terr.Items.Add(k);
         terr.SelectedIndex = 0;
+        Tip.SetToolTip(terr, "Which ground the posse is on — each of the Grounds has its own table of what "
+            + "is out there, so a roll on the high desert can't hand you a swamp thing.\nRoll below. What "
+            + "comes up is reported with its Tier, and where it is too much for the posse to meet head-on "
+            + "you are given its sign and its clock instead: the safe-table rule, applied for you.");
         left.Controls.Add(terr);
         left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground — the safe-table rule is applied for you"));
         left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
@@ -2646,7 +2883,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("▶", (s, e) => RefShow(refPage + 1), 44, "Next leaf (or press Right)"));
         refTitle = new Label { AutoSize = true, UseMnemonic = false, Font = new Font("Segoe UI", 11.5f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(10, 9, 0, 0) };
         bar.Controls.Add(refTitle);
-        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = Gold, Padding = new Padding(12, 11, 0, 0) };
+        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = GoldDeep, Padding = new Padding(12, 11, 0, 0) };
         bar.Controls.Add(refCount);
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
@@ -3039,6 +3276,10 @@ public partial class MainForm
 
         var notesGroup = new GroupBox { Text = "The Keeper's ledger  (auto-saves on exit && every five minutes)", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         notesBox = new TextBox { Multiline = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
+        Tip.SetToolTip(notesBox, "The Keeper's notebook — whatever you want to still have next session. It "
+            + "saves with everything else: on exit, and every five minutes while you work.\nThis box keeps "
+            + "its own typing undo (Ctrl+Z inside it); the app's Undo in the status bar is for the tables, "
+            + "and deliberately leaves your writing alone.");
         // This tab is built on first visit, so the box takes over from the field that has
         // been holding the ledger since load, and keeps it fed from here on.
         notesBox.Text = notesText;

@@ -21,6 +21,81 @@ public enum RunMode { Player, KeeperDice, KeeperEngine }
 /// <summary>The one small preference that outlives a session: how the last table chose to run, and
 /// whether to skip the chooser next time. Kept beside the exe in prefs.json; a missing or unreadable
 /// file just means "ask, defaulting to the engine".</summary>
+/// <summary>The turn hourglass: how long the posse has, how much of it is gone, and what the glass
+/// should look like — with no reference to drawing, so the smoke rig can hold it to all of that.
+///
+/// <para>It counts in milliseconds because the animation ticks far faster than a second, and it is
+/// asked to render on every tick; a whole-second counter would make the sand fall in visible steps.
+/// It is deliberately NOT a <c>System.Timers</c> anything: the caller owns the clock and feeds it
+/// elapsed time, which is the only way a headless test can run five minutes in a millisecond.</para></summary>
+public sealed class TurnClock
+{
+    /// Five minutes. Long enough for a posse of four to say what they are each doing, short enough
+    /// that the fight keeps its shape. Ten is the other common house rule and is one click away.
+    public const int DefaultSeconds = 300;
+
+    /// The one-click lengths offered in the settings dialog and the drop-down, in seconds.
+    public static readonly int[] Presets = { 60, 120, 180, 300, 600, 900 };
+
+    public static string Spell(int seconds) => seconds % 60 == 0
+        ? $"{seconds / 60} minute{(seconds / 60 == 1 ? "" : "s")}"
+        : $"{seconds / 60}:{seconds % 60:00}";
+
+    int preset = DefaultSeconds;
+
+    /// <summary>How long a turn is, in seconds. Setting it re-loads the glass unless it is running,
+    /// so changing the house rule mid-session doesn't cut the current turn short.</summary>
+    public int PresetSeconds
+    {
+        get => preset;
+        set
+        {
+            preset = Math.Clamp(value, 5, 3600);
+            if (!Running) LeftMs = preset * 1000;
+        }
+    }
+
+    public int LeftMs { get; private set; } = DefaultSeconds * 1000;
+    public bool Running { get; private set; }
+
+    /// <summary>True once the sand is through. Stays true until <see cref="Reset"/> — an expired
+    /// glass is a fact about the turn, not a momentary event, so a Keeper who looks up late still
+    /// sees that the time went.</summary>
+    public bool Expired => LeftMs <= 0;
+
+    /// <summary>How much of the turn has gone, 0 to 1 — the fraction of sand in the LOWER bulb.</summary>
+    public double Spent => preset <= 0 ? 1 : Math.Clamp(1 - LeftMs / (preset * 1000.0), 0, 1);
+
+    /// <summary>The face of the glass: m:ss remaining, and "0:00" once it is through. Rounded UP,
+    /// so a glass reading 1:00 has a full minute in it rather than anything from 0 to 60 seconds —
+    /// a timer that shows 0:00 for a whole second before it fires reads as a broken timer.</summary>
+    public string Face
+    {
+        get
+        {
+            int s = Math.Max(0, (LeftMs + 999) / 1000);
+            return $"{s / 60}:{s % 60:00}";
+        }
+    }
+
+    public void Start() { if (Expired) Reset(); Running = true; }
+    public void Pause() => Running = false;
+    public void Toggle() { if (Running) Pause(); else Start(); }
+    public void Reset() { LeftMs = preset * 1000; Running = false; }
+
+    /// <summary>Hand the glass however many milliseconds have really passed. Returns true on the one
+    /// tick that runs it out, so the caller can say so once instead of once per frame.</summary>
+    public bool Tick(int ms)
+    {
+        if (!Running || ms <= 0) return false;
+        bool wasRunning = LeftMs > 0;
+        LeftMs = Math.Max(0, LeftMs - ms);
+        if (LeftMs > 0) return false;
+        Running = false;                 // it has run out; it does not keep counting downward
+        return wasRunning;
+    }
+}
+
 public static class Prefs
 {
     public class Data
@@ -40,6 +115,16 @@ public static class Prefs
         /// Deliberately in prefs.json, not session.json: it belongs to the person at the keyboard,
         /// not to the game they happen to have loaded.</summary>
         public bool ToldTheTour { get; set; }
+
+        /// <summary>Whether the Tracker shows the turn hourglass at all. Off by default: a table
+        /// that has never asked to be timed should not find itself being timed.</summary>
+        public bool TurnTimer { get; set; }
+
+        /// <summary>How long one posse turn is allowed, in seconds. Settled before the session and
+        /// kept between them — it is a house rule about how this table plays, not state belonging
+        /// to any one fight, which is why it lives here and not in session.json. Five minutes by
+        /// default; <see cref="TurnClock.Presets"/> holds the one-click choices.</summary>
+        public int TurnSeconds { get; set; } = TurnClock.DefaultSeconds;
     }
 
     static string PathTo => Path.Combine(AppContext.BaseDirectory, "prefs.json");
