@@ -205,6 +205,14 @@ public static class CharGen
         return rank <= 0 ? mod : mod + s.Level + rank * 2;
     }
 
+    /// <summary>What a soul adds to initiative — their Notice bonus, because initiative IS a Notice
+    /// check (Player's Book Ch. XI, and the app's own Reference deck says so on the Iron Code leaf).
+    /// Named rather than left as a bare <see cref="SkillBonus"/> call at the tracker, so the skill
+    /// the rule keys to is written down once and the tracker cannot quietly start rolling a
+    /// different one. A soul with no sheet — an ad-hoc NPC, a creature — has nothing to read and
+    /// adds nothing.</summary>
+    public static int InitiativeBonus(CharacterSheet s) => SkillBonus(s, "Notice");
+
     // ---- the Rank spine, shared by Signs (Ch. XIII) and Miracles (Ch. VI) ----
 
     /// <summary>The highest Rank a soul of this level may reach: Rank 1 at 1st, then a new Rank at
