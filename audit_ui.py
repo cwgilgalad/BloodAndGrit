@@ -102,13 +102,30 @@ def calls(src, helper):
         yield src.count("\n", 0, m.start()) + 1, split_args(src[start:i - 1])
 
 
+def dialogs(text):
+    """Yield (line_no, var_name, body) for each locally-built Form that is shown MODALLY.
+
+    The scope of one dialog is taken as everything from its `new Form` to the next one (or the
+    end of the file), which is exact enough here: these are built, filled and shown inside a
+    single method, one per method. A Form that is never `ShowDialog`n is a pop-out window (a
+    creature card, a soul's Ledger, the tour's callout) and is deliberately not audited.
+    """
+    marks = [(m.start(), m.group(1), text.count("\n", 0, m.start()) + 1)
+             for m in re.finditer(r"(?:using\s+)?var\s+(\w+)\s*=\s*new\s+Form\b", text)]
+    for i, (pos, name, line) in enumerate(marks):
+        end = marks[i + 1][0] if i + 1 < len(marks) else len(text)
+        body = text[pos:end]
+        if re.search(r"\b" + name + r"\.ShowDialog\b", body):
+            yield line, name, body
+
+
 def main():
     quiet = "--quiet" in sys.argv
     if not SRC.is_dir():
         print(f"no source tree at {SRC}")
         return 2
 
-    findings, counts = [], {}
+    findings, counts, dlgcount = [], {}, 0
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
@@ -145,11 +162,25 @@ def main():
                         if re.search(r",\s*null\s*\)\s*$", item):
                             findings.append(f"{where}  MenuBtn({label}) — a menu item with no handler")
 
+        # ---- modal dialogs must answer Esc ----
+        # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
+        # compiles, looks finished, and produces a modal that ignores the one key everybody presses
+        # first — which reads as a hung window rather than as a firm question. Four had drifted that
+        # way by v1.28.0, two of them the Strike and Dread dialogs a Keeper opens most in a fight.
+        # Where cancelling makes no sense, point CancelButton at the commit button: Esc should still
+        # close the thing, and doing what the title-bar ✕ already does is honest.
+        for line, name, body in dialogs(text):
+            dlgcount += 1
+            if not re.search(r"\b" + name + r"\.CancelButton\s*=", body):
+                findings.append(f"{path.name}:{line}  the dialog built as `{name}` sets no "
+                                "CancelButton — Esc does nothing in it")
+
     if not quiet:
         print("buttons per file")
         for name in sorted(counts):
             print(f"  {name:<18} {counts[name]}")
         print(f"  {'TOTAL':<18} {sum(counts.values())}")
+        print(f"\nmodal dialogs checked for an Esc route: {dlgcount}")
         print()
 
     if findings:
@@ -157,7 +188,7 @@ def main():
         for f in findings:
             print("  " + f)
         return 1
-    print("every button has a handler and a tooltip.")
+    print("every button has a handler and a tooltip; every modal dialog answers Esc.")
     return 0
 
 

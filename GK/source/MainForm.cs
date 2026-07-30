@@ -36,9 +36,23 @@ public partial class MainForm : Form
     public static readonly Color Blood   = Color.FromArgb(120, 22, 22);
     public static readonly Color Gold     = Color.FromArgb(150, 116, 50);
     public static readonly Color Verdigris = Color.FromArgb(60, 96, 84);
-    public static readonly Color PcRow   = Color.FromArgb(238, 244, 232);
+    public static readonly Color PcRow   = Color.FromArgb(232, 241, 224);
     public static readonly Color FoeRow  = Color.FromArgb(250, 250, 247);
     public static readonly Color DownRow = Color.FromArgb(248, 224, 224);
+
+    // ---- two colours the palette was missing, both for CONTRAST rather than for meaning ----
+    // Gold is right for a heading and too light for a sentence: at 9pt on Paper it measures about
+    // 3.5:1, under the 4.5:1 a person can comfortably read, and the app puts whole explanatory
+    // paragraphs in it (the empty-state hints, every wizard note, the status bar's shortcut line).
+    // GoldDeep is the same hue carried far enough down to measure ~5:1. Use Gold for headings and
+    // short labels, GoldDeep for anything that is a sentence.
+    public static readonly Color GoldDeep = Color.FromArgb(122, 92, 34);
+    /// <summary>"Nothing is happening yet" ink — the idle turn line, spent turns, quiet asides. The
+    /// old value (122,112,96) measured 4.0:1; this reads the same way and measures ~5.2:1.</summary>
+    public static readonly Color Faint    = Color.FromArgb(104, 94, 78);
+    /// <summary>The unselected tab's ground, and the rule under the strip. A tab bar where the
+    /// selected tab is the same colour as the rest is a tab bar that does not answer "where am I".</summary>
+    public static readonly Color TabRest  = Color.FromArgb(230, 222, 200);
 
     // roll-log result colors — so a dice result jumps out from plain event lines
     public static readonly Color RollCritGood = Color.FromArgb(150, 108, 0);   // critical success — rich gold
@@ -93,6 +107,7 @@ public partial class MainForm : Form
         KeyPreview = true;
 
         var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(14, 6) };
+        StyleTabs(tabs);
         tabsCtl = tabs;
         // Build the tab the Keeper is looking at; hand the other nine over as shells that
         // fill themselves the first time they're selected. Measured on this laptop, building
@@ -203,7 +218,7 @@ public partial class MainForm : Form
         // a table and ignores it, which reversed the pair into "Redo Undo" and left them mid-strip
         // anyway.) statusSay springs, so the slack all lands on the one line that changes.
         status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min")
-        { ForeColor = Gold, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
+        { ForeColor = GoldDeep, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
         status.Items.Add(undoStatusBtn);
         status.Items.Add(redoStatusBtn);
         Controls.Add(status);
@@ -361,7 +376,10 @@ public partial class MainForm : Form
         var remember = new CheckBox { Left = 24, Top = y + 2, Width = 300, Text = "Start here next time (skip this)", ForeColor = Ink };
         f.Controls.Add(remember);
         var ok = new Button { Text = "Sit down ▸", Left = 360, Top = y, Width = 160, Height = 32, DialogResult = DialogResult.OK };
-        f.Controls.Add(ok); f.AcceptButton = ok;
+        // Enter and Esc both sit you down at the table that is selected — which is what closing it
+        // from the title bar already did, since the pick is read off the radio regardless. Leaving
+        // Esc unwired made the first window the app ever shows the one window that ignores it.
+        f.Controls.Add(ok); f.AcceptButton = ok; f.CancelButton = ok;
 
         f.ShowDialog();
         return (picked, remember.Checked);
@@ -550,7 +568,87 @@ public partial class MainForm : Form
         return b;
     }
 
+    /// <summary>Paint the tab strip ourselves, for one reason: under the Windows visual style the
+    /// selected tab differs from the other nine by a couple of pixels of height and nothing else, so
+    /// the app's own answer to "which of the ten am I on" was almost invisible — the most basic
+    /// piece of state a tabbed window has to show. Selected now stands on Paper under a thick Blood
+    /// rule with its name in Blood; the rest sit back on a darker ground in plain Ink.
+    ///
+    /// <para>Owner-drawing a TabControl is honest but blunt: it hands us the tab RECTANGLES and
+    /// keeps painting the strip's own background itself. Nothing here touches the pages, so a tab's
+    /// contents are unaffected, and <c>TabDrawMode.OwnerDrawFixed</c> still lets the control size
+    /// each tab to its own text — the labels are ten different lengths.</para></summary>
+    static void StyleTabs(TabControl tabs)
+    {
+        tabs.DrawMode = TabDrawMode.OwnerDrawFixed;
+        tabs.DrawItem += (s, e) =>
+        {
+            var t = (TabControl)s;
+            if (e.Index < 0 || e.Index >= t.TabPages.Count) return;
+            bool on = e.Index == t.SelectedIndex;
+            var r = t.GetTabRect(e.Index);
+            var g = e.Graphics;
+
+            using (var ground = new SolidBrush(on ? Paper : TabRest)) g.FillRectangle(ground, r);
+            // A 3px Blood rule along the top of the live tab — the accent that does the work. Drawn
+            // inside the rect so it can't bleed onto its neighbours.
+            if (on) using (var rule = new SolidBrush(Blood)) g.FillRectangle(rule, r.X, r.Y, r.Width, 3);
+            // Hairline separators, so ten tabs read as ten and not as one long bar.
+            using (var edge = new Pen(Color.FromArgb(206, 196, 170)))
+                g.DrawLine(edge, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
+
+            var face = on ? new Font(t.Font, FontStyle.Bold) : t.Font;
+            TextRenderer.DrawText(g, t.TabPages[e.Index].Text, face, r, on ? Blood : Ink,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+            if (on) face.Dispose();
+        };
+    }
+
     static readonly ToolTip Tip = new() { AutoPopDelay = 12000, InitialDelay = 400 };
+
+    // ---------------------------------------------------------------- THE TIP AUDIT
+    // A control a Keeper can touch and cannot ask about is a control they have to guess at, and
+    // "does this button take my Blood or give it back" is not a guess worth making mid-fight. So
+    // coverage is checked rather than intended: --selftest walks every realized tab and every
+    // wizard step and fails on anything interactive that says nothing on hover.
+    //
+    // Written once and shared by both walkers on purpose — a wizard held to one standard and ten
+    // tabs held to another is two standards, and the looser one wins by default.
+
+    /// <summary>Note every control under <paramref name="root"/> that wants a tooltip and has none,
+    /// as "<paramref name="where"/> · Type \"text\"".</summary>
+    internal static void WalkForTips(Control root, string where, List<string> into)
+    {
+        foreach (Control c in root.Controls)
+        {
+            // Containers are walked THROUGH; anything that wants a tip is never walked INTO. A
+            // NumericUpDown is a ContainerControl holding its own TextBox and spin buttons, and a
+            // DataGridView holds its editing controls and scrollbars — recursing would report
+            // three or four findings for one silent control, none of them nameable.
+            if (!WantsTip(c)) { WalkForTips(c, where, into); continue; }
+            if (string.IsNullOrEmpty(Tip.GetToolTip(c)))
+                into.Add($"{where} · {c.GetType().Name}"
+                    + (string.IsNullOrWhiteSpace(c.Text) ? "" : $" \"{c.Text.Trim()}\""));
+        }
+    }
+
+    /// Everything a person clicks, ticks, types in, or picks from. ButtonBase rather than Button
+    /// so the Map tab's overlay checkboxes count. Prose labels are exempt — they ARE the
+    /// explanation — but a caption carrying a LIVE number is not prose, so those opt in with
+    /// <c>Tag = "readout"</c>. RichTextBox is exempt for the same reason: the Bestiary and
+    /// Reference panes are the reading, not a control over it.
+    static bool WantsTip(Control c) =>
+        c is NumericUpDown or ComboBox or ListBox or TextBox or ButtonBase or DataGridView
+        || c.Tag as string == "readout";
+
+    /// <summary>Realize all ten tabs and audit every control on them. Tabs fill themselves on first
+    /// selection, so nothing else in a self-test would touch nine of them.</summary>
+    internal List<string> AuditTabTips()
+    {
+        var found = new List<string>();
+        foreach (var t in allTabs) { RealizeTab(t); WalkForTips(t, t.Text, found); }
+        return found;
+    }
 
     // A button that drops a menu of choices on click, so one control offers several
     // related actions (sort orders, rest scopes, conditions) without crowding the bar.
@@ -935,10 +1033,13 @@ public partial class MainForm : Form
         g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
         g.ColumnHeadersHeight = 30;
         g.RowTemplate.Height = 28;
-        g.GridColor = Color.FromArgb(214, 202, 176);
+        // Grid lines and the alternating stripe were both a shade off Paper — the stripe differed by
+        // four points of blue, which on a warm ground is no difference at all. A grid whose rows do
+        // not separate is a grid a Keeper reads the wrong row off mid-fight.
+        g.GridColor = Color.FromArgb(198, 184, 152);
         g.DefaultCellStyle.SelectionBackColor = Gold;
         g.DefaultCellStyle.SelectionForeColor = Color.White;
-        g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(243, 237, 221);
+        g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(237, 229, 207);
         g.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
     }
 
@@ -1163,6 +1264,9 @@ public partial class MainForm : Form
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
         bar.Controls.Add(Lbl("Dread DC:"));
         dreadDc = new NumericUpDown { Minimum = 1, Maximum = 40, Value = 13, Width = 55, Margin = new Padding(3, 6, 3, 3) };
+        Tip.SetToolTip(dreadDc, "The number a soul's Will save must beat to hold their Nerve. Every horror "
+            + "prints its own Dread DC in the Bestiary — copy it in here. The Tier beside it decides how "
+            + "much Nerve a failed save costs, not how hard the save is.");
         bar.Controls.Add(dreadDc);
         bar.Controls.Add(Lbl("Tier:"));
         dreadTier = new NumericUpDown { Minimum = 1, Maximum = 5, Value = 2, Width = 45, Margin = new Padding(3, 6, 3, 3) };
@@ -1410,7 +1514,12 @@ public partial class MainForm : Form
     void PartyToTracker()
     {
         int added = party.Count(p => AddSoulToTracker(p, quiet: true));
-        Log($"Sent {added} soul(s) to the tracker.");
+        // "Sent 0 soul(s) to the tracker" is what this said when the posse was ALREADY on the field —
+        // the commonest case of all, since the button is pressed twice as often as a fight starts.
+        // A zero beside the word "Sent" reads as a failure. Say which of the three things happened.
+        Log(added > 0 ? $"Sent {added} soul{(added == 1 ? "" : "s")} to the tracker."
+            : party.Count == 0 ? "No posse to send — add souls on this tab first."
+            : $"Every soul is already on the field — all {party.Count} of them.");
     }
 
     /// <summary>Put one soul on the field, unless they're already standing on it. Answers whether a
@@ -1576,6 +1685,10 @@ public partial class MainForm : Form
         left.Controls.Add(Lbl("e.g.  2d6+3   ·   d20   ·   1d8+1d6+2"));
         var exprRow = new FlowLayoutPanel { AutoSize = true };
         exprBox = new TextBox { Width = 250, Text = "1d20", Font = new Font("Consolas", 11f) };
+        Tip.SetToolTip(exprBox, "What to roll, written out — NdS for N dice of S sides, plus or minus a "
+            + "modifier. 2d6+3 · d20 · 1d8+1d6+2. Several kinds of die in one expression are fine; each "
+            + "one is rolled and shown separately in the tray.\nType it, or build it on the keypad below "
+            + "without touching the keyboard. Enter rolls it.");
         exprBox.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { RollExprBox(); e.SuppressKeyPress = true; } };
         exprRow.Controls.Add(exprBox);
         exprRow.Controls.Add(Btn("Roll", (s, e) => RollExprBox(), 80, "Roll the expression (or press Enter)"));
@@ -1625,7 +1738,11 @@ public partial class MainForm : Form
 
         left.Controls.Add(Heading("The d20 check — four degrees"));
         var modBox = new NumericUpDown { Minimum = -20, Maximum = 40, Value = 4, Width = 60 };
+        Tip.SetToolTip(modBox, "What the roller adds to the d20 — their ability modifier, plus their whole "
+            + "level if they are trained in the skill. Set it negative for a penalty.");
         var dcBox = new NumericUpDown { Minimum = 1, Maximum = 50, Value = 13, Width = 60 };
+        Tip.SetToolTip(dcBox, "The number to beat. The Keeper sets it: 10 easy · 13 ordinary · 16 hard · "
+            + "20 very hard. A creature's own DCs are printed on its Bestiary entry.");
         var checkRow = new FlowLayoutPanel { AutoSize = true };
         checkRow.Controls.Add(Lbl("Modifier:")); checkRow.Controls.Add(modBox);
         checkRow.Controls.Add(Lbl("   DC:")); checkRow.Controls.Add(dcBox);

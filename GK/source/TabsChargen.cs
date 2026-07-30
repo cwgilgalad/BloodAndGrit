@@ -37,6 +37,10 @@ public partial class MainForm
         soulCalling.Items.Add("Random");
         foreach (var c in CharGen.D.callings.OrderBy(c => c.name)) soulCalling.Items.Add(c.name);
         soulCalling.SelectedIndex = 0;
+        Tip.SetToolTip(soulCalling, "Pin the Calling — what this soul does for a living — or leave it on "
+            + "Random and let the dice choose. It is the one choice the rest of the sheet hangs off: the die "
+            + "that rolls Blood, which two saves are strong, how many skills are trained, and whether they "
+            + "work Signs, Miracles, or neither.");
         bar.Controls.Add(soulCalling);
 
         bar.Controls.Add(Lbl("  Origin:"));
@@ -44,6 +48,11 @@ public partial class MainForm
         soulOrigin.Items.Add("Random");
         foreach (var o in CharGen.D.origins) soulOrigin.Items.Add(o.name);
         soulOrigin.SelectedIndex = 0;
+        Tip.SetToolTip(soulOrigin, "Pin where they come from, or leave it on Random. An Origin gives ability "
+            + "points, trains a skill or two free of the Calling's allowance, sometimes hands over gear, and "
+            + "always carries one boon and one burden.\nEvery Origin goes with every Calling but one: the "
+            + "Gambler is barred to the Callings of Faith. Ask for both and the Origin is re-drawn, and the "
+            + "log says so.");
         bar.Controls.Add(soulOrigin);
         bar.SetFlowBreak(soulOrigin, true);
 
@@ -287,7 +296,10 @@ public partial class MainForm
         var cancelBtn = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true, Margin = new Padding(6, 10, 3, 3) };
         f.AcceptButton = okBtn; f.CancelButton = cancelBtn;
         var btnPanel = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0) };
-        btnPanel.Controls.Add(okBtn); btnPanel.Controls.Add(cancelBtn);
+        // Cancel first, so the RIGHT-to-left flow lays them out as [Level up] [Cancel] — the commit
+        // on the left, the way the Tweak dialog, the wizard and every absolutely-placed dialog in
+        // the app already read. Added the other way round, this was the one that read backwards.
+        btnPanel.Controls.Add(cancelBtn); btnPanel.Controls.Add(okBtn);
         Span(btnPanel);
 
         f.Controls.Add(tbl);
@@ -510,7 +522,7 @@ public partial class MainForm
         bar.Controls.Add(cancel); bar.Controls.Add(ok);
         var note = new Label
         {
-            Dock = DockStyle.Bottom, Height = 34, ForeColor = Gold, Padding = new Padding(12, 2, 4, 2),
+            Dock = DockStyle.Bottom, Height = 34, ForeColor = GoldDeep, Padding = new Padding(12, 2, 4, 2),
             Font = new Font("Segoe UI", 8.8f, FontStyle.Italic),
             Text = "Hand tweaks are the Keeper's word against the book's — the sheet is re-checked but never blocked;\nthe Ledger simply notes it was tweaked."
         };
