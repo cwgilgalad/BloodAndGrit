@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.24 -->
+<!-- Blood & Grit — The Player's Book · Version 2.25 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.24)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.25)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.24</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.25</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.24 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.25 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -883,7 +883,7 @@ body{ background:#525659; }
     <ul class="dash">
       <li><strong>Avoid the worn lies.</strong> No faithful retainer, no comic relief, no saintly sufferer, no character who exists to be endured against. These are minstrel-show inventions, not character.</li>
       <li><strong>Be specific.</strong> An Exoduster homesteader proving up (working a claim the years the law required to earn its title) outside Nicodemus, a sergeant of the Tenth out of Fort Davis with fifteen years in, a trail hand on his sixth drive who is the best horseman in the outfit, a widow who owns the laundry and half the block — these are different lives. Choose one and learn a little of it.</li>
-      <li><strong>Competence is the historical record.</strong> Where a Black character is the best hand, the best shot, or the best doctor in the scene, that is not a favor being done — it is the ordinary case, and the table should play it as ordinary.</li>
+      <li><strong>Competence is the historical record.</strong> Where a Black character is the best hand, the best shot, or the best doctor in the scene, that is the ordinary case, and the table should play it as ordinary.</li>
       <li><strong>Community is the strength.</strong> The church, the lodge, the school built first, the town that holds together — these anchor a character against the dark, and they are somewhere to come back to.</li>
       <li><strong>The injustice is real history.</strong> Slavery, the Exodus, the color line, and the violence that enforced it all happened. Use them with weight, by agreement, and never for flavor or shock.</li>
     </ul>
@@ -3167,10 +3167,10 @@ body{ background:#525659; }
   <h1 class="chapter">XI. Conflict &amp; the Iron Code</h1>
   <p class="chapter-sub">How violence is reckoned, and how quickly it ends a life.</p>
   <div class="divider"></div>
-  <p class="dropcap lead">Violence in <em>Blood and Grit</em> is fast, ugly, and rarely fair. A gunfight is not a duel of attrition; it is a
-  handful of seconds in which someone dies. Fight only when you must, from cover when you can, and never in the belief
-  that your numbers make you safe. They do not. The rules of the gun are called the <strong>Iron Code</strong> — not a
-  law any marshal enforces, but the plain arithmetic of powder and flesh that the country enforces for itself.</p>
+  <p class="dropcap lead">Violence in <em>Blood and Grit</em> is fast, ugly, and rarely fair. A gunfight lasts a
+  handful of seconds, and someone dies inside them. Fight only when you must, from cover when you can, and never in the belief
+  that your numbers make you safe. They do not. The rules of the gun are called the <strong>Iron Code</strong>, though no
+  marshal enforces them — they are the plain arithmetic of powder and flesh, which the country enforces for itself.</p>
   <h2 id="ix-beats">Rounds, Turns, and the Three Beats</h2>
   <p>When blood is in the offing, time breaks into <strong>rounds</strong> of roughly six seconds. Everyone rolls
   <strong>initiative</strong> — a Notice check (or another skill the Keeper calls for, after the manner of Pathfinder 2E) — and acts from highest to lowest. On your turn you have three
@@ -3395,8 +3395,8 @@ body{ background:#525659; }
   <h2 id="ix-breaking">Breaking</h2>
   <p>Lose Nerve and you fray. At low Nerve the Keeper may impose the <strong>Frightened</strong> condition — a status penalty to all your rolls equal to its value —
   until you steady. Reach <strong>0 Nerve</strong> and you <strong>break</strong>: roll at once on the table below for a
-  short, uncontrolled response, and take a lasting Affliction that rides you until it is treated. A broken character is not
-  removed from play; they are made dangerous to themselves and to those beside them.</p>
+  short, uncontrolled response, and take a lasting Affliction that rides you until it is treated. A broken character stays in play, and
+  becomes dangerous to themselves and to those beside them.</p>
   <table>
     <thead><tr><th class="c">d6</th><th>In the Moment of Breaking</th></tr></thead>
     <tbody>

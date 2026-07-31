@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.24 · Keeper's Book v2.11 · Bestiary v2.10 ·
-GritKeeper app v1.29.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11 ·
+GritKeeper app v1.29.2 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
@@ -69,7 +69,7 @@ which reads as a hung window, not as a firm question. Four had drifted that way,
 **Strike and Dread** dialogs. Where cancelling is meaningless (the die prompt, the run-mode chooser),
 point `CancelButton` at the commit button: Esc should still close the thing, and doing what the title
 bar's ✕ already does is honest. `audit_ui.py` checks every locally-built Form that is `ShowDialog`n
-(18 of them). **Button order:** commit LEFT, Cancel RIGHT — and in a `FlowDirection.RightToLeft` bar
+(19 of them). **Button order:** commit LEFT, Cancel RIGHT — and in a `FlowDirection.RightToLeft` bar
 that means adding **Cancel first**.
 
 **The tab strip is owner-drawn (v1.29.0),** for one reason: under the Windows visual style the
@@ -114,7 +114,7 @@ duplicate. Rides ride in `session.json` and go to the tracker as ordinary `Comba
 roll log). They **select the row first, then build**, so each menu line calls the same handler
 the tab's button calls — a menu that reimplements a button is a menu that will disagree with it.
 That's why `SpendGrit`/`AdvanceMark`/`DeepenTaint`/`AddSoulToTracker`/`RenameRide`/`RideToTracker`
-exist as methods rather than button lambdas. `audit_ui.py` still passes (118 buttons).
+exist as methods rather than button lambdas. `audit_ui.py` still passes (128 buttons).
 
 **Map marker ink (v1.18.0):** `MapInk` in `Core.cs` holds the book's color per kind, the Keeper's
 standing override (persisted as `Prefs.Data.MarkerInk`), the 10-color palette, and `Hex()` for the
@@ -253,9 +253,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.24 | 200 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.11 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.10 | 166 | none (150 creatures) |
+| The Player's Book | v2.25 | 200 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.12 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.11 | 166 | none (150 creatures) |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -351,7 +351,9 @@ version on the cover**, and **update this doc's version table + Changelog.**
 ### The version cascade (important, easy to miss)
 `build_keeper.py` and `build_bestiary.py` splice each book's own cover onto the Player shell
 by **string-replacing the Player's version strings** with their own. Those match strings are
-hard-coded (currently "…Version 2.13…" / "…v2.13…", four per script).
+hard-coded (currently "…Version 2.25…" / "…v2.25…", four per script). They are the Player's
+version, never the splicing book's own — check them against `build_player.py` rather than
+against this line, which has gone stale before.
 
 **Any time you bump the Player's Book version, you must also update those match strings in
 both build scripts** — e.g.:
@@ -430,7 +432,7 @@ appears in more than one place, wire it this way: one source, generated outward,
 
 ---
 
-## The Player's Book (v2.24) — structure
+## The Player's Book (v2.25) — structure
 
 Chapters: I. The Country · II. How the Game Is Played · III. Making a Character ·
 IV. Origins & the Peoples of the Frontier · V. Worldly Callings · VI. Callings of Faith ·
@@ -480,7 +482,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.11) — structure
+## The Keeper's Book (v2.12) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index:
 I. The Keeper's Chair · II. Running the Game · III. Fear, Nerve & the Mark ·
@@ -513,7 +515,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.10) — structure & conventions
+## The Bestiary (v2.11) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **150 creatures** by name (from every `<p class="cr-name">`,
@@ -596,7 +598,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.29.0) — the C# desktop app
+## GritKeeper (v1.29.2) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8,
 Windows Forms**. Not part of the HTML book pipeline — separate source tree, separate build.
@@ -973,7 +975,7 @@ this helper, never by setting `SplitterDistance` etc. directly in an initializer
   fuzzing), gendered-name checks, `PartyMember.Sheet` session round-trips, Trail Maps
   generation/SVG/PDF structural + determinism checks (the rig now also compiles
   `MapGen.cs` + `Pdf.cs` and writes sample PDFs to `%TEMP%\gritkeeper-smoke` for external
-  validation). Currently **≈12,147 passing, 0 failing** — the total drifts by a few dozen run to
+  validation). Currently **≈12,250 passing, 0 failing** — the total drifts by a few dozen run to
   run because several sweeps assert once per random draw, so read the *failures*, not the total.
   Re-run (`cd GK/smoke; dotnet run -c Release`)
   after any `Core.cs`/`CharGen.cs`/`MapGen.cs`/data change. Growth by release: 2322 → 2333 (v1.6)
