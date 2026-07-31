@@ -168,7 +168,7 @@
   "puttingItDown": "Burn the bodies and everything they touched; salt and quicklime the ground. Do not bury. Do not loot.",
   "mark": "",
   "lore": [
-   "A bad season comes through \u2014 cholera, the bloody flux, the spotted fever \u2014 and a town buries more than it can grieve, fast and shallow and frightened. The Plague-Dead are what rises from those graves, still burning with the fever that killed them, still carrying it. They are not the worst fighters in this book. They do not need to be. The danger of the Plague-Dead is not in their hands; it is in their breath, their blood, the well they have fouled, the wound they leave behind.",
+   "A bad season comes through \u2014 cholera, the bloody flux, the spotted fever \u2014 and a town buries more than it can grieve, fast and shallow and frightened. The Plague-Dead are what rises from those graves, still burning with the fever that killed them, still carrying it. They are not the worst fighters in this book. They do not need to be. The danger of the Plague-Dead lies in their breath, their blood, the well they have fouled, the wound they leave behind.",
    "They shuffle, slow and feverish, and a child could outrun one. But a town that handles them wrong \u2014 that buries them, that loots the clothes off them, that drinks downstream of where they lie \u2014 buries itself by the next season."
   ],
   "found": "The cemeteries and trench-graves of a town that took a hard epidemic, especially one buried in a panic. Fouled wells, sickrooms left as they were, the abandoned pest-house at the edge of a played-out settlement.",
@@ -1730,7 +1730,7 @@
   "puttingItDown": "Unmake the idea \u2014 prove the lie at its center, break its hold on the faithful \u2014 and the flesh has nothing left to hold it together.",
   "mark": "Speaking its creed aloud, even to refute it, risks +1 Mark.",
   "lore": [
-   "A belief can grow so dark, and be believed so hard by so many, that it stops being merely an idea and takes on a body of its own. The Sermon Made Flesh is a doctrine incarnate \u2014 a creed walking around in a shape, preaching itself, its Word a weapon that converts the very people it strikes, folding the slain into its growing choir. It is not a person who believes a thing; it is the thing itself, the belief, given hands and a voice and a terrible momentum.",
+   "A belief can grow so dark, and be believed so hard by so many, that it stops being merely an idea and takes on a body of its own. The Sermon Made Flesh is a doctrine incarnate \u2014 a creed walking around in a shape, preaching itself, its Word a weapon that converts the very people it strikes, folding the slain into its growing choir. What walks is the belief itself, given hands and a voice and a terrible momentum.",
    "You cannot kill an idea by shooting the body it wears \u2014 the belief just finds new flesh, new mouths, new believers. The only way to end it is to unmake the idea itself: prove the lie at its center, break its hold on the faithful, show the doctrine to be the falsehood it is. Do that, and the flesh has nothing left to hold it together, and the Sermon Made Flesh comes apart for want of anyone left to believe it."
   ],
   "found": "Wherever a dark doctrine has taken deep root \u2014 a corrupted church, a fanatical movement, a town that gave itself over to a terrible creed. It manifests where belief in it is strongest and preaches to spread.",
@@ -2514,7 +2514,7 @@
   "puttingItDown": "Ride the circle and sing to them, which is what the singing was always for \u2014 and on most outfits the hand who taught the rest of them how is the segundo. Once it breaks, see The Stampede, and pray for room.",
   "mark": "",
   "lore": [
-   "Three thousand head, bedded down, and one bad noise from being something else entirely. The outfit holding it is eleven or twelve hands, and on the great drives three of those are Black or Mexican as a matter of plain arithmetic \u2014 the night guard that keeps this from becoming a disaster is worked in shifts by whoever can sing and stay awake. A trail herd at rest is not a peaceful thing; it is a hill of nerves that mills and drifts and swallows a man on foot without ever intending him any harm, and every single thing an outfit does at night \u2014 the night guard, the slow circle, the singing that the singing was always actually for \u2014 is done to keep it from turning into the entry four pages back."
+   "Three thousand head, bedded down, and one bad noise from being something else entirely. The outfit holding it is eleven or twelve hands, and on the great drives three of those are Black or Mexican as a matter of plain arithmetic \u2014 the night guard that keeps this from becoming a disaster is worked in shifts by whoever can sing and stay awake. A trail herd at rest is a hill of nerves that mills and drifts and swallows a man on foot without ever intending him any harm, and every single thing an outfit does at night \u2014 the night guard, the slow circle, the singing that the singing was always actually for \u2014 is done to keep it from turning into the entry four pages back."
   ],
   "found": "The bed ground, every night of a drive, and any holding pasture where a big herd is gathered. Worst on a close night with lightning in it, on the first week out, and anywhere the ground ahead is broken.",
   "keeperNote": "",
