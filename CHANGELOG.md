@@ -8,8 +8,8 @@ Desktop\Git repos.)
 
 ---
 
-- **Books v2.25 / v2.12 / v2.11 · GritKeeper v1.29.2 — the antithesis stopped being a habit
-  (2026-07-30, user-requested).**
+- **Books v2.25 / v2.12 / v2.11 · GritKeeper v1.29.2 — the antithesis stopped being a habit, and
+  the tracker's readouts caught up with the tracker (2026-07-30, user-requested).**
 
   A third pass at the one figure that keeps coming back: negative parallelism, the antithesis
   that denies one thing in order to assert another. Earlier passes (v2.15/v2.7/v2.7, then v2.23)
@@ -38,11 +38,61 @@ Desktop\Git repos.)
     re-extracted with `extract_creatures.py` and diffed first — exactly three entries moved, all
     150 present. Status-bar and `GK/source/README.md` book strings follow to v2.25 / v2.12 / v2.11.
 
+  **The tracker's readouts, and one refresh instead of eighteen.** The round box and the hourglass
+  face would sit on a stale number while the grid beside them was current, and the two faults had
+  one cause: refreshing was written per site, as `trkGrid?.Refresh(); UpdateTurnLine();` copied to
+  eighteen call sites. `ShowRound` documents itself as the one place the round moves through, and
+  most of those sites never called it — so the round box updated only where somebody had remembered
+  it. There is now a single `RefreshTracker()` that redraws the grid, the round, the turn line and
+  the glass face together, and every one of those sites calls it. The bug class goes with the
+  duplication: a readout added tomorrow is refreshed by the ten existing callers for free.
+
+  **Choosing a turn length turns the glass over.** Picking "three minutes" from the drop-down set
+  the preference and left the sand where it was, so the glass went on draining against the old
+  length until somebody reset it by hand. `SetTurnLength` now resets the clock — and restores
+  `Running` afterwards, because `Reset()` clears it, which is how a running glass used to stop dead
+  the moment the Keeper adjusted the length mid-fight.
+
+  **The glass is where a glass should be, and big enough to read across a table.** It sat inline in
+  the tracker's button bar at 30×40, small enough to be ornamental. It now holds its own column at
+  the far right of the bar, about 100×150, with the m:ss face and the length menu stacked beside it.
+  `HourglassView` needed no change to grow: its geometry was already written as fractions of its own
+  bounds. Verified by rendering it, per the project's own "look at it" standard — a TableLayoutPanel
+  arrangement is the same landmine class as `SplitContainer`, and a clean build proves nothing here.
+
+  **`audit_ui.py` grew the checks a UI reviewer would ask for.** Three, taken from the accessibility
+  and Windows-UX guidance that is actually standardized rather than folklore: **target size**, at
+  the 24px floor where WCAG 2.5.8 (AA) and Microsoft's own control guidance agree; **destructive
+  actions are recoverable**, satisfied either by a `Confirm()` or by editing one of the six lists
+  that `ListChanged += CaptureUndo` puts on the undo stack — an undoable action does not need a
+  prompt, and a prompt on every one of them trains a Keeper to click through the one that matters;
+  and **no two items in a menu claim the same Alt key**, which Windows resolves by quietly demoting
+  the key from "activate" to "cycle", so a learned shortcut stops working and nothing says why. All
+  three pass today, which makes them regression guards — so each was proved against a synthetic
+  source file first, and each fired exactly once. Now covering 128 buttons, 19 modal dialogs and 21
+  access keys.
+
+  **Dead code now fails the build.** An analyzer sweep over both app projects, and what it found is
+  the argument for keeping it on: a tracker sort mode the Keeper picks that was stored and never
+  read back, a Ledger font minted at every zoom step and never drawn with, and a null check on the
+  result of `new`. All three compiled clean and read as live code. Also a real leak — `LedgerView`
+  re-mints its thirteen fonts whenever the zoom changes and stranded the previous set every time;
+  they are pooled and disposed now, and on the control's own `Dispose` as well. Six doc comments
+  were malformed in ways that silently did nothing: two `///` blocks on local functions (which
+  cannot carry XML docs at all), a bare `&` inside XML, an unresolvable `cref`, three missing
+  `<param>` tags, and the Nerve method's documentation sitting three methods above the method it
+  describes. `GK/.editorconfig` plus `EnforceCodeStyleInBuild` makes all of it a build error under
+  `-warnaserror` from here on; the guard was proved by planting an unused member and watching the
+  build fail. One wrinkle worth recording: IDE0005 refuses to report unless the build generates XML
+  docs and says so as its own error, so doc generation is on in every configuration and excluded
+  from publish output — a Debug-only first attempt broke the Release build on the demand itself.
+
   Verified: all three books measure clean (200 / 101 / 166 pages, desktop-mobile parity, zero
   true-scale clip, zero mobile h-scroll, every TOC and index anchor resolved), builds idempotent,
   inline JS parses under `node --check`, `verify_rules.py` 697 cross-checks with zero drift, app
-  build 0 warnings / 0 errors under `-warnaserror`, smoke 12,250 passed / 0 failed, PDFs
-  regenerated and verified at 612×792pt with page count matching sheet count.
+  build 0 warnings / 0 errors under `-warnaserror`, smoke 12,249 passed / 0 failed, `--selftest`
+  36/36, `audit_ui.py` clean, PDFs regenerated and verified at 612×792pt with page count matching
+  sheet count.
 
 - **GritKeeper v1.29.1 — the release carries its own license, and the repository says what it
   is (2026-07-29).**

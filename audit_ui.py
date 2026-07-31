@@ -6,7 +6,15 @@ Reads GK/source/*.cs and checks every button the app builds through the shared h
   * it has a handler (a Btn with a null handler is a button that does nothing when pressed —
     only MenuBtn is allowed one, since it wires its own drop-down),
   * it has a tooltip (the app's own convention; a bare label with no tip is the odd one out),
-  * MenuBtn's items each carry a handler.
+  * MenuBtn's items each carry a handler,
+  * it is at least 24px on its narrow side (WCAG 2.5.8 Target Size (Minimum), AA — Microsoft's
+    own Windows control guidance lands on ~23px, so 24 is the floor both agree on),
+  * a destructive button is recoverable: it either confirms first or edits an undo-backed list.
+
+Plus two checks on the things around the buttons:
+
+  * every modal dialog answers Esc (it sets a CancelButton),
+  * no two items in one menu claim the same Alt access key.
 
 It also reports the button count per file, so a tab that has quietly grown a second toolbar
 is visible. This is the cheap check the project has leaned on before — it has caught orphaned
@@ -25,16 +33,19 @@ if hasattr(sys.stdout, "reconfigure"):
 
 SRC = Path(__file__).resolve().parent / "GK" / "source"
 
-# helper -> (min args, index of the handler arg or None, index of the tooltip arg)
+# helper -> (min args, handler arg index or None, tooltip arg index, width arg index)
 # PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
 # their CALL SITES deserve the same audit as any other button. They were missing here, so five
 # of the tracker's buttons were never checked at all.
+#   Btn/PrimaryBtn/DangerBtn(text, onClick, w = 120, tip = null)
+#   MenuBtn(text, w, tip, params (label, onClick)[] items)
+#   DieBtn(text, sides, onClick, w, tip = null)
 HELPERS = {
-    "Btn":        (2, 1, 3),
-    "PrimaryBtn": (2, 1, 3),
-    "DangerBtn":  (2, 1, 3),
-    "MenuBtn":    (3, None, 2),
-    "DieBtn":     (4, 2, 4),
+    "Btn":        (2, 1, 3, 2),
+    "PrimaryBtn": (2, 1, 3, 2),
+    "DangerBtn":  (2, 1, 3, 2),
+    "MenuBtn":    (3, None, 2, 1),
+    "DieBtn":     (4, 2, 4, 3),
 }
 
 # The parameter names the wrappers forward under. A call whose arguments ARE these names is one
@@ -119,6 +130,40 @@ def dialogs(text):
             yield line, name, body
 
 
+def body_of(text, name):
+    """The body of a method `name`, by brace matching. Used to follow a button's handler when it
+    delegates (`(s, e) => NewFight()`) instead of doing the work inline."""
+    m = re.search(r"\b(?:void|bool|int|string)\s+" + re.escape(name) + r"\s*\([^)]*\)\s*\{", text)
+    if not m:
+        return ""
+    i, depth = m.end(), 1
+    while i < len(text) and depth:
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+        i += 1
+    return text[m.end():i]
+
+
+def mnemonics(label):
+    """The access keys in a label: the letter after a single '&'. '&&' is a literal ampersand."""
+    return [m.group(1).lower() for m in re.finditer(r"(?<!&)&([A-Za-z0-9])", label.replace("&&", ""))]
+
+
+# The smallest a clickable target may be. WCAG 2.5.8 (Target Size, Minimum, AA) sets 24x24 CSS px
+# and Microsoft's own Windows control guidance lands in the same place at ~23px, so 24 is the floor
+# both agree on. Nothing in the app is under it today — the narrowest are the 34px dice-keypad keys
+# — which makes this a REGRESSION guard rather than a backlog: it exists so the next cramped
+# toolbar is caught while it is being written.
+MIN_TARGET_PX = 24
+
+# The six BindingLists wired to `ListChanged += CaptureUndo` in MainForm.cs. An edit to any of
+# them lands on the Universal Undo stack without the caller doing anything, which is what makes
+# a destructive button on one of them recoverable.
+UNDO_BACKED = r"\b(party|tracker|signs|encounter|clocks|rides)\.(Clear|Remove|RemoveAt)\("
+
+
 def main():
     quiet = "--quiet" in sys.argv
     if not SRC.is_dir():
@@ -126,11 +171,20 @@ def main():
         return 2
 
     findings, counts, dlgcount = [], {}, 0
+    sources = {}
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
         text = re.sub(r"static\s+Button\s+(Btn|PrimaryBtn|DangerBtn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
-        for helper, (minargs, hidx, tidx) in HELPERS.items():
+        sources[path.name] = text
+    # One string for method-body lookups: a button's handler often delegates across files (a
+    # Tracker button calling a method that lives in MainForm.cs), so following it has to be
+    # tree-wide, not per file.
+    alltext = "\n".join(sources.values())
+
+    for name, text in sources.items():
+        path = SRC / name
+        for helper, (minargs, hidx, tidx, widx) in HELPERS.items():
             for line, args in calls(text, helper):
                 counts[path.name] = counts.get(path.name, 0) + 1
                 where = f"{path.name}:{line}"
@@ -162,6 +216,29 @@ def main():
                         if re.search(r",\s*null\s*\)\s*$", item):
                             findings.append(f"{where}  MenuBtn({label}) — a menu item with no handler")
 
+                # ---- the target has to be big enough to hit ----
+                if len(args) > widx and re.fullmatch(r"\d+", args[widx].strip()):
+                    w = int(args[widx])
+                    if w < MIN_TARGET_PX:
+                        findings.append(f"{where}  {helper}({label}) — {w}px wide, under the "
+                                        f"{MIN_TARGET_PX}px minimum target size")
+
+                # ---- a destructive button has to be recoverable ----
+                # The one class of button where a misfire can't be taken back by looking at it.
+                # Two routes count, and only two: a Confirm() prompt, or an edit to one of the
+                # six bound lists, which `ListChanged += CaptureUndo` puts on the Universal Undo
+                # stack for free (MainForm.cs:229-234). An undoable action does NOT need a prompt
+                # — putting one on every one of them is the surest way to train a Keeper to
+                # dismiss prompts unread mid-fight, which is how the prompt that MATTERS gets
+                # clicked through. A handler with neither route is the finding.
+                if helper == "DangerBtn" and hidx < len(args):
+                    reach = args[hidx]
+                    for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
+                        reach += body_of(alltext, callee)
+                    if not (re.search(r"\bConfirm\(", reach) or re.search(UNDO_BACKED, reach)):
+                        findings.append(f"{where}  DangerBtn({label}) — destructive, but the "
+                                        "handler neither confirms nor touches an undo-backed list")
+
         # ---- modal dialogs must answer Esc ----
         # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
         # compiles, looks finished, and produces a modal that ignores the one key everybody presses
@@ -175,12 +252,71 @@ def main():
                 findings.append(f"{path.name}:{line}  the dialog built as `{name}` sets no "
                                 "CancelButton — Esc does nothing in it")
 
+    # ---- the menu bar's access keys have to be unique within their menu ----
+    # Alt+F then S for Save. Two items in one drop-down claiming the same letter is neither a
+    # compile error nor a crash: Windows quietly demotes the key from "jump and activate" to
+    # "cycle between the matches", so a shortcut somebody learned stops working and nothing says
+    # why. Uniqueness is only required WITHIN one menu — &Save under File and &Show me around
+    # under Help never meet — so the check groups by the menu each item is added to, and the
+    # top-level bar is a group of its own.
+    menus = sources.get("Menus.cs", "")
+    mnemcount = 0
+    if menus:
+        groups = {}
+
+        def claim(owner, label, line):
+            for key in mnemonics(label):
+                groups.setdefault((owner, key), []).append((line, label))
+
+        # An item built on one line and added by name on another: `var glass = new
+        # ToolStripMenuItem("The turn &glass")`, and `undoMenuItem = Item("&Undo", …)`. Both
+        # forms, or Alt+U and Alt+R under Edit go unchecked.
+        named = {m.group(1): m.group(2) for m in re.finditer(
+            r'(?:var\s+)?(\w+)\s*=\s*(?:new\s+ToolStripMenuItem|Item)\(\s*"([^"]*)"', menus)}
+
+        # A local function that adds to one menu — `void ModeItem(string text, RunMode m)` puts
+        # its argument under Table. Its call sites carry the labels, so resolve the function to
+        # the menu it feeds and credit each call to that menu.
+        adders = {}
+        for m in re.finditer(r"\bvoid\s+(\w+)\s*\([^)]*\)", menus):
+            owner = re.search(r"(\w+)\.DropDownItems\.Add\(", body_of(menus, m.group(1)))
+            if owner:
+                adders[m.group(1)] = owner.group(1)
+
+        for m in re.finditer(r"(\w+)\.DropDownItems\.Add\((.*)", menus):
+            owner, arg = m.group(1), m.group(2)
+            lit = re.search(r'"([^"]*)"', arg)
+            if lit:
+                label = lit.group(1)
+            else:
+                ident = re.match(r"\s*(\w+)\s*\)", arg)
+                if not ident or ident.group(1) not in named:
+                    continue          # built from data (the View menu names its items off the tabs)
+                label = named[ident.group(1)]
+            claim(owner, label, menus.count("\n", 0, m.start()) + 1)
+
+        for func, owner in adders.items():
+            for m in re.finditer(r"\b" + func + r'\(\s*"([^"]*)"', menus):
+                claim(owner, m.group(1), menus.count("\n", 0, m.start()) + 1)
+
+        for ident, label in named.items():
+            if re.search(r"\bmenu\.Items\.Add\(\s*" + ident + r"\s*\)", menus):
+                claim("the menu bar", label, 0)
+
+        mnemcount = sum(len(v) for v in groups.values())
+        for (owner, key), hits in sorted(groups.items()):
+            if len(hits) > 1:
+                which = ", ".join(f"{lbl!r}" + (f" (line {ln})" if ln else "") for ln, lbl in hits)
+                findings.append(f"Menus.cs  {owner}: Alt+{key.upper()} is claimed by "
+                                f"{len(hits)} items — {which}")
+
     if not quiet:
         print("buttons per file")
         for name in sorted(counts):
             print(f"  {name:<18} {counts[name]}")
         print(f"  {'TOTAL':<18} {sum(counts.values())}")
         print(f"\nmodal dialogs checked for an Esc route: {dlgcount}")
+        print(f"menu access keys checked for collisions:  {mnemcount}")
         print()
 
     if findings:
@@ -188,7 +324,8 @@ def main():
         for f in findings:
             print("  " + f)
         return 1
-    print("every button has a handler and a tooltip; every modal dialog answers Esc.")
+    print("every button has a handler, a tooltip and a hittable target; every destructive button\n"
+          "is recoverable; every modal dialog answers Esc; no two menu items share an access key.")
     return 0
 
 

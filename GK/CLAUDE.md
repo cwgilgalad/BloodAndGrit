@@ -273,7 +273,24 @@ that do render are ▶ ▾ ◀ ▸ ◂ ✕ ＋ ✎ ✦ ✝ ◈ ✚ ✥ ⟲ ⟳ �
   checks each title has a renderer.
 - **Static wiring audit**: `python audit_ui.py` — every `Btn(...)` supplies a handler and a tooltip,
   every input control is referenced by a handler, and every locally-built `ShowDialog`n Form sets
-  `CancelButton` so it answers Esc. Currently 128 buttons, 19 dialogs.
+  `CancelButton` so it answers Esc. Three UX checks joined it in v1.29.2: a **24px minimum target**
+  (the floor WCAG 2.5.8 AA and Microsoft's control guidance agree on), **destructive buttons must be
+  recoverable** (a `Confirm()`, or an edit to one of the six lists `ListChanged += CaptureUndo`
+  covers — an undoable action does not need a prompt, and prompting on all of them trains a Keeper
+  to click through the one that matters), and **no two items in one menu claim the same Alt key**
+  (Windows demotes a collision from "activate" to "cycle", so a learned shortcut dies silently).
+  Currently 128 buttons, 19 dialogs, 21 access keys. All three UX checks pass today, so they are
+  regression guards — if you add another, prove it against a synthetic source file first, the way
+  these were.
+- **Dead code is a build error** (v1.29.2). `GK/.editorconfig` sets IDE0051 / IDE0052 / IDE0005 /
+  CA1508 to `warning` and both csprojs carry `EnforceCodeStyleInBuild`, so under `-warnaserror` an
+  unused private member, a field written and never read, an unnecessary using, or a dead conditional
+  stops the build. The sweep that motivated it found a tracker sort mode stored and never read back,
+  a Ledger font minted per zoom step and never drawn with, and a null check on `new` — all three
+  compiled clean and read as live code. **IDE0005 will not report unless the build generates XML
+  docs**, and emits its own build error saying so, so `GenerateDocumentationFile` is on in every
+  configuration with `PublishDocumentationFile=false` keeping the `.xml` out of the single-file
+  publish. Making it Debug-only looks tidier and breaks the Release build on the demand itself.
 - **Look at it.** The app builds and runs natively here, so layout is verifiable and should be
   verified — the v1.19.0 clipped Strike dialog and the "The Crooked The Wall" landmark names both
   passed every assertion and were caught only by rendering. Two safe ways: capture a single window

@@ -35,8 +35,11 @@ if hasattr(sys.stdout, "reconfigure"):
 
 ROOT = Path(__file__).resolve().parent
 
-# The prose a reader actually meets first.
-DEFAULT_DOCS = ["README.md", "CLAUDE.md", "CHANGELOG.md", "NOTICE"]
+# The prose a reader actually meets first. GK/CLAUDE.md joined the list in v1.29.2: it was split
+# out of the root CLAUDE.md on 2026-07-30 and carries ~24,000 characters of the same kind of prose,
+# so leaving it off would have quietly exempted a quarter of the project's documentation from the
+# standard the rest of it is held to.
+DEFAULT_DOCS = ["README.md", "CLAUDE.md", "GK/CLAUDE.md", "CHANGELOG.md", "NOTICE"]
 
 # The books. Pass --books to scan these too. They were exempted at first on the theory that their
 # period-western register would confuse the scan; that was wrong, and it hid real findings — the

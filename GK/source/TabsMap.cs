@@ -304,6 +304,9 @@ public partial class MainForm
     /// city could ONLY be drawn as a ward, so there was no way to ask "and what is around it?" —
     /// the one question a posse riding toward a city actually has. Now either can be surveyed as
     /// itself or set down in open country, and the country can be rolled or named.</summary>
+    /// <param name="placeName">The rolled-up place's name, as the Generators tab left it.</param>
+    /// <param name="city">True for a city, false for a town — the two roll up differently.</param>
+    /// <param name="view">Survey the place itself, or set it down in open country.</param>
     /// <param name="terrain">The ground to set it in. Null rolls one — "surprise me" being most
     /// of what a generator is for. Ignored unless the view is <see cref="PlaceView.InItsCountry"/>.</param>
     internal void SendPlaceToMap(string placeName, bool city, PlaceView view = PlaceView.Itself, string terrain = null)

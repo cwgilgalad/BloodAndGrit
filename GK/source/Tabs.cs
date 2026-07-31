@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace BloodAndGritKeeper;
 
 public enum TrkSort { InitDesc, InitAsc, NameAsc, NameDesc, BloodDesc, BloodAsc }
@@ -1327,8 +1325,6 @@ public partial class MainForm
         Log($"— Round {round} —");
     }
 
-    TrkSort trkSort = TrkSort.InitDesc;
-
     // the conditions from Appendix B, in the order the book lists them (Frightened and
     // Slowed carry a value, so their common steps are offered explicitly)
     static readonly string[] BookConditions =
@@ -1338,10 +1334,8 @@ public partial class MainForm
         "Prone", "Sickened", "Slowed 1", "Slowed 2", "Stunned", "Marked"
     };
 
-    void SortTracker() => SortTracker(trkSort);
     void SortTracker(TrkSort mode)
     {
-        trkSort = mode;
         try { trkGrid?.EndEdit(); } catch { }      // commit a half-typed Init before reading it
         // Remember WHO the Keeper had selected — clearing the list below resets the grid's
         // current row to the top, and every action that reads CurrentRow (Strike, Dread,
@@ -2074,7 +2068,7 @@ public partial class MainForm
         Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}.");
     }
 
-    /// <summary>Read a sign & spoor row: a Survival check at the Tier's DC, what the four degrees
+    /// <summary>Read a sign &amp; spoor row: a Survival check at the Tier's DC, what the four degrees
     /// give the tracker, the Dread it costs them, and one more segment of the clock. This is the
     /// safe-table rule as a scene you can actually run — the thing takes part in the fight through
     /// what it left behind, and the fight is against the reading.</summary>
@@ -2378,12 +2372,12 @@ public partial class MainForm
                 : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
                 : "an ad-hoc combatant — name what they work by hand";
         }
-        /// <summary>Re-shape the "on whom" list for the working now selected. The old list offered
-        /// one combatant or "everyone on the field" and nothing else, which fits about half the
-        /// book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
-        /// lands on nobody, and Salt &amp; Iron catches everything within ten feet — friends included,
-        /// which is not the same list as everyone in the fight. The right entry is preselected; the
-        /// whole roster stays on offer underneath it, because the parse is advice, not a gate.
+        // Re-shape the "on whom" list for the working now selected. The old list offered
+        // one combatant or "everyone on the field" and nothing else, which fits about half the
+        // book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
+        // lands on nobody, and Salt & Iron catches everything within ten feet — friends included,
+        // which is not the same list as everyone in the fight. The right entry is preselected; the
+        // whole roster stays on offer underneath it, because the parse is advice, not a gate.
         void SyncTargets(Rules.Working w, Combatant worker)
         {
             onWhom.Items.Clear();
@@ -2423,19 +2417,19 @@ public partial class MainForm
             onWhom.SelectedIndex = Math.Clamp(pick, 0, onWhom.Items.Count - 1);
         }
 
-        /// <summary>Stack everything below the effect box off whatever is actually showing, and size
-        /// the form to what came out. The dialog's height genuinely changes with the working now —
-        /// a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
-        /// neither — so a layout pinned to constants would leave a hole under half the workings and
-        /// clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
-        /// off the previous control's Bottom, and set ClientSize last.
-        ///
-        /// SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
-        /// paths somebody remembered. It was written the other way first, and the "— something
-        /// else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
-        /// and so only ever sees that branch, opened this dialog at the WinForms default 300x300
-        /// with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
-        /// it was caught by taking a picture of it. The wrapper is why it cannot happen again.
+        // Stack everything below the effect box off whatever is actually showing, and size
+        // the form to what came out. The dialog's height genuinely changes with the working now —
+        // a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
+        // neither — so a layout pinned to constants would leave a hole under half the workings and
+        // clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
+        // off the previous control's Bottom, and set ClientSize last.
+        //
+        // SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
+        // paths somebody remembered. It was written the other way first, and the "— something
+        // else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
+        // and so only ever sees that branch, opened this dialog at the WinForms default 300x300
+        // with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
+        // it was caught by taking a picture of it. The wrapper is why it cannot happen again.
         void Relayout()
         {
             backlash.Top = detail.Bottom + 6;
