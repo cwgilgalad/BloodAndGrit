@@ -26,6 +26,15 @@
          package.ps1 names the release tag from the built exe's FileVersion. A second version
          number in a second csproj is exactly the drift that cost four mislabelled releases
          once already. This library ships inside the exe and is not versioned separately. -->
+
+    <!-- Same dead-code guard the app carries; the rules in GK/.editorconfig cover this tree too.
+         It matters more here than anywhere: an unread private field in the rules library is a
+         rule somebody encoded and never wired to a roll. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishDocumentationFile>false</PublishDocumentationFile>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

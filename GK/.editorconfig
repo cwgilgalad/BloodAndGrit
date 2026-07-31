@@ -1,0 +1,10 @@
+root = true
+
+[*.cs]
+# Dead-code rules, on as warnings. The build runs -warnaserror, so anything here that fires
+# stops a release — which is the point: an unused private member is a thing somebody meant to
+# wire up and didn't, and it reads as live code to the next person who opens the file.
+dotnet_diagnostic.IDE0005.severity = warning   # unnecessary using directive
+dotnet_diagnostic.IDE0051.severity = warning   # unused private member
+dotnet_diagnostic.IDE0052.severity = warning   # private member written but never read
+dotnet_diagnostic.CA1508.severity = warning    # dead conditional code

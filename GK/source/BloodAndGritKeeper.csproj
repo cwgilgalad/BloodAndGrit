@@ -75,6 +75,26 @@
     <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
     <PublishReadyToRun>false</PublishReadyToRun>
     <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Dead code fails the build rather than waiting to be noticed. GK/.editorconfig turns four
+         rules on as warnings — unused private member, private member written but never read, dead
+         conditional branch, unnecessary using — and the verification pass builds with -warnaserror,
+         so any of them stops a release. The 2026-07-30 sweep is what motivated it: a tracker sort
+         mode the Keeper chose that was stored and never read back, a Ledger font minted on every
+         zoom step and never drawn with, and a null check on the result of `new`. All three compiled
+         clean and read as live code. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- IDE0005 (unnecessary using) refuses to report unless the build generates XML docs, and
+         says so as its own build error — so this cannot be Debug-only, as a first attempt had it:
+         Release then failed on the demand instead of on any real finding. Docs are generated in
+         every configuration and kept OUT of the publish output, so the single-file exe still ships
+         alone with no loose GritKeeper.xml beside it. CS1591 off: this is an app, not a library,
+         and an undocumented member is the norm here rather than an omission. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishDocumentationFile>false</PublishDocumentationFile>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

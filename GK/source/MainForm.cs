@@ -1436,9 +1436,6 @@ public partial class MainForm : Form
         Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
     }
 
-    /// <summary>Give Nerve back. <paramref name="expr"/> is the remedy's die (rolled fresh per soul,
-    /// the way the table reads) or null for "all of it". Nothing here touches Blood, the Mark, or
-    /// the Taint — steadying a soul is not healing one, and the book is careful about the difference.</summary>
     // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
     // on the bar and the lines in the row's right-click menu are literally the same code — a menu
     // that reimplements what a button does is a menu that will one day disagree with it.
@@ -1463,6 +1460,9 @@ public partial class MainForm : Form
         Log($"{p.Name}'s Taint deepens to {p.Taint} of 4.");
     }
 
+    /// <summary>Give Nerve back. <paramref name="expr"/> is the remedy's die (rolled fresh per soul,
+    /// the way the table reads) or null for "all of it". Nothing here touches Blood, the Mark, or
+    /// the Taint — steadying a soul is not healing one, and the book is careful about the difference.</summary>
     void Steady(bool wholePosse, string expr, string doing)
     {
         var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };

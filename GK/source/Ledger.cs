@@ -77,28 +77,47 @@ public sealed class LedgerView : Panel
     }
 
     // ---- fonts, minted per zoom level (cached so paint never allocates) ----
+    // The whole set is remade whenever the zoom changes, so the previous set has to go with it.
+    // `Zoom` is a public setter wired to the Ledger's zoom control, and every step used to strand
+    // its thirteen fonts for the life of the window. These are all DRAWN with and never assigned
+    // to a control, and MintFonts only runs on the UI thread, so releasing the old handles here
+    // is safe — nothing else is holding one.
     float cachedZoom = -1;
-    Font fTitle, fSub, fLabel, fLabelSm, fValue, fValueB, fSmall, fTiny, fBig, fWarn;
+    readonly List<Font> minted = new();
+    Font fTitle, fSub, fLabel, fLabelSm, fValue, fValueB, fSmall, fTiny, fWarn;
     Font fNum, fNumB, fNumSm, fNumTiny;
     void MintFonts()
     {
         if (Math.Abs(cachedZoom - zoom) < 0.001f) return;
         cachedZoom = zoom;
-        fTitle  = new Font("Georgia", 21f * zoom, FontStyle.Bold);
-        fSub    = new Font("Georgia", 9.5f * zoom, FontStyle.Italic);
-        fLabel  = new Font("Georgia", 7.6f * zoom, FontStyle.Bold);
-        fLabelSm = new Font("Georgia", 6.5f * zoom, FontStyle.Bold);
-        fValue  = new Font("Georgia", 10f * zoom);
-        fValueB = new Font("Georgia", 10f * zoom, FontStyle.Bold);
-        fSmall  = new Font("Georgia", 8.4f * zoom);
-        fTiny   = new Font("Georgia", 7.1f * zoom);
-        fBig    = new Font("Georgia", 12.5f * zoom, FontStyle.Bold);
-        fWarn   = new Font("Segoe UI", 8.8f * zoom, FontStyle.Bold);
+        foreach (var old in minted) old.Dispose();
+        minted.Clear();
+        Font F(string face, float pt, FontStyle style = FontStyle.Regular)
+        {
+            var f = new Font(face, pt * zoom, style);
+            minted.Add(f);
+            return f;
+        }
+        fTitle   = F("Georgia", 21f, FontStyle.Bold);
+        fSub     = F("Georgia", 9.5f, FontStyle.Italic);
+        fLabel   = F("Georgia", 7.6f, FontStyle.Bold);
+        fLabelSm = F("Georgia", 6.5f, FontStyle.Bold);
+        fValue   = F("Georgia", 10f);
+        fValueB  = F("Georgia", 10f, FontStyle.Bold);
+        fSmall   = F("Georgia", 8.4f);
+        fTiny    = F("Georgia", 7.1f);
+        fWarn    = F("Segoe UI", 8.8f, FontStyle.Bold);
         // the figure cuts, one per prose cut, so shrink-to-fit steps down in step with them
-        fNum     = new Font(NumFace, 10f * zoom);
-        fNumB    = new Font(NumFace, 10f * zoom, FontStyle.Bold);
-        fNumSm   = new Font(NumFace, 8.4f * zoom);
-        fNumTiny = new Font(NumFace, 7.1f * zoom);
+        fNum     = F(NumFace, 10f);
+        fNumB    = F(NumFace, 10f, FontStyle.Bold);
+        fNumSm   = F(NumFace, 8.4f);
+        fNumTiny = F(NumFace, 7.1f);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) { foreach (var f in minted) f.Dispose(); minted.Clear(); }
+        base.Dispose(disposing);
     }
 
     // A value is drawn inside its box, never past it — trimmed with an ellipsis as the last
