@@ -8,6 +8,42 @@ Desktop\Git repos.)
 
 ---
 
+- **Books v2.25 / v2.12 / v2.11 · GritKeeper v1.29.2 — the antithesis stopped being a habit
+  (2026-07-30, user-requested).**
+
+  A third pass at the one figure that keeps coming back: negative parallelism, the antithesis
+  that denies one thing in order to assert another. Earlier passes (v2.15/v2.7/v2.7, then v2.23)
+  each thinned it and each left the shape intact enough to regrow. This one took the count in the
+  books from eighteen to seven.
+
+  - **Eleven rewritten, seven kept.** Density was never the problem — eighteen across ~138,000
+    words is roughly 1.3 per ten thousand. Monotony was: one figure carrying the weight in
+    fourteen places reads as a formula whoever wrote it. The eleven were varied into direct
+    assertion, subordination, and inversion, and in five of them the negative half turned out to
+    be doing nothing that the positive half wasn't already doing, so it simply went. Diction and
+    meaning are untouched; the architecture of the sentence is the only thing that moved.
+  - **The seven kept, and why.** Four earn the figure — the horse and the line between a journey
+    and a death, the occupied country between the last church and the first ocean, the tables as
+    an oracle, the Bruja and the beliefs people actually hold. The other three were already ruled
+    on and recorded: the two Bestiary flagships kept at v2.7 and the Sign-Rank antithesis kept at
+    v2.23. **A decision already made and written down is not re-litigated by a later pass** — that
+    is what writing it down was for.
+  - **Two more found by hand.** `audit_ai_tells.py` flags the figure one line at a time, so it had
+    nothing to say about two paragraphs that carried a *second* instance a sentence away from a
+    flagged one — the Iron Code opener in Ch. XI and the safe-table paragraph in the Keeper's
+    Ch. IV. A pair inside one paragraph is the monotony the whole pass is about, so both were
+    varied too. Worth remembering: the audit measures per line and the tell lives per paragraph.
+  - **The app followed the books, as it must.** Three creature entries changed lore text
+    (Plague-Dead, the Sermon Made Flesh, the Longhorn Herd), so `Data/creatures.json` was
+    re-extracted with `extract_creatures.py` and diffed first — exactly three entries moved, all
+    150 present. Status-bar and `GK/source/README.md` book strings follow to v2.25 / v2.12 / v2.11.
+
+  Verified: all three books measure clean (200 / 101 / 166 pages, desktop-mobile parity, zero
+  true-scale clip, zero mobile h-scroll, every TOC and index anchor resolved), builds idempotent,
+  inline JS parses under `node --check`, `verify_rules.py` 697 cross-checks with zero drift, app
+  build 0 warnings / 0 errors under `-warnaserror`, smoke 12,250 passed / 0 failed, PDFs
+  regenerated and verified at 612×792pt with page count matching sheet count.
+
 - **GritKeeper v1.29.1 — the release carries its own license, and the repository says what it
   is (2026-07-29).**
 

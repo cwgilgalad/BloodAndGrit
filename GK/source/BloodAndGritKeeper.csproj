@@ -16,7 +16,7 @@
     <!-- The ONLY version in the project. MainForm.AppVersion reads it back off the assembly,
          and package.ps1 names the release tag from the built exe's FileVersion — so this number
          is what ships, whatever any other file says. Bump it with every release. -->
-    <Version>1.29.1</Version>
+    <Version>1.29.2</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate

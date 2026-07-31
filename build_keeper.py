@@ -32,13 +32,13 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.24 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.11 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.24)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.11)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.25 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.12 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.25)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.12)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.24</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.11</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.25</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.12</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.24 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.11 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.25 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.12 · For the Keeper Alone</p>'),
 ]
 for a,b in _meta:
     if a in H: H = H.replace(a,b,1)
@@ -265,7 +265,7 @@ CH2 = f"""<!-- II -->
   instead of stalling at a locked door.</p>
 
   <h2>The Trail &amp; the Long Quiet</h2>
-  <p>Travel is not dead time; it is your best dread-builder. The long ride between the town and the wrong place is
+  <p>Travel is your best dread-builder. The long ride between the town and the wrong place is
   where you plant the wrong note &mdash; the cold that comes too early, the birds gone silent, the homesteads
   emptier the further out they go. Provisioning matters here (see the Player's Book, Chapter X): a party that rode
   out short on salt, lamp-oil, and shells is a party you can squeeze. Don't roll for every mile; roll for the mile
@@ -307,7 +307,7 @@ CH2 = f"""<!-- II -->
   <h2>The Talking Fight</h2>
   <p>Half the dangerous moments in this game never draw a gun &mdash; the standoff talked down, the cultist questioned,
   the bargain weighed, the frightened witness coaxed into the truth. Run these with the same care you give a gunfight.
-  A social conflict is not one roll; it is a scene with stakes, position, and degrees:</p>
+  Run a social conflict as a scene with stakes, position, and degrees:</p>
   <ul>
     <li><strong>Set the stakes and the read first.</strong> What does the NPC want, what would move them, and what
     will they never do? A man bargaining for his life talks differently than a fanatic who's made his peace with
@@ -538,8 +538,8 @@ CH4 = f"""<!-- IV -->
 
   <h2 id="ix-safetable">The Safe-Table Rule</h2>
   <p>There is a line past which the budget stops being arithmetic. A thing <strong>two or more Tiers over the
-  posse</strong> is not a hard fight; it is an execution, and no amount of clever play changes that. Put one in front of
-  a party and you have not raised the stakes &mdash; you have ended the campaign and taken the choice away from them.</p>
+  posse</strong> is an execution wearing the shape of a hard fight, and no amount of clever play changes that. Put one in
+  front of a party and you have ended the campaign, and taken the choice away from them along with it.</p>
   <p>So don't put it in front of them. <strong>It arrives as sign and spoor instead.</strong> <em>Spoor</em> is the
   physical trace: track, scat, hair on wire, blood, a scrape on a tree at a height that ends the conversation.
   <em>Sign</em> is everything wider &mdash; the kill, the silence where there were birds an hour ago, the stock that
@@ -2027,7 +2027,7 @@ CH14 = f"""<!-- XIV -->
     named after him, and an entire ward that would rather not testify.</li>
     <li><strong>Spirits &amp; Hauntings (Ch. V).</strong> Cities are built on their own dead ground, and the good ones are
     built on it twice. San Francisco's financial district stands on the hulls of the gold-rush fleet, scuttled and buried
-    where they lay, and there are ships under those foundations with cargo and crew still in them. That is not an invention; it is the ground, and there is no finer haunting site in the West.</li>
+    where they lay, and there are ships under those foundations with cargo and crew still in them. That is the ground itself, a matter of record, and there is no finer haunting site in the West.</li>
     <li><strong>The Wild &amp; the Weather (Ch. VI).</strong> The one kind that weakens &mdash; so change its target. The
     Thirst in a city is the water main and the typhoid ward. The Red Wind is the smelter smoke that turns Butte's noon into
     night for three days at a stretch. A blizzard that kills one drover on the flat kills four hundred in a tenement
