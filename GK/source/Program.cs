@@ -107,7 +107,7 @@ static class Program
                 foreach (var mode in new[] { RunMode.Player, RunMode.KeeperDice, RunMode.KeeperEngine })
                 {
                     using var mf = new MainForm(mode);
-                    Chk(mf != null && mf.Mode == mode, $"GUI: the WinForms graph constructs in {mode} mode");
+                    Chk(mf.Mode == mode, $"GUI: the WinForms graph constructs in {mode} mode");
                     // Tabs are realized lazily, so build the Reference deck on purpose: it proves
                     // every leaf's title has a renderer and an audience flag beside it, and that the
                     // count the app's own prose quotes is the count it actually holds.

@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace BloodAndGritKeeper;
 
 public enum TrkSort { InitDesc, InitAsc, NameAsc, NameDesc, BloodDesc, BloodAsc }
@@ -485,6 +483,28 @@ public partial class MainForm
     static readonly Font DialogItalic = new("Segoe UI", 9f, FontStyle.Italic);
     static readonly Font DialogBold = new("Segoe UI", 9.75f, FontStyle.Bold);
 
+    /// <summary>The Tracker's one refresh. Every readout on the tab that is driven by a counter —
+    /// the grid, the turn line, the round box and the glass face — is redrawn here.
+    ///
+    /// This exists because the alternative did not work. Refreshing was done per site, as
+    /// <c>RefreshTracker();</c> repeated at eighteen call sites, and every one
+    /// of them was a chance to remember two of the four. <c>ShowRound</c> documents itself as the
+    /// one place the round moves through, and most of those sites never called it — which is
+    /// exactly why the round box would sit on a stale number until something unrelated happened to
+    /// redraw it (user-reported). A readout that updates only when the caller remembers is a
+    /// readout that is sometimes wrong, and a number that is sometimes wrong is worse than no
+    /// number, because the Keeper stops checking it.
+    ///
+    /// So: anything that moves tracker state calls this, and nothing calls the four by hand.
+    /// It is cheap — all four are local redraws over at most a few dozen rows.</summary>
+    void RefreshTracker()
+    {
+        trkGrid?.Refresh();
+        ShowRound();
+        UpdateTurnLine();
+        ShowTurnFace();
+    }
+
     /// <summary>Say in words what the turn state is, because Beats and the MAP step are small
     /// numbers in a wide grid and a Keeper pressing "Begin turn" deserves to see something answer.
     /// </summary>
@@ -540,16 +560,31 @@ public partial class MainForm
     System.Windows.Forms.Timer turnTicker;
     readonly List<Control> turnGlassParts = new();
 
-    /// The glass, its face, and its own little menu — handed back as a list so the caller decides
-    /// where on the bar they land. They ride at the end of the ROUND row on purpose: "how far
-    /// through the round are we" and "how much of the turn is left" are the same question, and
-    /// putting the answer anywhere else makes a Keeper look in two places for it.
-    IEnumerable<Control> BuildTurnGlass()
+    /// <summary>The glass, its face, and its own little menu, built as one column that the Tracker
+    /// hangs at the RIGHT EDGE of the action bar rather than dropping into the flow.
+    ///
+    /// It used to ride inline at the end of the round row, which made it 30×40 — a postage stamp
+    /// competing with fourteen buttons for the same eye. A turn timer is meant to be read across a
+    /// table without looking for it, so it now gets a column of its own at the far right and takes
+    /// the bar's FULL HEIGHT, which is as large as the layout can give it without taking a pixel
+    /// from anything else: the flow simply keeps its own width and wraps a little sooner.
+    ///
+    /// The right edge is also the honest place for it. Everything else on this bar is something the
+    /// Keeper DOES; the glass is the only thing that acts on its own, so it sits apart from the
+    /// verbs instead of being filed among them. The m:ss face and the Glass ▾ menu stay beside it,
+    /// because a clock you cannot set is a clock you stop trusting.</summary>
+    Control BuildTurnGlass()
     {
         var prefs = Prefs.Load();
         turnClock = new TurnClock { PresetSeconds = prefs.TurnSeconds };
 
-        turnGlass = new HourglassView(turnClock) { Margin = new Padding(4, 3, 4, 3) };
+        // Dock-filled inside its cell, so its size comes from the bar rather than from constants —
+        // the same rule the dialogs follow. HourglassView draws every part of the glass as a
+        // fraction of its own box, so it simply gets bigger; nothing here needs a second layout.
+        turnGlass = new HourglassView(turnClock)
+        {
+            Dock = DockStyle.Fill, MinimumSize = new Size(54, 44), Margin = new Padding(2, 2, 8, 2)
+        };
         turnGlass.Click += (s, e) => ToggleTurnGlass();
         Tip.SetToolTip(turnGlass, "The posse's turn, running out. Click the glass to start or hold it.\n"
             + "It resets and starts itself at the top of every round. When the sand is through it says "
@@ -592,13 +627,34 @@ public partial class MainForm
             ShowTurnFace();
         };
 
+        // The column: the glass down the left of it spanning both rows, the face and the menu
+        // stacked to its right. Rows at 50/50 so the glass grows with the bar instead of being
+        // pinned to whatever the face and the button happen to measure.
+        var col = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2,
+            BackColor = Color.FromArgb(243, 237, 221),
+            Margin = new Padding(0), Padding = new Padding(10, 3, 4, 3)
+        };
+        col.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));   // the glass takes the slack
+        col.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        col.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
+        col.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
+        col.Controls.Add(turnGlass, 0, 0);
+        col.SetRowSpan(turnGlass, 2);
+        col.Controls.Add(turnFace, 1, 0);
+        col.Controls.Add(menu, 1, 1);
+        turnFace.Margin = new Padding(0, 4, 2, 0);
+        turnFace.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+        menu.Margin = new Padding(0, 0, 2, 4);
+        menu.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+
+        // One entry, so ShowTurnTimer keeps working: showing or hiding the column shows or hides
+        // the whole feature, which is what it always meant.
         turnGlassParts.Clear();
-        turnGlassParts.Add(BarSep());
-        turnGlassParts.Add(turnGlass);
-        turnGlassParts.Add(turnFace);
-        turnGlassParts.Add(menu);
+        turnGlassParts.Add(col);
         ShowTurnTimer(prefs.TurnTimer, quiet: true);
-        return turnGlassParts;
+        return col;
     }
 
     static string TurnPresetLabel(int i) => TurnClock.Spell(TurnClock.Presets[i])
@@ -650,16 +706,30 @@ public partial class MainForm
             turnClock.Expired ? Blood : Gold);
     }
 
-    /// <summary>Set how long a turn is and keep it for next time. Does not disturb a turn already
-    /// running — see TurnClock.PresetSeconds.</summary>
+    /// <summary>Set how long a turn is, turn the glass over onto that length, and keep it for next
+    /// time.
+    ///
+    /// Choosing a length used to leave a RUNNING glass alone, which was wrong two ways
+    /// (user-reported). Picking "two minutes" is the Keeper saying a turn is two minutes; being
+    /// told the current one keeps its old length is an answer to a question nobody asked. Worse,
+    /// it rendered nonsense: <c>TurnClock.PresetSeconds</c> only refills a HELD clock, so the
+    /// running one kept its old <c>LeftMs</c> against the new preset — and since the sand level is
+    /// <c>1 - LeftMs/(preset*1000)</c>, shortening the turn drove Spent negative and the glass read
+    /// FULL while counting down from the old, longer turn.
+    ///
+    /// So the glass is turned over onto the new length, and keeps running if it was running.</summary>
     internal void SetTurnLength(int seconds)
     {
         if (turnClock == null) { Prefs.Save(WithTurn(Prefs.Load(), null, seconds)); return; }
+        bool wasRunning = turnClock.Running;
         turnClock.PresetSeconds = seconds;
+        turnClock.Reset();                       // Reset clears Running, so restore it below
+        if (wasRunning) turnClock.Start();
         Prefs.Save(WithTurn(Prefs.Load(), null, turnClock.PresetSeconds));
+        SyncTicker();
         ShowTurnGlass();
         Say($"A posse's turn is now {TurnClock.Spell(turnClock.PresetSeconds)}."
-            + (turnClock.Running ? " The turn already running keeps the length it started with." : ""), Gold);
+            + (wasRunning ? " The glass is turned over and running." : ""), Gold);
     }
 
     /// A length of the Keeper's own choosing, in whole seconds, measured rather than laid out.
@@ -768,8 +838,7 @@ public partial class MainForm
         };
         Tip.SetToolTip(trkTurnLbl, "Whose turn it is, what they have left to spend, and what the next Strike costs");
         bar.Controls.Add(trkTurnLbl);
-        foreach (var c in BuildTurnGlass()) bar.Controls.Add(c);
-        bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
+        bar.SetFlowBreak(trkTurnLbl, true);
         UpdateTurnLine();
 
         // ---- row 2: the turn you are taking ----
@@ -1082,9 +1151,27 @@ public partial class MainForm
             FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Visible = false,
             Padding = new Padding(8, 6, 8, 8), BackColor = SignRow
         };
+        // The bar and the glass, side by side: the flow keeps the left and takes all the width it
+        // wants, the glass column hangs off the right edge and stretches to whatever height the bar
+        // ends up. A TableLayoutPanel rather than Dock=Right on a panel, because a docked Fill child
+        // contributes nothing to a container's AutoSize and the bar's height is exactly what has to
+        // travel outward here — the row measures the bar, and the glass is told that height.
+        var head = new TableLayoutPanel
+        {
+            Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            ColumnCount = 2, RowCount = 1, Margin = new Padding(0), Padding = new Padding(0),
+            BackColor = Color.FromArgb(243, 237, 221)
+        };
+        head.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+        head.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        head.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        bar.Dock = DockStyle.Fill;
+        head.Controls.Add(bar, 0, 0);
+        head.Controls.Add(BuildTurnGlass(), 1, 0);
+
         page.Controls.Add(trkGrid);
         page.Controls.Add(signPanel);
-        page.Controls.Add(bar);
+        page.Controls.Add(head);
         RefreshSigns();
 
         // empty-state hint — the tracker fills from OTHER tabs, which is invisible until told
@@ -1214,7 +1301,7 @@ public partial class MainForm
         // without the Keeper hunting for their row first.
         var row = trkGrid?.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ReferenceEquals(r.DataBoundItem, up));
         if (row != null) { trkGrid.ClearSelection(); row.Selected = true; trkGrid.CurrentCell = row.Cells[1]; }
-        trkGrid?.Refresh(); UpdateTurnLine();
+        RefreshTracker();
         Log($"{up.Name}'s turn — 3 Beats, a clean shot.");
     }
 
@@ -1233,12 +1320,10 @@ public partial class MainForm
             foreach (var done in c.TickWorked())
                 Log($"{done.Name} ends on {c.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
         }
-        trkGrid?.Refresh(); UpdateTurnLine();
+        RefreshTracker();
         TurnOverTheGlass();               // a new round is a new posse turn — see the hourglass block
         Log($"— Round {round} —");
     }
-
-    TrkSort trkSort = TrkSort.InitDesc;
 
     // the conditions from Appendix B, in the order the book lists them (Frightened and
     // Slowed carry a value, so their common steps are offered explicitly)
@@ -1249,10 +1334,8 @@ public partial class MainForm
         "Prone", "Sickened", "Slowed 1", "Slowed 2", "Stunned", "Marked"
     };
 
-    void SortTracker() => SortTracker(trkSort);
     void SortTracker(TrkSort mode)
     {
-        trkSort = mode;
         try { trkGrid?.EndEdit(); } catch { }      // commit a half-typed Init before reading it
         // Remember WHO the Keeper had selected — clearing the list below resets the grid's
         // current row to the top, and every action that reads CurrentRow (Strike, Dread,
@@ -1403,7 +1486,7 @@ public partial class MainForm
         // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn,
         // and nothing still working from the last one (Rules.ResetForNewFight, so it is testable)
         Rules.ResetForNewFight(tracker);
-        round = 1; ShowRound(); trkGrid?.Refresh(); UpdateTurnLine();
+        round = 1; ShowRound(); RefreshTracker();
         Log("New fight — foes cleared, the trail wiped, the posse holds the field, Round 1.");
     }
 
@@ -1655,7 +1738,7 @@ public partial class MainForm
             c.Wound(c.BloodMax - c.BloodCur, "restored");
             Log($"{c.Name} is made whole — {c.BloodCur}/{c.BloodMax} Blood.");
         }
-        trkGrid.Refresh(); UpdateTurnLine();
+        RefreshTracker();
     }
 
     /// <summary>Everyone on the field back to full Blood, and every posse soul back to full Nerve
@@ -1671,7 +1754,7 @@ public partial class MainForm
         foreach (var t in bodies) t.Wound(t.BloodMax - t.BloodCur, "restored");
         foreach (var p in party.Where(p => tracker.Any(t => t.IsSoul(p))))
         { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; }
-        posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
+        posseGrid?.Refresh(); RefreshTracker();
         Log($"The field is restored — {bodies.Count} back to full Blood, the posse's Nerve with them.");
     }
 
@@ -1684,7 +1767,7 @@ public partial class MainForm
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         foreach (var t in tracker) t.Acting = false;   // one at a time; the last turn is over
-        c.BeginTurn(); trkGrid.Refresh(); UpdateTurnLine();
+        c.BeginTurn(); RefreshTracker();
         Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
     }
 
@@ -1831,7 +1914,7 @@ public partial class MainForm
                 && Rules.IsGrievous(rep.Res.AfterDR, tgt.BloodMax, rep.Res.Strike.Crit))
                 OfferGrievous(hurt, tgt, rep.Res.AfterDR, rep.Res.Strike.Crit);
             // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
-            trkGrid.Refresh(); UpdateTurnLine(); Sync();
+            RefreshTracker(); Sync();
         }
     }
 
@@ -1985,7 +2068,7 @@ public partial class MainForm
         Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}.");
     }
 
-    /// <summary>Read a sign & spoor row: a Survival check at the Tier's DC, what the four degrees
+    /// <summary>Read a sign &amp; spoor row: a Survival check at the Tier's DC, what the four degrees
     /// give the tracker, the Dread it costs them, and one more segment of the clock. This is the
     /// safe-table rule as a scene you can actually run — the thing takes part in the fight through
     /// what it left behind, and the fight is against the reading.</summary>
@@ -2124,7 +2207,7 @@ public partial class MainForm
             AddCreatureToTracker(beast, 1, skipSafeTable: true);   // the rule has already run its course
             Log($"{beast.name} comes in the flesh. The safe table is over.");
         }
-        RefreshSigns(); trkGrid?.Refresh(); UpdateTurnLine();
+        RefreshSigns(); RefreshTracker();
     }
 
     // ---- Signs, Miracles, and creature powers: working one, and what it costs ----
@@ -2289,12 +2372,12 @@ public partial class MainForm
                 : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
                 : "an ad-hoc combatant — name what they work by hand";
         }
-        /// <summary>Re-shape the "on whom" list for the working now selected. The old list offered
-        /// one combatant or "everyone on the field" and nothing else, which fits about half the
-        /// book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
-        /// lands on nobody, and Salt &amp; Iron catches everything within ten feet — friends included,
-        /// which is not the same list as everyone in the fight. The right entry is preselected; the
-        /// whole roster stays on offer underneath it, because the parse is advice, not a gate.
+        // Re-shape the "on whom" list for the working now selected. The old list offered
+        // one combatant or "everyone on the field" and nothing else, which fits about half the
+        // book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
+        // lands on nobody, and Salt & Iron catches everything within ten feet — friends included,
+        // which is not the same list as everyone in the fight. The right entry is preselected; the
+        // whole roster stays on offer underneath it, because the parse is advice, not a gate.
         void SyncTargets(Rules.Working w, Combatant worker)
         {
             onWhom.Items.Clear();
@@ -2334,19 +2417,19 @@ public partial class MainForm
             onWhom.SelectedIndex = Math.Clamp(pick, 0, onWhom.Items.Count - 1);
         }
 
-        /// <summary>Stack everything below the effect box off whatever is actually showing, and size
-        /// the form to what came out. The dialog's height genuinely changes with the working now —
-        /// a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
-        /// neither — so a layout pinned to constants would leave a hole under half the workings and
-        /// clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
-        /// off the previous control's Bottom, and set ClientSize last.
-        ///
-        /// SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
-        /// paths somebody remembered. It was written the other way first, and the "— something
-        /// else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
-        /// and so only ever sees that branch, opened this dialog at the WinForms default 300x300
-        /// with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
-        /// it was caught by taking a picture of it. The wrapper is why it cannot happen again.
+        // Stack everything below the effect box off whatever is actually showing, and size
+        // the form to what came out. The dialog's height genuinely changes with the working now —
+        // a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
+        // neither — so a layout pinned to constants would leave a hole under half the workings and
+        // clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
+        // off the previous control's Bottom, and set ClientSize last.
+        //
+        // SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
+        // paths somebody remembered. It was written the other way first, and the "— something
+        // else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
+        // and so only ever sees that branch, opened this dialog at the WinForms default 300x300
+        // with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
+        // it was caught by taking a picture of it. The wrapper is why it cannot happen again.
         void Relayout()
         {
             backlash.Top = detail.Bottom + 6;
@@ -2580,7 +2663,7 @@ public partial class MainForm
                 + (note.Length > 0 ? $"\n{note}" : "")
                 + (pc.HasSave && !rollIt.Checked ? $"\n{pc.Save} save to resist." : ""), Verdigris);
 
-            posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
+            posseGrid?.Refresh(); RefreshTracker();
         }
     }
 

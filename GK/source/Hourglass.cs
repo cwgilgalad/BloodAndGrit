@@ -6,7 +6,7 @@ namespace BloodAndGritKeeper;
 ///
 /// <para>All state lives on the <see cref="TurnClock"/> it is pointed at — this control owns no
 /// countdown of its own and starts no timer. The Tracker feeds the clock and calls
-/// <see cref="Invalidate"/>; that keeps the rule (how long is a turn, how much is left) in the
+/// <see cref="Control.Invalidate()"/>; that keeps the rule (how long is a turn, how much is left) in the
 /// rules library where the smoke rig can reach it, and keeps this file to ink.</para>
 ///
 /// <para>Written double-buffered and antialiased because the glass is all diagonals. It draws no

@@ -405,8 +405,10 @@ Regenerating overwrites the three PDFs in place.)*
   standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
   the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
   sentence length; 0.55+ human-like, under 0.45 is the tell) and a scan for generated cadences,
-  **negative parallelism** above all. Currently README 0.82 · CLAUDE.md 0.78 · CHANGELOG 0.80 ·
-  commit messages 0.63, zero hard tells.
+  **negative parallelism** above all. Currently README 0.84 · CLAUDE.md 0.81 · GK/CLAUDE.md 0.68 ·
+  CHANGELOG 0.81 · commit messages 0.64, zero hard tells. `GK/CLAUDE.md` joined the scanned set in
+  v1.29.2 — it was split out of this file on 2026-07-30 and would otherwise have exempted a quarter
+  of the project's documentation from the standard the rest of it is held to.
   Three things about that script are worth not re-learning: its markup stripping is
   **length-preserving**, because collapsing spans made every reported line number fiction and sent
   you to rewrite innocent prose; **quoted** spans are reported apart and never fail, since both real

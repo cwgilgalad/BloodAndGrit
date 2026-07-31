@@ -1,0 +1,94 @@
+# Everything this project already checks by hand before a release, run on every push.
+#
+# The repo had a 12,000-assertion logic suite, a self-test, a static UI audit and a book/data drift
+# checker, and no way for anyone to see that any of them pass. These are the same five commands
+# CLAUDE.md's "verification standard" section lists — nothing new is being invented here, it is
+# only being made visible and made to run on someone else's machine, which is the part that catches
+# "works on my laptop".
+#
+# Deliberately NOT run here: measure_index.py / measure_book.py / audit_whitespace.py. They drive a
+# real browser through Playwright to measure rendered page geometry, and pagination is
+# environment-dependent by design (see CLAUDE.md) — a cloud runner would measure a different page
+# count than the machine the books are proofed on and fail for no useful reason.
+name: verify
+
+on:
+  push:
+    branches: [main, 'session/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  app:
+    # windows-latest, not ubuntu: the app is net8.0-windows WinForms, and the self-test constructs
+    # the real window graph. The rules library and the smoke rig are plain net8.0 and would build
+    # anywhere, but there is no value in splitting the job to prove it.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build the app (0 warnings, 0 errors is the standard)
+        run: dotnet build -c Release -warnaserror
+        working-directory: GK/source
+
+      - name: Logic suite — ~12,000 assertions over the rules, chargen, maps and PDF writer
+        run: dotnet run -c Release
+        working-directory: GK/smoke
+
+      - name: Self-test — builds the real window graph in all three run modes
+        # Constructs every tab and every wizard step, and fails on any interactive control with no
+        # tooltip. Written to report-but-not-fail if WinForms cannot realize on a headless station,
+        # so this stays honest on a runner without a desktop rather than going red for the wrong
+        # reason. Its exit code still fails the job on a genuine assertion failure.
+        run: ./GritKeeper.exe --selftest
+        working-directory: GK/source/bin/Release/net8.0-windows/win-x64
+
+      - name: Publish the self-contained single file, and self-test THAT
+        # The one failure mode a dev build cannot show: Db.ReadData resolves embedded resources off
+        # typeof(Db).Assembly, so a data file embedded in the wrong project works in a dev run and
+        # finds nothing inside the bundle. Only a published exe proves it.
+        run: |
+          dotnet publish -c Release
+          ./bin/Release/net8.0-windows/win-x64/publish/GritKeeper.exe --selftest
+        working-directory: GK/source
+
+  books:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: No rules drift — the printed book against the app's data against the formula
+        # 697 cross-checks. The guard the whole project is built on: each rule is encoded once and
+        # any disagreement between book, data and formula fails a build.
+        run: python verify_rules.py
+
+      - name: Static UI audit — every button wired and tipped, every modal dialog answers Esc
+        run: python audit_ui.py
+
+      - name: AI-tell audit — the repo's own prose reads as written, not generated
+        # Burstiness (sd/mean of sentence length) plus a scan for the cadences that give generated
+        # text away, negative parallelism above all. Quoted book text is reported separately and
+        # never fails: the books' voice is not this audit's business.
+        run: python audit_ai_tells.py --commits 40
+
+      - name: The builds are idempotent — building twice yields byte-identical output
+        # Build order matters: the Player's Book is the shared shell the other two read.
+        run: |
+          python build_player.py && python build_keeper.py && python build_bestiary.py
+          md5sum *.html > first.txt
+          python build_player.py && python build_keeper.py && python build_bestiary.py
+          md5sum -c first.txt
+
+      - name: The built books match what is committed
+        # A build script edited without rebuilding leaves the repo's HTML stale, and the PDFs and
+        # the app's creature data are both extracted from it.
+        run: git diff --exit-code -- '*.html'
