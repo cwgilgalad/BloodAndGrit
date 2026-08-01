@@ -9,12 +9,12 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11 ·
-GritKeeper app v1.29.2 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.30.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
-`net8.0` class library — no WinForms — holding the six headless files (`Core.cs`, `CharGen.cs`,
-`IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`) **and the five `Data/*.json`**. `GK/source` is
+`net8.0` class library — no WinForms — holding the seven headless files (`Core.cs`, `CharGen.cs`,
+`IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`, `Look.cs`) **and the six `Data/*.json`**. `GK/source` is
 the WinForms app on top of it; it and `GK/smoke` both reach it by `<ProjectReference>`. This
 replaced `smoke.csproj`'s hand-listed `<Compile Include>` per file, which could silently fall out
 of step with what the app contained — a seventh headless file, unlisted, went untested forever.
@@ -86,6 +86,36 @@ labels, `GoldDeep` for anything that is a sentence. **`Faint`** replaced a hand-
 `Color.FromArgb(122,112,96)` for "nothing is happening yet" ink. Also: **do not use ⧖ (U+29D6)** —
 it is not in Segoe UI on this machine and renders as "≥". The glyphs that do render are
 ▶ ▾ ◀ ▸ ◂ ✕ ＋ ✎ ✦ ✝ ◈ ✚ ✥ ⟲ ⟳ 🔍 🎲 🧭.
+
+**What a soul looks like (v1.30.0).** `GK/rules/Look.cs` + `Data/appearance.json` — the seventh
+headless file and the first that is not the books' rules. Two rules govern it and both are load-bearing.
+**Nothing here is worth a point:** it touches no number, gates no Origin or Calling, and the books'
+standing line holds — the peoples of the West appear as people, described and never costed. **The
+draws are conditioned, not shuffled:** complexion, hair and eyes come out of ONE people's own lists
+and every garment out of ONE style's wardrobe (`LkStyle`), because six independent lists produce a
+Norwegian in a charro jacket over mining boots and that reads as a machine talking. `callingStyles`
+steers the wardrobe 80% of the time and lets the country surprise you the rest. **The name and the
+people are one decision:** the look is drawn BEFORE the name and `FullName(gender, look)` follows it,
+because chargen.json's whole-name pools used to be reached on a bare 12% roll answerable to nothing —
+which was invisible until the app started saying where people were from, and then produced "Rafferty
+Luján, Chinese, out of Guangdong" on the first soul it ever drew on screen. A REDRAW passes
+`nameIsFixed: true` and leaves out the peoples whose names come whole, since it is only allowed half
+the decision. `CharacterSheet.Look` is null on every sheet saved before this, so every consumer tests
+`Look?.Any` and no session.json migration exists.
+
+**Six-month faults (v1.30.0) — the class of bug a day's testing cannot reach.** Four were found by
+looking for them on purpose, and each is worth not re-introducing. (1) **`GameSession.IsUntouched`**
+decides whether the demo posse may be seeded over a loaded session; launch used to ask only whether
+the PARTY was empty, and then not apply the session at all — losing the ledger, clocks, rides, map
+markers and tracker of any all-NPC night. It lives in the rules library so the smoke rig holds it.
+(2) **`AutoSave` returns whether it landed** and says so once per new reason; swallowing the failure
+was right, being silent about it meant a `session.json` unwritable for months looked identical to one
+saving perfectly. (3) **`MainForm.Face(family, size, style)` is the font shelf** — a `Font` holds a
+GDI handle, and two paths minted one per event (a headline font per roll; ~30 per creature rendered,
+so ~4,500 while arrowing down the Bestiary) and disposed none. **Never assign `.Font` or
+`SelectionFont` from a `new Font(...)` on a repeating path; take it off the shelf.** (4) Anything that
+**reparents** a control unwinds in a `finally`. That failure arrives with nothing to read: no
+exception, no dialog, just a tab that stays blank until the app is restarted.
 
 **The turn hourglass (v1.29.0)** — `TurnClock` in the rules library is pure and is FED elapsed
 milliseconds by its caller, which is the only reason a five-minute turn can be tested in a
@@ -600,7 +630,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.29.2) — the C# desktop app
+## GritKeeper (v1.30.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

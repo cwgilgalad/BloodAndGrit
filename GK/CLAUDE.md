@@ -17,7 +17,7 @@ also renamed in v1.6.0.
 ## Source-tree layout (read before editing the app)
 
 The working/master tree is **`GK/`**, and since v1.28.0 it holds **three** projects:
-`GK/rules/` (the `net8.0` rules library — the six headless `.cs` files and `Data/*.json`),
+`GK/rules/` (the `net8.0` rules library — the seven headless `.cs` files and `Data/*.json`),
 `GK/source/` (the WinForms app: the UI `.cs`, its `.csproj`, `app.ico`, `Assets/`), and
 `GK/smoke/` (the headless logic-test project). The app and the smoke rig both reference the
 library. **Edit `GK/rules` for rules and data, `GK/source` for UI; build/test in `GK/`.**
@@ -173,6 +173,8 @@ what each tab *is*, plus the decisions worth not re-deriving.
 | `Data/creatures.json` | All 150 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
+| **`Look.cs`** | What a soul looks like — `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. See the root CLAUDE.md for the two rules that govern it. |
+| `Data/appearance.json` | 28 peoples, 19 whole styles of dress, and the shared pools for build, bearing, face, marks, voice, hair, whiskers, wear and the one memorable detail. **The app's own, not the books'** — like `tables_extra.json`, and for the same reason: `chargen.json` is a transcription and must stay one. **Embedded**, like the rest. |
 
 ## Build & run
 
@@ -250,6 +252,22 @@ owner-drawn surface (`TabsMap.cs` replays primitives the same way):
 
 **Do not use ⧖ (U+29D6)** — it is not in Segoe UI on this machine and renders as "≥". The glyphs
 that do render are ▶ ▾ ◀ ▸ ◂ ✕ ＋ ✎ ✦ ✝ ◈ ✚ ✥ ⟲ ⟳ 🔍 🎲 🧭.
+
+## Known landmine: a Font is a native handle, and `.Font = new Font(…)` on a repeating path leaks it
+
+Found in the v1.30.0 six-month sweep, in the two hottest paths in the app: the Dice tab's result card
+minted a headline font on **every roll**, and `RenderCreature` about **thirty per creature**, so
+arrowing down the Bestiary's 150 spends ~4,500 GDI handles in seconds. Neither disposed anything.
+The finalizer does eventually reclaim them, which is exactly why an hour of testing looks clean and a
+long evening does not — and why this survived every assertion the app has.
+
+**`MainForm.Face(family, size, style)` is the shelf.** It memoizes into a static dictionary and is
+never emptied on purpose: the set of triples the app draws with is small and fixed, so it settles at a
+few dozen fonts for the life of the process. Take fonts from it anywhere the font is drawn with
+repeatedly. A `new Font(...)` assigned once at construction, and owned by the control, is fine and is
+what most of the UI does — the rule is about **repeating** paths. (Two existing sites got this right
+and are worth copying: `StyleRollLog` mints one bold variant and disposes it on `Disposed`;
+`StyleTabs` disposes the bold face it makes per paint.)
 
 ## Verification standard for this app
 

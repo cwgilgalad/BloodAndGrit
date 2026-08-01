@@ -30,6 +30,16 @@ public class LkPeople
     public List<string> complexions { get; set; } = new();
     public List<string> hair { get; set; } = new();
     public List<string> eyes { get; set; } = new();
+    /// <summary>The stem of a chargen.json whole-name pool this people's names come out of —
+    /// "fullNames" reaches fullNamesMen / fullNamesWomen. Set on the ONE people whose names do
+    /// not decompose into a given name and a surname that can be mixed with anybody else's.
+    ///
+    /// This is what stops the generator producing "Rafferty Luján, Chinese, out of Guangdong",
+    /// which is what it did the first time it was run in front of a screenshot. chargen.json
+    /// already carried the whole-name pools and drew from them on a bare 12% roll with nothing
+    /// tying that roll to anything; now the people owns the pool and the name follows the people,
+    /// which is one decision instead of two that can disagree.</summary>
+    public string namesFrom { get; set; }
 }
 
 /// <summary>One whole way of dressing, wardrobe and all. The garment lists belong to the style
@@ -159,9 +169,13 @@ public static class Look
 
     /// <summary>A people, drawn against the weights. Falls through to an even draw if every
     /// weight is zero or missing, so a hand-edited data file can't produce an empty result.</summary>
-    public static LkPeople People()
+    /// <param name="keepsOwnNames">Exclude the peoples whose names come whole out of their own
+    /// pool. Passed by the redraw-a-look routes, which change a description on a soul who already
+    /// HAS a name and so cannot honour one — see <see cref="Roll"/>.</param>
+    public static LkPeople People(bool keepsOwnNames = true)
     {
         var ps = D?.peoples;
+        if (!keepsOwnNames) ps = ps?.Where(p => string.IsNullOrWhiteSpace(p.namesFrom)).ToList();
         if (ps is not { Count: > 0 }) return null;
         int total = ps.Sum(p => Math.Max(0, p.weight));
         if (total <= 0) return ps[Rules.Rng.Next(ps.Count)];
@@ -209,12 +223,17 @@ public static class Look
     /// convention, not a rule about anybody, and every field is editable by hand precisely so the
     /// convention can be ignored.</param>
     /// <param name="calling">What they do for a living, which is most of what they wear.</param>
-    public static SoulLook Roll(string gender, string calling = null)
+    /// <param name="nameIsFixed">True when this is a REDRAW over a soul who already has a name.
+    /// A name and a people are one decision (see <see cref="CharGen.FullName"/>), and a redraw is
+    /// only allowed half of it — so it leaves out the peoples whose names come whole rather than
+    /// handing back a description the soul's own name contradicts. Making a soul, and the wizard,
+    /// draw both together and pass false.</param>
+    public static SoulLook Roll(string gender, string calling = null, bool nameIsFixed = false)
     {
         var look = new SoulLook();
         if (D == null) Load();
 
-        var people = People();
+        var people = People(keepsOwnNames: !nameIsFixed);
         if (people != null)
         {
             look.People = people.name;

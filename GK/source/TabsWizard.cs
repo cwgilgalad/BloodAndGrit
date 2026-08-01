@@ -1109,8 +1109,14 @@ public partial class MainForm
                 + "anybody would describe first. Nothing here costs or grants anything.");
             ShowLook();
             lookRow.Controls.Add(wLookLbl);
-            lookRow.Controls.Add(Btn("🎲", (s, e) => { look = Look.Roll(charGender, calName); ShowLook(); }, 40,
-                "Draw a fresh description"));
+            // A wizard that was given a name cannot have that name overruled by a description, so
+            // the draw leaves out the peoples whose names come whole. Left blank, the name is
+            // still to be drawn and follows whatever this hands back.
+            lookRow.Controls.Add(Btn("🎲", (s, e) =>
+            {
+                look = Look.Roll(charGender, calName, nameIsFixed: !string.IsNullOrWhiteSpace(charName));
+                ShowLook();
+            }, 40, "Draw a fresh description"));
             col.Controls.Add(lookRow);
             return col;
         }

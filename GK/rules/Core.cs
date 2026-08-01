@@ -741,6 +741,26 @@ public class GameSession
     public int Round { get; set; } = 1;
     public List<MapMarker> MapMarkers { get; set; } = new();
     public List<Ride> Rides { get; set; } = new();
+
+    /// <summary>Nothing in it at all — the only state in which handing a Keeper the Appendix D
+    /// pregens is help rather than a mess.
+    ///
+    /// The launch path used to ask a much cruder question, "is the PARTY empty?", and if it was it
+    /// seeded the demo posse and never applied the loaded session at all. So a table whose posse
+    /// the Keeper had cleared — an all-NPC night, a party wiped and not yet rebuilt — came back
+    /// next launch with its written ledger, its clocks, its rides, its map markers and its tracker
+    /// all gone, and then autosaved that loss over the file on the way out. An empty posse is a
+    /// legitimate table; it is not an empty session.
+    ///
+    /// Here rather than on the form so the smoke rig can hold it: this decides whether a Keeper's
+    /// work is kept, and it is the kind of thing that is only ever wrong months later.</summary>
+    [JsonIgnore]
+    public bool IsUntouched =>
+        (Party is not { Count: > 0 }) && (Tracker is not { Count: > 0 })
+        && (Signs is not { Count: > 0 }) && (Clocks is not { Count: > 0 })
+        && (Rides is not { Count: > 0 }) && (MapMarkers is not { Count: > 0 })
+        && (EncounterCreatures is not { Count: > 0 })
+        && string.IsNullOrWhiteSpace(Notes);
 }
 
 // ============================================================ RULES & DICE

@@ -299,6 +299,30 @@ public partial class MainForm
     Panel mapHost;
     bool mapFull;
 
+    /// <summary>Send the map away to a second window and bring it back, without showing anything —
+    /// the reparenting half of <see cref="MapFullScreen"/> with the modal taken out, so
+    /// <c>--selftest</c> can prove the Map tab survives the round trip. Hands back true when the
+    /// host is home again with all four of its children.
+    ///
+    /// Worth a check of its own because of what the failure looks like: not a crash, not a wrong
+    /// number, just a Map tab that is empty for the rest of the session with the survey still
+    /// parented to a window nobody can see.</summary>
+    internal bool MapFullScreenRoundTrip()
+    {
+        if (mapHost == null) return false;
+        var home = mapHost.Parent;
+        if (home == null) return false;
+        int had = mapHost.Controls.Count;
+        using (var f = new Form { FormBorderStyle = FormBorderStyle.None, ShowInTaskbar = false })
+        {
+            mapHost.Parent = f;
+            if (mapHost.Parent != f) return false;
+            mapHost.Parent = home;
+        }
+        return mapHost.Parent == home && mapHost.Controls.Count == had && !mapHost.IsDisposed
+            && mapPanel is { IsDisposed: false };
+    }
+
     /// <summary>Show the map across the whole screen, carrying its own controls with it.
     ///
     /// The host panel is REPARENTED into a borderless window and handed back afterwards, so
@@ -363,6 +387,11 @@ public partial class MainForm
         mapFull = true;
         try
         {
+            // If this throws between here and the finally, the finally still hands the host back.
+            // That is the whole reason this is a try/finally rather than a straight line. The
+            // failure it guards against arrives with nothing to read: a Map tab that stays blank
+            // until the app is restarted, and a Keeper with no way of knowing their survey is
+            // still parented to a window that went away.
             // Host first, strip second. Docking resolves from the highest index down, so the strip
             // takes the top edge and the host fills whatever is left — the same order the tabs use.
             Rehome(f);

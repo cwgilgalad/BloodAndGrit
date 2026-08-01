@@ -8,6 +8,74 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.30.0 — a soul you can describe, a glass you can find, a map that fills the
+  screen, and four things that only go wrong in month six (2026-07-31, user-requested).**
+
+  Four asks and one standing instruction: *fix what will show up after six months of sessions
+  without intervention.* The four are features; the fifth found more than the four did.
+
+  - **"Write it down" writes it down where a Keeper reads it.** A scar always went onto the soul —
+    the Posse tab's Scars column — and the button says the words the Session tab's *Keeper's
+    ledger* is for. It now stamps a dated line there too, and the Ledger sheet carries a **What
+    They Carry** box, so the answer to "did that get recorded" is visible in three places instead
+    of one narrow column. Behind it, a worse thing: **the Posse tab and the Tracker were two
+    implementations of the Dread Check and they disagreed about the rule.** The Posse tab rolled
+    its own ladder and **doubled the Nerve on a critical failure**, which Ch. XII does not say
+    ("loses the listed Nerve and imposes Frightened 1 at once"); it also never hung the Frightened,
+    never rolled the Affliction a DC-25 failure carries, and never touched the break table — so
+    the same horror cost twice the Nerve and left no mark on one tab and did the book's arithmetic
+    on the other. One road now (`ResolveDread`), and the **Tier spinner is gone**: two boxes for
+    one row of one table meant DC 25 beside Tier 2 took 1d4 for a truth that unmakes a world.
+    The DC is asked for and the ladder is *derived* and shown beside it.
+  - **The turn glass can be found.** It is off by default and, when off, the whole column hides —
+    so the only route to turning it on was a menu called **Table**, which is not where anybody
+    looks for a clock. There is now a **＋ Turn glass** button on the Tracker's own bar, visible
+    exactly when the glass is not, and a **View** menu entry. All three call the one method.
+  - **The map goes full screen** — a **◈ Full screen** button and a double-click on open country;
+    Esc, F11 or ✕ brings it back. It **reparents the real controls** rather than building a second
+    bar, so every ground, scale, hour, weather, overlay, marker and export control is the same
+    object it was on the tab and the two can never disagree. Double-click is ignored over anything
+    draggable, so it never takes the map away mid-drag.
+  - **A soul you can describe** (new: `GK/rules/Look.cs`, `Data/appearance.json`). Physical
+    traits, dress and the one detail a witness names first — 28 peoples of the 1880s West, 19
+    whole styles of dress, and pools for build, bearing, face, marks, voice, hair and wear. Shown
+    on the **Ledger sheet**, printed on the text sheet and the PDF, editable field by field in
+    **✎ Tweak**, rolled from the New Soul tab, the wizard, and the Posse tab's right-click menu.
+    Two decisions carry it: the draws are **conditioned, not shuffled** — colouring comes out of
+    one people's own lists and every garment out of one style's wardrobe, because six independent
+    lists give you a Norwegian in a charro jacket — and **nothing here is worth a point.** It
+    touches no number and gates nothing; the books' line about the peoples of the West holds, that
+    they appear as people, described and never costed. The very first soul it drew on screen was
+    "Rafferty Luján, Chinese, out of Guangdong", so **the name and the people are now one
+    decision**: the look is drawn first and the name follows it, and 600 generated souls assert it.
+
+  **And the six-month sweep — four faults that a day's testing cannot find.**
+
+  - **The session was thrown away when the posse was empty.** Launch asked "is the Party empty?"
+    and, if it was, seeded the demo posse and **never applied the loaded session at all** — so a
+    table whose posse the Keeper had cleared (an all-NPC night, a party wiped and not yet rebuilt)
+    came back next launch with its written ledger, its clocks, its rides, its map markers and its
+    tracker gone, and autosaved that loss over the file on the way out. `GameSession.IsUntouched`
+    now asks the whole question, in the rules library so the smoke rig holds it.
+  - **The session could stop saving and say nothing.** `AutoSave` swallowed every failure, which
+    is right — it must never block closing — and then kept quiet about it, so a `session.json`
+    unwritable since March (a sync client holding it, a read-only folder, a full disk) looked
+    exactly like one saving perfectly, while File ▸ Save session said "Session saved." on top of
+    it. It now reports whether it landed, says why once per new reason, and says so again when it
+    recovers.
+  - **Two native font leaks on the hottest paths.** A `Font` holds a GDI handle. The Dice tab's
+    result card minted a new headline font on **every roll**, and the Bestiary's creature renderer
+    about **thirty per creature** — so arrowing down the list of 150 spends four and a half
+    thousand handles in seconds. Nothing disposed them; the finalizer gets there eventually, which
+    is why an hour of testing looks clean and a long evening does not. One shared shelf
+    (`MainForm.Face`) now hands out the few dozen the app actually uses.
+  - **A blank Map tab, forever.** Reparenting is unwound in a `finally`, because that failure
+    arrives with nothing to read: an empty Map tab that stays empty until the app is restarted,
+    with the survey still parented to a window that has gone. `--selftest` walks the round trip.
+
+  Build 0/0, smoke green, `--selftest` 37/37, `audit_ui.py` clean at 132 buttons / 20 dialogs /
+  22 access keys.
+
 - **Books v2.25 / v2.12 / v2.11 · GritKeeper v1.29.2 — the antithesis stopped being a habit, and
   the tracker's readouts caught up with the tracker (2026-07-30, user-requested).**
 

@@ -334,18 +334,47 @@ public static class CharGen
     // NOT decompose that way, though: a Chinese name puts the surname first, and pairing one
     // half of it with a surname from the general pool produces nonsense. Those live in a
     // whole-name pool and are drawn complete, surname draw skipped.
-    public static string FullName(string gender)
+    //
+    // WHICH souls get one used to be a bare 12% roll answerable to nothing, which was fine while
+    // the app never said where anybody was from and became a contradiction on screen the moment it
+    // did — "Rafferty Luján, Chinese, out of Guangdong". The look decides now: a people that owns a
+    // whole-name pool (LkPeople.namesFrom) always draws from it, and everybody else always draws
+    // given-plus-surname. One decision, made once. Pass a null look and the old odds stand, which
+    // is what an NPC with no description should still get.
+    public static string FullName(string gender, SoulLook look = null)
     {
         // A gender the lists are not written for draws from BOTH whole-name pools, the same way
         // GivenFor falls back to the mixed given-name list. The old ternary sent every gender that
         // was not exactly "Woman" down the men's branch, so a soul whose player wrote their own
         // gender got a man's whole name one time in eight.
-        var whole = gender == "Woman" ? Flavor("fullNamesWomen")
-                  : gender == "Man" ? Flavor("fullNamesMen")
-                  : Flavor("fullNamesWomen").Concat(Flavor("fullNamesMen")).ToList();
+        string stem = NamePoolFor(look);
+        if (stem != null)
+        {
+            var owned = WholeNames(stem, gender);
+            if (owned.Count > 0) return Pick(owned);
+        }
+        if (look != null) return GivenFor(gender) + " " + Db.Pick("npcSurname");
+
+        var whole = WholeNames("fullNames", gender);
         if (whole.Count > 0 && Rules.Rng.Next(100) < 12) return Pick(whole);
         return GivenFor(gender) + " " + Db.Pick("npcSurname");
     }
+
+    /// <summary>The whole-name pool stem a described soul's people owns, or null for the great
+    /// majority whose names are a given name and a surname like anybody else's.</summary>
+    static string NamePoolFor(SoulLook look)
+    {
+        if (look == null || string.IsNullOrWhiteSpace(look.People) || Look.D?.peoples == null) return null;
+        var p = Look.D.peoples.Find(x => x.name == look.People);
+        return string.IsNullOrWhiteSpace(p?.namesFrom) ? null : p.namesFrom;
+    }
+
+    static List<string> WholeNames(string stem, string gender) => gender switch
+    {
+        "Woman" => Flavor(stem + "Women"),
+        "Man" => Flavor(stem + "Men"),
+        _ => Flavor(stem + "Women").Concat(Flavor(stem + "Men")).ToList(),
+    };
 
     /// <summary>The prompt the gender picker offers beside Woman and Man. It is an invitation to
     /// type, never an answer — <see cref="CleanGender"/> is what guarantees it can't be stored as
@@ -521,15 +550,16 @@ public static class CharGen
         ReckonNumbers(s, cal, org);   // again, now that the gear — and so the armor — is known
 
         // ---- Steps 1 & 8: a person, not a statline ----
-        var (gender, given) = PickPerson();
+        var (gender, _) = PickPerson();
         s.Gender = gender;
-        s.Name = given + " " + Db.Pick("npcSurname");
+        // The look is drawn BEFORE the name, and the name is drawn against it — see FullName.
+        // Drawn against the Calling too, because most of what a soul is wearing is what they do
+        // for a living. Costs nothing and gates nothing.
+        s.Look = Look.Roll(s.Gender, s.Calling);
+        s.Name = FullName(s.Gender, s.Look);
         s.Compass = WeightedCompass();
         s.Lost = Pick(FlavorList("lost")); s.Seen = Pick(FlavorList("seen"));
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
-        // …and a face to go with the numbers. Drawn against the Calling, because most of what a
-        // soul is wearing is what they do for a living. Costs nothing and gates nothing.
-        s.Look = Look.Roll(s.Gender, s.Calling);
         return s;
     }
 
@@ -699,16 +729,17 @@ public static class CharGen
         // a person, not a statline
         if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
         else s.Gender = spec.Gender.Trim();
-        s.Name = string.IsNullOrWhiteSpace(spec.Name) ? FullName(s.Gender) : spec.Name.Trim();
+        // The wizard's own look if it collected one, otherwise a drawn one — same rule as every
+        // other line here. Before the name, because the name is drawn against it (see FullName);
+        // a name the wizard was GIVEN is of course kept, and then nothing is drawn against it.
+        bool named = !string.IsNullOrWhiteSpace(spec.Name);
+        s.Look = spec.Look ?? Look.Roll(s.Gender, s.Calling, nameIsFixed: named);
+        s.Name = named ? spec.Name.Trim() : FullName(s.Gender, s.Look);
         s.Compass = string.IsNullOrWhiteSpace(spec.Compass) ? WeightedCompass() : spec.Compass;
         s.Lost = string.IsNullOrWhiteSpace(spec.Lost) ? Pick(FlavorList("lost")) : spec.Lost;
         s.Seen = string.IsNullOrWhiteSpace(spec.Seen) ? Pick(FlavorList("seen")) : spec.Seen;
         s.Vice = string.IsNullOrWhiteSpace(spec.Vice) ? Pick(FlavorList("vices")) : spec.Vice;
         s.Moving = string.IsNullOrWhiteSpace(spec.Moving) ? Pick(FlavorList("moving")) : spec.Moving;
-        // The wizard's own look if it collected one, otherwise a drawn one — same rule as every
-        // other line above. A soul who walked through nine steps of choices should not come out
-        // the far end with no face.
-        s.Look = spec.Look ?? Look.Roll(s.Gender, s.Calling);
         return s;
     }
 

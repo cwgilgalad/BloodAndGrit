@@ -119,7 +119,7 @@ public partial class MainForm
     void DrawLookFor(CharacterSheet sheet, Action after)
     {
         if (sheet == null) { Nope("Make a soul first — a look belongs to somebody."); return; }
-        sheet.Look = Look.Roll(sheet.Gender, sheet.Calling);
+        sheet.Look = Look.Roll(sheet.Gender, sheet.Calling, nameIsFixed: true);
         after?.Invoke();
         Log($"{sheet.Name} — {sheet.Look.AtAGlance}");
     }
@@ -569,7 +569,9 @@ public partial class MainForm
             + "It fills the boxes above — nothing is committed until Apply.");
         reroll.Click += (s2, e2) =>
         {
-            var fresh = Look.Roll(gender.Text, s.Calling);
+            // nameIsFixed: this dialog is editing a soul who is already called something, and the
+            // Name box above is theirs to change, not this button's.
+            var fresh = Look.Roll(gender.Text, s.Calling, nameIsFixed: true);
             foreach (var (field, box) in lookBoxes) box.Text = LookField(fresh, field);
         };
         Wide("", reroll);
