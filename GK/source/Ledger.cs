@@ -378,6 +378,42 @@ public sealed class LedgerView : Panel
         else prose.Add(("What did you lose? · What keeps you moving? · What is your vice? · What have you seen?", false));
         y += ProseBox(x0, y, w, "The Four Questions", prose) + gap;
 
+        // ---- what they look like ----
+        // Above the two columns rather than inside one, because it is the only part of the sheet
+        // a player reads OUT — "who am I looking at?" — and it wants the full width for it. Shown
+        // only when there is something to show: a sheet from before the generator existed, or one
+        // whose look has been cleared by hand, gets no empty box.
+        if (sheet?.Look is { Any: true } look)
+        {
+            var seen = new List<(string, bool)>();
+            void Line(string label, string value)
+            { if (!string.IsNullOrWhiteSpace(value)) seen.Add((label + " — " + value, false)); }
+            if (!string.IsNullOrWhiteSpace(look.People)) seen.Add((look.People, true));
+            Line("Build", look.BodyLine);
+            Line("Face", look.FaceLine);
+            Line("Wearing", string.IsNullOrWhiteSpace(look.Style) ? look.DressLine
+                : $"{look.Style} — {look.DressLine}");
+            Line("And", look.Detail);
+            y += ProseBox(x0, y, w, "Appearance", seen) + gap;
+        }
+
+        // ---- what they carry out of the bad nights ----
+        // Only when there is something to carry: a blank box headed WHAT THEY CARRY on a soul who
+        // has been through nothing reads as a sheet with a hole in it. Scars live on the table row
+        // rather than the generated sheet, because a soul earns them at the table, not at rolling
+        // — which is also why the New Soul tab's preview never shows this.
+        if (member?.Scars is { Count: > 0 })
+        {
+            var carried = new List<(string, bool)>();
+            foreach (var sc in member.Scars)
+            {
+                carried.Add(($"{sc.Mark} {sc.Name} — {sc.Kind}"
+                    + (string.IsNullOrWhiteSpace(sc.When) ? "" : $", {sc.When}"), true));
+                if (!string.IsNullOrWhiteSpace(sc.Note)) carried.Add(("    " + sc.Note, false));
+            }
+            y += ProseBox(x0, y, w, "What They Carry — Injuries & Afflictions", carried) + gap;
+        }
+
         // ---- two columns: skills | edges & gear ----
         float colGap = 12 * zoom;
         float leftW = w * 0.40f, rightW = w - leftW - colGap;
@@ -547,6 +583,18 @@ public partial class MainForm
         soulWindows[p] = win;
         win.FormClosed += (s, e) => soulWindows.Remove(p);
         win.Show(this);
+    }
+
+    /// <summary>Re-ink this soul's open Ledger window, if one is open. The sheet is drawn once and
+    /// then sits there — every number on it comes off the PartyMember and the CharacterSheet at
+    /// paint time, but nothing tells it a scar was just written or a new look rolled, so the window
+    /// went on showing the soul as they were when it opened. Silent on a soul with no window, which
+    /// is the ordinary case; callers should not have to ask first.</summary>
+    internal void RefreshSoulCard(PartyMember p)
+    {
+        if (p == null || !soulWindows.TryGetValue(p, out var win) || win.IsDisposed) return;
+        var view = win.Controls.OfType<LedgerView>().FirstOrDefault();
+        view?.ShowSheet(p.Sheet, p, p.Sheet != null ? SheetWarnings(p.Sheet) : null);
     }
 
     // the live table row follows the sheet after a tweak (Blood/Nerve refill to the new max)

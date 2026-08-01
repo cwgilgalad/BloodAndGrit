@@ -67,6 +67,8 @@ public partial class MainForm
                 Log($"{lastSoul.Name}'s sheet hand-tweaked.");
             }
         }, 85, "Hand-adjust the sheet — any number, any list"));
+        bar.Controls.Add(Btn("🎲 New look", (s, e) => DrawLookFor(lastSoul, () => ShowSoul(lastSoul)), 100,
+            "Draw this soul a fresh face, build and outfit — nothing else on the sheet moves"));
         bar.Controls.Add(Btn("→ Posse", (s, e) => SoulToPosse(), 85, "Add this soul to the Posse tab"));
         bar.Controls.Add(Btn("Copy sheet", (s, e) => { if (lastSoul != null) Clipboard.SetText(CharGen.Render(lastSoul)); }, 95, "Copy the sheet as plain text"));
         bar.Controls.Add(Btn("Save PDF…", (s, e) => SoulSavePdf(), 90, "Save the sheet as a printable PDF"));
@@ -106,6 +108,20 @@ public partial class MainForm
         lastSoul = sheet;
         soulLedger.ShowSheet(sheet, null, SheetWarnings(sheet));
         soulHint.Visible = false;
+    }
+
+    /// <summary>Draw a soul a new description and say what came up. One method behind the New Soul
+    /// tab's button and the Posse tab's menu line, so the two cannot start drawing differently —
+    /// and it deliberately does NOT set <c>HandTweaked</c>: a rolled look is the generator's work,
+    /// not the Keeper's word against the book's, and the sheet's numbers have not been touched.</summary>
+    /// <param name="sheet">Whose. Null says so and does nothing.</param>
+    /// <param name="after">What to redraw once it is rolled — the tab's Ledger, or a pop-out.</param>
+    void DrawLookFor(CharacterSheet sheet, Action after)
+    {
+        if (sheet == null) { Nope("Make a soul first — a look belongs to somebody."); return; }
+        sheet.Look = Look.Roll(sheet.Gender, sheet.Calling);
+        after?.Invoke();
+        Log($"{sheet.Name} — {sheet.Look.AtAGlance}");
     }
 
     void GenerateSoul()
@@ -514,6 +530,50 @@ public partial class MainForm
         var compass = new TextBox { Text = s.Compass, Margin = new Padding(3, 5, 3, 3) };
         Wide("Compass", compass);
 
+        // ---- what they look like ----
+        // Every field of it, free text, and a button that draws a fresh one into the boxes. A
+        // generated description is a starting point and nothing else; the player who says "no, she
+        // wears her mother's coat" is right, and the app should take two seconds to agree.
+        s.Look ??= new SoulLook();
+        var look = s.Look;
+        var lookBoxes = new Dictionary<string, TextBox>();
+        TextBox LookRow(string label, string field, string val, string tip)
+        {
+            var t = new TextBox { Text = val, Margin = new Padding(3, 5, 3, 3) };
+            Tip.SetToolTip(t, tip);
+            lookBoxes[field] = t;
+            Wide(label, t);
+            return t;
+        }
+        LookRow("People", "People", look.People, "Where their people came from. Description only — nothing in the app reads it but the eye.");
+        LookRow("Height", "Height", look.Height, "How tall, and what that has done to how they carry it");
+        LookRow("Build", "Frame", look.Frame, "The frame under the clothes");
+        LookRow("Complexion", "Complexion", look.Complexion, "Skin, and what the country has done to it");
+        LookRow("Hair", "Hair", look.Hair, "Colour and cut");
+        LookRow("Eyes", "Eyes", look.Eyes, "Eye colour");
+        LookRow("Face", "Face", look.Face, "The face, and any whiskers on it");
+        LookRow("Marks", "Marks", look.Marks, "What they walked in already carrying — a scar, a brand, a missing finger. "
+            + "Lasting Injuries and Afflictions earned at the table live on the Posse tab instead.");
+        LookRow("Bearing", "Bearing", look.Bearing, "How they hold themselves and move");
+        LookRow("Voice", "Voice", look.Voice, "How they sound");
+        LookRow("Dress style", "Style", look.Style, "The whole way of dressing the garments below were drawn out of");
+        LookRow("Hat", "Hat", look.Hat, "What is on their head");
+        LookRow("Coat", "Coat", look.Coat, "The outer layer");
+        LookRow("Shirt", "Shirt", look.Shirt, "What is under the coat");
+        LookRow("Trousers / skirt", "Legs", look.Legs, "The lower half");
+        LookRow("Boots", "Boots", look.Boots, "What they stand in");
+        LookRow("Condition", "Wear", look.Wear, "The state of the clothes, which says more about a life than the clothes do");
+        LookRow("The detail", "Detail", look.Detail, "The one thing a witness describes first");
+        var reroll = new Button { Text = "🎲 Draw a new look", Width = 160, Height = 28, Margin = new Padding(3, 5, 3, 3) };
+        Tip.SetToolTip(reroll, "Roll the whole description again, drawn against this soul's Calling. "
+            + "It fills the boxes above — nothing is committed until Apply.");
+        reroll.Click += (s2, e2) =>
+        {
+            var fresh = Look.Roll(gender.Text, s.Calling);
+            foreach (var (field, box) in lookBoxes) box.Text = LookField(fresh, field);
+        };
+        Wide("", reroll);
+
         scroll.Controls.Add(grid);
 
         var bar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 46, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(8) };
@@ -562,7 +622,48 @@ public partial class MainForm
         s.Lost = lost.Text.Trim(); s.Seen = seen.Text.Trim();
         s.Vice = vice.Text.Trim(); s.Moving = moving.Text.Trim();
         s.Compass = compass.Text.Trim();
+        foreach (var (field, box) in lookBoxes) SetLookField(s.Look, field, box.Text.Trim());
         s.HandTweaked = true;
         return true;
+    }
+
+    // One name, one field, both ways. The alternative was eighteen assignments written twice —
+    // once to fill the boxes from a fresh draw and once to read them back — and eighteen pairs of
+    // lines that have to agree is eighteen chances for one of them to be quietly reading Boots
+    // into Legs. Reflection is not worth its unpredictability here; a switch is checked by the
+    // compiler and reads as the list it is.
+    static string LookField(SoulLook l, string field) => field switch
+    {
+        "People" => l.People, "Height" => l.Height, "Frame" => l.Frame,
+        "Complexion" => l.Complexion, "Hair" => l.Hair, "Eyes" => l.Eyes,
+        "Face" => l.Face, "Marks" => l.Marks, "Bearing" => l.Bearing, "Voice" => l.Voice,
+        "Style" => l.Style, "Hat" => l.Hat, "Coat" => l.Coat, "Shirt" => l.Shirt,
+        "Legs" => l.Legs, "Boots" => l.Boots, "Wear" => l.Wear, "Detail" => l.Detail,
+        _ => "",
+    };
+
+    static void SetLookField(SoulLook l, string field, string v)
+    {
+        switch (field)
+        {
+            case "People": l.People = v; break;
+            case "Height": l.Height = v; break;
+            case "Frame": l.Frame = v; break;
+            case "Complexion": l.Complexion = v; break;
+            case "Hair": l.Hair = v; break;
+            case "Eyes": l.Eyes = v; break;
+            case "Face": l.Face = v; break;
+            case "Marks": l.Marks = v; break;
+            case "Bearing": l.Bearing = v; break;
+            case "Voice": l.Voice = v; break;
+            case "Style": l.Style = v; break;
+            case "Hat": l.Hat = v; break;
+            case "Coat": l.Coat = v; break;
+            case "Shirt": l.Shirt = v; break;
+            case "Legs": l.Legs = v; break;
+            case "Boots": l.Boots = v; break;
+            case "Wear": l.Wear = v; break;
+            case "Detail": l.Detail = v; break;
+        }
     }
 }

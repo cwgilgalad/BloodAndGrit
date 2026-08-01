@@ -1217,6 +1217,139 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
                                       ("givenWomen", 50), ("givenMen", 51) })
     T($"flavor pool [{pool}] is at least {floor} deep", CharGen.FlavorList(pool).Count >= floor);
 
+// ---- What a soul looks like (Data/appearance.json) ----
+// Held to the same depth rule as the flavor pools, and for the same reason: a thin list still
+// generates perfectly good descriptions, and a campaign quietly meets the same face nine times.
+{
+    Look.Load();
+    var L = Look.D;
+    T("look: the data loads", L.peoples.Count >= 20 && L.styles.Count >= 15);
+    foreach (var (name, count, floor) in new[]
+    {
+        ("peoples", L.peoples.Count, 24), ("styles", L.styles.Count, 15),
+        ("heights", L.heights.Count, 6), ("frames", L.frames.Count, 8),
+        ("bearings", L.bearings.Count, 10), ("faces", L.faces.Count, 12),
+        ("marks", L.marks.Count, 14), ("voices", L.voices.Count, 8),
+        ("hairStyles", L.hairStyles.Count, 10), ("facialHair", L.facialHair.Count, 8),
+        ("wear", L.wear.Count, 10), ("details", L.details.Count, 14),
+    })
+        T($"look: [{name}] is at least {floor} deep", count >= floor);
+
+    // Every people has to be able to answer all three of its own questions, or a draw comes back
+    // with a blank complexion and the sheet reads as broken rather than as unfinished data.
+    T("look: every people carries complexions, hair and eyes",
+        L.peoples.All(p => p.complexions.Count >= 3 && p.hair.Count >= 3 && p.eyes.Count >= 3));
+    T("look: every people is weighted above zero", L.peoples.All(p => p.weight > 0));
+    T("look: peoples are named once each",
+        L.peoples.Select(p => p.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() == L.peoples.Count);
+
+    // Same for a style's wardrobe: a style with no boots dresses a soul barefoot by accident.
+    T("look: every style dresses a soul head to foot",
+        L.styles.All(s => s.hats.Count >= 3 && s.coats.Count >= 3 && s.shirts.Count >= 3
+                       && s.legs.Count >= 3 && s.boots.Count >= 3 && s.extras.Count >= 3));
+    T("look: styles are named once each",
+        L.styles.Select(s => s.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() == L.styles.Count);
+
+    // The Calling→style map is the one place two data files have to agree. A Calling missing from
+    // it dresses out of the whole wardrobe (harmless); a style named there that does not exist is
+    // a typo that silently narrows the draw, which is exactly the kind of thing nobody sees.
+    var styleNames = new HashSet<string>(L.styles.Select(s => s.name));
+    foreach (var (cal, prefs) in L.callingStyles)
+    {
+        T($"look: [{cal}] names only real styles", prefs.All(styleNames.Contains));
+        T($"look: [{cal}] is a real Calling", cg.callings.Any(c => c.name == cal));
+    }
+    foreach (var c in cg.callings)
+        T($"look: the {c.name} has a way of dressing", L.callingStyles.ContainsKey(c.name));
+
+    // A roll fills every part of a description. Marks are deliberately not always drawn, and
+    // whiskers only for one gender, so those two are excluded from the "always filled" sweep and
+    // proved separately below.
+    for (int i = 0; i < 200; i++)
+    {
+        var cal = cg.callings[Rules.Rng.Next(cg.callings.Count)].name;
+        var lk = Look.Roll(i % 2 == 0 ? "Woman" : "Man", cal);
+        if (!lk.Any || string.IsNullOrWhiteSpace(lk.People) || string.IsNullOrWhiteSpace(lk.Complexion)
+            || string.IsNullOrWhiteSpace(lk.Hair) || string.IsNullOrWhiteSpace(lk.Eyes)
+            || string.IsNullOrWhiteSpace(lk.Face) || string.IsNullOrWhiteSpace(lk.Bearing)
+            || string.IsNullOrWhiteSpace(lk.Style) || string.IsNullOrWhiteSpace(lk.Hat)
+            || string.IsNullOrWhiteSpace(lk.Boots) || string.IsNullOrWhiteSpace(lk.Detail))
+        { T($"look: a roll for a {cal} fills every part of the description", false); break; }
+        // Coherence is the whole point of drawing from ONE style: every garment must come out of
+        // the wardrobe the style names, or the outfit is a shuffle wearing a label.
+        var st = L.styles.First(s => s.name == lk.Style);
+        if (!st.hats.Contains(lk.Hat) || !st.coats.Contains(lk.Coat) || !st.shirts.Contains(lk.Shirt)
+            || !st.legs.Contains(lk.Legs) || !st.boots.Contains(lk.Boots))
+        { T($"look: every garment comes out of the one style ({lk.Style})", false); break; }
+        // …and colouring out of the one people, for the same reason.
+        var pp = L.peoples.First(p => p.name == lk.People);
+        if (!pp.complexions.Contains(lk.Complexion) || !pp.eyes.Contains(lk.Eyes)
+            || !pp.hair.Any(h => lk.Hair.StartsWith(h, StringComparison.Ordinal)))
+        { T($"look: complexion, hair and eyes come out of the one people ({lk.People})", false); break; }
+    }
+    T("look: 200 rolls are complete, coherently dressed and coherently coloured", true);
+
+    // The Calling steers the wardrobe without owning it — a Preacher usually preaches in black,
+    // and once in a while turns up in somebody's cavalry coat. Both halves are asserted, because
+    // a bug in either direction (never steering, or never straying) reads as working.
+    {
+        var preacher = Enumerable.Range(0, 400).Select(_ => Look.Roll("Man", "Preacher").Style).ToList();
+        var own = new HashSet<string>(L.callingStyles["Preacher"]);
+        int inTrade = preacher.Count(own.Contains);
+        T("look: a Calling mostly dresses as its Calling", inTrade > 260);
+        T("look: and sometimes does not", inTrade < 400);
+        T("look: an unknown Calling still gets dressed",
+            Look.Roll("Woman", "Snake Charmer") is { Style.Length: > 0, Boots.Length: > 0 });
+        T("look: so does no Calling at all", Look.Roll(null, null) is { Any: true });
+    }
+
+    // Whiskers are offered to one gender and not drawn for the others. This is a convention of the
+    // period's own descriptions, not a rule about anybody — which is why every field is editable —
+    // but the draw must at least be consistent with itself.
+    {
+        var whisk = new HashSet<string>(L.facialHair);
+        bool Bearded(SoulLook lk) => whisk.Any(w => (lk.Face ?? "").EndsWith(w, StringComparison.Ordinal));
+        int men = Enumerable.Range(0, 200).Count(_ => Bearded(Look.Roll("Man", "Drifter")));
+        int others = Enumerable.Range(0, 200).Count(_ => Bearded(Look.Roll("Two-Spirit", "Drifter")));
+        T("look: whiskers are drawn for a man", men > 150);
+        T("look: and not drawn uninvited for anybody else", others == 0);
+    }
+
+    // Marks land on some souls and not others. A generator that marked everybody would make the
+    // scarred ones ordinary, which is the opposite of what a scar is for.
+    {
+        int marked = Enumerable.Range(0, 400).Count(_ => !string.IsNullOrWhiteSpace(Look.Roll("Woman", "Gunhand").Marks));
+        T("look: marks are drawn for some souls", marked > 80);
+        T("look: and not for most", marked < 320);
+    }
+
+    // Depth, the way it actually matters: a table meets a lot of people over a campaign.
+    {
+        var faces = new HashSet<string>();
+        for (int i = 0; i < 500; i++) faces.Add(Look.Roll("Woman", "Gambler").AtAGlance);
+        T("look: 500 draws give 500 distinct descriptions", faces.Count > 480);
+    }
+
+    // It rides in the sheet, which is what puts it in session.json and on the printed PDF.
+    {
+        var made = CharGen.Generate(3, false, "Sawbones");
+        T("look: a generated soul comes with one", made.Look is { Any: true });
+        var round = System.Text.Json.JsonSerializer.Deserialize<CharacterSheet>(
+            System.Text.Json.JsonSerializer.Serialize(made));
+        T("look: it survives save and load", round.Look.Style == made.Look.Style && round.Look.Detail == made.Look.Detail);
+        T("look: and it is printed on the sheet", CharGen.Render(made).Contains("APPEARANCE"));
+
+        // A sheet from before any of this existed must read as a soul nobody has described, not as
+        // a crash. This is the shape every consumer guards on.
+        var older = System.Text.Json.JsonSerializer.Deserialize<CharacterSheet>(
+            System.Text.Json.JsonSerializer.Serialize(made).Replace("\"Look\":", "\"LookWas\":"));
+        T("look: a sheet saved before it loads with none, not a crash", older.Look == null);
+        T("look: and prints without the heading", !CharGen.Render(older).Contains("APPEARANCE"));
+        T("look: an emptied one is not Any", new SoulLook().Any == false);
+        T("look: and its lines come back empty rather than as separators", new SoulLook().BodyLine == "");
+    }
+}
+
 // ---- SkillBonus: the number the Read Sign dialog puts in front of the Keeper ----
 // It prefills the Survival bonus for every sign & spoor reading, so a wrong answer here is a
 // wrong DC check at the table, silently, every time.

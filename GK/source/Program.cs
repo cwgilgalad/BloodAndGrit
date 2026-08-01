@@ -36,6 +36,7 @@ static class Program
             ApplicationConfiguration.Initialize();
             Db.Load();
             CharGen.Load();
+            Look.Load();
 
             // How is this table run — a player's own view, a Keeper with dice, or a Keeper on the
             // engine? Ask at launch unless a past table asked to be remembered; the choice is saved
@@ -69,6 +70,7 @@ static class Program
             ApplicationConfiguration.Initialize();
             Db.Load();
             CharGen.Load();
+            Look.Load();
 
             // -- #1 the Iron Code Strike, end to end: a sure hit takes Blood; a Fatal crit is bigger --
             var revolver = CharGen.D.weapons.First(w => w.name == "Single-Action Revolver");

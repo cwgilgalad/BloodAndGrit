@@ -93,7 +93,9 @@ public partial class MainForm
         public MapPanel()
         {
             DoubleBuffered = true; ResizeRedraw = true;
-            SetStyle(ControlStyles.Selectable, true);   // so a click can focus it and the wheel zooms
+            // Selectable so a click can focus it and the wheel zooms; the two click styles so the
+            // panel actually raises MouseDoubleClick, which is what opens the map full screen.
+            SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
         }
     }
 
@@ -189,6 +191,9 @@ public partial class MainForm
             "Zoom out"));
         rowView.Controls.Add(Btn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
+        rowView.Controls.Add(Btn("◈ Full screen", (s, e) => MapFullScreen(), 108,
+            "Throw the map across the whole screen, with every control on this bar still on it — "
+            + "or just double-click the map. Esc, F11 or ✕ brings it back."));
 
         // ---- row 3: at the table, then out the door ----
         // The old label just read "✥ Landmarks", which named a thing rather than an action — you
@@ -276,12 +281,102 @@ public partial class MainForm
             MapDraw(false);
         };
 
-        page.Controls.Add(mapPanel);
-        page.Controls.Add(rowWork);      // Dock=Top stacks bottom-up: last added sits highest
-        page.Controls.Add(rowView);
-        page.Controls.Add(rowGen);
+        // The whole drafting table — three bars and the map — lives in ONE host panel so that going
+        // full screen can move the real thing rather than build a second copy of it. A full-screen
+        // view with its own rebuilt bar would be eleven combo boxes and twenty buttons written
+        // twice, and the day the two disagree is the day a Keeper draws a map they cannot reproduce.
+        mapHost = new Panel { Dock = DockStyle.Fill, BackColor = Paper };
+        mapHost.Controls.Add(mapPanel);
+        mapHost.Controls.Add(rowWork);   // Dock=Top stacks bottom-up: last added sits highest
+        mapHost.Controls.Add(rowView);
+        mapHost.Controls.Add(rowGen);
+        page.Controls.Add(mapHost);
         MapDraw(true);
         return page;
+    }
+
+    // ---------------------------------------------------------- full screen
+    Panel mapHost;
+    bool mapFull;
+
+    /// <summary>Show the map across the whole screen, carrying its own controls with it.
+    ///
+    /// The host panel is REPARENTED into a borderless window and handed back afterwards, so
+    /// everything available while the map is in its tab is available here — the same ground, scale,
+    /// hour and weather boxes, the same overlay checks, the same markers, the same exports, and the
+    /// same objects behind them. Nothing here is a copy that could fall out of step.
+    ///
+    /// Modal on purpose: the tab it came from is standing empty while its contents are away, and a
+    /// modeless window would let a Keeper click back to a blank Map tab and conclude the app had
+    /// lost their survey. Esc closes it, as every dialog in this app does; so does the ✕, and so
+    /// does F11, which is what a full screen is expected to answer.</summary>
+    internal void MapFullScreen()
+    {
+        if (mapHost == null || mapFull) return;
+        var home = mapHost.Parent;
+        if (home == null) return;
+
+        using var f = new Form
+        {
+            Text = "The Trail Maps drafting table — full screen",
+            FormBorderStyle = FormBorderStyle.None, StartPosition = FormStartPosition.Manual,
+            ShowInTaskbar = false, BackColor = Paper, KeyPreview = true,
+            Bounds = Screen.FromControl(this).Bounds
+        };
+        if (AppIcon != null) f.Icon = AppIcon;
+
+        var strip = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.RightToLeft,
+            Padding = new Padding(6, 4, 8, 4), BackColor = Color.FromArgb(243, 237, 221)
+        };
+        var close = new Button
+        {
+            Text = "✕  Close  (Esc)", Width = 132, Height = 30, Margin = new Padding(3),
+            DialogResult = DialogResult.Cancel
+        };
+        Tip.SetToolTip(close, "Put the map back on its tab — Esc and F11 do the same");
+        strip.Controls.Add(close);
+        var says = new Label
+        {
+            AutoSize = true, ForeColor = GoldDeep, Padding = new Padding(10, 8, 4, 0),
+            Font = new Font("Segoe UI", 9f, FontStyle.Italic),
+            Text = "Every control the tab has is on this screen. Esc, F11 or ✕ puts it back."
+        };
+        strip.Controls.Add(says);
+
+        f.KeyDown += (s, e) => { if (e.KeyCode == Keys.F11) { e.Handled = true; f.Close(); } };
+        f.CancelButton = close;
+
+        // Pan is a pixel offset against the panel that was on screen when it was dragged, so it
+        // means nothing once the panel is four times the size. Zoom is a magnification and travels
+        // fine, so it is kept and only the pan is dropped — the view re-centres at the same scale.
+        void Rehome(Control to)
+        {
+            home.SuspendLayout(); to.SuspendLayout();
+            mapHost.Parent = to;
+            mapPan = PointF.Empty;
+            to.ResumeLayout(true); home.ResumeLayout(true);
+            mapPanel.Invalidate();
+        }
+
+        mapFull = true;
+        try
+        {
+            // Host first, strip second. Docking resolves from the highest index down, so the strip
+            // takes the top edge and the host fills whatever is left — the same order the tabs use.
+            Rehome(f);
+            f.Controls.Add(strip);
+            Log("The map is full screen — Esc, F11 or ✕ brings it back.");
+            f.ShowDialog(this);
+        }
+        finally
+        {
+            // Unconditional: `using` disposes the window on the way out, and a host still parented
+            // to it would be disposed WITH it — the Map tab would come back permanently empty.
+            Rehome(home);
+            mapFull = false;
+        }
     }
 
     MapSpec MapSpecFromUi() => new()
@@ -488,6 +583,18 @@ public partial class MainForm
     void WireMarkerMouse()
     {
         mapPanel.MouseWheel += (s, e) => MapZoomAt(e.Location, e.Delta > 0 ? 1.2f : 1 / 1.2f);
+        // Double-click the open country to throw the map across the screen. Deliberately only the
+        // open country: with Moving on, or with the pointer on a marker, a double-click is two
+        // grabs at the thing under it, and answering that with a window would take the map away
+        // mid-drag. So a double-click that landed on anything draggable does nothing here and lets
+        // the drag handlers have it.
+        mapPanel.MouseDoubleClick += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Left || mapFull) return;
+            if (HitMarker(e.Location) != null) return;
+            if (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0 || HitTown(e.Location))) return;
+            MapFullScreen();
+        };
         mapPanel.MouseDown += (s, e) =>
         {
             mapPanel.Focus();                       // so the wheel zooms after any click on the map
