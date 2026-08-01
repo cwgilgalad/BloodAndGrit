@@ -70,3 +70,7 @@ add_index.py
 __pycache__/
 *.pyc
 _map_preview.html
+
+# Runtime files package.ps1 moves out of GritKeeper\app before zipping. Never shipped,
+# never committed — they are whatever the machine that ran the app happened to leave behind.
+.package-aside/
