@@ -79,8 +79,23 @@ Copy-Item $Exe (Join-Path $destApp "GritKeeper.exe") -Force
 # prefs.json was NOT, and it shipped in v1.20.1 carrying the packager's own run mode with
 # "Remember": true — so every download launched into someone else's table and never saw the
 # chooser. Anything the exe drops here belongs to the machine that ran it, not to the release.
+#
+# MOVED, not deleted (2026-08-01). This was Remove-Item, which does not use the Recycle Bin, and
+# GritKeeper stages its saves to session.json.new and moves them rather than keeping a .bak — so
+# a Keeper who plays out of GritKeeper\app, as one does, loses their table the first time anyone
+# packages a release. That happened. The intent is unchanged and is still absolute: none of these
+# files ship. They just go somewhere first.
+$asideStamp = Get-Date -Format 'yyyy-MM-dd_HHmmss'
+$asideDir = $null
 foreach ($dropping in "session.json", "prefs.json", "startup-error.txt", "selftest-report.txt") {
-    Remove-Item (Join-Path $destApp $dropping) -ErrorAction SilentlyContinue
+    $droppedPath = Join-Path $destApp $dropping
+    if (-not (Test-Path $droppedPath)) { continue }
+    if (-not $asideDir) {
+        $asideDir = Join-Path (Join-Path $root ".package-aside") $asideStamp
+        New-Item -ItemType Directory -Force -Path $asideDir | Out-Null
+    }
+    Move-Item $droppedPath (Join-Path $asideDir $dropping) -Force
+    Write-Host "  set aside (not deleted): $dropping -> .package-aside\$asideStamp\"
 }
 # Only when staging: the delivered folder already holds its own README, and copying it onto
 # itself is an error rather than a no-op.

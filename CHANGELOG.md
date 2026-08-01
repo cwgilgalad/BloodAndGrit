@@ -8,6 +8,37 @@ Desktop\Git repos.)
 
 ---
 
+- **`package.ps1` sets the runtime files aside instead of deleting them (2026-08-01,
+  after it cost a Keeper their table).** No version bump — the app is untouched at v1.30.0;
+  this is the release tooling.
+
+  Step 1 of the packager copies the signed exe into `GritKeeper\app\` and then clears
+  `session.json`, `prefs.json`, `startup-error.txt` and `selftest-report.txt` out of it. That
+  intent is right and is unchanged: those files belong to whichever machine last ran the app,
+  and v1.20.1 proved what happens when one ships — it went out carrying the packager's own
+  `prefs.json` with `"Remember": true`, so every download launched into someone else's table
+  and never saw the run-mode chooser.
+
+  The **method** was wrong. It was `Remove-Item`, which does not use the Recycle Bin, and
+  GritKeeper stages its saves to `session.json.new` and moves them rather than keeping a `.bak`
+  the way Tidewatch does. So for anyone who plays out of `GritKeeper\app\` — which is the
+  obvious thing to do, the exe is right there — the first release anyone packages takes their
+  table with it, silently, with no way back. That is not hypothetical: it happened on
+  2026-08-01, packaging v1.30.0 into that folder minutes after the app had autosaved into it on
+  close. Nothing recovered it; there are no shadow copies and no File History on this machine.
+
+  The files are **moved** now, to `.package-aside\<yyyy-mm-dd_HHmmss>\`, and the script says so
+  by name as it goes. `GritKeeper\app\` still ends up holding the exe and nothing else, so the
+  zip is unchanged and no runtime file can ship. `.package-aside/` is git-ignored.
+
+  Proved rather than assumed: a decoy `session.json` and `prefs.json` were put in
+  `GritKeeper\app\`, the packager was run, and afterwards the folder held only the exe while
+  both files sat intact under `.package-aside\` — the decoy's contents read back byte-for-byte.
+
+  **And the real fix is not in the script:** `GritKeeper\app\` is generated build output and is
+  the wrong place to keep anything. There is now a play folder at **`Desktop\GritKeeper\`**,
+  outside the repo, holding the signed v1.30.0 exe and a `README.txt` saying why it exists.
+
 - **GritKeeper v1.30.0 — a soul you can describe, a glass you can find, a map that fills the
   screen, and four things that only go wrong in month six (2026-07-31, user-requested).**
 
