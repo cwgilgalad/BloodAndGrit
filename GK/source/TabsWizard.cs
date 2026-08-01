@@ -179,7 +179,8 @@ public partial class MainForm
                 BuyGear = buyPicks.Where(kv => CharGen.D.gearPrices.ContainsKey(kv.Key))
                                   .SelectMany(kv => Enumerable.Repeat(kv.Key, kv.Value)).ToList(),
                 Name = charName, Gender = charGender, Compass = compass,
-                Lost = lost, Seen = seen, Vice = vice, Moving = moving
+                Lost = lost, Seen = seen, Vice = vice, Moving = moving,
+                Look = look                                   // null draws one, like every line above
             };
             foreach (var a in AbKeys)
                 spec.PreGiftScores[a] = methodIdx == 2
@@ -1058,6 +1059,8 @@ public partial class MainForm
 
         // ============================================== 9 · the person
         ComboBox wLost, wSeen, wVice, wMoving, wCompass;
+        Label wLookLbl;
+        SoulLook look;
         Control BuildPerson()
         {
             var col = Column();
@@ -1088,7 +1091,35 @@ public partial class MainForm
             wVice = Row("Vice", "vices", vice);
             wMoving = Row("Moving", "moving", moving);
             wCompass = Row("Compass", "compass", compass);
+
+            // …and what they look like. Drawn here rather than asked for field by field: eighteen
+            // more boxes at the end of a nine-step wizard is where a player puts the thing down.
+            // One button, a plain-English read-back, and the whole of it is editable afterwards
+            // from ✎ Tweak — which is the right place for somebody who wants to choose the coat.
+            col.Controls.Add(Note("A face and an outfit, drawn against the Calling. Roll it as often as you like — "
+                + "✎ Tweak on the finished sheet opens every part of it for editing."));
+            var lookRow = new FlowLayoutPanel { AutoSize = true };
+            lookRow.Controls.Add(Lbl("Look:", 70));
+            wLookLbl = new Label
+            {
+                Width = 460, AutoSize = false, Height = 46, ForeColor = Ink, Padding = new Padding(0, 4, 0, 0),
+                Font = new Font("Segoe UI", 9f, FontStyle.Italic), Tag = "readout"
+            };
+            Tipped(wLookLbl, "How this soul strikes a stranger — their people, build, dress and the one detail "
+                + "anybody would describe first. Nothing here costs or grants anything.");
+            ShowLook();
+            lookRow.Controls.Add(wLookLbl);
+            lookRow.Controls.Add(Btn("🎲", (s, e) => { look = Look.Roll(charGender, calName); ShowLook(); }, 40,
+                "Draw a fresh description"));
+            col.Controls.Add(lookRow);
             return col;
+        }
+        void ShowLook()
+        {
+            if (wLookLbl == null) return;
+            wLookLbl.Text = look is { Any: true }
+                ? look.AtAGlance
+                : "Not drawn yet — one is dealt with the sheet if you leave it.";
         }
         bool CollectPerson()
         {

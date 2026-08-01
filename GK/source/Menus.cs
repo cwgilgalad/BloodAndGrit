@@ -44,6 +44,17 @@ public partial class MainForm
             view.DropDownItems.Add(Item(tabs.TabPages[i].Text,
                 (s, e) => tabs.SelectedIndex = idx, shortcutText: $"Ctrl+{(i + 1) % 10}"));
         }
+        // Show/hide belongs on a menu called View — which is where the glass was NOT, and the only
+        // menu it was on is called Table. Same one method underneath as the Table entry and the
+        // Tracker's own button, so three routes cannot come to three different answers.
+        if (ShowsTab("Tracker"))
+        {
+            view.DropDownItems.Add(new ToolStripSeparator());
+            var vglass = new ToolStripMenuItem("The turn &hourglass") { Checked = TurnTimerOn };
+            vglass.Click += (s, e) => { ShowTurnTimer(!TurnTimerOn); RebuildMenu(); };
+            vglass.ToolTipText = "Put an hourglass on the Tracker that times the posse's turn, or take it away";
+            view.DropDownItems.Add(vglass);
+        }
         menu.Items.Add(view);
 
         // Switch how the table is run without leaving the app — a checkmark on the mode in force.

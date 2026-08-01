@@ -1070,7 +1070,8 @@ public partial class MainForm : Form
     // ============================================================ POSSE TAB
     DataGridView posseGrid;
     NumericUpDown adjAmount;
-    NumericUpDown dreadDc, dreadTier;
+    NumericUpDown dreadDc;
+    Label dreadLadder;
 
     TabPage BuildPosseTab()
     {
@@ -1162,6 +1163,11 @@ public partial class MainForm : Form
             MIHead(menu, p.Name is { Length: > 0 } ? p.Name : "This soul");
             MI(menu, "Open the Ledger", () => ShowSoulCard(p));
             MI(menu, "Read and edit the note…", () => ExpandNotes(p));
+            // A look belongs to the character record, so a soul typed straight into the grid has
+            // nowhere to keep one. Said plainly rather than silently missing — the same shape the
+            // Level up line already uses for the same reason.
+            MI(menu, p.Sheet != null ? "Draw a new look…" : "Draw a new look — needs a New Soul sheet",
+                () => DrawLookFor(p.Sheet, () => { RefreshSoulCard(p); posseGrid?.Refresh(); }), p.Sheet != null);
             MISep(menu);
             // The two things the game says are permanent. Written here by hand for anything the
             // engine did not produce — an old wound the character arrived with, a scar from a
@@ -1193,7 +1199,7 @@ public partial class MainForm : Form
             MI(menu, $"Heal {adjAmount.Value}", () => AdjustPC(+1));
             MI(menu, p.Grit > 0 ? $"Spend Grit  ({p.Grit} left)" : "Spend Grit — none left", () => SpendGrit(p), p.Grit > 0);
             MISep(menu);
-            MI(menu, $"Dread check  (DC {dreadDc.Value}, Tier {dreadTier.Value})", () => DreadCheckPC(p));
+            MI(menu, $"Dread check  (DC {dreadDc.Value} — {dreadLadder.Text})", () => DreadCheckPC(p));
             var steady = new ToolStripMenuItem("Steady — give Nerve back");
             steady.DropDownItems.Add("Confession, spoken plainly  (1d6)", null, (s, e) => Steady(false, "1d6", "makes confession"));
             steady.DropDownItems.Add("A night unmolested, in real safety  (1d6)", null, (s, e) => Steady(false, "1d6", "sleeps a night in real safety"));
@@ -1268,10 +1274,26 @@ public partial class MainForm : Form
             + "prints its own Dread DC in the Bestiary — copy it in here. The Tier beside it decides how "
             + "much Nerve a failed save costs, not how hard the save is.");
         bar.Controls.Add(dreadDc);
-        bar.Controls.Add(Lbl("Tier:"));
-        dreadTier = new NumericUpDown { Minimum = 1, Maximum = 5, Value = 2, Width = 45, Margin = new Padding(3, 6, 3, 3) };
-        Tip.SetToolTip(dreadTier, "Horror's Tier — sets the Nerve-loss ladder (1 / 1d4 / 1d6 / 1d10)");
-        bar.Controls.Add(dreadTier);
+        // What the DC costs, derived rather than typed beside it. This was a second spinner the
+        // Keeper set by hand, and two boxes for one row of one table is one box too many: set DC 25
+        // and leave Tier on 2 and the app took 1d4 off a soul for a truth that unmakes a world.
+        // Ch. XII prints the DC and the die on the same line, so the DC is the only thing to ask for.
+        dreadLadder = new Label
+        {
+            AutoSize = true, ForeColor = GoldDeep, Padding = new Padding(4, 7, 6, 0),
+            Tag = "readout"                                     // a live number: it must say what it is
+        };
+        Tip.SetToolTip(dreadLadder, "What a failed save costs at this DC — Ch. XII's ladder, read off the DC "
+            + "itself: 10 → 1 · 13 → 1d4 · 16 → 1d6 · 20 → 1d10 · 25 → 1d10 and a lasting Affliction. "
+            + "A critical failure loses the same Nerve and adds Frightened 1.");
+        void ShowLadder()
+        {
+            int tier = Horror.DreadTier((int)dreadDc.Value);
+            dreadLadder.Text = $"costs {Rules.NerveLoss(tier).label} Nerve" + (tier >= 5 ? " + an Affliction" : "");
+        }
+        dreadDc.ValueChanged += (s, e) => ShowLadder();
+        ShowLadder();
+        bar.Controls.Add(dreadLadder);
         bar.Controls.Add(Btn("Dread check — selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
         bar.Controls.Add(Btn("Dread check — whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
 
@@ -1394,27 +1416,20 @@ public partial class MainForm : Form
         MirrorToTracker(p);
     }
 
+    // The same rule, resolved the same way, whichever tab you are standing on — see ResolveDread
+    // in Tabs.cs for what this used to do differently and why that was wrong. The Tracker's Dread
+    // dialog has always asked a dice-and-books table for the die it rolled; this one rolled its own
+    // regardless, so a Keeper running from the physical books got the engine's d20 here and their
+    // own d20 two tabs over, for the identical check.
+    //
+    // The Tier spinner beside the DC is deliberately not passed on: Horror.DreadTier derives the
+    // Nerve-loss ladder from the DC itself, which is the book's own table read forward instead of
+    // trusted to two boxes agreeing.
     void DreadCheckPC(PartyMember p)
     {
         if (p == null) { Nope("Select a soul first."); return; }
-        int dc = (int)dreadDc.Value, tier = (int)dreadTier.Value;
-        // The same rule, resolved the same way, whichever tab you are standing on. The Tracker's
-        // Dread dialog has always asked a dice-and-books table for the die it rolled; this one
-        // rolled its own regardless, so a Keeper running from the physical books got the engine's
-        // d20 here and their own d20 two tabs over — for the identical check.
-        int die = AskDie($"{p.Name}'s Will save against Dread DC {dc} — what did the d20 come up?")
-                  ?? Rules.Rng.Next(1, 21);
-        var (idx, deg, detail) = Rules.FourDegrees(die, p.Will, dc);
-        if (idx <= 1)                                       // 0 = crit fail, 1 = fail
-        {
-            bool crit = idx == 0;
-            var (label, roll) = Rules.NerveLoss(tier);
-            int loss = roll();
-            if (crit) loss *= 2;
-            p.NerveCur = Math.Max(0, p.NerveCur - loss);
-            Log($"DREAD — {p.Name}: {detail} → {deg}. −{loss} Nerve ({label}{(crit ? " ×2" : "")}) → {p.NerveCur}/{p.NerveMax}" + (p.NerveCur == 0 ? "  — BREAKS." : ""));
-        }
-        else Log($"DREAD — {p.Name}: {detail} → {deg}. Holds their nerve.");
+        int dc = (int)dreadDc.Value;
+        ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc} — what did the d20 come up?"));
     }
 
     // A long rest heals the body and steadies the mind: Blood and Nerve back to full.

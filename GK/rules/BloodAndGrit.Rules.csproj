@@ -48,6 +48,7 @@
     <EmbeddedResource Include="Data\tables_extra.json" />
     <EmbeddedResource Include="Data\chargen.json" />
     <EmbeddedResource Include="Data\rides.json" />
+    <EmbeddedResource Include="Data\appearance.json" />
   </ItemGroup>
 
   <ItemGroup>

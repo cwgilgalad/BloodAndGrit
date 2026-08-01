@@ -165,6 +165,10 @@ public class CharacterSheet
     public int DrBlades { get; set; } public int DrShot { get; set; }    // what the armor turns
     public string Lost { get; set; } public string Seen { get; set; }
     public string Vice { get; set; } public string Moving { get; set; }
+    // What they look like and what they are wearing (Look.Roll). Added v1.30; absent from sheets
+    // saved before it, which deserialize to null and simply read as a soul nobody has described
+    // yet — every consumer tests Look?.Any, so no session.json migration is needed.
+    public SoulLook Look { get; set; }
     public List<int> AbilityBoostLevels { get; set; } = new();           // 5 and/or 10 if reached
     public List<string> BoostedAbilities { get; set; } = new();
     public bool HandTweaked { get; set; }                                // edited after generation — the book no longer vouches
@@ -523,6 +527,9 @@ public static class CharGen
         s.Compass = WeightedCompass();
         s.Lost = Pick(FlavorList("lost")); s.Seen = Pick(FlavorList("seen"));
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
+        // …and a face to go with the numbers. Drawn against the Calling, because most of what a
+        // soul is wearing is what they do for a living. Costs nothing and gates nothing.
+        s.Look = Look.Roll(s.Gender, s.Calling);
         return s;
     }
 
@@ -537,6 +544,7 @@ public static class CharGen
         public string Calling, Origin;
         public Dictionary<string, int> PreGiftScores = new(); // all six, before Origin gifts
         public string OriginSkillChoice;                      // the Origin's either/or skill, if it has one
+        public SoulLook Look;                                 // what they look like; null draws one
         public List<string> TrainedPicks = new();             // the Calling's trained skills (Origin grants ride free)
         public List<string> SkillIncreases = new();           // one target per increase earned (3/5/7/9), in order
         public List<string> Edges = new();                    // one per odd level, in order
@@ -697,6 +705,10 @@ public static class CharGen
         s.Seen = string.IsNullOrWhiteSpace(spec.Seen) ? Pick(FlavorList("seen")) : spec.Seen;
         s.Vice = string.IsNullOrWhiteSpace(spec.Vice) ? Pick(FlavorList("vices")) : spec.Vice;
         s.Moving = string.IsNullOrWhiteSpace(spec.Moving) ? Pick(FlavorList("moving")) : spec.Moving;
+        // The wizard's own look if it collected one, otherwise a drawn one — same rule as every
+        // other line above. A soul who walked through nine steps of choices should not come out
+        // the far end with no face.
+        s.Look = spec.Look ?? Look.Roll(s.Gender, s.Calling);
         return s;
     }
 
@@ -1295,6 +1307,22 @@ public static class CharGen
         sb.AppendLine("   Seen:   " + s.Seen);
         sb.AppendLine("   Vice:   " + s.Vice);
         sb.AppendLine("   Moving: " + s.Moving);
+
+        // Last, and only if there is one: a sheet saved before v1.30 has no look, and a heading
+        // with four empty lines under it is worse than no heading. Every line is guarded the same
+        // way, because any one field can be cleared by hand.
+        if (s.Look is { Any: true })
+        {
+            sb.AppendLine();
+            sb.AppendLine("APPEARANCE" + (string.IsNullOrWhiteSpace(s.Look.People) ? "" : "   (" + s.Look.People + ")"));
+            void Row(string label, string value)
+            { if (!string.IsNullOrWhiteSpace(value)) sb.AppendLine("   " + label.PadRight(8) + value); }
+            Row("Build:", s.Look.BodyLine);
+            Row("Face:", s.Look.FaceLine);
+            Row("Wearing:", string.IsNullOrWhiteSpace(s.Look.Style) ? s.Look.DressLine
+                : $"{s.Look.Style} — {s.Look.DressLine}");
+            Row("Detail:", s.Look.Detail);
+        }
         return sb.ToString();
     }
 

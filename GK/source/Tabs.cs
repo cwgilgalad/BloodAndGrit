@@ -559,6 +559,9 @@ public partial class MainForm
     Label turnFace;
     System.Windows.Forms.Timer turnTicker;
     readonly List<Control> turnGlassParts = new();
+    /// The Tracker bar's standing invitation to put the glass out, shown exactly when the glass
+    /// itself is not. See where it is built for why it has to exist.
+    Button glassCallBtn;
 
     /// <summary>The glass, its face, and its own little menu, built as one column that the Tracker
     /// hangs at the RIGHT EDGE of the action bar rather than dropping into the flow.
@@ -666,6 +669,7 @@ public partial class MainForm
     {
         if (turnGlass == null) { Prefs.Save(WithTurn(Prefs.Load(), on, null)); return; }
         foreach (var c in turnGlassParts) c.Visible = on;
+        if (glassCallBtn != null) glassCallBtn.Visible = !on;   // one of the two is always on show
         if (!on) { turnClock.Pause(); turnClock.Reset(); }
         SyncTicker();
         ShowTurnGlass();
@@ -856,6 +860,16 @@ public partial class MainForm
             + "3, their next Strike is clean (no MAP), and their row lights gold as the one acting"));
         bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100,
             "Step to the next round by hand — Next turn does this for you when everyone has gone (Ctrl+R)"));
+        // The glass is off by default and, when it is off, the whole column at the right edge is
+        // hidden — so the ONE route to turning it on was a menu called Table, which is where nobody
+        // looks for a clock (user-reported: "I don't see an option to turn on the hourglass
+        // anywhere"). This button stands where the turn is taken and is visible precisely when the
+        // glass is not, so the feature is never invisible in both places at once.
+        glassCallBtn = Btn("＋ Turn glass", (s, e) => ShowTurnTimer(true), 108,
+            "Put an hourglass on the bar that runs the posse's turn down. It never ends a turn or "
+            + "takes a Beat — it shows the time going and says so when it is through. Also on the "
+            + "Table and View menus, and its length is yours to set.");
+        bar.Controls.Add(glassCallBtn);
 
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
@@ -1420,7 +1434,10 @@ public partial class MainForm
         if (cond != family) set.RemoveAll(x => x.StartsWith(family + " ") || x == family);
         if (!set.Contains(cond)) set.Add(cond);
         c.Conditions = string.Join(", ", set);
-        trkGrid.Refresh();
+        // ?. because a Posse-tab Dread Check can hang a Frightened on a soul whose row is in the
+        // tracker list while the Tracker TAB has never been opened — the tabs fill themselves on
+        // first visit, so the grid can legitimately not exist yet.
+        trkGrid?.Refresh();
         Log($"{c.Name}: {cond}.");
     }
 
@@ -1952,29 +1969,58 @@ public partial class MainForm
         f.AcceptButton = check; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
+            ResolveDread(soul, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
+    }
+
+    /// <summary>One Dread Check, resolved one way, wherever it was called from — the Tracker's
+    /// dialog above or the Posse tab's two buttons.
+    ///
+    /// It had two implementations, and they disagreed about the rule. The Posse tab rolled its own
+    /// ladder and DOUBLED the loss on a critical failure, which the book does not say ("A critical
+    /// failure … loses the listed Nerve and imposes Frightened 1 at once", Ch. XII); it also never
+    /// hung the Frightened, never rolled the Affliction a DC-25 failure carries, and never touched
+    /// the break table — so the same horror cost a soul twice the Nerve and left no mark on one tab,
+    /// and cost the printed Nerve and left a scar on the other. This is the one road now.</summary>
+    void ResolveDread(PartyMember soul, int dc, int? forcedDie)
+    {
+        if (soul == null) return;
+        var o = Horror.DreadCheck(soul.Will, dc, forcedDie);
+        Log($"{soul.Name}: {o.Line}");
+        ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
+        if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
+        if (o.Frightened)
         {
-            var o = Horror.DreadCheck(soul.Will, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
-            Log($"{soul.Name}: {o.Line}");
-            ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
-            if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
-            if (o.Frightened) ApplyCondition("Frightened 1");   // applies to the selected row (this soul)
-            // The engine has worked out that this one leaves a mark since v1.x and nothing ever
-            // read the flag. Now it rolls the book's d10 and offers to write it down for good.
-            if (o.Affliction)
-            {
-                var (d10, aff, cost) = Rules.RollAffliction();
-                Log($"{soul.Name} does not come back whole — Affliction, d10 {d10}: {aff}. {cost}");
-                ShowResult("AFFLICTION", $"{soul.Name}: {aff}\n{cost}", Blood);
-                RecordScar(soul, "Affliction", aff);
-            }
-            if (soul.NerveCur == 0)
-            {
-                var bk = Horror.Break();
-                Log($"{soul.Name} {bk.Line}");
-                if (bk.GainsMark) soul.Mark += 1;
-            }
-            posseGrid?.Refresh(); trkGrid?.Refresh();
+            // The condition rides the tracker row, and a soul checked from the Posse tab may not be
+            // on the field. Say so rather than dropping it: an unrecorded condition is the Keeper's
+            // problem two rounds later.
+            var row = tracker.FirstOrDefault(t => t.IsSoul(soul));
+            if (row != null) ApplyConditionTo(row, "Frightened 1");
+            else Log($"{soul.Name} is Frightened 1 — send them to the Tracker for it to be carried.");
         }
+
+        // Two rules, both the book's, and they can fire on the same check: a DC-25 failure carries
+        // "1d10 + a lasting Affliction", and breaking at 0 Nerve takes "a lasting Affliction that
+        // rides you until it is treated". One d10 is rolled either way — the soul came out of one
+        // night changed once, and two modal dialogs back to back for it would be the app arguing
+        // with itself in front of the table.
+        bool broke = soul.NerveCur == 0;
+        if (broke)
+        {
+            var bk = Horror.Break();
+            Log($"{soul.Name} {bk.Line}");
+            if (bk.GainsMark) soul.Mark += 1;
+        }
+        if (o.Affliction || broke)
+        {
+            var (d10, aff, cost) = Rules.RollAffliction();
+            string why = o.Affliction && broke ? "a truth that unmakes a world, and no Nerve left to meet it"
+                       : o.Affliction ? "a truth that unmakes a world"
+                       : "driven to 0 Nerve — they broke";
+            Log($"{soul.Name} does not come back whole — Affliction, d10 {d10}: {aff}. {cost}");
+            ShowResult("AFFLICTION", $"{soul.Name}: {aff}\n{cost}", Blood);
+            RecordScar(soul, "Affliction", aff, why);
+        }
+        posseGrid?.Refresh(); trkGrid?.Refresh();
     }
 
     /// <summary>A blow bad enough to leave something behind (Ch. XI): half the soul's maximum Blood
@@ -1998,14 +2044,21 @@ public partial class MainForm
         var (d6, injury) = Rules.RollInjury();
         Log($"{soul.Name} — Fortitude {detail} → {deg}. Lasting Injury, d6 {d6}: {injury}.");
         ShowResult("LASTING INJURY", $"{soul.Name}: {injury}", Blood);
-        RecordScar(soul, "Injury", injury);
+        RecordScar(soul, "Injury", injury, why);
     }
 
     /// <summary>Write a mark onto a soul that they do not get to put down — a Lasting Injury off
     /// the d6, or an Affliction out of a Dread Check that went badly. Prefilled with what the app
     /// knows and editable, because the books name the six injuries and deliberately leave the
     /// Afflictions to the table: "the scars that stay" is a prompt, not a list.</summary>
-    void RecordScar(PartyMember soul, string kind, string suggested)
+    /// <param name="soul">Who carries it. Null is a no-op, so callers need not test first.</param>
+    /// <param name="kind">"Injury" or "Affliction" — which of the two ledgers, and which book's
+    /// list the What box offers.</param>
+    /// <param name="suggested">What the dice said, prefilled into the What box and editable.</param>
+    /// <param name="because">What brought it on, in the app's own words, when the engine knows —
+    /// it goes into the dialog's opening line and into the Keeper's ledger with the entry. Empty
+    /// for the two hand-written routes off the Posse tab's menu, where the Keeper knows why.</param>
+    void RecordScar(PartyMember soul, string kind, string suggested, string because = "")
     {
         if (soul == null) return;
         const int Pad = 16, CW = 420;
@@ -2016,11 +2069,12 @@ public partial class MainForm
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
         };
         string blurb = kind == "Affliction"
-            ? $"{soul.Name} came out of that changed. An Affliction is not a condition — it does not "
-              + "wear off, and it is yours to name: a fear of the dark, a stammer, a thing they will "
-              + "not do any more. Keeper's Book, Ch. III."
-            : $"{soul.Name} took a terrible blow. A Lasting Injury does not heal with rest alone — it "
-              + "takes a Sawbones, time, and sometimes a graveyard. Player's Book, Ch. XI.";
+            ? $"{soul.Name} came out of that changed{(because.Length > 0 ? " — " + because : "")}. An "
+              + "Affliction is not a condition — it does not wear off, and it is yours to name: a fear "
+              + "of the dark, a stammer, a thing they will not do any more. Keeper's Book, Ch. III."
+            : $"{soul.Name} took a terrible blow{(because.Length > 0 ? " — " + because : "")}. A Lasting "
+              + "Injury does not heal with rest alone — it takes a Sawbones, time, and sometimes a "
+              + "graveyard. Player's Book, Ch. XI.";
         var say = new Label
         {
             Left = Pad, Top = Pad, Width = CW, ForeColor = Ink,
@@ -2061,11 +2115,37 @@ public partial class MainForm
         if (f.ShowDialog(this) != DialogResult.OK) { Log($"{soul.Name} — the {kind.ToLowerInvariant()} was not written down."); return; }
         string what = name.Text.Trim();
         if (what.Length == 0) what = kind == "Affliction" ? "Something changed" : "A lasting hurt";
+        var scar = new Scar { Kind = kind, Name = what, Note = note.Text.Trim(), When = when.Text.Trim() };
         soul.Scars ??= new();
-        soul.Scars.Add(new Scar { Kind = kind, Name = what, Note = note.Text.Trim(), When = when.Text.Trim() });
+        soul.Scars.Add(scar);
         CaptureUndo();
         posseGrid?.Refresh();
-        Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}.");
+        RefreshSoulCard(soul);
+        // "Write it down" now writes it down somewhere a Keeper can read at the end of the night.
+        // It always went onto the soul — the Posse tab's Scars column, the Ledger sheet — and that
+        // is the ledger the RULES care about, but the button says the words the Session tab's
+        // Keeper's ledger is for, and a scar nobody sees written is a scar the table doubts
+        // happened. Both, therefore: the sheet keeps it, the ledger says it happened tonight.
+        ToLedger($"{soul.Name} — {kind.ToLowerInvariant()}: {what}"
+            + (because.Length > 0 ? $"  ({because})" : "")
+            + (scar.Note.Length > 0 ? Environment.NewLine + "    " + scar.Note : ""));
+        Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}. Written into the Keeper's ledger.");
+    }
+
+    /// <summary>Append a dated line to the Keeper's ledger on the Session tab — the app's own hand
+    /// in the notebook the Keeper keeps. Written through the FIELD as well as the box, because the
+    /// Session tab fills itself on first visit and a night's play can easily never open it; the
+    /// box, when it exists, is the live view of that same string.</summary>
+    void ToLedger(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line)) return;
+        string stamp = $"[{DateTime.Now:HH:mm}]  {line}";
+        if (notesBox != null)
+        {
+            notesBox.AppendText((notesBox.TextLength > 0 ? Environment.NewLine : "") + stamp);
+            notesText = notesBox.Text;                 // TextChanged does this too; belt and braces
+        }
+        else notesText = (notesText.Length > 0 ? notesText + Environment.NewLine : "") + stamp;
     }
 
     /// <summary>Read a sign &amp; spoor row: a Survival check at the Tier's DC, what the four degrees
