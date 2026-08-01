@@ -21,7 +21,9 @@ public partial class MainForm
         var menu = new MenuStrip { BackColor = Paper, Font = new Font("Segoe UI", 9.5f), Padding = new Padding(8, 4, 0, 4) };
 
         var file = new ToolStripMenuItem("&File");
-        file.DropDownItems.Add(Item("&Save session", (s, e) => { AutoSave(); Log("Session saved."); }, Keys.Control | Keys.S));
+        // Only says it saved if it saved — AutoSave now reports, and it has its own loud say about
+        // why when it did not.
+        file.DropDownItems.Add(Item("&Save session", (s, e) => { if (AutoSave()) Log("Session saved."); }, Keys.Control | Keys.S));
         file.DropDownItems.Add(Item("Save session &as…", (s, e) => SaveSessionAs(), Keys.Control | Keys.Shift | Keys.S));
         file.DropDownItems.Add(Item("&Load session…", (s, e) => LoadSessionFromFile(), Keys.Control | Keys.O));
         file.DropDownItems.Add(new ToolStripSeparator());
@@ -195,9 +197,9 @@ public partial class MainForm
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
 
-        void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 12.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
-        void T(string s) { rtf.SelectionFont = new Font("Segoe UI", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n\n"); }
-        void I(string s) { rtf.SelectionFont = new Font("Segoe UI", 9.7f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n\n"); }
+        void H(string s) { rtf.SelectionFont = Face("Segoe UI", 12.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
+        void T(string s) { rtf.SelectionFont = Face("Segoe UI", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n\n"); }
+        void I(string s) { rtf.SelectionFont = Face("Segoe UI", 9.7f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n\n"); }
 
         H("GritKeeper, in five minutes");
         // The count is READ, not typed, and the shortcut sentence follows it. It said "ten tabs …
@@ -317,8 +319,8 @@ public partial class MainForm
         if (win == null) return;
 
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Consolas", 10f) };
-        void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 12f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
-        void M(string s) { rtf.SelectionFont = new Font("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
+        void H(string s) { rtf.SelectionFont = Face("Segoe UI", 12f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
+        void M(string s) { rtf.SelectionFont = Face("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
 
         H("Anywhere");
         M("  Ctrl+1 … Ctrl+0   Jump to a tab (in bar order; Ctrl+0 is the tenth)");
@@ -427,15 +429,15 @@ public partial class MainForm
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
             Left = 18, Top = 14, Width = 508, Height = 412
         };
-        void H(string s) { rtf.SelectionFont = new Font("Segoe UI", 11.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
+        void H(string s) { rtf.SelectionFont = Face("Segoe UI", 11.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void L(string k, string v)
         {
-            rtf.SelectionFont = new Font("Consolas", 9.5f, FontStyle.Bold); rtf.SelectionColor = Ink;
+            rtf.SelectionFont = Face("Consolas", 9.5f, FontStyle.Bold); rtf.SelectionColor = Ink;
             rtf.AppendText("  " + k.PadRight(13));
-            rtf.SelectionFont = new Font("Consolas", 9.5f); rtf.SelectionColor = Ink;
+            rtf.SelectionFont = Face("Consolas", 9.5f); rtf.SelectionColor = Ink;
             rtf.AppendText(v + "\n");
         }
-        void N(string s) { rtf.SelectionFont = new Font("Segoe UI", 9.5f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n"); }
+        void N(string s) { rtf.SelectionFont = Face("Segoe UI", 9.5f, FontStyle.Italic); rtf.SelectionColor = Gold; rtf.AppendText(s + "\n"); }
 
         H("Minimum");
         L("System",   "Windows 10 (version 1607) or Windows 11, 64-bit");

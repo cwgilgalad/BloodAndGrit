@@ -469,7 +469,9 @@ public partial class MainForm : Form
         if (resultBig == null) return;              // rolled before the Dice tab was ever built
         resultBig.Text = big;
         resultBig.ForeColor = c;
-        resultBig.Font = new Font("Segoe UI", big.Length > 12 ? 18f : big.Length > 6 ? 24f : 30f, FontStyle.Bold);
+        // Off the shelf, not minted here: this runs on every roll, and the font it replaced was
+        // never disposed. Three sizes, for the life of the process.
+        resultBig.Font = Face("Segoe UI", big.Length > 12 ? 18f : big.Length > 6 ? 24f : 30f, FontStyle.Bold);
         resultSub.Text = sub;
     }
 
@@ -848,6 +850,31 @@ public partial class MainForm : Form
 
     static Label Heading(string t) => new()
     { Text = t, AutoSize = true, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(0, 6, 0, 2), UseMnemonic = false };
+
+    // ---------------------------------------------------------------- the font shelf
+    /// <summary>Every font the app draws with that is NOT a control's own, kept once and handed
+    /// out again.
+    ///
+    /// A Font holds a native GDI handle, and two places were minting one per event on the hottest
+    /// paths in the app: the Dice tab's result card made a fresh headline font on EVERY roll, and
+    /// the Bestiary's creature renderer made about thirty per creature — so arrowing down the list
+    /// of 150 spends four and a half thousand handles in a few seconds. Nothing disposed them.
+    /// The finalizer does get there eventually, which is why this never showed up in an hour of
+    /// testing and is exactly the shape of thing that makes an app go strange at the end of a long
+    /// evening, or after a season of them.
+    ///
+    /// A cache rather than a `using`, because these are drawn with over and over: the set of
+    /// (family, size, style) triples the app uses is small and fixed, so it settles at a few dozen
+    /// fonts for the life of the process. Static and never emptied on purpose — a shelf that
+    /// cleared itself would just re-mint the same fonts. UI thread only, like all of WinForms.</summary>
+    static readonly Dictionary<(string, float, FontStyle), Font> faces = new();
+
+    internal static Font Face(string family, float size, FontStyle style = FontStyle.Regular)
+    {
+        var key = (family, size, style);
+        if (!faces.TryGetValue(key, out var f)) faces[key] = f = new Font(family, size, style);
+        return f;
+    }
 
     /// <summary>
     /// Breathing room for text panes. WinForms RichTextBox/ListBox ignore their own Padding
@@ -1913,7 +1940,15 @@ public partial class MainForm : Form
     // few minutes: it silently replaces the Keeper's whole table with the demo posse. Staging
     // to a sibling file and moving it over is a single filesystem operation on NTFS, so the
     // old session survives intact until the new one is complete on disk.
-    internal void AutoSave()
+    ///
+    /// <para>Swallowing the failure was right and being SILENT about it was not. A session.json
+    /// that has been unwritable since March — a sync client holding the file, a folder gone
+    /// read-only, a disk that filled — looks from the table exactly like one saving perfectly
+    /// every five minutes, and File ▸ Save session said "Session saved." on top of it. The write
+    /// still never blocks anything; it just says so, once per new reason, and says so again when
+    /// it comes back.</para>
+    /// <returns>Whether the session actually reached the disk.</returns>
+    internal bool AutoSave()
     {
         try
         {
@@ -1921,8 +1956,38 @@ public partial class MainForm : Form
             string staged = SavePath + ".new";
             File.WriteAllText(staged, json);
             File.Move(staged, SavePath, overwrite: true);
+            if (saveFailure != null)
+            {
+                saveFailure = null;
+                Announce("The session is saving again — the last write reached the disk.", Verdigris);
+            }
+            return true;
         }
-        catch { /* never block closing */ }
+        catch (Exception ex)
+        {
+            // Once per distinct reason: the five-minute timer must not turn one stuck file into a
+            // log full of the same line.
+            if (saveFailure != ex.Message)
+            {
+                saveFailure = ex.Message;
+                Announce($"THE SESSION IS NOT SAVING — {SavePath}: {ex.Message}. "
+                       + "Use File ▸ Save session as… to put it somewhere that will take it.", Blood);
+            }
+            return false;
+        }
+    }
+
+    /// The reason the last save failed, or null while saves are landing. Compared by message so a
+    /// changed reason is announced afresh and a stuck one is announced once.
+    string saveFailure;
+
+    /// <summary>Say something from a path that may be running while the window is closing — the
+    /// autosave on exit, and Crash()'s emergency save, both call in here. Logging into a form that
+    /// is being torn down is how a report about one failure becomes a second one.</summary>
+    void Announce(string line, Color c)
+    {
+        if (IsDisposed || Disposing || !IsHandleCreated) return;
+        Say(line, c);
     }
 
     // Replace the whole table with a saved session — the shared road for the startup
@@ -2056,8 +2121,16 @@ public partial class MainForm : Form
         try
         {
             var s = JsonSerializer.Deserialize<GameSession>(File.ReadAllText(SavePath));
-            if (s == null || s.Party.Count == 0) { SeedDemo(); return; }
+            if (s == null) { SeedDemo(); return; }
+            // LOAD FIRST, then decide whether anything needs seeding. The old order asked
+            // "is the party empty?" and, if it was, seeded the demo posse and never called
+            // ApplySession at all — so a session whose posse the Keeper had cleared came back
+            // next launch with its ledger, its clocks, its rides, its map markers and its
+            // tracker all gone, and autosaved that loss over the file on the way out. An empty
+            // posse is a legitimate table (an all-NPC night, a party wiped and not yet
+            // rebuilt); it is not an empty session.
             ApplySession(s);
+            if (s.IsUntouched) SeedDemo();
         }
         catch (Exception ex)
         {

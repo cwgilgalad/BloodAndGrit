@@ -82,7 +82,7 @@
       "hair": ["black, long", "dark brown", "black, greying at the front", "black, heavy and straight"],
       "eyes": ["dark brown", "brown", "hazel-brown", "near black"] },
 
-    { "name": "Chinese, out of Guangdong", "weight": 5,
+    { "name": "Chinese, out of Guangdong", "weight": 5, "namesFrom": "fullNames",
       "complexions": ["light brown", "pale gold", "brown, sun-darkened from the grade work", "fair, and indoor-kept"],
       "hair": ["black, straight and heavy", "black, greying at the temple", "very dark brown", "black, and fine"],
       "eyes": ["dark brown", "near black", "brown", "warm brown"] },

@@ -136,6 +136,12 @@ static class Program
                         var quiet = mf.AuditTabTips();
                         foreach (var q in quiet) Line("       silent: " + q);
                         Chk(quiet.Count == 0, $"GUI: every control on all ten tabs says what it is ({quiet.Count} silent)");
+
+                        // Full screen moves the Map tab's real contents into another window and
+                        // hands them back. Checked because the failure is silent and permanent:
+                        // a blank Map tab for the rest of the session, with the survey parented to
+                        // a window that has gone. AuditTabTips has realized the tab by now.
+                        Chk(mf.MapFullScreenRoundTrip(), "GUI: the Map comes home from full screen with everything on it");
                     }
                 }
 

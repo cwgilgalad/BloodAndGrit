@@ -342,6 +342,7 @@ foreach (var (table, floor) in new[]
     if (womenWhole.Count > 0 && menWhole.Count > 0)
     {
         // Over 600 draws at a 12% whole-name rate, a custom gender should reach BOTH pools.
+        // (An undescribed soul — no look passed — keeps those old odds; see FullName.)
         var custom = new List<string>();
         for (int i = 0; i < 1200; i++) custom.Add(CharGen.FullName("Nonbinary"));
         T("gender: a custom gender reaches the women's whole-name pool", custom.Any(womenWhole.Contains));
@@ -1206,6 +1207,27 @@ T("party survives",   back.Party[0].BloodCur == 7 && back.Party[0].BloodMax == 1
 var legacy = System.Text.Json.JsonSerializer.Deserialize<GameSession>("{\"Party\":[],\"Notes\":\"x\"}");
 T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.Round == 1);
 
+// ---- what counts as an empty session, and so what may be overwritten with the demo posse ----
+// The launch path asked "is the PARTY empty?" and threw away everything else in the file when it
+// was. Each of these is a night's work that used to vanish on the next launch, and did it quietly.
+{
+    T("untouched: a genuinely blank session is untouched", new GameSession().IsUntouched);
+    T("untouched: a session with a posse is not", new GameSession { Party = { new PartyMember() } }.IsUntouched == false);
+    T("untouched: a written ledger alone is enough to keep", new GameSession { Notes = "the well at Coffin Wells" }.IsUntouched == false);
+    T("untouched: so is a thread on the clock", new GameSession { Clocks = { new CampaignClock() } }.IsUntouched == false);
+    T("untouched: so is a field left standing", new GameSession { Tracker = { new Combatant() } }.IsUntouched == false);
+    T("untouched: so is a sign on the trail", new GameSession { Signs = { new Combatant { IsSign = true } } }.IsUntouched == false);
+    T("untouched: so is a horse in the corral", new GameSession { Rides = { new Ride() } }.IsUntouched == false);
+    T("untouched: so is a marker on the map", new GameSession { MapMarkers = { new MapMarker() } }.IsUntouched == false);
+    T("untouched: so is an encounter being costed", new GameSession { EncounterCreatures = { "The Risen" } }.IsUntouched == false);
+    T("untouched: whitespace in the ledger is not writing", new GameSession { Notes = "   \r\n " }.IsUntouched);
+    // The shape the bug actually took: a posse cleared, everything else still there.
+    var nightOff = new GameSession { Notes = "Tuesday — nobody but NPCs", Clocks = { new CampaignClock { Name = "The ring of nails" } } };
+    T("untouched: an all-NPC night with an empty posse is NOT an empty session", nightOff.IsUntouched == false);
+    T("untouched: and it survives a save and load", System.Text.Json.JsonSerializer
+        .Deserialize<GameSession>(System.Text.Json.JsonSerializer.Serialize(nightOff)).IsUntouched == false);
+}
+
 // ---- Character generator: data sanity ----
 CharGen.Load();
 var cg = CharGen.D;
@@ -1347,6 +1369,53 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         T("look: and prints without the heading", !CharGen.Render(older).Contains("APPEARANCE"));
         T("look: an emptied one is not Any", new SoulLook().Any == false);
         T("look: and its lines come back empty rather than as separators", new SoulLook().BodyLine == "");
+    }
+
+    // ---- the name and the people are ONE decision ----
+    // The first soul this generator ever put on screen was "Rafferty Luján, Chinese, out of
+    // Guangdong": chargen.json drew a whole name on a bare 12% roll answerable to nothing, and
+    // appearance.json drew a people answerable to nothing else. Neither was wrong on its own.
+    // Now the look is drawn first and the name follows it, and this is what holds that.
+    {
+        var owning = Look.D.peoples.Where(p => !string.IsNullOrWhiteSpace(p.namesFrom)).ToList();
+        T("names: at least one people draws its names whole", owning.Count >= 1);
+        var wholeNames = new HashSet<string>(CharGen.Flavor("fullNamesWomen").Concat(CharGen.Flavor("fullNamesMen")));
+
+        int checkedSouls = 0, wrong = 0, fromOwning = 0;
+        for (int i = 0; i < 600; i++)
+        {
+            var made = CharGen.Generate(1, false);
+            checkedSouls++;
+            bool ownsNames = owning.Any(p => p.name == made.Look.People);
+            if (ownsNames) fromOwning++;
+            // A whole name and a people that owns one must go together, both ways round.
+            if (ownsNames != wholeNames.Contains(made.Name)) wrong++;
+        }
+        T($"names: all {checkedSouls} generated souls are named as their people are named", wrong == 0);
+        T("names: and the peoples that own their names do come up", fromOwning > 5);
+
+        // A soul given a name keeps it, and is not handed a people that would contradict it.
+        var cal2 = CharGen.D.callings[0];
+        var org2 = CharGen.D.origins.First(o => !(cal2.group == "Faith" && o.notFaith));
+        for (int i = 0; i < 120; i++)
+        {
+            var sp = new CharGen.AssembleSpec
+            { Level = 1, Calling = cal2.name, Origin = org2.name, Name = "Wren Ashby", Gender = "Woman" };
+            foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) sp.PreGiftScores[a] = 12;
+            var b = CharGen.Assemble(sp);
+            if (b.Name != "Wren Ashby" || owning.Any(p => p.name == b.Look.People))
+            { T("names: a soul given a name is never described as a people whose names come whole", false); break; }
+        }
+        T("names: a given name survives, and nothing is drawn that contradicts it", true);
+
+        // …and the redraw button obeys the same rule, since it changes a description on somebody
+        // who is already called something.
+        int strays = Enumerable.Range(0, 400)
+            .Count(_ => owning.Any(p => p.name == Look.Roll("Man", "Drifter", nameIsFixed: true).People));
+        T("names: a redrawn look never lands on a people whose names come whole", strays == 0);
+        T("names: and an ordinary draw still reaches every other people",
+            Enumerable.Range(0, 600).Select(_ => Look.Roll("Man", "Drifter", nameIsFixed: true).People)
+                      .Distinct().Count() >= Look.D.peoples.Count - owning.Count - 4);
     }
 }
 

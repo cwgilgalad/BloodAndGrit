@@ -137,7 +137,10 @@ public partial class MainForm
         void W(string s, bool bold = false, float size = 10f, Color? col = null, bool italic = false)
         {
             var style = (bold ? FontStyle.Bold : FontStyle.Regular) | (italic ? FontStyle.Italic : 0);
-            rtf.SelectionFont = new Font("Segoe UI", size, style);
+            // Off the shelf (MainForm.Face): this ran about thirty times per creature and fired on
+            // every arrow-key move down a list of 150, minting a native font handle each time and
+            // disposing none of them.
+            rtf.SelectionFont = Face("Segoe UI", size, style);
             rtf.SelectionColor = col ?? Ink;
             rtf.AppendText(s);
         }
@@ -3466,7 +3469,7 @@ public partial class MainForm
         var clocksGroup = new GroupBox { Text = "Threads && clocks", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         var cbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110, "Start a new thread of trouble, with a clock to run it down"));
-        cbar.Controls.Add(Btn("Save now", (s, e) => { AutoSave(); Log("Session saved."); }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
+        cbar.Controls.Add(Btn("Save now", (s, e) => { if (AutoSave()) Log("Session saved."); }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
         cbar.Controls.Add(Btn("Clear threads", (s, e) =>
         {
             if (clocks.Count == 0) { Nope("No threads to clear."); return; }

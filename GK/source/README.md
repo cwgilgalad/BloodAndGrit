@@ -83,8 +83,13 @@ Player's Book Appendix D so everything is usable immediately.
 **Posse** — the party sheet. Every soul's Blood, Defense, saves, Nerve, Grit, Mark
 (0–6), and Taint (0–4), all editable in place, and **▲ ▼ reorder the posse** to taste.
 One-click Damage/Heal, Spend Grit, Mark +1 (warns when the Mark is full), per-soul or
-whole-posse **Dread Checks** on the horror's tier ladder (1 / 1d4 / 1d6 / 1d10, doubled
-on a critical failure), **New Session** (refill Nerve, reset Grit) and **Rest ▾** (a long
+whole-posse **Dread Checks** — set the Dread DC and the app reads Ch. XII's ladder off it
+(10 → 1 · 13 → 1d4 · 16 → 1d6 · 20 → 1d10 · 25 → 1d10 and a lasting Affliction), hangs the
+Frightened, and rolls the break table at 0 Nerve, exactly as the Tracker's Dread ▸ does
+*(v1.30 — the two used to disagree, and this one doubled the Nerve on a critical failure,
+which the book does not say)*. A **Scars** column carries what a soul does not put down —
+Lasting Injuries and Afflictions, written into the Keeper's ledger on the Session tab as
+they happen and shown on the Ledger sheet. **New Session** (refill Nerve, reset Grit) and **Rest ▾** (a long
 rest — Blood *and* Nerve to full, whole posse or one soul). *(v1.5)* **Double-click a
 soul (or hit the far-right Ledger button) to open their character sheet** — the book's
 own Ledger — **in its own window**, the same modeless pop-out pattern as the Bestiary's
@@ -135,7 +140,11 @@ right on the tab, the Bestiary's `→ Tracker` (× N), or **＋ Add** for ad-hoc
 Double-click any creature for its pop-out stat block — and *(v1.5)* **posse souls get
 their Ledger instead** (double-click, or the far-right Ledger button that only appears
 on rows that have a sheet to show). **New fight** clears the foes but keeps the posse;
-**Clear field** wipes everything.
+**Clear field** wipes everything. *(v1.29)* an optional **turn glass** — an hourglass that
+runs the posse's turn down, resets itself at the top of each round, and never ends a turn
+or takes a Beat; it only shows the time going. *(v1.30)* **＋ Turn glass** on the bar puts
+it out when it is away, so the feature is never invisible; **View ▸ The turn hourglass**
+and **Table ▸ The turn glass** do the same, and its length is yours to set.
 
 **Generators** — the Country in Your Pocket, one click each: a town in three rolls, a
 face in four, bar-talk rumors, trail events by day and night, plunder, and wrong-note
@@ -192,19 +201,26 @@ map number — toggling the hour or the Keeper's layer won't shake them loose �
 SVG/PDF exports carry them. And **the ink respects the border now**: rivers, creeks,
 trails, and rails are clipped to the map's inner neatline at generation, so nothing
 runs off the paper in the preview, the SVG, or the PDF (rivers used to).
+*(v1.30)* **◈ Full screen** — or a double-click on open country — throws the map across the
+whole screen with **every control on this tab still on it**: it moves the real drafting
+table rather than building a second one, so the ground, scale, hour, weather, overlays,
+markers and exports are the same controls and can never disagree with the tab's. Esc, F11
+or ✕ brings it back.
 
 **New Soul** *(overhauled in v1.5)* — a complete character at any level 1–10, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
 Book, redrawn live and filled in — name, **gender**, calling, origin, abilities,
-reckoned numbers, the Mark's six boxes, the Four Questions, all seventeen skills with
-proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
+reckoned numbers, the Mark's six boxes, the Four Questions, **what they look like**, all
+seventeen skills with proficiency ticks, edges & path, arms & gear & coin). Three roads to
+a soul:
 
 - **🎲 Make a soul** — rolled strictly by Chapter III's eight steps: abilities (Honest
   Array or the 4d6-drop-lowest Gamble), Calling and Origin with their cross-constraints
   honored, skills, legal Edges, Signs for the Old Dark only, the Mark where the book
   imposes it, coin rolled on the Calling's dice and spent at printed prices, gender and
-  a name drawn to match, and the Four Questions. Pin the Calling or Origin if you have
-  one in mind.
+  a name drawn to match, the Four Questions — and **a face, a build and an outfit**, drawn
+  against the Calling (a Preacher usually preaches in black; once in a while he turns up in
+  somebody's cavalry coat). Pin the Calling or Origin if you have one in mind.
 - **🧭 Wizard…** — build a custom character choice by choice through nine steps: level,
   method and name · Calling · Origin · assign the six abilities (with a Suggest button
   and 5th/10th-level boosts) · pick trained skills and skill increases · pick every Edge
@@ -212,6 +228,9 @@ proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
   the coin and shop the printed price list against a live balance · answer the Four
   Questions. Anything left on "(let the book pick)" is rolled by the same rules as the
   generator.
+- **🎲 New look** — draw the description again and leave every number alone. The whole of it
+  is editable field by field in ✎ Tweak, and the Posse tab's right-click menu can redraw a
+  soul's look after they have joined the table.
 - **✎ Tweak** — hand-adjust any number or any list on a finished sheet. Tweaks are the
   Keeper's word against the book's: the sheet is re-checked but never blocked, and the
   Ledger simply notes it was hand-tweaked.
@@ -238,7 +257,8 @@ live from `Data/chargen.json`, and the safe-table numbers from `Rules.SpoorRow`,
 can never drift from the books.
 
 **Session** — the Keeper's ledger (free-form notes, with a **Stamp the date** button
-for session headers) and **threads & clocks**: named progress clocks of 4/6/8 segments —
+for session headers; *(v1.30)* the app writes into it too — every Lasting Injury and
+Affliction lands here, dated, the moment you press Write it down) and **threads & clocks**: named progress clocks of 4/6/8 segments —
 tick ＋ when the world moves toward the trouble; when the last segment fills, it comes
 due. New threads offer ready patterns, and every thread can be renamed (✎) as the story
 turns. Everything persists between sessions.
