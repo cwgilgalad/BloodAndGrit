@@ -297,7 +297,7 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   covers — an undoable action does not need a prompt, and prompting on all of them trains a Keeper
   to click through the one that matters), and **no two items in one menu claim the same Alt key**
   (Windows demotes a collision from "activate" to "cycle", so a learned shortcut dies silently).
-  Currently 128 buttons, 19 dialogs, 21 access keys. All three UX checks pass today, so they are
+  Currently 132 buttons, 20 dialogs, 22 access keys. All three UX checks pass today, so they are
   regression guards — if you add another, prove it against a synthetic source file first, the way
   these were.
 - **Dead code is a build error** (v1.29.2). `GK/.editorconfig` sets IDE0051 / IDE0052 / IDE0005 /

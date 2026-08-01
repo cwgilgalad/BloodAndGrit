@@ -144,7 +144,7 @@ duplicate. Rides ride in `session.json` and go to the tracker as ordinary `Comba
 roll log). They **select the row first, then build**, so each menu line calls the same handler
 the tab's button calls — a menu that reimplements a button is a menu that will disagree with it.
 That's why `SpendGrit`/`AdvanceMark`/`DeepenTaint`/`AddSoulToTracker`/`RenameRide`/`RideToTracker`
-exist as methods rather than button lambdas. `audit_ui.py` still passes (128 buttons).
+exist as methods rather than button lambdas. `audit_ui.py` still passes (132 buttons).
 
 **Map marker ink (v1.18.0):** `MapInk` in `Core.cs` holds the book's color per kind, the Keeper's
 standing override (persisted as `Prefs.Data.MarkerInk`), the 10-color palette, and `Hex()` for the
