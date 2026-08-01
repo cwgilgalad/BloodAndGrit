@@ -309,15 +309,22 @@ def main():
     if not findings:
         print("\n  none.")
 
-    if any(r["quoted"] for _, r in reports):
+    # Reported in full and deliberately NOT counted. CLAUDE.md has said since this script was
+    # written that quoted spans "are reported apart and never fail, since both real hits were the
+    # books' own rules text quoted back into a changelog and rewriting either would falsify the
+    # record" — and the tally counted them anyway and returned 1. Nobody noticed for as long as
+    # nobody ran it as a gate; the first CI run ever to execute it went red on two findings that
+    # the project has already ruled must stay exactly as they are, which is a check that can never
+    # pass and so a check that teaches people to ignore it.
+    quoted_total = sum(len(r["quoted"]) for _, r in reports)
+    if quoted_total:
         print("\n" + "=" * 78)
-        print("IN QUOTED BOOK TEXT — still findings. Fix them in the BOOK, not here.")
+        print("IN QUOTED BOOK TEXT — reported, never a failure. Fix them in the BOOK, not here.")
         print("=" * 78)
         print("(A changelog quoting the books must stay an accurate record of what they said, so the")
-        print(" rewrite belongs upstream in build_*.py. These count toward the total.)")
+        print(" rewrite belongs upstream in build_*.py — and until it happens the quote is correct.)")
         for name, r in reports:
             for label, line, snip in r["quoted"]:
-                findings += 1
                 print(f"\n{name} L{line}: {label}")
                 print(f"  …{snip}…")
 
@@ -336,7 +343,8 @@ def main():
     if findings:
         print(f"{findings} hard tell(s). Rewrite them in your own cadence — do not just delete the words.")
         return 1
-    print("no hard tells: the prose reads as written rather than generated.")
+    print("no hard tells: the prose reads as written rather than generated."
+          + (f"  ({quoted_total} in quoted book text, reported above and not counted.)" if quoted_total else ""))
     return 0
 
 

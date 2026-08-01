@@ -61,6 +61,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The AI-tell audit reads the last 40 COMMIT MESSAGES as one of its inputs, and
+          # checkout's default shallow clone hands it exactly one. The first run reported
+          # "commit msgs  2 sents  45 words  too short to measure" and passed that half of the
+          # audit without auditing anything — the quietest way for a check to stop checking.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
