@@ -198,6 +198,16 @@ mention interpolates it (the five-minute lesson in `Menus.cs`, `GK/source/README
 `--selftest` builds the deck on purpose — tabs are realized lazily, so nothing else touches it —
 and checks each title has a renderer. Apply the same shape to any other number the prose quotes.
 
+**`GritKeeper\app\` is sanitised on every package, so nothing is kept there (2026-08-01).**
+Step 1 of `package.ps1` clears `session.json`, `prefs.json`, `startup-error.txt` and
+`selftest-report.txt` out of that folder — deliberately, because v1.20.1 shipped with the
+packager's own `prefs.json` and every download launched into someone else's table. It **moves**
+them to `.package-aside\<timestamp>\` now rather than deleting them: it used `Remove-Item`, which
+skips the Recycle Bin, and GritKeeper stages saves to `session.json.new` and keeps no `.bak`, so
+packaging a release destroyed the table of anyone playing out of that folder. It did exactly that
+on 2026-08-01. **The play copy lives at `Desktop\GritKeeper\`, outside the repo** — the delivered
+folder is build output and is the wrong home for anything you want to keep.
+
 **`package.ps1` handles a running app (v1.20.1).** If GritKeeper is running out of `GritKeeper\app\`
 it holds its own exe, and the copy step used to die on a raw file-lock error mid-release. The script
 now finds the process, names it with pid and start time, and falls back to a staging tree so the zip
