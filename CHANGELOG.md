@@ -8,6 +8,74 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.33.0 — the app stops borrowing Windows' clothes (2026-08-02).**
+  The tabs have been painted from the frontier palette for a long time: paper grounds, blood
+  headers, an owner-drawn tab strip, gold on the row a Keeper has picked. What had never been done
+  is everything a tab opens onto. Windows was still drawing the title bar of every window, the face
+  of every dialog button, every checkbox and radio, and the selection in every plain list — so the
+  app read as a book sitting inside somebody else's utility, and the further in you went the less
+  of it was yours.
+
+  **Three weights of button, and one place each is defined.** `Btn` is the ordinary one and now
+  carries a paper face with a hairline edge; `PrimaryBtn` is the single action a bar exists for;
+  `QuietBtn` is a housekeeping verb that keeps its full 32px target and gives up only its ink. All
+  three are one dressing routine with different colour, so the focus ring, the border and the width
+  guard cannot disagree between them. The ring is drawn in Paint rather than by swapping the border
+  colour, because the loud weights set their own border afterwards and the first blur would have
+  reset a red-edged button to a hairline one; its ink is now chosen against the face beneath it, so
+  a focused Primary or a held-down toggle shows a ring instead of dark-on-dark.
+
+  **`FitLabel` is the guard that made the change safe.** Every width in the app had been fitted by
+  eye against the themed button, and the flat one reserves less room for its text — the move clipped
+  "Dread check — selected" to "Dread check —" on a bar that had looked right for a year. Widths
+  hand-fitted to a renderer break when the renderer changes, so a button now measures its own
+  caption and refuses to be narrower than it, on font change as well as at build: a button takes its
+  real font from its parent only after it is constructed.
+
+  **What a rule cannot cover, a walk does.** About forty-five buttons in the app were built as a
+  bare `new Button` — every dialog's OK and Cancel, the wizard's Back and Next, the map's ✕ Close —
+  because a dialog button carries a `DialogResult` rather than a handler and so never fitted the
+  helper's shape. Rather than rewrite forty-five call sites and trust the forty-sixth to remember,
+  `DressControls` walks a window when it loads and a tab when it is realized, and dresses whatever
+  is still on a system style. **The predicate is also the guard against dressing twice**: it only
+  touches non-Flat controls, so a die's colour and a Primary's Blood are skipped, and a tree walked
+  twice costs the visit and nothing else. Between that and `Sheet` — the Form subclass that carries
+  the dark title bar, which `SoulWizard` and the tour callout had both quietly declined to inherit
+  — a window in this app can only come out wearing Windows' clothes if somebody deliberately builds
+  it off `Form`.
+
+  **The system accent had nine places left to sit.** `#0078D4` is the one colour here belonging to
+  no palette in the app, and after the lists gave it up in v1.32.0 it still owned every checkbox and
+  radio: the run-mode chooser a Keeper meets before anything else, and the Map tab's row of overlay
+  toggles, where the ticks are the brightest thing on a parchment survey. They are drawn in Ink on a
+  hairline box now. Gold was tried for the tick and lost — at glyph size it reads as a smudge, and a
+  checkbox has one job, which is to answer yes or no from across a table.
+
+  **The tour's three buttons were the ones that mattered most and were the last to be found.** The
+  callout is a borderless patch of Paper with nothing else on it, so three grey-blue Win32 blocks
+  had no chrome to blend into — and it is the first thing a new Keeper sees, since the tour offers
+  itself on first run. The app's introduction to itself was the one window that did not look like
+  the app. They were invisible to `audit_ui.py` because they came from a bare `new Button`, so the
+  count went 131 → 134 when they were rebuilt on the shared helper and `TourBtn` was registered: a
+  helper the audit does not know about is a set of buttons nobody checks.
+
+  **And one thing the previous release broke by fixing something else.** v1.32.0 renamed the Posse
+  tab's current/max headers from `/Max` to `/ max` so a pair would read as one field. A space is
+  where a header wraps, the header band is a fixed 30px that will not grow, and all three columns
+  had been rendering a lone slash with "max" sliced through the middle underneath it ever since.
+  The space is now non-breaking — written as an escape, because a literal U+00A0 cannot be told from
+  a space by eye — and kept in one constant the corral shares, which also puts an end to that grid
+  spelling the same header two ways. **The widths that go with it are measured rather than judged**,
+  and that took three tries worth recording: widening the three columns by eye cost about 2%
+  everywhere else, which was enough to start clipping "Blood", "Nerve" and "Mark" — and those are
+  right-aligned, so they clip on the LEFT and came back as "3lood", "Verve" and "Vlark", which reads
+  as a font fault rather than as a narrow column. In Fill mode a weight is a share and not a width;
+  every point given to one column is taken from the other nineteen. So each header was measured
+  against the room it actually gets, the twelve points needed were taken from Notes and Scars —
+  whose content is longer than any width they will ever get, so they lose characters off an already
+  truncated string — and the total was left where it was, which is what stops the fix moving
+  anything it was not aimed at.
+
 - **GritKeeper v1.32.0 — four things a Keeper looked at and could not read (2026-08-01).**
   All four came in from the table, which is the only place they could have come from: every one of
   them passed the build, the 12,359 headless checks, the self-test and the wiring audit, because
