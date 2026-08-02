@@ -8,6 +8,44 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.32.0 — four things a Keeper looked at and could not read (2026-08-01).**
+  All four came in from the table, which is the only place they could have come from: every one of
+  them passed the build, the 12,359 headless checks, the self-test and the wiring audit, because
+  each is a fact about what the ink LOOKS like rather than about what the code does.
+
+  **The turn glass drew its lower bulb as a box.** The heap of fallen sand took the width of its
+  own top edge from its height above the floor — the glass wall measured from the wrong end — so
+  the fuller it got, the narrower it drew its surface. Near the end of a turn that put the heap's
+  corners out at the widest part of the bulb with its surface up at the narrow neck: the sand
+  painted a rectangle across the whole lower half and the drawn glass came out inside the box.
+  Both bulbs now lay out from one number, the distance the remaining sand reaches from the waist,
+  so the upper band's surface and the lower heap's surface are two cuts across the glass at equal
+  distances from the neck and are drawn equally wide. That mirroring earns its keep: the two areas
+  sum to a constant, so the sand in the glass is conserved and the eye reads one quantity moving.
+  The falling stream now lands on the heap's real surface, off the same number.
+
+  **The glass got a switch that works both ways.** Putting it out was a button on the Tracker bar;
+  putting it away was back in a menu, because the button hid itself once used. A control that
+  disappears when you press it says nothing about the state it left behind. It is now a held-down
+  toggle in the same place, wearing the same shape as the Map tab's ✥ Move things, and it stays in
+  step with the View menu, the Table menu and the Glass ▾ menu — four routes, one state, one place
+  that sets the switch.
+
+  **A survey with a town on it carried two names and captioned neither.** The cartouche named the
+  country, the label under the buildings named the settlement, and both are drawn from the same
+  well of frontier words, so *Providence Township* up top and *Mule Springs* on the ground read as
+  the same kind of thing. The cartouche now carries a small line above its title saying what kind
+  of name it holds — *the county of*, *the territory of*, *the ground at*, *the city ward of* — and
+  the settlement wears *the settlement* under its own. The caption uses the word on the checkbox
+  that draws it, so the map and the control that governs it need no translating between them.
+
+  **The emblem was too shy to see.** It is painted into whatever background a pane has left below
+  its content, and it was capped at three fifths of the pane's width and refused to draw at all
+  under 150px — which took a nearly empty pane in a nearly full-screen window. Now three quarters
+  and 104px, so it shows up on panes that have a little room instead of a lot. **The faintness is a
+  separate dial and was left exactly where it was**: 0.15 alpha is what keeps it a watermark, and
+  every host paints it behind live content.
+
 - **The prose gate moved to where a commit message can still be changed (2026-08-01).**
   `audit_ai_tells.py` has scanned the last 40 commit messages from the start, and CI runs it, so
   a bad one turned the build red. But a commit message cannot be edited without rewriting
