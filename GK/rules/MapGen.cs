@@ -417,7 +417,16 @@ public static class MapGen
                 }
                 if (rngTown.Next(2) == 0) Sym(P, rngTown, "church", tx + 40, ty - 22, k);
             }
-            P.Add(TextP(tx, ty + (sp.Scale == 0 ? 66 : 48), townName, 14, Ink, bold: true, anchor: 1));
+            float nameY = ty + (sp.Scale == 0 ? 66 : 48);
+            P.Add(TextP(tx, nameY, townName, 14, Ink, bold: true, anchor: 1));
+            // What the name IS, said under it. A survey that draws a settlement carries two names on
+            // one sheet — the country's in the cartouche, the town's down here — and both are drawn
+            // from the same well of frontier words, so "Coffin Flats" up top and "Coffin Wells" on
+            // the ground read as the same kind of thing (user-reported: which name is the settlement
+            // and which is the territory). The caption says "settlement" rather than "town" because
+            // that is the word on the checkbox that draws it: the map and the control that governs
+            // it should not need translating between them.
+            P.Add(TextP(tx, nameY + 13, "the settlement", 9, Gold, italic: true, anchor: 1));
             // The whole settlement — street, buildings, church, name — as one movable thing,
             // recorded the way a landmark is so it drags with the same hand.
             m.Town = new Landmark
@@ -627,13 +636,25 @@ public static class MapGen
         };
         m.Weather = Weathers[wx];
         m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}  ·  {WeatherLine(wx)}";
-        // Wide enough for BOTH lines. Sizing it off the title alone left the subtitle hanging out
+        // What KIND of name the big one is, in the small line above it. The cartouche used to state
+        // a name and leave the reader to work out what it named; on a sheet that also draws a town,
+        // that is a genuine question with two answers on it. The subtitle already gives the scale,
+        // but it gives it as the ride ("a county, a hard day's ride"), which describes the map — this
+        // line reaches the other way and describes the NAME. It reads as a survey heading because
+        // that is exactly what it is.
+        string of = city ? "the city ward of" : sp.Scale switch
+        {
+            0 => "the ground at", 1 => "the country about", 2 => "the county of", _ => "the territory of"
+        };
+        // Wide enough for ALL THREE lines. Sizing it off the title alone left the subtitle hanging out
         // past the box and off the paper once the weather was added to it.
-        float cw = Math.Max(280, Math.Max(m.Title.Length * 12.5f + 40, m.Sub.Length * 5.2f + 34));
-        P.Add(Rect(26, 26, cw, 78, "#f6efdd", Dark, 1.6f, 0.93f));
-        P.Add(Rect(31, 31, cw - 10, 68, null, Dark, 0.7f));
-        P.Add(TextP(26 + cw / 2, 62, m.Title, 21, Dark, bold: true, anchor: 1));
-        P.Add(TextP(26 + cw / 2, 86, m.Sub, 10.5f, Gold, italic: true, anchor: 1));
+        float cw = Math.Max(280, Math.Max(m.Title.Length * 12.5f + 40,
+                                          Math.Max(m.Sub.Length * 5.2f + 34, of.Length * 6.5f + 96)));
+        P.Add(Rect(26, 26, cw, 92, "#f6efdd", Dark, 1.6f, 0.93f));
+        P.Add(Rect(31, 31, cw - 10, 82, null, Dark, 0.7f));
+        P.Add(TextP(26 + cw / 2, 48, of, 10, Gold, italic: true, anchor: 1));
+        P.Add(TextP(26 + cw / 2, 76, m.Title, 21, Dark, bold: true, anchor: 1));
+        P.Add(TextP(26 + cw / 2, 100, m.Sub, 10.5f, Gold, italic: true, anchor: 1));
         P.Add(TextP(26 + cw - 12, 42, "N° " + sp.Seed, 8, Gold, italic: true, anchor: 2));
 
         // ---- compass ----

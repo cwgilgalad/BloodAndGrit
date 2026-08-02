@@ -562,9 +562,12 @@ public partial class MainForm
     Label turnFace;
     System.Windows.Forms.Timer turnTicker;
     readonly List<Control> turnGlassParts = new();
-    /// The Tracker bar's standing invitation to put the glass out, shown exactly when the glass
-    /// itself is not. See where it is built for why it has to exist.
-    Button glassCallBtn;
+    /// The Tracker bar's own switch for the glass — down when the glass is out, up when it is not.
+    /// See where it is built for why it has to exist.
+    CheckBox glassToggle;
+    /// Set while ShowTurnTimer is putting the switch back in agreement with the state it just set,
+    /// so the CheckedChanged that follows doesn't call straight back into it.
+    bool glassToggleSyncing;
 
     /// <summary>The glass, its face, and its own little menu, built as one column that the Tracker
     /// hangs at the RIGHT EDGE of the action bar rather than dropping into the flow.
@@ -619,7 +622,7 @@ public partial class MainForm
             (TurnPresetLabel(5), (s, e) => SetTurnLength(TurnClock.Presets[5])),
             ("Some other length…", (s, e) => AskTurnLength()),
             ("-", null),
-            ("Put the glass away", (s, e) => ShowTurnTimer(false)));
+            ("Put the glass away", (s, e) => { ShowTurnTimer(false); RebuildMenu(); }));
 
         // One timer for the whole feature, started only when the glass is on show. 60 ms is about
         // 16 frames a second — enough that sand looks like it is falling, cheap enough that a
@@ -672,7 +675,7 @@ public partial class MainForm
     {
         if (turnGlass == null) { Prefs.Save(WithTurn(Prefs.Load(), on, null)); return; }
         foreach (var c in turnGlassParts) c.Visible = on;
-        if (glassCallBtn != null) glassCallBtn.Visible = !on;   // one of the two is always on show
+        SyncGlassToggle(on);            // four routes lead here; the switch must show all four
         if (!on) { turnClock.Pause(); turnClock.Reset(); }
         SyncTicker();
         ShowTurnGlass();
@@ -680,6 +683,22 @@ public partial class MainForm
         if (!quiet) Say(on
             ? $"The turn glass is on the table — {TurnClock.Spell(turnClock.PresetSeconds)} to a turn."
             : "The turn glass is put away.", Gold);
+    }
+
+    /// <summary>Put the Tracker bar's switch in agreement with the state, without letting it answer
+    /// back. The switch is one of four routes to the glass — the other three are the View menu, the
+    /// Table menu and the Glass ▾ menu's "Put the glass away" — and every one of them lands in
+    /// <see cref="ShowTurnTimer"/>, so this is the single place the switch is ever set. Guarded
+    /// because setting Checked raises CheckedChanged whether a hand or the code did it, and that
+    /// handler calls ShowTurnTimer straight back.</summary>
+    void SyncGlassToggle(bool on)
+    {
+        if (glassToggle == null || glassToggleSyncing) return;
+        glassToggleSyncing = true;
+        glassToggle.Checked = on;
+        // What it SAYS, not what pressing it does: a switch already shows that by being down.
+        glassToggle.Text = on ? "Turn glass — on" : "＋ Turn glass";
+        glassToggleSyncing = false;
     }
 
     /// <summary>Whether the glass is on the table. Falls back to the saved preference, because the
@@ -866,13 +885,31 @@ public partial class MainForm
         // The glass is off by default and, when it is off, the whole column at the right edge is
         // hidden — so the ONE route to turning it on was a menu called Table, which is where nobody
         // looks for a clock (user-reported: "I don't see an option to turn on the hourglass
-        // anywhere"). This button stands where the turn is taken and is visible precisely when the
-        // glass is not, so the feature is never invisible in both places at once.
-        glassCallBtn = Btn("＋ Turn glass", (s, e) => ShowTurnTimer(true), 108,
-            "Put an hourglass on the bar that runs the posse's turn down. It never ends a turn or "
-            + "takes a Beat — it shows the time going and says so when it is through. Also on the "
-            + "Table and View menus, and its length is yours to set.");
-        bar.Controls.Add(glassCallBtn);
+        // anywhere"). This switch stands where the turn is taken, so the feature is never invisible.
+        //
+        // It was a button that appeared only while the glass was away, which answered half the
+        // question: putting the glass OUT was on the bar, putting it away was back in a menu, and a
+        // control that vanishes once you have used it says nothing about the state it left behind
+        // (user-reported). A held-down switch says both things at once — that the glass is out, and
+        // that this is what puts it away — which is what a toggle is FOR. Same shape as the Map
+        // tab's ✥ Move things, so the app has one idiom for "this is on".
+        glassToggle = new CheckBox
+        {
+            Text = "＋ Turn glass", Appearance = Appearance.Button, AutoSize = false,
+            Width = 108, Height = 30, Margin = new Padding(3),
+            FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        Tip.SetToolTip(glassToggle, "Put an hourglass on the bar that runs the posse's turn down, or take it "
+            + "away. It never ends a turn or takes a Beat — it shows the time going and says so when it is "
+            + "through. Also on the Table and View menus, and its length is yours to set.");
+        glassToggle.CheckedChanged += (s, e) =>
+        {
+            if (glassToggleSyncing) return;
+            ShowTurnTimer(glassToggle.Checked);
+            RebuildMenu();                 // the two menu checkmarks answer to the same one state
+        };
+        bar.Controls.Add(glassToggle);
 
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));

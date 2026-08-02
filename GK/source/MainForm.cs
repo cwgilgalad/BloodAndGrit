@@ -952,6 +952,13 @@ public partial class MainForm : Form
     /// bottom half), and scales with the pane's own size — bigger in a roomy window,
     /// smaller in a tight one, gone entirely below a dignified minimum — so it never
     /// sits behind rows, text, or controls.
+    ///
+    /// <para>The three numbers below are the whole of how present the mark is, and they were
+    /// set too shy: capped at three fifths of the pane and refusing to draw under 150px wide,
+    /// it took a nearly empty pane in a nearly full-screen window to see the thing at all. They
+    /// are now three quarters and 104. <b>The faintness is a separate dial and was deliberately
+    /// left alone</b> — <c>WmAttr</c>'s 0.15 alpha is what keeps this a watermark instead of a
+    /// picture, and every one of these hosts paints it behind live content.</para>
     /// </summary>
     static void Watermark(Control host, Func<int> usedHeight)
     {
@@ -961,12 +968,12 @@ public partial class MainForm : Form
             int cw = host.ClientSize.Width, ch = host.ClientSize.Height;
             int top = usedHeight() + 22;
             int freeH = ch - top;
-            if (freeH < 60) return;                             // no room at all below content
+            if (freeH < 48) return;                             // no room at all below content
             // scale with the window: as large as the free background allows, capped so a
             // big pane doesn't let it balloon past a dignified share of the width
-            int maxW = Math.Min(cw - 56, cw * 3 / 5);
-            int w = Math.Min(maxW, (freeH - 24) * img.Width / img.Height);
-            if (w < 150) return;
+            int maxW = Math.Min(cw - 40, cw * 3 / 4);
+            int w = Math.Min(maxW, (freeH - 12) * img.Width / img.Height);
+            if (w < 104) return;
             int h = w * img.Height / img.Width;
             var r = new Rectangle((cw - w) / 2, top + (freeH - h) / 2, w, h);
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
