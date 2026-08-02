@@ -32,7 +32,11 @@ public partial class MainForm
         return (pages, wiz.Untipped);
     }
 
-    sealed class SoulWizard : Form
+    // Sheet, not Form: this is a full window with a caption bar, and it was one of two left wearing
+    // the system's white one after v1.32.0 dressed the rest. It is also the longest-lived window in
+    // the app — nine steps of a character — so it is the last place a Keeper should be looking at
+    // somebody else's chrome.
+    sealed class SoulWizard : Sheet
     {
         public CharacterSheet Result;
 

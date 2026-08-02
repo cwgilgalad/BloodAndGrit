@@ -63,4 +63,16 @@ public class Sheet : Form
         base.OnHandleCreated(e);
         Chrome.Apply(this);
     }
+
+    /// <summary>Dress the contents, once, after they exist.
+    ///
+    /// <para>Load rather than the constructor or <c>OnHandleCreated</c>, because a dialog in this
+    /// app is built the whole way — every control added — and only then shown, so Load is the first
+    /// moment there is anything to walk. See <see cref="MainForm.DressControls"/> for what it does
+    /// and why it is a walk rather than a rule about how to build a button.</para></summary>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        MainForm.DressControls(this);
+    }
 }

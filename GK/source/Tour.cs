@@ -202,7 +202,11 @@ public partial class MainForm
 /// <summary>The floating callout. Owned by the main window so it rides above it and closes with
 /// it, borderless so it reads as a speech bubble rather than another dialog, and deliberately NOT
 /// modal — the whole point is that the app stays usable while it is talking about it.</summary>
-sealed class TourCallout : Form
+// Sheet rather than Form even though this one is borderless and so has no caption to colour: what
+// it is really joining is the contents pass, so a control added to the callout later cannot arrive
+// wearing the system theme. Chrome's DWM calls on a borderless window are a no-op, which is the
+// right outcome and costs one failing HRESULT nobody reads.
+sealed class TourCallout : Sheet
 {
     readonly MainForm host;
     readonly List<TourStop> stops;
