@@ -74,9 +74,12 @@ Desktop\Git repos.)
   `GritKeeper\app\`, the packager was run, and afterwards the folder held only the exe while
   both files sat intact under `.package-aside\` — the decoy's contents read back byte-for-byte.
 
-  **And the real fix is not in the script:** `GritKeeper\app\` is generated build output and is
-  the wrong place to keep anything. There is now a play folder at **`Desktop\GritKeeper\`**,
-  outside the repo, holding the signed v1.30.0 exe and a `README.txt` saying why it exists.
+  **And the real fix is not in the script.** A separate play folder at `Desktop\GritKeeper\` was
+  the first attempt, and it was the wrong shape: within hours it was a 156 MB duplicate sitting a
+  version behind, because nothing kept it current. v1.31.0 later that day did it properly by moving
+  the state out of the exe's folder entirely, which makes `GritKeeper\app\GritKeeper.exe` safe to
+  play from — one copy, refreshed by the release it came from. The duplicate was deleted and a
+  1 KB Desktop shortcut points at the real one.
 
 - **GritKeeper v1.30.0 — a soul you can describe, a glass you can find, a map that fills the
   screen, and four things that only go wrong in month six (2026-07-31, user-requested).**
