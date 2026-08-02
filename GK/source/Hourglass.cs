@@ -70,45 +70,55 @@ internal sealed class HourglassView : Control
         var sand = through ? MainForm.Blood : MainForm.Gold;
 
         // ---- the sand, drawn behind the glass outline so the outline reads as glass ----
+        //
+        // Both bulbs are laid out from ONE number: how far out from the neck the sand still to
+        // fall reaches, as a fraction of a bulb's height. Each bulb is a triangle on the neck, so
+        // AREA — which is what the eye actually reads as "how much is left" — goes as the square
+        // of that distance; taking the square root of the sand remaining is what makes the level
+        // drop look linear in time.
         double spent = clock.Spent;
+        float scale = (float)Math.Sqrt(Math.Clamp(1 - spent, 0, 1));
+        // The half-width of the glass wall at that distance from the neck — the SAME number in
+        // both bulbs, which is the whole trick. The surface of the upper band and the surface of
+        // the lower heap are two cuts across the glass at equal distances from the waist, so they
+        // are equally wide, and the two areas sum to a constant: sand is conserved, and the eye
+        // reads one quantity moving rather than two shapes animating past each other.
+        float halfAtSurface = neckHalf + (gw / 2f - neckHalf) * scale;
+        float bandTop = neckY - (neckY - topY) * scale;
+        float heapTop = neckY + (botY - neckY) * scale;
         using (var brush = new SolidBrush(Color.FromArgb(through ? 210 : 235, sand)))
         {
-            // Upper bulb: an inverted triangle emptying from the top down. Its remaining sand is a
-            // triangle similar to the bulb, so the AREA left — which is what the eye reads as
-            // "how much is left" — falls off as the square of the height. Scaling the height by
-            // sqrt(remaining) is what makes the level drop look linear in time.
-            double left = 1 - spent;
-            float scale = (float)Math.Sqrt(Math.Max(0, left));
+            // Upper bulb: an inverted triangle emptying from the top down.
             if (scale > 0.01f)
-            {
-                float bandTop = neckY - (neckY - topY) * scale;
-                float halfAtTop = neckHalf + (gw / 2f - neckHalf) * scale;
                 g.FillPolygon(brush, new[]
                 {
-                    new PointF(midX - halfAtTop, bandTop), new PointF(midX + halfAtTop, bandTop),
-                    new PointF(midX + neckHalf, neckY),    new PointF(midX - neckHalf, neckY),
+                    new PointF(midX - halfAtSurface, bandTop), new PointF(midX + halfAtSurface, bandTop),
+                    new PointF(midX + neckHalf, neckY),        new PointF(midX - neckHalf, neckY),
                 });
-            }
 
-            // Lower bulb: a heap growing up from the floor, same square-law in reverse.
-            float heap = (float)Math.Sqrt(Math.Max(0, spent));
-            if (heap > 0.01f)
-            {
-                float heapTop = botY - (botY - neckY) * heap;
-                float halfAtHeap = neckHalf + (gw / 2f - neckHalf) * heap;
+            // Lower bulb: the heap it lands in, growing up off the floor.
+            //
+            // This is the half that was wrong. It took its top edge's width from its own height
+            // above the floor — the wall measured from the wrong end — so the wider the heap grew
+            // the narrower it drew its surface. At a glass nearly through, that put the heap's
+            // corners at the widest part of the bulb while its surface sat up at the narrow neck:
+            // the sand painted a rectangle across the whole lower half, and the drawn glass came
+            // out INSIDE the box instead of around the sand.
+            if (scale < 0.99f)
                 g.FillPolygon(brush, new[]
                 {
-                    new PointF(midX - gw / 2f, botY),      new PointF(midX + gw / 2f, botY),
-                    new PointF(midX + halfAtHeap, heapTop), new PointF(midX - halfAtHeap, heapTop),
+                    new PointF(midX - gw / 2f, botY),          new PointF(midX + gw / 2f, botY),
+                    new PointF(midX + halfAtSurface, heapTop), new PointF(midX - halfAtSurface, heapTop),
                 });
-            }
         }
 
         // ---- the falling stream: only while it is actually running and has sand to fall ----
         if (clock.Running && spent > 0.001 && spent < 0.999)
         {
             using var grain = new SolidBrush(sand);
-            float fallTop = neckY + 1, fallBot = botY - (botY - neckY) * (float)Math.Sqrt(spent) - 1;
+            // From just under the neck to just above the heap's surface — off the same heapTop the
+            // heap is drawn to, so the stream always lands ON the sand rather than in it or short of it.
+            float fallTop = neckY + 1, fallBot = heapTop - 1;
             if (fallBot > fallTop)
                 foreach (var (dx, phase) in Grains)
                 {
