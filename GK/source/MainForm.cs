@@ -590,7 +590,7 @@ public partial class MainForm : Sheet
     /// PrimaryBtn and DangerBtn set their own border AFTER this returns, so the first blur would
     /// have reset a red-edged button to a hairline one. A ring drawn over the top belongs to no
     /// weight in particular and so cannot overwrite any of them.</para></summary>
-    static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
+    internal static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = new Button
         {
@@ -918,9 +918,14 @@ public partial class MainForm : Sheet
     }
 
     // ---- weight on a toolbar ----
-    // Btn is FlatStyle.System, which hands painting to the theme and quietly IGNORES BackColor and
-    // FlatAppearance — so a button cannot be emphasised by setting those on it. Both variants below
-    // switch to FlatStyle.Flat, which is the only way to actually colour a WinForms button.
+    // Four weights, all built on Btn and differing only in ink: QuietBtn (housekeeping), Btn (the
+    // ordinary work), PrimaryBtn (the one action a bar exists for), DangerBtn (throws work away).
+    // They all inherit Btn's flat paper face, so each one below overrides colour and nothing else —
+    // the focus ring, the hairline geometry and FitLabel are set once, in Btn, and stay agreed.
+    // (Until v1.33.0 Btn was FlatStyle.System, which hands painting to the theme and silently
+    // ignores BackColor and FlatAppearance; these two had to switch to Flat themselves to be
+    // coloured at all. Now that Btn is already Flat, that switch is inherited — the assignments are
+    // kept below only because a weight should state its own face rather than assume the base's.)
 
     /// <summary>The one action a bar exists for, painted so a hand finds it without reading. Use it
     /// once per bar: two primaries is none.</summary>
