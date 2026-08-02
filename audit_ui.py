@@ -42,6 +42,11 @@ SRC = Path(__file__).resolve().parent / "GK" / "source"
 #   ToggleBtn(text, w, tip)
 #   DieBtn(text, sides, onClick, w, tip = null)
 #
+# TourBtn is the tour callout's own weight (Tour.cs) — Btn at 88×28. It is listed for the same
+# reason, and it is the case that shows why the list has to be kept: the tour's three buttons were
+# built from a bare `new Button` and so were invisible here for eleven releases, which is exactly
+# how they stayed FlatStyle.System through the release that flattened every other bar in the app.
+#
 # QuietBtn and ToggleBtn joined in v1.33.0 with the three button weights, and the reason they are
 # here is the reason PrimaryBtn and DangerBtn are: a helper the audit does not know about is a set
 # of buttons nobody checks. The tell was the count — 131 down to 126 with only three buttons
@@ -52,6 +57,7 @@ HELPERS = {
     "PrimaryBtn": (2, 1, 3, 2),
     "DangerBtn":  (2, 1, 3, 2),
     "QuietBtn":   (2, 1, 3, 2),
+    "TourBtn":    (2, 1, 3, 2),
     "MenuBtn":    (3, None, 2, 1),
     "ToggleBtn":  (3, None, 2, 1),
     "DieBtn":     (4, 2, 4, 3),
@@ -193,7 +199,8 @@ def main():
         # return type is matched loosely here. Pinning it to `Button` would have let ToggleBtn's own
         # definition be counted as a call site and reported for having no literal tooltip.
         text = re.sub(r"static\s+(?:Button|CheckBox)\s+"
-                      r"(Btn|PrimaryBtn|DangerBtn|QuietBtn|MenuBtn|ToggleBtn|DieBtn)\(", r"DEF_\1(", text)
+                      r"(Btn|PrimaryBtn|DangerBtn|QuietBtn|TourBtn|MenuBtn|ToggleBtn|DieBtn)\(",
+                      r"DEF_\1(", text)
         sources[path.name] = text
     # One string for method-body lookups: a button's handler often delegates across files (a
     # Tracker button calling a method that lives in MainForm.cs), so following it has to be
