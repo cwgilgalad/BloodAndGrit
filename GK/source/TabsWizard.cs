@@ -91,6 +91,13 @@ public partial class MainForm
             var cancel = new Button { Text = "Cancel", Width = 88, Height = 32, DialogResult = DialogResult.Cancel };
             next = new Button { Text = "Next ▸", Width = 100, Height = 32 };
             back = new Button { Text = "◂ Back", Width = 88, Height = 32 };
+            // Weight, so the row does not read as three of the same thing. Next ▸ is what drives the
+            // nine steps and is the only reason this window is open; Cancel sits right beside it and
+            // throws all nine away, which is the exact adjacency DangerBtn exists for — "it stops
+            // looking like the button beside it, so it is never pressed by muscle memory". ◂ Back
+            // keeps the ordinary face the walk gives it: it is neither the point nor a loss.
+            MainForm.DressPrimary(next);
+            MainForm.DressDanger(cancel);
             next.Click += (s, e) => GoNext();
             back.Click += (s, e) => GoBack();
             Tipped(next, "On to the next step. What this one asks for is checked first — anything the book insists on has to be settled before you move.");
