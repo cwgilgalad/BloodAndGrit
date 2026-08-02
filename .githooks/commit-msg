@@ -1,0 +1,71 @@
+#!/bin/sh
+# Hold a commit message to the same prose standard as the rest of the repo — at the one
+# moment it can still be changed.
+#
+# audit_ai_tells.py has scanned the last 40 commit messages from the start, and CI runs it,
+# so a bad one turned the build red. But a commit message cannot be edited without rewriting
+# history, and this project's standing rule is that history on main is never rewritten — so
+# that finding could never be cleared. A gate that cannot be satisfied is a gate people learn
+# to route around. It happened on 2026-08-01: a message closing on "X is not a backup, it is
+# a second thing to be wrong" — the exact figure the audit exists to catch — landed on main
+# and there was nothing to be done about it afterwards.
+#
+# So the check moved here, where the message is still a file on disk. Landed messages are now
+# reported by the audit and not counted; this is what stops the next one.
+#
+# Install once per clone:  git config core.hooksPath .githooks
+# Bypass, when you mean it: git commit --no-verify
+
+msg_file="$1"
+
+# Merge commits, reverts, squashes and fixups are generated or conventional — not authored
+# prose, and not worth blocking a merge over.
+case "$(head -n1 "$msg_file")" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *|amend!\ *) exit 0 ;;
+esac
+
+py=$(command -v python || command -v python3 || command -v py) || exit 0
+[ -x "${py}" ] || [ -n "${py}" ] || exit 0
+
+# The audit lives beside the hooks' parent. Fail open if it is not there: a missing tool
+# should not stop a commit, it should stop being missing.
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+[ -f "$root/audit_ai_tells.py" ] || exit 0
+
+"$py" - "$msg_file" "$root" <<'PY'
+import sys, pathlib, importlib.util
+
+msg_file, root = sys.argv[1], sys.argv[2]
+
+# Strip the comment lines git puts in the template; they are not the author's prose.
+text = "\n".join(l for l in pathlib.Path(msg_file).read_text(encoding="utf-8").splitlines()
+                 if not l.startswith("#"))
+if not text.strip():
+    sys.exit(0)
+
+spec = importlib.util.spec_from_file_location("tells", pathlib.Path(root) / "audit_ai_tells.py")
+mod = importlib.util.module_from_spec(spec)
+try:
+    spec.loader.exec_module(mod)
+    rep = mod.audit("commit message", text)
+except Exception:
+    sys.exit(0)          # the audit failing is not the committer's problem
+
+hard = rep.get("hard") or []
+if not hard:
+    sys.exit(0)
+
+print("")
+print("=" * 74)
+print("This commit message carries a generated cadence:")
+print("=" * 74)
+for label, line, snip in hard:
+    print(f"  L{line}  {label}")
+    print(f"        …{snip}…")
+print("")
+print("Rewrite it in your own cadence -- do not just delete the words. A commit message")
+print("cannot be fixed after it lands, which is why this is checked here and not in CI.")
+print("To commit it anyway: git commit --no-verify")
+print("")
+sys.exit(1)
+PY
