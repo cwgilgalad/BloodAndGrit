@@ -296,6 +296,17 @@ def main():
         print(f"{'commit msgs':<22}{r['sentences']:>6}{r['words']:>7}{bs:>7}  "
               f"{str(r['shortest']) + '-' + str(r['longest']):<10}{r['emdash_per_1k']:>6.1f}  {band(r['burst'])}")
 
+    # Findings in ALREADY-LANDED commit messages are reported and not counted. This is not a
+    # softening. A commit message cannot be edited without rewriting history, and this project's
+    # own standing rule is that history on main is never rewritten — so a hard failure there is
+    # one that can never be cleared, which is exactly the defect the quoted-book-text case had.
+    # The gate for commit messages is .githooks/commit-msg, which runs this same scan over the
+    # message BEFORE it is written, while it can still be changed. Files stay fatal: files can
+    # be edited. (Found the hard way: a commit message written on 2026-08-01 carried the very
+    # figure this audit exists to catch, and turned CI red with nothing anyone could do about it.)
+    landed_msgs = [(n, r) for n, r in reports if n.startswith("commit msgs")]
+    reports = [(n, r) for n, r in reports if not n.startswith("commit msgs")]
+
     print("\n" + "=" * 78)
     print("HARD TELLS — these are the ones to fix")
     print("=" * 78)
@@ -328,15 +339,28 @@ def main():
                 print(f"\n{name} L{line}: {label}")
                 print(f"  …{snip}…")
 
+    msg_hits = sum(len(r["hard"]) + len(r["quoted"]) for _, r in landed_msgs)
+    if msg_hits:
+        print("\n" + "=" * 78)
+        print("IN COMMIT MESSAGES ALREADY WRITTEN — reported, never a failure.")
+        print("=" * 78)
+        print("(They cannot be edited without rewriting history, which this project does not do on")
+        print(" main. The commit-msg hook is what stops the next one — install the hooks once per")
+        print(" clone with `git config core.hooksPath .githooks`.)")
+        for name, r in landed_msgs:
+            for label, line, snip in r["hard"] + r["quoted"]:
+                print(f"\n{name} L{line}: {label}")
+                print(f"  …{snip}…")
+
     print("\n" + "=" * 78)
     print("SOFT TELLS — corporate register; judgement call, never a failure")
     print("=" * 78)
-    for name, r in reports:
+    for name, r in reports + landed_msgs:
         if r["soft"]:
             print(f"\n{name}:")
             for w, (n, line, ctx) in sorted(r["soft"].items(), key=lambda kv: -kv[1][0]):
                 print(f"  {w}×{n}  first at L{line}:  …{ctx}…")
-    if not any(r["soft"] for _, r in reports):
+    if not any(r["soft"] for _, r in reports + landed_msgs):
         print("\n  none.")
 
     print()
