@@ -35,7 +35,11 @@ def current_versions() -> dict:
         "Player's Book": _find("build_player.py", r"The Player's Book · Version ([\d.]+)"),
         "Keeper's Book": _find("build_keeper.py", r"The Keeper's Book · Version ([\d.]+)"),
         "Bestiary": _find("build_bestiary.py", r"The Bestiary · Version ([\d.]+)"),
-        "GritKeeper": _find("GK/source/MainForm.cs", r'AppVersion\s*=\s*"([\d.]+)"'),
+        # The csproj carries the app's number and nothing else does: MainForm.AppVersion reads it
+        # back off the assembly. This used to read a hand-typed const in MainForm.cs, and when that
+        # const was retired the pattern stopped matching — so the app quietly left the README's
+        # editions line, which is the one place a reader looks to see what the download is.
+        "GritKeeper": _find("GK/source/BloodAndGritKeeper.csproj", r"<Version>([\d.]+)</Version>"),
     }
 
 
@@ -92,6 +96,13 @@ def main() -> int:
     if not readme.exists():
         print("update_readme: README.md not found", file=sys.stderr)
         return 0  # never block a commit over this
+    missing = [name for name, ver in current_versions().items() if not ver]
+    if missing:
+        # render_block leaves out a component whose version it cannot read, which is exactly how
+        # GritKeeper slipped off the editions line and stayed off it. A silent omission reads as
+        # "this component has no version", so say plainly that the line is short.
+        print("update_readme: no version found for " + ", ".join(missing)
+              + " — the editions line is incomplete", file=sys.stderr)
     changed = update(readme)
     print("update_readme: README.md " + ("updated" if changed else "already current"))
     return 0
