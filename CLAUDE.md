@@ -218,8 +218,12 @@ packager's own `prefs.json` and every download launched into someone else's tabl
 them to `.package-aside\<timestamp>\` now rather than deleting them: it used `Remove-Item`, which
 skips the Recycle Bin, and GritKeeper stages saves to `session.json.new` and keeps no `.bak`, so
 packaging a release destroyed the table of anyone playing out of that folder. It did exactly that
-on 2026-08-01. **The play copy lives at `Desktop\GritKeeper\`, outside the repo** — the delivered
-folder is build output and is the wrong home for anything you want to keep.
+on 2026-08-01. Since v1.31.0 moved the state to `AppState.Dir` this is belt-and-braces rather than
+the only thing between a Keeper and a lost table, and **`GritKeeper\app\GritKeeper.exe` is the one
+local copy to play from** — `package.ps1` refreshes it on every release, so it cannot go stale.
+There is a `GritKeeper.lnk` shortcut on the Desktop pointing at it. A second hand-synced copy was
+tried on 2026-08-01 and deleted the same day: it was a 156 MB duplicate that had already drifted a
+version behind, which is what any copy nothing keeps current does.
 
 **`package.ps1` handles a running app (v1.20.1).** If GritKeeper is running out of `GritKeeper\app\`
 it holds its own exe, and the copy step used to die on a raw file-lock error mid-release. The script
