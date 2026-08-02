@@ -377,6 +377,7 @@ Each book's cheapest editable form is **bolded**.
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
 | `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
+| **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. In CI (default mode) and in `.githooks/pre-push` (`--delivered`, warn-only, main only). Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
 
@@ -742,6 +743,12 @@ change them all:
   from the build-script version strings and `CHANGELOG.md`. The tracked **`.githooks/pre-commit`**
   hook runs it and re-stages `README.md` on every commit (never blocks a commit). Enable once per
   clone: `git config core.hooksPath .githooks`. Don't hand-edit inside the AUTO markers.
+- **`.githooks/pre-push` tells you when the packaged app is behind the source**, running
+  `verify_release.py --delivered` and printing the three commands that fix it. It **never blocks**,
+  and it only speaks up when **`main`** is being pushed — a `session/*` branch is work in progress,
+  where the version is bumped early and the packaging happens at the end, so warning there would
+  fire on every autosync push for hours. Same enable step as `pre-commit` (`core.hooksPath`), which
+  means **an unhooked clone gets no warning** — the gate that always runs is the tag check in CI.
 - `autosync.ps1` + `register_autosync_task.ps1` are canonical and identical in every repo.
   The "<folder name> AutoSync" scheduled task (every 30 min + at logon) auto-commits the
   checked-out branch and pushes only when an `origin` remote exists. `autosync.log` is

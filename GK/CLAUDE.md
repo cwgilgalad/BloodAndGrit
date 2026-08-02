@@ -208,6 +208,17 @@ and no `Data/` folder beside it. `Db.ReadData` loads the JSON from the assembly,
 (via `AppContext.BaseDirectory`). Published on GitHub via **Releases**, never committed — the
 binary is git-ignored.
 
+**Bumping the version is the START of shipping, not the end of it** (learned the hard way,
+2026-08-02). A build in `bin/` changes nothing about what anybody runs: the desktop shortcut points
+at **`GritKeeper\app\GritKeeper.exe`**, which only `package.ps1` ever writes. v1.32.0 was written,
+verified against all four checks, merged, and entered in the CHANGELOG as a shipped release — and
+was never published, signed, packaged or tagged, so the Keeper's desktop stayed on v1.31.0 for a day
+and a half and the app was two releases behind before anyone looked. **The whole loop is
+`dotnet publish -c Release` → `.\sign.ps1` → `.\package.ps1` → tag → GitHub Release**, and
+**`python verify_release.py --delivered`** is the one command that answers "is the app on this
+machine actually the version we think it is". `.githooks/pre-push` runs it when `main` is pushed;
+CI runs the half it can see, and fails once a version stops being the newest without a tag.
+
 **A Linux package is planned** (decided 2026-07-29). The engine half has been done since v1.28.0:
 `GK/rules` is a plain `net8.0` library with no Windows reference — exactly what the headless smoke
 rig builds against — so the rules, chargen, map generator and PDF writer all run on Linux today.
@@ -277,6 +288,10 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
 ## Verification standard for this app
 
 - `dotnet build -c Release` → 0 warnings, 0 errors (`-warnaserror` in CI).
+- **`python verify_release.py`** — one version everywhere, and every past release actually cut.
+  Add `--delivered` on this machine to include the exe the desktop shortcut runs. Everything else
+  on this list checks the SOURCE; this is the only one that asks whether the source ever became
+  something a Keeper can open.
 - **Headless logic tests** (`GK/smoke`, `dotnet run -c Release`): dice-range checks, all
   four-degrees edge cases (including the nat-20-on-a-failure / nat-1-on-a-success regression cases
   — there was a real bug here once, a signed band scale with a gap at zero; fixed by moving to an
