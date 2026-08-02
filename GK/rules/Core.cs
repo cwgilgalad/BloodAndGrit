@@ -127,7 +127,7 @@ public static class Prefs
         public int TurnSeconds { get; set; } = TurnClock.DefaultSeconds;
     }
 
-    static string PathTo => Path.Combine(AppContext.BaseDirectory, "prefs.json");
+    static string PathTo => Path.Combine(AppState.Dir, "prefs.json");
 
     public static Data Load()
     {
@@ -1413,6 +1413,77 @@ public static class Rules
 }
 
 // ============================================================ DATA STORE
+
+// ============================================================ WHERE THE TABLE LIVES
+/// <summary>The one folder GritKeeper writes a Keeper's own things into — the session, the
+/// preferences, and the two files that exist to rescue a session that went wrong.
+///
+/// It used to be "beside the exe", full stop, which is a fine answer for a single-file portable
+/// app and a terrible one the moment the exe's folder is BUILD OUTPUT. `package.ps1` clears the
+/// runtime files out of <c>GritKeeper\app\</c> on every release — it has to, or a download ships
+/// carrying the packager's own table — and a Keeper who plays out of that folder, which is the
+/// obvious thing to do since the exe is right there, loses everything the first time anyone cuts
+/// a release. That happened on 2026-08-01.
+///
+/// So the folder is RESOLVED rather than assumed, in this order:
+///
+/// <list type="number">
+/// <item>A <c>portable.txt</c> beside the exe — an explicit "keep my things here", for a copy on
+///   a USB stick carried to somebody else's table. Nothing is written to their machine.</item>
+/// <item>An existing <c>session.json</c> beside the exe — someone is already using this folder as
+///   their table and it is not this code's place to move them off it silently.</item>
+/// <item>Otherwise <c>%APPDATA%\GritKeeper\</c>, which no build, publish or package step can
+///   reach. This is the answer nearly everyone gets, and it is the one that cannot lose a table.</item>
+/// </list>
+///
+/// The single-file promise is untouched: the exe still needs nothing beside it, and rule 1 means
+/// it can still be carried on a stick with its table. What changed is only where a plain
+/// double-click keeps things.</summary>
+public static class AppState
+{
+    /// <summary>Drop this beside the exe to pin the state to the exe's own folder.</summary>
+    public const string PortableMarker = "portable.txt";
+
+    /// <summary>Which folder wins, given only what exists on disk. Pure and separated from the
+    /// filesystem so the smoke rig can walk every combination without creating any of it — the
+    /// order below decides whether a Keeper's campaign is found or silently abandoned, which is
+    /// not something to leave to a first run on somebody's machine.</summary>
+    /// <param name="besideExe">The exe's own folder.</param>
+    /// <param name="appData">The per-user folder.</param>
+    /// <param name="hasPortableMarker">Is there a portable.txt beside the exe?</param>
+    /// <param name="hasSessionBesideExe">Is there already a session.json beside the exe?</param>
+    public static string Resolve(string besideExe, string appData, bool hasPortableMarker, bool hasSessionBesideExe)
+        => hasPortableMarker || hasSessionBesideExe ? besideExe : appData;
+
+    static string _dir;
+
+    /// <summary>The resolved folder, worked out once per run and created if it is missing.
+    /// Falls back to the exe's own folder if the per-user folder cannot be made — a Keeper with a
+    /// locked-down profile should still get an app that runs, not one that refuses to start.</summary>
+    public static string Dir
+    {
+        get
+        {
+            if (_dir != null) return _dir;
+            string beside = AppContext.BaseDirectory;
+            try
+            {
+                string appData = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GritKeeper");
+                _dir = Resolve(beside, appData,
+                    File.Exists(Path.Combine(beside, PortableMarker)),
+                    File.Exists(Path.Combine(beside, "session.json")));
+                Directory.CreateDirectory(_dir);
+            }
+            catch { _dir = beside; }
+            return _dir;
+        }
+    }
+
+    /// <summary>Point the state somewhere else. For the smoke rig and for --selftest, so neither
+    /// writes into a real Keeper's folder while it works.</summary>
+    public static void UseForTesting(string dir) => _dir = dir;
+}
 
 public static class Db
 {
