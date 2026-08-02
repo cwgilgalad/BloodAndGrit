@@ -37,14 +37,29 @@ SRC = Path(__file__).resolve().parent / "GK" / "source"
 # PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
 # their CALL SITES deserve the same audit as any other button. They were missing here, so five
 # of the tracker's buttons were never checked at all.
-#   Btn/PrimaryBtn/DangerBtn(text, onClick, w = 120, tip = null)
+#   Btn/PrimaryBtn/DangerBtn/QuietBtn(text, onClick, w = 120, tip = null)
 #   MenuBtn(text, w, tip, params (label, onClick)[] items)
+#   ToggleBtn(text, w, tip)
 #   DieBtn(text, sides, onClick, w, tip = null)
+#
+# TourBtn is the tour callout's own weight (Tour.cs) — Btn at 88×28. It is listed for the same
+# reason, and it is the case that shows why the list has to be kept: the tour's three buttons were
+# built from a bare `new Button` and so were invisible here for eleven releases, which is exactly
+# how they stayed FlatStyle.System through the release that flattened every other bar in the app.
+#
+# QuietBtn and ToggleBtn joined in v1.33.0 with the three button weights, and the reason they are
+# here is the reason PrimaryBtn and DangerBtn are: a helper the audit does not know about is a set
+# of buttons nobody checks. The tell was the count — 131 down to 126 with only three buttons
+# actually removed. ToggleBtn wires no handler of its own (its caller subscribes to CheckedChanged,
+# which is the state changing rather than a press), so it is listed with MenuBtn's None.
 HELPERS = {
     "Btn":        (2, 1, 3, 2),
     "PrimaryBtn": (2, 1, 3, 2),
     "DangerBtn":  (2, 1, 3, 2),
+    "QuietBtn":   (2, 1, 3, 2),
+    "TourBtn":    (2, 1, 3, 2),
     "MenuBtn":    (3, None, 2, 1),
+    "ToggleBtn":  (3, None, 2, 1),
     "DieBtn":     (4, 2, 4, 3),
 }
 
@@ -116,13 +131,18 @@ def calls(src, helper):
 def dialogs(text):
     """Yield (line_no, var_name, body) for each locally-built Form that is shown MODALLY.
 
-    The scope of one dialog is taken as everything from its `new Form` to the next one (or the
+    The scope of one dialog is taken as everything from its `new Sheet` to the next one (or the
     end of the file), which is exact enough here: these are built, filled and shown inside a
-    single method, one per method. A Form that is never `ShowDialog`n is a pop-out window (a
+    single method, one per method. A window that is never `ShowDialog`n is a pop-out (a
     creature card, a soul's Ledger, the tour's callout) and is deliberately not audited.
+
+    `Sheet` is the app's own Form subclass — it carries the themed title bar (see Chrome.cs) and
+    every window in the app is built from it. `Form` is still matched here on purpose: a plain
+    Form is a window that slipped the theme, and it should keep being audited for its Esc route
+    rather than quietly dropping out of the count the moment someone writes the wrong base.
     """
     marks = [(m.start(), m.group(1), text.count("\n", 0, m.start()) + 1)
-             for m in re.finditer(r"(?:using\s+)?var\s+(\w+)\s*=\s*new\s+Form\b", text)]
+             for m in re.finditer(r"(?:using\s+)?var\s+(\w+)\s*=\s*new\s+(?:Sheet|Form)\b", text)]
     for i, (pos, name, line) in enumerate(marks):
         end = marks[i + 1][0] if i + 1 < len(marks) else len(text)
         body = text[pos:end]
@@ -175,7 +195,12 @@ def main():
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
-        text = re.sub(r"static\s+Button\s+(Btn|PrimaryBtn|DangerBtn|MenuBtn|DieBtn)\(", r"DEF_\1(", text)
+        # ToggleBtn returns a CheckBox rather than a Button — it is a switch, not a press — so the
+        # return type is matched loosely here. Pinning it to `Button` would have let ToggleBtn's own
+        # definition be counted as a call site and reported for having no literal tooltip.
+        text = re.sub(r"static\s+(?:Button|CheckBox)\s+"
+                      r"(Btn|PrimaryBtn|DangerBtn|QuietBtn|TourBtn|MenuBtn|ToggleBtn|DieBtn)\(",
+                      r"DEF_\1(", text)
         sources[path.name] = text
     # One string for method-body lookups: a button's handler often delegates across files (a
     # Tracker button calling a method that lives in MainForm.cs), so following it has to be

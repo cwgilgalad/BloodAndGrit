@@ -173,7 +173,7 @@ public partial class MainForm
             if (!mapBusy) MapDraw(false);
         };
         rowGen.Controls.Add(mapName);
-        rowGen.Controls.Add(Btn("Clear name", (s, e) => mapName.Text = "", 88,
+        rowGen.Controls.Add(QuietBtn("Clear name", (s, e) => mapName.Text = "", 88,
             "Give the naming back to the survey"));
 
         // ---- row 2: what's shown, and how close ----
@@ -189,7 +189,7 @@ public partial class MainForm
             "Zoom in — or roll the mouse wheel over the map"));
         rowView.Controls.Add(Btn("🔍−", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1 / 1.4f), 46,
             "Zoom out"));
-        rowView.Controls.Add(Btn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
+        rowView.Controls.Add(QuietBtn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
         rowView.Controls.Add(Btn("◈ Full screen", (s, e) => MapFullScreen(), 108,
             "Throw the map across the whole screen, with every control on this bar still on it — "
@@ -199,14 +199,8 @@ public partial class MainForm
         // The old label just read "✥ Landmarks", which named a thing rather than an action — you
         // had to already know that pressing it let you move anything (user-reported). It now says
         // what it does, and stays saying it while it's held down.
-        lmEditBtn = new CheckBox
-        {
-            Text = "✥ Move things", Appearance = Appearance.Button, AutoSize = false,
-            Width = 118, Height = 32, Margin = new Padding(3),
-            FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        Tip.SetToolTip(lmEditBtn, "Press to pick things up. While it's down, drag the town, any named landmark, " +
+        lmEditBtn = ToggleBtn("✥ Move things", 118,
+            "Press to pick things up. While it's down, drag the town, any named landmark, " +
             "or a red Keeper's-layer mark to a better spot — right-click one to put it back where the survey " +
             "drew it. Placements hold for this map number, and exports carry them.");
         lmEditBtn.CheckedChanged += (s, e) =>
@@ -313,7 +307,7 @@ public partial class MainForm
         var home = mapHost.Parent;
         if (home == null) return false;
         int had = mapHost.Controls.Count;
-        using (var f = new Form { FormBorderStyle = FormBorderStyle.None, ShowInTaskbar = false })
+        using (var f = new Sheet { FormBorderStyle = FormBorderStyle.None, ShowInTaskbar = false })
         {
             mapHost.Parent = f;
             if (mapHost.Parent != f) return false;
@@ -340,7 +334,7 @@ public partial class MainForm
         var home = mapHost.Parent;
         if (home == null) return;
 
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "The Trail Maps drafting table — full screen",
             FormBorderStyle = FormBorderStyle.None, StartPosition = FormStartPosition.Manual,
@@ -1088,7 +1082,7 @@ public partial class MainForm
     // A one-line ask — small, centered on the app, Enter accepts, Esc cancels.
     string AskLine(string title, string initial)
     {
-        using var dlg = new Form
+        using var dlg = new Sheet
         {
             Text = title, Width = 340, Height = 128, FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,

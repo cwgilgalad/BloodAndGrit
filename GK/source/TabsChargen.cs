@@ -223,7 +223,7 @@ public partial class MainForm
             return;
         }
 
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = $"Level up — {cur.Name}", Width = 520, AutoSize = true,
             AutoSizeMode = AutoSizeMode.GrowAndShrink, FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -411,7 +411,7 @@ public partial class MainForm
     // word against the book's, and the Ledger notes it instead of arguing.
     internal bool TweakSheet(CharacterSheet s, IWin32Window owner)
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Width = 700, Height = 760, Text = $"Tweak — {s.Name}",
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = true,

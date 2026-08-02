@@ -40,7 +40,7 @@ public partial class MainForm
         var prefs = Prefs.Load();
         if (prefs.ToldTheTour) return;
 
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "Welcome to GritKeeper", Width = 520, Height = 268,
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
@@ -202,7 +202,11 @@ public partial class MainForm
 /// <summary>The floating callout. Owned by the main window so it rides above it and closes with
 /// it, borderless so it reads as a speech bubble rather than another dialog, and deliberately NOT
 /// modal — the whole point is that the app stays usable while it is talking about it.</summary>
-sealed class TourCallout : Form
+// Sheet rather than Form even though this one is borderless and so has no caption to colour: what
+// it is really joining is the contents pass, so a control added to the callout later cannot arrive
+// wearing the system theme. Chrome's DWM calls on a borderless window are a no-op, which is the
+// right outcome and costs one failing HRESULT nobody reads.
+sealed class TourCallout : Sheet
 {
     readonly MainForm host;
     readonly List<TourStop> stops;
@@ -238,9 +242,10 @@ sealed class TourCallout : Form
             Left = Pad, Width = 120, Height = 22, ForeColor = MainForm.Gold,
             Font = new Font("Segoe UI", 9f, FontStyle.Italic), TextAlign = ContentAlignment.MiddleLeft
         };
-        back = Small("◀ Back", (s, e) => Go(at - 1));
-        next = Small("Next ▶", (s, e) => Go(at + 1));
-        done = Small("Finish", (s, e) => Close());
+        back = TourBtn("◀ Back", (s, e) => Go(at - 1), 88, "The stop before this one");
+        next = TourBtn("Next ▶", (s, e) => Go(at + 1), 88, "The next stop on the tour");
+        done = TourBtn("Finish", (s, e) => Close(), 88,
+            "Close the tour — Help ▸ Take the tour brings it back whenever you want it");
         Controls.AddRange(new Control[] { titleLbl, bodyLbl, countLbl, back, next, done });
 
         // Esc anywhere in the callout ends it. The host also wires Esc, so it works whichever of
@@ -251,10 +256,31 @@ sealed class TourCallout : Form
 
     const int Pad = 16;
 
-    Button Small(string text, EventHandler go)
+    /// <summary>The callout's three buttons, built from the app's own <see cref="MainForm.Btn"/>
+    /// rather than from a bare <c>Button</c>.
+    ///
+    /// <para>They were the last <c>FlatStyle.System</c> controls left after v1.33.0 dressed every
+    /// bar in the app, and they were the worst place to leave them: this bubble is a borderless
+    /// patch of Paper with nothing else on it, so three grey-blue Win32 blocks had no surrounding
+    /// chrome to blend into — and it is the FIRST thing a new Keeper sees, since the tour offers
+    /// itself on first run. The app's introduction to itself was the one window that did not look
+    /// like the app.</para>
+    ///
+    /// <para>Going through the shared helper rather than restating the flat face here is the point:
+    /// a second place that paints a button is a second place for the palette to drift. It also puts
+    /// these three inside <c>audit_ui.py</c>'s count, which is why they now carry tooltips.</para>
+    ///
+    /// <para>The parameter list is <c>Btn</c>'s exactly — <c>(text, onClick, w, tip)</c> — and that
+    /// is not decoration. The audit exempts a wrapper from its literal-tooltip rule only when every
+    /// argument it passes down is a forwarded parameter, so a helper that hard-codes its width
+    /// reads to it as a real button site with no caption to check. Matching the signature is what
+    /// lets the audit skip this line and check the three call sites instead.</para></summary>
+    static Button TourBtn(string text, EventHandler onClick, int w = 88, string tip = null)
     {
-        var b = new Button { Text = text, Width = 88, Height = 28, FlatStyle = FlatStyle.System };
-        b.Click += go;
+        var b = MainForm.Btn(text, onClick, w, tip);
+        // 28, not Btn's 32: the callout is a small bubble and its own measured layout reads this
+        // back off `done.Height`, so the row and the form shrink with it.
+        b.Height = 28;
         return b;
     }
 

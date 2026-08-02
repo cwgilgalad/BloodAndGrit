@@ -544,7 +544,7 @@ public partial class MainForm
         { open.BringToFront(); open.Activate(); return; }
 
         int cascade = (soulWindows.Count % 5) * 26;
-        var win = new Form
+        var win = new Sheet
         {
             Text = p.Name, Width = 560, Height = 660, BackColor = Paper,
             MinimumSize = new Size(340, 300), StartPosition = FormStartPosition.Manual,

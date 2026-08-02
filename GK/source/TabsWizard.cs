@@ -32,7 +32,11 @@ public partial class MainForm
         return (pages, wiz.Untipped);
     }
 
-    sealed class SoulWizard : Form
+    // Sheet, not Form: this is a full window with a caption bar, and it was one of two left wearing
+    // the system's white one after v1.32.0 dressed the rest. It is also the longest-lived window in
+    // the app — nine steps of a character — so it is the last place a Keeper should be looking at
+    // somebody else's chrome.
+    sealed class SoulWizard : Sheet
     {
         public CharacterSheet Result;
 
@@ -357,6 +361,7 @@ public partial class MainForm
             col.Controls.Add(Note("Step 4 in the book, but chosen early here so every later list can honor its rules."));
             var row = new FlowLayoutPanel { AutoSize = true };
             wCalList = new ListBox { Width = 220, Height = 330, Font = new Font("Segoe UI", 9.5f) };
+            StyleList(wCalList);
             foreach (var c in CharGen.D.callings.OrderBy(c => c.group).ThenBy(c => c.name)) wCalList.Items.Add(c.name);
             ItemTips(wCalList, i =>
             {
@@ -415,6 +420,7 @@ public partial class MainForm
                 : "Where they come from — gifts, free trained skills, a boon and a burden."));
             var row = new FlowLayoutPanel { AutoSize = true };
             wOrgList = new ListBox { Width = 220, Height = 300, Font = new Font("Segoe UI", 9.5f) };
+            StyleList(wOrgList);
             foreach (var o in CharGen.D.origins.Where(o => !(isFaith && o.notFaith))) wOrgList.Items.Add(o.name);
             ItemTips(wOrgList, i =>
             {

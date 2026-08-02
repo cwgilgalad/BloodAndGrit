@@ -23,13 +23,21 @@ public partial class MainForm
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false
         };
         StyleGrid(ridesGrid);
+        // Name = prop, which the corral did without until v1.33.0 — with no name a column cannot be
+        // reached as g.Columns["BloodCur"], and that is the only way Figures() finds the ones to set
+        // right. It is why this grid kept its figures ragged while the Posse's were squared up.
         void Col(string prop, string head, int weight, bool ro = false)
             => ridesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            { DataPropertyName = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
+            { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
         Col("Name", "Name", 130); Col("Type", "What it is", 110, ro: true); Col("Kind", "Kind", 60, ro: true);
         Col("Rider", "Rider / driver", 115);
-        Col("BloodCur", "Blood", 52); Col("BloodMax", "/Max", 48); Col("Defense", "Def", 42);
+        // MaxHead and not "/Max": this grid sits directly under the Posse's on the same tab, close
+        // enough that the two are read in one glance, and they were wearing two spellings of the
+        // same header. Sharing the constant also means the corral cannot pick up the wrap-and-clip
+        // the Posse tab just got rid of — see MaxHead for the non-breaking space that prevents it.
+        Col("BloodCur", "Blood", 52); Col("BloodMax", MaxHead, 58); Col("Defense", "Def", 42);
         Col("Speed", "Speed", 140, ro: true); Col("Capacity", "Carries", 55); Col("Notes", "Notes", 210);
+        Figures(ridesGrid, "BloodCur", "Defense", "Capacity");
         WireNumericValidation(ridesGrid, new() { "BloodCur", "BloodMax", "Defense", "Capacity" });
 
         // a wrecked wagon or a downed horse reads at a glance, the same red the Tracker uses
@@ -123,8 +131,29 @@ public partial class MainForm
             Log("The corral is empty.");
         }, 92, "Empty the corral and the yard"));
 
+        // Empty-state hint. The Encounter and the Tracker both explain themselves when they have
+        // nothing in them; the corral was a header band over a void, which says only that something
+        // is missing and never what. The band is the emptiest surface in the app on a first run,
+        // because a new table has a posse before it has a horse.
+        var hint = new Label
+        {
+            Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Italic), ForeColor = GoldDeep, BackColor = Paper,
+            Text = "Nothing in the corral.\n\n"
+                 + "＋ Add a ride puts a horse, a mule, a wagon or the stage in the posse's keeping.\n"
+                 + "A ride carries the water and takes the first shot out of the dark, so it can be\n"
+                 + "hurt, mended, named, and sent to the Tracker like anything else that bleeds."
+        };
+        // Added in the Tracker's exact order — content, then the bar, then the hint brought to the
+        // front. Docking is resolved last-added-first, so the bar keeps its band and the hint fills
+        // only what is left; BringToFront is what puts it over the grid rather than under it.
         host.Controls.Add(ridesGrid);
         host.Controls.Add(bar);
+        host.Controls.Add(hint);
+        hint.BringToFront();
+        hint.Visible = rides.Count == 0;
+        rides.ListChanged += (s, e) => hint.Visible = rides.Count == 0;
+        Watermark(hint, () => HintBottom(hint));
         return host;
     }
 
