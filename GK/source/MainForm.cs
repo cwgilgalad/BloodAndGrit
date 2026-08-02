@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Text.Json;
 
 namespace BloodAndGritKeeper;
@@ -414,6 +414,10 @@ public partial class MainForm : Sheet
         built.Controls.CopyTo(kids, 0);
         built.Controls.Clear();
         shell.Controls.AddRange(kids);
+        // A tab is built long after the window it lives in has loaded, so Sheet's own pass has
+        // already been and gone by the time this content exists. Dress it here instead — this is
+        // the route every checkbox on the Map tab arrives by.
+        DressControls(shell);
         shell.ResumeLayout(true);
         // ProcessCmdKey steers Left/Right to the Reference deck by comparing the selected
         // tab against this field — it has to name the page actually in the TabControl.
@@ -592,27 +596,61 @@ public partial class MainForm : Sheet
     /// weight in particular and so cannot overwrite any of them.</para></summary>
     internal static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
-        var b = new Button
-        {
-            Text = text, Width = w, Height = 32, Margin = new Padding(3),
-            FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false,
-            BackColor = BtnFace, ForeColor = Ink
-        };
-        b.FlatAppearance.BorderColor = Rule;
-        b.FlatAppearance.BorderSize = 1;
-        b.FlatAppearance.MouseOverBackColor = BtnHover;
-        b.FlatAppearance.MouseDownBackColor = BtnDown;
-        b.Paint += (s, e) =>
-        {
-            if (!b.Focused) return;
-            using var ring = new Pen(Ink, 1f) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
-            e.Graphics.DrawRectangle(ring, 2, 2, b.Width - 5, b.Height - 5);
-        };
-        FitLabel(b);
+        var b = new Button { Text = text, Width = w, Height = 32, Margin = new Padding(3) };
+        DressBtn(b);
         b.Click += onClick;
         if (tip != null) Tip.SetToolTip(b, tip);
         return b;
     }
+
+    /// <summary>Put the ordinary weight on a button — the face, the hairline, the two hover
+    /// grounds, the focus ring and the width guard. <see cref="Btn"/> is this plus a handler and a
+    /// tooltip, and <see cref="DressControls"/> is this applied to a button somebody built by hand.
+    ///
+    /// <para>It is factored out for the second caller's sake. The app has about forty-five buttons
+    /// built as a bare <c>new Button</c> — every dialog's OK and Cancel, the wizard's ◂ Back and
+    /// Next ▸, the map's ✕ Close — because a dialog button carries a <c>DialogResult</c> rather than
+    /// a handler and so never fitted <c>Btn</c>'s shape. They stayed system-themed through the
+    /// release that flattened every toolbar, which left the app in the worst of both states: the
+    /// tabs were the app's own and every window you opened off them was somebody else's.</para></summary>
+    static void DressBtn(Button b)
+    {
+        b.FlatStyle = FlatStyle.Flat;
+        b.UseVisualStyleBackColor = false;
+        b.BackColor = BtnFace;
+        b.ForeColor = Ink;
+        b.FlatAppearance.BorderColor = Rule;
+        b.FlatAppearance.BorderSize = 1;
+        b.FlatAppearance.MouseOverBackColor = BtnHover;
+        b.FlatAppearance.MouseDownBackColor = BtnDown;
+        b.Paint += FocusRing;
+        FitLabel(b);
+    }
+
+    /// <summary>The focus ring every weight shares.
+    ///
+    /// <para>Drawn in Paint rather than by swapping the border colour, because PrimaryBtn and
+    /// DangerBtn set their own border AFTER <see cref="DressBtn"/> returns — the first blur would
+    /// have reset a red-edged button to a hairline one. A ring drawn over the top belongs to no
+    /// weight in particular and so cannot overwrite any of them.</para>
+    ///
+    /// <para>Its ink is chosen against the face it lands on, which is the whole reason this is one
+    /// shared handler and not a lambda per weight: Ink on PrimaryBtn's Blood, or on a held-down
+    /// toggle's Gold, is a dark ring on a dark ground — a focus indicator that cannot be seen is
+    /// the same as none, and keyboard users are exactly who it is for.</para></summary>
+    static void FocusRing(object sender, PaintEventArgs e)
+    {
+        if (sender is not ButtonBase b || !b.Focused) return;
+        var face = b is CheckBox { Checked: true, Appearance: Appearance.Button }
+            ? b.FlatAppearance.CheckedBackColor : b.BackColor;
+        using var ring = new Pen(IsDark(face) ? Paper : Ink, 1f)
+        { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
+        e.Graphics.DrawRectangle(ring, 2, 2, b.Width - 5, b.Height - 5);
+    }
+
+    /// Perceived brightness, the usual 299/587/114 weighting — green carries most of what an eye
+    /// reads as "light", so a plain average calls Blood and Gold the same darkness and they are not.
+    static bool IsDark(Color c) => c.R * 299 + c.G * 587 + c.B * 114 < 140_000;
 
     /// <summary>Never let a button be narrower than its own words.
     ///
@@ -637,6 +675,85 @@ public partial class MainForm : Sheet
         b.FontChanged += Fit;
         b.TextChanged += Fit;
         Fit(null, null);
+    }
+
+    /// <summary>Dress every hand-built button, checkbox and radio under <paramref name="root"/> in
+    /// the app's own colours.
+    ///
+    /// <para>This exists for the same reason <see cref="Sheet"/> does, and it is the same argument:
+    /// a rule that every control must be built through a helper is a rule somebody breaks the first
+    /// time a control does not fit the helper's shape, and nobody notices for a release or two. So
+    /// the frame is inherited and the ink is applied by a walk — the two ways of getting it right
+    /// that do not depend on remembering. Between them, a window opened in this app cannot come out
+    /// wearing Windows' clothes unless it is deliberately built off <c>Form</c>.</para>
+    ///
+    /// <para><b>The predicate is also the guard against dressing twice.</b> Only a control still on
+    /// a system <c>FlatStyle</c> is touched, and dressing sets it to Flat — so a control that has
+    /// already been through here, or through <see cref="Btn"/>, <see cref="DieBtn"/>,
+    /// <see cref="PrimaryBtn"/> or <see cref="ToggleBtn"/>, is skipped and keeps its own face. That
+    /// matters: PrimaryBtn's Blood and a die's colour would otherwise be flattened back to paper by
+    /// the walk, which is a far worse bug than the one being fixed. It also means the walk can run
+    /// twice over one tree — a tab realized before its window loads — and cost nothing but the
+    /// visit, and that Paint and FontChanged never get a second subscriber.</para></summary>
+    internal static void DressControls(Control root)
+    {
+        foreach (Control c in root.Controls)
+        {
+            switch (c)
+            {
+                // Appearance.Button on a CheckBox is ToggleBtn's shape, and it is always already
+                // Flat — the case is spelled out anyway so the intent survives someone building a
+                // toggle by hand: it is a button, and it takes the button's dressing.
+                case CheckBox { Appearance: Appearance.Button } t when t.FlatStyle != FlatStyle.Flat:
+                    DressToggle(t); break;
+                case Button b when b.FlatStyle != FlatStyle.Flat:
+                    DressBtn(b); break;
+                case CheckBox or RadioButton when ((ButtonBase)c).FlatStyle != FlatStyle.Flat:
+                    DressCheck((ButtonBase)c); break;
+            }
+            if (c.HasChildren) DressControls(c);
+        }
+    }
+
+    /// <summary>A checkbox or a radio, wearing the app's ink instead of the system accent.
+    ///
+    /// <para>Windows draws both glyphs in <c>#0078D4</c>. That is the one colour in this app that
+    /// belongs to no palette here — the same finding that took Windows' selection blue out of the
+    /// lists (<see cref="StyleList"/>) — and it had nine places left to sit: the run-mode chooser a
+    /// Keeper meets before anything else, and the Map tab's row of overlay toggles, where the ticks
+    /// are the brightest thing on a parchment survey.</para>
+    ///
+    /// <para><c>FlatStyle.Flat</c> is what stops the themed renderer painting the glyph at all;
+    /// from there the box is <see cref="MainForm.Rule"/>'s hairline and the tick is drawn in the
+    /// control's own <c>ForeColor</c>, which is already Ink nearly everywhere. Gold was tried for
+    /// the tick and lost: at glyph size it reads as a smudge rather than as a mark, and a checkbox
+    /// has one job, which is to answer yes or no from across a table.</para></summary>
+    static void DressCheck(ButtonBase c)
+    {
+        c.FlatStyle = FlatStyle.Flat;
+        c.FlatAppearance.BorderColor = Rule;
+        c.FlatAppearance.CheckedBackColor = Color.Transparent;
+        c.FlatAppearance.MouseOverBackColor = Color.Transparent;
+        c.FlatAppearance.MouseDownBackColor = Color.Transparent;
+    }
+
+    /// <summary>The held-down toggle's face, shared by <see cref="ToggleBtn"/> and by the walk.</summary>
+    static void DressToggle(CheckBox c)
+    {
+        c.FlatStyle = FlatStyle.Flat;
+        c.UseVisualStyleBackColor = false;
+        c.BackColor = c.Checked ? Gold : BtnFace;
+        c.ForeColor = c.Checked ? Color.White : Ink;
+        c.FlatAppearance.BorderColor = c.Checked ? GoldDeep : Rule;
+        c.FlatAppearance.BorderSize = 1;
+        c.FlatAppearance.MouseOverBackColor = BtnHover;
+        c.FlatAppearance.CheckedBackColor = Gold;
+        c.CheckedChanged += (s, e) =>
+        {
+            c.ForeColor = c.Checked ? Color.White : Ink;
+            c.FlatAppearance.BorderColor = c.Checked ? GoldDeep : Rule;
+        };
+        c.Paint += FocusRing;
     }
 
     /// The three grounds an ordinary button stands on. Paper itself is the pane behind it, so the
@@ -676,26 +793,9 @@ public partial class MainForm : Sheet
         {
             Text = text, Appearance = Appearance.Button, AutoSize = false,
             Width = w, Height = 32, Margin = new Padding(3),
-            TextAlign = ContentAlignment.MiddleCenter,
-            FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false,
-            BackColor = BtnFace, ForeColor = Ink
+            TextAlign = ContentAlignment.MiddleCenter
         };
-        c.FlatAppearance.BorderColor = Rule;
-        c.FlatAppearance.BorderSize = 1;
-        c.FlatAppearance.MouseOverBackColor = BtnHover;
-        c.FlatAppearance.CheckedBackColor = Gold;
-        c.CheckedChanged += (s, e) =>
-        {
-            c.ForeColor = c.Checked ? Color.White : Ink;
-            c.FlatAppearance.BorderColor = c.Checked ? GoldDeep : Rule;
-        };
-        c.Paint += (s, e) =>
-        {
-            if (!c.Focused) return;
-            using var ring = new Pen(c.Checked ? Color.White : Ink, 1f)
-            { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
-            e.Graphics.DrawRectangle(ring, 2, 2, c.Width - 5, c.Height - 5);
-        };
+        DressToggle(c);
         Tip.SetToolTip(c, tip);
         return c;
     }
@@ -1225,6 +1325,14 @@ public partial class MainForm : Sheet
         g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Paper;
         g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
         g.ColumnHeadersHeight = 30;
+        // Header wrapping is left ON, and that is a decision rather than an oversight. This band
+        // cannot grow — the height is pinned above and resizing is off — so a header that takes a
+        // second line has that line cut through the middle of its letters, which is what the three
+        // "/ max" columns were doing. Turning wrapping off fixes those three and costs every other
+        // header in the app: measured against the same widths, "Blood" came back as "Bl…", "Nerve"
+        // as "Ne…" and "Mark" as "M…", because the non-wrapping header reserves more room around
+        // its text than the wrapping one does. The fix belongs in the one string that wraps, not in
+        // the setting that governs all eighteen — see MaxHead.
         g.RowTemplate.Height = 28;
         // Grid lines and the alternating stripe were both a shade off Paper — the stripe differed by
         // four points of blue, which on a warm ground is no difference at all. A grid whose rows do
@@ -1244,6 +1352,11 @@ public partial class MainForm : Sheet
         g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
         g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
         g.DefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
+        // The header takes the same left and right bearing as the cells under it. Without it the
+        // header text starts hard against the column rule while every value below it stands 4px
+        // clear, so a column reads as very slightly out of true all the way down — and with the
+        // columns tightened to make room for "/ max" the capitals were touching the rule outright.
+        g.ColumnHeadersDefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
     }
 
     /// <summary>The far-right button column, painted so it doesn't shout. A raised system button
@@ -1261,6 +1374,23 @@ public partial class MainForm : Sheet
             Font = new Font("Segoe UI", 8.5f), Padding = new Padding(2, 4, 2, 4)
         }
     };
+
+    /// <summary>The header over the second half of a current/max pair — "/ max", with a NON-BREAKING
+    /// space in it.
+    ///
+    /// <para>An ordinary space is a place a header may wrap, and the header band is a fixed 30px
+    /// that will not grow to hold a second line: on the Posse tab all three of these were rendering
+    /// a lone slash with "max" sliced through the middle underneath it. The columns are also 58 now
+    /// rather than 45–50, so at any window width the app allows there is room for the text — but the
+    /// width is the comfort and this character is the guarantee. Too narrow, it now clips its own
+    /// tail instead of cutting a line of letters in half, and a header that reads "/ m…" says
+    /// "widen me" where the old one said "something is broken".</para>
+    ///
+    /// <para>Written as the escape <c>\u00A0</c> rather than as the character, and kept in a named
+    /// constant, for one reason: it is invisible. A literal U+00A0 pasted into the source cannot be
+    /// told from a space by eye or in review, and the same header typed out again at a fourth call
+    /// site would look identical, wrap, and put the bug back with nothing to see.</para></summary>
+    internal const string MaxHead = "/\u00A0max";
 
     /// <summary>Right-align a column of figures, and its header with it. Numbers that share a right
     /// edge can be compared down the column at a glance; numbers ragged on the right cannot, which
@@ -1320,12 +1450,31 @@ public partial class MainForm : Sheet
         void Col(string prop, string head, int weight, bool ro = false)
             => posseGrid.Columns.Add(new DataGridViewTextBoxColumn
             { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
-        Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Gender", "Gender", 70); Col("Level", "Lv", 40);
-        Col("BloodCur", "Blood", 55); Col("BloodMax", "/ max", 50); Col("Defense", "Def", 45);
+        // ---- these weights are measured, and the total is fixed at 1302 ----
+        // Fill mode makes a weight a SHARE of the grid, not a width, so every point handed to one
+        // column comes off the other nineteen. Widening the three "/ max" columns by eye cost about
+        // 2% everywhere else — enough that "Blood", "Nerve" and "Mark" started clipping too, and
+        // because those three are right-aligned they clip on the LEFT: they came back as "3lood",
+        // "Verve" and "Vlark", which reads as a font fault rather than as a narrow column. Guessing
+        // traded one clipped header for three, twice.
+        //
+        // So each was measured instead — TextRenderer.MeasureText on the header string in Segoe UI
+        // 9.5 Bold, plus the 8px of left and right bearing StyleGrid now sets — and turned into a
+        // weight against the ~1252px the grid actually gets at the default window: Gender needed 63
+        // and had 59, "/ max" needed 54, Mark and Taint needed 49 and had 48. The 12 points that
+        // took were taken from Notes and Scars, the two columns whose CONTENT is always longer than
+        // the pane anyway, so what they lose is a few characters of an already-truncated string
+        // rather than a header. Total unchanged, so nothing else moved.
+        //
+        // Narrow the window toward its 1040 minimum and headers will clip again; twenty columns in
+        // Fill mode cannot all keep their labels at every width, and clipping is the graceful way to
+        // run out of room. What this stops is clipping at the size the app actually opens at.
+        Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Gender", "Gender", 63); Col("Level", "Lv", 40);
+        Col("BloodCur", "Blood", 55); Col("BloodMax", MaxHead, 54); Col("Defense", "Def", 45);
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
-        Col("NerveCur", "Nerve", 55); Col("NerveMax", "/ max", 50); Col("Grit", "Grit", 45);
-        Col("PoolCur", "Pool", 46); Col("PoolMax", "/ max", 45);
-        Col("Mark", "Mark", 48); Col("Taint", "Taint", 48);
+        Col("NerveCur", "Nerve", 55); Col("NerveMax", MaxHead, 54); Col("Grit", "Grit", 45);
+        Col("PoolCur", "Pool", 46); Col("PoolMax", MaxHead, 54);
+        Col("Mark", "Mark", 49); Col("Taint", "Taint", 49);
         // Figures right, words left — and the three current/max pairs set as pairs. With the vertical
         // rules gone (StyleGrid), a right-aligned "12" against a left-aligned "12" under a header
         // reading "/ max" is one field wearing one slash, instead of two columns that happened to be
@@ -1337,8 +1486,11 @@ public partial class MainForm : Sheet
         // Affliction are added through the engine that produced them (a terrible blow, a Dread
         // Check that went badly) or by hand from the right-click menu, so the column reports the
         // ledger rather than being a second place to type into it. Hover for the whole of each.
-        Col("ScarLine", "Scars", 110, ro: true);
-        Col("Notes", "Notes", 130);
+        // 106 and 122, down from 110 and 130: these two fund the twelve points the measured headers
+        // above needed. Both hold text longer than any width they will ever get, so the cost is a
+        // couple of characters off a string that already ends in an ellipsis.
+        Col("ScarLine", "Scars", 106, ro: true);
+        Col("Notes", "Notes", 122);
         // far-right Ledger button — one click to the soul's character sheet
         posseGrid.Columns.Add(QuietButtonCol("Ledger", 60));
         posseGrid.CellContentClick += (s, e) =>

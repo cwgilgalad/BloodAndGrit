@@ -23,13 +23,21 @@ public partial class MainForm
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false
         };
         StyleGrid(ridesGrid);
+        // Name = prop, which the corral did without until v1.33.0 — with no name a column cannot be
+        // reached as g.Columns["BloodCur"], and that is the only way Figures() finds the ones to set
+        // right. It is why this grid kept its figures ragged while the Posse's were squared up.
         void Col(string prop, string head, int weight, bool ro = false)
             => ridesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            { DataPropertyName = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
+            { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
         Col("Name", "Name", 130); Col("Type", "What it is", 110, ro: true); Col("Kind", "Kind", 60, ro: true);
         Col("Rider", "Rider / driver", 115);
-        Col("BloodCur", "Blood", 52); Col("BloodMax", "/Max", 48); Col("Defense", "Def", 42);
+        // MaxHead and not "/Max": this grid sits directly under the Posse's on the same tab, close
+        // enough that the two are read in one glance, and they were wearing two spellings of the
+        // same header. Sharing the constant also means the corral cannot pick up the wrap-and-clip
+        // the Posse tab just got rid of — see MaxHead for the non-breaking space that prevents it.
+        Col("BloodCur", "Blood", 52); Col("BloodMax", MaxHead, 58); Col("Defense", "Def", 42);
         Col("Speed", "Speed", 140, ro: true); Col("Capacity", "Carries", 55); Col("Notes", "Notes", 210);
+        Figures(ridesGrid, "BloodCur", "Defense", "Capacity");
         WireNumericValidation(ridesGrid, new() { "BloodCur", "BloodMax", "Defense", "Capacity" });
 
         // a wrecked wagon or a downed horse reads at a glance, the same red the Tracker uses
