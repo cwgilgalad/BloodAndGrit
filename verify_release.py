@@ -91,21 +91,54 @@ def tags():
     return {line.strip()[len("gritkeeper-v"):] for line in r.stdout.splitlines() if line.strip()}
 
 
-def delivered_version():
-    """The FileVersion of the packaged exe, via PowerShell — reading a PE version resource by hand
-    is a lot of code to avoid a tool that is present on the only OS this exe runs on."""
+def delivered():
+    """(version, build-commit, error) for the packaged exe, read via PowerShell — parsing a PE
+    version resource by hand is a lot of code to avoid a tool that is present on the only OS this
+    exe runs on.
+
+    The commit comes free: .NET stamps `InformationalVersion` as `1.33.0+<full sha>`, which is the
+    only way to tell one build of a version from another. A version number alone cannot — see the
+    check below for what that misses.
+    """
     exe = ROOT / "GritKeeper" / "app" / "GritKeeper.exe"
     if not exe.is_file():
-        return None, f"no packaged exe at {exe.relative_to(ROOT)}"
+        return None, None, f"no packaged exe at {exe.relative_to(ROOT)}"
     try:
         r = subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command",
-             f"(Get-Item '{exe}').VersionInfo.FileVersion"],
+             f"$v=(Get-Item '{exe}').VersionInfo; $v.FileVersion + '|' + $v.ProductVersion"],
             capture_output=True, text=True, timeout=60)
     except (OSError, subprocess.TimeoutExpired) as e:
-        return None, f"could not read the exe's version ({e})"
-    m = VER.search(r.stdout or "")
-    return (m.group(1), None) if m else (None, f"no version in the exe ({r.stdout.strip()!r})")
+        return None, None, f"could not read the exe's version ({e})"
+    out = (r.stdout or "").strip()
+    m = VER.search(out)
+    if not m:
+        return None, None, f"no version in the exe ({out!r})"
+    sha = re.search(r"\+([0-9a-f]{7,40})", out)
+    return m.group(1), (sha.group(1) if sha else None), None
+
+
+def app_changed_since(sha):
+    """Which app sources have changed between the packaged build's commit and HEAD.
+
+    Scoped to the two projects that COMPILE INTO the exe — `GK/source` (the WinForms UI) and
+    `GK/rules` (the engine and its embedded `Data/*.json`). Not `GK/smoke`, which is the test rig
+    and ships to nobody, and not `GK/CLAUDE.md`, which is a handoff document.
+
+    The scoping is the whole point. Comparing the packaged commit against HEAD alone reports the
+    package as stale after any commit at all — a CHANGELOG line, a note in this file — and a warning
+    that fires when nothing is wrong is the warning people learn to scroll past, which is the same
+    defect the commit-message gate had. It has to be quiet to be worth reading.
+    """
+    try:
+        r = subprocess.run(["git", "diff", "--name-only", f"{sha}..HEAD",
+                            "--", "GK/source/", "GK/rules/"],
+                           cwd=ROOT, capture_output=True, text=True)
+    except OSError:
+        return None
+    if r.returncode != 0:                # the packaged build predates this clone's history
+        return None
+    return [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
 
 
 def main():
@@ -152,14 +185,27 @@ def main():
 
     # ---- 3. the exe the Keeper actually runs ----
     if check_delivered:
-        got, why = delivered_version()
+        got, built_at, why = delivered()
+        repack = ("Run: dotnet publish -c Release (in GK/source) -> .\\sign.ps1 -> .\\package.ps1")
         if why:
             findings.append(f"delivered exe: {why}")
         elif got != src:
             findings.append(
                 f"GritKeeper/app/GritKeeper.exe is v{got}, the source is v{src} — the app on this "
-                f"machine is behind. Run: dotnet publish -c Release (in GK/source) -> .\\sign.ps1 "
-                f"-> .\\package.ps1")
+                f"machine is behind. {repack}")
+        elif built_at:
+            # Same version, different build. The version check alone cannot see this, and it missed
+            # it live: the wizard's button weights were fixed and merged under v1.33.0 while the
+            # packaged exe still held the build from the commit before, and the check said the app
+            # matched the source because both said 1.33.0. A version identifies a release; only the
+            # commit identifies a build.
+            changed = app_changed_since(built_at)
+            if changed:
+                findings.append(
+                    f"GritKeeper/app/GritKeeper.exe says v{got}, but it was built from "
+                    f"{built_at[:9]} and {len(changed)} app source file(s) have changed since "
+                    f"({', '.join(changed[:3])}{'…' if len(changed) > 3 else ''}). Same version, "
+                    f"older build. {repack}")
 
     if not quiet:
         print(f"source version (csproj):  v{src}")
@@ -171,8 +217,9 @@ def main():
                   f"{len(versions) - 1 - len(missing)} of the {len(versions) - 1} past ones tagged "
                   f"({len(UNSHIPPED)} recorded as never shipped)")
         if check_delivered:
-            got, why = delivered_version()
-            print(f"  delivered GritKeeper/app/GritKeeper.exe: {why or 'v' + got}")
+            got, built_at, why = delivered()
+            print(f"  delivered GritKeeper/app/GritKeeper.exe: "
+                  f"{why or 'v' + got + (f' built from {built_at[:9]}' if built_at else '')}")
         print()
 
     if findings:
