@@ -8,6 +8,45 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.31.0 — the table stops living beside the exe (2026-08-01, user-requested).**
+  The ask was to reach the release build locally without going to GitHub for it — and Tidewatch
+  already worked that way.
+  It does, and this is why: Tidewatch keeps its state in `%APPDATA%\Tidewatch`, so republishing
+  over its exe can never disturb anything. GritKeeper wrote beside its own exe, so the folder
+  holding the release build was also the folder holding the campaign, and the two jobs fought.
+
+  **`AppState.Dir` resolves the folder now** instead of assuming it, in three steps: a
+  `portable.txt` beside the exe wins (an explicit "keep my things here", for a copy carried on a
+  stick to somebody else's table); failing that, an existing `session.json` beside the exe is
+  honoured, because nobody gets moved off a folder they are already using; otherwise
+  **`%APPDATA%\GritKeeper\`**, which no build, publish or package step can reach. The four files
+  that belong to a Keeper move with it — `session.json`, `prefs.json`, `session-backup.json`,
+  `session-unreadable.json`. `startup-error.txt` and `selftest-report.txt` stay beside the exe,
+  because a crash report has to land somewhere findable when the profile is the thing that is
+  broken, and the `Data/` lookup stays too — it is a read, and the smoke rig depends on it.
+
+  **The single-file promise is untouched.** The exe still needs nothing beside it, and rule 1
+  means it can still be carried on a stick with its campaign. What changed is where a plain
+  double-click keeps things.
+
+  Consequences worth having: **`GritKeeperpp\GritKeeper.exe` is now a safe thing to play
+  from** — which is what was wanted, since `package.ps1` refreshes it on every release — and the
+  set-aside added earlier today becomes belt-and-braces rather than the only thing between a
+  Keeper and a lost table.
+
+  `--selftest` now points the state at a scratch folder before anything reads it. Each of its
+  three `MainForm` instances runs `TryAutoLoad` in its constructor, which on an unparseable file
+  MOVES it to `session-unreadable.json` — against a real folder that is a self-test rearranging
+  somebody's table. It also makes the run hermetic: what the self-test does no longer depends on
+  what happens to be saved on the machine running it.
+
+  `AppState.Resolve` is a pure function in the rules library and the smoke suite walks all four
+  combinations of its two inputs, because this decides whether a campaign is found or silently
+  abandoned on a first run. Both branches were also proved live: a launch with no marker wrote
+  `prefs.json` and a 25,894-byte `session.json` into `%APPDATA%\GritKeeper` and left the exe's
+  folder holding nothing but the exe; a launch from a folder carrying `portable.txt` wrote both
+  beside the exe and left the per-user copy untouched to the second.
+
 - **`package.ps1` sets the runtime files aside instead of deleting them (2026-08-01,
   after it cost a Keeper their table).** No version bump — the app is untouched at v1.30.0;
   this is the release tooling.

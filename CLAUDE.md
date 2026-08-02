@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11 ·
-GritKeeper app v1.30.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.31.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain
@@ -197,6 +197,19 @@ reference screen held eleven leaves for two releases while it held thirteen. `Re
 mention interpolates it (the five-minute lesson in `Menus.cs`, `GK/source/README.md`, this doc).
 `--selftest` builds the deck on purpose — tabs are realized lazily, so nothing else touches it —
 and checks each title has a renderer. Apply the same shape to any other number the prose quotes.
+
+**Where a Keeper's things live (v1.31.0): `AppState.Dir`, not "beside the exe".** Resolved in
+three steps — a `portable.txt` beside the exe wins; failing that an existing `session.json` beside
+the exe is honoured (nobody is moved off a folder they already use); otherwise
+`%APPDATA%\GritKeeper\`, which no build, publish or package step can reach. `session.json`,
+`prefs.json`, `session-backup.json` and `session-unreadable.json` all follow it. **Three things
+deliberately do NOT:** `startup-error.txt` and `selftest-report.txt`, because a crash report has to
+land somewhere findable when the profile is the thing that is broken, and the `Data/` lookup, which
+is a read and which the smoke rig depends on. `AppState.Resolve` is pure so the smoke rig can walk
+every combination of its inputs. **The rule for anything new:** if a Keeper would be upset to lose
+it, it goes through `AppState.Dir`; if it is a diagnostic about THIS COPY of the exe, it stays
+beside the exe. Because the state no longer sits beside the binary, `GritKeeper\app\GritKeeper.exe`
+is now a perfectly good thing to play from — it is refreshed by `package.ps1` on every release.
 
 **`GritKeeper\app\` is sanitised on every package, so nothing is kept there (2026-08-01).**
 Step 1 of `package.ps1` clears `session.json`, `prefs.json`, `startup-error.txt` and
@@ -640,7 +653,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.30.0) — the C# desktop app
+## GritKeeper (v1.31.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
