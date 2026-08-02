@@ -107,9 +107,14 @@ what each tab *is*, plus the decisions worth not re-deriving.
     itself. `Combatant.HasActed` is the spine; `Rules.NextUp`/`CanAct`/`RoundSpent` are the pure
     logic — the downed are skipped, traces never counted, ties broken by name so the order never
     wobbles. The round is a **spinner**, not a label: the app keeps it, the Keeper can correct it.
-  - **`Btn` is `FlatStyle.System`, which silently ignores `BackColor` and `FlatAppearance`.**
-    `PrimaryBtn` / `DangerBtn` exist for exactly this reason — both switch to `FlatStyle.Flat`,
-    the only way to actually colour a WinForms button. In the grid, an editable column carries ✎
+  - **Every button in the app is `FlatStyle.Flat`** as of v1.33.0 — `Btn` dresses it that way, and
+    `PrimaryBtn` / `DangerBtn` / `QuietBtn` are that same face with different ink. Flat is the only
+    style that honours `BackColor` and `FlatAppearance` at all; under the old `FlatStyle.System` a
+    button could not be coloured, which is why those variants had to switch it themselves. Anything
+    built by hand rather than through a helper — every dialog's OK and Cancel, every checkbox and
+    radio — is caught by **`MainForm.DressControls`**, a walk run from `Sheet.OnLoad` and from
+    `RealizeTab`; it only touches controls still on a system `FlatStyle`, so a coloured or
+    already-dressed control keeps its own face. In the grid, an editable column carries ✎
     in its header and its cells stand on ground lifted 42% toward paper by `Writable(color)`,
     applied *after* the row colour so it composes with posse green / foe rust / acting gold.
     Only the Tracker gets this: every Posse column is editable, so marking all eighteen is noise.
@@ -297,9 +302,14 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   covers — an undoable action does not need a prompt, and prompting on all of them trains a Keeper
   to click through the one that matters), and **no two items in one menu claim the same Alt key**
   (Windows demotes a collision from "activate" to "cycle", so a learned shortcut dies silently).
-  Currently 131 buttons, 20 dialogs, 22 access keys. (It was 132 until v1.32.0 turned the Tracker's
+  Currently 134 buttons, 20 dialogs, 22 access keys. (It was 132 until v1.32.0 turned the Tracker's
   ＋ Turn glass button into a `CheckBox` toggle — a drop of one here means a `Btn` became something
-  else, so check that before assuming a control went missing.) All three UX checks pass today, so they are
+  else, so check that before assuming a control went missing. It went to 134 in v1.33.0 when the
+  tour callout's three buttons were rebuilt on `MainForm.Btn` and `TourBtn` was registered in
+  `HELPERS`: they had been a bare `new Button` since v1.22, invisible to this audit, and that is
+  precisely how they kept their Windows theme through the release that flattened every other bar.
+  **A helper the audit does not know about is a set of buttons nobody checks** — register new ones.)
+  All three UX checks pass today, so they are
   regression guards — if you add another, prove it against a synthetic source file first, the way
   these were.
 - **Dead code is a build error** (v1.29.2). `GK/.editorconfig` sets IDE0051 / IDE0052 / IDE0005 /
