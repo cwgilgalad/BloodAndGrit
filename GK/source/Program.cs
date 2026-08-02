@@ -68,6 +68,13 @@ static class Program
         try
         {
             ApplicationConfiguration.Initialize();
+            // Point the state at a scratch folder BEFORE anything can read or write it. The three
+            // MainForm instances below each run TryAutoLoad in their constructor, which reads the
+            // session and — on a file it cannot parse — MOVES it aside to session-unreadable.json.
+            // Against a real Keeper's folder that is a self-test rearranging somebody's table. It
+            // also makes the run hermetic: what the self-test does no longer depends on what
+            // happens to be saved on the machine running it.
+            AppState.UseForTesting(Path.Combine(Path.GetTempPath(), "gritkeeper-selftest"));
             Db.Load();
             CharGen.Load();
             Look.Load();
