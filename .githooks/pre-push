@@ -1,0 +1,40 @@
+#!/bin/sh
+# Say so when the app on THIS machine is behind the source being pushed.
+#
+# The failure this exists for: v1.32.0 was written, verified, merged and entered in the CHANGELOG
+# as a shipped release, and the exe behind the desktop shortcut stayed on v1.31.0 for a day and a
+# half. CI cannot see that — GritKeeper/app/GritKeeper.exe is git-ignored, being a 163 MB signed
+# binary — so the only place the check can live is the machine that does the packaging.
+#
+# Two deliberate limits:
+#
+#   * It NEVER blocks. A push is how work gets off this laptop, and a half-finished release is a
+#     perfectly good reason to push. It prints and gets out of the way — the same rule pre-commit
+#     follows. The gate that does fail is in CI, on the tag, once a version stops being the newest.
+#   * It only speaks up when MAIN is being pushed. A session/* branch is work in progress by
+#     definition: the version gets bumped early and the packaging happens at the end, so warning
+#     there would fire on every autosync push for hours and teach you to ignore it.
+#
+# Enabled per-clone with:  git config core.hooksPath .githooks
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+    case "$remote_ref" in
+        refs/heads/main) ;;
+        *) continue ;;
+    esac
+
+    py=python
+    command -v "$py" >/dev/null 2>&1 || py=python3
+    command -v "$py" >/dev/null 2>&1 || exit 0
+
+    "$py" verify_release.py --delivered --quiet || {
+        echo ""
+        echo "pre-push: pushing main, and the packaged app does not match the source."
+        echo "          Nothing is blocked. To ship it:"
+        echo "            cd GK/source && dotnet publish -c Release"
+        echo "            cd ../.. && ./sign.ps1 && ./package.ps1"
+        echo ""
+    }
+done
+
+exit 0

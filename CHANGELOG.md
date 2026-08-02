@@ -8,6 +8,39 @@ Desktop\Git repos.)
 
 ---
 
+- **A version that says it shipped has to have shipped (2026-08-02).**
+  v1.33.0 was built, verified against the build, the 12,359 assertions, the self-test and the wiring
+  audit, merged to `main` and pushed. Then the Keeper opened the app and it was **v1.31.0**.
+
+  Two releases had gone missing the same way. v1.32.0 was written the day before, verified the same
+  four ways, merged, and entered here as a shipped release — and was never published, signed,
+  packaged or tagged. v1.33.0 went the same distance and stopped in the same place. The reason
+  neither was caught is that **every check this project has looks at the source**, and the thing a
+  Keeper double-clicks is `GritKeeper\app\GritKeeper.exe`, which nothing but `package.ps1` ever
+  writes. A build in `bin\` changes what the developer runs and nothing about what anyone else does.
+
+  CI already had the same check for the books — `git diff --exit-code -- '*.html'` fails when a
+  build script changes and the built HTML does not. The app could never have that one: its artifact
+  is a 163 MB signed binary that is git-ignored on purpose, so no diff can see it. **`verify_release.py`**
+  is that check, split by what is visible from where. In CI it reads only what is in git: that the
+  csproj, this file's newest entry, the README and CLAUDE.md's two version lines all say the same
+  number, and that **every GritKeeper version here except the newest carries a `gritkeeper-vX.Y.Z`
+  tag**. That second rule is the one with teeth, because it needs no binary: the moment v1.33.0
+  became the newest entry, v1.32.0 stopped being the version in progress and had to prove it was
+  released. Locally, `--delivered` adds the only question that really matters — whether the exe
+  behind the shortcut carries the source's version — and `.githooks/pre-push` asks it whenever
+  `main` is pushed, printing the three commands that fix it.
+
+  **Neither gate blocks anything.** The hook warns and gets out of the way, because pushing
+  half-finished work is what a branch is for, and a gate people route around is the defect it was
+  meant to catch. The failing check is the tag, in CI, once a version can no longer claim to be
+  the one being worked on.
+
+  It found a second gap on its first run: **v1.28.0** was never tagged either, back in July. Both
+  it and v1.32.0 are now recorded in the script's `UNSHIPPED` list with the reason each never
+  shipped, which is the honest way to keep a check green — the alternative being to weaken the rule
+  until the history it inherited stops failing it.
+
 - **GritKeeper v1.33.0 — the app stops borrowing Windows' clothes (2026-08-02).**
   The tabs have been painted from the frontier palette for a long time: paper grounds, blood
   headers, an owner-drawn tab strip, gold on the row a Keeper has picked. What had never been done
