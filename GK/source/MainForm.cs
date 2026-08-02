@@ -1032,6 +1032,21 @@ public partial class MainForm : Sheet
     static Button PrimaryBtn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = Btn(text, onClick, w, tip);
+        PrimaryFace(b);
+        return b;
+    }
+
+    /// <summary>The Blood face on its own, split out of <see cref="PrimaryBtn"/> so a button built
+    /// by hand can wear it. Colour only — the geometry, the focus ring and the width guard come
+    /// from <see cref="DressBtn"/>, which every route runs first.
+    ///
+    /// <para>The wizard is why this exists. Its three buttons are a bare <c>new Button</c> apiece
+    /// (they carry a DialogResult and drive a step machine, so they never fitted the factory's
+    /// shape), which meant the walk gave all three the ordinary weight — and <c>Next ▸</c>, the
+    /// action that drives nine steps, came out looking exactly like the <c>Cancel</c> sitting
+    /// against it that throws all nine away.</para></summary>
+    static void PrimaryFace(Button b)
+    {
         b.FlatStyle = FlatStyle.Flat;
         b.UseVisualStyleBackColor = false;
         b.BackColor = Blood;
@@ -1040,7 +1055,6 @@ public partial class MainForm : Sheet
         b.FlatAppearance.BorderColor = Color.FromArgb(92, 24, 22);
         b.FlatAppearance.BorderSize = 1;
         b.FlatAppearance.MouseOverBackColor = Color.FromArgb(150, 44, 40);
-        return b;
     }
 
     /// <summary>An action that throws work away. It is not hidden and it is not shouted — it simply
@@ -1048,6 +1062,14 @@ public partial class MainForm : Sheet
     static Button DangerBtn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = Btn(text, onClick, w, tip);
+        DangerFace(b);
+        return b;
+    }
+
+    /// <summary>The pale-red face on its own — see <see cref="PrimaryFace"/> for why the faces are
+    /// separable from the factories that usually apply them.</summary>
+    static void DangerFace(Button b)
+    {
         b.FlatStyle = FlatStyle.Flat;
         b.UseVisualStyleBackColor = false;
         b.BackColor = Color.FromArgb(240, 229, 225);
@@ -1055,8 +1077,18 @@ public partial class MainForm : Sheet
         b.FlatAppearance.BorderColor = Color.FromArgb(201, 172, 164);
         b.FlatAppearance.BorderSize = 1;
         b.FlatAppearance.MouseOverBackColor = Color.FromArgb(228, 208, 202);
-        return b;
     }
+
+    /// <summary>Dress a hand-built button as the primary or the destructive weight, in one call.
+    ///
+    /// <para>These are what a window built outside the factories reaches for. Dressing has to happen
+    /// at construction rather than being left to <see cref="DressControls"/>, because the walk skips
+    /// anything already Flat — so a button that sets only its colours would be found still on a
+    /// system FlatStyle and have those colours painted back over with the ordinary face.</para></summary>
+    internal static void DressPrimary(Button b) { DressBtn(b); PrimaryFace(b); }
+
+    /// <summary>The destructive weight, for a hand-built button. See <see cref="DressPrimary"/>.</summary>
+    internal static void DressDanger(Button b) { DressBtn(b); DangerFace(b); }
 
     /// <summary>The ground a cell you can type into stands on: the row's own colour, lifted toward
     /// paper. Every row in these grids already carries meaning in its background — posse green, foe
