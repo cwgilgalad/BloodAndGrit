@@ -63,14 +63,16 @@ public partial class MainForm
         // makes the feature discoverable without the mouse hovering in the right place
         filters.Controls.Add(Btn("⧉ Pop out", (s, e) => { if (beastList.SelectedItem is Creature c) ShowCreatureCard(c); }, 90,
             "Open this creature in its own window (or double-click it in the list)"));
-        filters.Controls.Add(Btn("Reset", (s, e) =>
+        filters.Controls.Add(QuietBtn("Reset", (s, e) =>
         {
             beastSearch.Text = ""; beastTier.SelectedIndex = 0; beastChapter.SelectedIndex = 0; beastQty.Value = 1;
         }, 65, "Clear the search and filters — the whole Bestiary again"));
         beastCount = Lbl("");
+        beastCount.ForeColor = Slate;
         filters.Controls.Add(beastCount);
 
         beastList = new ListBox { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 9.5f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
+        StyleList(beastList);
         beastList.SelectedIndexChanged += (s, e) => ShowBeast(beastList.SelectedItem as Creature);
         // double-click pops the creature out into its own window — maximize it, grow the
         // text, keep several open side by side
@@ -100,7 +102,7 @@ public partial class MainForm
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
 
         split.Panel1.Controls.Add(leftPanel);
-        split.Panel2.Controls.Add(Pad(beastView, 14));
+        split.Panel2.Controls.Add(Measure(beastView, 14, 580));
         page.Controls.Add(split);
         FilterBeasts();
         return page;
@@ -131,29 +133,44 @@ public partial class MainForm
         RenderCreature(beastView, c);
     }
 
+    /// <summary>A creature's page, set in two faces on purpose.
+    ///
+    /// <para><b>Narrative is Georgia; data is Segoe UI.</b> Georgia is the books' own face, and the
+    /// lore, the witness quote and the Keeper's note are the parts of this page that ARE the book —
+    /// setting them in the UI's sans made the Bestiary read as a database of creatures rather than
+    /// as the chapter it was extracted from. The stat lines stay sans for a reason recorded in
+    /// CLAUDE.md: Georgia is a text-figure face whose 3 4 5 7 9 descend below the baseline and whose
+    /// 0 1 2 sit at x-height, so "Fort +4, Ref +5, Will +2 (boss +5)" comes out visibly uneven. A
+    /// RichTextBox can carry both, so each half of the page gets the face that suits it.</para></summary>
     void RenderCreature(RichTextBox rtf, Creature c)
     {
         rtf.Clear();
-        void W(string s, bool bold = false, float size = 10f, Color? col = null, bool italic = false)
+        void W(string s, bool bold = false, float size = 10f, Color? col = null, bool italic = false,
+               string face = "Segoe UI")
         {
             var style = (bold ? FontStyle.Bold : FontStyle.Regular) | (italic ? FontStyle.Italic : 0);
             // Off the shelf (MainForm.Face): this ran about thirty times per creature and fired on
             // every arrow-key move down a list of 150, minting a native font handle each time and
             // disposing none of them.
-            rtf.SelectionFont = Face("Segoe UI", size, style);
+            rtf.SelectionFont = Face(face, size, style);
             rtf.SelectionColor = col ?? Ink;
             rtf.AppendText(s);
         }
-        W(c.name + "\n", true, 16, Blood);
-        W(c.tierText + "\n\n", false, 9.5f, Gold, italic: true);
-        foreach (var p in c.lore) W(p + "\n\n");
-        if (!string.IsNullOrEmpty(c.witness)) W("“" + c.witness + "”\n\n", false, 9.7f, Gold, italic: true);
+        void Prose(string s, float size = 10.5f, Color? col = null, bool italic = false)
+            => W(s, false, size, col, italic, "Georgia");
+
+        W(c.name + "\n", true, 17, Blood, face: "Georgia");
+        Prose(c.tierText + "\n\n", 10f, Gold, italic: true);
+        foreach (var p in c.lore) Prose(p + "\n\n");
+        // GoldDeep, not Gold: this is a whole sentence, and the palette's own note says Gold is a
+        // heading colour that measures about 3.5:1 on Paper — under what a person reads comfortably.
+        if (!string.IsNullOrEmpty(c.witness)) Prose("“" + c.witness + "”\n\n", 10.5f, GoldDeep, italic: true);
         if (!string.IsNullOrEmpty(c.found)) { W("FOUND — ", true, 9.5f, Blood); W(c.found + "\n\n"); }
         void Stat(string k, string v) { if (!string.IsNullOrEmpty(v)) { W(k.ToUpper() + "  ", true, 9.5f, Blood); W(v + "\n"); } }
         Stat("Defense", c.defense); Stat("Blood", c.blood); Stat("Speed", c.speed);
         Stat("Saves", c.saves); Stat("Attacks", c.attacks); Stat("Special", c.special);
         Stat("Dread", c.dread); Stat("The Mark", c.mark); Stat("Putting It Down", c.puttingItDown);
-        if (!string.IsNullOrEmpty(c.keeperNote)) { W("\nHOW TO PLAY IT\n", true, 9.5f, Verdigris); W(c.keeperNote + "\n"); }
+        if (!string.IsNullOrEmpty(c.keeperNote)) { W("\nHOW TO PLAY IT\n", true, 9.5f, Verdigris); Prose(c.keeperNote + "\n"); }
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
     }
 
@@ -764,7 +781,7 @@ public partial class MainForm
     internal void AskTurnLength()
     {
         int current = turnClock?.PresetSeconds ?? Prefs.Load().TurnSeconds;
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "How long is a turn?", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
@@ -877,11 +894,18 @@ public partial class MainForm
         bar.Controls.Add(PrimaryBtn("▶  Next turn", (s, e) => NextTurn(), 112,
             "Hand the turn to whoever is up next by initiative, and roll the round over when the "
             + "field has all gone (Ctrl+Space)"));
-        bar.Controls.Add(Btn("Begin turn", (s, e) => BeginTurnForSelected(), 82,
-            "Hand the turn to the SELECTED combatant, out of initiative order: their Beats go back to "
-            + "3, their next Strike is clean (no MAP), and their row lights gold as the one acting"));
-        bar.Controls.Add(Btn("Next round ▸", (s, e) => NextRound(), 100,
-            "Step to the next round by hand — Next turn does this for you when everyone has gone (Ctrl+R)"));
+        // The three OTHER ways a turn can move, behind one label. Each is an exception the loop
+        // above already handles by itself — begin out of order, step the round by hand, re-roll the
+        // order — so each was a button competing for the eye with the one button that runs the
+        // fight. Collapsed, the row reads "press this; here are the exceptions", which is the shape
+        // of the thing. Both shortcuts still work without opening it (Ctrl+R, Ctrl+I).
+        bar.Controls.Add(MenuBtn("Turn order ▾", 104,
+            "The exceptions to Next turn — hand the turn out of order, step the round by hand, or "
+            + "roll the whole field's initiative again",
+            ("Begin the SELECTED combatant's turn", (s, e) => BeginTurnForSelected()),
+            ("Step to the next round  (Ctrl+R)", (s, e) => NextRound()),
+            ("-", null),
+            ("Roll initiative for the field  (Ctrl+I)", (s, e) => RollInitiative())));
         // The glass is off by default and, when it is off, the whole column at the right edge is
         // hidden — so the ONE route to turning it on was a menu called Table, which is where nobody
         // looks for a clock (user-reported: "I don't see an option to turn on the hourglass
@@ -893,14 +917,8 @@ public partial class MainForm
         // (user-reported). A held-down switch says both things at once — that the glass is out, and
         // that this is what puts it away — which is what a toggle is FOR. Same shape as the Map
         // tab's ✥ Move things, so the app has one idiom for "this is on".
-        glassToggle = new CheckBox
-        {
-            Text = "＋ Turn glass", Appearance = Appearance.Button, AutoSize = false,
-            Width = 108, Height = 30, Margin = new Padding(3),
-            FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        Tip.SetToolTip(glassToggle, "Put an hourglass on the bar that runs the posse's turn down, or take it "
+        glassToggle = ToggleBtn("＋ Turn glass", 108,
+            "Put an hourglass on the bar that runs the posse's turn down, or take it "
             + "away. It never ends a turn or takes a Beat — it shows the time going and says so when it is "
             + "through. Also on the Table and View menus, and its length is yours to set.");
         glassToggle.CheckedChanged += (s, e) =>
@@ -939,10 +957,9 @@ public partial class MainForm
             ("Everyone on the field — Blood to full", (s, e) => RestoreField())));
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
-        // ---- row 3: the field itself — ordering it, filling it, and clearing it ----
-        bar.Controls.Add(Btn("Roll initiative", (s, e) => RollInitiative(), 110,
-            "Roll for the whole field and sort by it (Ctrl+I). Initiative is a Notice check "
-            + "(Ch. XI), so a soul with a sheet adds their Notice bonus."));
+        // ---- row 3: the field itself — filling it, ordering it, and clearing it ----
+        // Roll initiative moved up into Turn order ▾: it is pressed once at the top of a fight, and
+        // it belongs with the other two ways the order gets set rather than beside the foe picker.
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
             ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
             ("Initiative — low to high", (s, e) => SortTracker(TrkSort.InitAsc)),
@@ -1008,7 +1025,7 @@ public partial class MainForm
         C("Init", "Init", 58); C("Name", "Name", 172, true); C("BloodCur", "Blood", 68, false,
             "Blood left, drawn as a bar behind the number — full green, hurt gold, near death red. "
             + "On a sign & spoor row it is the spoor clock instead.");
-        C("BloodMax", "/Max", 48, true);
+        C("BloodMax", "", 48, true);
         C("LastNote", "Last", 74, true,
             "What just happened here — the damage taken, the healing done, the moment they went down. "
             + "Cleared at the top of each round.");
@@ -1026,10 +1043,14 @@ public partial class MainForm
             "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
             + "creature's own, with the rounds left. Hover for who worked it and what it does; "
             + "right-click to end one.");
+        // Figures right, words left. BloodMax is READ-ONLY here — unlike the Posse tab's, which can
+        // be typed into — so it can carry the slash in the cell rather than in the header, and with
+        // no rule drawn between them the pair reads as the single field it is: "12 / 12".
+        Figures(trkGrid, "Init", "BloodCur", "Defense", "Beats");
+        trkGrid.Columns["BloodMax"].DefaultCellStyle.Padding = new Padding(1, 0, 4, 0);
         // far-right Ledger button — posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
-        trkGrid.Columns.Add(new DataGridViewButtonColumn
-        { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
+        trkGrid.Columns.Add(QuietButtonCol("Ledger", 60));
         bool TrkHasSheet(int i) => i >= 0 && i < tracker.Count && tracker[i].IsPC
             && string.IsNullOrEmpty(tracker[i].Ref) && SoulOf(tracker[i]) != null;
         trkGrid.CellPainting += (s, e) =>
@@ -1083,6 +1104,14 @@ public partial class MainForm
             // Something worked on you is a fact about the fight, not a status you shrug off — it
             // reads in the ink the app already uses for the uncanny.
             if (col == "WorkedChips" && c.Worked is { Count: > 0 }) e.CellStyle.ForeColor = Verdigris;
+            // The other half of "12 / 12". A sign & spoor row has no Blood maximum to show — its
+            // Blood cell is a spoor clock, not a number — so it gets no orphaned slash either.
+            if (col == "BloodMax")
+            {
+                e.Value = !c.IsSign && c.BloodMax > 0 ? "/ " + c.BloodMax : "";
+                e.CellStyle.ForeColor = c.Down ? Blood : c.HasActed ? Spent : Faint;
+                e.FormattingApplied = true;
+            }
         };
         // The chips are deliberately terse, so the whole of each effect — who worked it, what it
         // cost, what it does, when it ends — lives one hover away rather than in a wider column.
@@ -1255,7 +1284,7 @@ public partial class MainForm
         { open.BringToFront(); open.Activate(); return; }
 
         int cascade = (beastWindows.Count % 5) * 26;
-        var win = new Form
+        var win = new Sheet
         {
             Text = c.name, Width = 520, Height = 620, BackColor = Paper,
             MinimumSize = new Size(340, 300), StartPosition = FormStartPosition.Manual,
@@ -1436,7 +1465,7 @@ public partial class MainForm
     // Bestiary. Blood/Defense by hand; the PC flag just tints the row green like the posse.
     void AddCustomCombatant()
     {
-        using var f = new Form { Width = 350, Height = 258, Text = "Add combatant", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Width = 350, Height = 258, Text = "Add combatant", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 16, Top = 18, Width = 80, Text = "Name:" };
         var name = new TextBox { Left = 104, Top = 15, Width = 210, Text = "Bandit" };
         var l2 = new Label { Left = 16, Top = 54, Width = 80, Text = "Blood:" };
@@ -1487,7 +1516,7 @@ public partial class MainForm
     int? AskDie(string prompt)
     {
         if (EngineRolls) return null;
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "The die", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
@@ -1697,7 +1726,7 @@ public partial class MainForm
     /// offers the book's answer first, and says what the cost of the other one is.</summary>
     bool AskInTheFlesh(Creature c, int partyLevel)
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "The safe-table rule", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
@@ -1853,7 +1882,7 @@ public partial class MainForm
         // changes with the run mode and with whether a creature or a soul is swinging, and the
         // old fixed heights cut the last line of it — and the Beats count — off the right edge.
         const int Pad = 16, CW = 500;   // left margin and the content width every row shares
-        using var f = new Form { Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         Label L(string t, int top) => new() { Left = Pad, Top = top + 3, Width = 92, Text = t };
         // A block of prose sized to the words in it, so it can never be clipped at any DPI.
         Label Para(string text, int top, Font font, Color fore)
@@ -1983,7 +2012,7 @@ public partial class MainForm
         var soul = SoulOf(c);
         if (soul == null) { Nope("Dread Checks are for the posse — select a player's soul."); return; }
 
-        using var f = new Form { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
         var dc = new NumericUpDown { Left = 112, Top = 48, Width = 70, Minimum = 5, Maximum = 40, Value = 16 };
         f.Controls.Add(new Label { Left = 16, Top = 51, Width = 92, Text = "Dread DC:" });
@@ -2102,7 +2131,7 @@ public partial class MainForm
     {
         if (soul == null) return;
         const int Pad = 16, CW = 420;
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = kind == "Affliction" ? "A scar that stays" : "A Lasting Injury",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
@@ -2212,7 +2241,7 @@ public partial class MainForm
         if (readers.Count == 0) { Nope("Nobody to read it — put the posse on the field first."); return; }
 
         const int Pad = 16, CW = 470;
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = $"{sign.Name} — read it", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
@@ -2381,7 +2410,7 @@ public partial class MainForm
         if (tracker.Count == 0) { Nope("Nobody on the field to work anything."); return; }
 
         const int Pad = 16, CW = 500;
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "Work a Sign or Miracle", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
@@ -3023,15 +3052,18 @@ public partial class MainForm
     /// </summary>
     internal int RefDeckLength => refDeck?.Length ?? 0;
 
+    // The Keeper's screen, in the same two faces the Bestiary page uses: Georgia carries the prose
+    // and the leaf titles because this deck is the books condensed, and the tables stay in Consolas
+    // because they are columns of figures and Georgia's descending 3 4 5 7 9 would shear them.
     static readonly Font RefMono  = new("Consolas", 9.5f);
     static readonly Font RefMonoB = new("Consolas", 9.5f, FontStyle.Bold);
-    static readonly Font RefBody  = new("Segoe UI", 10f);
-    static readonly Font RefItal  = new("Segoe UI", 9.7f, FontStyle.Italic);
-    static readonly Font RefHead  = new("Segoe UI", 12.5f, FontStyle.Bold);
+    static readonly Font RefBody  = new("Georgia", 10.5f);
+    static readonly Font RefItal  = new("Georgia", 10.2f, FontStyle.Italic);
+    static readonly Font RefHead  = new("Georgia", 13.5f, FontStyle.Bold);
 
     static void RH(RichTextBox r, string s) { r.SelectionFont = RefHead; r.SelectionColor = Blood; r.AppendText(s + "\n"); }
     static void RT(RichTextBox r, string s) { r.SelectionFont = RefBody; r.SelectionColor = Ink; r.AppendText(s + "\n\n"); }
-    static void RI(RichTextBox r, string s) { r.SelectionFont = RefItal; r.SelectionColor = Gold; r.AppendText(s + "\n\n"); }
+    static void RI(RichTextBox r, string s) { r.SelectionFont = RefItal; r.SelectionColor = GoldDeep; r.AppendText(s + "\n\n"); }
 
     static List<string> RWrap(string s, int width)
     {
@@ -3086,7 +3118,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("▶", (s, e) => RefShow(refPage + 1), 44, "Next leaf (or press Right)"));
         refTitle = new Label { AutoSize = true, UseMnemonic = false, Font = new Font("Segoe UI", 11.5f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(10, 9, 0, 0) };
         bar.Controls.Add(refTitle);
-        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = GoldDeep, Padding = new Padding(12, 11, 0, 0) };
+        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = Slate, Padding = new Padding(12, 11, 0, 0) };
         bar.Controls.Add(refCount);
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
@@ -3533,7 +3565,7 @@ public partial class MainForm
 
     void NewThread()
     {
-        using var f = new Form { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 14, Top = 14, Width = 320, Text = "Name the trouble (type your own, or pick a pattern):" };
         var name = new ComboBox { Left = 14, Top = 38, Width = 320, DropDownStyle = ComboBoxStyle.DropDown };
         name.Items.AddRange(new object[]
@@ -3566,7 +3598,7 @@ public partial class MainForm
 
     void RenameThread(CampaignClock c)
     {
-        using var f = new Form { Width = 360, Height = 160, Text = "Rename thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Width = 360, Height = 160, Text = "Rename thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var l1 = new Label { Left = 14, Top = 14, Width = 320, Text = "Thread name:" };
         var name = new TextBox { Left = 14, Top = 38, Width = 320, Text = c.Name };
         var ok = new Button { Text = "Rename", Left = 148, Top = 78, Width = 90, DialogResult = DialogResult.OK };

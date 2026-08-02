@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace BloodAndGritKeeper;
 
-public partial class MainForm : Form
+public partial class MainForm : Sheet
 {
     // shared state
     readonly BindingList<PartyMember> party = new();
@@ -53,6 +53,16 @@ public partial class MainForm : Form
     /// <summary>The unselected tab's ground, and the rule under the strip. A tab bar where the
     /// selected tab is the same colour as the rest is a tab bar that does not answer "where am I".</summary>
     public static readonly Color TabRest  = Color.FromArgb(230, 222, 200);
+
+    /// <summary>Information that is neither emphasis nor prose — counters, shortcut hints, the
+    /// "150 shown" under a filter. Gold was doing this job AND carrying emphasis, so a heading and
+    /// an aside arrived in the same colour and neither won. This is off the warm axis on purpose:
+    /// it reads as apparatus rather than as something the frontier said. ~6.8:1 on Paper.</summary>
+    public static readonly Color Slate    = Color.FromArgb(76, 86, 98);
+
+    /// <summary>Every hairline in the app: bar separators, the rule under a heading, a button's
+    /// edge. One value so a border never disagrees with the border beside it.</summary>
+    public static readonly Color Rule     = Color.FromArgb(206, 194, 170);
 
     // roll-log result colors — so a dice result jumps out from plain event lines
     public static readonly Color RollCritGood = Color.FromArgb(150, 108, 0);   // critical success — rich gold
@@ -182,45 +192,20 @@ public partial class MainForm : Form
         // button that did nothing at all. That's the "some buttons don't work" report.
         statusSay = new ToolStripStatusLabel("") { Spring = true, ForeColor = Ink, TextAlign = ContentAlignment.MiddleLeft };
         status.Items.Add(statusSay);
-        // Undo and Redo are pinned here rather than on a tab so they're reachable wherever the
-        // Keeper is working. Flat text in a status bar reads as a caption, though, not as
-        // something you can press (user-reported) — so they wear a raised face and a border.
+        // Undo and Redo used to live here, at the right end of this bar. They have moved to the
+        // right end of the MENU bar (see BuildMenu), which keeps everything the old arrangement was
+        // for — reachable from any tab, at the end rather than through the middle of the status —
+        // and gives the status bar back to status. A bar carrying app state, a version list, two
+        // hints AND two buttons is four kinds of thing in one strip, and the two buttons were the
+        // ones that did not belong: every other item on it is something the app is telling you.
         //
-        // They are RIGHT-ALIGNED, and that is the whole point of this arrangement. Added in normal
-        // order they landed between the "what just happened" line and the shortcut hints, so two
-        // buttons sat in the middle of a sentence and clipped the end off it — "Sent 6 soul(s) to
-        // the tracker" was cut short by the Undo button parked against it (user-reported). Actions
-        // belong at the end of a status bar, not through the middle of the status.
-        ToolStripButton UndoBtn(string text, string tip, Action go)
-        {
-            var b = new ToolStripButton(text)
-            {
-                Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text, ToolTipText = tip,
-                BackColor = Color.FromArgb(238, 230, 210), ForeColor = Ink,
-                Margin = new Padding(3, 2, 3, 2), Padding = new Padding(7, 1, 7, 1),
-                Font = new Font("Segoe UI", 9f, FontStyle.Bold)
-            };
-            b.Click += (s, e) => go();
-            b.Paint += (s, e) =>
-            {
-                var r = new Rectangle(0, 0, b.Width - 1, b.Height - 1);
-                using var pen = new Pen(Color.FromArgb(b.Enabled ? 150 : 205, 140, 118));
-                e.Graphics.DrawRectangle(pen, r);
-            };
-            return b;
-        }
-        undoStatusBtn = UndoBtn("⟲ Undo", "Undo the last change — the posse, the corral, the tracker, "
-            + "the encounter, the threads (Ctrl+Z)", Undo);
-        redoStatusBtn = UndoBtn("⟳ Redo", "Redo the last undone change (Ctrl+Y)", Redo);
-        // Order matters, and it is the whole fix: everything that is TEXT goes on first, then the
-        // two buttons, so the strip reads status-then-actions and the buttons sit against the right
-        // edge. (ToolStripItemAlignment.Right is not the way to do this — a StatusStrip lays out on
-        // a table and ignores it, which reversed the pair into "Redo Undo" and left them mid-strip
-        // anyway.) statusSay springs, so the slack all lands on the one line that changes.
+        // The raised face and border they wear are kept exactly, and for the recorded reason: flat
+        // text in a bar reads as a caption rather than as something you can press (user-reported).
+        //
+        // Slate, not GoldDeep: this line is apparatus — keys and intervals — and gold is the colour
+        // the app uses when the frontier is speaking. See the palette note on Slate.
         status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min")
-        { ForeColor = GoldDeep, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
-        status.Items.Add(undoStatusBtn);
-        status.Items.Add(redoStatusBtn);
+        { ForeColor = Slate, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
         Controls.Add(status);
 
         // Universal undo/redo: any add/remove/edit to the posse, tracker, encounter, or
@@ -334,7 +319,7 @@ public partial class MainForm : Form
     /// window is built. Cancel keeps the mode it opened on.</summary>
     public static (RunMode mode, bool remember) ChooseMode(RunMode current)
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "Blood & Grit — GritKeeper", Width = 560, Height = 470,
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterScreen,
@@ -514,6 +499,35 @@ public partial class MainForm : Form
     static readonly System.Text.RegularExpressions.Regex RollLineRe =
         new(@"^\[\d\d:\d\d\] (ROLL |CHECK — |DREAD — )");
 
+    /// <summary>A plain list, selecting in the app's own colours.
+    ///
+    /// <para>Windows selects in <c>#0078D4</c>. On a warm parchment ground that is the one colour in
+    /// the app belonging to no palette here, and the Bestiary — a full-height list of 150 creatures
+    /// beside a page of prose — put a bright blue block in the middle of it every time a Keeper
+    /// picked something. A grid already selects in Gold (<see cref="StyleGrid"/>); this makes the
+    /// lists agree with the grids, so "the thing I chose" looks the same everywhere.</para>
+    ///
+    /// <para><c>OwnerDrawFixed</c> keeps the control's own item height, so nothing about the list's
+    /// density or scrolling changes — only the two colours and a few pixels of left bearing, which
+    /// text pressed against a border has always wanted.</para></summary>
+    static void StyleList(ListBox lb)
+    {
+        lb.DrawMode = DrawMode.OwnerDrawFixed;
+        lb.DrawItem += (s, e) =>
+        {
+            if (e.Index < 0 || e.Index >= lb.Items.Count) return;
+            bool on = (e.State & DrawItemState.Selected) != 0;
+            using (var ground = new SolidBrush(on ? Gold : lb.BackColor))
+                e.Graphics.FillRectangle(ground, e.Bounds);
+            var r = e.Bounds; r.X += 4; r.Width -= 4;
+            TextRenderer.DrawText(e.Graphics, lb.GetItemText(lb.Items[e.Index]), e.Font, r,
+                on ? Color.White : Ink,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix
+                | TextFormatFlags.EndEllipsis);
+            if (!on) e.DrawFocusRectangle();
+        };
+    }
+
     static void StyleRollLog(ListBox log)
     {
         // One bold variant, created once and kept for the log's lifetime. Never wrap
@@ -549,25 +563,141 @@ public partial class MainForm : Form
                 }
                 else if (RollLineRe.IsMatch(text)) color = RollNeutral;
             }
-            e.DrawBackground();
+            // Ground and selection painted here rather than by e.DrawBackground(), which fills with
+            // Windows' own selection blue — see StyleList for why that one colour cannot stay.
             bool selected = (e.State & DrawItemState.Selected) != 0;
+            using (var ground = new SolidBrush(selected ? Gold : log.BackColor))
+                e.Graphics.FillRectangle(ground, e.Bounds);
             TextRenderer.DrawText(e.Graphics, text, bold ? boldFont : e.Font, e.Bounds,
-                selected ? SystemColors.HighlightText : color,
+                selected ? Color.White : color,
                 TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
-            e.DrawFocusRectangle();
+            if (!selected) e.DrawFocusRectangle();
         };
     }
 
+    /// <summary>The ordinary button — the middle of three weights, and the one nearly every bar in
+    /// the app is made of.
+    ///
+    /// <para>It was <c>FlatStyle.System</c>, which hands the painting to the Windows theme. That
+    /// theme has no idea this app is made of paper and blood, so a themed grid, a themed tab strip
+    /// and a themed status bar all sat above a row of grey-blue Win32 buttons, and the app read as
+    /// a book inside somebody else's utility. Flat with a paper face and a hairline edge costs the
+    /// system hover animation and buys the app its own hands.</para>
+    ///
+    /// <para><b>Focus is drawn deliberately, and drawn in Paint rather than by swapping the border
+    /// colour.</b> The dotted rectangle a Flat button paints is nearly invisible on a warm ground.
+    /// Swapping <c>FlatAppearance.BorderColor</c> on focus was the obvious fix and the wrong one:
+    /// PrimaryBtn and DangerBtn set their own border AFTER this returns, so the first blur would
+    /// have reset a red-edged button to a hairline one. A ring drawn over the top belongs to no
+    /// weight in particular and so cannot overwrite any of them.</para></summary>
     static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = new Button
         {
             Text = text, Width = w, Height = 32, Margin = new Padding(3),
-            FlatStyle = FlatStyle.System, UseVisualStyleBackColor = true
+            FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false,
+            BackColor = BtnFace, ForeColor = Ink
         };
+        b.FlatAppearance.BorderColor = Rule;
+        b.FlatAppearance.BorderSize = 1;
+        b.FlatAppearance.MouseOverBackColor = BtnHover;
+        b.FlatAppearance.MouseDownBackColor = BtnDown;
+        b.Paint += (s, e) =>
+        {
+            if (!b.Focused) return;
+            using var ring = new Pen(Ink, 1f) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
+            e.Graphics.DrawRectangle(ring, 2, 2, b.Width - 5, b.Height - 5);
+        };
+        FitLabel(b);
         b.Click += onClick;
         if (tip != null) Tip.SetToolTip(b, tip);
         return b;
+    }
+
+    /// <summary>Never let a button be narrower than its own words.
+    ///
+    /// <para>Every width in this app was chosen by eye against <c>FlatStyle.System</c>, and the
+    /// themed button reserves less room for its text than a flat one does — so moving to the flat
+    /// weight clipped "Dread check — selected" to "Dread check —" on a bar that had looked right for
+    /// a year. Widths hand-fitted to a renderer are widths that break when the renderer changes,
+    /// which is the same lesson the dialogs learned when fixed heights clipped their prose.</para>
+    ///
+    /// <para>Measured on FontChanged as well as now, because a button takes its real font from its
+    /// parent AFTER it is built: constructed it is carrying <c>Control.DefaultFont</c> at 9pt, and
+    /// the form's own face is 9.5. It only ever grows — a bar of buttons that resized as their
+    /// captions changed would shuffle under the hand.</para></summary>
+    static void FitLabel(ButtonBase b)
+    {
+        void Fit(object s, EventArgs e)
+        {
+            int need = TextRenderer.MeasureText(b.Text, b.Font).Width + 18;
+            if (b.Width < need) b.Width = need;
+            if (b.MinimumSize.Width < need) b.MinimumSize = new Size(need, b.MinimumSize.Height);
+        }
+        b.FontChanged += Fit;
+        b.TextChanged += Fit;
+        Fit(null, null);
+    }
+
+    /// The three grounds an ordinary button stands on. Paper itself is the pane behind it, so the
+    /// face is lifted a shade off it — a button the same colour as its background is a label.
+    static readonly Color BtnFace  = Color.FromArgb(240, 233, 214);
+    static readonly Color BtnHover = Color.FromArgb(232, 221, 189);
+    static readonly Color BtnDown  = Color.FromArgb(219, 205, 168);
+
+    /// <summary>The lightest of the three weights: a real action that should not compete. No face
+    /// and no edge until the mouse is on it, so a bar of eight buttons can carry two or three
+    /// housekeeping verbs — Reset, Clear name, Fit — without them reading as loud as the work.
+    ///
+    /// <para>It keeps the full 32px target and the tooltip, so nothing about it is less reachable
+    /// than a normal button; only its ink is quieter. That distinction matters — quiet is a visual
+    /// weight, and a control a hand cannot land on is a different problem entirely.</para></summary>
+    static Button QuietBtn(string text, EventHandler onClick, int w = 120, string tip = null)
+    {
+        var b = Btn(text, onClick, w, tip);
+        b.BackColor = Color.Transparent;
+        b.ForeColor = Slate;
+        b.FlatAppearance.BorderSize = 0;
+        b.FlatAppearance.MouseOverBackColor = BtnHover;
+        return b;
+    }
+
+    /// <summary>A button that stays down — the app's one idiom for "this is on", used by the
+    /// Tracker's turn glass and the Map's ✥ Move things.
+    ///
+    /// <para>A CheckBox rather than a Button because the state is the point: it is readable at a
+    /// glance, it reaches assistive tech as a toggle rather than as a push button, and it cannot
+    /// drift out of step with what it controls the way a button whose caption is rewritten can.
+    /// Held down it wears Gold — the same colour a selected row wears, so "on" means one thing
+    /// across the app.</para></summary>
+    static CheckBox ToggleBtn(string text, int w, string tip)
+    {
+        var c = new CheckBox
+        {
+            Text = text, Appearance = Appearance.Button, AutoSize = false,
+            Width = w, Height = 32, Margin = new Padding(3),
+            TextAlign = ContentAlignment.MiddleCenter,
+            FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false,
+            BackColor = BtnFace, ForeColor = Ink
+        };
+        c.FlatAppearance.BorderColor = Rule;
+        c.FlatAppearance.BorderSize = 1;
+        c.FlatAppearance.MouseOverBackColor = BtnHover;
+        c.FlatAppearance.CheckedBackColor = Gold;
+        c.CheckedChanged += (s, e) =>
+        {
+            c.ForeColor = c.Checked ? Color.White : Ink;
+            c.FlatAppearance.BorderColor = c.Checked ? GoldDeep : Rule;
+        };
+        c.Paint += (s, e) =>
+        {
+            if (!c.Focused) return;
+            using var ring = new Pen(c.Checked ? Color.White : Ink, 1f)
+            { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
+            e.Graphics.DrawRectangle(ring, 2, 2, c.Width - 5, c.Height - 5);
+        };
+        Tip.SetToolTip(c, tip);
+        return c;
     }
 
     /// <summary>Paint the tab strip ourselves, for one reason: under the Windows visual style the
@@ -596,7 +726,7 @@ public partial class MainForm : Form
             // inside the rect so it can't bleed onto its neighbours.
             if (on) using (var rule = new SolidBrush(Blood)) g.FillRectangle(rule, r.X, r.Y, r.Width, 3);
             // Hairline separators, so ten tabs read as ten and not as one long bar.
-            using (var edge = new Pen(Color.FromArgb(206, 196, 170)))
+            using (var edge = new Pen(Rule))
                 g.DrawLine(edge, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
 
             var face = on ? new Font(t.Font, FontStyle.Bold) : t.Font;
@@ -837,7 +967,7 @@ public partial class MainForm : Form
     /// things do not, which is most of what makes a crowded bar readable.</summary>
     static Control BarSep(int gap = 7) => new Panel
     {
-        Width = 1, Height = 22, BackColor = Color.FromArgb(206, 194, 170),
+        Width = 1, Height = 22, BackColor = Rule,
         Margin = new Padding(gap, 8, gap, 4)
     };
 
@@ -887,6 +1017,30 @@ public partial class MainForm : Form
         var host = new Panel { Dock = DockStyle.Fill, Padding = new Padding(all), BackColor = c.BackColor };
         c.Dock = DockStyle.Fill;
         host.Controls.Add(c);
+        return host;
+    }
+
+    /// <summary>The same, for a pane of PROSE: the text is held to a readable measure and the slack
+    /// becomes margin, instead of the line growing with the window.
+    ///
+    /// <para>A docked read-pane takes whatever width it is given, and on a wide screen the Bestiary's
+    /// lore ran about 130 characters to the line — roughly double what an eye tracks comfortably, and
+    /// the reason a long entry felt like work. Typographers have converged on 45–75 characters for a
+    /// century of setting books; this leaves a little more than that, because a stat line
+    /// ("ATTACKS revolver +5 (1d8+2, range 60 ft)") should not be made to wrap for the sake of the
+    /// paragraph above it.</para>
+    ///
+    /// <para>Only the padding moves, so the pane still fills its half of the splitter and still
+    /// scrolls as one. On a window too narrow to reach the cap this is exactly <see cref="Pad"/>.</para></summary>
+    static Panel Measure(Control c, int pad, int maxWidth)
+    {
+        var host = Pad(c, pad);
+        void Fit(object s, EventArgs e)
+        {
+            int side = Math.Max(pad, (host.ClientSize.Width - maxWidth) / 2);
+            if (host.Padding.Left != side) host.Padding = new Padding(side, pad, side, pad);
+        }
+        host.Resize += Fit;
         return host;
     }
 
@@ -1075,6 +1229,45 @@ public partial class MainForm : Form
         g.DefaultCellStyle.SelectionForeColor = Color.White;
         g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(237, 229, 207);
         g.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+        // ---- horizontal rules only ----
+        // Eighteen columns boxed in on all four sides is a spreadsheet, and it reads like one: the
+        // eye has to cross a line to get from a name to that name's Blood, and every line is drawn
+        // with the same weight whether it separates two halves of one fact or two unrelated ones.
+        // Rows are what a Keeper actually reads along, so rows keep their rules and the columns give
+        // theirs up. It also lets a pair of columns be set as ONE field — see the Tracker's
+        // "12 / 12", which is two bound columns with nothing drawn between them.
+        g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+        g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+        g.DefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
+    }
+
+    /// <summary>The far-right button column, painted so it doesn't shout. A raised system button
+    /// repeated once per row is a stack of grey blocks running down the edge of a warm page, and it
+    /// takes more of the eye than the ledger it opens — while the same sheet is already one
+    /// double-click away on the row itself. Flat, on the row's own ground, in Slate: still plainly a
+    /// button when looked at, and quiet when not.</summary>
+    static DataGridViewButtonColumn QuietButtonCol(string text, int weight) => new()
+    {
+        HeaderText = "", Text = text, UseColumnTextForButtonValue = true, FillWeight = weight,
+        Name = "ledgerBtn", ReadOnly = true, FlatStyle = FlatStyle.Flat,
+        DefaultCellStyle = new DataGridViewCellStyle
+        {
+            ForeColor = Slate, SelectionForeColor = Slate,
+            Font = new Font("Segoe UI", 8.5f), Padding = new Padding(2, 4, 2, 4)
+        }
+    };
+
+    /// <summary>Right-align a column of figures, and its header with it. Numbers that share a right
+    /// edge can be compared down the column at a glance; numbers ragged on the right cannot, which
+    /// is the whole reason ledgers have been set this way since there were ledgers.</summary>
+    static void Figures(DataGridView g, params string[] names)
+    {
+        foreach (var n in names)
+            if (g.Columns[n] is { } c)
+            {
+                c.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                c.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
     }
 
     // shared numeric cell-validation for grids: reject non-numbers on numeric columns
@@ -1123,11 +1316,18 @@ public partial class MainForm : Form
             => posseGrid.Columns.Add(new DataGridViewTextBoxColumn
             { DataPropertyName = prop, Name = prop, HeaderText = head, FillWeight = weight, ReadOnly = ro });
         Col("Name", "Name", 155); Col("Calling", "Calling", 115); Col("Gender", "Gender", 70); Col("Level", "Lv", 40);
-        Col("BloodCur", "Blood", 55); Col("BloodMax", "/Max", 50); Col("Defense", "Def", 45);
+        Col("BloodCur", "Blood", 55); Col("BloodMax", "/ max", 50); Col("Defense", "Def", 45);
         Col("Fort", "Fort", 45); Col("Ref", "Ref", 45); Col("Will", "Will", 45);
-        Col("NerveCur", "Nerve", 55); Col("NerveMax", "/Max", 50); Col("Grit", "Grit", 45);
-        Col("PoolCur", "Pool", 46); Col("PoolMax", "/Max", 45);
+        Col("NerveCur", "Nerve", 55); Col("NerveMax", "/ max", 50); Col("Grit", "Grit", 45);
+        Col("PoolCur", "Pool", 46); Col("PoolMax", "/ max", 45);
         Col("Mark", "Mark", 48); Col("Taint", "Taint", 48);
+        // Figures right, words left — and the three current/max pairs set as pairs. With the vertical
+        // rules gone (StyleGrid), a right-aligned "12" against a left-aligned "12" under a header
+        // reading "/ max" is one field wearing one slash, instead of two columns that happened to be
+        // adjacent. The slash lives in the HEADER rather than in the cell because every column on
+        // this tab can be typed into, and a cell that displays "/ 12" hands "/ 12" to the editor.
+        Figures(posseGrid, "Level", "BloodCur", "Defense", "Fort", "Ref", "Will",
+                "NerveCur", "Grit", "PoolCur", "Mark", "Taint");
         // What they carry out of the bad nights. Read-only and derived: a Lasting Injury and an
         // Affliction are added through the engine that produced them (a terrible blow, a Dread
         // Check that went badly) or by hand from the right-click menu, so the column reports the
@@ -1135,8 +1335,7 @@ public partial class MainForm : Form
         Col("ScarLine", "Scars", 110, ro: true);
         Col("Notes", "Notes", 130);
         // far-right Ledger button — one click to the soul's character sheet
-        posseGrid.Columns.Add(new DataGridViewButtonColumn
-        { HeaderText = "", Text = "Ledger", UseColumnTextForButtonValue = true, FillWeight = 60, Name = "ledgerBtn", ReadOnly = true });
+        posseGrid.Columns.Add(QuietButtonCol("Ledger", 60));
         posseGrid.CellContentClick += (s, e) =>
         {
             if (e.RowIndex >= 0 && e.RowIndex < party.Count && posseGrid.Columns[e.ColumnIndex].Name == "ledgerBtn")
@@ -1408,7 +1607,7 @@ public partial class MainForm : Form
     // the Notes column shows what fits in one cell; this shows (and edits) the whole note
     void ExpandNotes(PartyMember p)
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Width = 520, Height = 380, Text = $"Notes — {p.Name}",
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false,
@@ -2112,6 +2311,27 @@ public partial class MainForm : Form
         ApplySession(JsonSerializer.Deserialize<GameSession>(target));
         Log("Redo.");
         RefreshUndoRedoButtons();
+    }
+
+    /// <summary>One of the two undo buttons on the right of the menu bar. A raised face and a
+    /// border, because flat text on a bar reads as a caption and not as something you can press
+    /// (user-reported, and the finding survives the move from the status bar).</summary>
+    ToolStripButton UndoRedoBtn(string text, string tip, Action go)
+    {
+        var b = new ToolStripButton(text)
+        {
+            Enabled = false, DisplayStyle = ToolStripItemDisplayStyle.Text, ToolTipText = tip,
+            BackColor = BtnFace, ForeColor = Ink, Alignment = ToolStripItemAlignment.Right,
+            Margin = new Padding(3, 1, 3, 1), Padding = new Padding(7, 1, 7, 1),
+            Font = new Font("Segoe UI", 9f, FontStyle.Bold)
+        };
+        b.Click += (s, e) => go();
+        b.Paint += (s, e) =>
+        {
+            using var pen = new Pen(b.Enabled ? Rule : Color.FromArgb(224, 214, 190));
+            e.Graphics.DrawRectangle(pen, new Rectangle(0, 0, b.Width - 1, b.Height - 1));
+        };
+        return b;
     }
 
     void RefreshUndoRedoButtons()

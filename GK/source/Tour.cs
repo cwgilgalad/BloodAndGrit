@@ -40,7 +40,7 @@ public partial class MainForm
         var prefs = Prefs.Load();
         if (prefs.ToldTheTour) return;
 
-        using var f = new Form
+        using var f = new Sheet
         {
             Text = "Welcome to GritKeeper", Width = 520, Height = 268,
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
