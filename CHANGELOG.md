@@ -8,6 +8,29 @@ Desktop\Git repos.)
 
 ---
 
+- **The prose gate moved to where a commit message can still be changed (2026-08-01).**
+  `audit_ai_tells.py` has scanned the last 40 commit messages from the start, and CI runs it, so
+  a bad one turned the build red. But a commit message cannot be edited without rewriting
+  history, and this project's standing rule is that history on `main` is never rewritten — so that
+  finding could never be cleared. A gate nobody can satisfy is a gate people learn to route
+  around, which is the same defect the quoted-book-text case had this morning.
+
+  It went wrong exactly that way: a commit message written today closed on *“A duplicate that
+  nothing keeps in step is not a backup, it is a second thing to be wrong”* — the precise figure
+  the audit exists to catch — and there was nothing to be done about it once it had landed.
+  It was missed because the audit is always run BEFORE committing, so the one input never checked
+  by the person writing it is their own message.
+
+  **`.githooks/commit-msg`** now runs the same scan over the message while it is still a file on
+  disk, and rejects a hard tell with the finding quoted back. Merges, reverts, fixups and squashes
+  are skipped (generated or conventional, not authored prose), a missing Python or missing audit
+  fails open, and `--no-verify` still gets through when you mean it. Proved against all three
+  cases: the figure is rejected, a plain message passes, a merge is skipped.
+
+  Findings in messages that have already landed are now **reported and not counted**, in their own
+  section, for the same reason quoted book text is. Files stay fatal — files can be edited.
+  Install once per clone: `git config core.hooksPath .githooks`.
+
 - **GritKeeper v1.31.0 — the table stops living beside the exe (2026-08-01, user-requested).**
   The ask was to reach the release build locally without going to GitHub for it — and Tidewatch
   already worked that way.
