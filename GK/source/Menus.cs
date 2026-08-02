@@ -38,6 +38,22 @@ public partial class MainForm
         edit.DropDownItems.Add(redoMenuItem);
         menu.Items.Add(edit);
 
+        // The same two, as buttons at the right end of this bar. They are here rather than on a tab
+        // for the reason they always were — an undo a Keeper can only reach from one tab is an undo
+        // they will not reach mid-fight — and here rather than in the status bar because a status
+        // bar should carry status. This one is a toolbar, which is what they are.
+        //
+        // Added Redo FIRST: right-aligned items stack from the right edge in the order they are
+        // added, so the second one lands to the LEFT of the first. Added in reading order the pair
+        // comes out "Redo Undo", which is the same trap the status bar hit from the other side.
+        // (A MenuStrip does honour ToolStripItemAlignment.Right; a StatusStrip lays out on a table
+        // and ignores it, which is why the old arrangement could not use it.)
+        redoStatusBtn = UndoRedoBtn("⟳ Redo", "Redo the last undone change (Ctrl+Y)", Redo);
+        undoStatusBtn = UndoRedoBtn("⟲ Undo", "Undo the last change — the posse, the corral, the tracker, "
+            + "the encounter, the threads (Ctrl+Z)", Undo);
+        menu.Items.Add(redoStatusBtn);
+        menu.Items.Add(undoStatusBtn);
+
         // one entry per tab, so the Ctrl+number shortcuts are discoverable
         var view = new ToolStripMenuItem("&View");
         for (int i = 0; i < tabs.TabPages.Count; i++)
@@ -177,7 +193,7 @@ public partial class MainForm
     static Form HelpWindow(ref Form slot, string title, int w, int h)
     {
         if (slot != null && !slot.IsDisposed) { slot.BringToFront(); slot.Activate(); return null; }
-        var win = new Form
+        var win = new Sheet
         {
             Text = title, Width = w, Height = h, BackColor = Paper,
             MinimumSize = new Size(420, 360), StartPosition = FormStartPosition.CenterScreen
@@ -367,7 +383,7 @@ public partial class MainForm
 
     void ShowAbout()
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Width = 520, Height = 420, Text = "About GritKeeper",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
@@ -418,7 +434,7 @@ public partial class MainForm
     /// spent two releases telling people they could play on a phone.</summary>
     void ShowRequirements()
     {
-        using var f = new Form
+        using var f = new Sheet
         {
             Width = 560, Height = 520, Text = "GritKeeper — what it needs",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
