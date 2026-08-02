@@ -161,7 +161,7 @@ public partial class MainForm
             return;
         try
         {
-            File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "session-backup.json"),
+            File.WriteAllText(Path.Combine(AppState.Dir, "session-backup.json"),
                 JsonSerializer.Serialize(Snapshot(), new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { /* the backup is best-effort — never block a load over it */ }
