@@ -92,6 +92,18 @@ Desktop\Git repos.)
   count went 131 → 134 when they were rebuilt on the shared helper and `TourBtn` was registered: a
   helper the audit does not know about is a set of buttons nobody checks.
 
+  **The wizard's three buttons read as three of the same thing**, which the pre-release UX check
+  caught by looking at them. Being a bare `new Button` apiece — they carry a DialogResult and drive
+  a step machine, so they never fitted the factory's shape — the walk gave all three the ordinary
+  weight, and `Next ▸`, the action that drives nine steps and the only reason the window is open,
+  came out identical to the `Cancel` sitting against it that throws all nine away. That adjacency is
+  the exact case `DangerBtn` was written for: *it stops looking like the button beside it, so it is
+  never pressed by muscle memory.* Next now wears Blood and Cancel the pale red; ◂ Back keeps the
+  ordinary face, being neither the point nor a loss. The two faces were split out of their
+  factories (`PrimaryFace`/`DangerFace`, reached by `DressPrimary`/`DressDanger`) so a hand-built
+  button can wear one — and they have to be applied at construction, because the walk skips anything
+  already Flat and would otherwise paint a colours-only button back to the ordinary face.
+
   **And one thing the previous release broke by fixing something else.** v1.32.0 renamed the Posse
   tab's current/max headers from `/Max` to `/ max` so a pair would read as one field. A space is
   where a header wraps, the header band is a fixed 30px that will not grow, and all three columns
