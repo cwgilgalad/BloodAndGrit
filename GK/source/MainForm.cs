@@ -1919,7 +1919,7 @@ public partial class MainForm : Form
         MessageBox.Show(msg, "Blood & Grit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
     // ---------------------------------------------------------- persistence
-    string SavePath => Path.Combine(AppContext.BaseDirectory, "session.json");
+    string SavePath => Path.Combine(AppState.Dir, "session.json");
 
     GameSession Snapshot() => new()
     {
@@ -2137,7 +2137,7 @@ public partial class MainForm : Form
             // An unreadable session used to be swallowed and papered over with the demo
             // posse, which then autosaved on exit — the Keeper's table quietly gone for
             // good. Set the bad file aside under a name nothing else writes, and say so.
-            string kept = Path.Combine(AppContext.BaseDirectory, "session-unreadable.json");
+            string kept = Path.Combine(AppState.Dir, "session-unreadable.json");
             try { File.Move(SavePath, kept, overwrite: true); } catch { kept = SavePath; }
             MessageBox.Show(
                 "GritKeeper couldn't read the saved session:\r\n\r\n" + ex.Message +

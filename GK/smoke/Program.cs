@@ -1228,6 +1228,35 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
         .Deserialize<GameSession>(System.Text.Json.JsonSerializer.Serialize(nightOff)).IsUntouched == false);
 }
 
+// ---- Where the table lives (AppState.Resolve) ----
+// This decides whether a Keeper's campaign is found or silently abandoned on a first run, so
+// every combination is walked rather than trusted. The order it encodes: an explicit portable
+// marker wins; an existing session beside the exe is honoured (nobody gets moved off a folder
+// they are already using); otherwise the per-user folder, which no build or package step can
+// reach. Before this, "beside the exe" was the only answer and packaging a release destroyed
+// the table of anyone playing out of the delivered folder.
+{
+    const string Beside = @"C:\app", Roaming = @"C:\users\x\AppData\Roaming\GritKeeper";
+    string R(bool portable, bool session) => AppState.Resolve(Beside, Roaming, portable, session);
+
+    T("state: a plain first run goes to the per-user folder", R(false, false) == Roaming);
+    T("state: a portable marker pins it beside the exe", R(true, false) == Beside);
+    T("state: an existing session beside the exe is honoured", R(false, true) == Beside);
+    T("state: both together still mean beside the exe", R(true, true) == Beside);
+    // The property that matters: nothing but the two beside-the-exe signals can pull it off the
+    // per-user folder, and either one on its own is enough.
+    T("state: the per-user folder is the answer only when neither signal is present",
+        (R(false,false) == Roaming) && (R(true,false) != Roaming) && (R(false,true) != Roaming) && (R(true,true) != Roaming));
+    T("state: the marker filename is the one the docs and package.ps1 name", AppState.PortableMarker == "portable.txt");
+
+    // The live folder must be usable and must exist — a Keeper whose profile is locked down
+    // should still get an app that runs, which is why Dir falls back rather than throwing.
+    var live = AppState.Dir;
+    T("state: the resolved folder is a real, created directory",
+        !string.IsNullOrWhiteSpace(live) && System.IO.Directory.Exists(live));
+    T("state: it is stable within a run", AppState.Dir == live);
+}
+
 // ---- Character generator: data sanity ----
 CharGen.Load();
 var cg = CharGen.D;
