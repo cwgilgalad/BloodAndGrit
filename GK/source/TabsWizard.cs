@@ -357,6 +357,7 @@ public partial class MainForm
             col.Controls.Add(Note("Step 4 in the book, but chosen early here so every later list can honor its rules."));
             var row = new FlowLayoutPanel { AutoSize = true };
             wCalList = new ListBox { Width = 220, Height = 330, Font = new Font("Segoe UI", 9.5f) };
+            StyleList(wCalList);
             foreach (var c in CharGen.D.callings.OrderBy(c => c.group).ThenBy(c => c.name)) wCalList.Items.Add(c.name);
             ItemTips(wCalList, i =>
             {
@@ -415,6 +416,7 @@ public partial class MainForm
                 : "Where they come from — gifts, free trained skills, a boon and a burden."));
             var row = new FlowLayoutPanel { AutoSize = true };
             wOrgList = new ListBox { Width = 220, Height = 300, Font = new Font("Segoe UI", 9.5f) };
+            StyleList(wOrgList);
             foreach (var o in CharGen.D.origins.Where(o => !(isFaith && o.notFaith))) wOrgList.Items.Add(o.name);
             ItemTips(wOrgList, i =>
             {

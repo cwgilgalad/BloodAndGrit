@@ -123,8 +123,29 @@ public partial class MainForm
             Log("The corral is empty.");
         }, 92, "Empty the corral and the yard"));
 
+        // Empty-state hint. The Encounter and the Tracker both explain themselves when they have
+        // nothing in them; the corral was a header band over a void, which says only that something
+        // is missing and never what. The band is the emptiest surface in the app on a first run,
+        // because a new table has a posse before it has a horse.
+        var hint = new Label
+        {
+            Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Italic), ForeColor = GoldDeep, BackColor = Paper,
+            Text = "Nothing in the corral.\n\n"
+                 + "＋ Add a ride puts a horse, a mule, a wagon or the stage in the posse's keeping.\n"
+                 + "A ride carries the water and takes the first shot out of the dark, so it can be\n"
+                 + "hurt, mended, named, and sent to the Tracker like anything else that bleeds."
+        };
+        // Added in the Tracker's exact order — content, then the bar, then the hint brought to the
+        // front. Docking is resolved last-added-first, so the bar keeps its band and the hint fills
+        // only what is left; BringToFront is what puts it over the grid rather than under it.
         host.Controls.Add(ridesGrid);
         host.Controls.Add(bar);
+        host.Controls.Add(hint);
+        hint.BringToFront();
+        hint.Visible = rides.Count == 0;
+        rides.ListChanged += (s, e) => hint.Visible = rides.Count == 0;
+        Watermark(hint, () => HintBottom(hint));
         return host;
     }
 
