@@ -72,6 +72,19 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: No release drift — one version everywhere, and every past release actually cut
+        # Added after v1.32.0 was merged, entered in the CHANGELOG as shipped, and then never
+        # published, signed, packaged or tagged — so the app on the Keeper's desktop sat two
+        # releases behind while every check in this file passed. Every one of them looks at the
+        # source; none of them looked at whether the source ever became a release.
+        #
+        # The `--delivered` half of this script cannot run here: it reads the version out of the
+        # packaged 163 MB signed exe, which is git-ignored by design. That half runs on the machine
+        # that does the packaging, from .githooks/pre-push.
+        #
+        # Needs the tags, which is the other reason this job checks out with fetch-depth: 0.
+        run: python verify_release.py
+
       - name: No rules drift — the printed book against the app's data against the formula
         # 697 cross-checks. The guard the whole project is built on: each rule is encoded once and
         # any disagreement between book, data and formula fails a build.
