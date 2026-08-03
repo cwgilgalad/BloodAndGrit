@@ -178,7 +178,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
 | `Data/creatures.json` | All 150 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
-| **`Look.cs`** | What a soul looks like — `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. See the root CLAUDE.md for the two rules that govern it. |
+| **`Look.cs`** | What a soul looks like — `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. The two rules that govern it are below, under *What a soul looks like*. |
 | `Data/appearance.json` | 28 peoples, 19 whole styles of dress, and the shared pools for build, bearing, face, marks, voice, hair, whiskers, wear and the one memorable detail. **The app's own, not the books'** — like `tables_extra.json`, and for the same reason: `chargen.json` is a transcription and must stay one. **Embedded**, like the rest. |
 
 ## Build & run
@@ -355,3 +355,260 @@ clipped it. `Para()` sizes a block with `TextRenderer.MeasureText`, everything b
 **Button order:** commit LEFT, Cancel RIGHT — and in a `FlowDirection.RightToLeft` bar that means
 adding **Cancel first**. Where cancelling is meaningless (the die prompt, the run-mode chooser),
 point `CancelButton` at the commit button: Esc should still close the thing.
+
+---
+
+*(Everything below moved down from the root `CLAUDE.md` on 2026-08-03, for the reason this file
+was split out in the first place: it is app detail, and it was sitting in every session's context
+including the ones that only touch a book. Nothing was rewritten — where a block already had a
+counterpart here, the two were merged rather than stacked.)*
+
+## The rules library, and why the JSON had to move with it
+
+`GK/rules/BloodAndGrit.Rules.csproj` is a plain `net8.0` class library — no WinForms — holding the
+seven headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
+`Look.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
+`<Compile Include>` per file, which could silently fall out of step with what the app contained —
+a seventh headless file, unlisted, went untested forever.
+
+**The JSON had to move with `Core.cs` and this is forced, not stylistic:** `Db.ReadData` resolves
+resources off `typeof(Db).Assembly`, so embedding it anywhere but beside `Db` makes the lookup find
+nothing and fall back to a `Data/` folder a standalone exe doesn't have — a break that shows up only
+in the published build. `CharGen.FlavorList` stays `internal`; the smoke rig reaches it through
+`<InternalsVisibleTo Include="smoke" />`.
+
+## Sign & spoor — the safe-table rule (v1.20.0)
+
+The numbers live once, in `Rules.SpoorRow` / `SpoorRead` / `SpoorClockSegments` (`Core.cs`), and
+everything renders from there — the Reference deck's Long Odds leaf and the Generators tab's ground
+roll. The books carry the same table by hand (Bestiary → Appendix: The Grounds → *Sign & Spoor*;
+Keeper's Book Ch. IV → *The Safe-Table Rule*; Player's Book Ch. VIII under *Reading the country*).
+The claim that binds them is "the Dread DC is one rung below meeting the thing", and the smoke suite
+asserts exactly that against `Rules.TierRow[i-1].dread` — so a change to one Tier's Dread DC fails
+the build rather than quietly desynchronising book and app.
+
+## Map weather & landforms (v1.19.0)
+
+`MapSpec.Weather` indexes `MapGen.Weathers` (0 = "as the sky wills"); `WeatherFor(pick, ti, rng)`
+resolves it against `WeatherByGround`, `WeatherLine` gives the cartouche's wording, and `DrawWeather`
+inks it over the hour on its own stream (`R(10)`) so forcing the sky moves nothing else — asserted.
+The resolved sky is on `MapModel.Weather`. Landforms (`mountain`, `range`, `ridge`, `bluff`, `butte`,
+`hoodoo`, `forest`, `pinestand`, `hills`, `marsh`, `orchard`, `spring`) are `Sym()` cases like any
+other. `GroundLandmarks(ti)` gives each ground its own named places; **those names are final** — they
+go into `ownName` and skip the "The Crooked …"/"Pryor's …" decorator, which is what produced "The
+Crooked The Wall". Weather ink is inset so no stroke lands past the neatline (a smoke test walks every
+sky). The cartouche is sized to the longer of title and subtitle.
+
+## Map marker ink (v1.18.0)
+
+`MapInk` in `Core.cs` holds the book's color per kind, the Keeper's standing override (persisted as
+`Prefs.Data.MarkerInk`), the 10-color palette, and `Hex()` for the exporters. Plain ARGB ints, never
+`Color` — `Core.cs` must stay drawing-free for the smoke rig. `MapMarker.Argb` is one marker's own
+choice (0 = take the kind's). `MapGen.MarkerPrims` renders markers as `Prim`s and both writers take
+them as an **optional overlay** (`ToSvg(m, overlay)`, `Pdf.MapPdf(m, overlay)`) — never appended to
+the model, so the survey the Map tab holds is never mutated by an export. The **with markers**
+checkbox is off by default.
+
+## Turn state on the tracker (v1.19.0)
+
+`Combatant.Acting` (persisted) and the derived `NextStrike` ("clean" / "−5" / "−10"). `BeginTurn()`
+sets Beats 3, MapStep 1, Acting true; clearing everyone else is the caller's job
+(`BeginTurnForSelected`). The tracker shows it three ways — a gold bold row (`ActingRow` + the cached
+`trkBold`), a **Next strike** column, and `UpdateTurnLine()` beside the round. `NextRound` clears
+Acting.
+
+## The turn hourglass (v1.29.0)
+
+`TurnClock` in the rules library is pure and is FED elapsed milliseconds by its caller, which is the
+only reason a five-minute turn can be tested in a millisecond; `HourglassView` in `GK/source` is ink
+and nothing else. Three deliberate choices worth keeping: it is **opt-in** (`Prefs.Data.TurnTimer`,
+off by default); its **length is a preference**, not session state, because it is a house rule about
+how a table plays; and it **never acts on the game** — it logs and turns red, and does not end a turn
+or take a Beat, because nothing in the books says a slow player loses their action. The sand level
+drops by **√time**, so the *area* the eye reads as "how much is left" falls off linearly. The
+animation timer runs only while sand is actually falling (`SyncTicker`).
+
+## Rides — mounts & vehicles (v1.18.0)
+
+The Posse tab is a `Split(Orientation.Horizontal, …)` with the posse above and *the corral & the
+yard* below (`TabsRides.cs`). `Ride` in `Core.cs` is an `INotifyPropertyChanged` model in a
+`BindingList<Ride>`; the roster is `Data/rides.json` (embedded like the rest), built by `Db.MakeRide`.
+New rides are named by `Db.FreeRideName` — the lowest FREE number, not a count of that type, or
+selling the middle of three mints a duplicate. Rides ride in `session.json` and go to the tracker as
+ordinary `Combatant`s.
+
+## Creature attacks (v1.17.0)
+
+A creature on the tracker Strikes with its OWN attacks, parsed from the Bestiary's free-text `attacks`
+line by `CreatureAttack.Parse` in `IronCode.cs` (pure, smoke-tested across all 150 creatures) — no
+data-format change; the free-text stays the source of truth, like `WeaponTraits`.
+`CombatFlow.StrikeAndApply` has a `CreatureAttack` overload; `IronCode.Strike` takes an optional
+`forceType` so an elemental touch types past worn-armor DR.
+
+## Right-click menus (v1.18.0)
+
+`GridMenu<T>` / `ListMenu<T>` + `MI`/`MISep`/`MIHead` in `MainForm.cs` wire a per-row menu onto every
+list (posse, rides, tracker, encounter, bestiary, roll log). They **select the row first, then
+build**, so each menu line calls the same handler the tab's button calls — a menu that reimplements a
+button is a menu that will disagree with it. That's why
+`SpendGrit`/`AdvanceMark`/`DeepenTaint`/`AddSoulToTracker`/`RenameRide`/`RideToTracker` exist as
+methods rather than button lambdas.
+
+## Run modes (v1.17.0)
+
+Launch shows a chooser — `RunMode.Player` (a player's pared-down view: only New Soul / Dice /
+Reference tabs), `RunMode.KeeperDice` (Keeper rolls physical dice and enters the die; a `d20` field
+appears in the Strike/Dread dialogs and feeds `forcedDie`), `RunMode.KeeperEngine` (the app rolls
+everything). Persisted in `prefs.json` (`Prefs` in `Core.cs`); changeable live from the **Table** menu
+(`SetMode` → `ApplyModeTabs` + `RebuildMenu`). `MainForm.EngineRolls` is the live read the dialogs
+branch on. The book-edition strings the status bar shows come from one place —
+`MainForm.PlayerBookVer`/`KeeperBookVer`/`BestiaryVer` consts (keep them current with the books).
+`--selftest` constructs all three modes.
+
+## The tab strip is owner-drawn (v1.29.0)
+
+For one reason: under the Windows visual style the selected tab differed from the other nine by a
+couple of pixels of height and nothing else, so the app's answer to "which of the ten am I on" was
+almost invisible. `StyleTabs` paints the live tab on `Paper` under a 3px `Blood` rule with its name in
+bold Blood; the rest sit back on `TabRest`. `TabDrawMode.OwnerDrawFixed` still lets the control size
+each tab to its own text — the ten labels are ten different lengths — and nothing here touches the
+pages.
+
+## Contrast is a palette decision, not a per-site one (v1.29.0)
+
+`Gold` measures ~3.5:1 on `Paper`, which is right for a heading and too light for a sentence — and the
+app sets whole explanatory paragraphs in it. **`GoldDeep`** is the same hue carried to ~5:1: use
+`Gold` for headings and short labels, `GoldDeep` for anything that is a sentence. **`Faint`** replaced
+a hand-written `Color.FromArgb(122,112,96)` for "nothing is happening yet" ink. (For the glyphs that
+render on this machine, see the drawn-text landmine above.)
+
+## Every control says what it is, and it is a failing check (v1.29.0)
+
+`--selftest`'s tooltip walk is described under the verification standard above; what is worth not
+re-learning is how it is built and what it caught. One walker, shared (`MainForm.WalkForTips` /
+`WantsTip`) — a wizard held to one standard and ten tabs held to another is two standards, and the
+looser one wins. `ButtonBase` rather than `Button` so checkboxes count; containers are walked
+*through* but anything that wants a tip is never walked *into* (a `NumericUpDown` holds its own
+TextBox and spin buttons). Prose labels are exempt; a caption carrying a **live number** is not prose
+and opts in with `Tag = "readout"`.
+
+**What this caught that reading the source did not:** `ItemTips` set a list's tooltip only from
+`MouseMove`, so all five wizard lists had *no* resting tip and cleared themselves over the blank
+ground below the last row — meaning the two lists that silently refuse a click (past the trained-skill
+cap, past what the coin covers) never said why. `ItemTips` now takes a `resting` tip that is the
+list's own instructions.
+
+## What a soul looks like (v1.30.0)
+
+`GK/rules/Look.cs` + `Data/appearance.json` — the seventh headless file and the first that is not the
+books' rules. Two rules govern it and both are load-bearing.
+
+**Nothing here is worth a point:** it touches no number, gates no Origin or Calling, and the books'
+standing line holds — the peoples of the West appear as people, described and never costed.
+
+**The draws are conditioned, not shuffled:** complexion, hair and eyes come out of ONE people's own
+lists and every garment out of ONE style's wardrobe (`LkStyle`), because six independent lists produce
+a Norwegian in a charro jacket over mining boots and that reads as a machine talking. `callingStyles`
+steers the wardrobe 80% of the time and lets the country surprise you the rest.
+
+**The name and the people are one decision:** the look is drawn BEFORE the name and
+`FullName(gender, look)` follows it, because `chargen.json`'s whole-name pools used to be reached on a
+bare 12% roll answerable to nothing — which was invisible until the app started saying where people
+were from, and then produced "Rafferty Luján, Chinese, out of Guangdong" on the first soul it ever
+drew on screen. A REDRAW passes `nameIsFixed: true` and leaves out the peoples whose names come whole,
+since it is only allowed half the decision. `CharacterSheet.Look` is null on every sheet saved before
+this, so every consumer tests `Look?.Any` and no `session.json` migration exists.
+
+## Six-month faults (v1.30.0) — the class of bug a day's testing cannot reach
+
+Four were found by looking for them on purpose. The fourth — fonts minted on repeating paths — has its
+own landmine section above; the other three are worth not re-introducing:
+
+1. **`GameSession.IsUntouched`** decides whether the demo posse may be seeded over a loaded session;
+   launch used to ask only whether the PARTY was empty, and then not apply the session at all — losing
+   the ledger, clocks, rides, map markers and tracker of any all-NPC night. It lives in the rules
+   library so the smoke rig holds it.
+2. **`AutoSave` returns whether it landed** and says so once per new reason; swallowing the failure was
+   right, being silent about it meant a `session.json` unwritable for months looked identical to one
+   saving perfectly.
+3. Anything that **reparents** a control unwinds in a `finally`. That failure arrives with nothing to
+   read: no exception, no dialog, just a tab that stays blank until the app is restarted.
+
+## Counts that appear in prose must be derived, not typed (v1.20.1)
+
+The app told Keepers its reference screen held eleven leaves for two releases while it held thirteen.
+`RefLeafCount` is now `RefLeafTitles.Length`, the deck is built by zipping those titles with the
+renderers, and every mention interpolates it (the five-minute lesson in `Menus.cs`,
+`GK/source/README.md`, the root CLAUDE.md). `--selftest` builds the deck on purpose — tabs are
+realized lazily, so nothing else touches it — and checks each title has a renderer.
+
+## Where a Keeper's things live (v1.31.0): `AppState.Dir`, not "beside the exe"
+
+Resolved in three steps — a `portable.txt` beside the exe wins; failing that an existing
+`session.json` beside the exe is honoured (nobody is moved off a folder they already use); otherwise
+`%APPDATA%\GritKeeper\`, which no build, publish or package step can reach. `session.json`,
+`prefs.json`, `session-backup.json` and `session-unreadable.json` all follow it.
+
+**Three things deliberately do NOT:** `startup-error.txt` and `selftest-report.txt`, because a crash
+report has to land somewhere findable when the profile is the thing that is broken, and the `Data/`
+lookup, which is a read and which the smoke rig depends on. `AppState.Resolve` is pure so the smoke
+rig can walk every combination of its inputs.
+
+**The rule for anything new:** if a Keeper would be upset to lose it, it goes through `AppState.Dir`;
+if it is a diagnostic about THIS COPY of the exe, it stays beside the exe. Because the state no longer
+sits beside the binary, `GritKeeper\app\GritKeeper.exe` is now a perfectly good thing to play from —
+it is refreshed by `package.ps1` on every release.
+
+## `GritKeeper\app\` is sanitised on every package, so nothing is kept there (2026-08-01)
+
+Step 1 of `package.ps1` clears `session.json`, `prefs.json`, `startup-error.txt` and
+`selftest-report.txt` out of that folder — deliberately, because v1.20.1 shipped with the packager's
+own `prefs.json` and every download launched into someone else's table. It **moves** them to
+`.package-aside\<timestamp>\` now rather than deleting them: it used `Remove-Item`, which skips the
+Recycle Bin, and GritKeeper stages saves to `session.json.new` and keeps no `.bak`, so packaging a
+release destroyed the table of anyone playing out of that folder. It did exactly that on 2026-08-01.
+
+Since v1.31.0 moved the state to `AppState.Dir` this is belt-and-braces rather than the only thing
+between a Keeper and a lost table, and **`GritKeeper\app\GritKeeper.exe` is the one local copy to play
+from** — `package.ps1` refreshes it on every release, so it cannot go stale. There is a
+`GritKeeper.lnk` shortcut on the Desktop pointing at it. A second hand-synced copy was tried on
+2026-08-01 and deleted the same day: it was a 156 MB duplicate that had already drifted a version
+behind, which is what any copy nothing keeps current does.
+
+## "Re-mirror" means overwrite, not sync-and-diff
+
+`GritKeeper/source/` is a *generated* copy of `GK/source` (git-ignored since 2026-07-23, same as
+`GritKeeper/app/`) — blow it away and rewrite it from the master tree every package:
+
+```powershell
+robocopy GK\source GritKeeper\source /MIR /XD bin obj publish
+robocopy GK\rules  GritKeeper\rules  /MIR /XD bin obj publish
+```
+
+Both trees, and they ship as **siblings** — the app's `<ProjectReference>` points at `..\rules\`, so
+flattening or renaming either one leaves the delivered source unable to build. `package.ps1` does both
+in a loop and its zip check asserts `rules/Core.cs` and `rules/Data/creatures.json`.
+(`/XD bin obj publish` keeps the .NET build output out of the deliverable; robocopy exit codes 0–7 are
+success.) Then drop the published `GritKeeper.exe` into `GritKeeper\app\` and re-zip to
+`GritKeeper.zip`.
+
+## `sign.ps1` and `package.ps1` — the scripted half of a release
+
+`sign.ps1` Authenticode-signs the published exe with the code-signing cert in `CurrentUser\My`
+(native `Set-AuthenticodeSignature`, no Windows SDK / signtool needed; timestamped when a server is
+reachable). `package.ps1` then copies the signed exe into `GritKeeper\app\`, re-mirrors
+`GritKeeper\source`, and writes `GritKeeper.zip` — refusing an unsigned exe unless you pass `-Force`
+(a local test build). It verifies the zip's contents before declaring itself ready and prints the
+matching `gh release create` line.
+
+The zip, the `app/` exe, the `source/` mirror **and the `RELEASE_NOTES_vX.Y.Z.md` file itself** are
+all git-ignored (release assets, never committed). The notes file is scratch: write it, paste it into
+the Release, leave it on disk. Once published, the text lives on the Release and the durable history
+lives in `CHANGELOG.md` — a copy in the repo root is a third place to drift. (Seven had accumulated
+there by v1.20.1; removed 2026-07-27.)
+
+**`package.ps1` handles a running app (v1.20.1).** If GritKeeper is running out of `GritKeeper\app\`
+it holds its own exe, and the copy step used to die on a raw file-lock error mid-release. The script
+now finds the process, names it with pid and start time, and falls back to a staging tree so the zip
+is still correct — the running instance is never touched, and it says plainly that `GritKeeper\app`
+stays on its old build until closed. Pass `-Staged` to force that path.
