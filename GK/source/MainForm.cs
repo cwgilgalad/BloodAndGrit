@@ -1969,7 +1969,7 @@ public partial class MainForm : Sheet
             if (!quiet && p != null) Log($"{p.Name} is already on the field.");
             return false;
         }
-        tracker.Add(new Combatant
+        AddToField(new Combatant
         { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax,
           Defense = p.Defense, Init = ArrivalInit(p.Sheet) });
         if (!quiet) Log($"{p.Name} takes the field.");

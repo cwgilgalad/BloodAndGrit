@@ -1013,16 +1013,59 @@ public static class Rules
     /// out takes none, and nobody takes two.</summary>
     public static bool CanAct(Combatant c) => c != null && !c.HasActed && !c.Down && !c.IsSign;
 
-    /// <summary>Who is up next: the highest initiative among those who have not gone yet. Null when
+    /// <summary>The order the field acts in — and the order the tracker shows it in. One answer to
+    /// one question, which is the whole point of it living here.
+    ///
+    /// <para>It did not, and that was a real fault a Keeper found at the table: the grid sorted
+    /// <c>Init desc → souls first → name</c> while <c>NextUp</c> picked <c>Init desc → name</c>, so
+    /// the two agreed only until somebody tied. On a d20 with eight on the field a tie is closer to
+    /// certain than not, and when it happened the turn jumped to a row that was not the next one
+    /// down — the app looked like it was ignoring initiative altogether. Two orderings for one
+    /// order is the same bug as two authorities for one number, and this project's standing rule
+    /// covers both.</para>
+    ///
+    /// <para>Souls before foes on a tie is the table convention and the one the grid already
+    /// showed, so the display did not move; the turn came to match it. The name is the last
+    /// tiebreak and it is ordinal, so the order never wobbles between two identically-rolled
+    /// bandits.</para></summary>
+    public static IEnumerable<Combatant> InTurnOrder(IEnumerable<Combatant> field)
+        => (field ?? Enumerable.Empty<Combatant>())
+            .Where(c => c != null)
+            .OrderByDescending(c => c.Init)
+            .ThenByDescending(c => c.IsPC)
+            .ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Who is up next: the first in the turn order who has not gone yet. Null when
     /// everyone who could act has, which is the same thing as the round being over — so the app can
     /// keep the round itself rather than asking the Keeper to remember to press a button.</summary>
     public static Combatant NextUp(IEnumerable<Combatant> field)
-        => field?.Where(CanAct).OrderByDescending(c => c.Init).ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+        => InTurnOrder(field?.Where(CanAct)).FirstOrDefault();
 
     /// <summary>Is the round spent? Only if somebody could have acted in the first place — an empty
     /// field, or one where everyone is down, is not a round that just ended over and over.</summary>
     public static bool RoundSpent(IEnumerable<Combatant> field)
         => field != null && field.Any(c => !c.Down && !c.IsSign) && NextUp(field) == null;
+
+    /// <summary>Turn the round over on the whole field: nobody has been handed the turn yet, the
+    /// "what just happened" notes are a clean page, and every Worked effect loses a round. Returns
+    /// the effects that ran out, each with who it was on, so the caller can say so by name — an
+    /// effect that vanishes off a chip without a word is one the table keeps playing anyway.
+    ///
+    /// <para>Out here rather than inline in the Tracker for the reason <see cref="ResetForNewFight"/>
+    /// is: the round rollover is the spine of the combat loop, and while it sat in UI code no test
+    /// could play a fight through it.</para></summary>
+    public static List<(Combatant On, WorkedEffect Effect)> NewRound(IEnumerable<Combatant> field)
+    {
+        var ended = new List<(Combatant, WorkedEffect)>();
+        if (field == null) return ended;
+        foreach (var c in field)
+        {
+            if (c == null) continue;
+            c.Acting = false; c.HasActed = false; c.ClearLast();
+            foreach (var done in c.TickWorked()) ended.Add((c, done));
+        }
+        return ended;
+    }
 
     /// <summary>Wipe everything the last fight left on a survivor: conditions, spent Beats, position
     /// in the order, and every Sign or Miracle still working on them. Blood is deliberately NOT

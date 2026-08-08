@@ -446,11 +446,214 @@ foreach (var (table, floor) in new[]
     try { Rules.ResetForNewFight(null); } catch { nullFieldOk = false; }
     T("new fight: a null field is survivable", nullFieldOk);
 
-    // Ties break by name, so the same field always yields the same order rather than a wobble.
+    // Ties break souls-first, then by name, so the same field always yields the same order rather
+    // than a wobble.
     var tied = new List<Combatant> { C("Silas", 11), C("Anni", 11), C("Ruth", 11) };
     T("turn: an initiative tie breaks by name", Rules.NextUp(tied).Name == "Anni");
     tied.First(x => x.Name == "Anni").BeginTurn();
     T("turn: and keeps breaking the same way", Rules.NextUp(tied).Name == "Ruth");
+
+    // ---- the order the field acts in IS the order the tracker shows (v1.35.0) ----
+    // The fault this pins: the grid sorted Init desc -> souls first -> name while NextUp went
+    // Init desc -> name, so the two agreed until somebody tied. A Keeper reported the turn
+    // skipping down the field, and on a d20 with eight on the field a tie is closer to certain
+    // than not. One ordering now, in Rules.InTurnOrder, read by both.
+    var tieMixed = new List<Combatant>
+    {
+        new() { Name = "Bandit", Init = 15, BloodCur = 10, BloodMax = 10 },
+        new() { Name = "Anni",   Init = 15, BloodCur = 10, BloodMax = 10, IsPC = true },
+    };
+    T("order: on a tie the soul goes before the foe", Rules.NextUp(tieMixed).Name == "Anni");
+    T("order: and the grid would show that same first",
+        Rules.InTurnOrder(tieMixed).First().Name == "Anni");
+    var tieNamed = new List<Combatant>
+    {
+        new() { Name = "bandit b", Init = 12, BloodCur = 10, BloodMax = 10 },
+        new() { Name = "Bandit A", Init = 12, BloodCur = 10, BloodMax = 10 },
+    };
+    T("order: two of a kind on a tie break by name, ignoring case",
+        Rules.InTurnOrder(tieNamed).First().Name == "Bandit A");
+    T("order: a null field orders to nothing rather than throwing",
+        !Rules.InTurnOrder(null).Any());
+
+    // ---- three full fights, played through (v1.35.0) ----
+    // The combat loop was UI code and no test could reach it, which is how the two orderings
+    // disagreed for as long as they did. Rules.NewRound is the rollover the Tracker now calls, so
+    // a whole fight can be played here: every round, the turns must come out in exactly the order
+    // the grid would be showing, everybody able to act must act once, and nobody twice.
+    // Is every turn taken in the order the grid showed? Not "the same list" — somebody cut down
+    // mid-round never gets their turn, which is the rule working. What must hold is that nobody
+    // jumps the queue: the turns that DID happen came in the displayed order.
+    bool InShownOrder(List<string> taken, List<string> shown)
+    {
+        int i = 0;
+        foreach (var name in shown) if (i < taken.Count && taken[i] == name) i++;
+        return i == taken.Count;
+    }
+
+    var fightRng = new Random(20260808);
+    for (int fight = 1; fight <= 3; fight++)
+    {
+        var posse = new List<Combatant>();
+        for (int i = 0; i < 4; i++)
+            posse.Add(new Combatant { Name = $"Soul {(char)('A' + i)}", IsPC = true,
+                                      BloodCur = 30, BloodMax = 30, Init = fightRng.Next(1, 21) });
+        for (int i = 0; i < 4; i++)
+            posse.Add(new Combatant { Name = $"Horror {(char)('A' + i)}",
+                                      BloodCur = 20, BloodMax = 20, Init = fightRng.Next(1, 21) });
+        // A tie every fight, deliberately: the bug only ever showed itself on one.
+        posse[0].Init = posse[5].Init;
+
+        int round = 0, guard = 0;
+        while (posse.Any(c => c.IsPC && !c.Down) && posse.Any(c => !c.IsPC && !c.Down) && guard++ < 100)
+        {
+            round++;
+            Rules.NewRound(posse);
+            // Who the grid shows as still to go, at the top of the round.
+            var expected = Rules.InTurnOrder(posse.Where(Rules.CanAct)).Select(c => c.Name).ToList();
+            var went = new List<string>();
+            while (Rules.NextUp(posse) is Combatant up)
+            {
+                went.Add(up.Name);
+                foreach (var other in posse) other.Acting = false;
+                up.BeginTurn();
+                // The turn does something: a soul cuts a horror, a horror cuts back.
+                var target = posse.FirstOrDefault(c => c.IsPC != up.IsPC && !c.Down);
+                if (target != null) target.BloodCur = Math.Max(0, target.BloodCur - fightRng.Next(3, 9));
+            }
+            T($"fight {fight} round {round}: the turns came in the order the field showed",
+                InShownOrder(went, expected));
+            T($"fight {fight} round {round}: nobody took two turns",
+                went.Distinct().Count() == went.Count);
+            T($"fight {fight} round {round}: everyone left standing got their turn",
+                posse.Where(c => !c.Down).All(c => went.Contains(c.Name)));
+            T($"fight {fight} round {round}: the round is spent when the last one has gone",
+                !posse.Any(Rules.CanAct));
+        }
+        T($"fight {fight}: it ended in somebody winning rather than running forever", guard < 100);
+        T($"fight {fight}: it took more than one round", round > 1);
+
+        // A late arrival takes its seat by initiative, not the bottom of the list — the second half
+        // of the same fault: ArrivalInit rolls a real number and the grid used to append anyway.
+        var latecomer = new Combatant { Name = "The Thing at the Door", BloodCur = 25, BloodMax = 25,
+                                        Init = posse.Max(c => c.Init) + 1 };
+        posse.Add(latecomer);
+        T($"fight {fight}: an arrival on a high roll is placed at the top of the order",
+            Rules.InTurnOrder(posse).First().Name == "The Thing at the Door");
+    }
+
+    // ---- more shapes of fight, hunting the cases three ordinary ones never reach ----
+    {
+        // A lone survivor still gets rounds: NextUp answers, the round spends, and the loop does
+        // not stall on a field of one.
+        var solo = new List<Combatant> { new() { Name = "Ruth", IsPC = true, Init = 9, BloodCur = 8, BloodMax = 20 } };
+        Rules.NewRound(solo);
+        T("solo: the last one standing is still up", Rules.NextUp(solo)?.Name == "Ruth");
+        solo[0].BeginTurn();
+        T("solo: and the round spends after them", Rules.RoundSpent(solo));
+
+        // Downed mid-round and healed back before the round ends. They have not acted, so the turn
+        // is still owed to them — being knocked down and dragged up is not the same as having gone.
+        var revive = new List<Combatant>
+        {
+            new() { Name = "Opal", IsPC = true, Init = 18, BloodCur = 12, BloodMax = 12 },
+            new() { Name = "Doc",  IsPC = true, Init = 4,  BloodCur = 12, BloodMax = 12 },
+        };
+        revive[0].Wound(-12);
+        T("revive: down is out of the order", Rules.NextUp(revive)?.Name == "Doc");
+        revive[1].BeginTurn();
+        revive[0].Wound(+5);                    // the Doc's whole turn, spent on the Padre
+        T("revive: healed back before the round ended, the turn is still owed",
+            Rules.NextUp(revive)?.Name == "Opal");
+        T("revive: so the round is not spent yet", !Rules.RoundSpent(revive));
+
+        // Everyone still up goes down inside one round. The round must end rather than hunting for
+        // somebody to hand the turn to.
+        var wipe = new List<Combatant>
+        {
+            new() { Name = "Bandit A", Init = 14, BloodCur = 6, BloodMax = 6 },
+            new() { Name = "Bandit B", Init = 13, BloodCur = 6, BloodMax = 6 },
+        };
+        wipe[0].BeginTurn();
+        wipe[1].Wound(-6);
+        T("wipe: the last one on the field is down, so nobody is up", Rules.NextUp(wipe) == null);
+        T("wipe: one still standing having gone IS a spent round", Rules.RoundSpent(wipe));
+        wipe[0].Wound(-6);
+        T("wipe: but once they are all down it is not a round ending over and over",
+            !Rules.RoundSpent(wipe));
+
+        // The Keeper corrects an initiative mid-fight. The order must follow the number, both for
+        // the turn and for the grid — this is the hand-edit path that used to leave them disagreeing.
+        var edited = new List<Combatant>
+        {
+            new() { Name = "Silas",  IsPC = true, Init = 7,  BloodCur = 10, BloodMax = 10 },
+            new() { Name = "Coyote", Init = 16, BloodCur = 10, BloodMax = 10 },
+        };
+        T("edit: before the correction the coyote leads", Rules.InTurnOrder(edited).First().Name == "Coyote");
+        edited[0].Init = 19;
+        T("edit: after it the order follows the number", Rules.InTurnOrder(edited).First().Name == "Silas");
+        T("edit: and the turn agrees with the order", Rules.NextUp(edited).Name == "Silas");
+
+        // A crowded field with heavy ties, asked twice: the order must not wobble between calls, or
+        // the grid redraws into a different sequence than the one the turn is walking.
+        var crowd = new List<Combatant>();
+        for (int i = 0; i < 12; i++)
+            crowd.Add(new Combatant { Name = $"Rider {(char)('A' + i)}", IsPC = i % 2 == 0,
+                                      Init = 10 + (i % 3), BloodCur = 10, BloodMax = 10 });
+        var first = Rules.InTurnOrder(crowd).Select(c => c.Name).ToList();
+        var again = Rules.InTurnOrder(crowd).Select(c => c.Name).ToList();
+        T("crowd: the order is the same answer twice", first.SequenceEqual(again));
+        T("crowd: souls lead their own initiative band",
+            Rules.InTurnOrder(crowd.Where(c => c.Init == 12)).First().IsPC);
+
+        // Worked effects across three rounds of a real loop, since the rollover now owns the tick.
+        var bearer = new Combatant { Name = "Elias", IsPC = true, Init = 11, BloodCur = 14, BloodMax = 14 };
+        bearer.Work(new WorkedEffect { Name = "Salt & Iron", Kind = "Sign", Source = "Opal", RoundsLeft = 2 });
+        bearer.Work(new WorkedEffect { Name = "The Long Watch", Kind = "Miracle", Source = "Elias", RoundsLeft = -1 });
+        var one = new List<Combatant> { bearer };
+        Rules.NewRound(one);
+        T("effects: a two-round sign survives the first rollover", bearer.Worked.Any(w => w.Name == "Salt & Iron"));
+        var out2 = Rules.NewRound(one);
+        T("effects: and ends on the second, reported by name",
+            out2.Any(x => x.Effect.Name == "Salt & Iron") && !bearer.Worked.Any(w => w.Name == "Salt & Iron"));
+        Rules.NewRound(one);
+        T("effects: one that runs until it is ended outlives the rounds",
+            bearer.Worked.Any(w => w.Name == "The Long Watch"));
+
+        // Something arrives mid-round, after souls above it have already gone. It has not acted, so
+        // it acts this round — the door opens and the thing comes through it now, not next round.
+        var mid = new List<Combatant>
+        {
+            new() { Name = "Ruth", IsPC = true, Init = 17, BloodCur = 10, BloodMax = 10 },
+            new() { Name = "Anni", IsPC = true, Init = 6,  BloodCur = 10, BloodMax = 10 },
+        };
+        mid[0].BeginTurn();
+        mid.Add(new Combatant { Name = "Wendigo", Init = 12, BloodCur = 40, BloodMax = 40 });
+        T("arrival: it takes its place in the standing order",
+            Rules.InTurnOrder(mid).Select(c => c.Name).SequenceEqual(new[] { "Ruth", "Wendigo", "Anni" }));
+        T("arrival: and is up next, ahead of the soul below it", Rules.NextUp(mid).Name == "Wendigo");
+
+        // A new fight after all that: the order is rebuilt from fresh rolls and nothing carries.
+        Rules.ResetForNewFight(mid);
+        T("new fight: nobody is still marked as having gone", mid.All(c => !c.HasActed && !c.Acting));
+        T("new fight: everyone who is standing is back in the order",
+            mid.Where(c => !c.Down).All(c => Rules.CanAct(c)));
+    }
+
+    // ---- the round rollover, out of the UI where a test can hold it ----
+    var rollover = new Combatant { Name = "Ruth", BloodCur = 10, BloodMax = 10, Init = 12 };
+    rollover.Work(new WorkedEffect { Name = "Borrowed Breath", Kind = "Sign", Source = "Opal", RoundsLeft = 1 });
+    rollover.BeginTurn();
+    rollover.Wound(-3);
+    var ended = Rules.NewRound(new List<Combatant> { rollover });
+    T("round: the rollover clears who has gone", !rollover.HasActed && !rollover.Acting);
+    T("round: it clears what just happened", rollover.LastDelta == 0);
+    T("round: an effect that runs out is reported with who it was on",
+        ended.Count == 1 && ended[0].On == rollover && ended[0].Effect.Name == "Borrowed Breath");
+    T("round: and is gone from the target", rollover.Worked.Count == 0);
+    bool nullRoundOk = true;
+    try { Rules.NewRound(null); } catch { nullRoundOk = false; }
+    T("round: a null field is survivable", nullRoundOk);
 
     // HasActed rides along in a saved session — a fight reloaded mid-round resumes mid-round.
     var saved = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
