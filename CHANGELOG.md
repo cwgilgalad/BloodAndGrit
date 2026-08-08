@@ -8,6 +8,69 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.34.0 — the daybook, for the failure that never throws (2026-08-08).**
+  `Program.cs` has had two tiers of failure handling for a long time, and both answer the same
+  question: *it stopped*. A recoverable exception writes `%TEMP%\BloodAndGrit-last-error.txt` and
+  keeps the table running; a fatal one saves the session, writes `startup-error.txt` with the
+  environment beside it, and goes down honestly. Neither answers the report a table actually makes.
+  **"It gave my Padre the wrong Grace." "That roll can't have been a 3." "The tracker lost
+  somebody."** Nothing threw, so there is no file, and the assertions only ever catch what somebody
+  thought to assert.
+
+  **`Daybook`** (`GK/rules/Daybook.cs`) is the missing half: a capped ring of the last **400**
+  things the app did, held in memory and written out only when there is a reason to. It records
+  every roll with its dice and its total, every four-degrees check with the degree it came to,
+  every session save and load with the counts, every mode switch, and every soul the generator
+  produced *with its reckoned numbers* — the Blood, the Nerve, the faith pool — because "the wrong
+  Grace" is a complaint about what came out, not about what went in.
+
+  Three decisions worth not re-deriving:
+
+  - **It lives in `GK/rules` but is inert until opened.** The rules library is what the smoke rig
+    fuzzes — `RollExprFull` and `Generate` run thousands of times per build — and a recorder that
+    was always on would build and discard a string for every one of them. `Program.cs` opens it at
+    launch, so the app always records and the library stays quiet. The smoke suite asserts both
+    halves of that: closed, a roll leaves nothing; open, it leaves exactly one entry.
+  - **Everything fails soft.** A diagnostic that can take the table down is worse than none, so a
+    mirror write that throws drops the mirror rather than surfacing, and `Save` returns false
+    instead of raising. Asserted, because the whole point is the path nobody exercises.
+  - **A closed daybook says "not recording" rather than printing nothing.** An empty report reads
+    as *nothing happened*, when the truth is that nobody was writing it down.
+
+  Reachable without a command line: **Help ▸ Save a diagnostic log…** writes it wherever you like,
+  and both error files now carry the dump underneath the stack. `GritKeeper.exe --verbose`
+  additionally mirrors every entry to `daybook.txt` beside the exe as it happens, for the fault
+  that takes the process down before anything can write the ring out. Nothing leaves the machine
+  unless a Keeper saves it and sends it. Smoke: 12,373 assertions, self-test 37/37.
+
+- **Every version claim is written by one script now (2026-08-08).**
+  `GritKeeper/README.md` — the README *inside the delivered zip*, the first thing anybody who
+  downloads the app reads — said **v1.10.1** while the app was on v1.33.0. Twenty-three releases,
+  in the open, in the one document aimed at somebody who is not the author. It also still described
+  110 creatures (there are 150) and an eleven-leaf Reference deck (there are thirteen), because it
+  was a frozen fork of `GK/source/README.md` that stopped being updated in July.
+
+  The cause has the same shape as the one `verify_release.py` was written for, one level down:
+  **that copy had neither a writer nor a reader.** `update_readme.py` wrote only the root README;
+  `verify_release.py` checked only the root README and CLAUDE.md. A claim nothing writes and
+  nothing checks is a claim that will be wrong, and the more copies of it there are, the sooner
+  one of them is.
+
+  **`update_readme.py` now writes all of them.** The root README's `AUTO:editions` block is still
+  regenerated wholesale; every other claim is patched **in place inside an anchored span** listed
+  in the new `CLAIMS` table — CLAUDE.md's header paragraph and its `## GritKeeper (vX)` heading,
+  and both app READMEs. The anchoring is load-bearing rather than tidy: CLAUDE.md also says "as of
+  Bestiary v2.0" in a sentence about how the paginator works, and that is a fact about history that
+  must not be dragged forward to the current edition. Only text inside a claim span is touched, and
+  the files are read and written as **bytes**, so a three-digit correction does not rewrite every
+  CRLF in the repo's two largest documents.
+
+  **`verify_release.py` now reads all of them** — both app READMEs joined its claim list — and
+  `.githooks/pre-commit` re-stages all four files instead of just the one. The delivered README was
+  refreshed from `GK/source/README.md`, which is the same document kept current, so the counts are
+  right again as well as the number. Proved the way the other checks were: three claim sites were
+  broken on purpose, in three different shapes, and the pair caught and repaired all three.
+
 - **A version that says it shipped has to have shipped (2026-08-02).**
   v1.33.0 was built, verified against the build, the 12,359 assertions, the self-test and the wiring
   audit, merged to `main` and pushed. Then the Keeper opened the app and it was **v1.31.0**.

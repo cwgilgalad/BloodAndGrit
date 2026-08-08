@@ -560,6 +560,11 @@ public static class CharGen
         s.Compass = WeightedCompass();
         s.Lost = Pick(FlavorList("lost")); s.Seen = Pick(FlavorList("seen"));
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
+        // The reckoned numbers, not the roll: "the wrong Grace" and "that Blood is too high" are the
+        // reports this line exists to answer, and they are about what came out, not what went in.
+        Daybook.Note("soul", $"generated {s.Name} — level {s.Level} {s.Calling}/{s.Origin}, "
+                             + $"{s.Method}, Blood {s.Blood}, Nerve {s.NerveMax}"
+                             + (s.PoolName != null ? $", {s.PoolName} {s.PoolMax}" : ""));
         return s;
     }
 
