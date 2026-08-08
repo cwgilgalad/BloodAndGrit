@@ -19,7 +19,14 @@ missing check, split by what can be seen from where:
 
   DEFAULT (runs in CI, reads only what is in git)
     1. Every place that names the app's version agrees: the csproj, the newest CHANGELOG entry,
-       README.md's "current editions" line, and CLAUDE.md's two.
+       README.md's "current editions" line, CLAUDE.md's two, and both app READMEs —
+       `GK/source/README.md` and the delivered `GritKeeper/README.md`.
+
+       The last two joined the list on 2026-08-08, after the delivered README — the one inside the
+       zip, which is what a stranger reads first — was found claiming v1.10.1 against a v1.33.0
+       app. Twenty-three releases, in the open, unnoticed: this script checked the root README and
+       CLAUDE.md, and `update_readme.py` wrote only the root README, so that copy had neither a
+       writer nor a reader. `update_readme.py` now writes all of them; this checks all of them.
     2. Every GritKeeper version in the CHANGELOG except the newest has a `gritkeeper-vX.Y.Z`
        tag. The newest is exempt because it is the one being worked on. This is the check that
        would have caught v1.32.0: the moment v1.33.0 became the newest entry, v1.32.0 stopped
@@ -162,6 +169,12 @@ def main():
          next((m.group(1) for m in re.finditer(r"GritKeeper app v(\d+\.\d+\.\d+)", read("CLAUDE.md"))), None)),
         ("CLAUDE.md     app section heading",
          next((m.group(1) for m in re.finditer(r"## GritKeeper \(v(\d+\.\d+\.\d+)\)", read("CLAUDE.md"))), None)),
+        ("GK/source/README.md  app version",
+         next((m.group(1) for m in re.finditer(r"\*\*App version (\d+\.\d+\.\d+)", read("GK/source/README.md"))), None)),
+        # The delivered copy. It is the only tracked file in an otherwise generated folder, which is
+        # how it went twenty-three releases without anyone noticing.
+        ("GritKeeper/README.md app version",
+         next((m.group(1) for m in re.finditer(r"\*\*App version (\d+\.\d+\.\d+)", read("GritKeeper/README.md"))), None)),
     ]
     for where, claimed in claims:
         if claimed is None:
