@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11 ·
-GritKeeper app v1.34.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.35.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -440,7 +440,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.34.0) — the C# desktop app
+## GritKeeper (v1.35.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

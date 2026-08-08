@@ -104,9 +104,21 @@ what each tab *is*, plus the decisions worth not re-deriving.
     Sign spends the real pools. The effect rides on the **target** as `Combatant.Worked`.
     `RoundsLeft = -1` means "until it is ended", which is what the book's "for a scene" is.
   - **▶ Next turn** (Ctrl+Space) hands the turn on by initiative and rolls the round over by
-    itself. `Combatant.HasActed` is the spine; `Rules.NextUp`/`CanAct`/`RoundSpent` are the pure
-    logic — the downed are skipped, traces never counted, ties broken by name so the order never
-    wobbles. The round is a **spinner**, not a label: the app keeps it, the Keeper can correct it.
+    itself. `Combatant.HasActed` is the spine; `Rules.NextUp`/`CanAct`/`RoundSpent`/`NewRound` are
+    the pure logic — the downed are skipped, traces never counted. The round is a **spinner**, not
+    a label: the app keeps it, the Keeper can correct it.
+  - **One ordering, and it lives in `Rules.InTurnOrder` (v1.35.0).** `Init desc → souls first →
+    name, ordinal`. Both the grid's init sort and `NextUp` read it, and **nothing else may sort the
+    field by initiative.** They used to differ on the last tiebreak — the grid put souls first, the
+    turn went alphabetical — so the two agreed until somebody tied, and then the turn jumped to a
+    row that was not the next one down. A Keeper reported it as the app ignoring initiative. Two
+    orderings for one order is the same bug as two authorities for one number.
+  - **Anything that changes a place in the order has to move the row.** `AddToField` seats an
+    arrival by its rolled initiative instead of appending it (`ArrivalInit` gives it a real one
+    whenever the field has rolled, and it was then landing at the bottom of the grid regardless),
+    and a hand-typed Init re-sorts on `CellEndEdit`, deferred through `BeginInvoke` so the grid is
+    out of its edit cycle before the list underneath it is rebuilt. Before anybody has rolled,
+    every Init is 0 and the hand-built order is the Keeper's — leave it alone.
   - **Every button in the app is `FlatStyle.Flat`** as of v1.33.0 — `Btn` dresses it that way, and
     `PrimaryBtn` / `DangerBtn` / `QuietBtn` are that same face with different ink. Flat is the only
     style that honours `BackColor` and `FlatAppearance` at all; under the old `FlatStyle.System` a
@@ -174,7 +186,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
 | **`Hourglass.cs`** | `HourglassView` — owner-drawn sand, ink only. Draws no text, so the drawn-text landmine below does not apply. |
 | **`Pdf.cs`** | From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. Opens the `Daybook` (and points it at `daybook.txt` under `--verbose`), and folds its dump into both error reports. Also hosts `--selftest`. |
-| **`Daybook.cs`** | The capped record of what the app just did — rolls, checks, session saves/loads, mode switches, generated souls — for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
+| **`Daybook.cs`** | The capped record of what the app just did — rolls, checks, session saves/loads, mode switches, generated souls, and **turn handoffs** (who went, on what initiative, who was still to go — the `turn` channel, added in v1.35.0, which is how the ordering fix was proved in the running app rather than only in the test rig) — for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
 | `app.ico` / `Assets/emblem.png` | The cover emblem as a multi-size Windows icon (regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded. |
 | `Data/creatures.json` | All 150 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
