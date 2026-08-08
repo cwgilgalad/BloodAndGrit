@@ -1,12 +1,30 @@
 #!/usr/bin/env python3
-"""Keep README.md's version/latest-change block current, from the source of truth.
+"""Keep every version claim in the repo current, from the source of truth.
 
-The README's prose is hand-written and version-agnostic on purpose; its book links point
-at `blob/main/*.pdf` and the app link at `/releases/latest`, so they never go stale. The
-one thing that *does* drift is the "current editions" line and the "latest change" note.
-This script regenerates only the region between the AUTO markers, reading versions straight
-from the build scripts and the app source, and the headline from CHANGELOG.md — so the
-README always agrees with what actually shipped, and a human never has to remember to edit it.
+The prose is hand-written and version-agnostic on purpose; the book links point at
+`blob/main/*.pdf` and the app link at `/releases/latest`, so they never go stale. What *does*
+drift is every place that names a number. This script reads the versions straight from the
+build scripts and the app csproj — the files that authoritatively carry them — and rewrites
+the claims, so a human never has to remember to edit any of them.
+
+TWO MECHANISMS, because the sites are not alike:
+
+  * **README.md's AUTO block** is regenerated wholesale between its markers. It carries the
+    editions line *and* the latest-change headline from CHANGELOG.md, so it is easier to
+    render than to patch.
+  * **Every other claim** (CLAUDE.md's two, and both app READMEs) is patched IN PLACE inside
+    an anchored span — see CLAIMS. Those sit in hand-written prose that this script has no
+    business regenerating, and the anchoring is load-bearing: CLAUDE.md also says "as of
+    Bestiary v2.0" in a sentence about how the paginator works, which is a fact about history
+    and must not be rewritten to the current edition. Only text inside a claim span is touched.
+
+WHY THE SECOND MECHANISM EXISTS (2026-08-08). `GritKeeper/README.md` — the README inside the
+delivered zip, the first thing anyone who downloads the app reads — said **v1.10.1** while the
+app was on v1.33.0: twenty-three releases of drift, in the one document aimed at somebody who
+is not the author. Nothing caught it because nothing looked: `verify_release.py` checked the
+root README and CLAUDE.md, and this script wrote only the root README. A claim that nothing
+writes and nothing checks is a claim that will be wrong, and the more copies there are the
+sooner one of them is.
 
 Idempotent: running it twice makes no change. Wired to run on every commit by
 `.githooks/pre-commit` (see CLAUDE.md). Safe to run by hand any time.
@@ -41,6 +59,77 @@ def current_versions() -> dict:
         # editions line, which is the one place a reader looks to see what the download is.
         "GritKeeper": _find("GK/source/BloodAndGritKeeper.csproj", r"<Version>([\d.]+)</Version>"),
     }
+
+
+# Every version claim OUTSIDE README.md's AUTO block, as (file, anchored span). The rewrite is
+# confined to what the span matches, which is what keeps a historical mention ("as of Bestiary
+# v2.0") from being dragged forward to the current edition. Add a site here the moment a new one
+# is written; a claim nobody automates is a claim that drifts.
+CLAIMS = [
+    # The two-line "Current versions:" paragraph at the top, ending at its closing bold marker.
+    ("CLAUDE.md", r"\*\*Current versions:.*?\*\*"),
+    ("CLAUDE.md", r"## GritKeeper \(v[^)]*\)"),
+    # The app's own README and the copy that ships inside the zip. Both carry the books they were
+    # extracted from and the app's own number.
+    ("GK/source/README.md", r"\(Player's Book v[^)]*\)"),
+    ("GK/source/README.md", r"\*\*App version [^*]*\*\*"),
+    ("GritKeeper/README.md", r"\(Player's Book v[^)]*\)"),
+    ("GritKeeper/README.md", r"\*\*App version [^*]*\*\*"),
+]
+
+# How a version is written, per component, wherever it appears inside a span. Each pattern keeps
+# its label in group 1 so the rewrite replaces only the number — the label is what anchors it, and
+# a bare "v1.5.0" in prose (CLAUDE.md's note on the rename) matches nothing here on purpose.
+#
+# The number is `\d+(?:\.\d+)*` and deliberately NOT `[\d.]+`: the looser class is greedy enough to
+# swallow a sentence-ending period ("**App version 1.34.0.**"), which then comes back one character
+# shorter every run. Both the spans above and these patterns tolerate the period being there or
+# not, because whether it is is a matter of prose and this script has no opinion about prose.
+NUM = r"\d+(?:\.\d+)*"
+TOKENS = [
+    (rf"(Player's Book v){NUM}", "Player's Book"),
+    (rf"(Keeper's Book v){NUM}", "Keeper's Book"),
+    (rf"(Bestiary v){NUM}", "Bestiary"),
+    (rf"(GritKeeper app v){NUM}", "GritKeeper"),
+    (rf"(## GritKeeper \(v){NUM}", "GritKeeper"),
+    (rf"(\*\*App version ){NUM}", "GritKeeper"),
+]
+
+
+def retoken(span: str, versions: dict) -> str:
+    """Put the current number behind every version label in one claim span."""
+    for pattern, component in TOKENS:
+        ver = versions.get(component)
+        if not ver:
+            continue                     # unreadable source of truth: leave the claim alone
+        span = re.sub(pattern, lambda m, v=ver: m.group(1) + v, span)
+    return span
+
+
+def update_claims(versions: dict) -> list[str]:
+    """Patch every claim in CLAIMS. Returns the files actually changed.
+
+    Read and written as BYTES on purpose. These are CRLF files, and a text round-trip would
+    rewrite every line ending in the repo's two largest documents — a whole-file diff to correct
+    three digits, which is how a useful automatic edit becomes one people turn off.
+    """
+    changed = []
+    for name, span_pattern in CLAIMS:
+        path = ROOT / name
+        try:
+            text = path.read_bytes().decode("utf-8")
+        except OSError:
+            print(f"update_readme: {name} not found — skipped", file=sys.stderr)
+            continue
+        new = re.sub(span_pattern,
+                     lambda m: retoken(m.group(0), versions),
+                     text, flags=re.S)
+        if new == text:
+            continue
+        path.write_bytes(new.encode("utf-8"))
+        if name not in changed:
+            changed.append(name)
+    return changed
 
 
 def latest_change() -> str | None:
@@ -96,15 +185,18 @@ def main() -> int:
     if not readme.exists():
         print("update_readme: README.md not found", file=sys.stderr)
         return 0  # never block a commit over this
-    missing = [name for name, ver in current_versions().items() if not ver]
+    versions = current_versions()
+    missing = [name for name, ver in versions.items() if not ver]
     if missing:
         # render_block leaves out a component whose version it cannot read, which is exactly how
         # GritKeeper slipped off the editions line and stayed off it. A silent omission reads as
         # "this component has no version", so say plainly that the line is short.
         print("update_readme: no version found for " + ", ".join(missing)
               + " — the editions line is incomplete", file=sys.stderr)
-    changed = update(readme)
-    print("update_readme: README.md " + ("updated" if changed else "already current"))
+    changed = ["README.md"] if update(readme) else []
+    changed += update_claims(versions)
+    print("update_readme: " + (", ".join(changed) + " updated" if changed
+                               else "every version claim already current"))
     return 0
 
 

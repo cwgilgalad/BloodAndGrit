@@ -2557,5 +2557,44 @@ foreach (var terrain in MapGen.Terrains)
     Console.WriteLine($"sample PDFs → {outDir}");
 }
 
+// ---- The daybook: what the app did, for the failure that never throws ----
+// Held to the end of the run on purpose. It is the one thing here with process-wide state, and
+// every sweep above calls the paths it listens to — so it opens, proves itself, and closes again
+// with nothing left behind.
+T("daybook: closed until somebody opens it", !Daybook.On && Daybook.Count == 0);
+Rules.RollExpr("2d6+3");
+T("daybook: a closed daybook records nothing", Daybook.Count == 0);
+
+Daybook.Open();
+T("daybook: opens empty", Daybook.On && Daybook.Count == 0);
+Rules.RollExpr("2d6+3");
+T("daybook: a roll leaves one entry", Daybook.Count == 1);
+T("daybook: the entry carries the expression", Daybook.Dump().Contains("2d6+3"));
+Rules.FourDegrees(10, 5, 13);
+T("daybook: a check leaves one too", Daybook.Count == 2);
+T("daybook: the check names its degree", Daybook.Dump().Contains("Success"));
+
+// The cap is the whole reason this is safe to leave recording all evening.
+for (int i = 0; i < Daybook.Cap + 50; i++) Daybook.Note("test", $"entry {i}");
+string dbDump = Daybook.Dump();
+T("daybook: the ring holds at its cap", Daybook.Count == Daybook.Cap);
+T("daybook: the dump admits what it dropped", dbDump.Contains("older dropped"));
+T("daybook: the oldest went and the newest stayed",
+    !dbDump.Contains("entry 49" + Environment.NewLine)
+    && dbDump.Contains($"entry {Daybook.Cap + 49}" + Environment.NewLine));
+
+string dbPath = Path.Combine(Path.GetTempPath(), "gritkeeper-daybook-smoke.txt");
+T("daybook: writes itself out",
+    Daybook.Save(dbPath) && File.ReadAllText(dbPath).Contains($"entry {Daybook.Cap + 49}"));
+// A diagnostic that throws is worse than no diagnostic — an impossible path must come back false,
+// not come back as the exception the Keeper was trying to report.
+T("daybook: an unwritable path fails soft",
+    !Daybook.Save(Path.Combine(dbPath, "no", "such", "place.txt")));
+try { File.Delete(dbPath); } catch { }
+
+Daybook.Close();
+T("daybook: closing forgets everything", !Daybook.On && Daybook.Count == 0);
+T("daybook: and says so rather than reading as an empty night", Daybook.Dump().Contains("not recording"));
+
 Console.WriteLine($"\n{pass} passed, {fail} failed");
 return fail == 0 ? 0 : 1;
