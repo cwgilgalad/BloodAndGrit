@@ -21,6 +21,20 @@ static class Program
             return;
         }
 
+        // The daybook: a capped record of what the app just did, kept in memory and written out only
+        // when there is a reason to. The two tiers below answer "it stopped"; this answers the report
+        // a table actually makes — "that roll can't have been a 3", "the tracker lost somebody" —
+        // where nothing threw and so nothing was written. Opened here rather than in the library so
+        // the smoke rig's fuzz loops stay silent (see Daybook).
+        //
+        // --verbose additionally mirrors every entry to daybook.txt as it happens, for the fault that
+        // takes the process down before anything gets the chance to write the ring out.
+        bool verbose = args != null && Array.IndexOf(args, "--verbose") >= 0;
+        Daybook.Open(verbose ? Path.Combine(AppContext.BaseDirectory, "daybook.txt") : null);
+        Daybook.Note("app", $"GritKeeper v{typeof(Program).Assembly.GetName().Version} on "
+                            + $"{Environment.OSVersion}, 64-bit: {Environment.Is64BitProcess}"
+                            + (verbose ? " — verbose, mirroring to daybook.txt" : ""));
+
         // Two tiers of failure handling:
         //  - UI-thread exceptions (a locked clipboard, a bad paste, one misbehaving
         //    handler) are RECOVERABLE — report them and keep the table running.
@@ -195,9 +209,13 @@ static class Program
 
     static void Recoverable(Exception ex)
     {
+        Daybook.Note("error", "recoverable: " + (ex?.Message ?? "(null)"));
         try
         {
-            File.WriteAllText(Path.Combine(Path.GetTempPath(), "BloodAndGrit-last-error.txt"), ex?.ToString() ?? "(null)");
+            // The daybook rides along: what the Keeper did in the minutes before a snag is usually
+            // more use than the stack of the handler that finally noticed.
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), "BloodAndGrit-last-error.txt"),
+                (ex?.ToString() ?? "(null)") + "\r\n\r\n" + Daybook.Dump());
         }
         catch { }
         try
@@ -214,6 +232,7 @@ static class Program
 
     static void Crash(Exception ex)
     {
+        Daybook.Note("error", "fatal: " + (ex?.Message ?? "(null)"));
         // last-ditch: keep the Keeper's table state even when going down
         try
         {
@@ -228,7 +247,7 @@ static class Program
             $"CurrentDirectory: {Environment.CurrentDirectory}\r\n" +
             $"OS: {Environment.OSVersion}, 64-bit: {Environment.Is64BitProcess}\r\n" +
             $"Data folder exists: {Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Data"))}\r\n\r\n" +
-            ex;
+            ex + "\r\n\r\n" + Daybook.Dump();
         string path;
         try
         {

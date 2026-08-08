@@ -3,13 +3,52 @@
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
 **Blood & Grit** at the table. Built in C# (.NET 8 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
-(Player's Book v2.15 · Keeper's Book v2.7 · Bestiary v2.7).
+(Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11).
 
-**App version 1.10.1.**
+**App version 1.34.0**
 
 ---
 
-## Running it (Windows laptop)
+## System requirements
+
+**Minimum**
+
+| | |
+|---|---|
+| **System** | Windows 10 (version 1607) or Windows 11, **64-bit** |
+| **Processor** | Any x64 processor |
+| **Memory** | 2 GB RAM |
+| **Disk** | 400 MB free — the app is ~155 MB and unpacks its own libraries into your `%TEMP%` folder the first time each new build runs |
+| **Display** | 1280 × 720. The window will not shrink below 1040 × 640 |
+| **Input** | Keyboard and mouse |
+| **Other** | None. No .NET install, no internet connection, no account, no administrator rights, nothing to configure |
+
+**Recommended**
+
+| | |
+|---|---|
+| **Memory** | 4 GB RAM |
+| **Display** | 1920 × 1080 — the Tracker and the Ledger both breathe better with the room |
+| **Printing** | Any printer, for the PDFs it writes (character sheets and trail maps). Not required to play |
+
+**One thing that matters:** put the folder somewhere you can **write** to — your Desktop,
+your Documents, a USB stick. GritKeeper saves the table beside its own exe (`session.json`,
+`prefs.json`), so a read-only location like `C:\Program Files` will not hold your game.
+
+**What it is not.** GritKeeper is a Windows desktop program and only that. It does not run
+on macOS, Linux, a phone or a tablet; there is no browser version; and it does not connect
+players over a network — one machine at the table, usually the Keeper's. (The three books
+are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
+the game.)
+
+**Planned, not here yet: a Linux package.** The rules are already a plain `net8.0` library with
+no Windows dependency (`GK/rules` — it is what the headless test suite runs against), so the
+engine half needs nothing. The window is Windows Forms, and that is the half a Linux build has
+to answer. Treat this as an intention, not a date: there is nothing to download yet.
+
+---
+
+## Running it
 
 **No installation required.** This build is fully self-contained — the .NET runtime is
 bundled inside the app folder.
@@ -31,6 +70,16 @@ click **More info → Run anyway**, and note the publisher reads *Cole Williams*
 `%TEMP%\BloodAndGrit-startup-error.txt`) describing exactly what went wrong — send me its
 contents and I'll fix it.
 
+**If it starts and then does something wrong** — a roll that can't be right, a soul with the
+wrong numbers, somebody missing off the tracker — nothing has crashed, so there is no error
+file. Use **Help ▸ Save a diagnostic log…**: the app keeps a running record of the last few
+hundred things it did (rolls with their dice, checks with their degree, every session save and
+load, every soul it generated), and that button writes it out. Send it with the report and I can
+see what the app thought it was doing. It costs nothing and is always on; nothing leaves the
+machine unless you save it and send it. Launching with `GritKeeper.exe --verbose` additionally
+mirrors the record to `daybook.txt` beside the exe as it happens, which is what you want if the
+trouble takes the app down with it.
+
 **From source (optional, needs the .NET 8 SDK):**
 ```
 cd source
@@ -46,8 +95,13 @@ Player's Book Appendix D so everything is usable immediately.
 **Posse** — the party sheet. Every soul's Blood, Defense, saves, Nerve, Grit, Mark
 (0–6), and Taint (0–4), all editable in place, and **▲ ▼ reorder the posse** to taste.
 One-click Damage/Heal, Spend Grit, Mark +1 (warns when the Mark is full), per-soul or
-whole-posse **Dread Checks** on the horror's tier ladder (1 / 1d4 / 1d6 / 1d10, doubled
-on a critical failure), **New Session** (refill Nerve, reset Grit) and **Rest ▾** (a long
+whole-posse **Dread Checks** — set the Dread DC and the app reads Ch. XII's ladder off it
+(10 → 1 · 13 → 1d4 · 16 → 1d6 · 20 → 1d10 · 25 → 1d10 and a lasting Affliction), hangs the
+Frightened, and rolls the break table at 0 Nerve, exactly as the Tracker's Dread ▸ does
+*(v1.30 — the two used to disagree, and this one doubled the Nerve on a critical failure,
+which the book does not say)*. A **Scars** column carries what a soul does not put down —
+Lasting Injuries and Afflictions, written into the Keeper's ledger on the Session tab as
+they happen and shown on the Ledger sheet. **New Session** (refill Nerve, reset Grit) and **Rest ▾** (a long
 rest — Blood *and* Nerve to full, whole posse or one soul). *(v1.5)* **Double-click a
 soul (or hit the far-right Ledger button) to open their character sheet** — the book's
 own Ledger — **in its own window**, the same modeless pop-out pattern as the Bestiary's
@@ -75,7 +129,7 @@ near-black and bold, a plain success is verdigris green, a plain failure is rust
 any other roll gets a neutral steel-blue tag — so a result reads at a glance instead of
 by squinting at the words.
 
-**Bestiary** — all **110 creatures**, searchable by name or Found-text, filterable by
+**Bestiary** — all **150 creatures**, searchable by name or Found-text, filterable by
 tier and chapter, with the full book entry displayed. **Double-click any creature to pop
 it out into its own window** — resize it, maximize it, and step the text size up and
 down (A− / A＋); open as many creatures side by side as the fight needs. One click sends
@@ -98,7 +152,11 @@ right on the tab, the Bestiary's `→ Tracker` (× N), or **＋ Add** for ad-hoc
 Double-click any creature for its pop-out stat block — and *(v1.5)* **posse souls get
 their Ledger instead** (double-click, or the far-right Ledger button that only appears
 on rows that have a sheet to show). **New fight** clears the foes but keeps the posse;
-**Clear field** wipes everything.
+**Clear field** wipes everything. *(v1.29)* an optional **turn glass** — an hourglass that
+runs the posse's turn down, resets itself at the top of each round, and never ends a turn
+or takes a Beat; it only shows the time going. *(v1.30)* **＋ Turn glass** on the bar puts
+it out when it is away, so the feature is never invisible; **View ▸ The turn hourglass**
+and **Table ▸ The turn glass** do the same, and its length is yours to set.
 
 **Generators** — the Country in Your Pocket, one click each: a town in three rolls, a
 face in four, bar-talk rumors, trail events by day and night, plunder, and wrong-note
@@ -155,19 +213,26 @@ map number — toggling the hour or the Keeper's layer won't shake them loose �
 SVG/PDF exports carry them. And **the ink respects the border now**: rivers, creeks,
 trails, and rails are clipped to the map's inner neatline at generation, so nothing
 runs off the paper in the preview, the SVG, or the PDF (rivers used to).
+*(v1.30)* **◈ Full screen** — or a double-click on open country — throws the map across the
+whole screen with **every control on this tab still on it**: it moves the real drafting
+table rather than building a second one, so the ground, scale, hour, weather, overlays,
+markers and exports are the same controls and can never disagree with the tab's. Esc, F11
+or ✕ brings it back.
 
 **New Soul** *(overhauled in v1.5)* — a complete character at any level 1–10, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
 Book, redrawn live and filled in — name, **gender**, calling, origin, abilities,
-reckoned numbers, the Mark's six boxes, the Four Questions, all seventeen skills with
-proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
+reckoned numbers, the Mark's six boxes, the Four Questions, **what they look like**, all
+seventeen skills with proficiency ticks, edges & path, arms & gear & coin). Three roads to
+a soul:
 
 - **🎲 Make a soul** — rolled strictly by Chapter III's eight steps: abilities (Honest
   Array or the 4d6-drop-lowest Gamble), Calling and Origin with their cross-constraints
   honored, skills, legal Edges, Signs for the Old Dark only, the Mark where the book
   imposes it, coin rolled on the Calling's dice and spent at printed prices, gender and
-  a name drawn to match, and the Four Questions. Pin the Calling or Origin if you have
-  one in mind.
+  a name drawn to match, the Four Questions — and **a face, a build and an outfit**, drawn
+  against the Calling (a Preacher usually preaches in black; once in a while he turns up in
+  somebody's cavalry coat). Pin the Calling or Origin if you have one in mind.
 - **🧭 Wizard…** — build a custom character choice by choice through nine steps: level,
   method and name · Calling · Origin · assign the six abilities (with a Suggest button
   and 5th/10th-level boosts) · pick trained skills and skill increases · pick every Edge
@@ -175,30 +240,37 @@ proficiency ticks, edges & path, arms & gear & coin). Three roads to a soul:
   the coin and shop the printed price list against a live balance · answer the Four
   Questions. Anything left on "(let the book pick)" is rolled by the same rules as the
   generator.
+- **🎲 New look** — draw the description again and leave every number alone. The whole of it
+  is editable field by field in ✎ Tweak, and the Posse tab's right-click menu can redraw a
+  soul's look after they have joined the table.
 - **✎ Tweak** — hand-adjust any number or any list on a finished sheet. Tweaks are the
   Keeper's word against the book's: the sheet is re-checked but never blocked, and the
   Ledger simply notes it was hand-tweaked.
 
 Every sheet is validated against `Data/chargen.json` before it's shown. **→ Posse**
 seats the soul at the table — the full sheet rides along into `session.json`, so their
-Ledger window keeps everything forever. **Copy sheet** takes the text anywhere, and
+Ledger window still has all of it next session. **Copy sheet** takes the text anywhere, and
 *(v1.5)* **Save PDF…** writes a printable Letter sheet. *(v1.6)* The given-name pools
 (and the vice/lost/seen/moving flavor tables) nearly doubled, so generated and
 wizard-built souls repeat far less across a long campaign.
 
-**Reference** — a **Keeper's screen in eleven leaves**, paged with the ◀ ▶ buttons or
+**Reference** — a **Keeper's screen in thirteen leaves**, paged with the ◀ ▶ buttons or
 the Left/Right arrow keys, every leaf formatted as proper tables: the four degrees and
 the DC ladder · a turn in the Iron Code · Blood/Dying/Grievous Wounds with the Lasting
 Injury table · the complete **Conditions table from Appendix B** · the Nerve/Dread
 ladder and every way to recover Nerve · the Mark's six steps and the Taint clock (DCs
 13/16/20) · the eight Signs with costs and the Sign DC formula, plus Grit's five spends
-· the Threat-by-Tier benchmarks and the encounter budget · the book's **arms tables**
-(guns and steel, damage/cost/traits) · the **Goods & Provisions printed prices** · and
-skills, saves, and abilities. The arms, goods, signs, and skills leaves render live from
-`Data/chargen.json`, so they can never drift from the book.
+· the Miracles of the five Callings of Faith · the Threat-by-Tier benchmarks, the
+encounter budget, and the **safe-table rule with the sign-and-spoor table** (Survival DC
+and Dread Check by the thing's Tier) · the book's **arms tables** (guns and steel,
+damage/cost/traits) · the **Goods & Provisions printed prices** · skills, saves, and
+abilities · and running a scene in town. The arms, goods, signs, and skills leaves render
+live from `Data/chargen.json`, and the safe-table numbers from `Rules.SpoorRow`, so they
+can never drift from the books.
 
 **Session** — the Keeper's ledger (free-form notes, with a **Stamp the date** button
-for session headers) and **threads & clocks**: named progress clocks of 4/6/8 segments —
+for session headers; *(v1.30)* the app writes into it too — every Lasting Injury and
+Affliction lands here, dated, the moment you press Write it down) and **threads & clocks**: named progress clocks of 4/6/8 segments —
 tick ＋ when the world moves toward the trouble; when the last segment fills, it comes
 due. New threads offer ready patterns, and every thread can be renamed (✎) as the story
 turns. Everything persists between sessions.

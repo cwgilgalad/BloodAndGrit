@@ -17,7 +17,7 @@ also renamed in v1.6.0.
 ## Source-tree layout (read before editing the app)
 
 The working/master tree is **`GK/`**, and since v1.28.0 it holds **three** projects:
-`GK/rules/` (the `net8.0` rules library — the seven headless `.cs` files and `Data/*.json`),
+`GK/rules/` (the `net8.0` rules library — the eight headless `.cs` files and `Data/*.json`),
 `GK/source/` (the WinForms app: the UI `.cs`, its `.csproj`, `app.ico`, `Assets/`), and
 `GK/smoke/` (the headless logic-test project). The app and the smoke rig both reference the
 library. **Edit `GK/rules` for rules and data, `GK/source` for UI; build/test in `GK/`.**
@@ -173,7 +173,8 @@ what each tab *is*, plus the decisions worth not re-deriving.
 | **`TabsMap.cs`** | The Map tab UI + the GDI primitive replayer. |
 | **`Hourglass.cs`** | `HourglassView` — owner-drawn sand, ink only. Draws no text, so the drawn-text landmine below does not apply. |
 | **`Pdf.cs`** | From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
-| `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. Also hosts `--selftest`. |
+| `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. Opens the `Daybook` (and points it at `daybook.txt` under `--verbose`), and folds its dump into both error reports. Also hosts `--selftest`. |
+| **`Daybook.cs`** | The capped record of what the app just did — rolls, checks, session saves/loads, mode switches, generated souls — for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
 | `app.ico` / `Assets/emblem.png` | The cover emblem as a multi-size Windows icon (regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded. |
 | `Data/creatures.json` | All 150 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
@@ -366,8 +367,8 @@ counterpart here, the two were merged rather than stacked.)*
 ## The rules library, and why the JSON had to move with it
 
 `GK/rules/BloodAndGrit.Rules.csproj` is a plain `net8.0` class library — no WinForms — holding the
-seven headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
-`Look.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
+eight headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
+`Look.cs`, `Daybook.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
 `<Compile Include>` per file, which could silently fall out of step with what the app contained —
 a seventh headless file, unlisted, went untested forever.
 
