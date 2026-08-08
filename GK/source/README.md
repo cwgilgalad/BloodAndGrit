@@ -5,6 +5,8 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11).
 
+**App version 1.34.0**
+
 ---
 
 ## System requirements
@@ -67,6 +69,16 @@ click **More info → Run anyway**, and note the publisher reads *Cole Williams*
 **If it still won't start**, the app writes a `startup-error.txt` beside the exe (or in
 `%TEMP%\BloodAndGrit-startup-error.txt`) describing exactly what went wrong — send me its
 contents and I'll fix it.
+
+**If it starts and then does something wrong** — a roll that can't be right, a soul with the
+wrong numbers, somebody missing off the tracker — nothing has crashed, so there is no error
+file. Use **Help ▸ Save a diagnostic log…**: the app keeps a running record of the last few
+hundred things it did (rolls with their dice, checks with their degree, every session save and
+load, every soul it generated), and that button writes it out. Send it with the report and I can
+see what the app thought it was doing. It costs nothing and is always on; nothing leaves the
+machine unless you save it and send it. Launching with `GritKeeper.exe --verbose` additionally
+mirrors the record to `daybook.txt` beside the exe as it happens, which is what you want if the
+trouble takes the app down with it.
 
 **From source (optional, needs the .NET 8 SDK):**
 ```

@@ -111,6 +111,15 @@ public partial class MainForm
         help.DropDownItems.Add(new ToolStripSeparator());
         help.DropDownItems.Add(Item("Show me a&round", (s, e) => StartTour()));
         help.DropDownItems.Add(new ToolStripSeparator());
+        // The other half of "send me the error file". When something goes wrong and nothing crashes,
+        // there is no error file — this is how the last few hundred things the app did leave the
+        // machine. Under Help because that is where a person looks when they want to report
+        // something, not under File where it would read as part of the session.
+        var daybookItem = Item("Save a &diagnostic log…", (s, e) => SaveDaybook());
+        daybookItem.ToolTipText = "Write out what the app has been doing — send it along with a report "
+                                + "of anything that came out wrong";
+        help.DropDownItems.Add(daybookItem);
+        help.DropDownItems.Add(new ToolStripSeparator());
         help.DropDownItems.Add(Item("What it &needs to run…", (s, e) => ShowRequirements()));
         help.DropDownItems.Add(Item("&About GritKeeper…", (s, e) => ShowAbout()));
         menu.Items.Add(help);
@@ -150,6 +159,25 @@ public partial class MainForm
             MessageBox.Show("Couldn't save there:\r\n\r\n" + ex.Message, "Blood & Grit",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+
+    /// <summary>Write the daybook out where a Keeper can find it and send it on. Deliberately writes
+    /// whatever is in the ring rather than refusing when it is thin: "the app had only just started"
+    /// is itself an answer, and a button that sometimes does nothing is a button nobody trusts.</summary>
+    void SaveDaybook()
+    {
+        using var d = new SaveFileDialog
+        {
+            Title = "Save the diagnostic log",
+            Filter = "Text file (*.txt)|*.txt|All files (*.*)|*.*",
+            FileName = $"gritkeeper-daybook-{DateTime.Now:yyyy-MM-dd-HHmm}.txt"
+        };
+        if (d.ShowDialog(this) != DialogResult.OK) return;
+        if (Daybook.Save(d.FileName))
+            Log($"Diagnostic log written to {Path.GetFileName(d.FileName)} ({Daybook.Count} entries).");
+        else
+            MessageBox.Show("Couldn't write the log there. Try somewhere else — your Desktop, say.",
+                "Blood & Grit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
     void LoadSessionFromFile()

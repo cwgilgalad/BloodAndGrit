@@ -311,6 +311,7 @@ public partial class MainForm : Sheet
         if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
         if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
+        Daybook.Note("mode", $"table set to {ModeLabel(mode)}");
         Log($"Table set to {ModeLabel(mode)}.");
     }
 
@@ -2356,10 +2357,13 @@ public partial class MainForm : Sheet
                 saveFailure = null;
                 Announce("The session is saving again — the last write reached the disk.", Verdigris);
             }
+            Daybook.Note("session", $"saved {party.Count} souls, {tracker.Count} on the field, "
+                                    + $"{signs.Count} on the trail → {Path.GetFileName(SavePath)}");
             return true;
         }
         catch (Exception ex)
         {
+            Daybook.Note("session", "SAVE FAILED — " + ex.Message);
             // Once per distinct reason: the five-minute timer must not turn one stuck file into a
             // log full of the same line.
             if (saveFailure != ex.Message)
@@ -2429,6 +2433,8 @@ public partial class MainForm : Sheet
             posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
         }
         finally { suppressUndo = prevSuppress; }
+        Daybook.Note("session", $"loaded {party.Count} souls, {tracker.Count} on the field, "
+                                + $"{signs.Count} on the trail, {clocks.Count} clocks, round {round}");
         undoBaseline = JsonSerializer.Serialize(Snapshot());   // re-synced whichever path called this
     }
 

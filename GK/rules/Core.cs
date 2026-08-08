@@ -858,7 +858,9 @@ public static class Rules
         if (die == 20) idx = Math.Min(3, idx + 1);
         if (die == 1)  idx = Math.Max(0, idx - 1);
         string deg = idx switch { 3 => "CRITICAL SUCCESS", 2 => "Success", 1 => "Failure", _ => "CRITICAL FAILURE" };
-        return (idx, deg, $"d20({die}) {(mod>=0?"+":"")}{mod} = {total} vs DC {dc}");
+        string detail = $"d20({die}) {(mod>=0?"+":"")}{mod} = {total} vs DC {dc}";
+        Daybook.Note("check", $"{detail} → {deg}");
+        return (idx, deg, detail);
     }
 
     /// Parse and roll a dice expression: "2d6+3", "d20", "1d8+1d6+2"
@@ -896,8 +898,16 @@ public static class Rules
                 total += v; bits.Add(v >= 0 ? $"+{v}" : v.ToString());
             }
         }
-        if (bits.Count == 0) return (0, "could not parse", dice);
-        return (total, string.Join(" ", bits), dice);
+        if (bits.Count == 0)
+        {
+            // Worth a line of its own: an expression the parser could not read returns 0 and says
+            // so quietly, which at the table looks like a roll that came up nothing.
+            Daybook.Note("roll", $"\"{expr}\" — could not parse");
+            return (0, "could not parse", dice);
+        }
+        string bd = string.Join(" ", bits);
+        Daybook.Note("roll", $"{expr} → {bd} = {total}");
+        return (total, bd, dice);
     }
 
     /// The Dice tab's expression-builder buttons. Clicking a die whose kind already ends
