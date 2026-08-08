@@ -1139,6 +1139,14 @@ public partial class MainForm
             // beside it went on working — the two disagreed and neither said so.
             if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh();
+            // Typing a new initiative moves that combatant in the order, so it has to move in the
+            // grid too. Without this the Keeper corrected a number, watched the row stay put, and
+            // then Next turn went somewhere the field did not show. Deferred to BeginInvoke so the
+            // grid is out of its edit cycle before the list underneath it is rebuilt.
+            if (e.ColumnIndex >= 0 && e.ColumnIndex < trkGrid.Columns.Count
+                && trkGrid.Columns[e.ColumnIndex].Name == "Init" && tracker.Any(t => t.Init != 0)
+                && !IsDisposed && IsHandleCreated)
+                BeginInvoke(new Action(() => { if (!IsDisposed) SortTracker(TrkSort.InitDesc); }));
         };
         trkGrid.KeyDown += (s, e) =>
         {
@@ -1326,6 +1334,22 @@ public partial class MainForm
     internal int ArrivalInit(CharacterSheet sheet = null)
         => tracker.Any(t => t.Init != 0) ? Rules.RollInitiative(CharGen.InitiativeBonus(sheet)) : 0;
 
+    /// <summary>Put an arrival on the field, in its place in the order rather than at the bottom of
+    /// the grid. <see cref="ArrivalInit"/> has rolled it a real initiative whenever the field has
+    /// rolled at all — and then appending it left the thing that just kicked the door in sitting
+    /// under everyone, while Next turn handed it the turn from halfway up. The grid said one order
+    /// and the fight ran another, which is the same fault as the tiebreak one and looked identical
+    /// from the Keeper's chair.
+    ///
+    /// <para>Before anybody has rolled, every Init is 0 and the list is whatever order the Keeper
+    /// built by hand. That is theirs, so it is left alone.</para></summary>
+    void AddToField(Combatant c)
+    {
+        bool ordered = tracker.Any(t => t.Init != 0);
+        tracker.Add(c);
+        if (ordered && c.Init != 0) SortTracker(TrkSort.InitDesc);
+    }
+
     void RollInitiative()
     {
         // Rolling initiative is the top of a fight: the order is fresh, so nobody has gone yet.
@@ -1385,6 +1409,11 @@ public partial class MainForm
         var row = trkGrid?.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ReferenceEquals(r.DataBoundItem, up));
         if (row != null) { trkGrid.ClearSelection(); row.Selected = true; trkGrid.CurrentCell = row.Cells[1]; }
         RefreshTracker();
+        // The daybook's founding complaint is "the tracker lost somebody", so the turn handoff is
+        // exactly the kind of thing it exists to have written down: who went, on what initiative,
+        // and who was still to go when they did.
+        Daybook.Note("turn", $"round {round}: {up.Name} (init {up.Init}) — still to go: "
+            + (string.Join(", ", Rules.InTurnOrder(tracker.Where(Rules.CanAct)).Select(c => c.Name)) is { Length: > 0 } rest ? rest : "nobody"));
         Log($"{up.Name}'s turn — 3 Beats, a clean shot.");
     }
 
@@ -1397,12 +1426,9 @@ public partial class MainForm
         // with it: they answer "what just happened", and at the top of a round nothing has.
         // Worked effects lose a round here too, and anything that runs out says so by name — an
         // effect that vanished off a chip without a word is one the table keeps playing anyway.
-        foreach (var c in tracker)
-        {
-            c.Acting = false; c.HasActed = false; c.ClearLast();
-            foreach (var done in c.TickWorked())
-                Log($"{done.Name} ends on {c.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
-        }
+        foreach (var (on, done) in Rules.NewRound(tracker))
+            Log($"{done.Name} ends on {on.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
+        Daybook.Note("turn", $"round {round} begins — {string.Join(", ", Rules.InTurnOrder(tracker).Select(c => $"{c.Name} {c.Init}"))}");
         RefreshTracker();
         TurnOverTheGlass();               // a new round is a new posse turn — see the hourglass block
         Log($"— Round {round} —");
@@ -1427,13 +1453,16 @@ public partial class MainForm
         var keep = trkGrid?.CurrentRow?.DataBoundItem as Combatant;
         var sorted = (mode switch
         {
-            TrkSort.InitDesc  => tracker.OrderByDescending(c => c.Init).ThenByDescending(c => c.IsPC).ThenBy(c => c.Name),
-            TrkSort.InitAsc   => tracker.OrderBy(c => c.Init).ThenByDescending(c => c.IsPC).ThenBy(c => c.Name),
+            // Init order comes from Rules.InTurnOrder and nowhere else — it is the same sequence
+            // Next turn hands the turn out in, so the grid cannot disagree with the fight. Ascending
+            // is that order read backwards, which keeps the tiebreaks consistent between the two.
+            TrkSort.InitDesc  => Rules.InTurnOrder(tracker),
+            TrkSort.InitAsc   => Rules.InTurnOrder(tracker).Reverse(),
             TrkSort.NameAsc   => tracker.OrderBy(c => c.Name),
             TrkSort.NameDesc  => tracker.OrderByDescending(c => c.Name),
             TrkSort.BloodDesc => tracker.OrderByDescending(c => c.BloodCur).ThenBy(c => c.Name),
             TrkSort.BloodAsc  => tracker.OrderBy(c => c.BloodCur).ThenBy(c => c.Name),
-            _                 => tracker.OrderByDescending(c => c.Init).ThenByDescending(c => c.IsPC).ThenBy(c => c.Name),
+            _                 => Rules.InTurnOrder(tracker),
         }).ToList();
         tracker.RaiseListChangedEvents = false;
         tracker.Clear();
@@ -1480,7 +1509,7 @@ public partial class MainForm
         if (f.ShowDialog(this) == DialogResult.OK && !string.IsNullOrWhiteSpace(name.Text))
         {
             int b = (int)blood.Value;
-            tracker.Add(new Combatant { Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value, IsPC = pc.Checked, Init = ArrivalInit() });
+            AddToField(new Combatant { Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value, IsPC = pc.Checked, Init = ArrivalInit() });
             Log($"Tracker: {name.Text.Trim()} added by hand ({b} Blood).");
         }
     }
@@ -1788,7 +1817,7 @@ public partial class MainForm
         {
             int k = start + i;
             bool bare = start == 0 && count == 1;   // a lone first copy stays unnumbered
-            tracker.Add(new Combatant
+            AddToField(new Combatant
             {
                 Name = bare ? c.name : $"{c.name} #{k}",
                 BloodCur = c.BloodValue, BloodMax = c.BloodValue,

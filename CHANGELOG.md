@@ -8,6 +8,40 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.35.0 — the field acts in the order the field shows (2026-08-08).**
+  A Keeper reported that combat did not follow initiative, and it did not. The tracker sorted the
+  grid `Init desc → souls first → name`; `Rules.NextUp` handed out turns `Init desc → name`. The
+  two agree right up until somebody ties, and on a d20 with eight on the field a tie is closer to
+  certain than not. When it happened the turn jumped to a row that was not the next one down, which
+  from the Keeper's chair looks like the app ignoring initiative altogether.
+
+  Two orderings for one order is the same fault as two authorities for one number, and the rule
+  this project has always applied to numbers applies here: **one source, generated outward.**
+  `Rules.InTurnOrder` is now the only answer to "what order is the field in", and both the grid and
+  the turn read it. Souls before foes on a tie was already what the grid showed, so nothing moved
+  on screen — the turn came to match the display rather than the other way about.
+
+  The same fault had a second half. `ArrivalInit` rolls a real initiative for anything that joins a
+  fight already in progress — added deliberately so the thing that kicks the door in does not go
+  last every time — and then every arrival was **appended to the bottom of the grid** anyway. It
+  acted from halfway up a list that showed it at the end. Arrivals now take their seat
+  (`AddToField`), and a hand-typed correction to an Init cell re-sorts instead of leaving the
+  Keeper looking at a stale order.
+
+  **`Rules.NewRound` joins `ResetForNewFight` out of the UI**, for the reason that one moved: the
+  round rollover is the spine of the combat loop, and while it sat in `Tabs.cs` no test could play
+  a fight through it. Three full fights now run in the smoke suite — every round asserting that the
+  turns came in the order the grid was showing, that nobody took two, and that everyone left
+  standing got one — alongside nine more shapes the ordinary ones never reach: a lone survivor, a
+  soul downed and healed before the round ended, a field wiped inside one round, a mid-fight Init
+  correction, twelve riders in heavy ties asked twice for a stable answer, effects across three
+  rollovers, and something arriving after the souls above it had gone.
+
+  The daybook now records turn handoffs — who went, on what initiative, and who was still to go —
+  which is what let this be proved in the running app rather than only in the test rig: a fight
+  driven through the real Tracker on the engine, its `--verbose` transcript read back against the
+  grid. Smoke: 12,490 assertions, self-test 37/37.
+
 - **GritKeeper v1.34.0 — the daybook, for the failure that never throws (2026-08-08).**
   `Program.cs` has had two tiers of failure handling for a long time, and both answer the same
   question: *it stopped*. A recoverable exception writes `%TEMP%\BloodAndGrit-last-error.txt` and
