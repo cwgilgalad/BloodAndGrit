@@ -70,13 +70,18 @@ public partial class MainForm
         bar.Controls.Add(Btn("🎲 New look", (s, e) => DrawLookFor(lastSoul, () => ShowSoul(lastSoul)), 100,
             "Draw this soul a fresh face, build and outfit — nothing else on the sheet moves"));
         bar.Controls.Add(Btn("→ Posse", (s, e) => SoulToPosse(), 85, "Add this soul to the Posse tab"));
-        bar.Controls.Add(Btn("Copy sheet", (s, e) => { if (lastSoul != null) Clipboard.SetText(CharGen.Render(lastSoul)); }, 95, "Copy the sheet as plain text"));
+        bar.Controls.Add(Btn("Copy sheet", (s, e) =>
+        {
+            if (lastSoul == null) { Nope("Make a soul first — there is no sheet to copy."); return; }
+            Clipboard.SetText(CharGen.Render(lastSoul));
+            Log($"{lastSoul.Name}'s sheet copied to the clipboard.");
+        }, 95, "Copy the sheet as plain text"));
         bar.Controls.Add(Btn("Save PDF…", (s, e) => SoulSavePdf(), 90, "Save the sheet as a printable PDF"));
         bar.Controls.Add(Btn("A−", (s, e) => { if (soulLedger != null) soulLedger.Zoom -= 0.15f; }, 46, "Smaller sheet"));
         bar.Controls.Add(Btn("A＋", (s, e) => { if (soulLedger != null) soulLedger.Zoom += 0.15f; }, 46, "Larger sheet"));
         bar.Controls.Add(Btn("Clear", (s, e) =>
         {
-            if (lastSoul == null) return;
+            if (lastSoul == null) { Nope("There is no sheet to clear — make a soul first."); return; }
             if (!Confirm($"Clear {lastSoul.Name}'s sheet? Unsaved work is lost.")) return;
             soulLedger.Clear(); lastSoul = null; soulHint.Visible = true;
         }, 70, "Wipe the sheet for a fresh start"));

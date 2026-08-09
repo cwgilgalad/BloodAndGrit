@@ -242,7 +242,7 @@ public partial class MainForm
             "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
         {
-            if (curMap == null) return;
+            if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
             Clipboard.SetText(MapGen.ToSvg(curMap, MarkerOverlay()));
             Log("Map SVG copied to the clipboard" + MarkerNote() + ".");
         }, 90, "Copy the SVG markup to the clipboard"));
@@ -525,7 +525,7 @@ public partial class MainForm
 
     void MapSaveSvg()
     {
-        if (curMap == null) return;
+        if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
         using var d = new SaveFileDialog
         {
             Title = "Save the map as SVG",
@@ -546,7 +546,7 @@ public partial class MainForm
 
     void MapSavePdf()
     {
-        if (curMap == null) return;
+        if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
         using var d = new SaveFileDialog
         {
             Title = "Save the map as PDF",
