@@ -1782,7 +1782,7 @@ public partial class MainForm : Sheet
     void MovePC(int delta)
     {
         var p = SelectedPC();
-        if (p == null) { Nope("Select a soul first."); return; }
+        if (p == null) { Nope(NoSoulPicked); return; }
         int i = party.IndexOf(p), j = i + delta;
         if (j < 0 || j >= party.Count) return;
         int col = posseGrid.CurrentCell?.ColumnIndex ?? 0;
@@ -1825,14 +1825,15 @@ public partial class MainForm : Sheet
 
     void RemoveSelectedPC()
     {
-        var p = SelectedPC(); if (p == null) return;
+        var p = SelectedPC();
+        if (p == null) { Nope(NoSoulPicked); return; }
         if (Confirm($"Remove {p.Name} from the posse?")) party.Remove(p);
     }
 
     void AdjustPC(int sign)
     {
         var p = SelectedPC();
-        if (p == null) { Nope("Select a soul first."); return; }
+        if (p == null) { Nope(NoSoulPicked); return; }
         int v = (int)adjAmount.Value;
         p.BloodCur = Math.Clamp(p.BloodCur + sign * v, 0, p.BloodMax);
         Log($"{p.Name} {(sign < 0 ? "takes" : "recovers")} {v} Blood → {p.BloodCur}/{p.BloodMax}" + (p.BloodCur == 0 ? "  — DOWN." : ""));
@@ -1850,7 +1851,7 @@ public partial class MainForm : Sheet
     // trusted to two boxes agreeing.
     void DreadCheckPC(PartyMember p)
     {
-        if (p == null) { Nope("Select a soul first."); return; }
+        if (p == null) { Nope(NoSoulPicked); return; }
         int dc = (int)dreadDc.Value;
         ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc} — what did the d20 come up?"));
     }
@@ -1859,7 +1860,7 @@ public partial class MainForm : Sheet
     // The Mark and Taint do not wash off with rest, so they're left alone.
     void RestPosse()
     {
-        if (party.Count == 0) return;
+        if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
         if (!Confirm("A long rest for the whole posse? Restores every soul's Blood, Nerve, and pool to full.")) return;
         foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; MirrorToTracker(p); }
         posseGrid?.Refresh();
@@ -1868,7 +1869,7 @@ public partial class MainForm : Sheet
 
     void RestSoul(PartyMember p)
     {
-        if (p == null) { Nope("Select a soul first."); return; }
+        if (p == null) { Nope(NoSoulPicked); return; }
         p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax;
         MirrorToTracker(p); posseGrid?.Refresh();
         Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
@@ -1877,23 +1878,32 @@ public partial class MainForm : Sheet
     // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
     // on the bar and the lines in the row's right-click menu are literally the same code — a menu
     // that reimplements what a button does is a menu that will one day disagree with it.
+    /// <summary>What anything acting on a picked soul says when nobody is picked. The three Posse
+    /// buttons below act on <see cref="SelectedPC"/>, and an empty table — or a click that landed
+    /// between rows — hands them null; each returned in silence, which from the far side of the
+    /// table is the same thing as a dead button, and all three were caught by the same sweep as the
+    /// Tracker's New fight. The sentence was already the app's, written out longhand at eight other
+    /// guards, so the fix was to say what they say rather than invent a ninth wording for one
+    /// refusal — a Keeper who learns a message should not have to learn it twice.</summary>
+    const string NoSoulPicked = "Select a soul first.";
+
     void SpendGrit(PartyMember p)
     {
-        if (p == null) return;
+        if (p == null) { Nope(NoSoulPicked); return; }
         if (p.Grit > 0) { p.Grit--; Log($"{p.Name} spends Grit ({p.Grit} left)."); }
         else Log($"{p.Name} has no Grit left to spend.");
     }
 
     void AdvanceMark(PartyMember p)
     {
-        if (p == null) return;
+        if (p == null) { Nope(NoSoulPicked); return; }
         p.Mark = Math.Min(6, p.Mark + 1);
         Log($"{p.Name}'s Mark advances to step {p.Mark} of 6." + (p.Mark >= 6 ? "  THE MARK IS FULL — the country collects." : ""));
     }
 
     void DeepenTaint(PartyMember p)
     {
-        if (p == null) return;
+        if (p == null) { Nope(NoSoulPicked); return; }
         p.Taint = Math.Min(4, p.Taint + 1);
         Log($"{p.Name}'s Taint deepens to {p.Taint} of 4.");
     }
@@ -1905,7 +1915,7 @@ public partial class MainForm : Sheet
     {
         var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
         if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
-        if (who[0] == null) { Nope("Select a soul first."); return; }
+        if (who[0] == null) { Nope(NoSoulPicked); return; }
 
         // A dice-and-books table rolls its own recovery too. Asked ONCE for the whole posse rather
         // than once a soul: "a week of true peace" is one remedy applied to everybody, and six
@@ -1935,7 +1945,7 @@ public partial class MainForm : Sheet
     {
         var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
         if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
-        if (who[0] == null) { Nope("Select a soul first."); return; }
+        if (who[0] == null) { Nope(NoSoulPicked); return; }
 
         string ans = AskLine(wholePosse ? "How much Nerve does each soul get back?" : "How much Nerve comes back?", "3");
         if (!int.TryParse(ans?.Trim(), out int amt) || amt <= 0) return;
@@ -2240,11 +2250,19 @@ public partial class MainForm : Sheet
         };
 
         var logBar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 40 };
-        logBar.Controls.Add(Btn("Copy log", (s, e) => { if (rollLog.Items.Count > 0) Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())); }, 90,
-            "Copy every line of the log to the clipboard"));
+        // Copying puts nothing on the screen, so a silent copy and a broken button look the same.
+        // Note the order: the copy happens BEFORE the log is written to, or the confirmation line
+        // this very press adds would be missing from what went to the clipboard.
+        logBar.Controls.Add(Btn("Copy log", (s, e) =>
+        {
+            if (rollLog.Items.Count == 0) { Nope("The log is empty — nothing to copy."); return; }
+            int n = rollLog.Items.Count;
+            Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>()));
+            Log($"{n} log line(s) copied to the clipboard.");
+        }, 90, "Copy every line of the log to the clipboard"));
         logBar.Controls.Add(Btn("Clear log", (s, e) =>
         {
-            if (rollLog.Items.Count == 0) return;
+            if (rollLog.Items.Count == 0) { Nope("The log is already empty."); return; }
             if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
             { rollLog.Items.Clear(); logLines.Clear(); }
         }, 90, "Wipe the log — the rolls themselves are already spent"));

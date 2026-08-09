@@ -8,6 +8,38 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.36.0 — a button may refuse, but it may not refuse in silence (2026-08-09).**
+  The Tracker's **New fight** was reported as a button that never works. It worked. It asked
+  whether there were foes on the field, sign on the trail, or effects still working, found none of
+  the three because the Keeper had already taken the last foe off by hand, and returned without a
+  word — over a posse still Frightened, still out of Beats, still standing mid-turn. From the far
+  side of the table a guard that returns quietly and a button wired to nothing look exactly alike.
+
+  The guard was also wrong twice over, which is the older fault underneath: it asked about three
+  things while the reset it protects clears nine. **`Rules.FightResidue`** is now the reset's own
+  inventory — a condition, spent Beats, a MAP step, a turn in progress or already taken, the note
+  of what just happened, anything still working — and both the guard and the confirmation read it,
+  so the two can never again disagree about what a fight leaves behind. The pairing is now a test
+  rather than a promise: every field the reset touches is proved to be one the residue test sees,
+  so adding a tenth without teaching both halves fails the suite. Smoke: **12,514** assertions.
+
+  Then the same question was asked of all 134 buttons, since one of anything is rarely one.
+  **`audit_ui.py` grew a check for it** — a handler that stops over an absence and says nothing —
+  and it runs in CI with the rest. Sixteen more answered to it. Six were fixed here: **Spend Grit**,
+  **Mark +1** and **Taint +1** all did nothing at all when no soul was picked, and now say so;
+  **zoom in**, **zoom out** and **Tracker → Map** were silent whenever no survey had been rolled
+  yet, and now name that. The wheel over an empty drafting table stays quiet on purpose — a refusal
+  belongs to a press, not to a scroll.
+
+  Two things the audit itself had to learn before it could be trusted, both found by it convicting
+  honest code. A guard that hands off to a method which does the talking is not silent — **Level
+  up**'s `BackfillSheet` explains that a hand-entered row has no sheet, or offers to draw one up and
+  takes No for an answer — so a called method is now asked the same question as the line. And asking
+  a control where it is hung is structural rather than a refusal: `mapHost.Parent` is null only
+  before the tab exists, which no press can reach, while `mapPanel.Model` being null means no map
+  has been rolled and is precisely what a Keeper should be told. An audit that cries wolf at
+  well-written code is one people stop running.
+
 - **GritKeeper v1.35.0 — the field acts in the order the field shows (2026-08-08).**
   A Keeper reported that combat did not follow initiative, and it did not. The tracker sorted the
   grid `Init desc → souls first → name`; `Rules.NextUp` handed out turns `Init desc → name`. The
