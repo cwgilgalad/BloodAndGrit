@@ -6,6 +6,8 @@ GK/rules/bin/
 GK/rules/obj/
 GK/smoke/bin/
 GK/smoke/obj/
+GK/playtest/bin/
+GK/playtest/obj/
 # Never commit the published exe. Dropping ReadyToRun and single-file compression in
 # v1.11.0 (a 3.5x faster first launch — see the csproj) took it to ~155 MB, past
 # GitHub's 100 MB per-file limit; an autosync run that swept it in made the push fail

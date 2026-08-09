@@ -96,6 +96,8 @@ SOFT_WORDS = [
 ]
 
 SENT_SPLIT = re.compile(r"(?<=[.!?])[\s\n]+")
+ENTITY = re.compile(r"&(?:#\d{1,5}|#x[0-9a-fA-F]{1,5}|[a-zA-Z]{2,10});")
+ENTITY_DASH = re.compile(r"&(?:mdash|#8212|#x2014);", re.I)
 
 
 def _blank(m):
@@ -124,6 +126,13 @@ def strip_html(text):
     text = re.sub(r"<script.*?</script>", _blank, text, flags=re.S | re.I)
     text = re.sub(r"<style.*?</style>", _blank, text, flags=re.S | re.I)
     text = re.sub(r"<[^>]+>", _blank, text)
+    # An em dash spelled `&mdash;` is an em dash. Blanking it with everything else made the dash
+    # column blind to the books' actual house punctuation: all three builders write the entity, so
+    # the metric was only ever seeing the handful of literal dashes that come in through creature
+    # data and quote attributions. Keep the character, pad the rest of the entity back out, so the
+    # count is real and the length stays preserved for line numbers.
+    text = re.sub(r"&(?:mdash|#8212|#x2014);",
+                  lambda m: "—" + " " * (len(m.group(0)) - 1), text, flags=re.I)
     text = re.sub(r"&[a-zA-Z]+;|&#\d+;", _blank, text)
     return text
 
@@ -232,12 +241,44 @@ def audit(name, raw):
             ctx = re.sub(r"\s+", " ", softtext[max(0, hits[0] - 45):hits[0] + 55]).strip()
             soft[w] = (len(hits), ln, ctx)
 
-    dashes = raw.count("—")
-    per_1k = dashes / max(1, len(prose) / 1000)
+    # Em-dash density, per THOUSAND WORDS. It was per thousand characters until 2026-08-09, which is
+    # the same number divided by about six, and it was being read against a per-word baseline — so
+    # the column had been quietly reporting a sixth of the real figure since the day it was added.
+    # The baseline it is read against: Freeburg 2026 measured 3.23 em dashes per 1,000 words across
+    # 57k words of published human essays, against 10.62 for GPT-4.1, and found the frontier models
+    # spread from 0 to 10-plus. So the dash is not a binary tell; density is the whole signal, and
+    # the band below is set where a real editor would start noticing rather than where a detector
+    # trips.
+    nwords = max(1, sum(lens))
+
+    # An HTML entity is text, not punctuation, and the books write theirs out longhand. Counting
+    # raw characters therefore read `&rsquo;` as a semicolon nobody typed and missed every
+    # `&mdash;` entirely — so the dash column sat dead still through a pass that removed fifty of
+    # them by hand, and the three books' wildly different dash rates were measuring which spelling
+    # each builder happened to use. Blank the entities to same-length filler (the same
+    # length-preserving trick strip_html uses, so reported line numbers stay true) and count the
+    # spelled-out dashes separately.
+    spelled = len(ENTITY_DASH.findall(prose))
+    clean = ENTITY.sub(lambda m: "·" * len(m.group(0)), prose)
+    em_1k = (clean.count("—") + spelled) / (nwords / 1000)
+
+    # Punctuation variety. The 2026 work on markdown-shaped prose finds LLM output leans on a
+    # narrow inventory — period, comma, em dash — where human prose reaches for semicolons, colons,
+    # parentheses and question marks. Counted as the share of "reaching" marks among all marks.
+    marks = {c: clean.count(c) for c in ",.;:?!()"}
+    reach = sum(marks[c] for c in ";:?!()")
+    variety = reach / max(1, sum(marks.values()))
+
+    # Opener repetition. Distinct first-two-words as a share of sentences: generated prose restarts
+    # its sentences from a smaller stock of openings than a person does.
+    heads = [" ".join(s.strip().split()[:2]).lower()
+             for s in SENT_SPLIT.split(prose) if len(s.split()) >= 4]
+    openers = len(set(heads)) / max(1, len(heads))
+
     return {
         "sentences": len(lens), "burst": b, "hard": hard, "quoted": quoted, "soft": soft,
         "words": sum(lens), "shortest": min(lens) if lens else 0, "longest": max(lens) if lens else 0,
-        "emdash_per_1k": per_1k,
+        "emdash_per_1k": em_1k, "variety": variety, "openers": openers,
     }
 
 
@@ -272,9 +313,12 @@ def main():
     targets = args or (DEFAULT_DOCS + (BOOKS if books else []))
     findings = 0
 
-    print("burstiness = sd/mean of sentence length. Books measured 0.65 / 0.94 / 0.49.\n")
-    print(f"{'file':<22}{'sents':>6}{'words':>7}{'burst':>7}  {'range':<10}{'em/1k':>6}  verdict")
-    print("-" * 78)
+    print("burstiness = sd/mean of sentence length. Books measured 0.65 / 0.94 / 0.49.")
+    print("em/1kw = em dashes per thousand words (human baseline ~3.2, GPT-4.1 ~10.6, Freeburg 2026).")
+    print("var = share of punctuation that is ; : ? ! ( ).  opn = distinct sentence openers.\n")
+    print(f"{'file':<30}{'sents':>6}{'words':>7}{'burst':>7}  {'range':<10}"
+          f"{'em/1kw':>7}{'var':>6}{'opn':>6}  verdict")
+    print("-" * 96)
     reports = []
     for t in targets:
         p = ROOT / t
@@ -285,7 +329,8 @@ def main():
         reports.append((t, r))
         bs = f"{r['burst']:.2f}" if r["burst"] is not None else "  -"
         rng = f"{r['shortest']}-{r['longest']}"
-        print(f"{t:<22}{r['sentences']:>6}{r['words']:>7}{bs:>7}  {rng:<10}{r['emdash_per_1k']:>6.1f}  {band(r['burst'])}")
+        print(f"{t:<30}{r['sentences']:>6}{r['words']:>7}{bs:>7}  {rng:<10}"
+              f"{r['emdash_per_1k']:>7.1f}{r['variety']:>6.2f}{r['openers']:>6.2f}  {band(r['burst'])}")
 
     if ncommits:
         log = subprocess.run(["git", "log", f"-{ncommits}", "--format=%B%n---8<---"],
