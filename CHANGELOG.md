@@ -21,7 +21,7 @@ Desktop\Git repos.)
   of what just happened, anything still working — and both the guard and the confirmation read it,
   so the two can never again disagree about what a fight leaves behind. The pairing is now a test
   rather than a promise: every field the reset touches is proved to be one the residue test sees,
-  so adding a tenth without teaching both halves fails the suite. Smoke: **12,514** assertions.
+  so adding a tenth without teaching both halves fails the suite. Smoke: **12,519** assertions.
 
   Then the same question was asked of all 134 buttons, since one of anything is rarely one.
   **`audit_ui.py` grew a check for it** — a handler that stops over an absence and says nothing —
@@ -39,6 +39,17 @@ Desktop\Git repos.)
   before the tab exists, which no press can reach, while `mapPanel.Model` being null means no map
   has been rolled and is precisely what a Keeper should be told. An audit that cries wolf at
   well-written code is one people stop running.
+
+  The pre-release read then caught what no audit could, because the check asks whether a refusal
+  speaks and cannot ask whether it speaks sense. **Both new sentences were strangers.** The app had
+  already said *"Select a soul first."* at eight guards, and the three new ones arrived with a ninth
+  wording for one refusal — so they now say what the app says, and the sentence is one constant.
+  The second was worse and was not new: three Map guards had been ending **"press Survey first"**,
+  and there is no Survey button on that tab. There never has been. The control that draws a survey
+  is the one labelled **🎲 New map**, so for as long as those messages have existed they have sent
+  Keepers hunting a control that was never there. A refusal that is confidently wrong is a worse
+  failure than the silent ones this release set out to find: silence at least admits it has nothing
+  to say. One sentence, one place, naming one real button.
 
 - **GritKeeper v1.35.0 — the field acts in the order the field shows (2026-08-08).**
   A Keeper reported that combat did not follow initiative, and it did not. The tracker sorted the
