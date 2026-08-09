@@ -159,6 +159,7 @@ MODULE_CSS = """
   table.playtest{ width:100%; border-collapse:collapse; margin:1em 0; font-size:13.2px; }
   table.playtest th{ background:var(--blood-d); color:#f2ead6; font-variant:small-caps; letter-spacing:.05em; padding:4px 7px; text-align:left; }
   table.playtest td{ border-bottom:1px solid var(--gold-d); padding:4px 7px; }
+""" + __import__("module_maps").MAP_CSS + """
 </style>"""
 
 

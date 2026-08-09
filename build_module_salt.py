@@ -8,8 +8,10 @@
 # of GK/playtest and nowhere else.
 from modules_common import (shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
+from module_maps import map_html
 
 VERSION = "1.0"
+SLUG = "salt-at-coffin-wells"
 
 H = shell(
     foot="The Salt at Coffin Wells",
@@ -42,6 +44,7 @@ CONTENTS = '''
       ("what", "What This Is"),
       ("truth", "The Truth of It"),
       ("hook", "The Hook, and Getting Them There"),
+      ("ground", "The Ground"),
       ("act1", "Act One &mdash; The Ordinary West"),
       ("act2", "Act Two &mdash; The Wrong Note Answers"),
       ("act3", "Act Three &mdash; The Reckoning"),
@@ -67,7 +70,7 @@ WHAT = '''
   Every creature in it is printed here in full, so the Bestiary can stay on the shelf.</p>
 
   <p>It is built to do the thing a first session most often fails to do. It opens as an honest
-  western &mdash; a town, a bar, a man buying a round &mdash; and it turns the note slowly enough
+  western (a town, a bar, a man buying a round), and it turns the note slowly enough
   that the players are the ones who notice. By the end of the second act they should be frayed and
   low on Nerve and beginning to understand that this is not the western they thought they rode into.</p>
 
@@ -91,7 +94,7 @@ WHAT = '''
   </ul>
 
   ''' + keeper(
-    "<p>Read the three acts and nothing else. The Cast and the creature entries are reference &mdash; "
+    "<p>Read the three acts and nothing else. The Cast and the creature entries are reference; "
     "look at them when the table looks at them. A Keeper who has memorised this module runs it worse "
     "than a Keeper who has read it once, because the first one is delivering a night and the second "
     "one is having one.</p>", "Before you run it") + '''
@@ -108,7 +111,7 @@ TRUTH = '''
 
   <p>Six weeks ago Josiah Vane, who holds the note on most of Coffin Wells and on none of it
   profitably, rode out to the old mission ground east of town with a shovel and a rumour. The rumour
-  was silver &mdash; that the Spanish padres had put their plate in the ground when they abandoned
+  was silver: that the Spanish padres had put their plate in the ground when they abandoned
   San Clavo, and that the marked grave on the mission&rsquo;s east side was where. The grave was
   marked. It was marked because it was staked and salted, and the padres had written on the stone
   in a language Vane could not read and did not trouble to have read.</p>
@@ -123,7 +126,7 @@ TRUTH = '''
 
   <h2 id="truth-fever">The Fever</h2>
   <p>There is no fever. The outlying homesteads are being fed on, and the ones who die of it do not
-  stay dead &mdash; they get up two or three days after burial, hungry and slow and wearing the face
+  stay dead; they get up two or three days after burial, hungry and slow and wearing the face
   their family knew. Coffin Wells has buried nine people in six weeks and dug up four of them again
   without saying so out loud.</p>
 
@@ -141,7 +144,7 @@ TRUTH = '''
   ''' + keeper(
     "<p>Do not let a player read this page and do not answer questions about it in the voice you use "
     "for rules. Everything here is discoverable in play, and every route to it is keyed in the acts. "
-    "The one thing that is not discoverable is the count of nights &mdash; that is yours, and it is "
+    "The one thing that is not discoverable is the count of nights; that is yours, and it is "
     "meant to be felt as the town getting worse rather than as a number going up.</p>") + '''
 </section>
 '''
@@ -189,6 +192,40 @@ HOOK = '''
 </section>
 '''
 
+# ============================================================ the ground / map
+GROUND = '''
+<section class="page" id="ground">
+  ''' + runhead("The Ground") + '''
+  <h1 class="chapter">The Ground</h1>
+  <p class="note">Every numbered place below is a keyed scene, and the number on the map is the
+  number in the margin of the act it belongs to.</p>
+
+  ''' + map_html(SLUG,
+                 "the town, the Pell road and the mission ground, with the keyed scenes pinned "
+                 "where they happen") + '''
+
+  <h2 id="ground-shape">What the Shape of It Does</h2>
+  <p>Four miles of the mission road, and everything in this module hangs off that distance. It is
+  an hour on a tired horse in the dark. It is short enough that the posse can go out and come back
+  in one night, and long enough that going out is a decision.</p>
+  <ul>
+    <li><strong>The town is west and the answer is east.</strong> Every scene in Act One faces the
+    wrong way on purpose. The boot-hill is the first thing on the map that points the other
+    direction.</li>
+    <li><strong>The Pell place is off the road.</strong> South, down a track, out of sight of
+    anywhere. That is why nobody has counted what has been happening to the homesteads.</li>
+    <li><strong>The mission is on open ground and the graveyard is on its east side</strong>,
+    which is the side the sun comes up on. Act Three ends at dawn, in the open, and the map is
+    quietly telling the Keeper where to stand everyone.</li>
+  </ul>
+
+  ''' + keeper(
+    "<p>Hand the map to the table in Act One. Nothing on it is a secret. A stranger riding "
+    "into Coffin Wells can see the mission road and be told where it goes. The download beside it "
+    "prints on one sheet.</p>") + '''
+</section>
+'''
+
 # ============================================================ act one
 ACT1 = '''
 <section class="page" id="act1">
@@ -223,7 +260,7 @@ ACT1 = '''
 
   <h2 id="a1-boothill">3. The Boot-Hill</h2>
   <p>Up the rise north of town, and worth walking to if anyone thinks of it. Nine fresh graves. Four
-  of them have been dug up <em>from the inside</em> &mdash; the dirt is heaped outward, the boards
+  of them have been dug up <em>from the inside</em>: the dirt is heaped outward, the boards
   are pushed out rather than in, and one coffin lid is lying eleven feet from its hole.</p>
 
   ''' + readaloud(
@@ -287,7 +324,7 @@ ACT2 = '''
 
   ''' + keeper(
     "<p><strong>This is the lesson fight and it must be won.</strong> The engine says a fresh posse "
-    "clears it two times in twelve if they only shoot &mdash; and ten times in twelve if somebody "
+    "clears it two times in twelve if they only shoot, and ten times in twelve if somebody "
     "thinks of fire, the barn door as a bottleneck, or the lamp oil on the shelf. Put the lamp oil "
     "where they can see it. If the fight turns badly, Marshal Cruz arrives on the third round: she "
     "followed them, and she has a shotgun and a bad conscience.</p>", "Running it") + '''
@@ -305,7 +342,7 @@ ACT2 = '''
 
   ''' + keeper(
     "<p>There is no correct answer here and the module refuses to supply one. A mercy costs a Dread "
-    "Check and nothing else. A hope &mdash; taking her to town, tying her, riding for a doctor &mdash; "
+    "Check and nothing else. A hope (taking her to town, tying her, riding for a doctor) "
     "costs a segment off the clock and puts her in Act Three, where she will turn, and where what she "
     "does then is on them. Both are playable. Neither is punished. Whatever they choose should follow "
     "at least one of them into the next module.</p>") + '''
@@ -354,7 +391,7 @@ ACT3 = '''
 
   <h2 id="a3-thing">10. The Thing Out of the Grave</h2>
   <p><strong>Dread Check, DC 18, Will save.</strong> Tier III loss, and it is its regard that does it
-  rather than its appearance &mdash; it looks at each of them in turn, the way a man looks at stock.</p>
+  rather than its appearance; it looks at each of them in turn, the way a man looks at stock.</p>
 
   ''' + found("The Nightwalker") + '''
 
@@ -363,10 +400,10 @@ ACT3 = '''
 
   ''' + keeper(
     "<p><strong>This cannot be shot down and the module means that literally.</strong> Twelve posses "
-    "were run at this fight on the engine and not one of them won it with guns &mdash; see "
+    "were run at this fight on the engine and not one of them won it with guns; see "
     "<a href=\"#cost\">What the Night Costs</a> for the count. Do not soften the fight to make it "
     "winnable. Make the wall readable instead, and let the answer be a thing they do rather than a "
-    "roll they pass. Pin it &mdash; the stake is right there in the dirt. Take the head. Burn it. "
+    "roll they pass. Pin it: the stake is right there in the dirt. Take the head. Burn it. "
     "Salt the grave. Every one of those is an action anyone can take, and none of them is an attack "
     "roll against Defense 18.</p>", "Read this before you run it") + '''
 
@@ -431,7 +468,7 @@ DEAD = '''
 
   ''' + keeper(
     "<p><strong>On the safe-table rule.</strong> A Nightwalker is Tier III and a 1st-level posse is "
-    "Tier 1, which is two Tiers over &mdash; so by the Keeper's Book Ch. IV this horror is sign and "
+    "Tier 1, which is two Tiers over, so by the Keeper's Book Ch. IV this horror is sign and "
     "spoor rather than a fight, and GritKeeper will offer to put it on the trail instead of the field "
     "if you build it there. That is correct and this module does not override it. Act Three is not a "
     "fight the posse wins by fighting. It is a thing in the room with them while they do the four "
@@ -445,8 +482,8 @@ COST = '''
   ''' + runhead("What the Night Costs") + '''
   <h1 class="chapter">What the Night Costs</h1>
 
-  <p>Every number on this page came out of the game&rsquo;s own engine. Twelve posses &mdash; a
-  Gunhand, a Preacher, a Mountain Man and a Sawbones, built by the generator, at 1st level &mdash;
+  <p>Every number on this page came out of the game&rsquo;s own engine. Twelve posses (a Gunhand, a
+  Preacher, a Mountain Man and a Sawbones, built by the generator, at 1st level)
   were run through all three acts on the same rules library the app runs on, with the Bestiary&rsquo;s
   numbers for every foe and the book&rsquo;s dice for every roll. The runs are seeded and reproduce.</p>
 
@@ -477,7 +514,7 @@ COST = '''
   <p>Two clears in twelve looks alarming and is not. That row is a posse that only shoots, standing
   in the open, in a yard, against three things that do not stop. The same fight with the barn door
   as a bottleneck, or with the lamp oil used, or with the Marshal arriving on round three, is a fight
-  a fresh posse wins comfortably &mdash; and every one of those is keyed into <a href="#a2-fight">scene 6</a>
+  a fresh posse wins comfortably, and every one of those is keyed into <a href="#a2-fight">scene 6</a>
   for exactly this reason.</p>
 
   <p>What the number is really telling you is the shape of the lesson: <strong>this game does not
@@ -489,7 +526,7 @@ COST = '''
     <li><strong>A bigger or bolder posse.</strong> Add a fourth Risen in Act Two. Give Vane two
     hired guns at the mission. Let the Nightwalker open Act Three from above rather than from the
     grave.</li>
-    <li><strong>A smaller or greener posse.</strong> Two Risen. Have the wall panels be plainer &mdash;
+    <li><strong>A smaller or greener posse.</strong> Two Risen. Have the wall panels be plainer:
     a carved word, in English, put there by a later hand. Run the Nightwalker fed and slow: Defense
     16 and no regard, if the posse reaches the mission on the first night.</li>
     <li><strong>If the dice turn cruel.</strong> The dawn is always one scene away. Use it.</li>
@@ -531,7 +568,8 @@ AFTER = '''
 </section>
 '''
 
-BODY = CONTENTS + WHAT + TRUTH + HOOK + ACT1 + ACT2 + ACT3 + CAST + DEAD + COST + AFTER
+BODY = (CONTENTS + WHAT + TRUTH + HOOK + GROUND + ACT1 + ACT2 + ACT3
+        + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)
 html = finish(
@@ -554,9 +592,11 @@ html = finish(
         ("The Fourth Night (clock)", "truth-clock"),
         ("Dawn, as an escape valve", "a3-dawn"),
         ("What the engine says", "cost"),
+        ("The map", "ground"),
     ],
     subtitle="Every person, place and thing in this night, and the page it waits on.",
-    intro="Scene numbers run 1&ndash;11 across the three acts and are keyed in the margin of each.",
-    out="module-salt-at-coffin-wells.html",
+    intro="Scene numbers run 1&ndash;11 across the three acts and are keyed in the margin of each, "
+          "and on the map in <a href=\"#ground\">The Ground</a>.",
+    out=f"module-{SLUG}.html",
 )
 report("module-salt-at-coffin-wells.html", html)
