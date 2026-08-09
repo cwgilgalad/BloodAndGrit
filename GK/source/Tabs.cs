@@ -2085,7 +2085,7 @@ public partial class MainForm
     // ladder on a failure, Frightened on a critical failure — and, at 0 Nerve, the break table.
     void DreadDialog()
     {
-        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a soul first."); return; }
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope(NoSoulPicked); return; }
         var soul = SoulOf(c);
         if (soul == null) { Nope("Dread Checks are for the posse — select a player's soul."); return; }
 

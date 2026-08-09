@@ -68,6 +68,25 @@ public partial class MainForm
     }
 
     // Zoom keeping the model point under the anchor fixed on screen.
+    /// <summary>The zoom buttons' way in. The wheel and the buttons share the zoom but must not
+    /// share the refusal: rolling the wheel across an empty drafting table should stay quiet, while
+    /// a button that appears to do nothing when pressed has to say why. So the guard lives here,
+    /// on the pressed path only, and <see cref="MapZoomAt"/> keeps its silent one for the wheel.</summary>
+    void MapZoomBtn(float factor)
+    {
+        if (mapPanel.Model == null) { Nope(NoSurvey); return; }
+        MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), factor);
+    }
+
+    /// <summary>What every Map-tab button says when there is no survey to work on yet. It names the
+    /// button by the label the Keeper can actually see. Three guards below already carried this
+    /// sentence longhand and all three ended it "press Survey first" — and there is no Survey
+    /// button on this tab, nor has there been one; the control that draws a survey is 🎲 New map.
+    /// A refusal that sends somebody looking for a control that was never there is a worse failure
+    /// than the silent ones this release went after, because it is confidently wrong instead of
+    /// merely quiet. One sentence, one place, naming one real button.</summary>
+    const string NoSurvey = "No survey on the table yet — press 🎲 New map first.";
+
     void MapZoomAt(Point anchor, float factor)
     {
         var m = mapPanel.Model; if (m == null) return;
@@ -185,9 +204,9 @@ public partial class MainForm
         mapSecrets = Check(rowView, "Keeper's layer", false, "The secrets, in red — leave off before showing players. Exports include whatever is checked.");
         rowView.Controls.Add(Sep());
         rowView.Controls.Add(Lbl("Zoom:"));
-        rowView.Controls.Add(Btn("🔍＋", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1.4f), 46,
+        rowView.Controls.Add(Btn("🔍＋", (s, e) => MapZoomBtn(1.4f), 46,
             "Zoom in — or roll the mouse wheel over the map"));
-        rowView.Controls.Add(Btn("🔍−", (s, e) => MapZoomAt(new Point(mapPanel.Width / 2, mapPanel.Height / 2), 1 / 1.4f), 46,
+        rowView.Controls.Add(Btn("🔍−", (s, e) => MapZoomBtn(1 / 1.4f), 46,
             "Zoom out"));
         rowView.Controls.Add(QuietBtn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
@@ -242,7 +261,7 @@ public partial class MainForm
             "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
         {
-            if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
+            if (curMap == null) { Nope(NoSurvey); return; }
             Clipboard.SetText(MapGen.ToSvg(curMap, MarkerOverlay()));
             Log("Map SVG copied to the clipboard" + MarkerNote() + ".");
         }, 90, "Copy the SVG markup to the clipboard"));
@@ -525,7 +544,7 @@ public partial class MainForm
 
     void MapSaveSvg()
     {
-        if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
+        if (curMap == null) { Nope(NoSurvey); return; }
         using var d = new SaveFileDialog
         {
             Title = "Save the map as SVG",
@@ -546,7 +565,7 @@ public partial class MainForm
 
     void MapSavePdf()
     {
-        if (curMap == null) { Nope("No survey on the table yet — press Survey first."); return; }
+        if (curMap == null) { Nope(NoSurvey); return; }
         using var d = new SaveFileDialog
         {
             Title = "Save the map as PDF",
@@ -1055,7 +1074,8 @@ public partial class MainForm
 
     void TrackerToMap()
     {
-        var m = mapPanel.Model; if (m == null) return;
+        var m = mapPanel.Model;
+        if (m == null) { Nope(NoSurvey); return; }
         var standing = new HashSet<string>(mapMarkers.Select(x => x.Label), StringComparer.OrdinalIgnoreCase);
         var incoming = tracker.Where(c => !standing.Contains(c.Name)).ToList();
         if (incoming.Count == 0) { Log("Everyone on the tracker already stands on the map."); return; }

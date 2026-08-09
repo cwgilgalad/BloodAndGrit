@@ -196,6 +196,24 @@ UNDO_BACKED = r"\b(party|tracker|signs|encounter|clocks|rides)\.(Clear|Remove|Re
 # Say, Announce, ShowResult, or a Confirm/MessageBox the Keeper answered themselves.
 SPEAKS = r"\b(Nope|Log|Say|Announce|ShowResult|Confirm|MessageBox)\s*\("
 
+# ...and a guard that defers to a method which speaks for itself is not silent either. `if
+# (p.Sheet == null && !BackfillSheet(p, owner)) return;` reads as a bare refusal and is the
+# opposite: BackfillSheet explains that the row has no sheet, or offers to draw one up and takes
+# No for an answer. Judging the line alone convicted it — and would convict every future guard
+# written the same honest way, which is the failure mode that teaches people to stop running the
+# audit. So the question asked of a called method is the same one asked of the line: does it speak?
+SPEAKING_CACHE = {}
+
+
+def speaks_for_itself(line, alltext):
+    """Does this guard hand off to something that does the talking?"""
+    for callee in re.findall(r"\b([A-Z]\w+)\s*\(", line):
+        if callee not in SPEAKING_CACHE:
+            SPEAKING_CACHE[callee] = bool(re.search(SPEAKS, body_of(alltext, callee)))
+        if SPEAKING_CACHE[callee]:
+            return True
+    return False
+
 # A guard on one of these is structural, not a refusal: tabs are realized lazily, so half the app
 # checks whether its own controls exist yet before touching them. Those returns are unreachable
 # from a press — the button cannot exist before the bar it sits on — and demanding they speak would
@@ -227,7 +245,15 @@ def control_fields(alltext):
     return names
 
 
-def silent_refusals(handler, controls):
+# Asking a control where it is hung is structural, the same as asking whether it exists yet:
+# `var home = mapHost.Parent;` is null only before the tab is realized, which a press cannot
+# reach. The DATA hanging off a control is a different question — `mapPanel.Model == null` means
+# no survey has been rolled, and that is exactly the refusal a Keeper needs told to them — so this
+# turns on the property, never on the control it is read from.
+STRUCTURAL = re.compile(r"\.(?:Parent|TopLevelControl|FindForm\(\)|ParentForm|Owner)\b")
+
+
+def silent_refusals(handler, controls, alltext):
     """The lines in one handler that stop the work over an absence and say nothing about it."""
     out = []
     for raw in handler.splitlines():
@@ -238,11 +264,16 @@ def silent_refusals(handler, controls):
         if "if" not in line or not re.search(r"\b(?:return|continue)\s*;", line):
             continue
         hit = ABSENCE.search(line)
-        if not hit or re.search(SPEAKS, line):
+        if not hit or re.search(SPEAKS, line) or speaks_for_itself(line, alltext):
             continue
         subject = next(g for g in hit.groups() if g)
         root = subject.split(".")[0].rstrip("()")
         if root in controls or root in {"s", "e", "sender", "args", "this"}:
+            continue
+        # The subject may be a local standing in for one — `home` is `mapHost.Parent` a line up.
+        if STRUCTURAL.search(line) or re.search(
+                r"\b(?:var|Control|Form)\s+" + re.escape(root) + r"\s*=\s*[\w.]*" + STRUCTURAL.pattern,
+                handler):
             continue
         out.append(line)
     return out
@@ -338,7 +369,7 @@ def main():
                     reach = args[hidx]
                     for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
                         reach += body_of(alltext, callee)
-                    for line in silent_refusals(reach, controls):
+                    for line in silent_refusals(reach, controls, alltext):
                         findings.append(f"{where}  {helper}({label}) — refuses in silence: "
                                         f"`{line}` stops the work and says nothing")
 
