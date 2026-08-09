@@ -8,6 +8,63 @@ Desktop\Git repos.)
 
 ---
 
+- **Modules I–III v1.0 — three adventures, played before they were written (2026-08-09).**
+  Three new books, built on the same shell as the other three: **The Salt at Coffin Wells** (four
+  souls at 1st level), **A Face Not His Own** (3rd), and **The Reckoning of the Wells** (5th). Each
+  is a keyed one-night adventure with a truth page, three acts, a cast built to Ch. VIII's want /
+  lever / line, full stat blocks generated out of `Data/creatures.json`, and a downloadable map.
+
+  What makes them different from an adventure somebody wrote down: **every fight in all three was
+  played on the engine first.** `GK/playtest` is a fourth consumer of `BloodAndGrit.Rules` — the
+  same library the app runs on — and it ran 3 adventures × 12 posses, twice over, cold and tended,
+  at base seed `20260809`. `PLAYTEST.md` is the raw report and the *What the Night Costs* page in
+  each module prints those numbers as numbers. They were not comfortable reading. Not one of the
+  thirty-six posses finished a night standing, and the Tier III fight in every module was cleared
+  zero times by shooting at it. That is now the argument each module makes: the answer to the last
+  act is the creature's own **Putting It Down** line, quoted from the Bestiary rather than
+  paraphrased, and each module keys the things that line asks for into the ground the posse is
+  already standing on.
+
+  The harness earned its keep twice before it produced a number worth printing. Nerve was being
+  summed over standing souls only, so a bad night reported nothing lost and nobody broken at the
+  same time; and every foe was focus-firing one soul, which is three Risen agreeing which of four
+  to pull down — perfect coordination, not a pack. The targeting fix alone moved every fight from a
+  slaughter to a fight.
+
+  **Maps.** `module_maps.py` draws one per module from a coordinate model, the way `perdition_map.py`
+  already does for the Basin, and each book carries its map inline with a download control that
+  serializes the drawing on the page — so it works from a book opened off a thumb drive with no
+  network. `python module_maps.py` also writes the three standalone `.svg` files.
+
+  **`audit_maps.py`** is the new check, and it is two auditors. The engineer asks whether the map
+  and the module agree: every feature carries the anchor of the scene it belongs to, every pin
+  carries a scene number, and the downloadable file must be the drawing the book actually shows.
+  The cartographer asks whether the drawing is a map at all — scale bar, north arrow, legend,
+  nothing outside the frame, no two labels on top of each other. It found five real faults on its
+  first run, including a legend standing 24px off the bottom of the sheet (invisible in a browser,
+  which scales the viewBox to fit) and three colliding labels. It also found two faults in itself,
+  which are written up in its own source.
+
+- **`audit_ai_tells.py` — the dash column was measuring the wrong thing, in the wrong unit
+  (2026-08-09).** Two faults, and the second hid the first. The em-dash figure was per thousand
+  *characters* while the published human baseline it is read against is per thousand *words*, so
+  the column ran about six times low. And `strip_html` blanked HTML entities along with the tags —
+  but all six books write their dashes as `&mdash;`, so the metric had never once seen the
+  punctuation it was named for. It was counting the handful of literal dashes that arrive through
+  creature data and quote attributions, which is why the Bestiary read 0.7 and the Player's Book
+  read 13.7 for prose written the same way by the same hand.
+
+  Corrected, against Freeburg 2026 (3.23 per thousand words across 57k words of published human
+  essays; 10.62 for GPT-4.1): the three modules read **8.6 / 9.2 / 9.4** and the three books read
+  **15.2 / 16.7 / 16.6**. Two further measures joined the scan, both from the same body of work —
+  punctuation variety (the share of marks that are `; : ? ! ( )`, where generated prose leans on a
+  narrow inventory) and sentence-opener diversity. Burstiness and the tell scan are unchanged.
+
+  The modules were then edited against the corrected number: about fifty em dashes became colons,
+  semicolons, parentheses and full stops, which is why they now sit lowest in the repo. **The three
+  books have not been touched** and are the outstanding item — they are five times the human
+  baseline and half again GPT-4.1's, on the one signal current work still finds worth reading.
+
 - **GritKeeper v1.36.0 — a button may refuse, but it may not refuse in silence (2026-08-09).**
   The Tracker's **New fight** was reported as a button that never works. It worked. It asked
   whether there were foes on the field, sign on the trail, or effects still working, found none of

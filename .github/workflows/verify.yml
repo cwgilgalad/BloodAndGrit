@@ -100,14 +100,25 @@ jobs:
         run: python audit_ai_tells.py --commits 40
 
       - name: The builds are idempotent — building twice yields byte-identical output
-        # Build order matters: the Player's Book is the shared shell the other two read.
+        # Build order matters: the Player's Book is the shared shell every other builder reads,
+        # and the three modules read it too.
         run: |
           python build_player.py && python build_keeper.py && python build_bestiary.py
-          md5sum *.html > first.txt
+          python module_maps.py
+          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
+          md5sum *.html *.svg > first.txt
           python build_player.py && python build_keeper.py && python build_bestiary.py
+          python module_maps.py
+          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
           md5sum -c first.txt
+
+      - name: Every module map agrees with its module
+        # Cartographer and engineer in one check: anchors resolve, pin numbers match the book's own
+        # numbered scenes, the downloadable SVG is the drawing the book carries, and the drawing is
+        # a map — scale, north, legend, nothing outside the frame, no labels on top of each other.
+        run: python audit_maps.py
 
       - name: The built books match what is committed
         # A build script edited without rebuilding leaves the repo's HTML stale, and the PDFs and
         # the app's creature data are both extracted from it.
-        run: git diff --exit-code -- '*.html'
+        run: git diff --exit-code -- '*.html' '*.svg'

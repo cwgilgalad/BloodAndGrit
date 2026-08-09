@@ -110,6 +110,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.25 | 200 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.12 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.11 | 166 | none (150 creatures) |
+| Module I — The Salt at Coffin Wells | v1.0 | 26 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.0 | 27 | one inline SVG map, downloadable |
+| Module III — The Reckoning of the Wells | v1.0 | 26 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -174,6 +177,10 @@ Each book's cheapest editable form is **bolded**.
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
 | `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
+| **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_wells.py`** | **The three adventure modules** (2026-08-09) — modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)` — a module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
+| **`module_maps.py`** | **The three module maps** (2026-08-09), drawn from one coordinate model apiece, same discipline as `perdition_map.py`. `map_html(slug, caption)` returns the inline SVG plus a download control that serializes the drawing already on the page (so it works offline, off a thumb drive); `python module_maps.py` writes the three standalone `map-<slug>.svg`. Every feature carries `data-scene`, the anchor of the scene it belongs to — that pairing is what `audit_maps.py` reads. |
+| **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). In CI. |
+| **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
 | **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. In CI (default mode) and in `.githooks/pre-push` (`--delivered`, warn-only, main only). Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
@@ -256,6 +263,8 @@ Regenerating overwrites the three PDFs in place.)*
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python verify_rules.py` parses the built Player's Book and checks its
   seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
+- **Every map agrees with its module** — `python audit_maps.py`. Anchors, pin numbers, the
+  downloadable file, and the cartography (scale, north, legend, frame, label collisions).
 - **The prose reads as written** — `python audit_ai_tells.py --commits 40`. The books have had this
   standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
   the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
@@ -264,6 +273,13 @@ Regenerating overwrites the three PDFs in place.)*
   CHANGELOG 0.81 · commit messages 0.64, zero hard tells. `GK/CLAUDE.md` joined the scanned set in
   v1.29.2 — it was split out of this file on 2026-07-30 and would otherwise have exempted a quarter
   of the project's documentation from the standard the rest of it is held to.
+  Three further measures joined the scan on 2026-08-09, from the 2026 stylometry work: **em dashes
+  per thousand words** (baseline 3.23 human / 10.62 GPT-4.1, Freeburg 2026), **punctuation variety**
+  (the share of marks that are `; : ? ! ( )`), and **sentence-opener diversity**. The dash figure
+  had two faults that cancelled into a plausible-looking column — it was per thousand *characters*,
+  and `strip_html` blanked `&mdash;` along with every other entity, which is how all six books
+  write theirs. Corrected, the three modules read 8.6 / 9.2 / 9.4 and **the three books read
+  15.2 / 16.7 / 16.6, which is the one outstanding prose finding in the repo.**
   Three things about that script are worth not re-learning: its markup stripping is
   **length-preserving**, because collapsing spans made every reported line number fiction and sent
   you to rewrite innocent prose; **quoted** spans are reported apart and never fail, since both real
