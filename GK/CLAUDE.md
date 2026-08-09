@@ -330,7 +330,16 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   covers — an undoable action does not need a prompt, and prompting on all of them trains a Keeper
   to click through the one that matters), and **no two items in one menu claim the same Alt key**
   (Windows demotes a collision from "activate" to "cycle", so a learned shortcut dies silently).
-  Currently 134 buttons, 20 dialogs, 22 access keys. (It was 132 until v1.32.0 turned the Tracker's
+  A fourth joined them in v1.36.0: **a button may refuse, but it may not refuse in silence.** Every
+  handler's early `return` is read for a guard that bails without saying anything — the failure that
+  is indistinguishable, from the far side of the table, from a dead button. It found six, including
+  three Posse buttons and the Tracker's New fight. Two things the check itself had to be taught:
+  a guard that hands off to a method which does the talking is not silent (`speaks_for_itself`
+  follows one call deep), and a structural null — `mapHost.Parent` before the tab is realized — is
+  unreachable from a press and is not a refusal. Both were principled rules rather than an exemption
+  list, deliberately: `mapPanel.Model` looks identical to the compiler and *is* a real refusal a
+  Keeper needs told, so an exemption list would have suppressed it too.
+  Currently 134 buttons, 121 refusal-checked handlers, 20 dialogs, 23 access keys. (It was 132 until v1.32.0 turned the Tracker's
   ＋ Turn glass button into a `CheckBox` toggle — a drop of one here means a `Btn` became something
   else, so check that before assuming a control went missing. It went to 134 in v1.33.0 when the
   tour callout's three buttons were rebuilt on `MainForm.Btn` and `TourBtn` was registered in
