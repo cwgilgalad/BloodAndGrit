@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Same reason smoke.csproj carries it: this machine has only the .NET 9 runtime for plain
+         console apps. Rig only — never a property of anything that ships. -->
+    <RollForward>LatestMajor</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The adventures are played on the SAME library the app runs on. That is the whole point of
+         this project: a module whose fights were balanced by a person guessing is a module whose
+         numbers nobody checked, and the one thing this repo will not do is print a number that
+         no source vouches for. -->
+    <ProjectReference Include="..\rules\BloodAndGrit.Rules.csproj" />
+  </ItemGroup>
+</Project>
