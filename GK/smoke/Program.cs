@@ -446,6 +446,37 @@ foreach (var (table, floor) in new[]
     try { Rules.ResetForNewFight(null); } catch { nullFieldOk = false; }
     T("new fight: a null field is survivable", nullFieldOk);
 
+    // ---- the residue test and the reset are one pair (v1.36.0) ----
+    // Reported by a Keeper as "the New fight button never works". It didn't: the button asked
+    // whether there were foes, sign on the trail, or worked effects, and then ran a reset that
+    // clears six more things than that. Take the last foe off by hand and the button answered
+    // "nothing to clear" over a posse still Frightened, out of Beats and mid-turn. So the guard
+    // is now the reset's own inventory, and every field the reset touches is proved to be one
+    // the residue test SEES — add a seventh field to ResetForNewFight without adding it here and
+    // one of these fails.
+    T("residue: a soul who never fought carries nothing", !Rules.FightResidue(C("Clean", 10)));
+    T("residue: a null combatant carries nothing", !Rules.FightResidue(null));
+    T("residue: an empty field carries nothing", !Rules.AnyFightResidue(new List<Combatant>()));
+    T("residue: a null field carries nothing", !Rules.AnyFightResidue(null));
+    foreach (var (what, mark) in new (string, Action<Combatant>)[]
+    {
+        ("a condition",        c => c.Conditions = "Frightened 1"),
+        ("spent Beats",        c => c.Beats = 1),
+        ("a MAP step",         c => c.MapStep = 2),
+        ("a turn in progress", c => c.Acting = true),
+        ("a turn already taken", c => c.HasActed = true),
+        ("what just happened", c => c.Wound(-3)),
+        ("something working",  c => c.Work(new WorkedEffect { Name = "Wither", Kind = "Sign", Source = "Opal", RoundsLeft = 2 })),
+    })
+    {
+        var one = C("Ruth", 12);
+        mark(one);
+        T($"residue: {what} counts as the last fight still on them", Rules.FightResidue(one));
+        T($"residue: {what} makes the whole field answer yes", Rules.AnyFightResidue(new List<Combatant> { C("Clean", 9), one }));
+        Rules.ResetForNewFight(new List<Combatant> { one });
+        T($"residue: and the reset actually clears {what}", !Rules.FightResidue(one));
+    }
+
     // Ties break souls-first, then by name, so the same field always yields the same order rather
     // than a wobble.
     var tied = new List<Combatant> { C("Silas", 11), C("Anni", 11), C("Ruth", 11) };

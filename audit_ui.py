@@ -183,6 +183,70 @@ MIN_TARGET_PX = 24
 # a destructive button on one of them recoverable.
 UNDO_BACKED = r"\b(party|tracker|signs|encounter|clocks|rides)\.(Clear|Remove|RemoveAt)\("
 
+# ---- a button may refuse, but it may not refuse in silence (v1.36.0) ----
+# The check above proves a button HAS a handler. This one asks the next question, which is the one
+# a Keeper actually asks: when the handler declines, does anything on screen say so? A guard that
+# returns without a word is, from the far side of the table, identical to a button wired to
+# nothing — and that is not a hypothetical. The Tracker's New fight was reported by the user as
+# "never works": it asked whether there were foes, sign or worked effects, found none because the
+# last foe had already been taken off by hand, and returned. Sweeping the class found sixteen more,
+# among them Copy log and Copy output, which said nothing whether they worked or not.
+#
+# What counts as speaking: Nope (the app's own refusal — status bar in Blood, plus the log), Log,
+# Say, Announce, ShowResult, or a Confirm/MessageBox the Keeper answered themselves.
+SPEAKS = r"\b(Nope|Log|Say|Announce|ShowResult|Confirm|MessageBox)\s*\("
+
+# A guard on one of these is structural, not a refusal: tabs are realized lazily, so half the app
+# checks whether its own controls exist yet before touching them. Those returns are unreachable
+# from a press — the button cannot exist before the bar it sits on — and demanding they speak would
+# put "the tab is not built" on the status bar. Field names are read out of the source rather than
+# listed, so a new control is exempt the day it is declared.
+CONTROL_TYPES = (r"(?:Button|CheckBox|ComboBox|Label|TextBox|RichTextBox|NumericUpDown|DataGridView"
+                 r"|FlowLayoutPanel|TableLayoutPanel|SplitContainer|GroupBox|ListBox|TabPage|TabControl"
+                 r"|ToolStrip\w*|PictureBox|TrackBar|ContextMenuStrip|ToolTip|Panel|Control|Form|Sheet"
+                 r"|MapPanel|LedgerView|HourglassView|MapModel|Graphics|Image|Bitmap)")
+
+# The shapes "there is nothing here to work on" is written in. The subject of the test is captured
+# so it can be checked against the control fields above.
+ABSENCE = re.compile(
+    r"(?:([\w.]+(?:\(\))?)\s*==\s*null"
+    r"|([\w.]+(?:\(\))?)\s+is\s+not\s+\w"
+    r"|([\w.]+)\.Count\s*==\s*0"
+    r"|([\w.]+)\.(?:TextLength|Length)\s*==\s*0"
+    r"|IsNullOrEmpty\(\s*([\w.]+)"
+    r"|IsNullOrWhiteSpace\(\s*([\w.]+))")
+
+
+def control_fields(alltext):
+    """Every identifier in the tree declared as a WinForms control (or a drawing object)."""
+    names = set()
+    for m in re.finditer(r"\b" + CONTROL_TYPES + r"\??\s+([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*[;=)]",
+                         alltext):
+        for n in m.group(1).split(","):
+            names.add(n.strip())
+    return names
+
+
+def silent_refusals(handler, controls):
+    """The lines in one handler that stop the work over an absence and say nothing about it."""
+    out = []
+    for raw in handler.splitlines():
+        line = raw.strip()
+        # A bare `return;` abandons the press. `return something;` is a helper computing a value —
+        # MarkerNote() answering "" for a map with no markers is an answer, not a refusal — and
+        # asking it to speak would put a status line on every string the app assembles.
+        if "if" not in line or not re.search(r"\b(?:return|continue)\s*;", line):
+            continue
+        hit = ABSENCE.search(line)
+        if not hit or re.search(SPEAKS, line):
+            continue
+        subject = next(g for g in hit.groups() if g)
+        root = subject.split(".")[0].rstrip("()")
+        if root in controls or root in {"s", "e", "sender", "args", "this"}:
+            continue
+        out.append(line)
+    return out
+
 
 def main():
     quiet = "--quiet" in sys.argv
@@ -206,6 +270,8 @@ def main():
     # Tracker button calling a method that lives in MainForm.cs), so following it has to be
     # tree-wide, not per file.
     alltext = "\n".join(sources.values())
+    controls = control_fields(alltext)
+    quietcount = 0
 
     for name, text in sources.items():
         path = SRC / name
@@ -263,6 +329,18 @@ def main():
                     if not (re.search(r"\bConfirm\(", reach) or re.search(UNDO_BACKED, reach)):
                         findings.append(f"{where}  DangerBtn({label}) — destructive, but the "
                                         "handler neither confirms nor touches an undo-backed list")
+
+                # ---- and it may not refuse in silence ----
+                # The handler as written, plus the body of whatever it delegates to, since half the
+                # bar is `(s, e) => RestPosse()` and the refusal lives inside the method.
+                if hidx is not None and hidx < len(args) and args[hidx].strip() != "null":
+                    quietcount += 1
+                    reach = args[hidx]
+                    for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
+                        reach += body_of(alltext, callee)
+                    for line in silent_refusals(reach, controls):
+                        findings.append(f"{where}  {helper}({label}) — refuses in silence: "
+                                        f"`{line}` stops the work and says nothing")
 
         # ---- modal dialogs must answer Esc ----
         # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
@@ -340,7 +418,8 @@ def main():
         for name in sorted(counts):
             print(f"  {name:<18} {counts[name]}")
         print(f"  {'TOTAL':<18} {sum(counts.values())}")
-        print(f"\nmodal dialogs checked for an Esc route: {dlgcount}")
+        print(f"\nhandlers checked for a silent refusal:   {quietcount}")
+        print(f"modal dialogs checked for an Esc route: {dlgcount}")
         print(f"menu access keys checked for collisions:  {mnemcount}")
         print()
 

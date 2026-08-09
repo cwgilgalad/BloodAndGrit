@@ -1067,6 +1067,27 @@ public static class Rules
         return ended;
     }
 
+    /// <summary>Has the last fight left anything on this one that <see cref="ResetForNewFight"/>
+    /// would clear — a condition, spent Beats, a MAP step, a turn in progress or already taken, the
+    /// "what just happened" note, or something still working on them?
+    ///
+    /// <para>The pair exists so the two can never disagree, and it exists because they did. New
+    /// fight asked only "are there foes, sign on the trail, or worked effects?" and then ran a reset
+    /// that clears six more things than that. Take the last foe off by hand — which is what a
+    /// Keeper does when the thing dies — and the button answered "nothing to clear" and left the
+    /// posse Frightened, out of Beats and mid-turn walking into the next fight. From the outside
+    /// that is a button that does nothing, and it was reported as one. Same class as the v1.24.2
+    /// escape: a guard that undercounts what a fight leaves behind.</para></summary>
+    public static bool FightResidue(Combatant c)
+        => c != null && (!string.IsNullOrWhiteSpace(c.Conditions) || c.Beats != 3 || c.MapStep != 1
+            || c.Acting || c.HasActed || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
+            || c.Worked is { Count: > 0 });
+
+    /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue"/>
+    /// over everyone standing on it.</summary>
+    public static bool AnyFightResidue(IEnumerable<Combatant> field)
+        => field != null && field.Any(FightResidue);
+
     /// <summary>Wipe everything the last fight left on a survivor: conditions, spent Beats, position
     /// in the order, and every Sign or Miracle still working on them. Blood is deliberately NOT
     /// touched — wounds carry between fights, and the Posse tab's Rest is what heals them.

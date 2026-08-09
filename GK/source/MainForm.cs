@@ -1825,7 +1825,8 @@ public partial class MainForm : Sheet
 
     void RemoveSelectedPC()
     {
-        var p = SelectedPC(); if (p == null) return;
+        var p = SelectedPC();
+        if (p == null) { Nope("Select a soul first."); return; }
         if (Confirm($"Remove {p.Name} from the posse?")) party.Remove(p);
     }
 
@@ -1859,7 +1860,7 @@ public partial class MainForm : Sheet
     // The Mark and Taint do not wash off with rest, so they're left alone.
     void RestPosse()
     {
-        if (party.Count == 0) return;
+        if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
         if (!Confirm("A long rest for the whole posse? Restores every soul's Blood, Nerve, and pool to full.")) return;
         foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; MirrorToTracker(p); }
         posseGrid?.Refresh();
@@ -2240,11 +2241,19 @@ public partial class MainForm : Sheet
         };
 
         var logBar = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 40 };
-        logBar.Controls.Add(Btn("Copy log", (s, e) => { if (rollLog.Items.Count > 0) Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())); }, 90,
-            "Copy every line of the log to the clipboard"));
+        // Copying puts nothing on the screen, so a silent copy and a broken button look the same.
+        // Note the order: the copy happens BEFORE the log is written to, or the confirmation line
+        // this very press adds would be missing from what went to the clipboard.
+        logBar.Controls.Add(Btn("Copy log", (s, e) =>
+        {
+            if (rollLog.Items.Count == 0) { Nope("The log is empty — nothing to copy."); return; }
+            int n = rollLog.Items.Count;
+            Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>()));
+            Log($"{n} log line(s) copied to the clipboard.");
+        }, 90, "Copy every line of the log to the clipboard"));
         logBar.Controls.Add(Btn("Clear log", (s, e) =>
         {
-            if (rollLog.Items.Count == 0) return;
+            if (rollLog.Items.Count == 0) { Nope("The log is already empty."); return; }
             if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
             { rollLog.Items.Clear(); logLines.Clear(); }
         }, 90, "Wipe the log — the rolls themselves are already spent"));

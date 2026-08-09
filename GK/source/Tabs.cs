@@ -52,16 +52,36 @@ public partial class MainForm
         beastChapter.SelectedIndex = 0; beastChapter.SelectedIndexChanged += (s, e) => FilterBeasts();
         filters.Controls.Add(beastChapter);
         filters.SetFlowBreak(beastChapter, true);
-        filters.Controls.Add(Btn("🎲 Random", (s, e) => { if (beastList.Items.Count > 0) beastList.SelectedIndex = Rules.Rng.Next(beastList.Items.Count); }, 95, "Jump to a random creature in the current filter"));
-        filters.Controls.Add(Btn("→ Encounter", (s, e) => { if (beastList.SelectedItem is Creature c) { encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}."); } }, 110, "Add to the encounter builder"));
+        // Each of these four declines when there is nothing to act on, and every one of them used
+        // to decline in silence — which from the Keeper's side of the screen is the same thing as a
+        // button wired to nothing. Say so. (Tracker's New fight was reported as dead for exactly
+        // this reason; the whole class was swept in v1.36.0.)
+        filters.Controls.Add(Btn("🎲 Random", (s, e) =>
+        {
+            if (beastList.Items.Count == 0) { Nope("Nothing in the list to jump to — loosen the filters."); return; }
+            beastList.SelectedIndex = Rules.Rng.Next(beastList.Items.Count);
+        }, 95, "Jump to a random creature in the current filter"));
+        filters.Controls.Add(Btn("→ Encounter", (s, e) =>
+        {
+            if (beastList.SelectedItem is not Creature c) { Nope("Pick a creature from the list first."); return; }
+            encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}.");
+        }, 110, "Add to the encounter builder"));
         filters.Controls.Add(Lbl("  ×"));
         beastQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         Tip.SetToolTip(beastQty, "How many copies → Tracker drops at once");
         filters.Controls.Add(beastQty);
-        filters.Controls.Add(Btn("→ Tracker", (s, e) => { if (beastList.SelectedItem is Creature c) AddCreatureToTracker(c, (int)beastQty.Value); }, 95, "Drop this many onto the battlefield"));
+        filters.Controls.Add(Btn("→ Tracker", (s, e) =>
+        {
+            if (beastList.SelectedItem is not Creature c) { Nope("Pick a creature from the list first."); return; }
+            AddCreatureToTracker(c, (int)beastQty.Value);
+        }, 95, "Drop this many onto the battlefield"));
         // the pop-out lived only behind a double-click and its tooltip; a visible button
         // makes the feature discoverable without the mouse hovering in the right place
-        filters.Controls.Add(Btn("⧉ Pop out", (s, e) => { if (beastList.SelectedItem is Creature c) ShowCreatureCard(c); }, 90,
+        filters.Controls.Add(Btn("⧉ Pop out", (s, e) =>
+        {
+            if (beastList.SelectedItem is not Creature c) { Nope("Pick a creature from the list first."); return; }
+            ShowCreatureCard(c);
+        }, 90,
             "Open this creature in its own window (or double-click it in the list)"));
         filters.Controls.Add(QuietBtn("Reset", (s, e) =>
         {
@@ -293,11 +313,23 @@ public partial class MainForm
             + "lines of budget, not one — which is the whole point of costing a fight before running it.");
         top.Controls.Add(encQty);
         top.Controls.Add(Btn("＋ Add", (s, e) => AddPickToEncounter(), 75, "Add it to the plan (or press Enter in the box)"));
-        top.Controls.Add(Btn("✕ Remove", (s, e) => { if (encGrid.CurrentRow?.DataBoundItem is EncounterPick p) { encounter.Remove(p); RefreshEncounter(); } }, 85,
-            "Take the selected foe out of the encounter"));
-        top.Controls.Add(Btn("Clear", (s, e) => { if (encounter.Count > 0 && Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); } }, 65,
-            "Empty the encounter and start costing a new one"));
-        top.Controls.Add(Btn("Send all → Tracker", (s, e) => { foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature); }, 150, "Put every listed creature on the battlefield"));
+        top.Controls.Add(Btn("✕ Remove", (s, e) =>
+        {
+            if (encGrid.CurrentRow?.DataBoundItem is not EncounterPick p) { Nope("Select a foe in the plan first."); return; }
+            encounter.Remove(p); RefreshEncounter();
+        }, 85, "Take the selected foe out of the encounter"));
+        top.Controls.Add(Btn("Clear", (s, e) =>
+        {
+            if (encounter.Count == 0) { Nope("The plan is already empty."); return; }
+            if (Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); }
+        }, 65, "Empty the encounter and start costing a new one"));
+        // An empty plan sent an empty loop and nothing happened — no rows, no word, no way to tell
+        // it apart from a button that does not work.
+        top.Controls.Add(Btn("Send all → Tracker", (s, e) =>
+        {
+            if (encounter.Count == 0) { Nope("Nothing costed yet — add a foe to the plan first."); return; }
+            foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature);
+        }, 150, "Put every listed creature on the battlefield"));
 
         encGrid = new DataGridView
         {
@@ -995,7 +1027,12 @@ public partial class MainForm
         bar.Controls.Add(BarSep(18));
         bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => RemoveSelectedCombatant(), 85, "Remove the selected combatant from the field (or press Delete). A posse soul is asked about first."));
         bar.Controls.Add(DangerBtn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
-        bar.Controls.Add(DangerBtn("Clear field", (s, e) => { if ((tracker.Count > 0 || signs.Count > 0) && Confirm("Clear the whole battlefield?")) { tracker.Clear(); signs.Clear(); round = 1; ShowRound(); Log("The field is cleared."); } }, 95, "Wipe everyone — posse and foes — and the sign on the trail, and reset to Round 1"));
+        bar.Controls.Add(DangerBtn("Clear field", (s, e) =>
+        {
+            if (tracker.Count == 0 && signs.Count == 0) { Nope("The field is already empty."); return; }
+            if (!Confirm("Clear the whole battlefield?")) return;
+            tracker.Clear(); signs.Clear(); round = 1; ShowRound(); Log("The field is cleared.");
+        }, 95, "Wipe everyone — posse and foes — and the sign on the trail, and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -1401,7 +1438,9 @@ public partial class MainForm
             NextRound();                       // clears HasActed, so NextUp answers again below
         }
         var up = Rules.NextUp(tracker);
-        if (up == null) return;
+        // Nobody can act even after the round rolled over. A field of nothing but sign & spoor rows
+        // gets here — a trace is not down, so the check above lets it through, and it takes no turn.
+        if (up == null) { Nope("Nobody on the field can take a turn — sign on the trail is read, not fought."); return; }
         foreach (var t in tracker) t.Acting = false;
         up.BeginTurn();
         // Follow the turn with the selection, so Strike, Dread and Work all act on the one who is up
@@ -1582,18 +1621,27 @@ public partial class MainForm
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
         int working = tracker.Sum(c => c.Worked.Count);
+        int marked = tracker.Count(Rules.FightResidue);
         // An encounter is not just the foes standing in it. The signs on the trail are the spoor of
-        // the fight now ending, and the Worked effects are Signs and Miracles riding on the people
-        // who survived it — both belong to the encounter and both must go. Until v1.24.2 only the
-        // foes did, so on a field of signs alone the button appeared to do nothing at all, and after
-        // a normal fight the threads strip and every active effect walked into the next one.
-        if (foes.Count == 0 && signs.Count == 0 && working == 0)
-        { Nope("Nothing to clear — no foes, no sign on the trail, nothing still working."); round = 1; ShowRound(); return; }
+        // the fight now ending, and what the fight left ON the survivors — conditions, spent Beats,
+        // a turn half taken, every Sign and Miracle still riding — belongs to it too. Until v1.24.2
+        // only the foes were cleared, so on a field of signs alone the button appeared to do nothing
+        // at all. The guard then undercounted a second time: it asked about foes, signs and worked
+        // effects while the reset below clears six more things, so with the last foe already taken
+        // off by hand it said "nothing to clear" over a posse still Frightened and out of Beats.
+        // Both halves now ask Rules.FightResidue, which is the reset's own inventory.
+        if (foes.Count == 0 && signs.Count == 0 && marked == 0 && round == 1)
+        { Nope("Nothing to clear — no foes, no sign on the trail, and the posse is already fresh for Round 1."); return; }
 
         var bits = new List<string>();
         if (foes.Count > 0) bits.Add($"{foes.Count} foe(s)");
         if (signs.Count > 0) bits.Add($"{signs.Count} sign(s) on the trail");
         if (working > 0) bits.Add($"{working} effect(s) still working");
+        // Everything else the reset touches, counted as souls rather than as a list of six fields —
+        // "3 still carrying the last fight" is what a Keeper needs to agree to.
+        int carrying = tracker.Count(c => Rules.FightResidue(c) && c.Worked.Count == 0);
+        if (carrying > 0) bits.Add($"{carrying} still carrying the last fight");
+        if (bits.Count == 0) bits.Add($"the round back to 1 from {round}");
         if (!Confirm($"New fight? Clears {string.Join(", ", bits)}, keeps the posse, resets to Round 1.")) return;
 
         foreach (var f in foes) tracker.Remove(f);
@@ -2927,7 +2975,7 @@ public partial class MainForm
         // Keeper has to retype at midnight.
         var advToThread = Btn("→ Thread — start its clock", (s, e) =>
         {
-            if (genLastAdv == null) return;
+            if (genLastAdv == null) { Nope("Roll an adventure first — there is no clock to start yet."); return; }
             clocks.Add(new CampaignClock { Name = genLastAdv.Clock, Segments = genLastAdv.ClockSegments });
             RefreshClocks();
             Log($"Thread started — “{genLastAdv.Clock}”, {genLastAdv.ClockSegments} segments.");
@@ -2997,10 +3045,17 @@ public partial class MainForm
             "Who's truly behind the trouble — the villain picker, its own table in the book"));
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
-        left.Controls.Add(Btn("Copy output", (s, e) => { if (!string.IsNullOrEmpty(genOut.Text)) Clipboard.SetText(genOut.Text); }, 112, "Copy everything rolled so far to the clipboard"));
+        // A copy to the clipboard leaves no mark on the screen at all, so silence here reads as
+        // failure whether it worked or not. Both ends now say which happened.
+        left.Controls.Add(Btn("Copy output", (s, e) =>
+        {
+            if (genOut.TextLength == 0) { Nope("Nothing rolled yet — no output to copy."); return; }
+            Clipboard.SetText(genOut.Text);
+            Log("The generator's output is on the clipboard.");
+        }, 112, "Copy everything rolled so far to the clipboard"));
         left.Controls.Add(Btn("Clear", (s, e) =>
         {
-            if (genOut.TextLength == 0) return;
+            if (genOut.TextLength == 0) { Nope("The output box is already empty."); return; }
             if (Confirm("Clear the generator output?")) genOut.Clear();
         }, 112, "Empty the output box and start a fresh page"));
 
@@ -3567,7 +3622,14 @@ public partial class MainForm
         var clocksGroup = new GroupBox { Text = "Threads && clocks", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         var cbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         cbar.Controls.Add(Btn("＋ New thread", (s, e) => NewThread(), 110, "Start a new thread of trouble, with a clock to run it down"));
-        cbar.Controls.Add(Btn("Save now", (s, e) => { if (AutoSave()) Log("Session saved."); }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
+        // AutoSave announces a failure once per distinct reason, which is right for the five-minute
+        // timer and wrong for a hand-pressed button: press Save now twice against a disk that will
+        // not take it and the second press said nothing whatever. A deliberate press always answers.
+        cbar.Controls.Add(Btn("Save now", (s, e) =>
+        {
+            if (AutoSave()) Log("Session saved.");
+            else Nope("The session did NOT save — see the message above, or use File ▸ Save session as…");
+        }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
         cbar.Controls.Add(Btn("Clear threads", (s, e) =>
         {
             if (clocks.Count == 0) { Nope("No threads to clear."); return; }
