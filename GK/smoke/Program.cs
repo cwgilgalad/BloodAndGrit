@@ -2502,15 +2502,35 @@ foreach (var terrain in MapGen.Terrains)
         T("names: one namer never spends a distinctive word twice", !wordClash);
     }
 
-    // One survey names a town, a cartouche and every landmark. Nothing on the sheet may echo.
+    // One survey names a town, a cartouche and every landmark. What the namer DRAWS may not echo.
+    //
+    // Scoped to drawn words on purpose. The first cut of this asserted that no word repeated
+    // anywhere on the sheet and failed on seed 5150 — because the open range offers "Line Camp"
+    // and "Cold Camp", and "Signal Hill" beside "Boot Hill". Those are hand-authored landmark
+    // nouns that share a generic word the way real country does, and a surveyor drawing two camps
+    // has not made a mistake. The Namer's promise is about what it hands out, not about the
+    // vocabulary it was handed.
+    // A second cut failed too, and taught the rest of the lesson: a word being IN a draw pool does
+    // not mean the namer drew it. "Hanging Tree" and "Burned Homestead" are authored nouns that
+    // happen to contain LmAdj words; "Well" is an authored noun and also a TownSecond word. Only
+    // provenance settles it, so the assertions below are scoped to text the namer alone can emit —
+    // the cartouche against the town, and the owner surnames, which appear in no authored noun.
     {
-        var m = MapGen.Generate(new MapSpec { Seed = 5150, Landmarks = 8 });
-        var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        bool echo = false;
-        foreach (var name in m.Landmarks.Select(l => l.Name).Append(m.Title).Append(m.Town?.Name ?? ""))
-            foreach (var w in Namer.Distinctive(name))
-                if (!used.Add(w)) echo = true;
-        T("names: one map never uses one word twice", !echo);
+        bool titleEchoesTown = false, ownerTwice = false;
+        var owners = new HashSet<string>(Names.Data.LmOwner, StringComparer.OrdinalIgnoreCase);
+        for (int s = 1; s <= 60; s++)
+        {
+            var m = MapGen.Generate(new MapSpec { Seed = s * 5150, Landmarks = 8 });
+            var townWords = new HashSet<string>(Namer.Distinctive(m.Town?.Name ?? ""), StringComparer.OrdinalIgnoreCase);
+            if (Namer.Distinctive(m.Title).Any(townWords.Contains)) titleEchoesTown = true;
+
+            var seenOwner = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var l in m.Landmarks)
+                foreach (var w in Namer.Distinctive(l.Name))
+                    if (owners.Contains(w) && !seenOwner.Add(w)) ownerTwice = true;
+        }
+        T("names: a map's cartouche never echoes its own town (60 surveys)", !titleEchoesTown);
+        T("names: no two landmarks on a sheet share an owner (60 surveys)", !ownerTwice);
     }
 
     // A seeded adventure is reproducible whole — words AND monster AND clock.

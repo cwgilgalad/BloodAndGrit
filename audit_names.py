@@ -219,6 +219,26 @@ def main():
     else:
         print("  ok       no proper noun appears in two modules")
 
+    # ---- the stock's own record of what has been spent ----
+    # GK/rules/Data/names.json carries a "spent" list — the words already on published work, which
+    # Namer refuses on first draw. It is only useful if it is TRUE, and nothing else would notice it
+    # going stale: a module retitled here without the list being updated leaves the generator free
+    # to hand out the very word that was just retired. So the two are checked against each other.
+    print("\nThe generator's spent-word list")
+    stock_path = HERE / "GK" / "rules" / "Data" / "names.json"
+    if not stock_path.exists():
+        print(f"  MISSING  {stock_path}")
+        hard += 1
+    else:
+        spent = {w.lower() for w in json.loads(stock_path.read_text(encoding="utf-8")).get("spent", [])}
+        missing = sorted({w.lower() for d in seen.values() for w in distinctive(d["title"])} - spent)
+        if missing:
+            for w in missing:
+                print(f"  STALE    '{w}' is in a shipped title but not in names.json \"spent\"")
+            hard += len(missing)
+        else:
+            print(f"  ok       every word in a shipped module title is recorded spent ({len(spent)} words)")
+
     print()
     if hard:
         print(f"FAIL: {hard} hard clash(es) between module titles.")
