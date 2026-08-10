@@ -1663,20 +1663,30 @@ public static class Db
         return l[Rules.Rng.Next(l.Count)];
     }
 
+    /// <summary>The same pick off a stream the caller owns. A generator that reaches for the
+    /// ambient <see cref="Rules.Rng"/> cannot be reproduced from a seed no matter what else it
+    /// does — <see cref="RollAdventure"/> seeded its namer and its monster and stayed unrepeatable
+    /// until every table read came through here too.</summary>
+    public static string Pick(Random rng, string table)
+    {
+        var l = Simple[table];
+        return l[rng.Next(l.Count)];
+    }
+
     public static Creature Find(string name) =>
         Creatures.FirstOrDefault(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>Pick a table entry that isn't <paramref name="notThis"/>, so an adventure never
     /// rolls the same line into two of its slots and reads like the dice got stuck. Gives up after
     /// a few tries rather than looping forever on a one-entry table.</summary>
-    static string PickDistinct(string table, params string[] notThis)
+    static string PickDistinct(Random rng, string table, params string[] notThis)
     {
         for (int i = 0; i < 12; i++)
         {
-            var s = Pick(table);
+            var s = Pick(rng, table);
             if (!notThis.Contains(s)) return s;
         }
-        return Pick(table);
+        return Pick(rng, table);
     }
 
     /// <summary>Roll a whole adventure rather than one more line off one more table.
@@ -1695,12 +1705,16 @@ public static class Db
     public static Adventure RollAdventure(int partyLevel = 0, int seed = 0)
     {
         if (seed == 0) seed = Rules.Rng.Next(1, int.MaxValue);
+        // EVERY draw below comes off this stream. The first cut of this seeded the namer and the
+        // monster and left the twelve table reads on the ambient Rules.Rng, so a "seeded" adventure
+        // reproduced its title and nothing else — caught by the smoke rig, which is what it is for.
+        var rng = new Random(unchecked(seed * 92821 + 17));
 
         // The town keeps coming off the book's own Ch. XII tables — those are a transcription and
         // stay one. But its words are handed to the namer as already spent, so the title and the
         // cast cannot echo them: "The Salt at Coffin Wells" beside "The Reckoning of the Wells" is
         // exactly the fault this is here to stop.
-        var town = $"{Pick("townFront")} {Pick("townBack")}";
+        var town = $"{Pick(rng, "townFront")} {Pick(rng, "townBack")}";
         var namer = Names.For(seed);
         var stock = Names.Data;
         namer.Reserve(town);
@@ -1716,9 +1730,6 @@ public static class Db
             if (near.Count > 0) pool = near;
         }
         var list = pool.ToList();
-        // Off the seeded stream, not the ambient one: a seed that reproduced the words but not the
-        // monster would be a seed that reproduces nothing anybody cares about.
-        var rng = new Random(unchecked(seed * 92821 + 17));
         var beast = list.Count > 0 ? list[rng.Next(list.Count)] : null;
 
         return new Adventure
@@ -1727,20 +1738,20 @@ public static class Db
             // Was advTitleA x advTitleB — 20 x 20 in ONE shape, so every roll read "The Long Debt",
             // "A Bad Harvest", "The Quiet Verdict". Namer varies the grammar as well as the words.
             Title = namer.Title(stock),
-            Shape = Pick("advShape"),
-            Hook = Pick("advHook"),
+            Shape = Pick(rng, "advShape"),
+            Hook = Pick(rng, "advHook"),
             TownName = town,
-            Ails = Pick("townAils"),
-            Rumor = Pick("rumors"),
+            Ails = Pick(rng, "townAils"),
+            Rumor = Pick(rng, "rumors"),
             Trouble = beast?.name ?? "something the Bestiary has not named",
             TroubleTier = beast?.tier ?? 0,
-            Truth = PickDistinct("advTruth"),
-            Turn = Pick("advTurn"),
-            Omen = Pick("omens"),
+            Truth = PickDistinct(rng, "advTruth"),
+            Turn = Pick(rng, "advTurn"),
+            Omen = Pick(rng, "omens"),
             NpcName = namer.Person(stock),
-            NpcWant = Pick("npcWant"),
-            NpcTell = Pick("npcTell"),
-            Clock = Pick("advClock"),
+            NpcWant = Pick(rng, "npcWant"),
+            NpcTell = Pick(rng, "npcTell"),
+            Clock = Pick(rng, "advClock"),
             ClockSegments = 4 + rng.Next(3) * 2,         // 4, 6 or 8 — the app's own clock sizes
             Reward = Pick("advReward"),
             Plunder = Pick("plunder"),

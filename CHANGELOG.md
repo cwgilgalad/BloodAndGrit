@@ -8,6 +8,61 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.37.0 & Modules v1.1 — two adventures had the same name, and nothing was looking
+  (2026-08-09).** Modules I and III shipped as *The Salt at Coffin Wells* and *The Reckoning of the
+  Wells*. Every auditor in this repo reads one artifact and asks whether it is sound; none of them
+  could be asked whether two artifacts are **distinct**, so the collision went out in a release.
+  Module III is now **What the Water Answers**.
+
+  The rename is the small half. The cause was the naming stock: 24 title words, 16 × 16 = 256 town
+  combinations, 10 landmark owners — and the birthday bound puts the first repeat at about twenty
+  draws, which is one campaign. The adventure generator was worse, because its variety was a lie of
+  arithmetic: `advTitleA` × `advTitleB` is 400 combinations *in a single grammar*, so every roll
+  came out "The Long Debt", "A Bad Harvest", "The Quiet Verdict". It also rolled off the ambient
+  `Rules.Rng`, so a night a Keeper liked could never be found again.
+
+  **`GK/rules/Names.cs` + `Data/names.json`** replace all of it. Two defences, because they fail
+  separately: **breadth** reaches across seeds (nothing one run remembers stops two evenings drawing
+  the same word — pools are now 60–79 deep and the town stock multiplies past 5,800), and **memory**
+  reaches within one (a `Namer` spends every distinctive word it hands out and will not hand it out
+  twice). It spends **shapes** too, which is the part that was actually broken: the two titles
+  collided on the word *Wells* AND on the grammar `The <abstract> <prep> <place>`, so widening the
+  word lists alone would have produced "The Ashes at Gallows Fork" beside "The Judgment of the
+  Hollow" — the identical fault in a better coat. Titles now come from **21 templates**.
+
+  **Exactly one `rng.Next` per draw**, deliberately: MapGen's landmark stream names *and* places
+  from one `Random`, so a rejection-sampling loop that cost two rolls instead of one would silently
+  move every rock on the sheet. The draw picks a start index and scans forward for the first unspent
+  entry, which is one roll whatever it finds. `Reserve()` spends a word without consuming any
+  randomness, so excluding something never shifts a seed.
+
+  `RollAdventure(partyLevel, seed)` is reproducible whole — and was not, at first. The first cut
+  seeded the namer and the monster and left twelve table reads on the ambient RNG, so a "seeded"
+  adventure reproduced its title and nothing else. The smoke rig caught it, which is what it is for.
+  `Db.Pick(Random, table)` exists so no generator has to reach for ambient state again. The town
+  still comes off the book's own Ch. XII tables — those are a transcription and stay one — but is
+  reserved into the namer, so a title can no longer echo its own town.
+
+  Three faults in the new work, all found by tests rather than by reading: two in **`audit_names.py`
+  itself** (it took the part of `<title>` *before* the em dash, which is the series name, and
+  reported three confident meaningless clashes; and it read the whole document, so a stat block's
+  "Attacks" and a map's "Download" counted as characters — 85 shared "names" of which six were
+  names), and one in a smoke test that asserted no word may repeat anywhere on a map. That last one
+  failed on hand-authored landmarks — the open range offers "Line Camp" beside "Cold Camp", and
+  "Signal Hill" beside "Boot Hill". A surveyor drawing two camps has not made a mistake. **A word
+  being in a draw pool is not evidence the namer drew it**, and only provenance settles it.
+
+  **`audit_names.py`** is the standing guard: it reads all three modules and fails on a shared
+  distinctive word or a shared title grammar, lists shared proper nouns for a human to judge (18
+  today, all deliberate cross-references — Perdition Basin is one country), and cross-checks
+  `names.json`'s `spent` list against the shipped titles so retiring a word and recording it cannot
+  drift apart. Smoke coverage: pool-breadth floors, every template's slots resolving, seed
+  determinism, `Reserve` costing no randomness, twelve titles off one namer sharing no word, and a
+  title never echoing its town across 200 seeds. 12,549 assertions, 0 failed.
+
+  *Maps generated before this will not reproduce* — the pools they drew from no longer exist. That
+  is the price of widening them, and it is paid once.
+
 - **Modules I–III v1.0 — three adventures, played before they were written (2026-08-09).**
   Three new books, built on the same shell as the other three: **The Salt at Coffin Wells** (four
   souls at 1st level), **A Face Not His Own** (3rd), and **The Reckoning of the Wells** (5th). Each

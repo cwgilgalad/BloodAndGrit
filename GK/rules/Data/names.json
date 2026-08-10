@@ -20,7 +20,7 @@
     "history is legible, and Namer excludes them from first draw."
   ],
 
-  "spent": ["Coffin", "Wells", "Salt", "Face", "Reckoning"],
+  "spent": ["Coffin", "Wells", "Salt", "Face", "Water", "Answers", "Reckoning"],
 
   "titleForms": [
     { "id": "adj-noun",      "pattern": "{adj} {noun}" },

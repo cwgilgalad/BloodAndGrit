@@ -10,7 +10,7 @@ from modules_common import (shell, splice, finish, report, runhead, quote, reada
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.0"
+VERSION = "1.1"
 SLUG = "what-the-water-answers"
 
 H = shell(
