@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parent
 PAIRS = [
     ("salt-at-coffin-wells", "module-salt-at-coffin-wells.html"),
     ("a-face-not-his-own", "module-a-face-not-his-own.html"),
-    ("the-reckoning-of-the-wells", "module-the-reckoning-of-the-wells.html"),
+    ("what-the-water-answers", "module-what-the-water-answers.html"),
 ]
 
 # Features are found by splitting rather than by a balanced match: a feature contains nested <g>

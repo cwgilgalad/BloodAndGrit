@@ -105,11 +105,11 @@ jobs:
         run: |
           python build_player.py && python build_keeper.py && python build_bestiary.py
           python module_maps.py
-          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
+          python build_module_salt.py && python build_module_face.py && python build_module_water.py
           md5sum *.html *.svg > first.txt
           python build_player.py && python build_keeper.py && python build_bestiary.py
           python module_maps.py
-          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
+          python build_module_salt.py && python build_module_face.py && python build_module_water.py
           md5sum -c first.txt
 
       - name: Every module map agrees with its module

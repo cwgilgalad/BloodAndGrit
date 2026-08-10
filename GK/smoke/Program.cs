@@ -2423,7 +2423,10 @@ foreach (var terrain in MapGen.Terrains)
         troubles.Add(adv.Trouble);
     }
     T($"adventure: 400 rolls are near-all distinct ({seen.Count})", seen.Count >= 395);
-    T($"adventure: titles vary ({titles.Count} in 400)", titles.Count >= 150);
+    // Was >= 150, which the old advTitleA x advTitleB could just about clear: 20 x 20 = 400 combos
+    // in ONE shape, so 400 rolls collided constantly and every title read "The <adj> <noun>".
+    // Namer draws 21 grammars off pools an order of magnitude wider; below ~350 means it regressed.
+    T($"adventure: titles vary ({titles.Count} in 400)", titles.Count >= 350);
     T($"adventure: the trouble varies ({troubles.Count} distinct creatures)", troubles.Count >= 10);
     T("adventure: level 0 opens the whole Bestiary", Db.RollAdventure(0) != null);
 
@@ -2435,6 +2438,101 @@ foreach (var terrain in MapGen.Terrains)
         foreach (var line in Db.RollAdventure(6).Sheet().Split('\n'))
             Console.WriteLine("  " + line.TrimEnd());
         Console.WriteLine();
+    }
+}
+
+// ---- the naming stock and Namer (2026-08-09) ----
+// Written for a fault that shipped: Modules I and III went out as "The Salt at Coffin Wells" and
+// "The Reckoning of the Wells". Two separate defences are asserted here because they fail
+// separately — BREADTH across seeds, MEMORY within one.
+{
+    var stock = Names.Data;
+
+    // Breadth is the only thing that reaches across seeds: no amount of within-run memory stops
+    // two Keepers on two evenings drawing the same word. The old town stock was 16 x 16 = 256 and
+    // the birthday bound puts the first repeat at roughly twenty draws, which is one campaign.
+    foreach (var (slot, floor) in new[]
+    {
+        ("adj", 50), ("noun", 60), ("actor", 35), ("actorp", 25), ("verb3", 30),
+        ("verb", 24), ("verbing", 22), ("plural", 25), ("surname", 45), ("given", 45),
+        ("titlefirst", 55), ("motion3", 12), ("hardnoun", 30), ("bodynoun", 22),
+    })
+        T($"names: {slot} pool is broad enough ({Names.PoolSize(slot)} >= {floor})",
+            Names.PoolSize(slot) >= floor);
+    T($"names: town stock multiplies out ({stock.TownFirst.Count} x {stock.TownSecond.Count})",
+        stock.TownFirst.Count * stock.TownSecond.Count >= 4000);
+    T($"names: there are many title shapes, not one ({stock.TitleForms.Count})",
+        stock.TitleForms.Count >= 15);
+    T("names: every ground has its own geography words",
+        stock.TitleGeo.Count == MapGen.Terrains.Length && stock.TitleGeo.TrueForAll(g => g.Count >= 8));
+
+    // Every slot a template writes must resolve, or a title ships with a literal "{actor}" in it.
+    foreach (var f in stock.TitleForms)
+    {
+        var filled = new Namer(4242).Fill(stock, f.Pattern);
+        T($"names: form '{f.Id}' fills every slot", !filled.Contains('{') && filled.Length > 3);
+    }
+
+    // Determinism. Same seed, same names — this is the whole reason the class exists, and it is
+    // what makes a rolled adventure something a Keeper can come back to.
+    string Twelve(int seed)
+    {
+        var n = Names.For(seed);
+        return string.Join("|", Enumerable.Range(0, 12).Select(_ => n.Title(stock)));
+    }
+    T("names: a seed reproduces its titles exactly", Twelve(31337) == Twelve(31337));
+    T("names: different seeds tell different stories", Twelve(31337) != Twelve(31338));
+
+    // Reserve must not consume randomness. If it did, excluding a word would shift every draw
+    // after it and "the same seed" would stop meaning anything the moment a caller reserved.
+    var plain = Names.For(909);
+    var reserved = Names.For(909);
+    reserved.Reserve("Nothing In Any Pool Whatsoever Zzz");
+    T("names: Reserve costs no randomness",
+        plain.Title(stock) == reserved.Title(stock));
+
+    // Memory within one run: 12 titles off one namer must share no distinctive word and no shape.
+    {
+        var namer = Names.For(20260809);
+        var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        bool wordClash = false;
+        for (int i = 0; i < 12; i++)
+            foreach (var w in Namer.Distinctive(namer.Title(stock)))
+                if (!words.Add(w)) wordClash = true;
+        T("names: one namer never spends a distinctive word twice", !wordClash);
+    }
+
+    // One survey names a town, a cartouche and every landmark. Nothing on the sheet may echo.
+    {
+        var m = MapGen.Generate(new MapSpec { Seed = 5150, Landmarks = 8 });
+        var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        bool echo = false;
+        foreach (var name in m.Landmarks.Select(l => l.Name).Append(m.Title).Append(m.Town?.Name ?? ""))
+            foreach (var w in Namer.Distinctive(name))
+                if (!used.Add(w)) echo = true;
+        T("names: one map never uses one word twice", !echo);
+    }
+
+    // A seeded adventure is reproducible whole — words AND monster AND clock.
+    {
+        var a1 = Db.RollAdventure(6, 777);
+        var a2 = Db.RollAdventure(6, 777);
+        T("adventure: a seed reproduces the whole night",
+            a1.Title == a2.Title && a1.Trouble == a2.Trouble && a1.NpcName == a2.NpcName
+            && a1.TownName == a2.TownName && a1.ClockSegments == a2.ClockSegments);
+        T("adventure: it reports the seed that made it", a1.Seed == 777);
+        T("adventure: an unseeded roll still reports a usable seed", Db.RollAdventure(6).Seed != 0);
+
+        // The town comes off the book's own Ch. XII tables and is reserved into the namer, so the
+        // title cannot echo it — "The Salt at Coffin Wells" beside "the Wells" is the shipped fault.
+        bool titleEchoesTown = false;
+        for (int s = 1; s <= 200; s++)
+        {
+            var a = Db.RollAdventure(6, s * 104729);
+            var townWords = new HashSet<string>(Namer.Distinctive(a.TownName), StringComparer.OrdinalIgnoreCase);
+            if (Namer.Distinctive(a.Title).Any(townWords.Contains)) { titleEchoesTown = true; break; }
+        }
+        T("adventure: a title never echoes its own town (200 seeds)", !titleEchoesTown);
     }
 }
 

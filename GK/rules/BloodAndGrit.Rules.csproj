@@ -49,6 +49,7 @@
     <EmbeddedResource Include="Data\chargen.json" />
     <EmbeddedResource Include="Data\rides.json" />
     <EmbeddedResource Include="Data\appearance.json" />
+    <EmbeddedResource Include="Data\names.json" />
   </ItemGroup>
 
   <ItemGroup>

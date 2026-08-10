@@ -588,7 +588,7 @@ AFTER = '''
               "from a Keeper's ledger, quoted in the Keeper's Book") + '''
 
   <h2 id="after-next">What comes next</h2>
-  <p><strong>Module III, <em>The Reckoning of the Wells</em></strong>, goes south and down, to Mission
+  <p><strong>Module III, <em>What the Water Answers</em></strong>, goes south and down, to Mission
   San Clavo and the shaft beneath it, for a posse at 5th level. Both earlier modules end within sight
   of that mission and neither one goes inside. That one does.</p>
 </section>

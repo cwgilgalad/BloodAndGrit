@@ -318,7 +318,7 @@ def _map_face():
 
 # ---------------------------------------------------------------- map III
 
-def _map_wells():
+def _map_water():
     W, H = 1000, 760
     s = [f'<rect x="0" y="0" width="{W}" height="{H}" fill="{PAPER}"/>']
 
@@ -409,7 +409,7 @@ def _map_wells():
 MAPS = {
     "salt-at-coffin-wells": _map_salt,
     "a-face-not-his-own": _map_face,
-    "the-reckoning-of-the-wells": _map_wells,
+    "what-the-water-answers": _map_water,
 }
 
 
