@@ -105,11 +105,11 @@ jobs:
         run: |
           python build_player.py && python build_keeper.py && python build_bestiary.py
           python module_maps.py
-          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
+          python build_module_salt.py && python build_module_face.py && python build_module_water.py
           md5sum *.html *.svg > first.txt
           python build_player.py && python build_keeper.py && python build_bestiary.py
           python module_maps.py
-          python build_module_salt.py && python build_module_face.py && python build_module_wells.py
+          python build_module_salt.py && python build_module_face.py && python build_module_water.py
           md5sum -c first.txt
 
       - name: Every module map agrees with its module
@@ -117,6 +117,14 @@ jobs:
         # numbered scenes, the downloadable SVG is the drawing the book carries, and the drawing is
         # a map — scale, north, legend, nothing outside the frame, no labels on top of each other.
         run: python audit_maps.py
+
+      - name: No two modules have the same name
+        # The one check that reads more than one artifact. Every other auditor here asks whether ONE
+        # book is sound; none of them could be asked whether two books are DISTINCT, which is how
+        # "The Salt at Coffin Wells" and "The Reckoning of the Wells" shipped together in v1.0.
+        # Fails on a shared distinctive word or a shared title grammar, and on names.json's
+        # spent-word list falling out of step with the titles actually shipped.
+        run: python audit_names.py
 
       - name: The built books match what is committed
         # A build script edited without rebuilding leaves the repo's HTML stale, and the PDFs and
