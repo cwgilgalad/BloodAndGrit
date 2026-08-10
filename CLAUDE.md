@@ -535,6 +535,19 @@ change them all:
   changes content or behavior adds an entry — and bumps the affected component's version — in
   the same commit. References to "the Changelog" elsewhere in this doc mean `CHANGELOG.md`.
 - Version bumps are **tagged** `component-vX.Y[.Z]` at the commit that ships them.
+- **Every tag gets a GitHub Release, and every Release carries a download.** Three components ship
+  out of this repo and each has its own line of tags and its own Release: `gritkeeper-vX.Y.Z`
+  (`GritKeeper.zip`), `books-vX.Y` (`BloodAndGrit-Books.zip` — the three HTML books plus the three
+  PDFs), and `modules-vX.Y` (`BloodAndGrit-Modules.zip` — the three module books, the three map
+  SVGs, and `PLAYTEST.md`). The zips exist because **GitHub serves raw `.html` as plain text**, so
+  without one there is no way for a stranger to actually get a book in a click. *(Established
+  2026-08-09, when the books and modules had no Release at all and `gritkeeper-v1.34.0` had a tag
+  with no page — the Releases list jumped 1.33.0 to 1.35.0. A tag with no Release is invisible;
+  backfill it notes-only rather than re-publishing a superseded binary.)*
+- **`books-` and `modules-` are bundle versions, not book versions.** Each book keeps its own
+  number and moves on its own schedule, so there is no single figure to put on the tag; the Release
+  notes table is the authority on what is inside, and `CHANGELOG.md` is the authority on when it
+  changed. Do not try to make the bundle number track any one book's.
 - **Every version claim stays current by itself.** The prose is version-agnostic and the links
   point at `blob/main/*.pdf` and `/releases/latest`; every part that names a number is written by
   **`update_readme.py`** from the build-script version strings and the app csproj. It works two
