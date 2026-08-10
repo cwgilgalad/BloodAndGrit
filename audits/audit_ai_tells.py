@@ -33,7 +33,10 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROOT = Path(__file__).resolve().parent
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+ROOT = Path(__file__).resolve().parent.parent
 
 # The prose a reader actually meets first. GK/CLAUDE.md joined the list in v1.29.2: it was split
 # out of the root CLAUDE.md on 2026-07-30 and carries ~24,000 characters of the same kind of prose,

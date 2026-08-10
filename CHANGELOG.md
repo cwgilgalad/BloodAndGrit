@@ -8,6 +8,46 @@ Desktop\Git repos.)
 
 ---
 
+- **The checks moved to `audits/`, and nothing runs on a timer any more (2026-08-10).**
+  Seven auditors left the repo root — `audit_ui`, `audit_ai_tells`, `audit_maps`,
+  `audit_names`, `audit_whitespace`, `verify_rules`, `verify_release` — and two checks that
+  existed **only as shell inside `.github/workflows/verify.yml`** became files beside them:
+  `audit_idempotent_build.py` and `audit_built_matches_committed.py`. Nine files, each with a
+  name, each runnable alone. `audits/README.md` says what each checks, what it costs, and
+  which two are only meaningful in sequence.
+
+  **The `books` CI job is gone.** It ran all eight on every push, and that was wrong twice
+  over. It ran against half-written work: a scheduled task pushed the checked-out branch every
+  30 minutes, so the red X coming back was reporting on a state nobody had claimed was
+  finished. And eight checks under one job name meant any one failing read as *the books are
+  broken*, while the job called `books` was also auditing the C# UI, the release tags and the
+  repo's own prose. The `app` job stays automatic — compiling and running ~12,000 assertions is
+  what a machine should do unasked — with triggers narrowed to `main`, pull requests and manual
+  dispatch.
+
+  The move needed a real fix, not just `git mv`. Every one of those scripts derived the repo
+  root from `Path(__file__).resolve().parent`, which after the move is `audits/`, so all of them
+  would have looked for the books, the C# tree and `GK/rules/Data/*.json` one level too deep —
+  and `audit_maps.py` would have failed to `import module_maps` besides, because running
+  `python audits/audit_maps.py` puts `audits/` first on `sys.path`. Each root is `.parent.parent`
+  now and `audit_maps.py` puts the repo root on the path explicitly. Two of the nine were run to
+  prove it; the rest were syntax-checked only, on purpose.
+
+  `autosync.ps1`, `register_autosync_task.ps1` and the `BloodAndGrit AutoSync` task are deleted.
+  Syncing happens at the one moment the work is declared finished: a tracked
+  **`.githooks/post-merge`** hook that pushes when, and only when, a merge lands on `main`. It
+  no-ops on any other branch and in any repo with no `origin`, and a failed push is not fatal —
+  the merge has already happened and working offline stays legal. **Said plainly: a session
+  branch now exists only on this laptop until it is merged.** That is the intent, and it is also
+  the loss of an off-machine backup that nothing else replaces. `--follow-tags` carries tags
+  that already exist and a tag is cut *after* the merge, so the ship loop ends
+  `merge, tag, git push --follow-tags origin main`.
+
+  One latent bug found on the way: `.gitattributes` had no rule for `.githooks/`, so
+  `* text=auto` handed them CRLF on a Windows checkout. `.githooks/pre-commit` was CRLF on disk
+  and worked only because Git Bash tolerates it — anywhere else that is `bad interpreter`.
+  Hooks are pinned to LF.
+
 - **GritKeeper v1.37.0 & Modules v1.1 — two adventures had the same name, and nothing was looking
   (2026-08-09).** Modules I and III shipped as *The Salt at Coffin Wells* and *The Reckoning of the
   Wells*. Every auditor in this repo reads one artifact and asks whether it is sound; none of them

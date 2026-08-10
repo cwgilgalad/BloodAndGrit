@@ -27,10 +27,10 @@ esac
 py=$(command -v python || command -v python3 || command -v py) || exit 0
 [ -x "${py}" ] || [ -n "${py}" ] || exit 0
 
-# The audit lives beside the hooks' parent. Fail open if it is not there: a missing tool
-# should not stop a commit, it should stop being missing.
+# The audit lives in audits/ (it moved there 2026-08-10). Fail open if it is not there:
+# a missing tool should not stop a commit, it should stop being missing.
 root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
-[ -f "$root/audit_ai_tells.py" ] || exit 0
+[ -f "$root/audits/audit_ai_tells.py" ] || exit 0
 
 "$py" - "$msg_file" "$root" <<'PY'
 import sys, pathlib, importlib.util
@@ -43,7 +43,7 @@ text = "\n".join(l for l in pathlib.Path(msg_file).read_text(encoding="utf-8").s
 if not text.strip():
     sys.exit(0)
 
-spec = importlib.util.spec_from_file_location("tells", pathlib.Path(root) / "audit_ai_tells.py")
+spec = importlib.util.spec_from_file_location("tells", pathlib.Path(root) / "audits" / "audit_ai_tells.py")
 mod = importlib.util.module_from_spec(spec)
 try:
     spec.loader.exec_module(mod)

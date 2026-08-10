@@ -19,6 +19,10 @@ GK/publish/
 #     self-contained .NET runtime, the zip ~70 MB — both rebuilt on release) ---
 GritKeeper/app/
 GritKeeper.zip
+# ...and the two book bundles that go on Releases the same way. Named by pattern after
+# `git add -A` on 2026-08-10 happily staged BloodAndGrit-Modules.zip, which the rule above
+# missed by one word. A release asset is not repo content.
+BloodAndGrit-*.zip
 # GritKeeper/source/ was a byte-identical second copy of GK/source tracked in git for no
 # build reason — and the exact seam that silently diverged once (2026-07-10). It is now a
 # generated mirror like app/: overwritten from GK/source as a step of packaging, never
@@ -38,25 +42,23 @@ GritKeeper/NOTICE
 # the history lives in CHANGELOG.md. Seven of them (v1.16.2–v1.20.1) accumulated at the repo
 # root before this rule; they were removed on 2026-07-27, and are still recoverable from git
 # history and from the Releases themselves. Write the next one, paste it, let it stay local.
-RELEASE_NOTES_v*.md
+# Widened from RELEASE_NOTES_v*.md on 2026-08-10: the modules notes are named
+# RELEASE_NOTES_modules_v1.1.md and fell straight through it.
+RELEASE_NOTES_*.md
 
 # --- per-table runtime state (the Keeper's live session, not project source) ---
 session.json
 startup-error.txt
 
-# --- autosync noise ---
-autosync.log
-
 # --- local-only: what GitHub carries is the three books, GritKeeper, and what supports them ---
 # Standing rule from 2026-07-29 (user's): the public repo holds the deliverables and the files
 # that BUILD or CHECK them — nothing else. These six stay on this disk, still doing their jobs;
 # they were untracked with `git rm --cached`, so they are recoverable from history if wanted.
-#   * the machine's own setup — a scheduled backup task and a Claude Code session command; they
-#     build nothing and describe this laptop, not the game. (Note the cross-repo convention in
-#     CLAUDE.md: autosync.ps1 is meant to be identical in every Desktop\Git repo. It still is on
-#     disk — it is simply no longer PUBLISHED from this one.)
-autosync.ps1
-register_autosync_task.ps1
+#   * the machine's own setup — a Claude Code session command. It builds nothing and describes
+#     this laptop, not the game. (The scheduled backup task that used to be listed here was
+#     deleted on 2026-08-10 along with autosync.ps1 and register_autosync_task.ps1: nothing in
+#     any repo runs on a timer now, and syncing happens in .githooks/post-merge when a branch
+#     lands on main. The old files are recoverable from history if anyone wants to read them.)
 .claude/
 #   * process records: an unbuilt design proposal and a log of editorial findings that were
 #     declined. Both are conversation, not product. The online-play proposal's substance — the
