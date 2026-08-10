@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# Sync to GitHub when a branch lands on main -- and at no other time.
+#
+# This replaces the "<folder> AutoSync" scheduled task, which committed and
+# PUSHED the checked-out branch every 30 minutes whether or not the work was
+# finished. That is how CI came to run against half-written code: a session
+# branch would be pushed mid-surgery, the workflow would fire, and the red X
+# that came back was reporting on a state nobody had claimed was done.
+#
+# A merge to main is the moment the work is declared finished. Nothing else
+# here fires on a timer, and nothing pushes a session branch at all -- which
+# means a session branch now lives only on this machine until it is merged.
+#
+# Notes:
+#   - post-merge also runs after `git pull`. Pushing then is a no-op.
+#   - --follow-tags carries annotated tags that already exist. A tag created
+#     AFTER the merge is not pushed by this hook; the ship loop is
+#     "merge, tag, git push --follow-tags origin main".
+#   - A failed push is NOT fatal. The merge has already happened, and working
+#     offline has to stay legal.
+#   - No origin means nothing to do. HRHS Scripts is local-only by design and
+#     must never get one; this hook is safe to have there and does nothing.
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+[ "$branch" = "main" ] || exit 0
+
+git remote get-url origin >/dev/null 2>&1 || exit 0
+
+echo "  post-merge: main updated -- pushing to origin"
+if git push --follow-tags origin main; then
+    :
+else
+    echo "  post-merge: push FAILED (offline?). The merge stands; push it by hand:" >&2
+    echo "      git push --follow-tags origin main" >&2
+fi
+exit 0

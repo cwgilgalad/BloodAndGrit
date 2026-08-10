@@ -21,9 +21,16 @@ import re
 import sys
 from pathlib import Path
 
-import module_maps
+# module_maps lives at the repo ROOT, and running `python audits/audit_maps.py`
+# puts audits/ at sys.path[0] -- so without this the import fails for a reason
+# that has nothing to do with maps.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import module_maps  # noqa: E402  -- must follow the sys.path line above
 
-ROOT = Path(__file__).resolve().parent
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+ROOT = Path(__file__).resolve().parent.parent
 
 # Which built book each map belongs to.
 PAIRS = [

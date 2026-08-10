@@ -29,7 +29,10 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-HERE = Path(__file__).parent
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+HERE = Path(__file__).resolve().parent.parent
 MODULES = [
     ("I", "module-salt-at-coffin-wells.html"),
     ("II", "module-a-face-not-his-own.html"),

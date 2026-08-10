@@ -15,6 +15,10 @@
 # Shell scripts MUST be LF. A CRLF `#!/bin/bash` fails on Debian with "bad interpreter: no such
 # file or directory" — a real break, not a cosmetic one, for anything meant to run on Linux.
 *.sh      text eol=lf
+# Git hooks are run by sh and have no extension, so `* text=auto` would hand them
+# CRLF on a Windows checkout. .githooks/pre-commit WAS CRLF on disk and only worked
+# because Git Bash tolerates it; anywhere else that is a bad-interpreter error.
+.githooks/* text eol=lf
 
 *.pdf     binary
 *.png     binary

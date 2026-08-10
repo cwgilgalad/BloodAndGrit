@@ -31,7 +31,10 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-SRC = Path(__file__).resolve().parent / "GK" / "source"
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+SRC = Path(__file__).resolve().parent.parent / "GK" / "source"
 
 # helper -> (min args, handler arg index or None, tooltip arg index, width arg index)
 # PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
