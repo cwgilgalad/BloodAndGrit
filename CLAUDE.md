@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.25 · Keeper's Book v2.12 · Bestiary v2.11 ·
-GritKeeper app v1.36.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.37.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -112,7 +112,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Bestiary | v2.11 | 166 | none (150 creatures) |
 | Module I — The Salt at Coffin Wells | v1.0 | 26 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.0 | 27 | one inline SVG map, downloadable |
-| Module III — The Reckoning of the Wells | v1.0 | 26 | one inline SVG map (two panels), downloadable |
+| Module III — What the Water Answers | v1.1 | 26 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -177,8 +177,9 @@ Each book's cheapest editable form is **bolded**.
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
 | `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
 | `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
-| **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_wells.py`** | **The three adventure modules** (2026-08-09) — modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)` — a module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
+| **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_water.py`** | **The three adventure modules** (2026-08-09) — modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)` — a module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
 | **`module_maps.py`** | **The three module maps** (2026-08-09), drawn from one coordinate model apiece, same discipline as `perdition_map.py`. `map_html(slug, caption)` returns the inline SVG plus a download control that serializes the drawing already on the page (so it works offline, off a thumb drive); `python module_maps.py` writes the three standalone `map-<slug>.svg`. Every feature carries `data-scene`, the anchor of the scene it belongs to — that pairing is what `audit_maps.py` reads. |
+| **`audit_names.py`** | **Cross-module name clash check** (2026-08-09) — `python audit_names.py`. Reads all three modules and asks the question no single-file auditor can be asked: are they *distinct*? Hard-fails on a distinctive word shared between two titles or a shared title **grammar**; lists shared proper nouns for a human to judge; cross-checks `GK/rules/Data/names.json`'s `spent` list against the shipped titles. Its `BLAND` set mirrors `Namer.Bland` — the same question on either side of the language boundary. In CI. |
 | **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). In CI. |
 | **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
 | **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. In CI (default mode) and in `.githooks/pre-push` (`--delivered`, warn-only, main only). Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
@@ -263,6 +264,16 @@ Regenerating overwrites the three PDFs in place.)*
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python verify_rules.py` parses the built Player's Book and checks its
   seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
+- **No two modules have the same name** — `python audit_names.py`. The only auditor here that reads
+  more than one artifact, and it exists because of what that gap cost: every other check asks
+  whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
+  *The Salt at Coffin Wells* shipped alongside *The Reckoning of the Wells* in modules-v1.0. It
+  fails on a distinctive word shared between two titles **and on a shared title grammar** — the two
+  collided on the word *Wells* and on the shape `The <abstract> <prep> <place>`, and fixing only the
+  vocabulary would have produced "The Ashes at Gallows Fork" beside "The Judgment of the Hollow".
+  Shared proper nouns are listed rather than failed on (18 today, all deliberate cross-references).
+  It also cross-checks `names.json`'s `spent` list against the shipped titles, so retiring a word
+  and recording that you retired it cannot drift apart. In CI.
 - **Every map agrees with its module** — `python audit_maps.py`. Anchors, pin numbers, the
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
 - **The prose reads as written** — `python audit_ai_tells.py --commits 40`. The books have had this
@@ -456,7 +467,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.36.0) — the C# desktop app
+## GritKeeper (v1.37.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
