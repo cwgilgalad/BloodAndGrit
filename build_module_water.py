@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — The Reckoning of the Wells", module III, on the shared engine.
-# Reads blood-and-grit.html (run build_player.py first), writes module-the-reckoning-of-the-wells.html.
+# Build "Blood & Grit — What the Water Answers", module III, on the shared engine.
+# Reads blood-and-grit.html (run build_player.py first), writes module-what-the-water-answers.html.
 #
 # Keeper's Book Ch. XIII gives Perdition Basin its spine — the padres' silver nails binding a thing
 # under the wells, failing one well at a time — and then stops at the mission door. Both earlier
@@ -11,14 +11,14 @@ from modules_common import (shell, splice, finish, report, runhead, quote, reada
 from module_maps import map_html
 
 VERSION = "1.0"
-SLUG = "the-reckoning-of-the-wells"
+SLUG = "what-the-water-answers"
 
 H = shell(
-    foot="The Reckoning of the Wells",
+    foot="What the Water Answers",
     kicker="A Third Reckoning, Keyed and Ready to Run",
     tiny_edition="Module III &middot; A one-night adventure for four souls at 5th level",
     tiny_blurb="The water is going bad from the bottom up, and the mission knows why.",
-    colophon="Blood &amp; Grit &middot; Module III &middot; The Reckoning of the Wells &middot; "
+    colophon="Blood &amp; Grit &middot; Module III &middot; What the Water Answers &middot; "
              f"Version {VERSION} &middot; For the Keeper Alone",
     version=VERSION,
     cover_bg="#0b1416",

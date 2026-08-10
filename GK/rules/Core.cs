@@ -1688,9 +1688,22 @@ public static class Db
     /// gets rolled is a thing with a stat block the Keeper can put straight on the Tracker.</summary>
     /// <param name="partyLevel">Used to keep the trouble in the posse's weight class. 0 or less
     /// takes the whole Bestiary, which is what "surprise me, and God help them" looks like.</param>
-    public static Adventure RollAdventure(int partyLevel = 0)
+    /// <param name="seed">Same seed, same adventure — the whole thing, title and town and cast.
+    /// 0 draws a fresh one and reports it on <see cref="Adventure.Seed"/>, so an adventure a Keeper
+    /// liked can be rolled again rather than remembered. Before 2026-08-09 this rolled off the
+    /// ambient <see cref="Rules.Rng"/> and could not be reproduced at all.</param>
+    public static Adventure RollAdventure(int partyLevel = 0, int seed = 0)
     {
+        if (seed == 0) seed = Rules.Rng.Next(1, int.MaxValue);
+
+        // The town keeps coming off the book's own Ch. XII tables — those are a transcription and
+        // stay one. But its words are handed to the namer as already spent, so the title and the
+        // cast cannot echo them: "The Salt at Coffin Wells" beside "The Reckoning of the Wells" is
+        // exactly the fault this is here to stop.
         var town = $"{Pick("townFront")} {Pick("townBack")}";
+        var namer = Names.For(seed);
+        var stock = Names.Data;
+        namer.Reserve(town);
 
         // Tier-appropriate where possible: the party's own tier, or one either side of it, so the
         // fight is a fight. Falls back to the whole Bestiary rather than returning nothing when a
@@ -1703,11 +1716,17 @@ public static class Db
             if (near.Count > 0) pool = near;
         }
         var list = pool.ToList();
-        var beast = list.Count > 0 ? list[Rules.Rng.Next(list.Count)] : null;
+        // Off the seeded stream, not the ambient one: a seed that reproduced the words but not the
+        // monster would be a seed that reproduces nothing anybody cares about.
+        var rng = new Random(unchecked(seed * 92821 + 17));
+        var beast = list.Count > 0 ? list[rng.Next(list.Count)] : null;
 
         return new Adventure
         {
-            Title = $"{Pick("advTitleA")} {Pick("advTitleB")}",
+            Seed = seed,
+            // Was advTitleA x advTitleB — 20 x 20 in ONE shape, so every roll read "The Long Debt",
+            // "A Bad Harvest", "The Quiet Verdict". Namer varies the grammar as well as the words.
+            Title = namer.Title(stock),
             Shape = Pick("advShape"),
             Hook = Pick("advHook"),
             TownName = town,
@@ -1718,11 +1737,11 @@ public static class Db
             Truth = PickDistinct("advTruth"),
             Turn = Pick("advTurn"),
             Omen = Pick("omens"),
-            NpcName = $"{Pick("npcGiven")} {Pick("npcSurname")}",
+            NpcName = namer.Person(stock),
             NpcWant = Pick("npcWant"),
             NpcTell = Pick("npcTell"),
             Clock = Pick("advClock"),
-            ClockSegments = 4 + Rules.Rng.Next(3) * 2,   // 4, 6 or 8 — the app's own clock sizes
+            ClockSegments = 4 + rng.Next(3) * 2,         // 4, 6 or 8 — the app's own clock sizes
             Reward = Pick("advReward"),
             Plunder = Pick("plunder"),
         };
@@ -1741,6 +1760,9 @@ public sealed class Adventure
     public string Clock = "", Reward = "", Plunder = "";
     public int ClockSegments = 6;
     public int TroubleTier;
+    /// <summary>What to type to get this night back. Rolling is cheap; a Keeper who liked the
+    /// third roll and has since made twelve more has no other way to return to it.</summary>
+    public int Seed;
 
     /// <summary>The adventure as the Keeper reads it off the tab. Written in the order it gets used
     /// at the table: what it is and how it arrives, then where, then what is actually true, then the

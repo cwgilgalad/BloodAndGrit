@@ -153,8 +153,13 @@ public static class MapGen
         // checking a box quietly regenerated a different countryside (user-reported).
         Random R(int salt) => new(unchecked(sp.Seed * 92821 + salt));
         Random rngWater = R(1), rngTrail = R(2), rngRail = R(3), rngTown = R(4),
-               rngLand = R(5), rngLm = R(6), rngHour = R(7), rngSecrets = R(8), rngName = R(9),
+               rngLand = R(5), rngLm = R(6), rngHour = R(7), rngSecrets = R(8),
                rngSky = R(10);
+        // One namer for the whole survey, so no two things on this sheet share a distinctive word:
+        // the town, the cartouche and every landmark draw from it and it remembers what it spent.
+        // Seeded off the map seed like every stream above, so a survey is still the same survey.
+        var namer = Names.For(unchecked(sp.Seed * 92821 + 11));
+        var stock = Names.Data;
 
         var m = new MapModel();
         var P = m.P;
@@ -336,10 +341,11 @@ public static class MapGen
         // ---- the settlement ----
         // The town's name and ground are claimed whether or not it's shown, so toggling
         // Settlement adds/removes only the town's own ink — the land never reshuffles.
-        // The roll is made either way. Taking the name from the spec INSTEAD of the draw would
-        // leave rngTown one step behind, and the street grid it goes on to lay out would come out
-        // different — so a Keeper who named their town would find the country under it rearranged.
-        string rolled = TownName(rngTown, ti);
+        // Naming draws off the namer, which is a stream of its own, so a Keeper who names their
+        // town cannot rearrange the country under it: rngTown lays the street grid and is never
+        // touched by a name either way. That invariant used to be maintained by hand — the draw
+        // was made and thrown away so rngTown would not fall a step behind — and is now structural.
+        string rolled = namer.Town(stock, city);
         string townName = string.IsNullOrWhiteSpace(sp.PlaceName) ? rolled : sp.PlaceName.Trim();
         blocked.Add((tx, ty, sp.Scale == 0 ? 150 : 95));
         if (sp.Town && city)
@@ -510,23 +516,25 @@ public static class MapGen
             // country decorator is skipped for them — it produced "The Drowned The Levee".
             // They take a ward name or a company name instead, the way a city labels things.
             string name;
+            // rngLm keeps deciding the SHAPE and the namer only supplies the words — the same
+            // stream places these landmarks, so moving the form rolls onto the namer would shift
+            // every rock on the sheet.
             if (city)
                 name = pick.noun.StartsWith("The ")
                     ? pick.noun
                     : rngLm.Next(2) == 0 ? "The " + pick.noun
-                                         : Choice(rngLm, LmOwner) + " " + pick.noun;
+                                         : namer.Draw(stock.LmOwner) + " " + pick.noun;
             else if (ownName.Contains(pick.noun))
             {
                 // The country's own. A man can own the working of a place ("Merritt's Pinery")
                 // but not the Divide, so the owner form only takes the name off the article.
                 name = pick.noun.StartsWith("The ") && rngLm.Next(4) == 0
-                    ? Choice(rngLm, LmOwner) + "'s " + pick.noun.Substring(4)
+                    ? namer.Draw(stock.LmOwner) + "'s " + pick.noun.Substring(4)
                     : pick.noun;
             }
             else
-                name = rngLm.Next(3) == 0
-                    ? Choice(rngLm, LmOwner) + "'s " + pick.noun
-                    : "The " + (rngLm.Next(2) == 0 ? Choice(rngLm, LmAdj) + " " : "") + pick.noun;
+                name = namer.Landmark(stock, pick.noun,
+                    rngLm.Next(3) == 0 ? 0 : rngLm.Next(2) == 0 ? 1 : 2);
             float x, y;
             if (pick.sym == "ford" && riverPts != null)
             {
@@ -627,7 +635,7 @@ public static class MapGen
         // ---- cartouche ----
         // On a ward map the cartouche IS the city's name — the generated map title and a
         // separate settlement label put two different names on one place.
-        m.Title = city ? townName : MapTitle(rngName, ti);
+        m.Title = city ? townName : namer.MapTitle(stock, ti);
         string ground = ti switch
         {
             0 => "the open range", 1 => "the river bottoms", 2 => "settled country", 3 => "a field of the dead",
@@ -822,32 +830,11 @@ public static class MapGen
     };
 
     // ---------------------------------------------------------- names
-    static readonly string[] TitleFirst =
-    {
-        "Coffin", "Gallows", "Salt", "Dead Horse", "Buzzard", "Widow's", "Cold Iron", "Lament",
-        "Bone", "Ash", "Jubilee", "Providence", "Hangman's", "Rattler", "Mercy", "Perdition",
-        "Silver", "Tallow", "Brimstone", "Copper", "Furnace", "Sorrow", "Owl Creek", "Redemption"
-    };
-    static readonly string[][] TitleGeo =
-    {
-        new[] { "Flats", "Range", "Prairie", "Reach" },     new[] { "Bottoms", "Bend", "Slough", "Crossing" },
-        new[] { "County", "Hollow", "Township", "Claim" },  new[] { "Field", "Ground", "Acre", "Rest" },
-        new[] { "Gulch", "Diggings", "Lode", "Draw" },      new[] { "Pass", "Divide", "Heights", "Timber" },
-        new[] { "Badlands", "Wash", "Mesa", "Wells" },      new[] { "Barrows", "Stones", "Hollow", "Ring" },
-        new[] { "Ward", "Bottoms", "Yards", "Works" },
-    };
-    static readonly string[] TownFirst =
-    {
-        "Gallows", "Dry", "Salt", "Lonesome", "Bitter", "Grace", "Coffin", "Candle",
-        "Hollow", "Mule", "Cinder", "Vesper", "Harlow", "Deacon", "Rook", "Solace"
-    };
-    static readonly string[] TownSecond =
-    {
-        "Rest", "Gulch", "Springs", "Fork", "Landing", "Bluff", "Camp", "Junction",
-        "Well", "Cross", "Ridge", "Hollow", "Mills", "Station", "Flat", "Creek"
-    };
-    static readonly string[] LmOwner = { "Weir", "Callow", "Merritt", "Boone", "Vance", "Crow", "Halloran", "Pryor", "Slade", "Ketch" };
-    static readonly string[] LmAdj = { "Hanging", "Burned", "Broken", "Silent", "Old", "Drowned", "Crooked", "Weeping", "Salted", "Forgotten" };
+    // The naming stock moved to Data/names.json and Names.cs on 2026-08-09. What lived here was
+    // 24 title words, 16 x 16 town words and 10 landmark owners — small enough that the birthday
+    // bound put the first repeat at about twenty draws, which is one campaign. It also drew every
+    // name independently, so nothing stopped one sheet calling two things by the same word.
+    // Namer is seeded, remembers what it spent, and varies title SHAPE as well as vocabulary.
     static readonly string[] SecretLines =
     {
         "something buried here", "it dens here", "they watch the trail", "old blood in the ground",
@@ -910,22 +897,6 @@ public static class MapGen
         _ => Array.Empty<(string, string)>(),
     };
 
-    static string MapTitle(Random rng, int ti) => Choice(rng, TitleFirst) + " " + Choice(rng, TitleGeo[Math.Clamp(ti, 0, 8)]);
-    static string TownName(Random rng, int ti) =>
-        ti == 8 ? Choice(rng, CityFirst) + " " + Choice(rng, CitySecond)
-                : Choice(rng, TownFirst) + " " + Choice(rng, TownSecond);
-
-    // City names carry the words a place uses once it has a stockyard and four newspapers.
-    static readonly string[] CityFirst =
-    {
-        "Ashton", "Cordell", "Marrow", "Bellhaven", "Kirkwood", "Ransom", "Calvary", "Ellsworth",
-        "Sable", "Thurlow", "Greystone", "Hollis", "Vesper", "Ironhead", "Chandler", "Merritt"
-    };
-    static readonly string[] CitySecond =
-    {
-        "City", "Junction", "Terminal", "Landing", "Works", "Yards", "Bluffs", "Crossing",
-        "Union", "Basin", "Falls", "Heights"
-    };
     static string Choice(Random rng, string[] a) => a[rng.Next(a.Length)];
 
     // ---------------------------------------------------------- symbols
