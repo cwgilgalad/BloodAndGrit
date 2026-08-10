@@ -86,8 +86,10 @@ tools — documented in their own sections below.
   Changelog, and any affected section so a fresh chat is never working from stale facts.
 - **Work on session branches, merge on success — every edit, no exceptions.** Before making
   any change in a session (code, books, docs, scripts), create
-  `session/<yyyy-mm-dd>-<short-topic>` and work there. The autosync task is branch-aware and
-  backs the branch up to GitHub every 30 minutes. When the session's changes are verified
+  `session/<yyyy-mm-dd>-<short-topic>` and work there. **A session branch now lives only on
+  this laptop until it is merged** — the 30-minute autosync task that used to back it up to
+  GitHub is gone (2026-08-10), because pushing half-written work is what made CI report on
+  states nobody had claimed were finished. When the session's changes are verified
   (build 0/0, smoke suite green, books measure clean — or, for doc edits, simply read back
   correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
   changes go bad, abandon the branch — `main` stays clean.
@@ -175,14 +177,14 @@ Each book's cheapest editable form is **bolded**.
 | ~~`add_index.py`~~ | Dead one-shot (baked the v2.9 Index into `player-src.html`, a file retired 2026-07-18). Still on disk, **git-ignored since 2026-07-29**, do not re-run. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
-| `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
+| `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audits/audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
 | `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
 | **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_water.py`** | **The three adventure modules** (2026-08-09) — modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)` — a module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
 | **`module_maps.py`** | **The three module maps** (2026-08-09), drawn from one coordinate model apiece, same discipline as `perdition_map.py`. `map_html(slug, caption)` returns the inline SVG plus a download control that serializes the drawing already on the page (so it works offline, off a thumb drive); `python module_maps.py` writes the three standalone `map-<slug>.svg`. Every feature carries `data-scene`, the anchor of the scene it belongs to — that pairing is what `audit_maps.py` reads. |
-| **`audit_names.py`** | **Cross-module name clash check** (2026-08-09) — `python audit_names.py`. Reads all three modules and asks the question no single-file auditor can be asked: are they *distinct*? Hard-fails on a distinctive word shared between two titles or a shared title **grammar**; lists shared proper nouns for a human to judge; cross-checks `GK/rules/Data/names.json`'s `spent` list against the shipped titles. Its `BLAND` set mirrors `Namer.Bland` — the same question on either side of the language boundary. In CI. |
-| **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). In CI. |
+| **`audit_names.py`** | **Cross-module name clash check** (2026-08-09) — `python audits/audit_names.py`. Reads all three modules and asks the question no single-file auditor can be asked: are they *distinct*? Hard-fails on a distinctive word shared between two titles or a shared title **grammar**; lists shared proper nouns for a human to judge; cross-checks `GK/rules/Data/names.json`'s `spent` list against the shipped titles. Its `BLAND` set mirrors `Namer.Bland` — the same question on either side of the language boundary. Run on request — see `audits/README.md`. |
+| **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audits/audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). Run on request — see `audits/README.md`. |
 | **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
-| **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. In CI (default mode) and in `.githooks/pre-push` (`--delivered`, warn-only, main only). Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
+| **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python audits/verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. Run on request (default mode); `.githooks/pre-push` still runs it `--delivered`, warn-only, main only. Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
 | `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
 | `README.md` | Short workflow notes. |
 
@@ -249,6 +251,17 @@ Regenerating overwrites the three PDFs in place.)*
 
 ## Verification standards (run on every change)
 
+**The checks live in [`audits/`](audits/README.md), one file each, and they are run when
+somebody asks for them** (2026-08-10). They used to be loose in the repo root and to run
+as a single CI job called `books` on every push — including pushes of session branches,
+which a scheduled task made every 30 minutes. Two problems, neither of them the checks:
+the job ran against work that was half-written by definition, and eight checks under one
+name meant any one failing read as "the books are broken" while the job was also auditing
+the C# UI, the release tags and the repo's own prose. `audits/README.md` says what each
+one checks and what it costs. Only the app job — build, ~12,000 assertions, self-test —
+still runs automatically, and only on `main` and pull requests.
+
+
 - **Page parity** — desktop and mobile must paginate to the same page count.
 - **No clipping at true scale** — desktop clip 0; on mobile, force `zoom:1 !important` on
   every `.page` element (setting the `--book-zoom` CSS var does *not* work — effective zoom
@@ -262,9 +275,9 @@ Regenerating overwrites the three PDFs in place.)*
 - **Contents page numbers** re-measured against the rendered sheets and patched.
 - **JS valid** — extract the `<script>` and run `node --check`.
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
-- **No rules drift** — `python verify_rules.py` parses the built Player's Book and checks its
+- **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
   seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
-- **No two modules have the same name** — `python audit_names.py`. The only auditor here that reads
+- **No two modules have the same name** — `python audits/audit_names.py`. The only auditor here that reads
   more than one artifact, and it exists because of what that gap cost: every other check asks
   whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
   *The Salt at Coffin Wells* shipped alongside *The Reckoning of the Wells* in modules-v1.0. It
@@ -273,10 +286,10 @@ Regenerating overwrites the three PDFs in place.)*
   vocabulary would have produced "The Ashes at Gallows Fork" beside "The Judgment of the Hollow".
   Shared proper nouns are listed rather than failed on (18 today, all deliberate cross-references).
   It also cross-checks `names.json`'s `spent` list against the shipped titles, so retiring a word
-  and recording that you retired it cannot drift apart. In CI.
-- **Every map agrees with its module** — `python audit_maps.py`. Anchors, pin numbers, the
+  and recording that you retired it cannot drift apart. Run on request — see `audits/README.md`.
+- **Every map agrees with its module** — `python audits/audit_maps.py`. Anchors, pin numbers, the
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
-- **The prose reads as written** — `python audit_ai_tells.py --commits 40`. The books have had this
+- **The prose reads as written** — `python audits/audit_ai_tells.py --commits 40`. The books have had this
   standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
   the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
   sentence length; 0.55+ human-like, under 0.45 is the tell) and a scan for generated cadences,
@@ -307,7 +320,7 @@ app are generated/checked from it, and any disagreement fails a build.** Concret
 spine (rank → level) and the save formulas live in Ch. XIV; `chargen.json` transcribes them and
 carries each Calling's `attackRank`; `CharGen.Validate` re-derives every row from
 `AttackFor`/`StrongSave`/`WeakSave` (so data↔app can't drift — the smoke suite fails first); and
-`verify_rules.py` checks the *printed book* against the data and the formula (so book↔data can't
+`audits/verify_rules.py` checks the *printed book* against the data and the formula (so book↔data can't
 drift). The same shape governs armor (`ArmorFrom`, folded into `ReckonNumbers`), the Signs and
 Miracles (`SignsFor`/`MiraclesFor` gated by the shared `RankAt`), the faith/sign pool
 (`PoolMax` re-derived in `Validate`), and the Iron Code weapon traits (`WeaponTraits.Parse` reads
@@ -583,12 +596,19 @@ change them all:
   `verify_release.py --delivered` and printing the three commands that fix it. It **never blocks**,
   and it only speaks up when **`main`** is being pushed — a `session/*` branch is work in progress,
   where the version is bumped early and the packaging happens at the end, so warning there would
-  fire on every autosync push for hours. Same enable step as `pre-commit` (`core.hooksPath`), which
+  have fired on every autosync push for hours back when those existed. Same enable step as `pre-commit` (`core.hooksPath`), which
   means **an unhooked clone gets no warning** — the gate that always runs is the tag check in CI.
-- `autosync.ps1` + `register_autosync_task.ps1` are canonical and identical in every repo.
-  The "<folder name> AutoSync" scheduled task (every 30 min + at logon) auto-commits the
-  checked-out branch and pushes only when an `origin` remote exists. `autosync.log` is
-  git-ignored. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three
+- **Nothing runs on a timer (2026-08-10).** The `<folder> AutoSync` scheduled task,
+  `autosync.ps1` and `register_autosync_task.ps1` are deleted from every repo. That task
+  committed **and pushed** the checked-out branch every 30 minutes, so CI ran against work that
+  was half-written by definition and the red X it returned was reporting on a state nobody had
+  claimed was done. Syncing happens at the one moment the work is declared finished: a tracked
+  **`.githooks/post-merge`** hook that pushes when, and only when, a merge lands on `main`. It
+  no-ops on any other branch and in any repo with no `origin` — which is why HRHS Scripts,
+  local-only by design, deliberately does not carry one at all.
+- **The ship loop ends with the tag push.** `--follow-tags` in the hook carries tags that
+  already exist, and a tag is normally created *after* the merge, so: merge, tag, then
+  `git push --follow-tags origin main`. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three
   repos** (BloodAndGrit, TideWatch, DebForge). They are still on disk, still byte-identical,
   and still run; they are simply not published, because they describe this laptop rather than
   any of the software. "Identical in every repo" therefore holds of the files AND of what is
@@ -608,10 +628,10 @@ recoverable from history.
 |---|---|---|
 | The 3 PDFs + 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
 | `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
-| `measure_index.py`, `measure_book.py`, `verify_rules.py`, `audit_whitespace.py`, `audit_ui.py` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
+| `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
 | `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones — the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
 | `DESIGN-online-play.md`, `editorial-denials.md` | **untracked** | Process, not product: an unbuilt proposal and a log of declined edits. The proposal's substance is summarized in the roadmap below, so nothing is lost. |
-| `autosync.ps1`, `register_autosync_task.ps1`, `.claude/` | **untracked** | This laptop's setup — a backup task and a session command. They build nothing. |
+| `.claude/` | **untracked** | This laptop's setup — a session command. It builds nothing. (`autosync.ps1` and `register_autosync_task.ps1` were here too until 2026-08-10, when nothing was left running on a timer and they were deleted outright.) |
 | `add_index.py` | **untracked** | Dead: a one-shot against `player-src.html`, a file retired 2026-07-18, marked "do not re-run" since. |
 
 The repo is **PUBLIC and stays public** — that is deliberate; don't offer to change it.

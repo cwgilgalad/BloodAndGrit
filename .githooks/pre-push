@@ -27,7 +27,7 @@ while read -r _local_ref _local_sha remote_ref _remote_sha; do
     command -v "$py" >/dev/null 2>&1 || py=python3
     command -v "$py" >/dev/null 2>&1 || exit 0
 
-    "$py" verify_release.py --delivered --quiet || {
+    "$py" audits/verify_release.py --delivered --quiet || {
         echo ""
         echo "pre-push: pushing main, and the packaged app does not match the source."
         echo "          Nothing is blocked. To ship it:"

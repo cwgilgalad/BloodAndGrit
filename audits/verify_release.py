@@ -49,7 +49,10 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROOT = Path(__file__).resolve().parent
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+ROOT = Path(__file__).resolve().parent.parent
 VER = re.compile(r"(\d+\.\d+\.\d+)")
 
 # Versions that appear in the CHANGELOG and will never have a tag, with the reason. A release
