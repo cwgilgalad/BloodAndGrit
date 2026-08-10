@@ -20,7 +20,10 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+# This file lives in audits/, so the repo root is one level up. Every path
+# below hangs off it -- including the cwd handed to git -- so this one line is
+# what makes the move to audits/ a move and not a rewrite.
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def attack_for(rank, level):
