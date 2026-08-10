@@ -544,6 +544,11 @@ change them all:
   2026-08-09, when the books and modules had no Release at all and `gritkeeper-v1.34.0` had a tag
   with no page — the Releases list jumped 1.33.0 to 1.35.0. A tag with no Release is invisible;
   backfill it notes-only rather than re-publishing a superseded binary.)*
+- **After cutting a books or modules Release, put the `Latest` flag back on GritKeeper**
+  (`gh release edit gritkeeper-vX.Y.Z --latest`). GitHub gives `Latest` to whatever was published
+  most recently, and `README.md` points its download button and this doc point at
+  `/releases/latest` — so a books release silently redirects everyone who came for the app to a zip
+  of PDFs. Caught within a minute of doing it on 2026-08-09; it would not have failed any check.
 - **`books-` and `modules-` are bundle versions, not book versions.** Each book keeps its own
   number and moves on its own schedule, so there is no single figure to put on the tag; the Release
   notes table is the authority on what is inside, and `CHANGELOG.md` is the authority on when it
