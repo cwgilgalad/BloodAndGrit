@@ -8,6 +8,89 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.38.0 — a soul can die now, a turn has an end, and the field says who is who
+  (2026-08-11).** Four things the Keeper reported, plus the one they asked for on the Reference
+  screen. Three of the four were rules the app already *printed* and did not *run*.
+
+  **Dying, bleeding and death (Player's Book Ch. XI).** *"At 0 Blood you fall, Dying and bleeding
+  — losing 1 Blood each round — until someone stabilizes you or you reach –CON, at which point you
+  are dead, and out here dead is dead."* The Reference deck has carried that since v1.4 and the
+  app implemented none of it: Blood clamped at zero, `Down` meant nothing beyond "at zero", nobody
+  bled and nobody could die. So the moment the whole game is built around was the one moment the
+  Keeper ran on paper. Now `Combatant` carries `Bleed`, `DeathAt`, `Stable` and `Upright`; the
+  round takes a Blood off everyone on the ground and says whose by name; a soul reaching −CON dies
+  and the app stops to say so. **Blood itself never goes negative** — every screen, save and bar in
+  the app reads it as 0..max — so the ground below zero is a separate count. Grit's *refuse to
+  fall* (Ch. II) is in with it, and it could not be derived: at 0 Blood `Down` is true and `CanAct`
+  refuses the turn, so standing on Grit had to become a fact of its own, cleared when the round
+  turns over. Stabilizing is a Fortitude save or somebody's Medicine check, both DC 15, on the
+  row's right-click menu and under **✚ Restore ▾**; a critical success also brings them round on 1
+  Blood. **One reading is recorded as a reading**: a blow that carries past zero keeps counting, so
+  a shot taking a soul from 4 to −14 has reached −CON. The chapter only makes sense if Blood is a
+  real number that goes negative, and the alternative would make a cannonball and a slap identical
+  to somebody standing on 1 Blood. 74 new assertions hold all of it, including the exact boundary
+  (dead **at** −CON, not one short and not one past) and that a session written before this has
+  nobody dying. Deliberately **not** done: the Gut-Shot Lasting Injury's "Dying at once" is still
+  the Keeper's to apply by hand.
+
+  **The Beats are spent now.** Three Beats were counted on screen and never enforced —
+  `StrikeAndApply` guarded the subtraction and not the attack, so a fourth, fifth and sixth Strike
+  in one turn were free and the MAP step climbed past anything the book prints. And working a Sign
+  cost nothing at all, though the app has parsed `1 Beat` off its printed cost line since v1.20.
+  `Rules.CanSpendBeats` / `WhyNoBeats` answer both halves — whether, and why not — so the Strike
+  and Work dialogs grey their commit button **and say which of the three reasons it is**, with the
+  way out relabelled *Back to the field* and Enter following it. The refusal line is reserved
+  whether or not it is speaking, because these dialogs stay open for a follow-up and a block that
+  appears on the third Strike would move the buttons out from under the Keeper's hand.
+
+  **The field's colours could not carry who was who** (user-reported: reordering the field "makes
+  encountered creatures look like posse members"). Nothing was mis-decided. `PcRow` was
+  (232,241,224) against a near-white `FoeRow` (250,250,247), so the whole distinction rested on
+  about nine points of luminance — and then `Writable()` lifted every editable cell 42% toward
+  paper, putting a posse row's Init, Blood, Beats and Conditions at (241,246,237): measurably
+  **closer to the foe colour (distance 14) than the posse colour was to it (31)**. Four of a posse
+  row's ten columns were, to the eye, wearing the foe's ground. The grounds are now separated by
+  **cast rather than brightness** — the posse's green sits G above R, a foe's clay sits R above G —
+  because lightening a pale colour drags it toward white and destroys a luminance difference while
+  leaving a hue difference standing; the lift came down to 28% to match. Three new grounds go with
+  the dying work: down is a quiet warm grey (nothing is happening here), dying is the loudest
+  ground in the app and the only loud one, dead is ash. The first attempt made dying only a little
+  deeper than down and put four near-identical pinks down one grid.
+
+  Two things were fixed underneath it. The tracker now repaints **because the field changed**
+  (`tracker.ListChanged`), not because a caller remembered — the repaint was a `Refresh()` at the
+  end of `SortTracker`, one call site of several, which does nothing at all while the tab is
+  hidden, and the tab is hidden on the commonest route of the lot: *Send all → Tracker* is a button
+  on the **Encounter** tab. And the row's ground is read from the row's own bound item rather than
+  from the list at the row's index — hardening, since the two agree today, and worth having because
+  the whole fault was a row and an index being treated as the same thing.
+
+  **The Reference deck reads like the book now.** Its prose was always Georgia, but the tables —
+  most of what is on every leaf — were **Consolas**, a face drawn for reading source code, used
+  nowhere else in this app or these books. At about eighty characters they also filled a little
+  under half a 1,280px window. The tables are now struck in Courier New at 11.5pt and laid to the
+  width actually on screen, headings and prose are up to 16.5/12.5pt, and the bar's title and count
+  came off Segoe UI onto the book's own face. The columns stay monospaced and that is not a
+  preference: the padding is what carries the Blood-red header band out to the right edge, and
+  Georgia's 3 4 5 7 9 descend so a column of figures will not line up. Surplus width goes to the
+  column carrying the rule text and **nowhere else** — the first version spread it over every
+  column and put thirty-six characters under a heading reading "Degree" — capped at ninety
+  characters, past which a line stops being easier to read. Checked on the seven-column Threat
+  table and on Arms at both 1,040 and 1,280.
+
+  **The Generators splitter sits against its own menu** (user-reported). Every control in that
+  column is 230px wide by construction, so a fraction of the window could only ever be right at one
+  size. The real fault was underneath: `Split()`'s one-shot unsubscribed on its first success, and
+  for a lazily-realized tab the first `SizeChanged` arrives at whatever intermediate width the
+  control passes through — the splitter was seated at 27% of about 2,700px and left there, 729px on
+  a 1,264px tab. A measured splitter now keeps re-seating until the Keeper drags it themselves, and
+  holds its panel's pixel width when the window is resized.
+
+  Verified: build 0/0 under `-warnaserror`, 12,627 assertions, `--selftest` 37/37, `audit_ui.py`
+  clean at 134 buttons / 121 refusal-checked handlers / **21** dialogs (the stabilize check
+  registering itself) / 23 access keys, and every claim above about a colour, a width or a dialog
+  was read off a rendering rather than off the source.
+
 - **The checks moved to `audits/`, and nothing runs on a timer any more (2026-08-10).**
   Seven auditors left the repo root — `audit_ui`, `audit_ai_tells`, `audit_maps`,
   `audit_names`, `audit_whitespace`, `verify_rules`, `verify_release` — and two checks that

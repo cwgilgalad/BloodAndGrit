@@ -1,4 +1,4 @@
-namespace BloodAndGritKeeper;
+﻿namespace BloodAndGritKeeper;
 
 public enum TrkSort { InitDesc, InitAsc, NameAsc, NameDesc, BloodDesc, BloodAsc }
 
@@ -481,8 +481,11 @@ public partial class MainForm
     ComboBox trkPick;
 
     // The acting row's ground — gold, so it reads as "this one is up" against the posse's green
-    // and the foes' rust without competing with the red a downed combatant wears.
-    static readonly Color ActingRow = Color.FromArgb(250, 240, 205);
+    // and the foes' clay without competing with the red a downed combatant wears. Carried a little
+    // deeper in v1.38.0 when the foe ground stopped being near-white: gold and clay are both warm,
+    // so what separates them is the gap between green and blue — 50 points here against the foe's
+    // 12. See the palette note in MainForm.
+    static readonly Color ActingRow = Color.FromArgb(250, 236, 186);
     // A sign & spoor row: cold and bloodless, so it never reads as one more body to shoot at.
     static readonly Color SignRow = Color.FromArgb(234, 238, 240);
     // Faded ink for a combatant who has already taken their turn this round.
@@ -510,6 +513,28 @@ public partial class MainForm
             g.FillRectangle(b, new Rectangle(r.X, r.Y, w, r.Height));
         }
         using var pen = new Pen(BarEdge, 1f);
+        g.DrawRectangle(pen, r);
+    }
+
+    /// <summary>The death clock in the Blood column, for a soul on the ground. The Blood bar has
+    /// nothing left to draw — they are at zero, so it is simply empty, which reads as "nothing is
+    /// happening here" at the exact moment the most is. This fills the OTHER way: from the left, in
+    /// the app's darkest red, as the bleed runs from 0 toward −CON. Full bar, empty soul.
+    ///
+    /// <para>Drawn rather than left to the words beside it because this is the one row on the field
+    /// a Keeper has to notice without reading. The figure is in the cell to its right for anybody
+    /// who then wants the count.</para></summary>
+    static void PaintDeathClock(Graphics g, Rectangle r, int bleed, int deathAt)
+    {
+        using (var back = new SolidBrush(BarTrack)) g.FillRectangle(back, r);
+        float frac = Math.Clamp(bleed / (float)Math.Max(1, deathAt), 0f, 1f);
+        int w = (int)Math.Round(r.Width * frac);
+        if (w > 0)
+        {
+            using var b = new SolidBrush(Color.FromArgb(200, RollCritBad));   // near-black red: this is the end of it
+            g.FillRectangle(b, new Rectangle(r.X, r.Y, w, r.Height));
+        }
+        using var pen = new Pen(Blood, 1f);
         g.DrawRectangle(pen, r);
     }
 
@@ -982,7 +1007,9 @@ public partial class MainForm
         // Putting the field back on its feet: what a Keeper reaches for when a scene ENDS, so it
         // sits at the end of the doing-things row rather than among the combat actions.
         bar.Controls.Add(MenuBtn("✚ Restore ▾", 118,
-            "Put Blood — and, for the posse, Nerve — back to full",
+            "Put Blood — and, for the posse, Nerve — back to full, or stop somebody bleeding out",
+            ($"Stop the bleeding — DC {Rules.StabilizeDc} Fortitude or Medicine", (s, e) => StabilizeDialog()),
+            ("-", null),
             ("Selected combatant — Blood to full", (s, e) => RestoreSelected()),
             ("The posse — Blood, Nerve & pool to full", (s, e) => RestPosse()),
             ("-", null),
@@ -1059,10 +1086,16 @@ public partial class MainForm
             });
         // Widths allow for the ✎ on the editable ones — "Beats ✎" does not fit the 44 that plain
         // "Beats" did, and a clipped header is worse than no marker at all.
-        C("Init", "Init", 58); C("Name", "Name", 172, true); C("BloodCur", "Blood", 68, false,
+        C("Init", "Init", 58); C("Name", "Name", 152, true); C("BloodCur", "Blood", 68, false,
             "Blood left, drawn as a bar behind the number — full green, hurt gold, near death red. "
             + "On a sign & spoor row it is the spoor clock instead.");
-        C("BloodMax", "", 48, true);
+        // Widened from 48 in v1.38.0: this cell is "/ 34" while a body is standing and the DEATH
+        // CLOCK once it is not — "dying −3 of 12" needs room that a slash and two figures did not.
+        C("BloodMax", "", 100, true,
+            "The Blood maximum while they are standing. Once somebody is at 0 it becomes the count "
+            + "instead: how far past zero they have bled, and how far it is to their CON — which is "
+            + $"where the book says it ends. A Fortitude save or a Medicine check at DC {Rules.StabilizeDc} "
+            + "stops the bleeding.");
         C("LastNote", "Last", 74, true,
             "What just happened here — the damage taken, the healing done, the moment they went down. "
             + "Cleared at the top of each round.");
@@ -1071,12 +1104,12 @@ public partial class MainForm
         // The header names the RULE, not just the column. "clean" is the Player's Book's own word
         // (Ch. IX: "Your first Strike in a turn is clean"), but a Keeper reading it cold has no way
         // to know that or what to look up — reported by the user, who asked what it meant.
-        C("NextStrike", "Next strike (MAP)", 96, true,
+        C("NextStrike", "Next strike (MAP)", 104, true,
             "The Multiple Attack Penalty — Player's Book Ch. IX. Your first Strike in a turn is "
             + "\"clean\" (no penalty); the second takes −5, the third −10. An Agile weapon softens "
             + "it to −4/−8. Begin turn resets it to clean.");
-        C("Conditions", "Conditions", 110);
-        C("WorkedChips", "Worked", 150, true,
+        C("Conditions", "Conditions", 106);
+        C("WorkedChips", "Worked", 114, true,
             "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
             + "creature's own, with the rounds left. Hover for who worked it and what it does; "
             + "right-click to end one.");
@@ -1094,8 +1127,12 @@ public partial class MainForm
         {
             if (e.RowIndex < 0 || e.ColumnIndex >= trkGrid.Columns.Count || e.ColumnIndex < 0) return;
             string col = trkGrid.Columns[e.ColumnIndex].Name;
+            // e.CellBounds, matching the Blood branch below. PaintBackground's first argument is a
+            // CLIP, not the rectangle it fills — it always fills the cell — so the two forms paint
+            // identically and the pair being written differently only invited the reading that one
+            // of them smeared across the grid. (Checked by instrumenting both; they do not.)
             if (col == "ledgerBtn" && !TrkHasSheet(e.RowIndex))
-            { e.PaintBackground(e.ClipBounds, true); e.Handled = true; return; }
+            { e.PaintBackground(e.CellBounds, true); e.Handled = true; return; }
             if (col != "BloodCur" || e.RowIndex >= tracker.Count) return;
 
             // The Blood column is the one number a Keeper reads a dozen times a round, and a bare
@@ -1104,8 +1141,13 @@ public partial class MainForm
             var c = tracker[e.RowIndex];
             e.PaintBackground(e.CellBounds, true);
             var bar = e.CellBounds; bar.Inflate(-4, -5);
-            if (bar.Width > 6 && bar.Height > 4 && c.BloodMax > 0)
-                PaintBloodBar(e.Graphics, bar, c.BloodCur, c.BloodMax);
+            if (bar.Width > 6 && bar.Height > 4)
+            {
+                // Once they are on the ground the Blood bar is an empty box, which is the least
+                // urgent thing on the screen at the most urgent moment. The clock takes its place.
+                if (c.Dying || (c.Dead && c.DeathAt > 0)) PaintDeathClock(e.Graphics, bar, c.Bleed, c.DeathAt);
+                else if (c.BloodMax > 0) PaintBloodBar(e.Graphics, bar, c.BloodCur, c.BloodMax);
+            }
             e.PaintContent(e.CellBounds);   // the number rides on top of its own bar
             e.Handled = true;
         };
@@ -1115,16 +1157,39 @@ public partial class MainForm
             { if (SoulOf(tracker[e.RowIndex]) is PartyMember p) ShowSoulCard(p); }
         };
         WireNumericValidation(trkGrid, new() { "Init", "BloodCur", "Beats" });
+        // The field repaints because the FIELD CHANGED, not because whoever changed it remembered to
+        // ask (v1.38.0). Every row's ground is decided from the combatant sitting at that row index,
+        // so any reorder leaves each row wearing the last occupant's colour until something repaints
+        // it — and the repaint was a `trkGrid.Refresh()` at the end of SortTracker, which is one call
+        // site out of several and does nothing at all while the tab is hidden. It is hidden on the
+        // commonest route of the lot: Send all -> Tracker is a button on the ENCOUNTER tab.
+        // Hanging it on the list itself covers every route that exists and every route added later.
+        tracker.ListChanged += (s, e) => trkGrid?.Invalidate();
         trkGrid.CellFormatting += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
-            var c = tracker[e.RowIndex];
-            // Down beats acting: a combatant who is bleeding out reads red even on their own turn.
-            e.CellStyle.BackColor = c.Down ? DownRow : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
+            // The row's OWN item, not the list read at the row's index. The two agree today — the
+            // grid is bound straight to the BindingList — so this is hardening rather than a fix,
+            // and it is worth having because the whole fault above was a row and an index being
+            // treated as the same thing.
+            if (trkGrid.Rows[e.RowIndex].DataBoundItem is not Combatant c) return;
+            // Down beats acting: a combatant who is bleeding out reads red even on their own turn —
+            // and since v1.38.0 there are three kinds of down, which the ground has to tell apart.
+            // Dead first: it is the only one of the four that cannot change, so nothing may paint
+            // over it. Then dying, which is the one with a clock on it. Then plainly down, which is
+            // where a creature stops and where a stabilised soul waits.
+            e.CellStyle.BackColor = c.Dead ? DeadRow : c.Dying ? DyingRow : c.Down ? DownRow
+                                  : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
             // A cell you can type in stands on lighter ground than one you cannot — applied after
             // the row colour so it lifts whatever that row happens to be wearing.
             if (!trkGrid.Columns[e.ColumnIndex].ReadOnly) e.CellStyle.BackColor = Writable(e.CellStyle.BackColor);
-            if (c.Down) e.CellStyle.ForeColor = Blood;
+            // The dead read in Slate on ash: still legible, plainly finished, and not competing for
+            // the eye with the soul two rows down who has four rounds left. The dying read in Ink,
+            // not Blood — Blood on the loud red ground is mud, and this is the row that most has to
+            // be readable across a table.
+            if (c.Dead) e.CellStyle.ForeColor = Slate;
+            else if (c.Dying) e.CellStyle.ForeColor = Ink;
+            else if (c.Down) e.CellStyle.ForeColor = Blood;
             else if (c.Acting) e.CellStyle.Font = trkBold;   // cached: CellFormatting runs on every paint
             // Already gone this round: faded, so "who is still to go" is something the Keeper SEES
             // rather than something they hold in their head and lose track of on round four.
@@ -1145,8 +1210,16 @@ public partial class MainForm
             // Blood cell is a spoor clock, not a number — so it gets no orphaned slash either.
             if (col == "BloodMax")
             {
-                e.Value = !c.IsSign && c.BloodMax > 0 ? "/ " + c.BloodMax : "";
-                e.CellStyle.ForeColor = c.Down ? Blood : c.HasActed ? Spent : Faint;
+                // For anyone on the ground the Blood maximum is the one number that no longer helps.
+                // "/ 34" beside a zero says what they used to have; "dying −3 of 12" says how many
+                // rounds are left to do something about it. The column stops being the other half of
+                // "12 / 12" and becomes the death clock, which is what a Keeper is actually reading
+                // that row for. Bold, because it is the most time-critical thing on the screen.
+                bool clock = c.DyingLine.Length > 0;
+                e.Value = clock ? c.DyingLine : !c.IsSign && c.BloodMax > 0 ? "/ " + c.BloodMax : "";
+                e.CellStyle.ForeColor = c.Dead ? Slate : c.Dying ? Ink : c.Down ? Blood
+                                      : c.HasActed ? Spent : Faint;
+                if (c.Dying) e.CellStyle.Font = trkBold;
                 e.FormattingApplied = true;
             }
         };
@@ -1220,12 +1293,37 @@ public partial class MainForm
         {
             MIHead(menu, c.Name is { Length: > 0 } ? c.Name : "This combatant");
             MI(menu, "Begin their turn — 3 Beats, a clean MAP", () => BeginTurnForSelected());
-            MI(menu, "Strike…", () => StrikeDialog(), !c.Down);
+            // The Beats ride in the label rather than greying the line, so the Keeper learns the turn
+            // is spent from the menu instead of from a dialog that refuses once it is open.
+            MI(menu, c.Beats > 0 ? $"Strike…  ({c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left)"
+                                 : "Strike…  — no Beats left this turn", () => StrikeDialog(), !c.Down);
             if (c.IsPC) MI(menu, "Dread check…", () => DreadDialog());
             MISep(menu);
             MI(menu, $"Damage {trkAmount.Value}", () => AdjustCombatant(-1));
             MI(menu, $"Heal {trkAmount.Value}", () => AdjustCombatant(+1), c.BloodMax == 0 || c.BloodCur < c.BloodMax);
             MI(menu, "Restore to full Blood", () => RestoreSelected(), c.BloodMax > 0 && c.BloodCur < c.BloodMax);
+            // The two things the book offers a body on the ground, offered where a Keeper's hand
+            // already is — on the row itself, at the moment it matters. They appear only for the row
+            // they can act on, because a menu that offers a stabilize check on a standing soul is a
+            // menu that has to be read rather than glanced at.
+            if (c.Dying)
+            {
+                MISep(menu);
+                MI(menu, $"Stop the bleeding…  (DC {Rules.StabilizeDc}, {c.RoundsToDeath} round"
+                       + $"{(c.RoundsToDeath == 1 ? "" : "s")} left)", () => StabilizeDialog());
+                if (SoulOf(c) is PartyMember gr && !c.Upright)
+                    MI(menu, gr.Grit > 0 ? $"Refuse to fall — spend 1 Grit ({gr.Grit} left)"
+                                         : "Refuse to fall — no Grit left",
+                       () => CheckFalling(c, false, false), gr.Grit > 0);
+            }
+            // The Keeper's override, named and deliberate. The app holds the book's line — dead is
+            // dead, and no heal walks it back — and this is the one door through it, because the
+            // table outranks the app and a rule with no override is a rule that gets fought.
+            else if (c.Dead)
+            {
+                MISep(menu);
+                MI(menu, "They were not dead after all…", () => Resurrect(c));
+            }
 
             var cond = new ToolStripMenuItem("Conditions");
             foreach (var name in BookConditions)
@@ -1434,7 +1532,10 @@ public partial class MainForm
         if (tracker.Count == 0) { Nope("Nobody on the field."); return; }
         if (Rules.NextUp(tracker) == null)
         {
-            if (!tracker.Any(t => !t.Down)) { Nope("Everyone on the field is down — the fight is over."); return; }
+            // "Down" is no longer the end of it: a soul refusing to fall is at 0 Blood and still
+            // taking turns, and the dead are down for good. Ask the same question CanAct asks.
+            if (!tracker.Any(t => !t.IsSign && !t.Dead && (!t.Down || t.Upright)))
+            { Nope("Everyone on the field is down — the fight is over."); return; }
             NextRound();                       // clears HasActed, so NextUp answers again below
         }
         var up = Rules.NextUp(tracker);
@@ -1467,6 +1568,27 @@ public partial class MainForm
         // effect that vanished off a chip without a word is one the table keeps playing anyway.
         foreach (var (on, done) in Rules.NewRound(tracker))
             Log($"{done.Name} ends on {on.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
+        // A Blood a round off everyone on the ground, and the Grit that kept somebody standing runs
+        // out. Every one of these is said by name: a soul who dies inside a column of numbers is
+        // exactly the failure the daybook was built for, and a death nobody announced is a death the
+        // table plays straight past.
+        foreach (var (who, bleed, died, fell) in Rules.BleedOut(tracker))
+        {
+            if (fell) Log($"{who.Name}'s Grit runs out — they go down.");
+            if (died)
+            {
+                Log($"{who.Name} bleeds out at −{bleed}. Dead, and out here dead is dead.");
+                Daybook.Note("death", $"round {round}: {who.Name} died at −{bleed} of {who.DeathAt}");
+                if (SoulOf(who) is PartyMember lost)
+                    Nope($"{lost.Name} has bled out.\n\nThey reached −{bleed}, which is their CON, and the "
+                       + "book is plain about what that means: out here dead is dead.\n\nGive the death its "
+                       + "weight — a last word, a turn of silence — before the next scene rides in.");
+            }
+            else if (who.Dying)
+                Log($"{who.Name} is bleeding — −{bleed} of {who.DeathAt}, "
+                    + $"{who.RoundsToDeath} round{(who.RoundsToDeath == 1 ? "" : "s")} left. "
+                    + $"A Fortitude or Medicine check at DC {Rules.StabilizeDc} stops it.");
+        }
         Daybook.Note("turn", $"round {round} begins — {string.Join(", ", Rules.InTurnOrder(tracker).Select(c => $"{c.Name} {c.Init}"))}");
         RefreshTracker();
         TurnOverTheGlass();               // a new round is a new posse turn — see the hourglass block
@@ -1548,7 +1670,15 @@ public partial class MainForm
         if (f.ShowDialog(this) == DialogResult.OK && !string.IsNullOrWhiteSpace(name.Text))
         {
             int b = (int)blood.Value;
-            AddToField(new Combatant { Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value, IsPC = pc.Checked, Init = ArrivalInit() });
+            // A hand-entered soul has no sheet and so no CON to read; the rule still governs them,
+            // at the middle of the scale, and the Keeper can say otherwise. An ad-hoc NPC or foe
+            // gets 0 and is simply put down at zero Blood, as every creature is.
+            AddToField(new Combatant
+            {
+                Name = name.Text.Trim(), BloodCur = b, BloodMax = b, Defense = (int)def.Value,
+                IsPC = pc.Checked, Init = ArrivalInit(),
+                DeathAt = pc.Checked ? Rules.DefaultDeathAt : 0
+            });
             Log($"Tracker: {name.Text.Trim()} added by hand ({b} Blood).");
         }
     }
@@ -1882,10 +2012,13 @@ public partial class MainForm
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         int v = (int)trkAmount.Value;
         int was = c.BloodCur;
+        bool wasDown = c.Down, wasDead = c.Dead;
         c.Wound(sign * v);                                     // clamps, and leaves the "Last" note
-        Log($"{c.Name} {(sign < 0 ? "takes" : "recovers")} {Math.Abs(c.BloodCur - was)} → {c.BloodCur}/{c.BloodMax}" + (c.Down ? "  — PUT DOWN." : ""));
+        Log($"{c.Name} {(sign < 0 ? "takes" : "recovers")} {Math.Abs(c.BloodCur - was)} → {c.BloodCur}/{c.BloodMax}"
+            + (c.Dying ? $"  — DYING, −{c.Bleed} of {c.DeathAt}." : c.Down ? "  — PUT DOWN." : ""));
         trkGrid.Refresh();
         if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
+        CheckFalling(c, wasDown, wasDead);
     }
 
     /// <summary>Put the selected combatant back to full Blood — the ad-hoc heal a Keeper wants
@@ -1894,6 +2027,16 @@ public partial class MainForm
     void RestoreSelected()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        // Blood does not answer this one. Wound refuses to un-kill (see Combatant.Wound), so without
+        // this the button would fill the bar, leave the row dead, and give a Keeper no idea why.
+        if (c.Dead)
+        {
+            Nope($"{c.Name} is dead — out here dead is dead, and Blood is not what is wrong.\n\n"
+               + "If the table has decided otherwise, right-click the row: \"They were not dead "
+               + "after all\". That is the Keeper's call to make on purpose, not a side effect of "
+               + "a heal.");
+            return;
+        }
         if (SoulOf(c) is PartyMember soul) { RestSoul(soul); c.Wound(c.BloodMax - c.BloodCur, "restored"); }
         else if (c.BloodMax <= 0) { Nope($"{c.Name} has no Blood maximum to restore to — set one in the /Max column."); return; }
         else
@@ -1908,14 +2051,22 @@ public partial class MainForm
     /// with them. The scene is over; this is the line between one and the next.</summary>
     void RestoreField()
     {
-        var bodies = tracker.Where(t => t.BloodMax > 0).ToList();
-        if (bodies.Count == 0) { Nope("Nobody on the field has Blood to restore."); return; }
+        // The dead are not "everyone on the field". A scene-end restore is a mercy for the living;
+        // bringing somebody back is a decision, and it has its own item on their row.
+        var bodies = tracker.Where(t => t.BloodMax > 0 && !t.Dead).ToList();
+        int gone = tracker.Count(t => t.Dead);
+        if (bodies.Count == 0)
+        {
+            Nope(gone > 0 ? $"Nobody left on the field has Blood to restore — {gone} of them are dead."
+                          : "Nobody on the field has Blood to restore.");
+            return;
+        }
         int hurt = bodies.Count(t => t.BloodCur < t.BloodMax);
         if (!Confirm($"Restore everyone on the field? {hurt} of {bodies.Count} are carrying wounds; "
                    + "every posse soul also gets their Nerve and pool back."))
             return;
         foreach (var t in bodies) t.Wound(t.BloodMax - t.BloodCur, "restored");
-        foreach (var p in party.Where(p => tracker.Any(t => t.IsSoul(p))))
+        foreach (var p in party.Where(p => tracker.Any(t => t.IsSoul(p) && !t.Dead)))
         { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; }
         posseGrid?.Refresh(); RefreshTracker();
         Log($"The field is restored — {bodies.Count} back to full Blood, the posse's Nerve with them.");
@@ -1984,6 +2135,18 @@ public partial class MainForm
         // Dice-and-books table: the Keeper rolls the d20 and enters it; the engine table rolls its own.
         var d20 = new NumericUpDown { Left = 248, Top = 123, Width = 60, Minimum = 1, Maximum = 20, Value = 10 };
 
+        // Declared before Sync rather than beside the other buttons at the bottom, because Sync is
+        // what turns the Strike off once the Beats are gone and a local cannot reach one declared
+        // after it. Placed further down, once the prose above them has been measured.
+        var ok = new Button { Text = "Strike ▸", Width = 90, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Close", Width = 84, DialogResult = DialogResult.Cancel };
+        // Why the Strike is refused, on its own full-width line. It cannot ride in mapLbl — that is
+        // 320px beside the To-hit box and would ellipsize the sentence to nothing. The line is
+        // reserved whether or not it is currently saying anything, because this dialog is re-shown
+        // in a loop and the reason appears mid-loop: a block that only exists once the Beats run
+        // out would move the buttons out from under the Keeper's hand on the third Strike.
+        var refusal = new Label { Left = Pad, Width = CW, ForeColor = Blood, Font = DialogItalic, AutoSize = false };
+
         // Prefill the to-hit — a creature's built-in bonus, or a soul's own off their sheet — and
         // re-figure it (and the MAP) when the chosen attack changes.
         void Sync()
@@ -1998,10 +2161,24 @@ public partial class MainForm
                 agile = WeaponTraits.Parse(w.traits).Agile;
             }
             int map = IronCode.MapPenalty(attacker.MapStep, agile);
+            // A Strike costs a Beat, and once they are gone the turn is over — so the button that
+            // takes one goes grey and the dialog says which of the three reasons it is. It used to
+            // stay live and keep resolving: the Beat count stopped at zero, the MAP step went on
+            // climbing, and the engine handed out a fourth and fifth Strike the Iron Code does not
+            // allow. The whole point of the app keeping the Beats is that it keeps them.
+            string why = Rules.WhyNoBeats(attacker);
+            ok.Enabled = why == null;
+            // Esc and Enter must both still leave. With the commit greyed there is nothing for Enter
+            // to do, so it answers with the way out rather than doing nothing at all — and the way
+            // out says where it goes, because at that point it is the only thing left to press.
+            cancel.Text = why == null ? "Close" : "Back to the field ▸";
+            f.AcceptButton = why == null ? ok : cancel;
+            refusal.Text = why ?? "";
             mapLbl.Text = $"This Strike: {(map == 0 ? "clean, no MAP" : "MAP " + map)}  ·  "
                 + (attacker.Beats > 0
                     ? $"{attacker.Beats} Beat{(attacker.Beats == 1 ? "" : "s")} left"
-                    : "no Beats left — Begin turn on the tracker");
+                    : "no Beats left");
+            mapLbl.ForeColor = attacker.Beats > 0 ? Blood : Faint;
         }
         // default a soul to the gun they carry if we can spot one, else the first attack
         int guess = asCreature ? -1
@@ -2051,15 +2228,29 @@ public partial class MainForm
             y = box.Bottom + 14;
         }
 
-        var ok = new Button { Text = "Strike ▸", Left = Pad + CW - 182, Top = y, Width = 90, DialogResult = DialogResult.OK };
-        var cancel = new Button { Text = "Close", Left = Pad + CW - 84, Top = y, Width = 84, DialogResult = DialogResult.Cancel };
-        f.Controls.AddRange(new Control[] { ok, cancel });
+        // Reserved to the tallest sentence the rule can produce for THIS attacker, measured rather
+        // than guessed — the name is in it, so the height is not a constant.
+        refusal.Top = y;
+        // Both sentences come from the rule itself rather than being copied here, so a reword there
+        // cannot leave this reserving the wrong height. A stand-in with the attacker's name, no
+        // Beats and Blood in it produces the longest of them.
+        var spent = new Combatant { Name = attacker.Name, Beats = 0, BloodMax = 1, BloodCur = 1 };
+        var felled = new Combatant { Name = attacker.Name, BloodMax = 1, BloodCur = 0 };
+        refusal.Height = new[] { Rules.WhyNoBeats(spent), Rules.WhyNoBeats(felled) }
+            .Max(t => TextRenderer.MeasureText(t, DialogItalic, new Size(CW, 0), TextFormatFlags.WordBreak).Height) + 4;
+        y = refusal.Bottom + 8;
+
+        ok.Left = Pad + CW - 182; ok.Top = y;
+        cancel.Left = Pad + CW - 84; cancel.Top = y;
+        f.Controls.AddRange(new Control[] { refusal, ok, cancel });
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
-        f.AcceptButton = ok; f.CancelButton = cancel;
+        f.CancelButton = cancel;
+        Sync();                      // the buttons are placed now, so settle their state on them
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
             var tgt = foes[target.SelectedIndex];
+            bool tgtWasDown = tgt.Down, tgtWasDead = tgt.Dead;
             var drList = dr.Value > 0 ? new[] { new DrEntry((int)dr.Value, "all") } : null;
             int idx = Math.Max(0, weapon.SelectedIndex);
             int? forced = EngineRolls ? null : (int)d20.Value;
@@ -2076,8 +2267,165 @@ public partial class MainForm
             if (SoulOf(tgt) is PartyMember hurt
                 && Rules.IsGrievous(rep.Res.AfterDR, tgt.BloodMax, rep.Res.Strike.Crit))
                 OfferGrievous(hurt, tgt, rep.Res.AfterDR, rep.Res.Strike.Crit);
+            // And the blow that put them on the ground. After the grievous offer on purpose: the
+            // Lasting Injury is what the hit did, and refusing to fall is what they do about it.
+            CheckFalling(tgt, tgtWasDown, tgtWasDead);
             // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
             RefreshTracker(); Sync();
+        }
+    }
+
+    // ---- Dying, on the ground, and what can still be done about it (Ch. XI) ----
+
+    /// <summary>Watch for the moment somebody goes down, and offer the one thing the book offers at
+    /// that moment. Called with whether they were already down BEFORE the harm, because "they are
+    /// down" is true for every round afterwards and the offer belongs to the round they fell.
+    ///
+    /// <para>Every route that can take Blood off a tracker row goes through here — the Strike, the
+    /// Damage button, a working that deals damage — for the same reason every route onto the field
+    /// goes through AddCreatureToTracker: a rule asked in three places is a rule forgotten in
+    /// one.</para></summary>
+    void CheckFalling(Combatant c, bool wasDown, bool wasDead)
+    {
+        if (c == null || c.IsSign) return;
+        if (c.Dead && !wasDead)
+        {
+            Log($"{c.Name} is killed outright — the blow carried past −{c.DeathAt}.");
+            Daybook.Note("death", $"round {round}: {c.Name} killed outright at −{c.Bleed} of {c.DeathAt}");
+            if (SoulOf(c) is PartyMember gone)
+                Nope($"{gone.Name} is killed outright.\n\nThe blow carried them to −{c.Bleed}, past the "
+                   + $"−{c.DeathAt} the book puts the end at. There is no check for this one.\n\n"
+                   + "Give the death its weight before the next scene rides in.");
+            RefreshTracker();
+            return;
+        }
+        if (wasDown || !c.Down || !c.Dying) return;
+
+        var soul = SoulOf(c);
+        // The offer is the posse's; a foe on the ground is simply on the ground.
+        if (soul == null) return;
+        Log($"{c.Name} falls — dying, and bleeding a Blood a round toward −{c.DeathAt}.");
+
+        if (soul.Grit <= 0)
+        {
+            Nope($"{soul.Name} is down at 0 Blood — Dying, and bleeding one Blood every round toward "
+               + $"−{c.DeathAt}.\n\nThey have no Grit left to refuse the fall. A Fortitude save or "
+               + $"somebody's Medicine check at DC {Rules.StabilizeDc} stops the bleeding; right-click "
+               + "their row for it.");
+            return;
+        }
+        // A Confirm, not a menu: there are exactly two answers and one of them is doing nothing.
+        if (!Confirm($"{soul.Name} is down at 0 Blood — Dying, and bleeding one Blood every round "
+                   + $"toward −{c.DeathAt}. That is {c.DeathAt} rounds.\n\n"
+                   + $"REFUSE TO FALL?  Spend 1 Grit ({soul.Grit} left) to stay conscious and on their "
+                   + "feet for one more round (Ch. II). The bleeding does not stop — the book buys "
+                   + "consciousness with Grit, not time.\n\n"
+                   + "Yes spends the Grit. No lets them fall."))
+            return;
+
+        if (Rules.RefuseToFall(c, soul) is string why) { Nope(why); return; }
+        Log($"{soul.Name} REFUSES TO FALL — 1 Grit spent ({soul.Grit} left), on their feet one more round.");
+        Daybook.Note("turn", $"round {round}: {soul.Name} spent Grit to refuse the fall at −{c.Bleed}");
+        posseGrid?.Refresh(); RefreshTracker();
+    }
+
+    /// <summary>The Keeper overruling the book. Nothing in Ch. XI walks a death back, and the app
+    /// should not pretend otherwise by letting a heal do it quietly — but a Miracle, a Patron's
+    /// bargain, or a table that simply decided is above the app's pay grade. So it exists, it is
+    /// named for what it is, and it is asked about.</summary>
+    void Resurrect(Combatant c)
+    {
+        if (c == null || !c.Dead) { Nope("That one is not dead."); return; }
+        if (!Confirm($"{c.Name} is dead — they reached −{c.Bleed}, which is their CON.\n\n"
+                   + "Put them back? They come round at 1 Blood: on their feet, and one hit from "
+                   + "being back on the ground.\n\n"
+                   + "The book has no rule for this. It is the table's call."))
+            return;
+        c.Bleed = 0; c.Stable = false; c.Upright = false;
+        c.Wound(1, "back");
+        if (SoulOf(c) is PartyMember p) p.BloodCur = c.BloodCur;
+        posseGrid?.Refresh(); RefreshTracker();
+        Log($"{c.Name} is back — 1 Blood, and the table's word for it.");
+        Daybook.Note("death", $"round {round}: {c.Name} brought back by the Keeper's ruling");
+    }
+
+    /// <summary>Stop somebody bleeding out: a Fortitude save of their own, or another soul's
+    /// Medicine check — the book gives both DC 15. Offered from the tracker's right-click menu and
+    /// from Restore ▾, because it is the thing a Keeper reaches for at the worst moment and hunting
+    /// for it is part of what makes that moment bad.</summary>
+    void StabilizeDialog()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select whoever is on the ground first."); return; }
+        if (c.Dead) { Nope($"{c.Name} is dead. Out here dead is dead — there is nothing left to stop."); return; }
+        if (!c.Dying)
+        {
+            Nope(c.Stable ? $"{c.Name} is already stable — the bleeding has stopped."
+               : c.Down ? $"{c.Name} is down, but the dying rule does not run on this row. It is the "
+                        + "posse's rule; a creature at 0 Blood is simply put down."
+                        : $"{c.Name} is still on their feet. There is nothing to stabilize.");
+            return;
+        }
+        var soul = SoulOf(c);
+
+        const int Pad = 16, CW = 470;
+        using var f = new Sheet
+        {
+            Text = $"{c.Name} — stop the bleeding", FormBorderStyle = FormBorderStyle.FixedDialog,
+            StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
+            ShowIcon = false, BackColor = Paper
+        };
+        Label Para(string t, int top, Font font, Color fore) => new()
+        {
+            Left = Pad, Top = top, Width = CW, Text = t, Font = font, ForeColor = fore,
+            Height = TextRenderer.MeasureText(t, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
+        };
+
+        var head = Para($"{c.Name} is at −{c.Bleed} of −{c.DeathAt}. {c.RoundsToDeath} round"
+                      + $"{(c.RoundsToDeath == 1 ? "" : "s")} left at a Blood a round.", Pad, DialogBold, Blood);
+        var body = Para($"A Fortitude save or a Medicine check, either one at DC {Rules.StabilizeDc}, stops "
+                      + "the bleeding (Ch. XI). Stable is not awake — they stay senseless at 0 Blood until "
+                      + "somebody puts Blood back in them.", head.Bottom + 6, f.Font, Ink);
+
+        var whichLbl = new Label { Left = Pad, Top = body.Bottom + 12, Width = 92, Text = "The check:" };
+        var which = new ComboBox { Left = Pad + 96, Top = body.Bottom + 9, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
+        which.Items.Add(soul != null ? $"{soul.Name}'s own Fortitude   ({(soul.Fort >= 0 ? "+" : "")}{soul.Fort})"
+                                     : "their own Fortitude");
+        which.Items.Add("somebody's Medicine check");
+        which.SelectedIndex = 0;
+
+        var modLbl = new Label { Left = Pad, Top = which.Bottom + 12, Width = 92, Text = "Modifier:" };
+        var mod = new NumericUpDown { Left = Pad + 96, Top = which.Bottom + 9, Width = 70, Minimum = -20, Maximum = 40, Value = soul?.Fort ?? 0 };
+        var modNote = new Label { Left = mod.Right + 10, Top = which.Bottom + 13, Width = CW - (mod.Right + 10 - Pad), Height = 18, ForeColor = Faint, Font = DialogItalic, AutoEllipsis = true };
+        void SyncWhich()
+        {
+            bool own = which.SelectedIndex == 0;
+            if (own && soul != null) mod.Value = Math.Clamp(soul.Fort, mod.Minimum, mod.Maximum);
+            modNote.Text = own ? "their Fortitude, off the sheet" : "the healer's Medicine bonus — type it in";
+        }
+        which.SelectedIndexChanged += (s, e) => SyncWhich();
+        SyncWhich();
+
+        var d20Lbl = new Label { Left = Pad, Top = mod.Bottom + 12, Width = 92, Text = "d20 rolled:", ForeColor = Blood };
+        var d20 = new NumericUpDown { Left = Pad + 96, Top = mod.Bottom + 9, Width = 70, Minimum = 1, Maximum = 20, Value = 10 };
+        int y = (EngineRolls ? mod.Bottom : d20.Bottom) + 16;
+
+        var go = new Button { Text = "Roll it ▸", Left = Pad + CW - 190, Top = y, Width = 96, Height = 30, DialogResult = DialogResult.OK };
+        var close = new Button { Text = "Close", Left = Pad + CW - 88, Top = y, Width = 88, Height = 30, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { head, body, whichLbl, which, modLbl, mod, modNote, go, close });
+        if (!EngineRolls) f.Controls.AddRange(new Control[] { d20Lbl, d20 });
+        f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
+        f.AcceptButton = go; f.CancelButton = close;
+
+        while (f.ShowDialog(this) == DialogResult.OK)
+        {
+            var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value);
+            Log($"{c.Name}: {res.Line}  (d20 {res.Die}{(res.Mod >= 0 ? "+" : "")}{res.Mod})");
+            ShowResult(res.DegreeName, $"{c.Name} — {res.Line}", DegreeColor(res.DegreeName));
+            if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
+            RefreshTracker();
+            if (res.Stopped) break;                      // nothing left to roll for
+            head.Text = $"{c.Name} is at −{c.Bleed} of −{c.DeathAt}. {c.RoundsToDeath} round"
+                      + $"{(c.RoundsToDeath == 1 ? "" : "s")} left at a Blood a round.";
         }
     }
 
@@ -2573,6 +2921,16 @@ public partial class MainForm
         var savedLbl = new Label { Left = Pad, Top = rollIt.Bottom + 8, Width = 100, Text = "The save:", Visible = false };
 
         var spend = new CheckBox { Left = Pad, Top = saved.Bottom + 8, Width = CW, Height = 22, Checked = true };
+        // What working this costs OUT OF THE TURN, which is the half of the price the app never
+        // charged. The cost line the book prints — "1 Beat · 2 Nerve · Will save" — has been parsed
+        // since v1.20 and only its currencies were ever spent, so a soul with three Beats could work
+        // six Signs and still Strike. Two lines tall, fixed: the refusal is longer than the price,
+        // and a block that changes height would walk the buttons around under the Keeper's hand.
+        var beatLbl = new Label
+        {
+            Left = Pad, Width = CW, Font = DialogItalic, AutoSize = false,
+            Height = TextRenderer.MeasureText("Wg", DialogItalic).Height * 2 + 4
+        };
         // Declared here rather than at the bottom because Relayout places them and sizes the form
         // off where they land, and a local function cannot reach a local declared after it.
         var go = new Button { Text = "Work it ▸", Left = Pad + CW - 198, Width = 100, Height = 32, DialogResult = DialogResult.OK };
@@ -2671,8 +3029,30 @@ public partial class MainForm
             if (saved.Visible) { saved.Top = y + 4; savedLbl.Top = saved.Top + 4; y = saved.Bottom; }
 
             spend.Top = y + 8;
-            go.Top = close.Top = spend.Bottom + 12;
+            beatLbl.Top = spend.Bottom + 6;
+            go.Top = close.Top = beatLbl.Bottom + 10;
             f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
+        }
+
+        // What the turn is charged, and whether there is a turn left to charge. Runs from the
+        // SyncDetail wrapper so it covers every path out of the body — including the two early
+        // returns, which is exactly the shape of miss that put a Gunhand's dialog at 300x300.
+        void SyncBeats()
+        {
+            var worker = folk[Math.Max(0, who.SelectedIndex)];
+            bool custom = what.SelectedIndex < 0 || what.SelectedIndex >= options.Count;
+            // A hand-named working has no printed time line, so the app has no business inventing a
+            // cost for it — the Keeper said what it was and the Keeper can say what it took.
+            int beats = custom ? 0 : Rules.BeatsFor(Rules.ParseCost(options[what.SelectedIndex].Cost).Time);
+            string why = Rules.WhyNoBeats(worker, beats);
+            go.Enabled = why == null;
+            close.Text = why == null ? "Close" : "Back to the field ▸";
+            f.AcceptButton = why == null ? go : close;
+            beatLbl.ForeColor = why == null ? Faint : Blood;
+            beatLbl.Text = why ?? (beats == 0
+                ? $"Takes no Beat — worked outside the turn. {worker.Name} still has {worker.Beats} of three."
+                : $"Costs {beats} Beat{(beats == 1 ? "" : "s")} of {worker.Name}'s turn — {worker.Beats} left, "
+                  + $"{worker.Beats - beats} after.");
         }
 
         void SyncEnds(Rules.WorkEnds e, int n)
@@ -2690,7 +3070,7 @@ public partial class MainForm
         };
 
         // The wrapper: whatever the body does, and whichever way it returns, the form gets measured.
-        void SyncDetail() { SyncDetailBody(); Relayout(); }
+        void SyncDetail() { SyncDetailBody(); SyncBeats(); Relayout(); }
 
         void SyncDetailBody()
         {
@@ -2765,8 +3145,8 @@ public partial class MainForm
 
         f.Controls.AddRange(new Control[] { whoLbl, who, whoNote, whatLbl, what, freeName, detail, backlash,
                                             onLbl, onWhom, lastsLbl, lasts, rounds, roundsNote,
-                                            rollIt, rolled, savedLbl, saved, spend, go, close });
-        f.AcceptButton = go; f.CancelButton = close;
+                                            rollIt, rolled, savedLbl, saved, spend, beatLbl, go, close });
+        f.CancelButton = close;   // AcceptButton is SyncBeats', so Enter follows whichever is live
 
         // Wired and driven only once the buttons exist, because Relayout places them and sizes the
         // form off where they land.
@@ -2803,6 +3183,14 @@ public partial class MainForm
                 if (pc.Mark > 0) soul.Mark += pc.Mark;
                 if (pc.Blood > 0) { worker.Wound(-pc.Blood, $"−{pc.Blood} working it"); soul.BloodCur = worker.BloodCur; }
             }
+
+            // The Beat is charged whether or not the pools are — it is the turn's own currency and
+            // it belongs to the combatant, not to the soul behind them, so a creature working its
+            // own power pays it too. Outside the "spend it" checkbox for the same reason: that
+            // switch is about the Keeper overruling a soul's Nerve and Faith, not about whether the
+            // Iron Code's three Beats exist.
+            int beatCost = custom ? 0 : Rules.BeatsFor(pc.Time);
+            if (beatCost > 0) worker.Beats = Math.Max(0, worker.Beats - beatCost);
 
             // Duration is whatever the Keeper left in the box — prefilled from the book, theirs to
             // override. Only a round count is a number the tracker counts down; everything else
@@ -2852,8 +3240,12 @@ public partial class MainForm
                 }
                 else
                 {
+                    // Captured before the harm, because "were they already down" stops being
+                    // answerable the moment it lands — same reason the Strike dialog captures it.
+                    var before = targets.ToDictionary(t => t, t => (t.Down, t.Dead));
                     foreach (var t in targets)
                     { t.Wound(-applied, $"−{applied}"); if (SoulOf(t) is PartyMember dp) dp.BloodCur = t.BloodCur; }
+                    foreach (var t in targets) CheckFalling(t, before[t].Down, before[t].Dead);
                     // The Hungering Hand and its kin: half of what was taken goes to the worker.
                     if (w.DrainsToWorker && applied > 0)
                     {
@@ -2889,7 +3281,11 @@ public partial class MainForm
                 + (note.Length > 0 ? $"\n{note}" : "")
                 + (pc.HasSave && !rollIt.Checked ? $"\n{pc.Save} save to resist." : ""), Verdigris);
 
-            posseGrid?.Refresh(); RefreshTracker();
+            // The Beat just spent has to reach the dialog that spent it, or the Keeper works a third
+            // Sign out of a turn that has nothing left in it. Same shape as the Strike dialog's
+            // trailing Sync: the window stays open for a follow-up, so it has to keep telling the
+            // truth about what the follow-up costs.
+            posseGrid?.Refresh(); RefreshTracker(); SyncDetail();
         }
     }
 
@@ -2905,9 +3301,16 @@ public partial class MainForm
     TabPage BuildGeneratorsTab()
     {
         var page = new TabPage("Generators") { BackColor = Paper };
-        var split = Split(Orientation.Vertical, 300, 300, 0.27);
+        // Seated against the button column rather than at 27% of the window (v1.38.0, user-reported).
+        // Every control in the left panel is 230px wide by construction, so a ratio could only ever
+        // be right at one window size — at 1280 it put the splitter some seventy pixels clear of the
+        // buttons and called the gap a layout. Panel1's minimum comes down with it: 300 was above
+        // what the column measures, so it was doing the clamping and the measurement never got a
+        // say. The Func is evaluated in the deferred handler, after `left` below has been filled.
+        FlowLayoutPanel left = null;
+        var split = Split(Orientation.Vertical, 200, 300, 0.27, () => MeasuredColumnWidth(left));
 
-        var left = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(12), AutoScroll = true, BackColor = Paper };
+        left = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(12), AutoScroll = true, BackColor = Paper };
         left.Controls.Add(Heading("The Country in Your Pocket"));
 
         // The two "→ Map" buttons are built first so the roll handlers can wake them, and they
@@ -3083,6 +3486,8 @@ public partial class MainForm
     Label refTitle, refCount;
     int refPage;
     (string title, Action<RichTextBox> render)[] refDeck;
+    /// The pane's width in monospaced characters at the last deal — see the Resize handler.
+    int refCols;
 
     /// <summary>The Keeper's screen, leaf by leaf. Named here rather than inline with the
     /// renderers so that everything which counts them reads one list — the five-minute lesson
@@ -3136,14 +3541,89 @@ public partial class MainForm
     /// </summary>
     internal int RefDeckLength => refDeck?.Length ?? 0;
 
-    // The Keeper's screen, in the same two faces the Bestiary page uses: Georgia carries the prose
-    // and the leaf titles because this deck is the books condensed, and the tables stay in Consolas
-    // because they are columns of figures and Georgia's descending 3 4 5 7 9 would shear them.
-    static readonly Font RefMono  = new("Consolas", 9.5f);
-    static readonly Font RefMonoB = new("Consolas", 9.5f, FontStyle.Bold);
-    static readonly Font RefBody  = new("Georgia", 10.5f);
-    static readonly Font RefItal  = new("Georgia", 10.2f, FontStyle.Italic);
-    static readonly Font RefHead  = new("Georgia", 13.5f, FontStyle.Bold);
+    // The Keeper's screen, in the faces the books are set in — and, since v1.38.0, at a size a
+    // Keeper can read across a table (user-reported: "change the font so that it's more in line with
+    // the settings and themes of the game, also enlarging the reference material so that it fills
+    // the empty space better").
+    //
+    // Two things were wrong and only one of them was the size. The prose was already Georgia, but
+    // the TABLES — which are most of what is on every leaf — were Consolas, a face drawn in 2006 for
+    // reading source code on a screen. Nothing else in this app or these books is set in it. The
+    // deck is the Keeper's screen out of a western-horror rulebook and it read like a terminal.
+    //
+    // The columns still need a monospaced face and that is not a preference: the tables are padded
+    // to width with spaces, which is also what carries the Blood-red header band out to the right
+    // edge, and Georgia is a text-figure face whose 3 4 5 7 9 descend so a column of numbers does
+    // not line up (the same reason LedgerView draws its figures in a different face). Courier New
+    // is the monospace a period document would actually have been struck on, it is on every Windows
+    // machine, and at 11.5pt it holds a line without reading as code.
+    static readonly string RefMonoFace = FirstInstalledFace("Courier New", "Consolas");
+    static Font RefMono  => Face(RefMonoFace, 11.5f);
+    static Font RefMonoB => Face(RefMonoFace, 11.5f, FontStyle.Bold);
+    static Font RefBody  => Face("Georgia", 12.5f);
+    static Font RefItal  => Face("Georgia", 12f, FontStyle.Italic);
+    static Font RefHead  => Face("Georgia", 16.5f, FontStyle.Bold);
+
+    /// <summary>The first of these actually installed. GDI+ silently substitutes Microsoft Sans
+    /// Serif for a family it does not have and the substitute reports its own name, which is the
+    /// only way to catch it — the same probe LedgerView uses to pick its figures face, and it lives
+    /// twice because the two files are on opposite sides of the rules/UI split.</summary>
+    static string FirstInstalledFace(params string[] names)
+    {
+        foreach (var n in names)
+        {
+            try
+            {
+                using var probe = new Font(n, 10f);
+                if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
+            }
+            catch { /* a broken font file shouldn't cost us the deck */ }
+        }
+        return "Consolas";
+    }
+
+    /// <summary>How many monospaced characters fit across the reference pane right now. Measured
+    /// with NoPadding over a long run, because TextRenderer adds a few pixels of its own to a short
+    /// string and dividing that by one character is how a table comes out three columns too wide.
+    /// </summary>
+    int RefColumns()
+    {
+        if (refView == null || refView.ClientSize.Width < 80) return 0;
+        int ten = TextRenderer.MeasureText(new string('0', 50), RefMono, Size.Empty, TextFormatFlags.NoPadding).Width;
+        double ch = ten / 50.0;
+        if (ch < 1) return 0;
+        // The pane's own right margin, plus room for the vertical scrollbar every long leaf grows.
+        int usable = refView.ClientSize.Width - 8 - SystemInformation.VerticalScrollBarWidth;
+        return Math.Max(20, (int)(usable / ch));
+    }
+
+    /// <summary>Widen an authored table to the room actually on screen. The leaves' column widths
+    /// were written to fit about eighty characters, so on this laptop's 1280px window the tables
+    /// occupied a little under half the pane and the rest was empty paper — which is exactly what
+    /// was reported.
+    ///
+    /// <para>The surplus goes to the LAST column and nowhere else — the one carrying the rule text.
+    /// The columns beside it hold a DC, a die face, a condition name: they are already as wide as
+    /// anything that goes in them, and widening one only opens a gulf between a label and the
+    /// sentence it labels. The first version of this spread the leftovers across every column and
+    /// put thirty-six characters under a heading reading "Degree", with "CRITICAL SUCCESS" marooned
+    /// at one end of it — wider is not the same as better used.</para>
+    ///
+    /// <para>Capped at <see cref="RefMeasureCap"/> characters, because past about ninety a line
+    /// stops being easier to read and starts being harder; whatever is left over stays as margin,
+    /// which is what a book would do with it.</para></summary>
+    const int RefMeasureCap = 90;
+    static int[] RefFit(int[] w, int capacity)
+    {
+        if (w == null || w.Length == 0) return w;
+        int joins = 2 * (w.Length - 1) + 2;              // the "  " between columns, plus the edges
+        int authored = w.Sum() + joins;
+        if (capacity <= authored) return w;
+        var outw = (int[])w.Clone();
+        int last = w.Length - 1;
+        outw[last] += Math.Min(capacity - authored, Math.Max(0, RefMeasureCap - outw[last]));
+        return outw;
+    }
 
     static void RH(RichTextBox r, string s) { r.SelectionFont = RefHead; r.SelectionColor = Blood; r.AppendText(s + "\n"); }
     static void RT(RichTextBox r, string s) { r.SelectionFont = RefBody; r.SelectionColor = Ink; r.AppendText(s + "\n\n"); }
@@ -3167,8 +3647,9 @@ public partial class MainForm
     // RichTextBox quirk: selection formatting must be re-asserted before EVERY append —
     // set once before a loop, later lines silently fall back to the control's default
     // proportional font and the columns shear.
-    static void RTbl(RichTextBox r, int[] w, string[] head, IEnumerable<string[]> rows)
+    void RTbl(RichTextBox r, int[] w, string[] head, IEnumerable<string[]> rows)
     {
+        w = RefFit(w, RefColumns());          // widened to the pane the Keeper actually has
         int last = w.Length - 1;
         string Row(IReadOnlyList<string> cells) =>
             " " + string.Join("  ", cells.Select((c, i) => (c ?? "").PadRight(w[i]))) + " ";
@@ -3190,7 +3671,7 @@ public partial class MainForm
         }
         Line("\n", RefMono, Ink, false);
     }
-    static void RTbl(RichTextBox r, int[] w, string[] head, params string[][] rows)
+    void RTbl(RichTextBox r, int[] w, string[] head, params string[][] rows)
         => RTbl(r, w, head, (IEnumerable<string[]>)rows);
 
     internal TabPage BuildReferenceTab()
@@ -3200,12 +3681,27 @@ public partial class MainForm
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("◀", (s, e) => RefShow(refPage - 1), 44, "Previous leaf (or press Left)"));
         bar.Controls.Add(Btn("▶", (s, e) => RefShow(refPage + 1), 44, "Next leaf (or press Right)"));
-        refTitle = new Label { AutoSize = true, UseMnemonic = false, Font = new Font("Segoe UI", 11.5f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(10, 9, 0, 0) };
+        // The leaf's name is the page's title, so it is set in the book's face like every other
+        // title in the deck. It was Segoe UI, which is Windows' voice rather than the game's, and it
+        // sat directly above thirteen Georgia headings saying the same kind of thing.
+        refTitle = new Label { AutoSize = true, UseMnemonic = false, Font = Face("Georgia", 14f, FontStyle.Bold), ForeColor = Blood, Padding = new Padding(10, 7, 0, 0) };
         bar.Controls.Add(refTitle);
-        refCount = new Label { AutoSize = true, Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = Slate, Padding = new Padding(12, 11, 0, 0) };
+        refCount = new Label { AutoSize = true, Font = Face("Georgia", 9.5f, FontStyle.Italic), ForeColor = Slate, Padding = new Padding(12, 12, 0, 0) };
         bar.Controls.Add(refCount);
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
+        // The tables are laid to the pane's width, so the pane changing width relaid them — but only
+        // when the number of CHARACTERS across actually changes. A resize drag raises this event
+        // dozens of times a second and re-dealing a leaf on every one of them would redraw the whole
+        // deck while the mouse is still down. Comparing the measurement rather than the pixels means
+        // the work happens once per column gained or lost.
+        refView.Resize += (s, e) =>
+        {
+            int cols = RefColumns();
+            if (cols == refCols || refDeck == null) return;
+            refCols = cols;
+            RefShow(refPage);
+        };
 
         BuildRefDeck();
         referencePage.Controls.Add(Pad(refView, 14));
