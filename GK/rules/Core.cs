@@ -269,7 +269,8 @@ public class Combatant : INotifyPropertyChanged
 {
     string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "";
     int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1, _lastDelta, _signFilled;
-    bool _isPC, _acting, _isSign, _hasActed;
+    int _bleed, _deathAt;
+    bool _isPC, _acting, _isSign, _hasActed, _stable, _upright;
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -320,7 +321,71 @@ public class Combatant : INotifyPropertyChanged
     /// grid can color it without parsing the words back out.</summary>
     [JsonIgnore] public int LastDelta { get => _lastDelta; set { _lastDelta = value; On(); } }
 
+    // ---- Dying, bleeding, and death (Player's Book Ch. XI, "Wounds, Bleeding, and Death") ----
+    // "At 0 Blood you fall, Dying and bleeding — losing 1 Blood each round — until someone
+    // stabilizes you or you reach –CON, at which point you are dead, and out here dead is dead."
+    //
+    // The app printed that rule on the Reference deck from v1.4 and implemented none of it: Blood
+    // clamped at zero, Down meant nothing more than "at zero", nobody bled and nobody could die. So
+    // the one moment the whole game is built around — a soul on the ground with a count running —
+    // was the one moment the Keeper had to run on paper.
+    //
+    // Blood does NOT go negative. Every screen, every save and every bar in the app reads BloodCur
+    // as 0..max and would have to be re-proved; instead the ground below zero is its own number.
+    // <see cref="Bleed"/> is how far past zero they are, counting up toward <see cref="DeathAt"/>.
+
+    /// <summary>How far past 0 Blood this one has bled — the distance travelled toward −CON. Zero
+    /// for anybody still standing, and for anybody the rule does not govern.</summary>
+    public int Bleed { get => _bleed; set { _bleed = Math.Max(0, value); On(); OnDying(); } }
+
+    /// <summary>The −CON this one dies at, held as a positive number. A soul takes it from their
+    /// sheet's CON; 0 means the dying rule does not run here at all, which is every creature and
+    /// every hand-entered row until a Keeper says otherwise. That default is deliberate: the book
+    /// writes this rule for characters, and the Bestiary's answer to a horror at 0 Blood is its own
+    /// <c>puttingItDown</c> line, not a count of rounds.</summary>
+    public int DeathAt { get => _deathAt; set { _deathAt = Math.Clamp(value, 0, 99); On(); OnDying(); } }
+
+    /// <summary>The bleeding has been stopped (Fortitude DC 15, or a Medicine check at the same DC).
+    /// Still at 0 Blood and still senseless — stable is not awake — but no longer on the clock.</summary>
+    public bool Stable { get => _stable; set { _stable = value; On(); OnDying(); } }
+
+    /// <summary>Grit, spent to refuse to fall: "when dropped to 0 Blood, stay conscious and on your
+    /// feet for one more round" (Ch. II). It cannot be derived from anything — at 0 Blood
+    /// <see cref="Down"/> is true and <see cref="Rules.CanAct"/> refuses the turn — so the exception
+    /// has to be a fact of its own. Cleared when the round turns over, which is what "one more
+    /// round" means. It does not stop the bleeding; the book buys consciousness with it, not
+    /// time.</summary>
+    public bool Upright { get => _upright; set { _upright = value; On(); OnDying(); } }
+
     [JsonIgnore] public bool Down => !_isSign && _bloodCur <= 0;
+
+    /// <summary>Dead. Out here dead is dead: no turn, no order, no roll.</summary>
+    [JsonIgnore] public bool Dead => !_isSign && _deathAt > 0 && _bleed >= _deathAt;
+
+    /// <summary>On the ground with the count running — at 0 Blood, governed by the rule, not yet
+    /// stopped and not yet gone.</summary>
+    [JsonIgnore] public bool Dying => Down && _deathAt > 0 && !_stable && !Dead;
+
+    /// <summary>Rounds left before <see cref="DeathAt"/> is reached at a Blood a round. Zero once
+    /// they are dead; zero, too, for anyone the rule does not govern.</summary>
+    [JsonIgnore] public int RoundsToDeath => Dying ? Math.Max(0, _deathAt - _bleed) : 0;
+
+    /// <summary>What the tracker prints where a standing combatant's Blood maximum goes. For anyone
+    /// on the ground that number tells the Keeper nothing they need; the count does.</summary>
+    [JsonIgnore]
+    public string DyingLine =>
+        Dead ? "dead"
+      : !Down || _deathAt <= 0 ? ""
+      : _stable ? "stable"
+      : $"dying −{_bleed} of {_deathAt}";
+
+    void OnDying()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Dead)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Dying)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RoundsToDeath)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DyingLine)));
+    }
 
     /// <summary>What the NEXT Strike this turn costs in MAP, in one word for the tracker. An Agile
     /// weapon softens it to −4/−8, which the Strike dialog figures once a weapon is picked; this is
@@ -349,12 +414,32 @@ public class Combatant : INotifyPropertyChanged
     {
         if (_isSign) return;
         int hi = _bloodMax > 0 ? _bloodMax : int.MaxValue;
-        int was = _bloodCur;
-        BloodCur = Math.Clamp(_bloodCur + delta, 0, hi);
+        int was = _bloodCur, wasBleed = _bleed;
+        bool wasDead = Dead;
+        int raw = _bloodCur + delta;
+        BloodCur = Math.Clamp(raw, 0, hi);
+
+        // Below zero the harm does not stop counting — it fills the ground between 0 and −CON.
+        // This is a READING of the book rather than a quotation of it: Ch. XI says you bleed a
+        // Blood a round "until ... you reach –CON", which only makes sense if Blood is a real
+        // number that goes negative, and a shot that takes a soul from 4 to −14 has reached it.
+        // The alternative — overkill vanishing at zero — would make a cannonball and a slap
+        // identical to a soul standing on 1 Blood, and the chapter's own sidebar is titled
+        // "The Mercy of Lethality". Only rows the rule governs are touched; DeathAt is 0 on every
+        // creature, so nothing about a horror at 0 Blood changes.
+        if (_deathAt > 0 && !wasDead)
+        {
+            if (raw < 0) Bleed = _bleed - raw;             // raw is negative; its magnitude is the overkill
+            else if (_bloodCur > 0) { Bleed = 0; Stable = false; Upright = false; }
+        }
+
         int moved = _bloodCur - was;
-        LastDelta = Math.Sign(moved);
-        LastNote = note ?? (moved == 0 ? (delta < 0 ? "no effect" : "already full")
-                          : Down ? $"−{Math.Abs(moved)} — DOWN"
+        int overkill = _bleed - wasBleed;
+        LastDelta = moved != 0 ? Math.Sign(moved) : overkill > 0 ? -1 : 0;
+        LastNote = note ?? (Dead && !wasDead ? "KILLED"
+                          : moved == 0 && overkill == 0 ? (delta < 0 ? "no effect" : "already full")
+                          : Dying && overkill > 0 && was <= 0 ? $"−{overkill} — bleeding"
+                          : Down ? $"−{Math.Abs(moved) + overkill} — DOWN"
                           : (moved > 0 ? "+" : "−") + Math.Abs(moved));
     }
 
@@ -1010,8 +1095,149 @@ public static class Rules
     public static int RollInitiative(int noticeBonus) => Math.Max(1, Rng.Next(1, 21) + noticeBonus);
 
     /// <summary>Can this one still be handed a turn this round? A trace takes none, someone bleeding
-    /// out takes none, and nobody takes two.</summary>
-    public static bool CanAct(Combatant c) => c != null && !c.HasActed && !c.Down && !c.IsSign;
+    /// out takes none, and nobody takes two — unless they have spent Grit to refuse to fall, which
+    /// is the one thing in the book that buys a turn out of a body at 0 Blood (Ch. II). The dead are
+    /// never <see cref="Combatant.Upright"/>; <see cref="RefuseToFall"/> is what keeps that true.
+    /// </summary>
+    public static bool CanAct(Combatant c)
+        => c != null && !c.HasActed && !c.IsSign && !c.Dead && (!c.Down || c.Upright);
+
+    // ---- Dying, stabilised, dead (Player's Book Ch. XI) ----
+
+    /// <summary>The DC to stop somebody bleeding, whether it is their own Fortitude save or another
+    /// soul's Medicine check — the book gives both the same number.</summary>
+    public const int StabilizeDc = 15;
+
+    /// <summary>Where a soul's −CON sits. Off the sheet where there is one; where there is not, the
+    /// app has no CON to read and says so rather than inventing a number that looks authoritative —
+    /// 10 is the middle of the scale and the Keeper can overrule it.</summary>
+    public const int DefaultDeathAt = 10;
+
+    /// <summary>A soul's death threshold: their CON. Returns <see cref="DefaultDeathAt"/> for a soul
+    /// with no sheet, which is every hand-entered row on the Posse tab.</summary>
+    public static int DeathThresholdFor(CharacterSheet s)
+        => s?.Scores != null && s.Scores.TryGetValue("CON", out int con) && con > 0 ? con : DefaultDeathAt;
+
+    /// <summary>What one round costs the fallen. Everyone the rule governs loses a Blood, and the
+    /// Grit that kept somebody standing runs out — "one more round" is one round.
+    ///
+    /// <para>Returns what happened to each of them so the caller can say it by name. A soul dying
+    /// quietly in a column of numbers is the exact failure this app exists to prevent, and an
+    /// effect that expires without a word is the fault this project already fixed once for the
+    /// Worked chips.</para>
+    ///
+    /// <para>Out here rather than inside <see cref="NewRound"/> so it can be tested without a round,
+    /// and so NewRound's signature — which the playtest harness and the smoke rig both call —
+    /// does not change.</para></summary>
+    public static List<(Combatant Who, int Bleed, bool Died, bool Fell)> BleedOut(IEnumerable<Combatant> field)
+    {
+        var news = new List<(Combatant, int, bool, bool)>();
+        if (field == null) return news;
+        foreach (var c in field)
+        {
+            if (c == null || c.IsSign) continue;
+            // The Grit is spent whether or not they are still on the ground: it bought a round and
+            // the round is over. Cleared BEFORE the bleed so "fell" and "bled" can be reported of
+            // the same round, which is what actually happens at the table.
+            bool fell = c.Upright;
+            if (fell) c.Upright = false;
+            if (!c.Dying) { if (fell) news.Add((c, c.Bleed, false, true)); continue; }
+            c.Bleed += 1;
+            news.Add((c, c.Bleed, c.Dead, fell));
+        }
+        return news;
+    }
+
+    /// <summary>Spend Grit to refuse to fall (Ch. II): "when dropped to 0 Blood, stay conscious and
+    /// on your feet for one more round." Refuses the dead, refuses anybody still standing, and
+    /// refuses a soul with no Grit left — and answers WHY, so no caller can turn it down in silence.
+    /// </summary>
+    public static string RefuseToFall(Combatant c, PartyMember soul)
+    {
+        if (c == null) return "Nobody is selected.";
+        if (c.Dead) return $"{c.Name} is dead. Grit does not reach that far.";
+        if (!c.Down) return $"{c.Name} is still on their feet — there is nothing to refuse yet.";
+        if (c.Upright) return $"{c.Name} is already refusing to fall this round.";
+        if (soul == null) return $"{c.Name} is not a posse soul, and Grit is the posse's alone.";
+        if (soul.Grit <= 0) return $"{soul.Name} has no Grit left to spend.";
+        soul.Grit -= 1;
+        c.Upright = true;
+        return null;
+    }
+
+    /// <summary>Stop the bleeding. The book gives a Fortitude save and a Medicine check the same DC,
+    /// so this takes the roll and the modifier and does not care which it was. A critical success
+    /// also brings them round on 1 Blood — the one degree the four-degree ladder has spare here, and
+    /// the reading that keeps a natural 20 worth rolling.</summary>
+    public record StabilizeOutcome(int Die, int Mod, int Degree, string DegreeName, bool Stopped,
+                                   bool Woke, string Detail)
+    {
+        public string Line => !Stopped
+            ? $"Stabilize (DC {StabilizeDc}): {DegreeName} — still bleeding."
+            : Woke ? $"Stabilize (DC {StabilizeDc}): {DegreeName} — the bleeding stops and they come round on 1 Blood."
+                   : $"Stabilize (DC {StabilizeDc}): {DegreeName} — the bleeding stops. Still senseless.";
+    }
+
+    /// <summary>Try to stop somebody bleeding out. Applies the result: a success sets
+    /// <see cref="Combatant.Stable"/>, a critical success also puts a Blood back in them.</summary>
+    public static StabilizeOutcome Stabilize(Combatant c, int mod, int? forcedDie = null)
+    {
+        int die = forcedDie ?? Rng.Next(1, 21);
+        var (idx, name, detail) = FourDegrees(die, mod, StabilizeDc);
+        bool stopped = idx >= 2, woke = idx == 3;
+        if (c != null && stopped)
+        {
+            c.Stable = true;
+            if (woke) c.Wound(1, "stabilized");   // Wound clears Bleed and Stable on the way up
+        }
+        return new StabilizeOutcome(die, mod, idx, name, stopped, woke, detail);
+    }
+
+    // ---- the Beat, spent (Ch. XI: "The turn — three Beats, spent as you like") ----
+    // The Beats were counted from the start and never enforced. A Strike decremented them and then
+    // resolved anyway at zero (see CombatFlow.StrikeAndApply, which guards the subtraction and not
+    // the attack), so a fourth, fifth and sixth Strike in one turn were free and the MAP step went
+    // on climbing past anything the book prints. Working a Sign cost nothing at all, though the app
+    // has parsed "1 Beat" off its printed cost line since v1.20. The turn had a budget on screen and
+    // no budget in fact, which is the one shape of bug this app exists to prevent.
+    //
+    // Both live here, in one pair, because the answer and the REASON for the answer have to agree —
+    // a button that goes grey without saying why is a button a Keeper reports as broken.
+
+    /// <summary>How many Beats a working's printed time line costs. "1 Beat" is one and "3 Beats"
+    /// three; "1 minute", "10 minutes", "one hour" and the rest are not things done inside a turn,
+    /// so they cost none. Anything unparseable costs none — the Keeper can still read the printed
+    /// line, and inventing a cost from a string we did not understand is worse than charging nothing.
+    /// </summary>
+    public static int BeatsFor(string time)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(time ?? "", @"(\d+)\s*Beat",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (m.Success) return Math.Clamp(int.Parse(m.Groups[1].Value), 0, 9);
+        // The book writes a single Beat both ways — "1 Beat" and "one Beat".
+        return System.Text.RegularExpressions.Regex.IsMatch(time ?? "", @"\bone\s+Beat\b",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase) ? 1 : 0;
+    }
+
+    /// <summary>Has this one the Beats to do a thing that costs <paramref name="beats"/>? A free
+    /// action (a working the book times in minutes) is always allowed; a trace and a body on the
+    /// ground never act.</summary>
+    public static bool CanSpendBeats(Combatant c, int beats = 1)
+        => c != null && !c.IsSign && !c.Down && (beats <= 0 || c.Beats >= beats);
+
+    /// <summary>Why not — the sentence the dialog prints beside the greyed button. Null when the
+    /// action is allowed, so a caller can write <c>if (Rules.WhyNoBeats(c) is string why)</c> and
+    /// never end up refusing in silence.</summary>
+    public static string WhyNoBeats(Combatant c, int beats = 1)
+    {
+        if (c == null) return "Nobody is selected.";
+        if (c.IsSign) return $"{c.Name} is sign on the trail — it is read, not fought.";
+        if (c.Down) return $"{c.Name} is down. The fallen take no actions.";
+        if (beats <= 0 || c.Beats >= beats) return null;
+        return c.Beats == 0
+            ? $"{c.Name} has spent all three Beats — the turn is done. ▶ Next turn hands the turn on."
+            : $"{c.Name} has {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left and this costs {beats}.";
+    }
 
     /// <summary>The order the field acts in — and the order the tracker shows it in. One answer to
     /// one question, which is the whole point of it living here.
@@ -1044,7 +1270,8 @@ public static class Rules
     /// <summary>Is the round spent? Only if somebody could have acted in the first place — an empty
     /// field, or one where everyone is down, is not a round that just ended over and over.</summary>
     public static bool RoundSpent(IEnumerable<Combatant> field)
-        => field != null && field.Any(c => !c.Down && !c.IsSign) && NextUp(field) == null;
+        => field != null && field.Any(c => !c.IsSign && !c.Dead && (!c.Down || c.Upright))
+           && NextUp(field) == null;
 
     /// <summary>Turn the round over on the whole field: nobody has been handed the turn yet, the
     /// "what just happened" notes are a clean page, and every Worked effect loses a round. Returns
@@ -1078,9 +1305,14 @@ public static class Rules
     /// posse Frightened, out of Beats and mid-turn walking into the next fight. From the outside
     /// that is a button that does nothing, and it was reported as one. Same class as the v1.24.2
     /// escape: a guard that undercounts what a fight leaves behind.</para></summary>
+    /// <para>Bleed, Stable and DeathAt are deliberately NOT in this inventory, and neither is the
+    /// reset below. They are Blood, and Blood carries between fights by design — a soul on the
+    /// ground with a count running is still on the ground when the shooting stops, and "New fight"
+    /// must not quietly make them well. <see cref="Combatant.Upright"/> IS here, because refusing to
+    /// fall buys one round and the round is over.</para>
     public static bool FightResidue(Combatant c)
         => c != null && (!string.IsNullOrWhiteSpace(c.Conditions) || c.Beats != 3 || c.MapStep != 1
-            || c.Acting || c.HasActed || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
+            || c.Acting || c.HasActed || c.Upright || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
             || c.Worked is { Count: > 0 });
 
     /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue"/>
@@ -1103,7 +1335,7 @@ public static class Rules
         {
             if (c == null) continue;
             c.Conditions = ""; c.Beats = 3; c.MapStep = 1;
-            c.Acting = false; c.HasActed = false;
+            c.Acting = false; c.HasActed = false; c.Upright = false;
             c.ClearLast();
             foreach (var w in c.Worked.ToList()) c.Unwork(w);
         }
