@@ -105,8 +105,15 @@ what each tab *is*, plus the decisions worth not re-deriving.
     `RoundsLeft = -1` means "until it is ended", which is what the book's "for a scene" is.
   - **▶ Next turn** (Ctrl+Space) hands the turn on by initiative and rolls the round over by
     itself. `Combatant.HasActed` is the spine; `Rules.NextUp`/`CanAct`/`RoundSpent`/`NewRound` are
-    the pure logic — the downed are skipped, traces never counted. The round is a **spinner**, not
-    a label: the app keeps it, the Keeper can correct it.
+    the pure logic — the downed are skipped, traces never counted, the dead never handed a turn, and
+    a soul standing on Grit **is** (see *Dying, bleeding and death*). The round is a **spinner**,
+    not a label: the app keeps it, the Keeper can correct it. `Rules.BleedOut` runs on the same
+    rollover and every result it returns is logged by name.
+  - **The field repaints because the FIELD CHANGED**, not because a caller remembered:
+    `tracker.ListChanged` invalidates the grid, wired once where the grid is built. `SortTracker`'s
+    trailing `Refresh()` is one call site of several and does nothing while the tab is hidden — and
+    the tab is hidden on the commonest route there is, since *Send all → Tracker* is a button on the
+    **Encounter** tab.
   - **One ordering, and it lives in `Rules.InTurnOrder` (v1.35.0).** `Init desc → souls first →
     name, ordinal`. Both the grid's init sort and `NextUp` read it, and **nothing else may sort the
     field by initiative.** They used to differ on the last tiebreak — the grid put souls first, the
@@ -161,9 +168,10 @@ what each tab *is*, plus the decisions worth not re-deriving.
   real creature (the smoke suite asserts it). **The White Bison stays off every table on purpose**,
   per its Ch. XII "gone quiet" rumor.
 - **Reference** — a paged Keeper's screen (**13 leaves**, counted from `RefLeafTitles`), ◀ ▶ or
-  arrow keys captured in `ProcessCmdKey` so focus doesn't matter. Monospace tables with Blood-red
-  header bands (`RTbl`). The arms, goods, signs and skills leaves render live from
-  `Data/chargen.json` so they can't drift.
+  arrow keys captured in `ProcessCmdKey` so focus doesn't matter. Typewriter tables with Blood-red
+  header bands (`RTbl`), laid to the width of the pane — see *The Reference deck is laid to the
+  pane* below. The arms, goods, signs and skills leaves render live from `Data/chargen.json` so
+  they can't drift.
 - **Session** — free-form Keeper's notes + named 4/6/8-segment progress clocks. Autosaves to
   `session.json` beside the exe on exit **and every 5 minutes**; reloads on launch. First run seeds
   the Appendix D pregens so it's useful immediately.
@@ -245,6 +253,71 @@ that the app never promises what it cannot keep applies to a roadmap as much as 
 places carrying the note, which must be kept in step, are `README.md`, `GK/source/README.md`, and
 the app's own **Help ▸ What it needs to run** (`ShowRequirements` in `Menus.cs`).
 
+## Dying, bleeding and death (v1.38.0) — and why Blood never goes negative
+
+Ch. XI in full: 0 Blood is Dying, a Blood a round, dead at −CON, stopped by a Fortitude save or a
+Medicine check at DC 15; Ch. II's Grit buys one more round on your feet. `Combatant` carries
+`Bleed` / `DeathAt` / `Stable` / `Upright`; `Rules.BleedOut`, `RefuseToFall`, `Stabilize` and
+`DeathThresholdFor` are the pure half.
+
+Four decisions worth not re-deriving:
+
+- **`BloodCur` stays 0..max.** Every screen, save, bar and clamp in the app reads it that way, so
+  the ground below zero is a separate count rather than a sign change nothing else was written for.
+- **`DeathAt` is 0 by default and the rule simply does not run on that row.** The book writes this
+  for characters; the Bestiary's answer to a horror at 0 Blood is its own `puttingItDown` line. A
+  soul takes CON off their sheet on the way onto the field, and `ApplySession` backfills rows from
+  sessions written before this, only ever upward from zero.
+- **`Upright` cannot be derived.** At 0 Blood `Down` is true and `CanAct` refuses the turn, so
+  refusing to fall had to become a fact of its own — cleared by `BleedOut`, which is what "one more
+  round" means. It does not stop the bleeding: the book buys consciousness with Grit, not time.
+- **Overkill carries.** A blow past zero keeps counting toward −CON. This is a READING, not a
+  quotation — "reach –CON" only parses if Blood is a real number that goes negative — and it is
+  recorded as one in `Wound`. Without it a cannonball and a slap are identical to a soul on 1 Blood.
+
+`ResetForNewFight` deliberately clears **none** of it except `Upright`: dying is Blood, and Blood
+carries between fights. `FightResidue` matches, so New fight cannot say "nothing to clear" over it.
+
+## The row grounds are separated by CAST, not by brightness (v1.38.0)
+
+Six grounds now say what a tracker row is, and the rule that keeps them apart is that **no two
+differ only in lightness**. `Writable()` lifts an editable cell toward paper, and a lift washes a
+pale colour toward white — which is exactly how the old palette failed: `PcRow` and a near-white
+`FoeRow` differed by about nine points of luminance, and `Writable` at 42% put a posse row's four
+editable columns nearer the foe colour than the posse colour was to it. Read them as R-vs-G: the
+posse's green sits G above R, a foe's clay sits R above G, and no lift crosses that. Down is a quiet
+grey, dying is the only loud ground in the app, dead is ash. **Anything added here has to obey the
+same rule**; a new ground that is merely a different brightness fails silently.
+
+## The Beats are enforced, and a refusal says why (v1.38.0)
+
+`Rules.CanSpendBeats(c, n)` and `Rules.WhyNoBeats(c, n)` are a pair on purpose: the answer and the
+reason have to agree, because a button that goes grey without saying why is reported as broken.
+`Rules.BeatsFor(time)` reads the printed cost line — `1 Beat` costs one, `10 minutes` costs none.
+Both dialogs that spend a turn (Strike, Work) gate their commit button on it, relabel the cancel to
+*Back to the field*, and point `AcceptButton` at whichever is live. **Reserve the refusal line's
+height whether or not it is speaking** — both dialogs stay open for a follow-up, so a block that
+appears once the Beats run out would walk the buttons around under the Keeper's hand.
+
+`StrikeAndApply` was left alone deliberately: `GK/playtest` drives fights through it on a
+`while (up.Beats > 0)` loop, and a refusal inside the engine would change what the modules' *What
+the Night Costs* numbers were measured against. The gate is the UI's.
+
+## The Reference deck is laid to the pane (v1.38.0)
+
+Tables are padded monospace and that is forced, not stylistic: the padding is what carries the
+Blood-red header band to the right edge, and Georgia is a text-figure face whose 3 4 5 7 9 descend,
+so a column of figures will not line up in it (same reason `LedgerView` has `NumFace`). The face is
+**Courier New**, not Consolas — a period document would have been struck on one, and Consolas is a
+code face used nowhere else in this project.
+
+`RefColumns()` measures how many characters fit *now*; `RefFit()` widens the authored widths to it.
+Two rules: the surplus goes to the **last** column only (the one carrying the rule text — widening a
+DC column just opens a gulf between a label and its sentence), and it is capped at
+`RefMeasureCap` = 90 characters, past which a line stops being easier to read. Leftovers stay as
+margin. The deck re-deals on resize **only when the character count changes**, so a resize drag does
+not redraw thirteen leaves a second.
+
 ## Known landmine: SplitContainer must not get geometry at construction time
 
 **Hit once, cost a full crash-on-launch on real Windows.** Setting
@@ -254,10 +327,19 @@ because at construction time the control's width is some tiny placeholder, not i
 size. This compiles fine and passes headless logic tests — it only throws when the window actually
 renders.
 
-**The fix, already in `MainForm.cs`:** a `Split(orientation, p1Min, p2Min, ratio)` helper that
-creates the SplitContainer bare and defers all geometry to a one-shot `SizeChanged` handler, which
-only fires once the control has a real size, clamps mins against small windows, and unsubscribes
-itself after succeeding. **Always build new splitters through this helper.**
+**The fix, already in `MainForm.cs`:** a `Split(orientation, p1Min, p2Min, ratio, preferred)` helper
+that creates the SplitContainer bare and defers all geometry to a `SizeChanged` handler, which only
+fires once the control has a real size and clamps mins against small windows. **Always build new
+splitters through this helper.**
+
+**One-shot is right for a ratio and wrong for a measurement (v1.38.0).** A ratio splitter seats once
+and is left alone, because re-seating on every resize would undo a Keeper's drag. A **measured** one
+— `preferred` returning `MeasuredColumnWidth(panel)`, for a fixed-width column of buttons — keeps
+listening until the Keeper moves it themselves, and takes `FixedPanel.Panel1` so its column holds
+its pixel width. That is not a nicety: unsubscribing on the first success is how the Generators
+splitter came to sit at 27% of about 2,700px on a 1,264px tab, because for a lazily-realized tab the
+first `SizeChanged` arrives at whatever width the control passes through on the way to being laid
+out. `applying` tells our own assignment apart from a drag.
 
 ## Known landmine: drawn text — the hint, the figures, and the box
 

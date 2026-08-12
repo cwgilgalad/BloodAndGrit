@@ -36,9 +36,41 @@ public partial class MainForm : Sheet
     public static readonly Color Blood   = Color.FromArgb(120, 22, 22);
     public static readonly Color Gold     = Color.FromArgb(150, 116, 50);
     public static readonly Color Verdigris = Color.FromArgb(60, 96, 84);
-    public static readonly Color PcRow   = Color.FromArgb(232, 241, 224);
-    public static readonly Color FoeRow  = Color.FromArgb(250, 250, 247);
-    public static readonly Color DownRow = Color.FromArgb(248, 224, 224);
+    // ---- the row grounds, and why they are separated by HUE and not by lightness (v1.38.0) ----
+    // These four say who is who on the Tracker, and they could not carry it. PcRow was
+    // (232,241,224) and FoeRow (250,250,247) — a near-white — so the whole distinction rested on
+    // about nine points of luminance. Then Writable() lifted every editable cell 42% toward paper,
+    // which put a posse row's Init, Blood, Beats and Conditions at (241,246,237): measurably CLOSER
+    // to the foe colour (distance 14) than the posse colour was to it (distance 31). Four of a
+    // posse row's ten columns were, to the eye, wearing the foe's ground.
+    //
+    // That is why the Keeper reported that a reordered field "screws up and makes encountered
+    // creatures look like posse members". Nothing was mis-decided — the colours simply could not be
+    // told apart once the rows moved, and New fight followed by sending the encounter back moves
+    // every row (each arrival re-rolls initiative).
+    //
+    // The fix is to separate them by CAST rather than by brightness: green against warm clay.
+    // Lightening a pale colour drags it toward white and destroys a luminance difference; it leaves
+    // a hue difference standing. Read them as R-vs-G: the posse's green sits G above R, the foe's
+    // clay sits R above G, and no amount of lifting crosses that.
+    public static readonly Color PcRow   = Color.FromArgb(216, 232, 208);   // G>R by 16 — the posse
+    public static readonly Color FoeRow  = Color.FromArgb(247, 231, 219);   // R>G by 16 — a foe
+    /// <summary>At 0 Blood and NOT on a clock: a creature put down, or a soul whose bleeding has
+    /// been stopped. A light warm grey rather than the pale red it used to be, because red now
+    /// belongs to the one row that still needs something done about it. Nothing is happening here
+    /// and the colour should say so.</summary>
+    public static readonly Color DownRow = Color.FromArgb(228, 222, 214);
+    /// <summary>On the ground with the count running (Ch. XI). The loudest ground in the app, and
+    /// the only loud one: it marks the single most urgent thing that can be true at a table. First
+    /// drawn only a little deeper than DownRow, which put four near-identical pinks down one grid —
+    /// a soul four rounds from dead beside a bandit who was simply finished. Separated by
+    /// LOUDNESS, not by shade: R>G by 66 against the down row's 6.</summary>
+    public static readonly Color DyingRow = Color.FromArgb(232, 166, 158);
+    /// <summary>Dead. Ash, deliberately the one row ground with no cast at all — every other colour
+    /// here means "look at this", and the whole point of this one is that there is nothing left to
+    /// do. Darker than the down row so the two greys are told apart at a glance, because "senseless"
+    /// and "gone" are the difference between a Keeper reaching for a Medicine check and not.</summary>
+    public static readonly Color DeadRow  = Color.FromArgb(198, 194, 190);
 
     // ---- two colours the palette was missing, both for CONTRAST rather than for meaning ----
     // Gold is right for a heading and too light for a sentence: at 9pt on Paper it measures about
@@ -1093,13 +1125,21 @@ public partial class MainForm : Sheet
 
     /// <summary>The ground a cell you can type into stands on: the row's own colour, lifted toward
     /// paper. Every row in these grids already carries meaning in its background — posse green, foe
-    /// rust, acting gold, down red — so "you may edit this" cannot be another flat colour without
+    /// clay, acting gold, down red — so "you may edit this" cannot be another flat colour without
     /// destroying that. Lifting whatever colour the row already has keeps both readable at once, and
-    /// it composes with a row colour added later without anyone remembering this exists.</summary>
+    /// it composes with a row colour added later without anyone remembering this exists.
+    ///
+    /// <para><b>28%, not 42% (v1.38.0).</b> The lift is a marker riding on a meaning, so it must
+    /// never travel far enough to change the meaning. At 42% it did: a posse row's editable cells
+    /// landed nearer the foe ground than the posse ground did. The pairing that keeps this honest is
+    /// the one in the palette above — the row colours differ by CAST, so a lift can wash a row out
+    /// but can never repaint it as another kind of row. Anything added to that palette has to obey
+    /// the same rule; a new ground that is merely a different brightness will fail here silently.
+    /// </para></summary>
     static Color Writable(Color c) => Color.FromArgb(
-        c.R + (255 - c.R) * 42 / 100,
-        c.G + (255 - c.G) * 42 / 100,
-        c.B + (255 - c.B) * 42 / 100);
+        c.R + (255 - c.R) * 28 / 100,
+        c.G + (255 - c.G) * 28 / 100,
+        c.B + (255 - c.B) * 28 / 100);
 
     /// <summary>A hairline between groups of buttons. Related things sit together and unrelated
     /// things do not, which is most of what makes a crowded bar readable.</summary>
@@ -1292,26 +1332,75 @@ public partial class MainForm : Sheet
     /// throws (SplitterDistance must fit inside the not-yet-sized control), which crashed
     /// the app at startup on real Windows.
     /// </summary>
-    static SplitContainer Split(Orientation o, int p1Min, int p2Min, double ratio)
+    /// <summary>
+    /// <c>preferred</c> is where the splitter should actually sit, in pixels, measured from what is
+    /// in the panel — or null to fall back on <c>ratio</c>. A fraction of the window is the right
+    /// answer when both sides hold content that wants the room; it is the wrong answer for a
+    /// fixed-width column of buttons, which wants exactly as much as it wants and leaves the rest as
+    /// a gap. Evaluated inside the deferred handler, so it runs after the panel has been filled and
+    /// can close over a variable assigned later. A throw or a zero from it falls back to the ratio,
+    /// because a splitter in the wrong place is a nuisance and a splitter that throws at construction
+    /// is the crash-on-launch this helper exists to prevent.
+    /// </summary>
+    static SplitContainer Split(Orientation o, int p1Min, int p2Min, double ratio, Func<int> preferred = null)
     {
         var sc = new SplitContainer { Dock = DockStyle.Fill, Orientation = o };
+        // A measured splitter keeps its panel's PIXEL width when the window is resized, because what
+        // it is measuring is a fixed-width column and a proportional one would drift off it again.
+        if (preferred != null) sc.FixedPanel = FixedPanel.Panel1;
+        bool applying = false, keeperMoved = false;
+        // Our own assignment raises SplitterMoved too, so the flag is what tells a Keeper's drag
+        // apart from our seating. Once they have moved it, it is theirs and we stop touching it.
+        sc.SplitterMoved += (s, e) => { if (!applying) keeperMoved = true; };
         void Apply(object s, EventArgs e)
         {
+            if (keeperMoved) { sc.SizeChanged -= Apply; return; }
             int span = o == Orientation.Vertical ? sc.Width : sc.Height;
             if (span < 80) return;                              // not laid out yet — wait
             int p1 = Math.Min(p1Min, span * 2 / 5);             // shrink mins on small windows
             int p2 = Math.Min(p2Min, span * 2 / 5);
+            int want = 0;
+            try { want = preferred?.Invoke() ?? 0; } catch { want = 0; }
+            if (want <= 0) want = (int)(span * ratio);
+            applying = true;
             try
             {
                 sc.Panel1MinSize = p1;
                 sc.Panel2MinSize = p2;
-                sc.SplitterDistance = Math.Clamp((int)(span * ratio), p1, Math.Max(p1, span - p2));
+                sc.SplitterDistance = Math.Clamp(want, p1, Math.Max(p1, span - p2));
             }
             catch { return; }                                   // odd intermediate size — retry on next resize
-            sc.SizeChanged -= Apply;                            // success: one-shot
+            finally { applying = false; }
+            // A ratio splitter is seated once and left alone — that is the long-standing behaviour of
+            // the other three, and re-seating them on every resize would undo a Keeper's drag.
+            //
+            // A MEASURED one keeps listening, and that is the whole fix: this handler used to
+            // unsubscribe on its first success, and for a lazily-realized tab the first SizeChanged
+            // arrives at whatever intermediate width the control passes through on the way to being
+            // laid out. The Generators splitter was seated at 27% of about 2,700px and left there —
+            // 729px on a 1,264px tab, which is how a 230px column of buttons came to be given more
+            // than half the window with five hundred pixels of nothing beside it.
+            if (preferred == null) sc.SizeChanged -= Apply;
         }
         sc.SizeChanged += Apply;
         return sc;
+    }
+
+    /// <summary>How wide a scrolling column of controls actually wants to be: its widest child plus
+    /// that child's margins, the panel's own padding, and room for the scrollbar it will grow. Used
+    /// to seat a splitter flush against a side menu instead of at a fraction of the window — the
+    /// Generators tab's column is 230px of buttons and was being given a third of a 1280px window,
+    /// leaving some seventy pixels of nothing between the buttons and the splitter.
+    ///
+    /// <para>The scrollbar's width is counted whether or not one is showing. The column is taller
+    /// than the tab in every window this app runs in, so one always is; and a splitter that has to
+    /// be dragged the first time a scrollbar appears is worse than one that is 17px generous.
+    /// </para></summary>
+    static int MeasuredColumnWidth(Control panel)
+    {
+        if (panel == null || panel.Controls.Count == 0) return 0;
+        int widest = panel.Controls.Cast<Control>().Max(c => c.Width + c.Margin.Horizontal);
+        return widest + panel.Padding.Horizontal + SystemInformation.VerticalScrollBarWidth + 2;
     }
 
     // ---- a soul's gender ----
@@ -1981,7 +2070,10 @@ public partial class MainForm : Sheet
         }
         AddToField(new Combatant
         { Name = p.Name, PcId = p.Id, IsPC = true, BloodCur = p.BloodCur, BloodMax = p.BloodMax,
-          Defense = p.Defense, Init = ArrivalInit(p.Sheet) });
+          Defense = p.Defense, Init = ArrivalInit(p.Sheet),
+          // Where −CON sits for this soul (Ch. XI). Set on the way onto the field rather than read
+          // live off the sheet, so a Keeper can overrule it for one night without editing anybody.
+          DeathAt = Rules.DeathThresholdFor(p.Sheet) });
         if (!quiet) Log($"{p.Name} takes the field.");
         return true;
     }
@@ -1993,8 +2085,25 @@ public partial class MainForm : Sheet
         {
             if (string.IsNullOrEmpty(c.PcId)) c.PcId = p.Id;   // adopt the id on a legacy row
             c.Name = p.Name;                                    // keep the tracker label in step with a rename
+            bool wasDown = c.Down, wasDead = c.Dead;
+            int wasBlood = c.BloodCur;
             c.BloodCur = p.BloodCur; c.BloodMax = p.BloodMax;
+            // Damage typed on the POSSE tab reaches the field through here and nowhere else, so the
+            // fall has to be noticed here too — otherwise a soul knocked to 0 with the Posse tab's
+            // spinner would be dying with nobody told and no Grit offered, while the identical
+            // number typed on the Tracker asked. One rule, both doors.
+            //
+            // The mirror sets BloodCur straight rather than through Wound, which is right: this is
+            // a restatement of a number the Posse tab already clamped, not a fresh wound. It means
+            // Bleed does not move here, which is also right — a soul knocked to zero starts at −0.
+            // Only FRESH harm reopens a wound that was staunched. The mirror runs on every posse
+            // edit — a rename, a note, a point of Grit — and a version of this that cleared Stable
+            // whenever the row was down would quietly un-stabilise a soul because somebody typed in
+            // their Notes field.
+            if (c.BloodCur < wasBlood && c.Down) c.Stable = false;
+            if (c.BloodCur > 0) { c.Bleed = 0; c.Stable = false; c.Upright = false; }
             trkGrid?.Refresh();
+            CheckFalling(c, wasDown, wasDead);
         }
     }
 
@@ -2441,6 +2550,14 @@ public partial class MainForm : Sheet
             foreach (var c in s.Tracker ?? new())
                 if (c.IsSign) signs.Add(c); else tracker.Add(c);
             foreach (var c in s.Signs ?? new()) { c.IsSign = true; signs.Add(c); }
+            // Every session written before v1.38.0 has DeathAt 0 on every row, which would mean the
+            // dying rule silently does not run for a fight already in progress — a Keeper who
+            // updated mid-campaign would find souls sitting at 0 Blood forever and no sign of why.
+            // Backfilled the same way PcId is, and only ever UP from zero: a Keeper who has set a
+            // threshold by hand keeps it, and a creature is left alone, because the rule is the
+            // posse's (see Combatant.DeathAt).
+            foreach (var c in tracker.Where(t => t.IsPC && t.DeathAt <= 0))
+                c.DeathAt = Rules.DeathThresholdFor(party.FirstOrDefault(c.IsSoul)?.Sheet);
             round = Math.Max(1, s.Round);
             ShowRound();
             foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
