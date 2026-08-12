@@ -1143,6 +1143,191 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
         reloaded.Tracker[0].Beats == 3 && reloaded.Tracker[0].MapStep == 1);
 }
 
+// ---- The Beat, enforced (Ch. XI) ----
+// The Beats were counted and never spent-out: the Strike dialog kept resolving at zero. These hold
+// the predicate the UI greys its button on, and the reason it prints beside it.
+{
+    var up = new Combatant { Name = "Ruth", BloodCur = 20, BloodMax = 20, Beats = 3 };
+    T("beats: three Beats can pay for one",  Rules.CanSpendBeats(up));
+    T("beats: and nothing is refused",        Rules.WhyNoBeats(up) == null);
+    up.Beats = 0;
+    T("beats: an empty turn cannot pay",      !Rules.CanSpendBeats(up));
+    T("beats: and it says so, by name",       Rules.WhyNoBeats(up)?.Contains("Ruth") == true);
+    T("beats: and says the turn is done",     Rules.WhyNoBeats(up)?.Contains("Next turn") == true);
+    up.Beats = 1;
+    T("beats: one Beat cannot buy two",       !Rules.CanSpendBeats(up, 2));
+    T("beats: and the refusal names the price", Rules.WhyNoBeats(up, 2)?.Contains("costs 2") == true);
+    T("beats: a free action is always allowed", Rules.CanSpendBeats(up, 0));
+    T("beats: even with nothing left",          Rules.CanSpendBeats(new Combatant { Name = "x", BloodCur = 1, BloodMax = 1, Beats = 0 }, 0));
+
+    var trace = new Combatant { Name = "Sign of the Wendigo", IsSign = true, Beats = 3 };
+    T("beats: a trace never acts",            !Rules.CanSpendBeats(trace));
+    var felled = new Combatant { Name = "Jed", BloodCur = 0, BloodMax = 10, Beats = 3 };
+    T("beats: the fallen never act",          !Rules.CanSpendBeats(felled));
+    T("beats: and are told why",              Rules.WhyNoBeats(felled)?.Contains("down") == true);
+
+    // The printed time line, read as a cost. This is the half the app parsed and never charged.
+    T("beats: \"1 Beat\" costs one",          Rules.BeatsFor("1 Beat") == 1);
+    T("beats: \"3 Beats\" costs three",       Rules.BeatsFor("3 Beats") == 3);
+    T("beats: the book's spelt-out one",      Rules.BeatsFor("one Beat") == 1);
+    T("beats: a minute is not a Beat",        Rules.BeatsFor("1 minute") == 0);
+    T("beats: nor is an hour",                Rules.BeatsFor("one hour") == 0);
+    T("beats: nor ten minutes",               Rules.BeatsFor("10 minutes") == 0);
+    T("beats: an unreadable line costs nothing", Rules.BeatsFor("as the Keeper says") == 0);
+    T("beats: and so does no line at all",    Rules.BeatsFor(null) == 0 && Rules.BeatsFor("") == 0);
+    // Read off a real printed cost, the way the Work dialog does it.
+    T("beats: parsed out of a whole cost line",
+        Rules.BeatsFor(Rules.ParseCost("1 Beat · 2 Nerve · Will save").Time) == 1);
+}
+
+// ---- Dying, bleeding, and death (Player's Book Ch. XI) ----
+// "At 0 Blood you fall, Dying and bleeding — losing 1 Blood each round — until someone stabilizes
+// you or you reach –CON, at which point you are dead." Printed on the Reference deck since v1.4 and
+// implemented nowhere until v1.38.0, so every one of these is a first assertion.
+{
+    Combatant Soul(int blood = 20, int con = 12) =>
+        new() { Name = "Ruth", BloodCur = blood, BloodMax = blood, IsPC = true, DeathAt = con, Beats = 3 };
+
+    // -- a creature is untouched by all of it: DeathAt 0 means the rule does not run here --
+    var beast = new Combatant { Name = "The Risen", BloodCur = 4, BloodMax = 14 };
+    beast.Wound(-9);
+    T("dying: a creature at 0 Blood is simply down", beast.Down && !beast.Dying && !beast.Dead);
+    T("dying: and its overkill is not counted",      beast.Bleed == 0);
+    T("dying: and it shows no death clock",          beast.DyingLine == "");
+
+    // -- a soul falls, and the count starts --
+    var ruth = Soul();
+    ruth.Wound(-20);
+    T("dying: a soul at 0 Blood is Dying",     ruth.Dying && ruth.Down && !ruth.Dead);
+    T("dying: and starts the count at zero",   ruth.Bleed == 0);
+    T("dying: with CON rounds to live",        ruth.RoundsToDeath == 12);
+    T("dying: and the row says so",            ruth.DyingLine == "dying −0 of 12");
+    T("dying: the fallen take no turn",        !Rules.CanAct(ruth));
+
+    // -- a Blood a round, and the round says it --
+    var news = Rules.BleedOut(new[] { ruth });
+    T("dying: a round costs a Blood",          ruth.Bleed == 1 && ruth.RoundsToDeath == 11);
+    T("dying: and the round reports it",       news.Count == 1 && news[0].Who == ruth && !news[0].Died);
+    for (int i = 0; i < 10; i++) Rules.BleedOut(new[] { ruth });
+    T("dying: eleven rounds is not yet death", ruth.Bleed == 11 && ruth.Dying && !ruth.Dead);
+    T("dying: with one round left",            ruth.RoundsToDeath == 1);
+    var last = Rules.BleedOut(new[] { ruth });
+    T("dying: reaching −CON is death",         ruth.Dead && ruth.Bleed == 12);
+    T("dying: the round says who died",        last.Count == 1 && last[0].Died);
+    T("dying: the dead are no longer dying",   !ruth.Dying);
+    T("dying: and the row says dead",          ruth.DyingLine == "dead");
+    T("dying: the dead take no turn",          !Rules.CanAct(ruth));
+    T("dying: and the dead stop bleeding",     Rules.BleedOut(new[] { ruth }).Count == 0 && ruth.Bleed == 12);
+
+    // -- the boundary, exactly. Dead AT −CON, not one short and not one past --
+    var edge = Soul(1, 3);
+    edge.Wound(-1);
+    Rules.BleedOut(new[] { edge }); Rules.BleedOut(new[] { edge });
+    T("dying: −2 of 3 is still alive",         edge.Bleed == 2 && !edge.Dead && edge.Dying);
+    Rules.BleedOut(new[] { edge });
+    T("dying: −3 of 3 is dead",                edge.Bleed == 3 && edge.Dead);
+
+    // -- overkill carries past zero, which is what "reach −CON" has to mean --
+    var shot = Soul(4, 12);
+    shot.Wound(-14);
+    T("dying: a blow past zero keeps counting", shot.Bleed == 10 && shot.Dying);
+    T("dying: and Blood itself never goes negative", shot.BloodCur == 0);
+    var cannon = Soul(4, 12);
+    cannon.Wound(-40);
+    T("dying: a blow past −CON kills outright", cannon.Dead && cannon.Bleed >= 12);
+    T("dying: and says so in the Last column",  cannon.LastNote == "KILLED");
+
+    // -- stabilizing stops the clock; it does not wake anybody --
+    var bled = Soul(10, 12);
+    bled.Wound(-10);
+    Rules.BleedOut(new[] { bled }); Rules.BleedOut(new[] { bled });
+    var missed = Rules.Stabilize(bled, 0, forcedDie: 2);     // 2 vs DC 15 — a critical failure
+    T("dying: a failed check leaves them bleeding", !missed.Stopped && !bled.Stable && bled.Dying);
+    var ok2 = Rules.Stabilize(bled, 0, forcedDie: 16);        // 16 vs DC 15 — a plain success
+    T("dying: a success stops the bleeding",   ok2.Stopped && bled.Stable && !bled.Dying);
+    T("dying: stable is not awake",            bled.BloodCur == 0 && bled.Down);
+    T("dying: and the row says stable",        bled.DyingLine == "stable");
+    T("dying: a stable body stops losing Blood", Rules.BleedOut(new[] { bled }).Count == 0 && bled.Bleed == 2);
+    var crit = Soul(10, 12);
+    crit.Wound(-10);
+    var woke = Rules.Stabilize(crit, 10, forcedDie: 20);      // beats DC 15 by 10 — critical success
+    T("dying: a critical success brings them round", woke.Woke && crit.BloodCur == 1 && !crit.Down);
+    T("dying: and clears the count with them", crit.Bleed == 0 && !crit.Stable);
+
+    // -- healing past zero undoes all of it --
+    var mended = Soul(8, 12);
+    mended.Wound(-8);
+    Rules.BleedOut(new[] { mended });
+    mended.Wound(6);
+    T("dying: healing above zero ends the dying", !mended.Dying && !mended.Down && mended.Bleed == 0);
+    T("dying: and they can act again",          Rules.CanAct(mended));
+
+    // -- Grit: refuse to fall (Ch. II) --
+    var brave = Soul(6, 12);
+    var soul = new PartyMember { Name = "Ruth", Grit = 1 };
+    brave.Wound(-6);
+    T("grit: a fallen soul cannot act",        !Rules.CanAct(brave));
+    T("grit: refusing spends the point",       Rules.RefuseToFall(brave, soul) == null && soul.Grit == 0);
+    T("grit: and puts them back on their feet", brave.Upright && Rules.CanAct(brave));
+    T("grit: but it does not stop the bleeding", brave.Dying);
+    T("grit: it cannot be spent twice in a round", Rules.RefuseToFall(brave, soul)?.Contains("already") == true);
+    Rules.BleedOut(new[] { brave });
+    T("grit: one more round means one",        !brave.Upright && !Rules.CanAct(brave));
+    T("grit: and the round still cost a Blood", brave.Bleed == 1);
+    T("grit: with no Grit there is no refusing", Rules.RefuseToFall(brave, soul)?.Contains("no Grit") == true);
+    T("grit: nobody standing has a fall to refuse",
+        Rules.RefuseToFall(Soul(), new PartyMember { Grit = 3 })?.Contains("still on their feet") == true);
+    T("grit: and the dead are past it",
+        Rules.RefuseToFall(cannon, new PartyMember { Grit = 3 })?.Contains("dead") == true);
+    T("grit: a foe has no Grit to spend",
+        Rules.RefuseToFall(beast, null)?.Contains("posse") == true);
+
+    // -- where −CON comes from --
+    T("dying: a sheet's CON is the threshold",
+        Rules.DeathThresholdFor(new CharacterSheet { Scores = new() { ["CON"] = 14 } }) == 14);
+    T("dying: no sheet falls back to the middle of the scale",
+        Rules.DeathThresholdFor(null) == Rules.DefaultDeathAt);
+    T("dying: and so does a sheet with no CON on it",
+        Rules.DeathThresholdFor(new CharacterSheet()) == Rules.DefaultDeathAt);
+
+    // -- the round is not over while somebody is still up on Grit --
+    var standing = Soul(); standing.Wound(-20);
+    Rules.RefuseToFall(standing, new PartyMember { Grit = 3 });
+    T("dying: a soul up on Grit keeps the round open", !Rules.RoundSpent(new[] { standing }));
+    T("dying: and is who is up next",                  Rules.NextUp(new[] { standing }) == standing);
+    var corpses = new[] { cannon, beast };
+    T("dying: a field of the dead and the downed has no round left", !Rules.RoundSpent(corpses));
+
+    // -- New fight is Blood-adjacent, so it must NOT quietly make a dying soul well --
+    var stillDying = Soul(9, 12);
+    stillDying.Wound(-9);
+    Rules.BleedOut(new[] { stillDying });
+    Rules.RefuseToFall(stillDying, new PartyMember { Grit = 2 });
+    Rules.ResetForNewFight(new[] { stillDying });
+    T("dying: New fight does not stop the bleeding", stillDying.Dying && stillDying.Bleed == 1);
+    T("dying: nor heal the body",                    stillDying.BloodCur == 0 && stillDying.DeathAt == 12);
+    T("dying: but the Grit round is over",           !stillDying.Upright);
+
+    // Standing on Grit is turn state, so New fight has to count it as something to clear — the
+    // paired guard that stopped New fight answering "nothing to clear" over a spent posse.
+    var stillUp = Soul(5, 12);
+    stillUp.Wound(-5);
+    Rules.RefuseToFall(stillUp, new PartyMember { Grit = 1 });
+    T("dying: refusing to fall is fight residue", Rules.FightResidue(stillUp));
+
+    // -- all of it survives a save and a load, and an old session defaults to nobody dying --
+    var dySess = new GameSession();
+    dySess.Tracker.Add(stillDying);
+    var dyBack = System.Text.Json.JsonSerializer.Deserialize<GameSession>(
+        System.Text.Json.JsonSerializer.Serialize(dySess));
+    T("dying: the count rides in the session file",
+        dyBack.Tracker[0].Bleed == 1 && dyBack.Tracker[0].DeathAt == 12 && dyBack.Tracker[0].Dying);
+    var oldRow = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
+        "{\"Name\":\"old row\",\"BloodCur\":0,\"BloodMax\":10,\"IsPC\":true}");
+    T("dying: a session written before the rule has nobody dying",
+        oldRow.Down && !oldRow.Dying && !oldRow.Dead && oldRow.DeathAt == 0);
+}
+
 // ---- Marker ink: the book's colors, the Keeper's, and one marker's own ----
 {
     MapInk.LoadKindColors(null);                                  // start from the book
