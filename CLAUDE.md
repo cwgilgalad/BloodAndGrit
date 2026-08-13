@@ -606,6 +606,18 @@ change them all:
   **`.githooks/post-merge`** hook that pushes when, and only when, a merge lands on `main`. It
   no-ops on any other branch and in any repo with no `origin` — which is why HRHS Scripts,
   local-only by design, deliberately does not carry one at all.
+- **A merge that had CONFLICTS needs its own hook (2026-08-12).** `post-merge` covers the clean
+  case and only the clean case — git's own documentation says it "is not executed if the merge
+  failed due to conflicts", and finishing that merge by hand with `git commit` does not run it
+  either, because that is a commit and not a merge. So the guarantee "a merge to main reaches
+  GitHub" was silently skipping the merges most worth backing up: the ones somebody sat and
+  resolved. A tracked **`.githooks/post-commit`** closes it — after any commit, if the commit just
+  made is a merge commit (two or more parents) and the branch is `main`, it pushes. The two cases
+  are disjoint, so nothing double-pushes: a clean `git merge` writes its own commit and runs
+  post-merge, while post-commit runs for `git commit`. Sandbox-proved on four cases: clean merge
+  pushes, conflicted merge pushes, an ordinary commit on `main` does not, and a conflicted merge on
+  a session branch does not.
+
 - **The ship loop ends with the tag push.** `--follow-tags` in the hook carries tags that
   already exist, and a tag is normally created *after* the merge, so: merge, tag, then
   `git push --follow-tags origin main`. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three

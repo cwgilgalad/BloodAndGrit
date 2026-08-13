@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# The other half of sync-on-merge: the merge that had CONFLICTS.
+#
+# `post-merge` covers the clean case and only the clean case. Git's own
+# documentation is explicit -- it "is not executed if the merge failed due to
+# conflicts" -- and finishing that merge by hand with `git commit` does not run
+# it either, because that is a commit and not a merge. So the hook that exists
+# to guarantee "a merge to main reaches GitHub" was silently skipping the merges
+# most worth backing up: the ones somebody had to sit and resolve.
+#
+# Measured in a sandbox (bare origin + clone, the real hook, one clean merge and
+# one conflicted merge): clean pushed, conflicted did not. Found the same way in
+# earnest, on the TideWatch v1.15.0 merge, which sat unpushed until it was
+# noticed by hand.
+#
+# So: after any commit, if the commit just made is a MERGE commit and we are on
+# main, push. A merge commit is one with two or more parents, which is what the
+# rev-list below counts.
+#
+# This cannot double-push against post-merge. A clean `git merge` writes its
+# commit itself and runs post-merge, not post-commit; post-commit runs for
+# `git commit`, which is how a conflicted merge is finished. The two cases are
+# disjoint. And a redundant push would be a harmless no-op in any event.
+#
+# Everything else matches post-merge deliberately: main only, origin only, a
+# failed push is not fatal, and no origin means nothing to do.
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+[ "$branch" = "main" ] || exit 0
+
+# 1 sha + 2 parents = 3 fields. Anything less is an ordinary commit, and an
+# ordinary commit on main is not what this hook is for.
+parents=$(git rev-list --parents -n 1 HEAD 2>/dev/null | wc -w)
+[ "$parents" -ge 3 ] 2>/dev/null || exit 0
+
+git remote get-url origin >/dev/null 2>&1 || exit 0
+
+echo "  post-commit: a merge landed on main (resolved by hand) -- pushing to origin"
+if git push --follow-tags origin main; then
+    :
+else
+    echo "  post-commit: push FAILED (offline?). The merge stands; push it by hand:" >&2
+    echo "      git push --follow-tags origin main" >&2
+fi
+exit 0
