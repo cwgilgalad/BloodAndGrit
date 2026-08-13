@@ -8,6 +8,23 @@ Desktop\Git repos.)
 
 ---
 
+- **2026-08-12 — Sync-on-merge had a hole: the merge that had conflicts (infrastructure).**
+  `post-merge` fires for a clean merge and never for a conflicted one. Git does not run it when
+  conflicts stop the merge, and completing the merge with `git commit` is a commit rather than a
+  merge, so nothing ran there either. The guarantee added on 2026-08-10 — that landing on `main`
+  is what reaches GitHub — was therefore skipping exactly the merges most worth backing up.
+
+  Found in earnest rather than by reading: the TideWatch v1.15.0 merge conflicted on `CHANGELOG.md`,
+  was resolved and committed, and sat unpushed until it was noticed by hand. Then reproduced in a
+  sandbox (bare origin + clone, the real hooks): clean merge pushed, conflicted merge did not.
+
+  A tracked **`.githooks/post-commit`** closes it — on `main`, after a commit with two or more
+  parents, push. Nothing double-pushes, because a clean `git merge` writes its own commit and runs
+  post-merge while post-commit only runs for `git commit`. Sandbox-verified on four cases: clean
+  merge pushes · conflicted merge pushes · an ordinary commit on `main` does not · a conflicted
+  merge on a session branch does not. Deployed to all five repos that have an `origin`; HRHS
+  Scripts is local-only by design and still carries no sync hook at all.
+
 - **GritKeeper v1.38.0 — a soul can die now, a turn has an end, and the field says who is who
   (2026-08-11).** Four things the Keeper reported, plus the one they asked for on the Reference
   screen. Three of the four were rules the app already *printed* and did not *run*.
