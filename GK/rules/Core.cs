@@ -1273,14 +1273,31 @@ public static class Rules
         => field != null && field.Any(c => !c.IsSign && !c.Dead && (!c.Down || c.Upright))
            && NextUp(field) == null;
 
-    /// <summary>Turn the round over on the whole field: nobody has been handed the turn yet, the
-    /// "what just happened" notes are a clean page, and every Worked effect loses a round. Returns
-    /// the effects that ran out, each with who it was on, so the caller can say so by name — an
-    /// effect that vanishes off a chip without a word is one the table keeps playing anyway.
+    /// <summary>Turn the round over on the whole field: everybody gets their turn back — three
+    /// Beats and a clean first Strike — nobody has been handed it yet, the "what just happened"
+    /// notes are a clean page, and every Worked effect loses a round. Returns the effects that ran
+    /// out, each with who it was on, so the caller can say so by name — an effect that vanishes off
+    /// a chip without a word is one the table keeps playing anyway.
     ///
     /// <para>Out here rather than inline in the Tracker for the reason <see cref="ResetForNewFight"/>
     /// is: the round rollover is the spine of the combat loop, and while it sat in UI code no test
-    /// could play a fight through it.</para></summary>
+    /// could play a fight through it.</para>
+    ///
+    /// <para><b>The Beats and the MAP step are given back HERE, and that is the whole of a real bug
+    /// (v1.39.0).</b> They were handed out by <see cref="Combatant.BeginTurn"/> and by nothing else,
+    /// and BeginTurn only runs when a row is stepped through ▶ Next turn. Step the round by hand, or
+    /// let it roll over while somebody never got an explicit turn, and that row walked into the new
+    /// round still spent: Beats 0, MapStep 4, which is a standing −10 on every Strike it makes for
+    /// the rest of the fight. A Keeper reported it as the posse being unable to hit anything, and
+    /// the arithmetic bears that out exactly — a level-1 Gunhand at +4 against Defense 13 goes from
+    /// hitting three times in five to needing a natural 19, while the dog biting her at +5 off a
+    /// clean MapStep 1 hits four times in five. The same zero Beats greys the Work button, so the
+    /// same fault reads at the table as the Signs and Miracles having stopped working.</para>
+    ///
+    /// <para>Ch. XI is not ambiguous about it — "On your turn you have three Beats", and the
+    /// Multiple Attack Penalty counts Strikes <em>in a turn</em>. A new round is a new turn for
+    /// everyone in it. BeginTurn still does this too, and the two being idempotent is the point:
+    /// one route that is remembered and one that is not is how this got out.</para></summary>
     public static List<(Combatant On, WorkedEffect Effect)> NewRound(IEnumerable<Combatant> field)
     {
         var ended = new List<(Combatant, WorkedEffect)>();
@@ -1289,6 +1306,10 @@ public static class Rules
         {
             if (c == null) continue;
             c.Acting = false; c.HasActed = false; c.ClearLast();
+            // The turn's own currency, back for the new turn. A trace takes no turn and is left
+            // alone; the dead are left alone too, so a corpse on the field never reads as a row
+            // with three Beats waiting to be spent.
+            if (!c.IsSign && !c.Dead) { c.Beats = 3; c.MapStep = 1; }
             foreach (var done in c.TickWorked()) ended.Add((c, done));
         }
         return ended;

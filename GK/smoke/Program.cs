@@ -573,6 +573,53 @@ foreach (var (table, floor) in new[]
             Rules.InTurnOrder(posse).First().Name == "The Thing at the Door");
     }
 
+    // ---- a new round hands the turn back (v1.39.0) ----
+    // The fault this is here to stop: NewRound cleared who had acted and did NOT give the Beats or
+    // the MAP step back. BeginTurn was the only thing that did, and it only runs when a row is
+    // stepped through ▶ Next turn — so a round stepped by hand, or rolled over with somebody who
+    // never got an explicit turn, left that row on Beats 0 and MapStep 4. MapStep 4 is a standing
+    // −10 on every Strike it makes for the rest of the fight, and a Keeper reported it as the posse
+    // being unable to hit anything. It was true: a level-1 Gunhand at +4 against Defense 13 fell
+    // from three hits in five to needing a natural 19, while the dog biting her back at +5 off a
+    // clean step hit seven times in ten.
+    //
+    // Note the three fights above could never have caught this: like GK/playtest, they call
+    // BeginTurn() on every turn, which is the ideal path and not the one at the table. This block
+    // deliberately does not.
+    {
+        var spent = new Combatant { Name = "Ruth", IsPC = true, Init = 12, BloodCur = 12, BloodMax = 12 };
+        var mark  = new Combatant { Name = "The Mad Dog", Init = 8, BloodCur = 10, BloodMax = 10, Defense = 13 };
+        var turnField = new List<Combatant> { spent, mark };
+        var gun = new CgWeapon { name = "Single-Action Revolver", dmg = "1d8", traits = "", kind = "gun" };
+
+        spent.BeginTurn();
+        for (int i = 0; i < 3; i++) CombatFlow.StrikeAndApply(spent, mark, gun, 4);
+        T("round: a full turn of three Strikes spends the Beats and walks the MAP up",
+            spent.Beats == 0 && spent.MapStep == 4);
+        T("round: and that step really is the −10 the Code's third Strike costs",
+            IronCode.MapPenalty(spent.MapStep, false) == -10);
+
+        Rules.NewRound(turnField);
+        T("round: a new round gives the Beats back", spent.Beats == 3);
+        T("round: a new round makes the first Strike clean again", spent.MapStep == 1);
+        T("round: which is to say the next Strike carries no MAP",
+            IronCode.MapPenalty(spent.MapStep, false) == 0);
+        T("round: the foe is handed its turn back too — this was never the posse's rule alone",
+            mark.Beats == 3 && mark.MapStep == 1);
+
+        // A trace takes no turn, so it is not handed three Beats to spend on nothing.
+        var trace = new Combatant { Name = "Something passed here", IsSign = true, Beats = 0, MapStep = 1 };
+        Rules.NewRound(new List<Combatant> { trace });
+        T("round: sign & spoor is not handed a turn", trace.Beats == 0);
+
+        // Neither are the dead. A corpse showing three Beats reads as a row still waiting to go.
+        var gone = new Combatant { Name = "Addison", IsPC = true, BloodMax = 9, DeathAt = 10, Beats = 0, MapStep = 3 };
+        gone.Wound(-30);                       // straight past −CON
+        T("round: the dead are dead before the round turns", gone.Dead);
+        Rules.NewRound(new List<Combatant> { gone });
+        T("round: and the dead are not handed a turn back", gone.Beats == 0 && gone.MapStep == 3);
+    }
+
     // ---- more shapes of fight, hunting the cases three ordinary ones never reach ----
     {
         // A lone survivor still gets rounds: NextUp answers, the round spends, and the loop does

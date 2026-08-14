@@ -2186,8 +2186,12 @@ public partial class MainForm : Sheet
             return;
         }
         int shown = Math.Min(diceTray.Dice.Count, DiceShownMax);
-        int size = 52, gap = 10;
-        int x = Math.Max(8, (diceTray.Width - shown * (size + gap)) / 2), y = (diceTray.Height - size) / 2 - 4;
+        // The die is a shape rather than a square now, so its name goes UNDER it: a rhombus and a
+        // kite both come to a point at the bottom, and "d10" set inside one would be printed over
+        // the empty corners either side of the tip. Below is also where a die's name is on a table.
+        int size = 50, gap = 10, tag = 14;
+        int x = Math.Max(8, (diceTray.Width - shown * (size + gap)) / 2);
+        int y = (diceTray.Height - (size + tag)) / 2;
         for (int i = 0; i < shown; i++)
         {
             var (sides, value, sign) = diceTray.Dice[i];
@@ -2196,7 +2200,7 @@ public partial class MainForm : Sheet
             var rect = new Rectangle(x + i * (size + gap), y, size, size);
             // a little jitter while tumbling, stillness once landed
             if (!diceTray.Settled) rect.Offset(Rules.Rng.Next(-2, 3), Rules.Rng.Next(-2, 3));
-            using var path = RoundedRect(rect, 9);
+            using var path = DiePath(sides, rect);
             using var face = new SolidBrush(faceCol);
             g.FillPath(face, path);
             // the faces carry the die colors now, so the verdicts ring in metal instead:
@@ -2205,18 +2209,112 @@ public partial class MainForm : Sheet
                        : show == sides ? Color.FromArgb(255, 208, 74)     // best face
                        : show == 1 && sides >= 6 ? Color.FromArgb(28, 20, 14)   // worst face
                        : Darken(faceCol);
-            using var pen = new Pen(edge, diceTray.Settled && (show == sides || (show == 1 && sides >= 6)) ? 3f : 1.6f);
+            bool loud = diceTray.Settled && (show == sides || (show == 1 && sides >= 6));
+            using var pen = new Pen(edge, loud ? 3f : 1.6f);
             g.DrawPath(pen, path);
-            TextRenderer.DrawText(g, show.ToString(), DieNumFont,
-                new Rectangle(rect.X, rect.Y - 4, rect.Width, rect.Height), textCol,
+            // The face the solid is built out of, scored inside the outline — it is what tells a
+            // d12 from a d100, which share a ten-sided edge.
+            if (DieFace(sides, rect) is PointF[] inner)
+            {
+                using var facePen = new Pen(Color.FromArgb(loud ? 150 : 96, Darken(faceCol, 0.55)), 1.2f);
+                g.DrawPolygon(facePen, inner);
+            }
+            TextRenderer.DrawText(g, show.ToString(), DieNumFont, DieTextRect(sides, rect), textCol,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            // Under the die, in the die's own ink darkened to carry on paper — the white text colour
+            // that reads on a red d20 is invisible out here. A pale face has to be taken down
+            // further than a dark one or the d10's name washes out against the tray: one fixed
+            // factor is a contrast ratio that changes with the hue, which is not a standard.
             TextRenderer.DrawText(g, (sign < 0 ? "−d" : "d") + sides, DieTagFont,
-                new Rectangle(rect.X, rect.Bottom - 17, rect.Width, 15),
-                textCol, TextFormatFlags.HorizontalCenter);   // GDI text is opaque — no alpha tricks
+                new Rectangle(rect.X, rect.Bottom + 1, rect.Width, tag),
+                Darken(faceCol, faceCol.GetBrightness() > 0.7f ? 0.42 : 0.62),
+                TextFormatFlags.HorizontalCenter);
         }
         if (diceTray.Dice.Count > shown)
             TextRenderer.DrawText(g, $"+{diceTray.Dice.Count - shown} more", DieMoreFont,
                 new Rectangle(diceTray.Width - 78, diceTray.Height - 22, 74, 18), Gold, TextFormatFlags.Right);
+    }
+
+    // ---- the shape a die actually is (v1.39.0) ----
+    // Every die in the tray used to be the same rounded square, so the tray told a Keeper the colour
+    // of the die and nothing else — and colour alone is the one channel that fails for the ~8% of
+    // men who cannot separate the d4's green from the d20's red. A d4 that is a triangle and a d20
+    // that is a hexagon are legible before they are read, and they are legible to everybody.
+    //
+    // These are the silhouettes the solids actually present face-on, which is not always the number
+    // of sides: a dodecahedron shows a TEN-sided outline around a pentagonal face, and an
+    // icosahedron a hexagon around a triangular one. Drawing a literal twelve-gon would be both
+    // wrong and, at 52 pixels, indistinguishable from a circle. The inner face is drawn as well,
+    // because the outline alone is what makes a d12 and a d100 twins.
+    static PointF[] Regular(int n, RectangleF r, double startDeg, float shrink = 1f)
+    {
+        float cx = r.X + r.Width / 2f, cy = r.Y + r.Height / 2f;
+        float rx = r.Width / 2f * shrink, ry = r.Height / 2f * shrink;
+        var pts = new PointF[n];
+        for (int i = 0; i < n; i++)
+        {
+            double a = Math.PI / 180.0 * (startDeg + i * 360.0 / n);
+            pts[i] = new PointF(cx + (float)(Math.Cos(a) * rx), cy + (float)(Math.Sin(a) * ry));
+        }
+        return pts;
+    }
+
+    /// <summary>The outline of a die of this many sides, or null for one the tray has no solid for —
+    /// <see cref="Rules.RollExprFull"/> admits any dN up to d1000, so the rounded square stays as the
+    /// answer for a d7 or a d30 rather than the paint throwing at the table.</summary>
+    static PointF[] DieOutline(int sides, RectangleF r) => sides switch
+    {
+        4   => Regular(3, r, -90),           // the pyramid, point up
+        8   => Regular(4, r, -90),           // two pyramids base to base: a rhombus, edge-on
+        10  => Kite(r),                      // the trapezohedron's kite — widest above the middle
+        12  => Regular(10, r, -90),          // a dodecahedron face-on reads as a ten-sided outline
+        20  => Regular(6, r, -90),           // an icosahedron face-on reads as a hexagon
+        100 => Regular(10, r, -90 + 18),     // the same ten sides, turned, so it is not a d12's twin
+        _   => null,                         // 6 included: a cube face IS a square
+    };
+
+    /// <summary>The face on top, drawn inside the outline. Null where the outline is the whole of it.
+    /// </summary>
+    static PointF[] DieFace(int sides, RectangleF r) => sides switch
+    {
+        4   => Regular(3, r, 90, 0.52f),     // the far face, inverted
+        12  => Regular(5, r, -90, 0.56f),    // the pentagon a dodecahedron is made of
+        20  => Regular(3, r, -90, 0.62f),    // the triangle an icosahedron is made of
+        100 => Regular(5, r, -90 + 36, 0.56f),
+        _   => null,
+    };
+
+    static PointF[] Kite(RectangleF r)
+    {
+        float cx = r.X + r.Width / 2f;
+        return new[]
+        {
+            new PointF(cx, r.Top),
+            new PointF(r.Right, r.Top + r.Height * 0.38f),
+            new PointF(cx, r.Bottom),
+            new PointF(r.Left, r.Top + r.Height * 0.38f),
+        };
+    }
+
+    /// <summary>Where the number can be set without falling off the shape. A triangle has no room at
+    /// its apex and a kite none at either point, so the figure sits where the ink actually is —
+    /// centring in the bounding box would hang a "4" over the empty corner of a d4.</summary>
+    static Rectangle DieTextRect(int sides, Rectangle r) => sides switch
+    {
+        4   => new Rectangle(r.X, r.Y + (int)(r.Height * 0.28f), r.Width, (int)(r.Height * 0.60f)),
+        8   => new Rectangle(r.X, r.Y + (int)(r.Height * 0.10f), r.Width, (int)(r.Height * 0.80f)),
+        10  => new Rectangle(r.X, r.Y + (int)(r.Height * 0.06f), r.Width, (int)(r.Height * 0.68f)),
+        20  => new Rectangle(r.X, r.Y + (int)(r.Height * 0.06f), r.Width, (int)(r.Height * 0.80f)),
+        _   => new Rectangle(r.X, r.Y, r.Width, r.Height),
+    };
+
+    static System.Drawing.Drawing2D.GraphicsPath DiePath(int sides, Rectangle r)
+    {
+        var pts = DieOutline(sides, r);
+        if (pts == null) return RoundedRect(r, 9);
+        var p = new System.Drawing.Drawing2D.GraphicsPath();
+        p.AddPolygon(pts);
+        return p;
     }
 
     static System.Drawing.Drawing2D.GraphicsPath RoundedRect(Rectangle r, int rad)
