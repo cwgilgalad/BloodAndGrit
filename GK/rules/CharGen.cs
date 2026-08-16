@@ -52,7 +52,17 @@ public class CgMiracle
     public int rank { get; set; }
 }
 
-public class CgWeapon { public string name { get; set; } public string dmg { get; set; } public string traits { get; set; } public double cost { get; set; } public string kind { get; set; } }
+/// <summary>One row of the Ch. X arms table. <c>range</c> is the increment in feet, <c>cap</c> how
+/// many shots before reloading, and <c>reload</c> the printed cost of making it ready again —
+/// "1", "1/shot" or "slow". All three are zero or empty on a blade, which has no such columns.
+/// They were absent until 2026-08-16, which is why the Iron Code's range increments and reload
+/// actions could not be implemented at all: the book prints seven columns and this carried four.</summary>
+public class CgWeapon
+{
+    public string name { get; set; } public string dmg { get; set; } public string traits { get; set; }
+    public int range { get; set; } public int cap { get; set; } public string reload { get; set; } = "";
+    public double cost { get; set; } public string kind { get; set; }
+}
 
 /// <summary>One row of the Ch. X armor table. <c>gear</c> is the gearPrices key that buys it,
 /// which is how a duster already in a soul's kit is recognized as the armor it always was.</summary>
