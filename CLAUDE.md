@@ -220,12 +220,25 @@ hard-coded (currently "…Version 2.25…" / "…v2.25…", four per script). Th
 version, never the splicing book's own — check them against `build_player.py` rather than
 against this line, which has gone stale before.
 
-**Any time you bump the Player's Book version, you must also update those match strings in
-both build scripts** — e.g.:
+**Any time you bump the Player's Book version, you must also update those match strings in all
+FOUR places** — the two book builders **and `modules_common.py`**, which carries the same transform
+for all three modules:
 ```bash
-sed -i 's/v2.13/v2.14/g; s/Version 2.13/Version 2.14/g' build_player.py build_keeper.py build_bestiary.py
+sed -i 's/v2.13/v2.14/g; s/Version 2.13/Version 2.14/g' \
+  build_player.py build_keeper.py build_bestiary.py modules_common.py
 ```
-— or the Keeper/Bestiary covers will silently keep the Player's version. Bumping only the
+— or the Keeper/Bestiary/module covers will silently keep the Player's version.
+
+**`modules_common.py` was missing from this line until 2026-08-15, and it cost exactly what the
+paragraph above predicts.** The v2.26 bump updated the two book builders, the modules' match
+strings went on hunting for "Version 2.25" in a shell that no longer had it, the replacement found
+nothing, and all three modules built with *"The Player's Book (Revised &amp; Expanded · v2.26)"* on
+the cover and in the title bar. They measured clean — parity, zero clip, zero h-scroll — because
+they were perfectly good books, just not their own. Nothing in the repo checks that a book's cover
+says the book's own name, which is why this is written down here instead. The trap is that the
+transform **moved**: it was copied into each module builder until 2026-08-09, when it became
+`modules_common.py`, and this note was not updated with it. When a shared transform moves, the
+cascade list moves with it. Bumping only the
 Keeper or only the Bestiary needs no cascade (their version strings are only on the *right*
 side of the tuples; bump them directly in their own build script).
 
