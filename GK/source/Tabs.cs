@@ -2560,9 +2560,71 @@ public partial class MainForm
             // sickens. Last of the three, because a condition on somebody who is already dying is
             // the least of what just happened to them.
             if (asCreature) OfferConditions(tgt, rep.Inflicts, catks[idx].Effect);
+            // And the shot that does not stop at the one it was aimed at.
+            if (!asCreature) OfferScatter(tgt, CharGen.D.weapons[idx], rep.Res.Strike.Hit, shot.Distance);
             // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
             RefreshTracker(); Sync();
         }
+    }
+
+    /// <summary>A Scatter weapon does not stop at the one it was aimed at: on a hit everything
+    /// within its radius takes 1d6, and on a MISS inside the first range increment the target still
+    /// wears it, which is the whole argument for a shotgun.
+    ///
+    /// <para><b>Who is standing within the radius is the Keeper's to say</b> — the app models no
+    /// ground and will not invent one. So this offers the splash and names the radius rather than
+    /// picking victims, which is the same rule a creature's attack rider follows. Each soul rolls
+    /// their own d6: one roll shared out would make a shotgun a thing that hits everybody for
+    /// exactly the same, and it is not.</para></summary>
+    void OfferScatter(Combatant aimedAt, CgWeapon w, bool hit, int distance)
+    {
+        var tr = WeaponTraits.Parse(w?.traits);
+        var (falls, radius, targetToo) = IronCode.ScatterFalls(tr, w, hit, distance);
+        if (!falls) return;
+
+        // Everyone else still standing. The one it was aimed at is already paid on a hit, and is
+        // included only in the miss-inside-the-increment case the book carves out.
+        var others = tracker.Where(c => !ReferenceEquals(c, aimedAt) && !c.IsSign && !c.Dead).ToList();
+        if (targetToo && !others.Contains(aimedAt)) others.Insert(0, aimedAt);
+        if (others.Count == 0) return;
+
+        const int Pad = 16, CW = 400;
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{w.name} — Scatter {radius} ft",
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        var head = new Label { Left = Pad, Top = Pad, Width = CW, Height = 54, ForeColor = Ink,
+            Text = hit ? $"The shot spreads. Everything within {radius} ft of {aimedAt.Name} takes 1d6 — "
+                       + "tick whoever was standing in it."
+                       : $"A miss inside the first increment still spreads. Tick whoever caught it, "
+                       + $"{aimedAt.Name} included." };
+        var list = new CheckedListBox { Left = Pad, Top = head.Bottom + 8, Width = CW,
+                                        Height = Math.Clamp(others.Count * 18 + 8, 40, 170),
+                                        BorderStyle = BorderStyle.FixedSingle, BackColor = Paper,
+                                        CheckOnClick = true };
+        foreach (var c in others) list.Items.Add($"{c.Name}  ({c.BloodCur}/{c.BloodMax})");
+        if (targetToo) list.SetItemChecked(0, true);
+        Tip.SetToolTip(list, "Who was standing inside the spread. The app models no ground, so this is "
+            + "yours to say — each one ticked rolls their own 1d6.");
+        var ok = new Button { Text = "Spread it ▸", Left = Pad + CW - 200, Top = list.Bottom + 14,
+                              Width = 100, Height = 32, DialogResult = DialogResult.OK };
+        var no = new Button { Text = "Nobody", Left = Pad + CW - 94, Top = ok.Top, Width = 94,
+                              Height = 32, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { head, list, ok, no });
+        f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
+        f.AcceptButton = ok; f.CancelButton = no;
+        if (f.ShowDialog(this) != DialogResult.OK) return;
+
+        var caught = list.CheckedIndices.Cast<int>().Select(i => others[i]).ToList();
+        if (caught.Count == 0) { Log($"The spread from the {w.name} caught nobody."); return; }
+        foreach (var c in caught)
+        {
+            int d = IronCode.ScatterDamage();
+            c.Wound(-d, "splash");
+            if (SoulOf(c) is PartyMember pm) { pm.BloodCur = c.BloodCur; }
+            Log($"Scatter {radius} ft: {c.Name} takes {d}. Now at {c.BloodCur}.");
+        }
+        posseGrid?.Refresh();
+        RefreshTracker();
     }
 
     /// <summary>A blow or a working named a condition — offer to lay it on. Offered rather than
