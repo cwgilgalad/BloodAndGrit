@@ -122,7 +122,7 @@ public partial class MainForm : Sheet
         typeof(MainForm).Assembly.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{v.Build}" : "0.0.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
-    internal const string PlayerBookVer = "2.25", KeeperBookVer = "2.12", BestiaryVer = "2.11";
+    internal const string PlayerBookVer = "2.26", KeeperBookVer = "2.12", BestiaryVer = "2.11";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.

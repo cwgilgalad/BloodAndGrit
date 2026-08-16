@@ -573,6 +573,62 @@ foreach (var (table, floor) in new[]
             Rules.InTurnOrder(posse).First().Name == "The Thing at the Door");
     }
 
+    // ---- every working says how long it lasts (v1.39.0) ----
+    // Twenty-one of the eighty printed no duration at all, and the reader could not tell a book that
+    // had DECIDED a thing resolves at once from a book that had simply not said — both came out as
+    // "until something ends it", which was true of neither. Ch. VI and Ch. XIII now say which, and
+    // this is the half of that agreement the app keeps.
+    {
+        CharGen.Load();
+        var workings = CharGen.D.signs.Select(s => (s.name, kind: "Sign", s.rank, s.cost, s.desc))
+            .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
+            .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
+
+        T("durations: all eighty workings still read", workings.Count == 80);
+        // A duration is "findable" when the printed line names one, or when the thing resolves on
+        // the spot. What must not exist any more is a working where neither is true.
+        var mute = workings.Where(w =>
+        {
+            string t = w.Effect.ToLowerInvariant();
+            // "night" is in this list because The Hearth Unbroken opens "For one night a place is
+            // genuinely safe" — the book's own way of writing until dawn, and the reader has always
+            // known it. A checklist that omits a phrasing the code handles reports a fault in the
+            // checklist as a fault in the book.
+            bool saysWhen = t.Contains("until") || t.Contains("scene") || t.Contains("dawn")
+                         || t.Contains("night") || t.Contains("hour") || t.Contains("day")
+                         || t.Contains("round") || t.Contains("month") || t.Contains("done")
+                         || t.Contains("at once");
+            return !saysWhen && w.Damage.Length == 0 && w.Heal.Length == 0 && w.Nerve.Length == 0;
+        }).ToList();
+        T($"durations: no working is silent about how long it lasts ({mute.Count} silent)", mute.Count == 0);
+
+        Rules.Working W(string n) => workings.First(w => w.Name == n);
+        T("durations: a question put to the dark is over when it is answered",
+            W("The Tally").Ends == Rules.WorkEnds.Instant);
+        T("durations: a handful of salt is thrown and done",
+            W("Salt & Iron").Ends == Rules.WorkEnds.Instant);
+        T("durations: a ward on a house holds to dawn and is laid again",
+            W("Crossing the Threshold").Ends == Rules.WorkEnds.UntilDawn);
+        T("durations: a bargain ends when its terms do, not on a clock",
+            W("The Black Contract").Ends == Rules.WorkEnds.UntilEnded);
+        T("durations: a familiar's errand lasts as long as you sit still",
+            W("Cat's Errand").Ends == Rules.WorkEnds.UntilEnded);
+        T("durations: a corked draught keeps a month, which is its own unit",
+            W("The Brewing").Ends == Rules.WorkEnds.Month);
+        T("durations: and a month reads as a month on the chip",
+            new WorkedEffect { Ends = Rules.WorkEnds.Month, RoundsLeft = -1 }.Duration == "a month");
+
+        // The regression this block exists for. Borrowed Breath heals 2d8 and says the worker's own
+        // Blood "does not come back until you rest" — a clause about the WORKER, not about how long
+        // the healing rides on anybody. A duration reader that anchors on a bare "until you …"
+        // turns a heal that resolves on the spot into an effect sitting on the target until somebody
+        // ends it by hand, and it does it to a working nobody edited.
+        T("durations: a heal is not given a duration by a clause about the healer",
+            W("Borrowed Breath").Ends == Rules.WorkEnds.Instant);
+        T("durations: and it is still read as healing rather than harm",
+            W("Borrowed Breath").Heal.Length > 0 && W("Borrowed Breath").Damage.Length == 0);
+    }
+
     // ---- a new round hands the turn back (v1.39.0) ----
     // The fault this is here to stop: NewRound cleared who had acted and did NOT give the Beats or
     // the MAP step back. BeginTurn was the only thing that did, and it only runs when a row is
