@@ -500,7 +500,7 @@
    "list": "common",
    "rank": 1,
    "cost": "1 Beat · 1 Nerve · Will save",
-   "desc": "A handful of blessed salt or cold-iron filings thrown wide. Uncanny things within ten feet save or recoil, and the Marked feel its sting whether they meant to stand in it or not. Backlash: None. This is the kindest Sign in the book, and the weakest."
+   "desc": "A handful of blessed salt or cold-iron filings thrown wide. Uncanny things within ten feet save or recoil, and the Marked feel its sting whether they meant to stand in it or not. The salt is thrown and it is done. Backlash: None. This is the kindest Sign in the book, and the weakest."
   },
   {
    "name": "The Listening",
@@ -528,14 +528,14 @@
    "list": "common",
    "rank": 2,
    "cost": "1 Beat · 2 Nerve",
-   "desc": "Step into one shadow and out of another within sight, as far as a stone's throw. You arrive whole, which is not guaranteed and is worth remarking on. Backlash: Some part of you arrives late: Frightened 1 until your next turn."
+   "desc": "Step into one shadow and out of another within sight, as far as a stone's throw. You arrive whole, which is not guaranteed and is worth remarking on. The step is taken and it is done. Backlash: Some part of you arrives late: Frightened 1 until your next turn."
   },
   {
    "name": "The Tally",
    "list": "common",
    "rank": 2,
    "cost": "Ten minutes · 2 Nerve",
-   "desc": "Ask the dark one question and receive an answer that is true, partial, and unwelcome. It does not lie. It simply declines to be helpful. Backlash: The answer costs a Dread Check, and a deep enough truth gains a Mark."
+   "desc": "Ask the dark one question and receive an answer that is true, partial, and unwelcome. It does not lie. It simply declines to be helpful. The answer given, the working is done. Backlash: The answer costs a Dread Check, and a deep enough truth gains a Mark."
   },
   {
    "name": "Deadman's Coat",
@@ -556,7 +556,7 @@
    "list": "common",
    "rank": 3,
    "cost": "1 Beat · 3 Nerve",
-   "desc": "Speak a sentence into the ear of someone you have met, wherever they are, as though you stood behind them. They may answer once. Most do not, the first time. Backlash: Anything between you that can hear the dark hears it too, and now has both your names."
+   "desc": "Speak a sentence into the ear of someone you have met, wherever they are, as though you stood behind them. They may answer once. Most do not, the first time. The way stays open for the scene. Backlash: Anything between you that can hear the dark hears it too, and now has both your names."
   },
   {
    "name": "Nail the Shadow",
@@ -591,7 +591,7 @@
    "list": "common",
    "rank": 4,
    "cost": "1 Beat · 4 Nerve",
-   "desc": "End another's Sign as it is spoken or after it has settled. Roll your Sign DC against theirs; the higher unmakes the lower, and a tie leaves both standing. Backlash: Fail and you have paid the Nerve and announced yourself to a worker who now knows your range."
+   "desc": "End another's Sign as it is spoken or after it has settled. Roll your Sign DC against theirs; the higher unmakes the lower, and a tie leaves both standing. The unmaking is resolved at once. Backlash: Fail and you have paid the Nerve and announced yourself to a worker who now knows your range."
   },
   {
    "name": "The Long Night",
@@ -612,7 +612,7 @@
    "list": "bargain",
    "rank": 1,
    "cost": "One minute · 1 Nerve",
-   "desc": "Put a question to whatever it is you deal with, framed so that yes or no will answer it. You get the one word. It is accurate. Backlash: It remembers that you asked, and asking is a thing that accrues."
+   "desc": "Put a question to whatever it is you deal with, framed so that yes or no will answer it. You get the one word. It is accurate. The one word given, the working is done. Backlash: It remembers that you asked, and asking is a thing that accrues."
   },
   {
    "name": "Rot the Wound",
@@ -668,7 +668,7 @@
    "list": "bargain",
    "rank": 4,
    "cost": "Ten minutes · 4 Nerve and 1 Mark · Will save",
-   "desc": "Bind a creature that can understand you to a single promise. It saves; on a failure it cannot break the promise, and both of you know the terms exactly. Backlash: You are bound to your half of it on the same terms, and it read the wording more carefully than you did."
+   "desc": "Bind a creature that can understand you to a single promise. It saves; on a failure it cannot break the promise, and both of you know the terms exactly. It holds until the promise is kept, or the creature is destroyed. Backlash: You are bound to your half of it on the same terms, and it read the wording more carefully than you did."
   },
   {
    "name": "Open the Vein of the World",
@@ -682,14 +682,14 @@
    "list": "bargain",
    "rank": 5,
    "cost": "One minute · 5 Nerve and 1 Mark",
-   "desc": "You call something out of the dark to bargain or to serve, and it comes. What it is, what it wants, and whether it consents to leave are the Keeper's to decide. Backlash: The most dangerous Sign in this book. Work it last, or never."
+   "desc": "You call something out of the dark to bargain or to serve, and it comes. What it is, what it wants, and whether it consents to leave are the Keeper's to decide. It stays until it is sent back, or until it has what it came for. Backlash: The most dangerous Sign in this book. Work it last, or never."
   },
   {
    "name": "Sour the Milk",
    "list": "craft",
    "rank": 1,
    "cost": "Free · 1 Nerve",
-   "desc": "The small malice the Craft is famous for. A creature you can see takes a −2 on its very next roll, and the milk goes off, and the bread will not rise. Backlash: None worth the name, which is why every witch in the territories knows it."
+   "desc": "The small malice the Craft is famous for. A creature you can see takes a −2 on its very next roll, and the milk goes off, and the bread will not rise. The malice holds until that roll is made. Backlash: None worth the name, which is why every witch in the territories knows it."
   },
   {
    "name": "Knot the Wind",
@@ -717,14 +717,14 @@
    "list": "craft",
    "rank": 2,
    "cost": "One hour · 2 Nerve",
-   "desc": "Make a house yours. Nothing uncanny may enter it uninvited while you sleep under its roof, and it will know it is being kept out, and it will mind. Backlash: You must sleep there. A witch who wards a house and rides away has built a very good box for someone else."
+   "desc": "Make a house yours. Nothing uncanny may enter it uninvited while you sleep under its roof, and it will know it is being kept out, and it will mind. The ward holds until dawn, and must be laid again each night you want it. Backlash: You must sleep there. A witch who wards a house and rides away has built a very good box for someone else."
   },
   {
    "name": "Cat's Errand",
    "list": "craft",
    "rank": 2,
    "cost": "1 Beat · 2 Nerve",
-   "desc": "Send your familiar out and ride behind its eyes at any distance, for as long as you sit still and let it work. It can carry a Sign of Rank 1 in its mouth and deliver it. Backlash: What happens to the familiar out there happens while you are looking through its eyes."
+   "desc": "Send your familiar out and ride behind its eyes at any distance, for as long as you sit still and let it work. It can carry a Sign of Rank 1 in its mouth and deliver it. It holds until you rise or are struck, and then you are back behind your own eyes. Backlash: What happens to the familiar out there happens while you are looking through its eyes."
   },
   {
    "name": "The Brewing",
@@ -752,14 +752,14 @@
    "list": "craft",
    "rank": 4,
    "cost": "One hour · 4 Nerve",
-   "desc": "Call up a woman of your own crooked line, dead these many years, and ask her. She answers plainly, at length, and with opinions about your choices. Backlash: She may decline to go back, and a dead grandmother in the house is a long and particular haunting."
+   "desc": "Call up a woman of your own crooked line, dead these many years, and ask her. She answers plainly, at length, and with opinions about your choices. She stays for the scene. Backlash: She may decline to go back, and a dead grandmother in the house is a long and particular haunting."
   },
   {
    "name": "The Old Woman's Bargain",
    "list": "craft",
    "rank": 5,
    "cost": "One hour · 5 Nerve",
-   "desc": "Trade a year of your own life for a working of any Rank you know, at no other cost, worked as though you were the greatest of your line. The year is taken from the far end. Backlash: None at the time. The Craft always collects at the far end, and it is never late."
+   "desc": "Trade a year of your own life for a working of any Rank you know, at no other cost, worked as though you were the greatest of your line. The year is taken from the far end. The bargain is struck at once, and what you bought is worked as any other. Backlash: None at the time. The Craft always collects at the far end, and it is never late."
   },
   {
    "name": "The Hearth Unbroken",
@@ -775,7 +775,7 @@
    "list": "blessing",
    "rank": 1,
    "cost": "1 Beat · 1 Faith",
-   "desc": "Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it."
+   "desc": "Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it. The steadiness holds until that save is rolled."
   },
   {
    "name": "A Light Unfailing",
@@ -852,7 +852,7 @@
    "list": "liturgy",
    "rank": 1,
    "cost": "Reaction · 1 Faith",
-   "desc": "The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time."
+   "desc": "The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time. The blessing holds until it is spent."
   },
   {
    "name": "The Litany of the Saints",
@@ -908,7 +908,7 @@
    "list": "revival",
    "rank": 3,
    "cost": "1 Beat · 3 Faith · Will save",
-   "desc": "Speak a true and terrible thing into the silence. One creature saves or is Frightened 2 and made to blurt the last lie it told. The Preacher has found that the guilty fear the truth far worse than the gun."
+   "desc": "Speak a true and terrible thing into the silence. One creature saves or is Frightened 2 and made to blurt the last lie it told. The Preacher has found that the guilty fear the truth far worse than the gun. The naming is resolved at once; the fear it leaves lessens a step each turn, as fear does."
   },
   {
    "name": "The Camp Meeting",
@@ -929,7 +929,7 @@
    "list": "spirits",
    "rank": 1,
    "cost": "1 Beat · 1 Faith",
-   "desc": "Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly."
+   "desc": "Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly. The answer given, the working is done."
   },
   {
    "name": "The Offering",
@@ -985,14 +985,14 @@
    "list": "mending",
    "rank": 2,
    "cost": "One minute · 2 Faith",
-   "desc": "Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse."
+   "desc": "Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done."
   },
   {
    "name": "The Sleep of Healing",
    "list": "mending",
    "rank": 3,
    "cost": "One minute · 3 Faith",
-   "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures."
+   "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn."
   },
   {
    "name": "The Life Shared",
@@ -1027,7 +1027,7 @@
    "list": "consecration",
    "rank": 2,
    "cost": "1 Beat · 2 Faith",
-   "desc": "Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger."
+   "desc": "Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger. The blessing holds until those three shots are fired, or until dawn, whichever comes first."
   },
   {
    "name": "The Branding",

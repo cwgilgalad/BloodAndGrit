@@ -573,6 +573,213 @@ foreach (var (table, floor) in new[]
             Rules.InTurnOrder(posse).First().Name == "The Thing at the Door");
     }
 
+    // ---- every working says how long it lasts (v1.39.0) ----
+    // Twenty-one of the eighty printed no duration at all, and the reader could not tell a book that
+    // had DECIDED a thing resolves at once from a book that had simply not said — both came out as
+    // "until something ends it", which was true of neither. Ch. VI and Ch. XIII now say which, and
+    // this is the half of that agreement the app keeps.
+    {
+        CharGen.Load();
+        var workings = CharGen.D.signs.Select(s => (s.name, kind: "Sign", s.rank, s.cost, s.desc))
+            .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
+            .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
+
+        T("durations: all eighty workings still read", workings.Count == 80);
+        // A duration is "findable" when the printed line names one, or when the thing resolves on
+        // the spot. What must not exist any more is a working where neither is true.
+        var mute = workings.Where(w =>
+        {
+            string t = w.Effect.ToLowerInvariant();
+            // "night" is in this list because The Hearth Unbroken opens "For one night a place is
+            // genuinely safe" — the book's own way of writing until dawn, and the reader has always
+            // known it. A checklist that omits a phrasing the code handles reports a fault in the
+            // checklist as a fault in the book.
+            bool saysWhen = t.Contains("until") || t.Contains("scene") || t.Contains("dawn")
+                         || t.Contains("night") || t.Contains("hour") || t.Contains("day")
+                         || t.Contains("round") || t.Contains("month") || t.Contains("done")
+                         || t.Contains("at once");
+            return !saysWhen && w.Damage.Length == 0 && w.Heal.Length == 0 && w.Nerve.Length == 0;
+        }).ToList();
+        T($"durations: no working is silent about how long it lasts ({mute.Count} silent)", mute.Count == 0);
+
+        Rules.Working W(string n) => workings.First(w => w.Name == n);
+        T("durations: a question put to the dark is over when it is answered",
+            W("The Tally").Ends == Rules.WorkEnds.Instant);
+        T("durations: a handful of salt is thrown and done",
+            W("Salt & Iron").Ends == Rules.WorkEnds.Instant);
+        T("durations: a ward on a house holds to dawn and is laid again",
+            W("Crossing the Threshold").Ends == Rules.WorkEnds.UntilDawn);
+        T("durations: a bargain ends when its terms do, not on a clock",
+            W("The Black Contract").Ends == Rules.WorkEnds.UntilEnded);
+        T("durations: a familiar's errand lasts as long as you sit still",
+            W("Cat's Errand").Ends == Rules.WorkEnds.UntilEnded);
+        T("durations: a corked draught keeps a month, which is its own unit",
+            W("The Brewing").Ends == Rules.WorkEnds.Month);
+        T("durations: and a month reads as a month on the chip",
+            new WorkedEffect { Ends = Rules.WorkEnds.Month, RoundsLeft = -1 }.Duration == "a month");
+
+        // The regression this block exists for. Borrowed Breath heals 2d8 and says the worker's own
+        // Blood "does not come back until you rest" — a clause about the WORKER, not about how long
+        // the healing rides on anybody. A duration reader that anchors on a bare "until you …"
+        // turns a heal that resolves on the spot into an effect sitting on the target until somebody
+        // ends it by hand, and it does it to a working nobody edited.
+        T("durations: a heal is not given a duration by a clause about the healer",
+            W("Borrowed Breath").Ends == Rules.WorkEnds.Instant);
+        T("durations: and it is still read as healing rather than harm",
+            W("Borrowed Breath").Heal.Length > 0 && W("Borrowed Breath").Damage.Length == 0);
+    }
+
+    // ---- a new round hands the turn back (v1.39.0) ----
+    // The fault this is here to stop: NewRound cleared who had acted and did NOT give the Beats or
+    // the MAP step back. BeginTurn was the only thing that did, and it only runs when a row is
+    // stepped through ▶ Next turn — so a round stepped by hand, or rolled over with somebody who
+    // never got an explicit turn, left that row on Beats 0 and MapStep 4. MapStep 4 is a standing
+    // −10 on every Strike it makes for the rest of the fight, and a Keeper reported it as the posse
+    // being unable to hit anything. It was true: a level-1 Gunhand at +4 against Defense 13 fell
+    // from three hits in five to needing a natural 19, while the dog biting her back at +5 off a
+    // clean step hit seven times in ten.
+    //
+    // Note the three fights above could never have caught this: like GK/playtest, they call
+    // BeginTurn() on every turn, which is the ideal path and not the one at the table. This block
+    // deliberately does not.
+    {
+        var spent = new Combatant { Name = "Ruth", IsPC = true, Init = 12, BloodCur = 12, BloodMax = 12 };
+        var mark  = new Combatant { Name = "The Mad Dog", Init = 8, BloodCur = 10, BloodMax = 10, Defense = 13 };
+        var turnField = new List<Combatant> { spent, mark };
+        var gun = new CgWeapon { name = "Single-Action Revolver", dmg = "1d8", traits = "", kind = "gun" };
+
+        spent.BeginTurn();
+        for (int i = 0; i < 3; i++) CombatFlow.StrikeAndApply(spent, mark, gun, 4);
+        T("round: a full turn of three Strikes spends the Beats and walks the MAP up",
+            spent.Beats == 0 && spent.MapStep == 4);
+        T("round: and that step really is the −10 the Code's third Strike costs",
+            IronCode.MapPenalty(spent.MapStep, false) == -10);
+
+        Rules.NewRound(turnField);
+        T("round: a new round gives the Beats back", spent.Beats == 3);
+        T("round: a new round makes the first Strike clean again", spent.MapStep == 1);
+        T("round: which is to say the next Strike carries no MAP",
+            IronCode.MapPenalty(spent.MapStep, false) == 0);
+        T("round: the foe is handed its turn back too — this was never the posse's rule alone",
+            mark.Beats == 3 && mark.MapStep == 1);
+
+        // A trace takes no turn, so it is not handed three Beats to spend on nothing.
+        var trace = new Combatant { Name = "Something passed here", IsSign = true, Beats = 0, MapStep = 1 };
+        Rules.NewRound(new List<Combatant> { trace });
+        T("round: sign & spoor is not handed a turn", trace.Beats == 0);
+
+        // Neither are the dead. A corpse showing three Beats reads as a row still waiting to go.
+        var gone = new Combatant { Name = "Addison", IsPC = true, BloodMax = 9, DeathAt = 10, Beats = 0, MapStep = 3 };
+        gone.Wound(-30);                       // straight past −CON
+        T("round: the dead are dead before the round turns", gone.Dead);
+        Rules.NewRound(new List<Combatant> { gone });
+        T("round: and the dead are not handed a turn back", gone.Beats == 0 && gone.MapStep == 3);
+
+        // The chip has to move when the COUNT moves, not only when something runs out. It printed
+        // "✦ The Stilling (3)" and went on printing 3 as the Sign ticked to 2 and to 1, because the
+        // only thing that said the column had changed was an effect expiring — and that count is the
+        // Keeper's one read on how long they have left.
+        var held = new Combatant { Name = "Opal", IsPC = true, BloodCur = 8, BloodMax = 8 };
+        held.Work(new WorkedEffect { Name = "The Stilling", Kind = "Sign", RoundsLeft = 3 });
+        string chip3 = held.WorkedChips;
+        T("chips: a counted working prints its count", chip3.Contains("(3)"));
+        held.TickWorked();
+        T("chips: and the count on the chip moves when the round does",
+            held.WorkedChips.Contains("(2)") && held.WorkedChips != chip3);
+        held.TickWorked(); held.TickWorked();
+        T("chips: an expired working leaves the column", held.WorkedChips == "");
+
+        // A working with no round count must not be ticked into nothing by a rollover.
+        var scene = new Combatant { Name = "Elias", IsPC = true, BloodCur = 9, BloodMax = 9 };
+        scene.Work(new WorkedEffect { Name = "Witch-Sight", Kind = "Sign", RoundsLeft = -1,
+                                      Ends = Rules.WorkEnds.Scene });
+        scene.TickWorked(); scene.TickWorked();
+        T("chips: a working measured in scenes survives the rounds", scene.Worked.Count == 1);
+        T("chips: and says the unit the book used", scene.WorkedChips.Contains("(scene)"));
+    }
+
+    // ---- what a condition costs, and that it is DERIVED (v1.39.0) ----
+    // Appendix B has been printed on the Reference deck since v1.4 and the ＋ Condition ▾ menu has
+    // offered all sixteen since, and not one of them did anything: "Frightened: −1 (or worse) on
+    // everything" was a word in a column and the Keeper's own arithmetic to carry, in the middle of
+    // a fight, while remembering four other things.
+    {
+        var none = Rules.ReadConditions("");
+        T("burden: nothing on you weighs nothing", !none.Any && !none.Anything);
+        T("burden: an unknown condition a Keeper typed weighs nothing rather than throwing",
+            !Rules.ReadConditions("Spooked something awful").Any);
+
+        var fr2 = Rules.ReadConditions("Frightened 2");
+        T("burden: Frightened 2 is −2 on everything the book lists",
+            fr2.Strike == -2 && fr2.Defense == -2 && fr2.Check == -2 && fr2.Save == -2);
+        var stacked = Rules.ReadConditions("Frightened 2, Off-Guard");
+        T("burden: two conditions sum rather than the worse one winning",
+            stacked.Defense == -4 && stacked.Strike == -2);
+        T("burden: Slowed 1 costs a Beat and nothing else",
+            Rules.ReadConditions("Slowed 1") is { BeatsLost: 1, Strike: 0, Defense: 0 });
+        T("burden: Stunned costs the whole turn and 2 Defense",
+            Rules.ReadConditions("Stunned") is { BeatsLost: 3, Defense: -2 });
+        T("burden: Sickened reaches damage, which is the column the others do not",
+            Rules.ReadConditions("Sickened").Damage == -2);
+        // Prone counts its −4 to melee and REFUSES to count the +4 everyone shooting at them gets,
+        // because that one depends on what the attacker is holding and the row does not know. What
+        // it must not do is drop it silently — a number the reader cannot carry has to become words.
+        var prone = Rules.ReadConditions("Prone");
+        T("burden: Prone counts the half of its line that is unconditional", prone.Strike == -4);
+        T("burden: and says the half it cannot count rather than dropping it",
+            prone.Note.Contains("+4") && prone.Note.Contains("SHOOTING"));
+
+        var lit = new Combatant { Name = "Anni", Defense = 12, BloodCur = 12, BloodMax = 12 };
+        T("burden: an unburdened row prints its plain Defense", lit.DefenseLine == "12");
+        lit.Conditions = "Frightened 2, Off-Guard";
+        T("burden: Defense falls by what is on them", lit.EffectiveDefense == 8);
+        T("burden: and the column shows the arithmetic, not just the total", lit.DefenseLine == "12 → 8");
+        T("burden: the STORED Defense never moved — this is derived, not applied", lit.Defense == 12);
+        // The fault this shape exists to prevent: an earlier sketch applied the modifier on Work and
+        // took it off on Unwork, so a session saved mid-Sign reloaded with the penalty baked into
+        // Defense AND the working still on the row, and it landed twice. Reading it twice must be
+        // idempotent, which a stored adjustment is not.
+        T("burden: reading it twice gives the same answer", lit.EffectiveDefense == 8 && lit.EffectiveDefense == 8);
+        lit.Conditions = "";
+        T("burden: and it lifts clean when the condition goes", lit.EffectiveDefense == 12 && lit.DefenseLine == "12");
+
+        var slow = new Combatant { Name = "Doc", BloodCur = 9, BloodMax = 9, Conditions = "Slowed 1" };
+        T("burden: Slowed takes a Beat off the turn", slow.BeatsThisTurn == 2);
+        slow.BeginTurn();
+        T("burden: and BeginTurn hands out that many, not three", slow.Beats == 2);
+        Rules.NewRound(new List<Combatant> { slow });
+        T("burden: the round rollover honours it too", slow.Beats == 2);
+        slow.Conditions = "Stunned";
+        Rules.NewRound(new List<Combatant> { slow });
+        T("burden: Stunned means no turn at all", slow.Beats == 0);
+
+        // The engine end: a Strike is rolled against the Defense as it stands, not as it was typed.
+        var shooter = new Combatant { Name = "Ruth", IsPC = true, BloodCur = 12, BloodMax = 12 };
+        var mark = new Combatant { Name = "Bandit", Defense = 20, BloodCur = 40, BloodMax = 40,
+                                   Conditions = "Off-Guard" };
+        var gun2 = new CgWeapon { name = "Revolver", dmg = "1d8", traits = "", kind = "gun" };
+        shooter.BeginTurn();
+        // die 18 + 0 = 18: misses Defense 20, hits the 18 that Off-Guard leaves.
+        var hit = CombatFlow.StrikeAndApply(shooter, mark, gun2, 0, null, 18);
+        T("burden: Off-Guard is what let that shot land", hit.Res.Strike.Hit);
+        T("burden: and the log says which Defense it was rolled against",
+            hit.Line.Contains("was 20"));
+
+        shooter.MapStep = 1; shooter.Beats = 3;
+        shooter.Conditions = "Frightened 3";
+        var missed = CombatFlow.StrikeAndApply(shooter, mark, gun2, 0, null, 18);
+        T("burden: the attacker's own fear comes off the Strike", !missed.Res.Strike.Hit);
+
+        // The riders a creature's own attacks line carries.
+        T("inflicts: a claw that grabs names Grabbed",
+            Rules.InflictedConditions("1d6+2 and grab").Contains("Grabbed")
+            || Rules.InflictedConditions("grabbed and held").Contains("Grabbed"));
+        T("inflicts: a horror that frightens names the step it frightens to",
+            Rules.InflictedConditions("saves or is Frightened 2").Contains("Frightened 2"));
+        T("inflicts: a plain blow names nothing", Rules.InflictedConditions("1d6+2").Count == 0);
+        T("inflicts: and neither does an empty rider", Rules.InflictedConditions(null).Count == 0);
+    }
+
     // ---- more shapes of fight, hunting the cases three ordinary ones never reach ----
     {
         // A lone survivor still gets rounds: NextUp answers, the round spends, and the loop does

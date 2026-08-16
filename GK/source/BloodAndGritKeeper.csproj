@@ -16,7 +16,7 @@
     <!-- The ONLY version in the project. MainForm.AppVersion reads it back off the assembly,
          and package.ps1 names the release tag from the built exe's FileVersion — so this number
          is what ships, whatever any other file says. Bump it with every release. -->
-    <Version>1.38.0</Version>
+    <Version>1.39.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -72,6 +72,15 @@
          Also measured and REJECTED: IncludeNativeLibrariesForSelfExtract=false. It publishes
          and signs cleanly but the app never opens a window (timed out at 90 s) — WinForms
          self-contained single-file needs its native libraries extracted. -->
+    <!-- RE-CHECKED v1.39.0 (2026-08-15) and the answer did not move. Measured again on this
+         machine: no-R2R 155.7 MB, 11.1 s first run, 3.35 s warm; R2R 173.0 MB, 15.7 s first run,
+         2.88 s warm. Those warm figures are the SELF-TEST, not a window launch, and that is the
+         whole reason they look kinder to R2R than the v1.10.0 row above: the self-test constructs
+         all three run modes, all ten tabs, the thirteen-leaf deck and seventeen wizards, so it JITs a
+         great deal of code a real launch never touches. The v1.10.0 numbers measured the thing a
+         Keeper actually waits for and found 0.12 s saved against 9.4 s added on first run.
+         Measure the launch, not the harness — a proxy that exercises more than the real path will
+         always flatter whatever makes bulk JIT cheaper. -->
     <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
     <PublishReadyToRun>false</PublishReadyToRun>
     <InvariantGlobalization>true</InvariantGlobalization>

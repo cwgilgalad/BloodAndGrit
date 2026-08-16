@@ -122,7 +122,7 @@ public partial class MainForm : Sheet
         typeof(MainForm).Assembly.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{v.Build}" : "0.0.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar).
-    internal const string PlayerBookVer = "2.25", KeeperBookVer = "2.12", BestiaryVer = "2.11";
+    internal const string PlayerBookVer = "2.26", KeeperBookVer = "2.12", BestiaryVer = "2.11";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -854,18 +854,24 @@ public partial class MainForm : Sheet
             var r = t.GetTabRect(e.Index);
             var g = e.Graphics;
 
-            using (var ground = new SolidBrush(on ? Paper : TabRest)) g.FillRectangle(ground, r);
+            // Brushes and pens off the shelf too (v1.39.0). This runs once per tab per paint — ten
+            // times a repaint, and a repaint comes on every hover, selection and resize — so three
+            // GDI objects minted and disposed here is thirty allocations for a bar that never
+            // changes colour. Same argument as the fonts, one rung down.
+            g.FillRectangle(on ? PaperBrush : TabRestBrush, r);
             // A 3px Blood rule along the top of the live tab — the accent that does the work. Drawn
             // inside the rect so it can't bleed onto its neighbours.
-            if (on) using (var rule = new SolidBrush(Blood)) g.FillRectangle(rule, r.X, r.Y, r.Width, 3);
+            if (on) g.FillRectangle(BloodBrush, r.X, r.Y, r.Width, 3);
             // Hairline separators, so ten tabs read as ten and not as one long bar.
-            using (var edge = new Pen(Rule))
-                g.DrawLine(edge, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
+            g.DrawLine(RulePen, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
 
-            var face = on ? new Font(t.Font, FontStyle.Bold) : t.Font;
+            // The bold face comes off MainForm.Face, the memoizing shelf, rather than being minted
+            // and disposed per paint. Disposing it was correct and is not the point: the set of
+            // triples this app draws with is small and fixed, so a shelf settles at a few dozen
+            // fonts for the life of the process and this path stops allocating altogether.
+            var face = on ? Face(t.Font.FontFamily.Name, t.Font.Size, FontStyle.Bold) : t.Font;
             TextRenderer.DrawText(g, t.TabPages[e.Index].Text, face, r, on ? Blood : Ink,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
-            if (on) face.Dispose();
         };
     }
 
@@ -1183,6 +1189,17 @@ public partial class MainForm : Sheet
         if (!faces.TryGetValue(key, out var f)) faces[key] = f = new Font(family, size, style);
         return f;
     }
+
+    /// <summary>The same shelf, one rung down, for the theme's own brushes and pens (v1.39.0).
+    /// A brush is a native handle exactly as a font is, and the argument for keeping these is the
+    /// argument above: the palette is fixed at compile time, the owner-drawn tab strip paints ten
+    /// tabs on every hover, selection and resize, and minting three GDI objects per tab per paint is
+    /// thirty allocations a frame for colours that never change. Never disposed, deliberately —
+    /// they live as long as the process draws.</summary>
+    internal static readonly SolidBrush PaperBrush   = new(Paper);
+    internal static readonly SolidBrush TabRestBrush = new(TabRest);
+    internal static readonly SolidBrush BloodBrush   = new(Blood);
+    internal static readonly Pen        RulePen      = new(Rule);
 
     /// <summary>
     /// Breathing room for text panes. WinForms RichTextBox/ListBox ignore their own Padding
@@ -2186,8 +2203,12 @@ public partial class MainForm : Sheet
             return;
         }
         int shown = Math.Min(diceTray.Dice.Count, DiceShownMax);
-        int size = 52, gap = 10;
-        int x = Math.Max(8, (diceTray.Width - shown * (size + gap)) / 2), y = (diceTray.Height - size) / 2 - 4;
+        // The die is a shape rather than a square now, so its name goes UNDER it: a rhombus and a
+        // kite both come to a point at the bottom, and "d10" set inside one would be printed over
+        // the empty corners either side of the tip. Below is also where a die's name is on a table.
+        int size = 50, gap = 10, tag = 14;
+        int x = Math.Max(8, (diceTray.Width - shown * (size + gap)) / 2);
+        int y = (diceTray.Height - (size + tag)) / 2;
         for (int i = 0; i < shown; i++)
         {
             var (sides, value, sign) = diceTray.Dice[i];
@@ -2196,7 +2217,7 @@ public partial class MainForm : Sheet
             var rect = new Rectangle(x + i * (size + gap), y, size, size);
             // a little jitter while tumbling, stillness once landed
             if (!diceTray.Settled) rect.Offset(Rules.Rng.Next(-2, 3), Rules.Rng.Next(-2, 3));
-            using var path = RoundedRect(rect, 9);
+            using var path = DiePath(sides, rect);
             using var face = new SolidBrush(faceCol);
             g.FillPath(face, path);
             // the faces carry the die colors now, so the verdicts ring in metal instead:
@@ -2205,18 +2226,112 @@ public partial class MainForm : Sheet
                        : show == sides ? Color.FromArgb(255, 208, 74)     // best face
                        : show == 1 && sides >= 6 ? Color.FromArgb(28, 20, 14)   // worst face
                        : Darken(faceCol);
-            using var pen = new Pen(edge, diceTray.Settled && (show == sides || (show == 1 && sides >= 6)) ? 3f : 1.6f);
+            bool loud = diceTray.Settled && (show == sides || (show == 1 && sides >= 6));
+            using var pen = new Pen(edge, loud ? 3f : 1.6f);
             g.DrawPath(pen, path);
-            TextRenderer.DrawText(g, show.ToString(), DieNumFont,
-                new Rectangle(rect.X, rect.Y - 4, rect.Width, rect.Height), textCol,
+            // The face the solid is built out of, scored inside the outline — it is what tells a
+            // d12 from a d100, which share a ten-sided edge.
+            if (DieFace(sides, rect) is PointF[] inner)
+            {
+                using var facePen = new Pen(Color.FromArgb(loud ? 150 : 96, Darken(faceCol, 0.55)), 1.2f);
+                g.DrawPolygon(facePen, inner);
+            }
+            TextRenderer.DrawText(g, show.ToString(), DieNumFont, DieTextRect(sides, rect), textCol,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            // Under the die, in the die's own ink darkened to carry on paper — the white text colour
+            // that reads on a red d20 is invisible out here. A pale face has to be taken down
+            // further than a dark one or the d10's name washes out against the tray: one fixed
+            // factor is a contrast ratio that changes with the hue, which is not a standard.
             TextRenderer.DrawText(g, (sign < 0 ? "−d" : "d") + sides, DieTagFont,
-                new Rectangle(rect.X, rect.Bottom - 17, rect.Width, 15),
-                textCol, TextFormatFlags.HorizontalCenter);   // GDI text is opaque — no alpha tricks
+                new Rectangle(rect.X, rect.Bottom + 1, rect.Width, tag),
+                Darken(faceCol, faceCol.GetBrightness() > 0.7f ? 0.42 : 0.62),
+                TextFormatFlags.HorizontalCenter);
         }
         if (diceTray.Dice.Count > shown)
             TextRenderer.DrawText(g, $"+{diceTray.Dice.Count - shown} more", DieMoreFont,
                 new Rectangle(diceTray.Width - 78, diceTray.Height - 22, 74, 18), Gold, TextFormatFlags.Right);
+    }
+
+    // ---- the shape a die actually is (v1.39.0) ----
+    // Every die in the tray used to be the same rounded square, so the tray told a Keeper the colour
+    // of the die and nothing else — and colour alone is the one channel that fails for the ~8% of
+    // men who cannot separate the d4's green from the d20's red. A d4 that is a triangle and a d20
+    // that is a hexagon are legible before they are read, and they are legible to everybody.
+    //
+    // These are the silhouettes the solids actually present face-on, which is not always the number
+    // of sides: a dodecahedron shows a TEN-sided outline around a pentagonal face, and an
+    // icosahedron a hexagon around a triangular one. Drawing a literal twelve-gon would be both
+    // wrong and, at 52 pixels, indistinguishable from a circle. The inner face is drawn as well,
+    // because the outline alone is what makes a d12 and a d100 twins.
+    static PointF[] Regular(int n, RectangleF r, double startDeg, float shrink = 1f)
+    {
+        float cx = r.X + r.Width / 2f, cy = r.Y + r.Height / 2f;
+        float rx = r.Width / 2f * shrink, ry = r.Height / 2f * shrink;
+        var pts = new PointF[n];
+        for (int i = 0; i < n; i++)
+        {
+            double a = Math.PI / 180.0 * (startDeg + i * 360.0 / n);
+            pts[i] = new PointF(cx + (float)(Math.Cos(a) * rx), cy + (float)(Math.Sin(a) * ry));
+        }
+        return pts;
+    }
+
+    /// <summary>The outline of a die of this many sides, or null for one the tray has no solid for —
+    /// <see cref="Rules.RollExprFull"/> admits any dN up to d1000, so the rounded square stays as the
+    /// answer for a d7 or a d30 rather than the paint throwing at the table.</summary>
+    static PointF[] DieOutline(int sides, RectangleF r) => sides switch
+    {
+        4   => Regular(3, r, -90),           // the pyramid, point up
+        8   => Regular(4, r, -90),           // two pyramids base to base: a rhombus, edge-on
+        10  => Kite(r),                      // the trapezohedron's kite — widest above the middle
+        12  => Regular(10, r, -90),          // a dodecahedron face-on reads as a ten-sided outline
+        20  => Regular(6, r, -90),           // an icosahedron face-on reads as a hexagon
+        100 => Regular(10, r, -90 + 18),     // the same ten sides, turned, so it is not a d12's twin
+        _   => null,                         // 6 included: a cube face IS a square
+    };
+
+    /// <summary>The face on top, drawn inside the outline. Null where the outline is the whole of it.
+    /// </summary>
+    static PointF[] DieFace(int sides, RectangleF r) => sides switch
+    {
+        4   => Regular(3, r, 90, 0.52f),     // the far face, inverted
+        12  => Regular(5, r, -90, 0.56f),    // the pentagon a dodecahedron is made of
+        20  => Regular(3, r, -90, 0.62f),    // the triangle an icosahedron is made of
+        100 => Regular(5, r, -90 + 36, 0.56f),
+        _   => null,
+    };
+
+    static PointF[] Kite(RectangleF r)
+    {
+        float cx = r.X + r.Width / 2f;
+        return new[]
+        {
+            new PointF(cx, r.Top),
+            new PointF(r.Right, r.Top + r.Height * 0.38f),
+            new PointF(cx, r.Bottom),
+            new PointF(r.Left, r.Top + r.Height * 0.38f),
+        };
+    }
+
+    /// <summary>Where the number can be set without falling off the shape. A triangle has no room at
+    /// its apex and a kite none at either point, so the figure sits where the ink actually is —
+    /// centring in the bounding box would hang a "4" over the empty corner of a d4.</summary>
+    static Rectangle DieTextRect(int sides, Rectangle r) => sides switch
+    {
+        4   => new Rectangle(r.X, r.Y + (int)(r.Height * 0.28f), r.Width, (int)(r.Height * 0.60f)),
+        8   => new Rectangle(r.X, r.Y + (int)(r.Height * 0.10f), r.Width, (int)(r.Height * 0.80f)),
+        10  => new Rectangle(r.X, r.Y + (int)(r.Height * 0.06f), r.Width, (int)(r.Height * 0.68f)),
+        20  => new Rectangle(r.X, r.Y + (int)(r.Height * 0.06f), r.Width, (int)(r.Height * 0.80f)),
+        _   => new Rectangle(r.X, r.Y, r.Width, r.Height),
+    };
+
+    static System.Drawing.Drawing2D.GraphicsPath DiePath(int sides, Rectangle r)
+    {
+        var pts = DieOutline(sides, r);
+        if (pts == null) return RoundedRect(r, 9);
+        var p = new System.Drawing.Drawing2D.GraphicsPath();
+        p.AddPolygon(pts);
+        return p;
     }
 
     static System.Drawing.Drawing2D.GraphicsPath RoundedRect(Rectangle r, int rad)
