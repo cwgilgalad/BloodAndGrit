@@ -620,6 +620,88 @@ foreach (var (table, floor) in new[]
         T("round: and the dead are not handed a turn back", gone.Beats == 0 && gone.MapStep == 3);
     }
 
+    // ---- what a condition costs, and that it is DERIVED (v1.39.0) ----
+    // Appendix B has been printed on the Reference deck since v1.4 and the ＋ Condition ▾ menu has
+    // offered all sixteen since, and not one of them did anything: "Frightened: −1 (or worse) on
+    // everything" was a word in a column and the Keeper's own arithmetic to carry, in the middle of
+    // a fight, while remembering four other things.
+    {
+        var none = Rules.ReadConditions("");
+        T("burden: nothing on you weighs nothing", !none.Any && !none.Anything);
+        T("burden: an unknown condition a Keeper typed weighs nothing rather than throwing",
+            !Rules.ReadConditions("Spooked something awful").Any);
+
+        var fr2 = Rules.ReadConditions("Frightened 2");
+        T("burden: Frightened 2 is −2 on everything the book lists",
+            fr2.Strike == -2 && fr2.Defense == -2 && fr2.Check == -2 && fr2.Save == -2);
+        var stacked = Rules.ReadConditions("Frightened 2, Off-Guard");
+        T("burden: two conditions sum rather than the worse one winning",
+            stacked.Defense == -4 && stacked.Strike == -2);
+        T("burden: Slowed 1 costs a Beat and nothing else",
+            Rules.ReadConditions("Slowed 1") is { BeatsLost: 1, Strike: 0, Defense: 0 });
+        T("burden: Stunned costs the whole turn and 2 Defense",
+            Rules.ReadConditions("Stunned") is { BeatsLost: 3, Defense: -2 });
+        T("burden: Sickened reaches damage, which is the column the others do not",
+            Rules.ReadConditions("Sickened").Damage == -2);
+        // Prone counts its −4 to melee and REFUSES to count the +4 everyone shooting at them gets,
+        // because that one depends on what the attacker is holding and the row does not know. What
+        // it must not do is drop it silently — a number the reader cannot carry has to become words.
+        var prone = Rules.ReadConditions("Prone");
+        T("burden: Prone counts the half of its line that is unconditional", prone.Strike == -4);
+        T("burden: and says the half it cannot count rather than dropping it",
+            prone.Note.Contains("+4") && prone.Note.Contains("SHOOTING"));
+
+        var lit = new Combatant { Name = "Anni", Defense = 12, BloodCur = 12, BloodMax = 12 };
+        T("burden: an unburdened row prints its plain Defense", lit.DefenseLine == "12");
+        lit.Conditions = "Frightened 2, Off-Guard";
+        T("burden: Defense falls by what is on them", lit.EffectiveDefense == 8);
+        T("burden: and the column shows the arithmetic, not just the total", lit.DefenseLine == "12 → 8");
+        T("burden: the STORED Defense never moved — this is derived, not applied", lit.Defense == 12);
+        // The fault this shape exists to prevent: an earlier sketch applied the modifier on Work and
+        // took it off on Unwork, so a session saved mid-Sign reloaded with the penalty baked into
+        // Defense AND the working still on the row, and it landed twice. Reading it twice must be
+        // idempotent, which a stored adjustment is not.
+        T("burden: reading it twice gives the same answer", lit.EffectiveDefense == 8 && lit.EffectiveDefense == 8);
+        lit.Conditions = "";
+        T("burden: and it lifts clean when the condition goes", lit.EffectiveDefense == 12 && lit.DefenseLine == "12");
+
+        var slow = new Combatant { Name = "Doc", BloodCur = 9, BloodMax = 9, Conditions = "Slowed 1" };
+        T("burden: Slowed takes a Beat off the turn", slow.BeatsThisTurn == 2);
+        slow.BeginTurn();
+        T("burden: and BeginTurn hands out that many, not three", slow.Beats == 2);
+        Rules.NewRound(new List<Combatant> { slow });
+        T("burden: the round rollover honours it too", slow.Beats == 2);
+        slow.Conditions = "Stunned";
+        Rules.NewRound(new List<Combatant> { slow });
+        T("burden: Stunned means no turn at all", slow.Beats == 0);
+
+        // The engine end: a Strike is rolled against the Defense as it stands, not as it was typed.
+        var shooter = new Combatant { Name = "Ruth", IsPC = true, BloodCur = 12, BloodMax = 12 };
+        var mark = new Combatant { Name = "Bandit", Defense = 20, BloodCur = 40, BloodMax = 40,
+                                   Conditions = "Off-Guard" };
+        var gun2 = new CgWeapon { name = "Revolver", dmg = "1d8", traits = "", kind = "gun" };
+        shooter.BeginTurn();
+        // die 18 + 0 = 18: misses Defense 20, hits the 18 that Off-Guard leaves.
+        var hit = CombatFlow.StrikeAndApply(shooter, mark, gun2, 0, null, 18);
+        T("burden: Off-Guard is what let that shot land", hit.Res.Strike.Hit);
+        T("burden: and the log says which Defense it was rolled against",
+            hit.Line.Contains("was 20"));
+
+        shooter.MapStep = 1; shooter.Beats = 3;
+        shooter.Conditions = "Frightened 3";
+        var missed = CombatFlow.StrikeAndApply(shooter, mark, gun2, 0, null, 18);
+        T("burden: the attacker's own fear comes off the Strike", !missed.Res.Strike.Hit);
+
+        // The riders a creature's own attacks line carries.
+        T("inflicts: a claw that grabs names Grabbed",
+            Rules.InflictedConditions("1d6+2 and grab").Contains("Grabbed")
+            || Rules.InflictedConditions("grabbed and held").Contains("Grabbed"));
+        T("inflicts: a horror that frightens names the step it frightens to",
+            Rules.InflictedConditions("saves or is Frightened 2").Contains("Frightened 2"));
+        T("inflicts: a plain blow names nothing", Rules.InflictedConditions("1d6+2").Count == 0);
+        T("inflicts: and neither does an empty rider", Rules.InflictedConditions(null).Count == 0);
+    }
+
     // ---- more shapes of fight, hunting the cases three ordinary ones never reach ----
     {
         // A lone survivor still gets rounds: NextUp answers, the round spends, and the loop does

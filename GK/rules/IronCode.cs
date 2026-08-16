@@ -276,7 +276,12 @@ public static class CombatFlow
         return s.Attack + mod;
     }
 
-    public record StrikeReport(IronCode.Resolution Res, int Map, string Line);
+    /// <summary><paramref name="Inflicts"/> is the conditions this blow's own printed rider names —
+    /// a ghoul's "grab", a horror's "and they are Frightened 2". Read off the Bestiary's free text by
+    /// <see cref="Rules.InflictedConditions"/> and handed back rather than applied, because the
+    /// riders are English and half of them hang on a save the Keeper has to call. The UI offers
+    /// them; the engine never lays one on by itself.</summary>
+    public record StrikeReport(IronCode.Resolution Res, int Map, string Line, List<string> Inflicts);
 
     /// <summary>Take one Strike from <paramref name="attacker"/> at <paramref name="target"/> and
     /// apply it: spend a Beat, resolve at the attacker's current MAP step, subtract the damage
@@ -286,14 +291,32 @@ public static class CombatFlow
     /// finally reach the table: a ghoul claws with +6 (1d8+3), not with the party's revolver.</summary>
     public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CreatureAttack attack,
         int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null)
-        => StrikeAndApply(attacker, target, attack.ToWeapon(), attackBonus, targetDr, forcedDie, attack.Type);
+        => StrikeAndApply(attacker, target, attack.ToWeapon(), attackBonus, targetDr, forcedDie, attack.Type,
+                          attack.Effect);
 
     public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CgWeapon weapon,
-        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null, string forceType = null)
+        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null, string forceType = null,
+        string rider = null)
     {
         var tr = WeaponTraits.Parse(weapon?.traits);
         int map = IronCode.MapPenalty(attacker?.MapStep ?? 1, tr.Agile);
-        var res = IronCode.Strike(attackBonus + map, target.Defense, weapon, targetDr, forcedDie, forceType);
+        // What is riding on the two of them (Appendix B). The attacker's conditions move the Strike;
+        // the target's move the Defense it is rolled against. Both are DERIVED — nothing here reads
+        // a number somebody stored earlier, so an effect cannot be applied twice.
+        //
+        // The playtest harness and the modules' What the Night Costs numbers are safe from this:
+        // neither ever sets a condition, so both Burdens come out empty and the arithmetic is what
+        // it always was. It only bites once somebody is actually Frightened, which is the point.
+        var mine   = attacker?.Load ?? Rules.Burden.None;
+        var theirs = target.Load;
+        int defense = target.EffectiveDefense;
+        var res = IronCode.Strike(attackBonus + map + mine.Strike, defense, weapon, targetDr, forcedDie, forceType);
+        // Sickened takes its −2 off the damage as well as the Strike, and the adjustment is folded
+        // back into the Resolution rather than applied at the wound: every caller downstream reads
+        // AfterDR — the log line, the grievous-blow check, the tracker's Last column — and a number
+        // that was quietly different from the one they were handed is a bug waiting on a bad night.
+        if (res.Strike.Hit && mine.Damage != 0 && res.Damage != null)
+            res = res with { AfterDR = Math.Max(0, res.AfterDR + mine.Damage) };
 
         if (attacker != null)
         {
@@ -303,7 +326,17 @@ public static class CombatFlow
 
         string who = $"{attacker?.Name ?? "—"} → {target.Name}";
         string mapNote = map != 0 ? $" (MAP {map})" : "";
+        // Say so when a condition moved the numbers. A roll that silently came out different from
+        // the one the Keeper expected is the fastest way to lose their trust in the engine.
+        if (mine.Strike != 0)    mapNote += $" ({(mine.Strike > 0 ? "+" : "")}{mine.Strike} on them)";
+        if (theirs.Defense != 0) mapNote += $" (vs Defense {defense}, was {target.Defense})";
         string line;
+        // What this blow's own rider would lay on them, if it landed. A creature's attacks line is
+        // the source: "pick and claw +4 (1d6+2 and grab)" means Grabbed, and until now that was a
+        // word in a dialog the Keeper had to notice, remember, and type into the conditions column
+        // themselves — which is to say a rule the app read out and did not run. Only on a hit: a
+        // miss grabs nobody.
+        var inflicts = res.Strike.Hit ? Rules.InflictedConditions(rider) : new List<string>();
         if (res.Strike.Hit)
         {
             // Through Wound rather than straight at BloodCur, so the tracker's "Last" column shows
@@ -322,6 +355,6 @@ public static class CombatFlow
             line = $"{who}{mapNote}: {res.Strike.DegreeName} — "
                  + (res.Strike.Jam ? "the iron JAMS (clear it: Interact + Repair)." : "a miss.");
         }
-        return new StrikeReport(res, map, line);
+        return new StrikeReport(res, map, line, inflicts);
     }
 }
