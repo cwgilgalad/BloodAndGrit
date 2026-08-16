@@ -1049,6 +1049,25 @@ public partial class MainForm
         condItems.Add(("— Clear all —", (s, e) => ClearConditions()));
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
 
+        // The Beat actions, built from Rules.BeatActions so this menu and the Reference deck's leaf
+        // are two views of ONE list. Strike and Reload have their own dialogs and are routed there;
+        // the rest are one call into the rules library, which is what makes them smoke-testable.
+        var actItems = Rules.BeatActions
+            .Where(a => a.Key is not ("strike" or "reload"))
+            .Select(a => (a.Name, (EventHandler)((s, e) => DoBeatAction(a.Key))))
+            .ToList();
+        actItems.Add(("-", null));
+        actItems.Add(("Reload ▸", (s, e) => ReloadDialog()));
+        actItems.Add(("-", null));
+        actItems.Add(("Dive for Cover (reaction)", (s, e) => DoDiveForCover()));
+        actItems.Add(("Leave cover", (s, e) => DoLeaveCover()));
+        actItems.Add(("-", null));
+        actItems.Add(("In the saddle ▸", (s, e) => GaitDialog()));
+        bar.Controls.Add(MenuBtn("Act ▾", 78,
+            "Spend a Beat the way Ch. XI's table says — Aim or brace, Interact, Stride, Take Cover, "
+            + "Steady a Soul — take the one reaction between your turns, or say what the horse under "
+            + "you is doing", actItems.ToArray()));
+
         // Everything past this line throws work away. A wider gap and a different face, so the hand
         // that means "＋ Add" never lands on "Clear field" — they were adjacent and identical before.
         bar.Controls.Add(BarSep(18));
@@ -2104,6 +2123,143 @@ public partial class MainForm
     // fallback) — so damage mirrors back to the right soul even after a rename.
     PartyMember SoulOf(Combatant c) => c != null && c.IsPC ? party.FirstOrDefault(c.IsSoul) : null;
 
+    // ---- the Beat actions, the reaction, and the saddle (Ch. XI) ----
+    //
+    // These are hands reaching for rules that live in GK/rules, never rules of their own. Every
+    // refusal printed here is the rule's OWN sentence: a second one written at the UI is a second
+    // authority, and two authorities for one answer is the fault Rules.InTurnOrder exists to stop.
+
+    /// <summary>Spend a Beat on one of Ch. XI's actions.</summary>
+    void DoBeatAction(string key)
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        var res = Rules.TakeAction(c, key);
+        if (!res.Done) { Nope(res.Line); return; }
+        Log(res.Line);
+        RefreshTracker();
+    }
+
+    /// <summary>Dive for Cover — the one reaction between your turns.</summary>
+    void DoDiveForCover()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        var dive = Rules.DiveForCover(c);
+        if (!dive.Taken) { Nope(dive.Line); return; }
+        c.Cover = dive.Cover;
+        // The Prone is OFFERED rather than applied, exactly as a creature's attack rider is: the
+        // conditions string is the Keeper's and the engine does not write there.
+        if (Confirm($"{dive.Line}\n\nTag {c.Name} Prone?")) ApplyConditionTo(c, dive.Condition);
+        Log(dive.Line);
+        RefreshTracker();
+    }
+
+    /// <summary>Cover is held "until you leave it", and this is the leaving.</summary>
+    void DoLeaveCover()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        if (c.Cover == IronCode.Cover.None) { Nope($"{c.Name} is not behind anything to leave."); return; }
+        Rules.LeaveCover(c);
+        Log($"{c.Name} leaves cover.");
+        RefreshTracker();
+    }
+
+    /// <summary>Say what the horse under the selected soul is doing. Rider and mount share the
+    /// rider's three Beats (Ch. XI), so this is a state of their row and not a row of its own.</summary>
+    void GaitDialog()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        const int Pad = 16, CW = 430;
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name} — in the saddle",
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        var what = new Label { Left = Pad, Top = Pad, Width = CW, Height = 58, ForeColor = Ink,
+            Text = $"How {c.Name} is mounted. A standing or walking horse shoots as normal; at a "
+            + "trot or a gallop every ranged Strike takes −2, a two-handed long gun another −2, "
+            + "and nobody aims or braces from a moving animal." };
+        var lbl = new Label { Left = Pad, Top = what.Bottom + 14, Width = 60, Text = "Gait:" };
+        var pick = new ComboBox { Left = Pad + 64, Top = what.Bottom + 10, Width = 170,
+                                  DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var g in Enum.GetNames<IronCode.Gait>()) pick.Items.Add(g == "Afoot" ? "Afoot — on their own legs" : g);
+        pick.SelectedIndex = (int)c.Gait;
+        Tip.SetToolTip(pick, "Afoot is everybody standing on the ground. The other four are the horse's "
+            + "pace, and the saddle rules read off it.");
+        var ok = new Button { Text = "Set it", Left = Pad + CW - 190, Top = pick.Bottom + 16, Width = 92,
+                              Height = 32, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Cancel", Left = Pad + CW - 92, Top = ok.Top, Width = 92,
+                                  Height = 32, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { what, lbl, pick, ok, cancel });
+        f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
+        f.AcceptButton = ok; f.CancelButton = cancel;
+        if (f.ShowDialog(this) != DialogResult.OK) return;
+        c.Gait = (IronCode.Gait)pick.SelectedIndex;
+        Log(c.Gait == IronCode.Gait.Afoot ? $"{c.Name} is afoot." : $"{c.Name} is up, at a {c.Gait.ToString().ToLowerInvariant()}.");
+        RefreshTracker();
+    }
+
+    /// <summary>Reload, at the cost the weapon's own arms-table row prints — one Interact for a
+    /// break-action, one Beat a round for a repeater, half the capacity to top one off, and three
+    /// whole rounds for a cap-and-ball cylinder, which cannot be part-filled in a hurry.</summary>
+    void ReloadDialog()
+    {
+        if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        var guns = (CharGen.D?.weapons ?? new List<CgWeapon>())
+            .Where(w => IronCode.ReadReload(w.reload) != IronCode.ReloadKind.None).ToList();
+        if (guns.Count == 0) { Nope("Nothing in the arms table has a reload to pay."); return; }
+
+        const int Pad = 16, CW = 470;
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name} — reload",
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        var lbl = new Label { Left = Pad, Top = Pad + 4, Width = 60, Text = "Weapon:" };
+        var pick = new ComboBox { Left = Pad + 64, Top = Pad, Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var w in guns) pick.Items.Add(w.name);
+        pick.SelectedIndex = 0;
+        Tip.SetToolTip(pick, "Which iron is being fed. The cost is its own, off the book's Reload column.");
+        var full = new CheckBox { Left = Pad, Top = pick.Bottom + 10, Width = 200, Text = "Top it right off", Checked = true };
+        Tip.SetToolTip(full, "Unticked, a repeater takes one Beat to thumb a single round in. Ticked, it is "
+            + "Beats equal to half the capacity, rounded up.");
+        var practiced = new CheckBox { Left = Pad, Top = full.Bottom + 4, Width = 260, Text = "Practiced Reload on this weapon" };
+        Tip.SetToolTip(practiced, "The Edge that shaves one Beat off a weapon you favor. It can never take it below one.");
+        var cost = new Label { Left = Pad, Top = practiced.Bottom + 12, Width = CW, Height = 46,
+                               ForeColor = GoldDeep, Font = DialogItalic };
+
+        void Sync()
+        {
+            var w = guns[Math.Max(0, pick.SelectedIndex)];
+            var rc = IronCode.Reloading(w, full.Checked, practiced.Checked);
+            full.Enabled = rc.Kind == IronCode.ReloadKind.PerShot;
+            cost.Text = rc.Rounds > 0
+                ? $"{w.name}: {rc.Line}. That is not a Beat you can spend — mark it and let the rounds pass."
+                : $"{w.name}: {rc.Line}." + (Rules.WhyNoBeats(c, rc.Beats) is string why ? "  " + why : "");
+        }
+        pick.SelectedIndexChanged += (s, e) => Sync();
+        full.CheckedChanged += (s, e) => Sync();
+        practiced.CheckedChanged += (s, e) => Sync();
+        Sync();
+
+        var go = new Button { Text = "Feed it ▸", Left = Pad + CW - 190, Top = cost.Bottom + 16, Width = 92,
+                              Height = 32, DialogResult = DialogResult.OK };
+        var close = new Button { Text = "Back to the field", Left = Pad + CW - 92, Top = go.Top, Width = 92,
+                                 Height = 32, DialogResult = DialogResult.Cancel };
+        f.Controls.AddRange(new Control[] { lbl, pick, full, practiced, cost, go, close });
+        f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
+        f.AcceptButton = go; f.CancelButton = close;
+        if (f.ShowDialog(this) != DialogResult.OK) return;
+
+        var chosen = guns[Math.Max(0, pick.SelectedIndex)];
+        var paid = IronCode.Reloading(chosen, full.Checked, practiced.Checked);
+        if (paid.Rounds > 0)
+        {
+            Log($"{c.Name} sets to charging the {chosen.name} — {paid.Line}.");
+            RefreshTracker();
+            return;
+        }
+        if (Rules.WhyNoBeats(c, paid.Beats) is string no) { Nope(no); return; }
+        c.Beats -= paid.Beats;
+        Log($"{c.Name} reloads the {chosen.name} — {paid.Line}.");
+        RefreshTracker();
+    }
+
     // The selected combatant's turn begins: three Beats, the next Strike clean (Ch. XI).
     void BeginTurnForSelected()
     {
@@ -2258,7 +2414,83 @@ public partial class MainForm
             f.Controls.Add(d20);
         }
 
-        int y = how.Bottom + 12;
+        // ---- Circumstance (Ch. XI). ----
+        // The app models no ground, so these are the four things only the Keeper can see. Everything
+        // else the chapter charges for -- the gait of the horse, whether the target is mounted or
+        // sprawling, the Aim held, the recoil of an unbraced shotgun -- the engine reads off the rows
+        // itself and is deliberately NOT asked for here. Until v1.40.0 the whole table was arithmetic
+        // the Keeper did in their head and typed into "To hit".
+        var circLbl = new Label { Left = Pad, Top = how.Bottom + 12, Width = 78, Text = "Range (ft):" };
+        var range = new NumericUpDown { Left = Pad + 82, Top = how.Bottom + 8, Width = 70,
+                                        Minimum = 0, Maximum = 2000, Value = 0 };
+        Tip.SetToolTip(range, "How far the target is, in feet. Zero means you have not said, and no range "
+            + "rule runs at all — the engine never guesses a distance. Past the first increment it is "
+            + "−2 for each, at arm's length a long gun is unwieldy, and a Volley iron resents close work.");
+        var coverLbl = new Label { Left = Pad + 164, Top = how.Bottom + 12, Width = 46, Text = "Cover:" };
+        var cover = new ComboBox { Left = Pad + 212, Top = how.Bottom + 8, Width = 104,
+                                   DropDownStyle = ComboBoxStyle.DropDownList };
+        cover.Items.AddRange(new object[] { "none", "light −2", "heavy −4" });
+        cover.SelectedIndex = 0;
+        Tip.SetToolTip(cover, "What stands between the shot and them. Prefilled from what the target is "
+            + "already behind on the field — Take Cover puts them there — and yours to overrule.");
+        var intoMelee = new CheckBox { Left = Pad, Top = range.Bottom + 8, Width = 150, Text = "Into melee −4" };
+        Tip.SetToolTip(intoMelee, "Firing into a scrum. A miss may strike a friend, at your call.");
+        var concealed = new CheckBox { Left = Pad + 164, Top = range.Bottom + 8, Width = 152, Text = "Blind −8" };
+        Tip.SetToolTip(concealed, "The target is fully concealed and cannot be targeted directly: fire at a "
+            + "guessed square and hope.");
+        var pulled = new CheckBox { Left = Pad + 322, Top = range.Bottom + 8, Width = 150, Text = "Pull the blow" };
+        Tip.SetToolTip(pulled, "Declared before the roll (Ch. XI): this one is meant to subdue. Most arms take "
+            + "−2 to pull it; fists and a club do it by nature. A foe brought to 0 this way is knocked "
+            + "senseless and is not bleeding toward −CON.");
+        var circRead = new Label { Left = Pad, Top = intoMelee.Bottom + 8, Width = CW, Height = 32,
+                                   ForeColor = GoldDeep, Font = DialogItalic };
+
+        IronCode.Shot ShotNow() => new()
+        {
+            Distance = (int)range.Value,
+            Cover = (IronCode.Cover)cover.SelectedIndex,
+            IntoMelee = intoMelee.Checked,
+            Concealed = concealed.Checked,
+            Nonlethal = pulled.Checked,
+        };
+
+        void SyncCirc()
+        {
+            var w = asCreature ? catks[Math.Max(0, weapon.SelectedIndex)].ToWeapon()
+                               : CharGen.D.weapons[Math.Max(0, weapon.SelectedIndex)];
+            // Shown the way the engine will actually reckon it, gait and all, so the readout and the
+            // roll can never be two different sums.
+            var tgtNow = foes[Math.Max(0, target.SelectedIndex)];
+            var facts = ShotNow() with
+            {
+                Gait = attacker.Gait,
+                TargetMounted = tgtNow.Mounted,
+                TargetProne = tgtNow.Load.Prone,
+            };
+            var rk = IronCode.Reckon(facts, w, attacker.Aimed && IronCode.CanAim(attacker.Gait));
+            circRead.Text = rk.Parts.Count == 0
+                ? "Circumstance: nothing the moment adds or takes away."
+                : $"Circumstance {(rk.Total > 0 ? "+" : "")}{rk.Total} — " + string.Join(", ", rk.Parts) + ".";
+        }
+        range.ValueChanged += (s, e) => SyncCirc();
+        cover.SelectedIndexChanged += (s, e) => SyncCirc();
+        intoMelee.CheckedChanged += (s, e) => SyncCirc();
+        concealed.CheckedChanged += (s, e) => SyncCirc();
+        pulled.CheckedChanged += (s, e) => SyncCirc();
+        weapon.SelectedIndexChanged += (s, e) => SyncCirc();
+        // The target carries its own cover onto the dialog, and changing target re-reads it.
+        void PrefillCover()
+        {
+            cover.SelectedIndex = (int)foes[Math.Max(0, target.SelectedIndex)].Cover;
+            SyncCirc();
+        }
+        target.SelectedIndexChanged += (s, e) => PrefillCover();
+
+        f.Controls.AddRange(new Control[] { circLbl, range, coverLbl, cover, intoMelee, concealed,
+                                            pulled, circRead });
+        PrefillCover();
+
+        int y = circRead.Bottom + 12;
         if (hasSpecials)
         {
             var bits = new List<string>();
@@ -2306,9 +2538,11 @@ public partial class MainForm
             var drList = dr.Value > 0 ? new[] { new DrEntry((int)dr.Value, "all") } : null;
             int idx = Math.Max(0, weapon.SelectedIndex);
             int? forced = EngineRolls ? null : (int)d20.Value;
+            var shot = ShotNow();
             var rep = asCreature
-                ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced)
-                : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList, forced);
+                ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced, shot)
+                : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList,
+                                            forced, null, null, shot);
             Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $"  — {catks[idx].Effect}." : ""));
             // the Strike reads on the Dice tab's card too, graded like any other check
             ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
@@ -3870,13 +4104,21 @@ public partial class MainForm
     void RefLeafIronCode(RichTextBox r)
     {
         RH(r, "A Turn in the Iron Code");
+        // The Beat row is DERIVED from Rules.BeatActions, not typed. It was typed for six releases,
+        // and for six releases it named six actions the app could not carry out — a Keeper reading
+        // this leaf mid-fight was told the app knew what a Beat buys. Now the leaf and the Tracker's
+        // Act ▾ menu are two views of one array, and the leaf cannot promise what the app will not do.
         RTbl(r, new[] { 16, 66 }, new[] { "Element", "The rule" },
             new[] { "Initiative",   "A Notice check" },
-            new[] { "The turn",     "Three Beats, spent as you like" },
-            new[] { "A Beat",       "Strike · Stride · Aim/Brace · Interact · Reload · Take Cover" },
+            new[] { "The turn",     $"Three Beats, spent as you like — {Rules.BeatActions.Length} things to spend them on" },
+            new[] { "A Beat",       string.Join(" · ", Rules.BeatActions.Select(a => a.Name)) },
             new[] { "A Strike",     "d20 + attack proficiency + DEX/STR against Defense" },
             new[] { "More attacks", "Multiple Attack Penalty −5 / −10 (Agile weapons −4 / −8)" },
-            new[] { "A critical hit", "Applies the weapon's Fatal die" });
+            new[] { "A critical hit", "Applies the weapon's Fatal die" },
+            new[] { "A reaction",   "One between your turns — Dive for Cover is the common one" },
+            new[] { "Circumstance", "Cover −2 / −4 · into melee −4 · beyond the first increment −2 each · blind −8" },
+            new[] { "Aim / Brace",  "A Beat for +2 on the next Strike, and it braces a Kickback weapon" },
+            new[] { "From the saddle", "Trot or gallop: −2, no aiming; a long gun −4 in all. Charge 20 ft: +1 die" });
     }
 
     void RefLeafWounds(RichTextBox r)

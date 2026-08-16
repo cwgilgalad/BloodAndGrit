@@ -289,6 +289,45 @@ posse's green sits G above R, a foe's clay sits R above G, and no lift crosses t
 grey, dying is the only loud ground in the app, dead is ash. **Anything added here has to obey the
 same rule**; a new ground that is merely a different brightness fails silently.
 
+## The Iron Code is run, not read out (v1.40.0)
+
+Ch. XI was audited against the engine and nine gaps closed. Six decisions worth not re-deriving:
+
+- **`Rules.BeatActions` is the one list of the seven actions**, and the Tracker's *Act ▾* menu and
+  the Reference deck's Iron Code leaf both render from it. They were two lists before, and for six
+  releases the leaf printed six actions to the Keeper while the app could spend a Beat on one of
+  them. Add an action here and both surfaces get it; add it to either surface alone and you have
+  recreated the bug.
+- **The Keeper is asked only what the app cannot see.** `IronCode.Shot` carries the distance, the
+  cover, into-melee, concealment and the pulled blow, because the app models no ground. Everything
+  else the chapter charges for is read off the rows by `StrikeAndApply` itself — the gait, whether
+  the target is mounted or Prone, the Aim held, the recoil standing. Asking for either of those
+  would be asking the Keeper to type in something the app already knows, and a typed answer that
+  disagrees with the row is a bug with two authorities.
+- **Off-Guard and the Aim are paid in exactly one place each**, and `IronCode.Reckon` documents why
+  it does not charge them: the Burden already pays Off-Guard as −2 Defense, and `Combatant.Aimed`
+  already pays the Aim. A smoke test asserts the absence. This is the same double-apply the derived
+  Burden was built to prevent in v1.39.0.
+- **`Combatant.Recoiling` is engine-written and `Conditions` is not.** The unbraced-Kickback rule is
+  unconditional — no save, nobody's judgement — so the engine may both set it and clear it at
+  `BeginTurn`. Anything that hangs on a save the Keeper has to call stays *offered*, the way a
+  creature's attack rider is. `Rules.DiveForCover` hands its Prone back for the same reason.
+- **`Combatant.Str` is 0 when nobody has said**, exactly as `DeathAt` is, and is read through
+  `Strength`. A stored default of ten would be indistinguishable from a soul who really is average,
+  and would hand the shotgun's recoil to somebody the book exempts. `ApplySession` backfills it only
+  ever upward from zero.
+- **A long gun is identified by NAME**, in `IronCode.IsLongGun`. Ch. X's glossary defines a
+  Two-Handed trait and then prints it on no weapon in either table, so there is no trait to read;
+  Ch. XI names them the same way ("a two-handed long gun (rifle, carbine, shotgun)"). Following the
+  book beat inventing a data column it does not have.
+
+**The arms table is now audited, and it is the reason all of this was unbuildable.**
+`audits/verify_rules.py` guarded the seventeen Calling tables and read the arms table not at all, so
+the transcription had lost **Range, Cap. and Reload** for every gun, folded the cap-and-ball's *slow*
+into its traits string, and left out Fists / Boots and the book's whole second table. 791
+cross-checks now, up from 697. **Any new book table transcribed into `chargen.json` gets an auditor
+in the same session** — that is the lesson, and it is cheaper than the six months this one cost.
+
 ## The Beats are enforced, and a refusal says why (v1.38.0)
 
 `Rules.CanSpendBeats(c, n)` and `Rules.WhyNoBeats(c, n)` are a pair on purpose: the answer and the

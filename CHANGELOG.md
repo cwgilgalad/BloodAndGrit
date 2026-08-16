@@ -8,6 +8,65 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.40.0 — the Iron Code is run rather than read out (2026-08-16).**
+  An audit of Ch. XI against the engine found eleven of its mechanisms faithful and nine absent.
+  The worst of them was not a missing rule but a promise: the Reference deck's own leaf printed
+  *"A Beat — Strike · Stride · Aim/Brace · Interact · Reload · Take Cover"* to the Keeper, mid-fight,
+  while exactly two paths in the whole app could spend a Beat. The app named six actions and could
+  carry out one.
+
+  **All seven Beat actions now spend a Beat**, off a single `Rules.BeatActions` array that the
+  Tracker's new **Act ▾** menu and the Reference leaf both render from — so the leaf cannot promise
+  what the app will not do, which is the same discipline `RefLeafTitles` has been held to since
+  v1.20.1. Aim buys its +2 on one Strike and is spent by that Strike, hit or miss; Striding loses it,
+  because the Circumstance table's row reads "you Aimed **and did not move**". Take Cover steps a row
+  to light and then to heavy and refuses a third step out loud.
+
+  **The Circumstance table is arithmetic now.** Cover −2/−4, firing into melee −4, a fully concealed
+  target at −8, the range increment at −2 for each past the first, and a long gun unwieldy at arm's
+  length. The Strike dialog asks the Keeper only for what the app cannot see — how far, what is in
+  the way, whether it is fired into a scrum, whether the blow is pulled — and reads the rest off the
+  rows itself: the gait of the horse, whether the target is mounted or sprawling, the Aim held, the
+  recoil standing. Off-Guard and the Aim are deliberately **not** charged twice, and a smoke test
+  says so, because charging them once in the Burden and again in the circumstance is exactly the
+  fault the derived-Burden design exists to prevent.
+
+  **Kickback and Volley were parsed and never read.** Both had been fields on `WeaponTraits` since
+  v1.17, both looked implemented from any call site, and neither was ever consulted: a shotgun fired
+  from the hip took no penalty and left nobody Off-Guard, and the Buffalo Rifle's *Volley 30 ft* had
+  never done anything. Aim and brace are one action in the book and so one flag here, and the strong
+  are exempt outright rather than charged less.
+
+  **Nonlethal, reactions, and the saddle.** A pulled blow costs −2 unless the arm subdues by nature,
+  and a foe brought to 0 that way is **senseless, not dying** — the overkill below zero is not
+  counted toward −CON, which is the whole of what nonlethal buys. One reaction between your turns,
+  with *Dive for Cover* as the named one; the Prone it costs is **offered**, not applied, because the
+  conditions string is the Keeper's and the engine does not write there. And fourteen mounted rules:
+  −2 from a moving horse and −2 again for a long gun, no aiming or bracing at a trot, +1 striking
+  down at a footman, the Charge at twenty feet, and a Ride save to keep the saddle.
+
+  **Two conditions that had never reached a fight.** Appendix B has said *"cannot Aim"* about
+  Fatigued since v1.4, and there was no Aim to refuse until now. Prone's other half — *"anyone
+  shooting at them has +4 instead"* — has an attacker in it, and so could never be a number on the
+  bearer's own Burden; it is reckoned where both parties are in view, and the engine reads it off the
+  target's row with nobody passing it in.
+
+  **The arms table had lost three columns and eleven weapons, and nothing was looking.**
+  `verify_rules.py` guarded the seventeen Calling tables and read the arms table not at all, so the
+  transcription had quietly dropped **Range, Cap. and Reload** for every gun. That is why the range
+  increments and the reload actions could not be written at all: the numbers to write them from were
+  gone. It had also folded the cap-and-ball's *slow* into its **traits** string, where it read as a
+  trait only one gun has, and left
+  out **Fists / Boots** and the whole of the book's second table, *More Arms & Powder*. Eight
+  firearms and the fists are transcribed, and the auditor now cross-checks all seven printed columns:
+  **791 cross-checks, up from 697.** The three thrown things are named where they are read past
+  rather than silently skipped.
+
+  One more thing nothing was looking at: `GK/playtest` still called Module III *"The Reckoning of the
+  Wells"*, the title retired in modules-v1.1 for colliding with *The Salt at Coffin Wells* — and
+  carried it into `PLAYTEST.md`, which ships inside the modules zip. `audit_names.py` reads the built
+  modules and `names.json`; no auditor reads the harness.
+
 - **GritKeeper v1.39.0 · Player's Book v2.26 — the round gives the turn back, Appendix B does
   arithmetic, every working says how long, and the dice wear their own shapes (2026-08-15).**
   A Keeper reported that the posse could barely hit anything while the horrors hit them at will,

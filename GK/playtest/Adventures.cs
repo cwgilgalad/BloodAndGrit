@@ -127,9 +127,14 @@ public static class Adventures
     // The third Hand, at Mission San Clavo — the ruined heart of the Basin from Ch. XIII. The two
     // book adventures both END at the mission and neither goes into it. This one does, and goes
     // under it. Level 5 puts the posse at Tier 3, which is what a Tier III boss wants.
+    // The title was retired in modules-v1.1 — "The Reckoning of the Wells" collided with "The Salt
+    // at Coffin Wells" on the word AND on the grammar, which is the whole reason audit_names.py
+    // exists. The harness kept the dead name for six days after the module was renamed, and carried
+    // it into PLAYTEST.md, which SHIPS inside BloodAndGrit-Modules.zip. Nothing looked: audit_names
+    // reads the built modules and names.json, and no auditor reads this file.
     public static readonly Adventure Wells = new(
-        "the-reckoning-of-the-wells",
-        "The Reckoning of the Wells",
+        "what-the-water-answers",
+        "What the Water Answers",
         "A third reckoning — the water is going bad from the bottom up, and the mission knows why",
         PartyLevel: 5,
         Site: "Mission San Clavo",
