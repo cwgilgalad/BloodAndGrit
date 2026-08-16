@@ -854,18 +854,24 @@ public partial class MainForm : Sheet
             var r = t.GetTabRect(e.Index);
             var g = e.Graphics;
 
-            using (var ground = new SolidBrush(on ? Paper : TabRest)) g.FillRectangle(ground, r);
+            // Brushes and pens off the shelf too (v1.39.0). This runs once per tab per paint — ten
+            // times a repaint, and a repaint comes on every hover, selection and resize — so three
+            // GDI objects minted and disposed here is thirty allocations for a bar that never
+            // changes colour. Same argument as the fonts, one rung down.
+            g.FillRectangle(on ? PaperBrush : TabRestBrush, r);
             // A 3px Blood rule along the top of the live tab — the accent that does the work. Drawn
             // inside the rect so it can't bleed onto its neighbours.
-            if (on) using (var rule = new SolidBrush(Blood)) g.FillRectangle(rule, r.X, r.Y, r.Width, 3);
+            if (on) g.FillRectangle(BloodBrush, r.X, r.Y, r.Width, 3);
             // Hairline separators, so ten tabs read as ten and not as one long bar.
-            using (var edge = new Pen(Rule))
-                g.DrawLine(edge, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
+            g.DrawLine(RulePen, r.Right - 1, r.Y + 4, r.Right - 1, r.Bottom - 2);
 
-            var face = on ? new Font(t.Font, FontStyle.Bold) : t.Font;
+            // The bold face comes off MainForm.Face, the memoizing shelf, rather than being minted
+            // and disposed per paint. Disposing it was correct and is not the point: the set of
+            // triples this app draws with is small and fixed, so a shelf settles at a few dozen
+            // fonts for the life of the process and this path stops allocating altogether.
+            var face = on ? Face(t.Font.FontFamily.Name, t.Font.Size, FontStyle.Bold) : t.Font;
             TextRenderer.DrawText(g, t.TabPages[e.Index].Text, face, r, on ? Blood : Ink,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
-            if (on) face.Dispose();
         };
     }
 
@@ -1183,6 +1189,17 @@ public partial class MainForm : Sheet
         if (!faces.TryGetValue(key, out var f)) faces[key] = f = new Font(family, size, style);
         return f;
     }
+
+    /// <summary>The same shelf, one rung down, for the theme's own brushes and pens (v1.39.0).
+    /// A brush is a native handle exactly as a font is, and the argument for keeping these is the
+    /// argument above: the palette is fixed at compile time, the owner-drawn tab strip paints ten
+    /// tabs on every hover, selection and resize, and minting three GDI objects per tab per paint is
+    /// thirty allocations a frame for colours that never change. Never disposed, deliberately —
+    /// they live as long as the process draws.</summary>
+    internal static readonly SolidBrush PaperBrush   = new(Paper);
+    internal static readonly SolidBrush TabRestBrush = new(TabRest);
+    internal static readonly SolidBrush BloodBrush   = new(Blood);
+    internal static readonly Pen        RulePen      = new(Rule);
 
     /// <summary>
     /// Breathing room for text panes. WinForms RichTextBox/ListBox ignore their own Padding

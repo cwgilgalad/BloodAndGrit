@@ -282,7 +282,7 @@ public class Combatant : INotifyPropertyChanged
     public int BloodMax { get => _bloodMax; set { _bloodMax = value; On(); } }
     public int Defense { get => _defense; set { _defense = value; On(); OnBurden(); } }
     public bool IsPC { get => _isPC; set { _isPC = value; On(); } }
-    public string Conditions { get => _conditions; set { _conditions = value; On(); OnBurden(); } }
+    public string Conditions { get => _conditions; set { _conditions = value; _burden = null; On(); OnBurden(); } }
 
     // ---- what the conditions on this one actually cost (Appendix B) ----
     // Derived, never stored. An earlier sketch of this applied the modifier to Defense when a
@@ -291,8 +291,18 @@ public class Combatant : INotifyPropertyChanged
     // the number AND the working still on the row, so it lands twice. The stored Defense stays the
     // Defense the sheet says; everything else is worked out on the way to the screen.
 
-    /// <summary>The sum of what this one's conditions cost them, in the columns a fight touches.</summary>
-    [JsonIgnore] public Rules.Burden Load => Rules.ReadConditions(_conditions);
+    /// <summary>The sum of what this one's conditions cost them, in the columns a fight touches.
+    ///
+    /// <para><b>Memoized, and it has to be.</b> This is read on a per-cell, per-paint path — the
+    /// tracker binds <see cref="DefenseLine"/> and the grid re-reads it every time a row is drawn,
+    /// which on a full field during a repaint storm is hundreds of reads a second. Parsing a
+    /// conditions string with a Split and a regex per condition on each of those is the same class
+    /// of fault as minting a Font per frame: correct, invisible in a short test, and a drag on the
+    /// one screen the Keeper stares at all night. The cache is dropped the moment
+    /// <see cref="Conditions"/> is assigned, so it can never answer for a string that has
+    /// changed.</para></summary>
+    [JsonIgnore] public Rules.Burden Load => _burden ??= Rules.ReadConditions(_conditions);
+    Rules.Burden _burden;
 
     /// <summary>Defense as it actually stands right now — the sheet's number plus whatever is
     /// riding on them. Floored at 1: no stack of conditions makes somebody impossible to miss.</summary>
@@ -511,16 +521,25 @@ public class Combatant : INotifyPropertyChanged
     /// <summary>The chips the tracker paints in the Worked column: the mark of the kind, the name,
     /// and the rounds left. Short on purpose — the whole of it is a tooltip and a right-click away,
     /// and a column a Keeper has to stop and read is a column they stop reading.</summary>
+    /// <para>Memoized for the reason <see cref="Load"/> is: the tracker binds this column, so the
+    /// grid re-reads it every time a row is painted. Building a joined string out of N chips —
+    /// each of which is itself a concatenation and a switch — on that path is allocation churn on
+    /// the one screen a Keeper watches all night. Every route that can change the list drops the
+    /// cache, and they are all right here.</para>
     [JsonIgnore]
-    public string WorkedChips => Worked == null || Worked.Count == 0 ? ""
+    public string WorkedChips => _chips ??= Worked == null || Worked.Count == 0 ? ""
         : string.Join("  ", Worked.Select(w => w.Chip));
+    string _chips;
+
+    /// <summary>Say the chips have changed, and forget the cached line.</summary>
+    void ChipsMoved() { _chips = null; On(nameof(WorkedChips)); }
 
     /// <summary>Put an effect on this one, and say so.</summary>
     public void Work(WorkedEffect e)
     {
         if (e == null) return;
         (Worked ??= new()).Add(e);
-        On(nameof(WorkedChips));
+        ChipsMoved();
     }
 
     /// <summary>Take an effect off — it ran out, or it was ended.</summary>
@@ -528,7 +547,7 @@ public class Combatant : INotifyPropertyChanged
     {
         if (e == null || Worked == null) return;
         Worked.Remove(e);
-        On(nameof(WorkedChips));
+        ChipsMoved();
     }
 
     /// <summary>A round has passed: everything counted in rounds loses one, and anything that
@@ -547,13 +566,20 @@ public class Combatant : INotifyPropertyChanged
     {
         var done = new List<WorkedEffect>();
         if (Worked == null) return done;
+        bool counted = false;
         foreach (var w in Worked.ToList())
         {
             if (w.RoundsLeft < 0) continue;
             w.RoundsLeft--;
+            counted = true;
             if (w.RoundsLeft <= 0) { done.Add(w); Worked.Remove(w); }
         }
-        if (done.Count > 0) On(nameof(WorkedChips));
+        // Any effect that COUNTED changed the chip, not just the ones that ran out — the chip prints
+        // "✦ The Stilling (2)" and that 2 is what just moved. The old test was `done.Count > 0`, so a
+        // three-round Sign ticking down to two said nothing and the grid kept showing three until
+        // something else happened to repaint it. Harmless-looking, and it is the Keeper's only
+        // read on how long they have.
+        if (counted) ChipsMoved();
         return done;
     }
 }

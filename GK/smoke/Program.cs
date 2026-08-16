@@ -674,6 +674,28 @@ foreach (var (table, floor) in new[]
         T("round: the dead are dead before the round turns", gone.Dead);
         Rules.NewRound(new List<Combatant> { gone });
         T("round: and the dead are not handed a turn back", gone.Beats == 0 && gone.MapStep == 3);
+
+        // The chip has to move when the COUNT moves, not only when something runs out. It printed
+        // "✦ The Stilling (3)" and went on printing 3 as the Sign ticked to 2 and to 1, because the
+        // only thing that said the column had changed was an effect expiring — and that count is the
+        // Keeper's one read on how long they have left.
+        var held = new Combatant { Name = "Opal", IsPC = true, BloodCur = 8, BloodMax = 8 };
+        held.Work(new WorkedEffect { Name = "The Stilling", Kind = "Sign", RoundsLeft = 3 });
+        string chip3 = held.WorkedChips;
+        T("chips: a counted working prints its count", chip3.Contains("(3)"));
+        held.TickWorked();
+        T("chips: and the count on the chip moves when the round does",
+            held.WorkedChips.Contains("(2)") && held.WorkedChips != chip3);
+        held.TickWorked(); held.TickWorked();
+        T("chips: an expired working leaves the column", held.WorkedChips == "");
+
+        // A working with no round count must not be ticked into nothing by a rollover.
+        var scene = new Combatant { Name = "Elias", IsPC = true, BloodCur = 9, BloodMax = 9 };
+        scene.Work(new WorkedEffect { Name = "Witch-Sight", Kind = "Sign", RoundsLeft = -1,
+                                      Ends = Rules.WorkEnds.Scene });
+        scene.TickWorked(); scene.TickWorked();
+        T("chips: a working measured in scenes survives the rounds", scene.Worked.Count == 1);
+        T("chips: and says the unit the book used", scene.WorkedChips.Contains("(scene)"));
     }
 
     // ---- what a condition costs, and that it is DERIVED (v1.39.0) ----
