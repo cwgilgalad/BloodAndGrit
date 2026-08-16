@@ -280,9 +280,52 @@ public class Combatant : INotifyPropertyChanged
     public int Init { get => _init; set { _init = value; On(); } }
     public int BloodCur { get => _bloodCur; set { _bloodCur = Math.Clamp(value, 0, 9999); On(); } }
     public int BloodMax { get => _bloodMax; set { _bloodMax = value; On(); } }
-    public int Defense { get => _defense; set { _defense = value; On(); } }
+    public int Defense { get => _defense; set { _defense = value; On(); OnBurden(); } }
     public bool IsPC { get => _isPC; set { _isPC = value; On(); } }
-    public string Conditions { get => _conditions; set { _conditions = value; On(); } }
+    public string Conditions { get => _conditions; set { _conditions = value; _burden = null; On(); OnBurden(); } }
+
+    // ---- what the conditions on this one actually cost (Appendix B) ----
+    // Derived, never stored. An earlier sketch of this applied the modifier to Defense when a
+    // working landed and took it off again when the working ended, which is the obvious way and the
+    // wrong one: a session saved in the middle of a Sign reloads with the penalty already baked into
+    // the number AND the working still on the row, so it lands twice. The stored Defense stays the
+    // Defense the sheet says; everything else is worked out on the way to the screen.
+
+    /// <summary>The sum of what this one's conditions cost them, in the columns a fight touches.
+    ///
+    /// <para><b>Memoized, and it has to be.</b> This is read on a per-cell, per-paint path — the
+    /// tracker binds <see cref="DefenseLine"/> and the grid re-reads it every time a row is drawn,
+    /// which on a full field during a repaint storm is hundreds of reads a second. Parsing a
+    /// conditions string with a Split and a regex per condition on each of those is the same class
+    /// of fault as minting a Font per frame: correct, invisible in a short test, and a drag on the
+    /// one screen the Keeper stares at all night. The cache is dropped the moment
+    /// <see cref="Conditions"/> is assigned, so it can never answer for a string that has
+    /// changed.</para></summary>
+    [JsonIgnore] public Rules.Burden Load => _burden ??= Rules.ReadConditions(_conditions);
+    Rules.Burden _burden;
+
+    /// <summary>Defense as it actually stands right now — the sheet's number plus whatever is
+    /// riding on them. Floored at 1: no stack of conditions makes somebody impossible to miss.</summary>
+    [JsonIgnore] public int EffectiveDefense => Math.Max(1, _defense + Load.Defense);
+
+    /// <summary>What the tracker prints in the Defense column: the plain number when nothing is on
+    /// them, and the arithmetic when something is — "12 → 10". A Keeper who sees only the total has
+    /// to remember why it moved, and mid-fight nobody remembers anything.</summary>
+    [JsonIgnore]
+    public string DefenseLine => Load.Defense == 0 ? _defense.ToString()
+                                                   : $"{_defense} → {EffectiveDefense}";
+
+    /// <summary>How many Beats this one actually gets on their turn — three, less whatever Slowed or
+    /// Stunned takes. Floored at zero.</summary>
+    [JsonIgnore] public int BeatsThisTurn => Math.Max(0, 3 - Load.BeatsLost);
+
+    void OnBurden()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Load)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EffectiveDefense)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefenseLine)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatsThisTurn)));
+    }
     public string Ref { get => _ref; set { _ref = value; On(); } }   // creature name for lookup, or ""
     // Links a PC row back to its PartyMember.Id (empty for foes and hand-entered rows), so the
     // Blood mirror survives a rename. Falls back to Name-match for legacy rows that lack it.
@@ -451,10 +494,16 @@ public class Combatant : INotifyPropertyChanged
     /// still to go. Persisted: a fight in progress survives a restart, and so must this.</summary>
     public bool HasActed { get => _hasActed; set { _hasActed = value; On(); } }
 
-    /// <summary>Start this combatant's turn: Beats back to three, the next Strike clean, the row
-    /// lit as the one acting, and their turn marked spent for the round. Clearing everyone else is
-    /// the caller's business — the model has no idea who else is on the field.</summary>
-    public void BeginTurn() { Beats = 3; MapStep = 1; Acting = true; HasActed = true; }
+    /// <summary>Start this combatant's turn: the Beats back, the next Strike clean, the row lit as
+    /// the one acting, and their turn marked spent for the round. Clearing everyone else is the
+    /// caller's business — the model has no idea who else is on the field.
+    ///
+    /// <para>The Beats come from <see cref="BeatsThisTurn"/> rather than the flat three, which is
+    /// how Appendix B's Slowed and Stunned finally reach the fight. The app has offered both
+    /// conditions from the ＋ Condition ▾ menu since v1.4 and neither did anything at all — "lose one
+    /// Beat each turn while it lasts" was a line of prose in a column and the Keeper's own problem
+    /// to remember.</para></summary>
+    public void BeginTurn() { Beats = BeatsThisTurn; MapStep = 1; Acting = true; HasActed = true; }
 
     /// <summary>Is this tracker row the given posse soul? By the stable PcId when it has one, else
     /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
@@ -472,16 +521,25 @@ public class Combatant : INotifyPropertyChanged
     /// <summary>The chips the tracker paints in the Worked column: the mark of the kind, the name,
     /// and the rounds left. Short on purpose — the whole of it is a tooltip and a right-click away,
     /// and a column a Keeper has to stop and read is a column they stop reading.</summary>
+    /// <para>Memoized for the reason <see cref="Load"/> is: the tracker binds this column, so the
+    /// grid re-reads it every time a row is painted. Building a joined string out of N chips —
+    /// each of which is itself a concatenation and a switch — on that path is allocation churn on
+    /// the one screen a Keeper watches all night. Every route that can change the list drops the
+    /// cache, and they are all right here.</para>
     [JsonIgnore]
-    public string WorkedChips => Worked == null || Worked.Count == 0 ? ""
+    public string WorkedChips => _chips ??= Worked == null || Worked.Count == 0 ? ""
         : string.Join("  ", Worked.Select(w => w.Chip));
+    string _chips;
+
+    /// <summary>Say the chips have changed, and forget the cached line.</summary>
+    void ChipsMoved() { _chips = null; On(nameof(WorkedChips)); }
 
     /// <summary>Put an effect on this one, and say so.</summary>
     public void Work(WorkedEffect e)
     {
         if (e == null) return;
         (Worked ??= new()).Add(e);
-        On(nameof(WorkedChips));
+        ChipsMoved();
     }
 
     /// <summary>Take an effect off — it ran out, or it was ended.</summary>
@@ -489,7 +547,7 @@ public class Combatant : INotifyPropertyChanged
     {
         if (e == null || Worked == null) return;
         Worked.Remove(e);
-        On(nameof(WorkedChips));
+        ChipsMoved();
     }
 
     /// <summary>A round has passed: everything counted in rounds loses one, and anything that
@@ -508,13 +566,20 @@ public class Combatant : INotifyPropertyChanged
     {
         var done = new List<WorkedEffect>();
         if (Worked == null) return done;
+        bool counted = false;
         foreach (var w in Worked.ToList())
         {
             if (w.RoundsLeft < 0) continue;
             w.RoundsLeft--;
+            counted = true;
             if (w.RoundsLeft <= 0) { done.Add(w); Worked.Remove(w); }
         }
-        if (done.Count > 0) On(nameof(WorkedChips));
+        // Any effect that COUNTED changed the chip, not just the ones that ran out — the chip prints
+        // "✦ The Stilling (2)" and that 2 is what just moved. The old test was `done.Count > 0`, so a
+        // three-round Sign ticking down to two said nothing and the grid kept showing three until
+        // something else happened to repaint it. Harmless-looking, and it is the Keeper's only
+        // read on how long they have.
+        if (counted) ChipsMoved();
         return done;
     }
 }
@@ -596,6 +661,7 @@ public class WorkedEffect
             Rules.WorkEnds.Scene      => "the scene",
             Rules.WorkEnds.Hour       => "an hour",
             Rules.WorkEnds.Day        => "a day",
+            Rules.WorkEnds.Month      => "a month",
             Rules.WorkEnds.UntilDawn  => "until dawn",
             Rules.WorkEnds.Instant    => "done",
             _                         => "until ended",
@@ -613,6 +679,7 @@ public class WorkedEffect
             Rules.WorkEnds.Scene      => " (scene)",
             Rules.WorkEnds.Hour       => " (hour)",
             Rules.WorkEnds.Day        => " (day)",
+            Rules.WorkEnds.Month      => " (month)",
             Rules.WorkEnds.UntilDawn  => " (dawn)",
             _                         => "",
         });
@@ -1273,14 +1340,31 @@ public static class Rules
         => field != null && field.Any(c => !c.IsSign && !c.Dead && (!c.Down || c.Upright))
            && NextUp(field) == null;
 
-    /// <summary>Turn the round over on the whole field: nobody has been handed the turn yet, the
-    /// "what just happened" notes are a clean page, and every Worked effect loses a round. Returns
-    /// the effects that ran out, each with who it was on, so the caller can say so by name — an
-    /// effect that vanishes off a chip without a word is one the table keeps playing anyway.
+    /// <summary>Turn the round over on the whole field: everybody gets their turn back — three
+    /// Beats and a clean first Strike — nobody has been handed it yet, the "what just happened"
+    /// notes are a clean page, and every Worked effect loses a round. Returns the effects that ran
+    /// out, each with who it was on, so the caller can say so by name — an effect that vanishes off
+    /// a chip without a word is one the table keeps playing anyway.
     ///
     /// <para>Out here rather than inline in the Tracker for the reason <see cref="ResetForNewFight"/>
     /// is: the round rollover is the spine of the combat loop, and while it sat in UI code no test
-    /// could play a fight through it.</para></summary>
+    /// could play a fight through it.</para>
+    ///
+    /// <para><b>The Beats and the MAP step are given back HERE, and that is the whole of a real bug
+    /// (v1.39.0).</b> They were handed out by <see cref="Combatant.BeginTurn"/> and by nothing else,
+    /// and BeginTurn only runs when a row is stepped through ▶ Next turn. Step the round by hand, or
+    /// let it roll over while somebody never got an explicit turn, and that row walked into the new
+    /// round still spent: Beats 0, MapStep 4, which is a standing −10 on every Strike it makes for
+    /// the rest of the fight. A Keeper reported it as the posse being unable to hit anything, and
+    /// the arithmetic bears that out exactly — a level-1 Gunhand at +4 against Defense 13 goes from
+    /// hitting three times in five to needing a natural 19, while the dog biting her at +5 off a
+    /// clean MapStep 1 hits four times in five. The same zero Beats greys the Work button, so the
+    /// same fault reads at the table as the Signs and Miracles having stopped working.</para>
+    ///
+    /// <para>Ch. XI is not ambiguous about it — "On your turn you have three Beats", and the
+    /// Multiple Attack Penalty counts Strikes <em>in a turn</em>. A new round is a new turn for
+    /// everyone in it. BeginTurn still does this too, and the two being idempotent is the point:
+    /// one route that is remembered and one that is not is how this got out.</para></summary>
     public static List<(Combatant On, WorkedEffect Effect)> NewRound(IEnumerable<Combatant> field)
     {
         var ended = new List<(Combatant, WorkedEffect)>();
@@ -1289,6 +1373,11 @@ public static class Rules
         {
             if (c == null) continue;
             c.Acting = false; c.HasActed = false; c.ClearLast();
+            // The turn's own currency, back for the new turn — less whatever Slowed or Stunned takes
+            // off it, which is why this asks the row rather than writing three. A trace takes no
+            // turn and is left alone; the dead are left alone too, so a corpse on the field never
+            // reads as a row with three Beats waiting to be spent.
+            if (!c.IsSign && !c.Dead) { c.Beats = c.BeatsThisTurn; c.MapStep = 1; }
             foreach (var done in c.TickWorked()) ended.Add((c, done));
         }
         return ended;
@@ -1448,6 +1537,10 @@ public static class Rules
         Hour,
         /// <summary>A day.</summary>
         Day,
+        /// <summary>A month. Only The Brewing keeps this long — a Sign cooked down into a draught
+        /// and corked — and it earned its own unit rather than being rounded to a day, because the
+        /// whole point of the Sign is that you can carry it until you need it.</summary>
+        Month,
         /// <summary>Until dawn. A ward, a vigil, a soul held at the edge.</summary>
         UntilDawn,
         /// <summary>Until something is done about it — the nail pulled, the wound doctored, the
@@ -1514,6 +1607,7 @@ public static class Rules
             WorkEnds.Scene      => "for the scene",
             WorkEnds.Hour       => "for an hour",
             WorkEnds.Day        => "for a day",
+            WorkEnds.Month      => "for a month — corked, carried, and drunk when it is wanted",
             WorkEnds.UntilDawn  => "until dawn",
             _                   => "until something ends it",
         };
@@ -1598,7 +1692,18 @@ public static class Rules
         // Ordered most specific first: "a round per two levels" has to beat the bare "round", and
         // "until dawn" has to beat the general "until".
         WorkEnds ends; int rounds = 0;
-        if (Has(effect, @"rounds?\s+per\s+two\s+levels"))
+        // "It is done" and its kin come FIRST, ahead of every unit below (v1.39.0). Twenty-one of
+        // the eighty workings printed no duration at all, and the reader had no way to tell a book
+        // that had decided a thing resolves at once from a book that simply had not said — both
+        // came out as "until something ends it", which is the one answer that was true of neither.
+        // Ch. VI and Ch. XIII now say plainly which of the two each one is, and these patterns are
+        // the half of that agreement the app keeps. A question answered, a step taken, a handful of
+        // salt thrown: the working is over before anybody could write it on a card.
+        if (Has(effect, @"\bit\s+is\s+done\b|working\s+is\s+done\b|resolved?\s+at\s+once\b|is\s+struck\s+at\s+once\b|done\s+at\s+once\b"))
+            ends = WorkEnds.Instant;
+        else if (Has(effect, @"keeps?\s+a\s+month|for\s+a\s+month|lasts?\s+a\s+month"))
+            ends = WorkEnds.Month;
+        else if (Has(effect, @"rounds?\s+per\s+two\s+levels"))
         { ends = WorkEnds.Rounds; rounds = Math.Max(1, workerLevel / 2); }
         else if (Has(effect, @"until\s+(?:your|their|the worker's)\s+next\s+turn")) ends = WorkEnds.NextTurn;
         else if (Has(effect, @"until\s+(?:dawn|sunrise|morning)")) ends = WorkEnds.UntilDawn;
@@ -1607,7 +1712,18 @@ public static class Rules
         // dealt this scene will not close … until it is doctored, bound, or dead" — the scene is
         // when the wound was made, not when the Sign lets go, and taking the first phrase that
         // matched put it off the field a scene early.
-        else if (Has(effect, @"until\s+it\s+is|until\s+the\s+\w+\s+is|until\s+they|cannot\s+be\s+taken\s+back")) ends = WorkEnds.UntilEnded;
+        // "…holds until that save is rolled", "…stays until it is sent back" — the book's own way of
+        // saying a thing ends when something happens rather than when a clock runs out.
+        //
+        // The verb is load-bearing and was learned the hard way: a bare `until you \w+` looked like
+        // the obvious way to catch Cat's Errand's "until you rise or are struck", and it also caught
+        // Borrowed Breath's "…take half that number in Blood yourself, which does not come back
+        // until you rest" — a clause about the WORKER'S Blood, not about how long the healing lasts.
+        // It turned a heal that resolves on the spot into an effect that rides on the target until
+        // somebody ends it. Anchoring on "holds until" / "stays until" — which is how Ch. VI and
+        // Ch. XIII actually phrase a duration — keeps the reader to sentences that are about the
+        // working itself.
+        else if (Has(effect, @"until\s+it\s+is|until\s+the\s+\w+\s+is|(?:holds|stays)\s+until\s+|until\s+they|cannot\s+be\s+taken\s+back")) ends = WorkEnds.UntilEnded;
         else if (Has(effect, @"for\s+(?:a|the|this)\s+scene|for\s+the\s+scene|this\s+scene|the\s+scene\s+ends")) ends = WorkEnds.Scene;
         else if (Has(effect, @"for\s+(?:an|one)\s+hour|lasting\s+an\s+hour|lasts?\s+an\s+hour")) ends = WorkEnds.Hour;
         else if (Has(effect, @"for\s+the\s+next\s+day|for\s+a\s+(?:full\s+)?day")) ends = WorkEnds.Day;
@@ -1665,6 +1781,127 @@ public static class Rules
             damage, ongoing, heal, nerve,
             half, pc.Save ?? "", drains,
             effect, backlash);
+    }
+
+    // ---- what a condition actually costs (Player's Book, Appendix B) ----
+
+    /// <summary>The weight a condition puts on somebody, in the columns a fight actually touches.
+    /// Signed, so it adds: −2 is a penalty and +2 a bonus, and two conditions simply sum.
+    ///
+    /// <para><see cref="Note"/> carries what the number cannot. Appendix B's lines are not all
+    /// arithmetic — Blinded also loses DEX to Defense, Drained also takes Blood equal to your level,
+    /// Prone gives everyone SHOOTING at you +4 — and a reader that quietly dropped those would be
+    /// worse than one that never claimed to have them, because a Keeper would stop reading the
+    /// condition and trust the number. Only the unconditional half is counted; the conditional half
+    /// is said.</para></summary>
+    public record Burden(int Strike, int Defense, int Check, int Save, int Damage, int BeatsLost, string Note)
+    {
+        public static readonly Burden None = new(0, 0, 0, 0, 0, 0, "");
+
+        public bool Any => Strike != 0 || Defense != 0 || Check != 0 || Save != 0 || Damage != 0 || BeatsLost != 0;
+        public bool Anything => Any || Note.Length > 0;
+
+        public Burden Plus(Burden o) => o == null ? this : new(
+            Strike + o.Strike, Defense + o.Defense, Check + o.Check, Save + o.Save,
+            Damage + o.Damage, BeatsLost + o.BeatsLost,
+            Note.Length == 0 ? o.Note : o.Note.Length == 0 ? Note : Note + "\n" + o.Note);
+
+        static string Sign(int n) => n > 0 ? $"+{n}" : n.ToString();
+
+        /// <summary>The arithmetic in one line, for a chip or a status strip.</summary>
+        public string Line
+        {
+            get
+            {
+                var bits = new List<string>();
+                if (Strike != 0)    bits.Add($"{Sign(Strike)} Strike");
+                if (Defense != 0)   bits.Add($"{Sign(Defense)} Defense");
+                if (Check != 0)     bits.Add($"{Sign(Check)} checks");
+                if (Save != 0)      bits.Add($"{Sign(Save)} saves");
+                if (Damage != 0)    bits.Add($"{Sign(Damage)} damage");
+                if (BeatsLost > 0)  bits.Add(BeatsLost >= 3 ? "no Beats" : $"−{BeatsLost} Beat" + (BeatsLost == 1 ? "" : "s"));
+                return string.Join(" · ", bits);
+            }
+        }
+    }
+
+    /// <summary>Appendix B, as arithmetic. The table is the book's, transcribed once here so the
+    /// Strike dialog, the tracker's effective numbers and the Reference leaf cannot disagree about
+    /// what Frightened 2 costs.
+    ///
+    /// <para><paramref name="value"/> is the step a condition carries where the book gives it one —
+    /// Frightened and Slowed. Sickened is written as a flat −2 in this book and is NOT scaled by a
+    /// step, whatever a reader who knows the system it derives from expects: the transcription wins
+    /// over the family resemblance.</para></summary>
+    public static Burden ConditionBurden(string name, int value)
+    {
+        int n = Math.Max(1, value);
+        return (name ?? "").Trim().ToLowerInvariant() switch
+        {
+            "bleeding"  => new(0, 0, 0, 0, 0, 0, "Bleeding — 1 Blood each round until stabilized."),
+            "blinded"   => new(-4, -4, -4, 0, 0, 0, "Blinded — also loses DEX to Defense, and half Speed."),
+            "clumsy"    => new(-2, -2, -2, 0, 0, 0, "Clumsy — the book scopes this to DEX-based Strikes, checks and Defense."),
+            "drained"   => new(0, 0, -2, -2, 0, 0, "Drained — Fortitude and CON specifically, and loses Blood equal to their level."),
+            "dying"     => new(0, 0, 0, 0, 0, 0, "Dying — unconscious at 0 Blood, bleeding toward −CON. The tracker runs this itself."),
+            "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued — and cannot Aim or run. Rest sheds it."),
+            "frightened"=> new(-n, -n, -n, -n, 0, 0, $"Frightened {n} — −{n} on everything; it lessens by one step each turn as they master it."),
+            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed — held fast and Off-Guard, at −4 DEX, and it takes a check to break free."),
+            "off-guard" => new(0, -2, 0, 0, 0, 0, ""),
+            "offguard"  => new(0, -2, 0, 0, 0, 0, ""),
+            "prone"     => new(-4, 0, 0, 0, 0, 0, "Prone — the −4 is to melee; anyone SHOOTING at them has +4 instead, and rising costs a Beat."),
+            "sickened"  => new(-2, 0, -2, -2, -2, 0, "Sickened — Strikes, damage, checks and saves alike."),
+            "slowed"    => new(0, 0, 0, 0, 0, n, $"Slowed {n} — {n} fewer Beat{(n == 1 ? "" : "s")} each turn. They may still defend."),
+            "stunned"   => new(0, -2, 0, 0, 0, 3, "Stunned — they drop what they are holding and lose the whole turn."),
+            "marked"    => new(0, 0, 0, 0, 0, 0, "Marked — stepped along the Mark track; see Ch. XII."),
+            "lost"      => new(0, 0, 0, 0, 0, 0, "Lost — Mark 6. The character passes into the Keeper's hands."),
+            _           => Burden.None,
+        };
+    }
+
+    static readonly System.Text.RegularExpressions.Regex ConditionRe =
+        new(@"([A-Za-z][A-Za-z\-]*)\s*(\d+)?", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>Read a combatant's whole conditions line — "Frightened 2, Off-Guard" — into the one
+    /// sum of what it costs them. Free text, because that is what the field has always been and a
+    /// Keeper types their own into it; anything the table does not recognise weighs nothing rather
+    /// than throwing at the table.</summary>
+    public static Burden ReadConditions(string conditions)
+    {
+        var total = Burden.None;
+        foreach (var raw in (conditions ?? "").Split(new[] { ',', ';', '·', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var m = ConditionRe.Match(raw.Trim());
+            if (!m.Success) continue;
+            int val = m.Groups[2].Success ? int.Parse(m.Groups[2].Value) : 1;
+            total = total.Plus(ConditionBurden(m.Groups[1].Value, val));
+        }
+        return total;
+    }
+
+    /// <summary>The conditions a printed working actually inflicts, named the way Appendix B names
+    /// them, so the Work dialog can offer to lay them on the target and the ONE condition machinery
+    /// does the arithmetic from there.
+    ///
+    /// <para>This is deliberately not a second modifier engine. Fourteen of the eighty workings carry
+    /// a mechanical rider at all and they are written fourteen different ways — a general reader over
+    /// them would be wrong more often than right, and wrong here means a number on a screen that a
+    /// Keeper trusts. Naming a condition the book already defines is the one thing that can be got
+    /// right, and it leaves the other sixty-six as the prose they are.</para></summary>
+    public static List<string> InflictedConditions(string effectText)
+    {
+        var found = new List<string>();
+        string t = effectText ?? "";
+        foreach (var name in new[] { "Frightened", "Slowed", "Sickened", "Clumsy", "Drained", "Fatigued", "Blinded", "Grabbed", "Prone", "Stunned", "Off-Guard" })
+        {
+            var m = System.Text.RegularExpressions.Regex.Match(t, name + @"\s*(\d+)?",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (!m.Success) continue;
+            // "is stilled instead" and "their Frightened" are the working talking ABOUT a condition,
+            // not laying one on. Only a bare naming counts, and the Keeper confirms it anyway.
+            string with = m.Groups[1].Success ? $" {m.Groups[1].Value}" : "";
+            found.Add(name + with);
+        }
+        return found;
     }
 
     /// <summary>A creature's power, pulled off its Bestiary <c>special</c> line. Every one of the

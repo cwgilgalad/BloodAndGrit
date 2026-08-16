@@ -8,6 +8,64 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.39.0 · Player's Book v2.26 — the round gives the turn back, Appendix B does
+  arithmetic, every working says how long, and the dice wear their own shapes (2026-08-15).**
+  A Keeper reported that the posse could barely hit anything while the horrors hit them at will,
+  and that the Signs and Miracles had stopped working. Both were one fault.
+
+  **A new round hands the turn back.** `Rules.NewRound` cleared who had acted and never restored
+  the Beats or the MAP step. `Combatant.BeginTurn` was the only thing that did, and it only runs
+  when a row is stepped through ▶ Next turn — so a round stepped by hand, or rolled over with
+  somebody who never got an explicit turn, left that row on Beats 0 and MapStep 4. That is a
+  standing −10 on every Strike it makes for the rest of the fight. The Keeper's saved session had
+  five of six posse rows sitting on it while four of five foes stood clean. A level-1 Gunhand at +4
+  against Defense 13 had fallen from three hits in five to needing a natural 19, while the dog
+  biting her back at +5 hit seven times in ten. The same zero Beats greys ✦ Work ▸, which is why
+  the Signs and Miracles looked like they had stopped. Ch. XI is not ambiguous: *"On your turn you
+  have three Beats"*, and the Multiple Attack Penalty counts Strikes **in a turn**.
+
+  Neither the smoke suite's three fights nor `GK/playtest` could ever have caught it — both call
+  `BeginTurn()` on every turn, which is the ideal path and not the one at the table. The new
+  assertions deliberately do not.
+
+  **Appendix B stops being a column of words.** The ＋ Condition ▾ menu has offered all sixteen
+  conditions since v1.4 and not one of them did anything: *"Frightened: −1 (or worse) on
+  everything"* was prose in a cell and the Keeper's own sum to carry mid-fight. `Rules.Burden` is
+  what a condition costs in the columns a fight touches, **derived on every read** — never applied
+  to the stored number and reverted, because a session saved mid-Sign would then reload with the
+  penalty already in Defense *and* the working still on the row, and it would land twice. Only the
+  unconditional half is counted; Blinded also losing DEX to Defense, Drained also taking Blood
+  equal to your level, Prone giving everyone shooting at you +4 — none of which a row can work out
+  — become words rather than being quietly dropped. Slowed and Stunned finally reach the Beats.
+  Conditions are **offered, never applied by the engine**, by a creature's own attack rider
+  ("1d6+2 and grab") and by any working that names one: the riders are English and half of them
+  hang on a save somebody still has to call.
+
+  **Every working now says how long it lasts (Player's Book v2.26).** Twenty-one of the eighty
+  Signs and Miracles printed no duration at all, and the reader had no way to tell a book that had
+  *decided* a thing resolves at once from a book that had simply not said — both came out as "until
+  something ends it", true of neither. Ch. VI and Ch. XIII now say which. Not all of them wanted a
+  clock: a question put to the dark ends when it is answered, and a bargain ends when its terms do,
+  so those got a sentence saying so. *The Brewing* keeps a month, which earned its own unit rather
+  than being rounded to a day. The Keeper's override in *Lasts:* is untouched and now offers every
+  unit the reader knows.
+
+  One fault found in the making and worth recording: a duration reader anchored on a bare
+  "until you …" caught *Borrowed Breath*'s "…which does not come back until you rest" — a clause
+  about the **worker's** Blood, not about how long the healing lasts — and turned a heal that
+  resolves on the spot into an effect riding on the target until somebody ended it, in a working
+  nobody had edited. Anchoring on "holds until" / "stays until" is the fix, and the regression is
+  asserted.
+
+  **The dice wear their own shapes.** The tray drew every die as the same rounded square, carrying
+  the die's colour and nothing else — and colour alone is the one channel that fails for readers
+  who cannot separate the d4's green from the d20's red. Each die now shows the silhouette its
+  solid presents face-on, which is not always its number of sides: a dodecahedron is a ten-sided
+  outline around a pentagonal face, an icosahedron a hexagon around a triangle. A literal twelve-gon
+  would be both wrong and, at fifty pixels, a circle. The name moved under the die, because a
+  rhombus and a kite both come to a point where it used to sit, and the rounded square stays as the
+  fallback for any dN the solids have no answer for.
+
 - **2026-08-12 — Sync-on-merge had a hole: the merge that had conflicts (infrastructure).**
   `post-merge` fires for a clean merge and never for a conflicted one. Git does not run it when
   conflicts stop the merge, and completing the merge with `git commit` is a commit rather than a
