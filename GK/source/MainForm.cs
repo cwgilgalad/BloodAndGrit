@@ -2090,7 +2090,10 @@ public partial class MainForm : Sheet
           Defense = p.Defense, Init = ArrivalInit(p.Sheet),
           // Where −CON sits for this soul (Ch. XI). Set on the way onto the field rather than read
           // live off the sheet, so a Keeper can overrule it for one night without editing anybody.
-          DeathAt = Rules.DeathThresholdFor(p.Sheet) });
+          DeathAt = Rules.DeathThresholdFor(p.Sheet),
+          // STR rides along for the same reason and by the same route: the Kickback rule exempts
+          // anyone at 12 or better, and a Combatant has no sheet to ask once it is on the field.
+          Str = Rules.StrengthOf(p.Sheet) });
         if (!quiet) Log($"{p.Name} takes the field.");
         return true;
     }
@@ -2673,6 +2676,10 @@ public partial class MainForm : Sheet
             // posse's (see Combatant.DeathAt).
             foreach (var c in tracker.Where(t => t.IsPC && t.DeathAt <= 0))
                 c.DeathAt = Rules.DeathThresholdFor(party.FirstOrDefault(c.IsSoul)?.Sheet);
+            // And STR, for the Kickback rule, on the same terms: only ever up from zero, so a
+            // Keeper who typed a number keeps it.
+            foreach (var c in tracker.Where(t => t.IsPC && t.Str <= 0))
+                c.Str = Rules.StrengthOf(party.FirstOrDefault(c.IsSoul)?.Sheet);
             round = Math.Max(1, s.Round);
             ShowRound();
             foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
