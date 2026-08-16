@@ -1228,10 +1228,38 @@ public partial class MainForm
         trkGrid.CellToolTipTextNeeded += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count || e.ColumnIndex < 0) return;
-            if (trkGrid.Columns[e.ColumnIndex].Name != "WorkedChips") return;
             var c = tracker[e.RowIndex];
-            if (c.Worked is { Count: > 0 })
-                e.ToolTipText = string.Join("\n\n──────────\n\n", c.Worked.Select(w => w.Full));
+            string col = trkGrid.Columns[e.ColumnIndex].Name;
+            if (col == "WorkedChips")
+            {
+                if (c.Worked is { Count: > 0 })
+                    e.ToolTipText = string.Join("\n\n──────────\n\n", c.Worked.Select(w => w.Full));
+                return;
+            }
+            // What the conditions on this row actually cost, worked out rather than recited. The
+            // column has listed Appendix B's words since v1.4 and the arithmetic behind them was
+            // the Keeper's to carry: "Frightened 2, Off-Guard" is −2 on everything AND −2 more
+            // Defense on top, and nobody does that sum reliably in the middle of a fight.
+            if (col == "Conditions" || col == "Defense")
+            {
+                var load = c.Load;
+                if (!load.Anything)
+                {
+                    e.ToolTipText = col == "Defense"
+                        ? "Defense — 10 + DEX + armor worn + cover. Nothing is riding on this one, so "
+                          + "this is the number a Strike is rolled against."
+                        : "Conditions off Appendix B. Add them from ＋ Condition ▾, or type your own. "
+                          + "The ones the book gives numbers to are counted against Strikes and Defense "
+                          + "automatically.";
+                    return;
+                }
+                e.ToolTipText =
+                    (load.Any ? $"What this costs them: {load.Line}\n" : "")
+                  + (load.Defense != 0 ? $"Defense {c.Defense} → {c.EffectiveDefense}\n" : "")
+                  + (load.BeatsLost > 0 ? $"Beats this turn: {c.BeatsThisTurn} of 3\n" : "")
+                  + (load.Note.Length > 0 ? "\n" + load.Note : "")
+                  + "\n\nThe Strike engine applies all of this by itself — it is not yours to remember.";
+            }
         };
         trkGrid.CellEndEdit += (s, e) =>
         {
@@ -2146,6 +2174,14 @@ public partial class MainForm
         // in a loop and the reason appears mid-loop: a block that only exists once the Beats run
         // out would move the buttons out from under the Keeper's hand on the third Strike.
         var refusal = new Label { Left = Pad, Width = CW, ForeColor = Blood, Font = DialogItalic, AutoSize = false };
+        // The line that says what this Strike is ACTUALLY rolled at and against, once everything
+        // riding on either of them is counted. Without it the engine applies a Frightened 2 and a
+        // −2 Defense correctly and the Keeper watches a number they cannot account for come out of
+        // it — which reads as the app being wrong even when it is right.
+        //
+        // Declared up here with the buttons, and for the same reason they are: Sync writes to it,
+        // and a local declared after Sync cannot be reached from inside it.
+        var against = new Label { Left = Pad, Top = 152, Width = CW, Height = 20, ForeColor = GoldDeep, Font = DialogItalic, AutoEllipsis = true };
 
         // Prefill the to-hit — a creature's built-in bonus, or a soul's own off their sheet — and
         // re-figure it (and the MAP) when the chosen attack changes.
@@ -2179,6 +2215,19 @@ public partial class MainForm
                     ? $"{attacker.Beats} Beat{(attacker.Beats == 1 ? "" : "s")} left"
                     : "no Beats left");
             mapLbl.ForeColor = attacker.Beats > 0 ? Blood : Faint;
+
+            // What the roll really is, both ends of it, after Appendix B.
+            var tgt = foes[Math.Clamp(target.SelectedIndex, 0, foes.Count - 1)];
+            var mine = attacker.Load; var theirs = tgt.Load;
+            int total = (int)toHit.Value + map + mine.Strike;
+            var bits = new List<string> { $"Rolls d20{(total >= 0 ? "+" : "")}{total} vs Defense {tgt.EffectiveDefense}" };
+            if (mine.Strike != 0)
+                bits.Add($"{attacker.Name} is {attacker.Conditions.Trim()} — {(mine.Strike > 0 ? "+" : "")}{mine.Strike}");
+            if (theirs.Defense != 0)
+                bits.Add($"{tgt.Name} is {tgt.Conditions.Trim()} — Defense {tgt.Defense} → {tgt.EffectiveDefense}");
+            if (mine.Damage != 0) bits.Add($"{mine.Damage} damage");
+            against.Text = string.Join("   ·   ", bits);
+            against.ForeColor = mine.Anything || theirs.Anything ? GoldDeep : Faint;
         }
         // default a soul to the gun they carry if we can spot one, else the first attack
         int guess = asCreature ? -1
@@ -2186,6 +2235,9 @@ public partial class MainForm
                    .FirstOrDefault(ix => ix >= 0) ?? -1;
         weapon.SelectedIndex = guess >= 0 ? guess : 0;
         weapon.SelectedIndexChanged += (s, e) => Sync();
+        // The Defense being rolled against belongs to the TARGET, so changing who is being shot at
+        // has to re-figure the line as surely as changing the gun does.
+        target.SelectedIndexChanged += (s, e) => Sync();
         Sync();
 
         var how = Para(
@@ -2195,11 +2247,11 @@ public partial class MainForm
             + (asCreature ? "" : " and the Fatal die on a critical hit")
             + ", subtracts the target's DR, takes the Blood, and spends a Beat. Strike again to take "
             + "the next one at higher MAP; Begin turn on the tracker gives the Beats back and makes "
-            + "the shot clean.", 160, f.Font, Ink);
+            + "the shot clean.", 178, f.Font, Ink);
 
         f.Controls.AddRange(new Control[] {
             L("Target:", 15), target, L(asCreature ? "Attack:" : "Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
-            L("Target DR:", 123), dr, how });
+            L("Target DR:", 123), dr, against, how });
         if (!EngineRolls)
         {
             f.Controls.Add(new Label { Left = 196, Top = 126, Width = 48, Text = "d20:", ForeColor = Blood, TextAlign = ContentAlignment.MiddleRight });
@@ -2270,9 +2322,46 @@ public partial class MainForm
             // And the blow that put them on the ground. After the grievous offer on purpose: the
             // Lasting Injury is what the hit did, and refusing to fall is what they do about it.
             CheckFalling(tgt, tgtWasDown, tgtWasDead);
+            // What the blow's own rider does beyond the Blood — a claw that grabs, a bite that
+            // sickens. Last of the three, because a condition on somebody who is already dying is
+            // the least of what just happened to them.
+            if (asCreature) OfferConditions(tgt, rep.Inflicts, catks[idx].Effect);
             // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
             RefreshTracker(); Sync();
         }
+    }
+
+    /// <summary>A blow or a working named a condition — offer to lay it on. Offered rather than
+    /// applied, and that is the whole design: the Bestiary's riders are English, and half of them
+    /// hang on a save somebody still has to call ("Fort DC 15 or take the hydrophobia"). An engine
+    /// that read "grab" and silently Grabbed the target would be right often enough to be trusted
+    /// and wrong often enough to matter.
+    ///
+    /// <para>Already-held conditions are dropped from the offer rather than doubled: Frightened 2
+    /// laid twice is Frightened 2, not Frightened 4, and a stack of duplicate words in the column is
+    /// how the arithmetic below it stops being readable.</para></summary>
+    void OfferConditions(Combatant on, List<string> named, string riderText)
+    {
+        if (on == null || named is not { Count: > 0 }) return;
+        var have = (on.Conditions ?? "").Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                       .Select(s => s.Trim()).ToList();
+        var fresh = named.Where(n => !have.Any(h => h.StartsWith(n.Split(' ')[0], StringComparison.OrdinalIgnoreCase)))
+                         .ToList();
+        if (fresh.Count == 0) return;
+
+        string what = string.Join(", ", fresh);
+        var weight = Rules.ReadConditions(what);
+        if (!Confirm($"That blow's own rider names {(fresh.Count == 1 ? "a condition" : "conditions")}: "
+                   + $"{what}.\n\n\"{riderText?.Trim()}\"\n\n"
+                   + $"Lay {(fresh.Count == 1 ? "it" : "them")} on {on.Name}?"
+                   + (weight.Any ? $"\n\nIt would cost them: {weight.Line}." : "")
+                   + "\n\nSay no if the save was made, or if you are calling it differently."))
+            return;
+
+        on.Conditions = have.Count == 0 ? what : string.Join(", ", have) + ", " + what;
+        Log($"{on.Name} is {what}" + (weight.Any ? $" — {weight.Line}." : "."));
+        Daybook.Note("turn", $"round {round}: {on.Name} takes {what}");
+        RefreshTracker();
     }
 
     // ---- Dying, on the ground, and what can still be done about it (Ch. XI) ----
@@ -3266,6 +3355,14 @@ public partial class MainForm
                     Shape = w.Shape, AreaFeet = w.AreaFeet, Ends = ends,
                     Backlash = w.Backlash, Note = note
                 });
+
+            // A working that names one of Appendix B's conditions lays it on the same way a
+            // creature's rider does — through the ONE condition column, so the arithmetic under it
+            // has a single author. Not asked for a Trait or a Place: nothing is standing there to
+            // be Frightened.
+            if (w.Shape != Rules.WorkShape.Trait && w.Shape != Rules.WorkShape.Place)
+                foreach (var t in targets)
+                    OfferConditions(t, Rules.InflictedConditions(w.Effect), o.Name);
 
             string onWho = !shapeEntry ? targets[0].Name
                          : landsNowhere ? "no one — it is not that kind of working"
