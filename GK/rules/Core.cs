@@ -635,6 +635,7 @@ public class WorkedEffect
             Rules.WorkEnds.Scene      => "the scene",
             Rules.WorkEnds.Hour       => "an hour",
             Rules.WorkEnds.Day        => "a day",
+            Rules.WorkEnds.Month      => "a month",
             Rules.WorkEnds.UntilDawn  => "until dawn",
             Rules.WorkEnds.Instant    => "done",
             _                         => "until ended",
@@ -652,6 +653,7 @@ public class WorkedEffect
             Rules.WorkEnds.Scene      => " (scene)",
             Rules.WorkEnds.Hour       => " (hour)",
             Rules.WorkEnds.Day        => " (day)",
+            Rules.WorkEnds.Month      => " (month)",
             Rules.WorkEnds.UntilDawn  => " (dawn)",
             _                         => "",
         });
@@ -1509,6 +1511,10 @@ public static class Rules
         Hour,
         /// <summary>A day.</summary>
         Day,
+        /// <summary>A month. Only The Brewing keeps this long — a Sign cooked down into a draught
+        /// and corked — and it earned its own unit rather than being rounded to a day, because the
+        /// whole point of the Sign is that you can carry it until you need it.</summary>
+        Month,
         /// <summary>Until dawn. A ward, a vigil, a soul held at the edge.</summary>
         UntilDawn,
         /// <summary>Until something is done about it — the nail pulled, the wound doctored, the
@@ -1575,6 +1581,7 @@ public static class Rules
             WorkEnds.Scene      => "for the scene",
             WorkEnds.Hour       => "for an hour",
             WorkEnds.Day        => "for a day",
+            WorkEnds.Month      => "for a month — corked, carried, and drunk when it is wanted",
             WorkEnds.UntilDawn  => "until dawn",
             _                   => "until something ends it",
         };
@@ -1659,7 +1666,18 @@ public static class Rules
         // Ordered most specific first: "a round per two levels" has to beat the bare "round", and
         // "until dawn" has to beat the general "until".
         WorkEnds ends; int rounds = 0;
-        if (Has(effect, @"rounds?\s+per\s+two\s+levels"))
+        // "It is done" and its kin come FIRST, ahead of every unit below (v1.39.0). Twenty-one of
+        // the eighty workings printed no duration at all, and the reader had no way to tell a book
+        // that had decided a thing resolves at once from a book that simply had not said — both
+        // came out as "until something ends it", which is the one answer that was true of neither.
+        // Ch. VI and Ch. XIII now say plainly which of the two each one is, and these patterns are
+        // the half of that agreement the app keeps. A question answered, a step taken, a handful of
+        // salt thrown: the working is over before anybody could write it on a card.
+        if (Has(effect, @"\bit\s+is\s+done\b|working\s+is\s+done\b|resolved?\s+at\s+once\b|is\s+struck\s+at\s+once\b|done\s+at\s+once\b"))
+            ends = WorkEnds.Instant;
+        else if (Has(effect, @"keeps?\s+a\s+month|for\s+a\s+month|lasts?\s+a\s+month"))
+            ends = WorkEnds.Month;
+        else if (Has(effect, @"rounds?\s+per\s+two\s+levels"))
         { ends = WorkEnds.Rounds; rounds = Math.Max(1, workerLevel / 2); }
         else if (Has(effect, @"until\s+(?:your|their|the worker's)\s+next\s+turn")) ends = WorkEnds.NextTurn;
         else if (Has(effect, @"until\s+(?:dawn|sunrise|morning)")) ends = WorkEnds.UntilDawn;
@@ -1668,7 +1686,18 @@ public static class Rules
         // dealt this scene will not close … until it is doctored, bound, or dead" — the scene is
         // when the wound was made, not when the Sign lets go, and taking the first phrase that
         // matched put it off the field a scene early.
-        else if (Has(effect, @"until\s+it\s+is|until\s+the\s+\w+\s+is|until\s+they|cannot\s+be\s+taken\s+back")) ends = WorkEnds.UntilEnded;
+        // "…holds until that save is rolled", "…stays until it is sent back" — the book's own way of
+        // saying a thing ends when something happens rather than when a clock runs out.
+        //
+        // The verb is load-bearing and was learned the hard way: a bare `until you \w+` looked like
+        // the obvious way to catch Cat's Errand's "until you rise or are struck", and it also caught
+        // Borrowed Breath's "…take half that number in Blood yourself, which does not come back
+        // until you rest" — a clause about the WORKER'S Blood, not about how long the healing lasts.
+        // It turned a heal that resolves on the spot into an effect that rides on the target until
+        // somebody ends it. Anchoring on "holds until" / "stays until" — which is how Ch. VI and
+        // Ch. XIII actually phrase a duration — keeps the reader to sentences that are about the
+        // working itself.
+        else if (Has(effect, @"until\s+it\s+is|until\s+the\s+\w+\s+is|(?:holds|stays)\s+until\s+|until\s+they|cannot\s+be\s+taken\s+back")) ends = WorkEnds.UntilEnded;
         else if (Has(effect, @"for\s+(?:a|the|this)\s+scene|for\s+the\s+scene|this\s+scene|the\s+scene\s+ends")) ends = WorkEnds.Scene;
         else if (Has(effect, @"for\s+(?:an|one)\s+hour|lasting\s+an\s+hour|lasts?\s+an\s+hour")) ends = WorkEnds.Hour;
         else if (Has(effect, @"for\s+the\s+next\s+day|for\s+a\s+(?:full\s+)?day")) ends = WorkEnds.Day;

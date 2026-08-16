@@ -2967,9 +2967,12 @@ public partial class MainForm
         // ended by hand", which is true of none of them. The reader prefills this; the Keeper can
         // still say otherwise, because a ruling at the table beats a parser every time.
         var lasts = new ComboBox { Left = Pad + 104, Top = onWhom.Bottom + 8, Width = 178, DropDownStyle = ComboBoxStyle.DropDownList };
+        // Every unit the books use, so the Keeper's override can reach all of them. The prefill
+        // comes from the printed line; this list is the Keeper's word over it, and a unit the app
+        // can read but not offer would be a duration a Keeper could not set by hand.
         var lastsKinds = new[] { Rules.WorkEnds.Rounds, Rules.WorkEnds.NextTurn, Rules.WorkEnds.Scene,
-                                 Rules.WorkEnds.Hour, Rules.WorkEnds.Day, Rules.WorkEnds.UntilDawn,
-                                 Rules.WorkEnds.UntilEnded, Rules.WorkEnds.Instant };
+                                 Rules.WorkEnds.Hour, Rules.WorkEnds.Day, Rules.WorkEnds.Month,
+                                 Rules.WorkEnds.UntilDawn, Rules.WorkEnds.UntilEnded, Rules.WorkEnds.Instant };
         foreach (var k in lastsKinds)
             lasts.Items.Add(k switch
             {
@@ -2978,6 +2981,7 @@ public partial class MainForm
                 Rules.WorkEnds.Scene      => "for the scene",
                 Rules.WorkEnds.Hour       => "for an hour",
                 Rules.WorkEnds.Day        => "for a day",
+                Rules.WorkEnds.Month      => "for a month",
                 Rules.WorkEnds.UntilDawn  => "until dawn",
                 Rules.WorkEnds.Instant    => "at once — nothing to carry",
                 _                         => "until something ends it",
