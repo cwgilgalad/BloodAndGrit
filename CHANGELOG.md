@@ -8,6 +8,18 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.40.1 — the spread reaches the table (2026-08-16).**
+  v1.40.0 taught the engine where a Scatter weapon's splash falls and then routed it nowhere, so a
+  shotgun still hit exactly one row. That is the fault the whole of v1.40.0 was about, shipped inside
+  v1.40.0 — the rule was read out and not run. A hit now offers the spread, and so does a miss inside
+  the first range increment, which is the case the book carves out and the whole argument for
+  carrying a shotgun.
+
+  **Who is standing in it stays the Keeper's to say.** The app models no ground and will not invent
+  one, so the dialog names the radius and lists the field rather than picking victims — the same rule
+  a creature's attack rider follows. Each soul caught rolls **their own** d6: one roll shared out
+  would make a shotgun a thing that hits everybody for exactly the same, and it is not.
+
 - **GritKeeper v1.40.0 — the Iron Code is run rather than read out (2026-08-16).**
   An audit of Ch. XI against the engine found eleven of its mechanisms faithful and nine absent.
   The worst of them was not a missing rule but a promise: the Reference deck's own leaf printed
