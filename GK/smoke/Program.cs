@@ -663,6 +663,351 @@ foreach (var (table, floor) in new[]
         T("round: the foe is handed its turn back too — this was never the posse's rule alone",
             mark.Beats == 3 && mark.MapStep == 1);
 
+        // ---- Aim, brace and the Kickback weapon (Ch. XI, "Aiming and Bracing") ----
+        // Three rules that only read as one: the Beat buys +2 on ONE Strike, the same Beat is what
+        // braces a shotgun, and the strong never needed it. Driven at the Keeper's path again —
+        // nothing below leans on BeginTurn to tidy up after it.
+        {
+            var scattergun = new CgWeapon { name = "Double-Barrel Shotgun", dmg = "2d8",
+                                            traits = "Scatter 10 ft, Kickback, Fatal d12", kind = "gun" };
+            var plain      = new CgWeapon { name = "Single-Action Revolver", dmg = "1d8", traits = "", kind = "gun" };
+            // Defense 9 is his own off Appendix D, and it matters: EffectiveDefense is floored at 1,
+            // so a test row left on Defense 0 cannot show a −2 at all.
+            Combatant Elias(int str) => new() { Name = "Brother Elias Crow", IsPC = true, Str = str,
+                                                BloodCur = 9, BloodMax = 9, Defense = 9, Beats = 3, MapStep = 1 };
+            Combatant Dog() => new() { Name = "The Mad Dog", BloodCur = 10, BloodMax = 10, Defense = 13 };
+
+            // Forced die 10: against Defense 13 a +2 is exactly the difference between 12 and 14,
+            // so the Aim is measured by whether the blow lands rather than by reading a number back.
+            var aimed = Elias(9); aimed.Aimed = true;
+            var r1 = CombatFlow.StrikeAndApply(aimed, Dog(), plain, 1, null, 10);
+            T("aim: the Beat spent to Aim is worth +2 on the Strike", r1.Res.Strike.Hit);
+            var hasty = Elias(9);
+            var r2 = CombatFlow.StrikeAndApply(hasty, Dog(), plain, 1, null, 10);
+            T("aim: and the same shot unaimed falls short", !r2.Res.Strike.Hit);
+            T("aim: the Strike spends it, so the next one this turn is unaimed", !aimed.Aimed);
+
+            // The Aim is spent hit or miss — the book buys one Strike with that Beat, not a turn.
+            var missed = Elias(9); missed.Aimed = true;
+            CombatFlow.StrikeAndApply(missed, Dog(), plain, -20, null, 1);
+            T("aim: a missed Strike spends the Aim just the same", !missed.Aimed);
+
+            // Kickback: -2 AND Off-Guard until their next turn, unless braced or STR 12+.
+            var hipfire = Elias(9);
+            CombatFlow.StrikeAndApply(hipfire, Dog(), scattergun, 4, null, 10);
+            T("kickback: firing a Kickback weapon unbraced leaves them recoiling", hipfire.Recoiling);
+            T("kickback: which is Off-Guard, and costs the Defense the book's Off-Guard costs",
+                hipfire.EffectiveDefense == hipfire.Defense + Rules.OffGuardDefense);
+
+            var braced = Elias(9); braced.Aimed = true;
+            CombatFlow.StrikeAndApply(braced, Dog(), scattergun, 4, null, 10);
+            T("kickback: the Beat spent to brace lifts it", !braced.Recoiling);
+
+            var strong = Elias(IronCode.BraceStrength);
+            CombatFlow.StrikeAndApply(strong, Dog(), scattergun, 4, null, 10);
+            T("kickback: and STR 12 is exempt outright, braced or not", !strong.Recoiling);
+            T("kickback: one under that is not", IronCode.KickbackBites(
+                WeaponTraits.Parse(scattergun.traits), false, IronCode.BraceStrength - 1));
+
+            // A soul cannot be doubly Off-Guard: the recoil adds nothing on top of the condition.
+            var already = Elias(9); already.Conditions = "Off-Guard";
+            int before = already.EffectiveDefense;
+            CombatFlow.StrikeAndApply(already, Dog(), scattergun, 4, null, 10);
+            T("kickback: recoil does not stack with an Off-Guard the Keeper already wrote",
+                already.Recoiling && already.EffectiveDefense == before);
+
+            // "Until your next turn" is exactly that, and the hand-stepped round clears it too.
+            var lingering = Elias(9);
+            CombatFlow.StrikeAndApply(lingering, Dog(), scattergun, 4, null, 10);
+            Rules.NewRound(new List<Combatant> { lingering });
+            T("kickback: a new round hands the turn back and the recoil is over", !lingering.Recoiling);
+
+            // Zero STR means nobody said, not a soul who cannot lift a rifle.
+            T("kickback: an unfilled row reckons at the middle of the scale",
+                new Combatant().Strength == Rules.AverageScore);
+        }
+
+        // ---- Circumstance, Volley, Scatter and reloading (Ch. XI · Ch. X's arms table) ----
+        {
+            var sar = CharGen.D.weapons.First(w => w.name == "Single-Action Revolver");
+            var buff = CharGen.D.weapons.First(w => w.name == "Buffalo Rifle");
+            var scat = CharGen.D.weapons.First(w => w.name == "Double-Barrel Shotgun");
+            var lever = CharGen.D.weapons.First(w => w.name == "Lever-Action Repeater");
+            var capball = CharGen.D.weapons.First(w => w.name == "Cap-and-Ball Revolver");
+
+            // The three columns the transcription had been dropping since the app was written.
+            T("arms: the revolver carries its printed range, capacity and reload",
+                sar.range == 50 && sar.cap == 6 && sar.reload == "1/shot");
+            T("arms: and the cap-and-ball's slow reload is a COLUMN, not a trait",
+                capball.reload == "slow" && !capball.traits.Contains("slow"));
+            T("arms: fists are on the table at the book's 1d3, and Agile",
+                CharGen.D.weapons.Any(w => w.name == "Fists / Boots" && w.dmg == "1d3"
+                                        && WeaponTraits.Parse(w.traits).Agile));
+
+            // Range increments: clean inside the first, −2 per full increment past it.
+            T("range: inside the first increment costs nothing", IronCode.IncrementsPast(50, 50) == 0);
+            T("range: a foot past it is the second increment", IronCode.IncrementsPast(51, 50) == 1);
+            T("range: and it is cumulative", IronCode.IncrementsPast(150, 50) == 2);
+            T("range: an unstated distance runs no range rule at all", IronCode.IncrementsPast(0, 50) == 0);
+            T("range: a shot at 120 ft with a 50 ft iron takes −4",
+                IronCode.Reckon(new IronCode.Shot { Distance = 120 }, sar).Total == -4);
+
+            // Point-blank waives the increment, and hands a long gun its own problem instead.
+            T("point-blank: no range penalty at arm's length",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, sar).Total == 0);
+            // Read on the shotgun, which carries no Volley, so the long-gun rule stands alone.
+            T("point-blank: but a long gun is unwieldy this close",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, scat).Total == -2);
+            T("point-blank: and bracing lifts it",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, scat, braced: true).Total == 0);
+            // The Buffalo Rifle is both unwieldy AND inside its own Volley band at arm's length,
+            // and the book gives no reason those two would not both bite.
+            T("point-blank: a Volley iron at arm's length wears both penalties",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, buff).Total == -4);
+            T("point-blank: bracing lifts only the one bracing is for",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, buff, braced: true).Total == -2);
+
+            // The flat rows.
+            T("cover: light is −2", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Light }, sar).Total == -2);
+            T("cover: heavy is −4", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Heavy }, sar).Total == -4);
+            T("circumstance: firing into melee is −4",
+                IronCode.Reckon(new IronCode.Shot { IntoMelee = true }, sar).Total == -4);
+            var blind = IronCode.Reckon(new IronCode.Shot { Concealed = true }, sar);
+            T("circumstance: a concealed target is −8 and cannot be targeted directly",
+                blind.Total == -8 && blind.CannotTarget);
+            T("circumstance: they stack, and each says why",
+                IronCode.Reckon(new IronCode.Shot { Distance = 120, Cover = IronCode.Cover.Light,
+                                                    IntoMelee = true }, sar).Parts.Count == 3);
+
+            // Volley: a long iron resents close work. The Buffalo Rifle's is 30 ft.
+            T("volley: inside the Volley band is −2",
+                IronCode.Reckon(new IronCode.Shot { Distance = 30 }, buff).Total == -2);
+            T("volley: and outside it is not",
+                !IronCode.Reckon(new IronCode.Shot { Distance = 200 }, buff).Parts.Any(p => p.Contains("Volley")));
+
+            // Nothing said about the ground means nothing charged — this is what keeps the playtest
+            // numbers and the smoke fights where they were.
+            T("circumstance: a caller who says nothing about the ground is charged nothing",
+                IronCode.Reckon(null, sar).Total == 0 && IronCode.Reckon(IronCode.Shot.Plain, buff).Total == 0);
+
+            // Off-Guard and Aim are paid elsewhere; charging them here would charge them twice.
+            T("circumstance: Off-Guard is not charged here — the Burden already pays it",
+                !IronCode.Reckon(IronCode.Shot.Plain, sar).Parts.Any(p => p.Contains("Off-Guard")));
+
+            // Scatter: on a hit it splashes; on a miss inside the first increment the target wears it.
+            var trScat = WeaponTraits.Parse(scat.traits);
+            T("scatter: a hit splashes within its radius",
+                IronCode.ScatterFalls(trScat, scat, hit: true, distance: 20) is (true, 10, false));
+            T("scatter: a miss inside the first increment still catches the target",
+                IronCode.ScatterFalls(trScat, scat, hit: false, distance: 20) is (true, 10, true));
+            T("scatter: a miss beyond it catches nobody",
+                !IronCode.ScatterFalls(trScat, scat, hit: false, distance: 90).Falls);
+            T("scatter: a weapon without the trait never splashes",
+                !IronCode.ScatterFalls(WeaponTraits.Parse(sar.traits), sar, true, 10).Falls);
+
+            // Reloading, in the units the book prices each kind in.
+            T("reload: a break-action is one Interact and it is whole",
+                IronCode.Reloading(scat).Beats == 1);
+            T("reload: thumbing one round into a repeater is one Beat",
+                IronCode.Reloading(lever, full: false).Beats == 1);
+            T("reload: topping a twelve-shot repeater is six Beats",
+                IronCode.Reloading(lever).Beats == 6);
+            T("reload: a six-gun is three", IronCode.Reloading(sar).Beats == 3);
+            T("reload: Practiced Reload shaves one",
+                IronCode.Reloading(sar, practiced: true).Beats == 2);
+            T("reload: and can never shave it below one",
+                IronCode.Reloading(scat, practiced: true).Beats >= 1);
+            var slow = IronCode.Reloading(capball);
+            T("reload: a cap-and-ball is three ROUNDS of work, not Beats",
+                slow.Rounds == IronCode.SlowReloadRounds && slow.Beats == 0);
+            T("reload: a blade has nothing to reload",
+                IronCode.Reloading(CharGen.D.weapons.First(w => w.name == "Hatchet")).Kind == IronCode.ReloadKind.None);
+        }
+
+        // ---- The seven Beat actions, reactions, nonlethal, and the saddle ----
+        {
+            Combatant Soul() => new() { Name = "Anni Halvorsen", IsPC = true, Str = 15, Defense = 9,
+                                        BloodCur = 12, BloodMax = 12, DeathAt = 12, Beats = 3, MapStep = 1 };
+
+            T("beats: the chapter's action table is seven rows", Rules.BeatActions.Length == 7);
+            T("beats: and every one of them costs a Beat the app can spend",
+                Rules.BeatActions.All(a => a.Beats == 1));
+
+            var a1 = Soul();
+            var aimed = Rules.TakeAction(a1, "aim");
+            T("beats: Aim spends a Beat and holds the aim", aimed.Done && a1.Beats == 2 && a1.Aimed);
+            T("beats: and aiming twice is refused, out loud", !Rules.TakeAction(a1, "aim").Done);
+
+            var a2 = Soul(); a2.Aimed = true;
+            T("beats: Stride loses the aim, because the book says 'and did not move'",
+                Rules.TakeAction(a2, "stride").Done && !a2.Aimed);
+
+            var a3 = Soul();
+            Rules.TakeAction(a3, "cover");
+            T("beats: Take Cover steps to light", a3.Cover == IronCode.Cover.Light && a3.Beats == 2);
+            Rules.TakeAction(a3, "cover");
+            T("beats: and again to heavy", a3.Cover == IronCode.Cover.Heavy);
+            var noMore = Rules.TakeAction(a3, "cover");
+            T("beats: there is no step past heavy, and it says so rather than going quiet",
+                !noMore.Done && noMore.Line.Length > 0);
+            Rules.LeaveCover(a3);
+            T("beats: leaving cover puts it down", a3.Cover == IronCode.Cover.None);
+
+            var spentAll = Soul(); spentAll.Beats = 0;
+            var refused = Rules.TakeAction(spentAll, "interact");
+            T("beats: a soul with no Beats is refused, with the reason",
+                !refused.Done && refused.Line.Contains("Beat"));
+
+            // Reactions: one between your turns, given back when the turn comes round.
+            var diver = Soul();
+            T("reaction: a fresh soul has theirs", Rules.CanReact(diver));
+            var dive = Rules.DiveForCover(diver);
+            T("reaction: Dive for Cover takes it, and buys cover and a Prone",
+                dive.Taken && dive.Cover == IronCode.Cover.Light && dive.Condition == "Prone");
+            T("reaction: and there is only the one", !Rules.CanReact(diver) && !Rules.DiveForCover(diver).Taken);
+            T("reaction: the refusal says why", Rules.WhyNoReaction(diver).Contains("already reacted"));
+            diver.BeginTurn();
+            T("reaction: the turn coming round gives it back", Rules.CanReact(diver));
+
+            // Nonlethal: a pulled blow lays them out and never fills the ground toward −CON.
+            var club = CharGen.D.weapons.First(w => w.name == "Club");
+            var sixgun = CharGen.D.weapons.First(w => w.name == "Single-Action Revolver");
+            T("nonlethal: a club pulls its blows by nature", IronCode.NonlethalByNature(club));
+            T("nonlethal: a revolver does not", !IronCode.NonlethalByNature(sixgun));
+            T("nonlethal: so pulling one costs −2",
+                IronCode.Reckon(new IronCode.Shot { Nonlethal = true }, sixgun).Total == -2);
+            T("nonlethal: and pulling a club costs nothing",
+                IronCode.Reckon(new IronCode.Shot { Nonlethal = true }, club).Total == 0);
+
+            var laid = Soul();
+            laid.Wound(-40, nonlethal: true);
+            T("nonlethal: brought to 0 they are senseless, not dying",
+                laid.Senseless && laid.Down && !laid.Dying && !laid.Dead);
+            T("nonlethal: and forty Blood of overkill never counted toward −CON", !laid.Dead);
+            laid.Wound(3);
+            T("nonlethal: patched back up, the senselessness ends with it",
+                !laid.Senseless && !laid.Down);
+
+            var killed = Soul();
+            killed.Wound(-40);
+            T("nonlethal: the same blow meant in earnest still kills", killed.Dead);
+
+            // The saddle.
+            T("saddle: standing and walking are not a moving platform; trot and gallop are",
+                !IronCode.IsMoving(IronCode.Gait.Standing) && !IronCode.IsMoving(IronCode.Gait.Walking)
+                && IronCode.IsMoving(IronCode.Gait.Trotting) && IronCode.IsMoving(IronCode.Gait.Galloping));
+            T("saddle: a pistol at a gallop takes the moving platform's −2",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping }, sixgun).Total == -2);
+            T("saddle: a long gun at a gallop takes −4 in all",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Lever-Action Repeater")).Total == -4);
+            T("saddle: at a walk the horseman's pistol is free",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Walking }, sixgun).Total == 0);
+            T("saddle: you cannot aim from a moving horse", !IronCode.CanAim(IronCode.Gait.Trotting));
+            T("saddle: but you can from a standing one", IronCode.CanAim(IronCode.Gait.Standing));
+
+            var saber = CharGen.D.weapons.First(w => w.name == "Saber");
+            T("saddle: mounted, you strike down at a footman for +1",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Standing, TargetMounted = false },
+                                saber).Total == 1);
+            T("saddle: and not at another rider",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Standing, TargetMounted = true },
+                                saber).Total == 0);
+
+            // The charge.
+            T("charge: twenty feet with a saber is worth a die",
+                IronCode.Charge(saber, 20) is { Made: true, ExtraDice: 1, DefenseAfter: -2 });
+            T("charge: nineteen feet is not a charge", !IronCode.Charge(saber, 19).Made);
+            T("charge: and a knife earns nothing however far it ran",
+                !IronCode.Charge(CharGen.D.weapons.First(w => w.name == "Knife / Bowie"), 40).Made);
+            T("charge: a refused charge says why", IronCode.Charge(saber, 5).Line.Length > 0);
+
+            // Keeping the saddle.
+            T("saddle: fifteen keeps it", IronCode.KeepTheSaddle(15).Kept);
+            var thrown2 = IronCode.KeepTheSaddle(14);
+            T("saddle: fourteen does not, and it costs 1d6 on the way down",
+                !thrown2.Kept && thrown2.Damage >= 1 && thrown2.Damage <= 6);
+
+            // New fight clears the turn state, and does not clear what is not of the turn.
+            var after = Soul();
+            after.Aimed = true; after.Recoiling = true; after.ReactionSpent = true;
+            after.Cover = IronCode.Cover.Heavy;
+            T("new fight: an aim, a recoil, a cover and a spent reaction all read as residue",
+                Rules.FightResidue(after));
+            Rules.ResetForNewFight(new[] { after });
+            T("new fight: and all four are cleared",
+                !after.Aimed && !after.Recoiling && !after.ReactionSpent
+                && after.Cover == IronCode.Cover.None);
+        }
+
+        // ---- every Appendix B condition reaches the fight ----
+        // Not "is in the switch" — REACHES it. The table has fifteen rows and the app answered for
+        // all fifteen while two of them did nothing a fight could feel: Fatigued's "cannot Aim" had
+        // no Aim to refuse, and Prone's "+4 to others' ranged against you" has an attacker in it and
+        // so could never be a number on the bearer's own Burden. Both are asserted below, from the
+        // side they actually bite on.
+        {
+            // The fifteen the printed Appendix B carries, in its own order.
+            string[] appendixB =
+            {
+                "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Fatigued", "Frightened",
+                "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stunned",
+            };
+            // Four are narrative or run by their own machinery rather than by arithmetic: Bleeding
+            // and Dying are the dying model's, and Marked and Lost are Ch. XII's Mark track.
+            string[] notArithmetic = { "Bleeding", "Dying", "Marked", "Lost" };
+
+            foreach (var name in appendixB)
+            {
+                var b = Rules.ConditionBurden(name, 1);
+                T($"conditions: {name} is known to the engine", b != null);
+                if (!notArithmetic.Contains(name))
+                    T($"conditions: {name} costs something a fight can feel", b.Any);
+                T($"conditions: {name} says what it does", b.Anything);
+            }
+
+            // Slowed and Stunned reach the Beats, which is the column nothing else touches.
+            var slowed = new Combatant { Name = "Opal", Conditions = "Slowed 1" };
+            T("conditions: Slowed 1 takes a Beat off the turn", slowed.BeatsThisTurn == 2);
+            var stunned = new Combatant { Name = "Opal", Conditions = "Stunned" };
+            T("conditions: Stunned takes the whole turn", stunned.BeatsThisTurn == 0);
+
+            // Frightened scales with its number, and reaches every column at once.
+            var f2 = Rules.ConditionBurden("Frightened", 2);
+            T("conditions: Frightened 2 is −2 on everything",
+                f2.Strike == -2 && f2.Defense == -2 && f2.Check == -2 && f2.Save == -2);
+
+            // Sickened is the only one that reaches the DAMAGE, and it is easy to lose.
+            T("conditions: Sickened takes its −2 off the damage as well", Rules.ConditionBurden("Sickened", 1).Damage == -2);
+
+            // Fatigued's "cannot Aim" — a sentence in a cell until there was an Aim to refuse.
+            // Blood on the row, or she reads as Down and is refused for that instead.
+            var tired = new Combatant { Name = "Anni", Conditions = "Fatigued", Beats = 3,
+                                        BloodCur = 12, BloodMax = 12 };
+            var noAim = Rules.TakeAction(tired, "aim");
+            T("conditions: the Fatigued cannot Aim, and are told why",
+                !noAim.Done && noAim.Line.Contains("Fatigued") && tired.Beats == 3);
+
+            // Prone's other half, read from the shooter's side.
+            var sixgun2 = CharGen.D.weapons.First(w => w.name == "Single-Action Revolver");
+            var knife2 = CharGen.D.weapons.First(w => w.name == "Knife / Bowie");
+            T("conditions: shooting a sprawling target is +4",
+                IronCode.Reckon(new IronCode.Shot { TargetProne = true }, sixgun2).Total == 4);
+            T("conditions: and reaching one with a blade is not",
+                IronCode.Reckon(new IronCode.Shot { TargetProne = true }, knife2).Total == 0);
+            T("conditions: the prone soul's own −4 is still theirs, and is not counted twice",
+                Rules.ConditionBurden("Prone", 1).Strike == -4
+                && !IronCode.Reckon(IronCode.Shot.Plain, sixgun2).Parts.Any(p => p.Contains("sprawl")));
+
+            // And it arrives through a real Strike, off the target's row, with nobody passing it in.
+            var sprawled = new Combatant { Name = "The Mad Dog", Defense = 13, BloodCur = 10,
+                                           BloodMax = 10, Conditions = "Prone" };
+            var shooter = new Combatant { Name = "Ruth", IsPC = true, Beats = 3, MapStep = 1 };
+            var atProne = CombatFlow.StrikeAndApply(shooter, sprawled, sixgun2, 0, null, 10);
+            T("conditions: the +4 is read off the target's row by the engine itself",
+                atProne.Circ.Parts.Any(p => p.Contains("sprawling")));
+        }
+
         // A trace takes no turn, so it is not handed three Beats to spend on nothing.
         var trace = new Combatant { Name = "Something passed here", IsSign = true, Beats = 0, MapStep = 1 };
         Rules.NewRound(new List<Combatant> { trace });

@@ -269,8 +269,11 @@ public class Combatant : INotifyPropertyChanged
 {
     string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "";
     int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1, _lastDelta, _signFilled;
-    int _bleed, _deathAt;
-    bool _isPC, _acting, _isSign, _hasActed, _stable, _upright;
+    int _bleed, _deathAt, _str;
+    bool _isPC, _acting, _isSign, _hasActed, _stable, _upright, _aimed, _recoiling, _senseless;
+    bool _reactionSpent;
+    IronCode.Cover _cover;
+    IronCode.Gait _gait;
 
     public event PropertyChangedEventHandler PropertyChanged;
     void On([System.Runtime.CompilerServices.CallerMemberName] string p = null)
@@ -306,14 +309,22 @@ public class Combatant : INotifyPropertyChanged
 
     /// <summary>Defense as it actually stands right now — the sheet's number plus whatever is
     /// riding on them. Floored at 1: no stack of conditions makes somebody impossible to miss.</summary>
-    [JsonIgnore] public int EffectiveDefense => Math.Max(1, _defense + Load.Defense);
+    [JsonIgnore] public int EffectiveDefense => Math.Max(1, _defense + Load.Defense + RecoilDefense);
+
+    /// <summary>What the recoil of an unbraced Kickback weapon costs this one's Defense, which is
+    /// whatever standing Off-Guard costs — read out of the one place that number lives rather than
+    /// typed a second time here. Zero when they are not recoiling, and zero as well when the Keeper
+    /// has already written Off-Guard on the row by hand, because a soul cannot be doubly
+    /// Off-Guard.</summary>
+    [JsonIgnore]
+    int RecoilDefense => _recoiling && !Load.OffGuard ? Rules.OffGuardDefense : 0;
 
     /// <summary>What the tracker prints in the Defense column: the plain number when nothing is on
     /// them, and the arithmetic when something is — "12 → 10". A Keeper who sees only the total has
     /// to remember why it moved, and mid-fight nobody remembers anything.</summary>
     [JsonIgnore]
-    public string DefenseLine => Load.Defense == 0 ? _defense.ToString()
-                                                   : $"{_defense} → {EffectiveDefense}";
+    public string DefenseLine => EffectiveDefense == _defense ? _defense.ToString()
+                                                              : $"{_defense} → {EffectiveDefense}";
 
     /// <summary>How many Beats this one actually gets on their turn — three, less whatever Slowed or
     /// Stunned takes. Floored at zero.</summary>
@@ -338,6 +349,57 @@ public class Combatant : INotifyPropertyChanged
     /// keeping for the same reason: "Begin turn" changes numbers a Keeper can't see moving unless
     /// the table lights the row it happened to.</summary>
     public bool Acting { get => _acting; set { _acting = value; On(); } }
+
+    /// <summary>Spent a Beat this turn to Aim or brace (Ch. XI). It buys +2 on the next Strike
+    /// before the turn ends, and it is also what <em>braced</em> means to a Kickback weapon: the
+    /// book makes Aim and brace one action, so one flag answers for both. The Strike that uses it
+    /// spends it, and Striding loses it, because the Circumstance table's row reads "you Aimed and
+    /// <b>did not move</b>".</summary>
+    public bool Aimed { get => _aimed; set { _aimed = value; On(); } }
+
+    /// <summary>Standing Off-Guard because a Kickback weapon was fired unbraced, until this one's
+    /// next turn (Ch. XI). Deliberately NOT written into <see cref="Conditions"/>: everything in
+    /// that string is the Keeper's word and the engine never writes there. This rule is
+    /// unconditional — no save, nobody's judgement — so the engine may both run it and clear it
+    /// again when the turn comes round, which is exactly what it cannot do to a hand-typed
+    /// condition.</summary>
+    public bool Recoiling { get => _recoiling; set { _recoiling = value; On(); OnBurden(); } }
+
+    /// <summary>What this one is standing behind (Ch. XI). A property of where they are rather than
+    /// of any one shot, which is why it lives on the row and not on the Strike: <em>Take Cover</em>
+    /// improves it by one step "until you leave it". The Strike dialog prefills from here and lets
+    /// the Keeper say otherwise, because the app models no ground and only they can see it.</summary>
+    public IronCode.Cover Cover { get => _cover; set { _cover = value; On(); } }
+
+    /// <summary>Whether the one reaction between this one's turns has been spent (Ch. XI). Given
+    /// back by <see cref="BeginTurn"/>, which is what "between your turns" means.</summary>
+    public bool ReactionSpent { get => _reactionSpent; set { _reactionSpent = value; On(); } }
+
+    /// <summary>The gait of the horse under this one, or <c>Afoot</c> for everybody standing on the
+    /// ground — which is nearly everybody, nearly always, so it is the default. Rider and mount
+    /// share the rider's three Beats (Ch. XI), so a mount is a state of the rider's row rather than
+    /// a row of its own; the corral's <see cref="Ride"/> is the animal, and this is the riding.</summary>
+    public IronCode.Gait Gait { get => _gait; set { _gait = value; On(); OnMounted(); } }
+
+    [JsonIgnore] public bool Mounted => _gait != IronCode.Gait.Afoot;
+
+    void OnMounted()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Mounted)));
+    }
+
+    /// <summary>This one's STR score, carried onto the field the way <see cref="DeathAt"/> carries
+    /// CON, and for the same reason: the Kickback rule turns on it and a Combatant has no sheet to
+    /// ask once it is out there. <b>Zero means nobody has said</b>, exactly as it does for
+    /// <see cref="DeathAt"/> — every session written before this reads back zero, and a stored
+    /// default of ten would be indistinguishable from a soul who really is average and would quietly
+    /// hand the recoil to somebody the book exempts. Read it through
+    /// <see cref="Strength"/>.</summary>
+    public int Str { get => _str; set { _str = Math.Clamp(value, 0, 30); On(); } }
+
+    /// <summary>The STR to actually reckon with: what the sheet said, or the middle of the scale
+    /// when nobody has said.</summary>
+    [JsonIgnore] public int Strength => _str > 0 ? _str : Rules.AverageScore;
 
     /// <summary>This row is the TRACE of a creature, not the creature — the safe-table rule made
     /// runnable (Bestiary, Appendix: The Grounds). A horror two or more Tiers over the posse takes
@@ -400,6 +462,13 @@ public class Combatant : INotifyPropertyChanged
     /// time.</summary>
     public bool Upright { get => _upright; set { _upright = value; On(); OnDying(); } }
 
+    /// <summary>Knocked senseless rather than killed — brought to 0 Blood by a blow that was
+    /// deliberately pulled (Ch. XI, "Two Kinds of Fighting"). They are out of the fight and they
+    /// are <b>not</b> bleeding toward −CON, which is the whole of what nonlethal buys. Setting it
+    /// also sets <see cref="Stable"/>, because a senseless body is a body that is not losing a
+    /// Blood a round, and <see cref="Dying"/> reads off that.</summary>
+    public bool Senseless { get => _senseless; set { _senseless = value; if (value) Stable = true; On(); OnDying(); } }
+
     [JsonIgnore] public bool Down => !_isSign && _bloodCur <= 0;
 
     /// <summary>Dead. Out here dead is dead: no turn, no order, no roll.</summary>
@@ -453,7 +522,12 @@ public class Combatant : INotifyPropertyChanged
     /// <summary>Take Blood off, or put it back, and leave the tracker a note about it. One method
     /// rather than a clamp at each call site, because every route to a wound — the Strike engine,
     /// the Damage button, the right-click menu — owes the Keeper the same visible answer.</summary>
-    public void Wound(int delta, string note = null)
+    /// <param name="delta">Blood to take off (negative) or put back (positive).</param>
+    /// <param name="note">What the tracker's Last column should say, or null to let it work it out.</param>
+    /// <param name="nonlethal">The blow was pulled (Ch. XI). A foe brought to 0 this way is
+    /// knocked senseless and not killed — so the overkill below zero is NOT counted toward −CON,
+    /// which is the one thing that separates a pistol-whipping from a shooting.</param>
+    public void Wound(int delta, string note = null, bool nonlethal = false)
     {
         if (_isSign) return;
         int hi = _bloodMax > 0 ? _bloodMax : int.MaxValue;
@@ -461,6 +535,16 @@ public class Combatant : INotifyPropertyChanged
         bool wasDead = Dead;
         int raw = _bloodCur + delta;
         BloodCur = Math.Clamp(raw, 0, hi);
+
+        // A pulled blow lays them out and stops there. The ground between 0 and −CON is for blows
+        // that meant it, so a nonlethal hit never fills it however hard it landed.
+        if (nonlethal && delta < 0 && _bloodCur <= 0 && _deathAt > 0 && !wasDead)
+        {
+            Senseless = true;                       // which sets Stable, and so clears Dying
+            LastDelta = -1;
+            LastNote = note ?? "SENSELESS";
+            return;
+        }
 
         // Below zero the harm does not stop counting — it fills the ground between 0 and −CON.
         // This is a READING of the book rather than a quotation of it: Ch. XI says you bleed a
@@ -473,7 +557,9 @@ public class Combatant : INotifyPropertyChanged
         if (_deathAt > 0 && !wasDead)
         {
             if (raw < 0) Bleed = _bleed - raw;             // raw is negative; its magnitude is the overkill
-            else if (_bloodCur > 0) { Bleed = 0; Stable = false; Upright = false; }
+            // Back on their feet: the bleeding, the standing-on-Grit and the senselessness all end
+            // together, because all three are answers to having been at zero.
+            else if (_bloodCur > 0) { Bleed = 0; Stable = false; Upright = false; Senseless = false; }
         }
 
         int moved = _bloodCur - was;
@@ -503,7 +589,11 @@ public class Combatant : INotifyPropertyChanged
     /// conditions from the ＋ Condition ▾ menu since v1.4 and neither did anything at all — "lose one
     /// Beat each turn while it lasts" was a line of prose in a column and the Keeper's own problem
     /// to remember.</para></summary>
-    public void BeginTurn() { Beats = BeatsThisTurn; MapStep = 1; Acting = true; HasActed = true; }
+    // Aim is spent by the turn that bought it, and the recoil of an unbraced Kickback weapon lasts
+    // exactly "until your next turn" (Ch. XI) — which is this moment, and only this moment.
+    public void BeginTurn()
+    { Beats = BeatsThisTurn; MapStep = 1; Acting = true; HasActed = true; Aimed = false; Recoiling = false;
+      ReactionSpent = false; }
 
     /// <summary>Is this tracker row the given posse soul? By the stable PcId when it has one, else
     /// by Name — so a rename never breaks the link, and two same-named souls stay distinct.</summary>
@@ -1180,6 +1270,22 @@ public static class Rules
     /// 10 is the middle of the scale and the Keeper can overrule it.</summary>
     public const int DefaultDeathAt = 10;
 
+    /// <summary>The middle of the ability scale, and so the honest stand-in for any score the app
+    /// has not been told — a hand-entered tracker row has no sheet to read a STR off.</summary>
+    public const int AverageScore = 10;
+
+    /// <summary>What standing Off-Guard costs a soul's Defense, read out of the Appendix B table
+    /// itself so the number lives in exactly one place. <see cref="Combatant.Recoiling"/> uses it
+    /// for the unbraced Kickback weapon, which the book resolves by making the firer Off-Guard
+    /// rather than by inventing a penalty of its own.</summary>
+    public static readonly int OffGuardDefense = ConditionBurden("off-guard", 1).Defense;
+
+    /// <summary>A soul's STR score, which is what the Kickback rule turns on. Returns
+    /// <see cref="AverageScore"/> where there is no sheet to read, exactly as
+    /// <see cref="DeathThresholdFor"/> does for CON.</summary>
+    public static int StrengthOf(CharacterSheet s)
+        => s?.Scores != null && s.Scores.TryGetValue("STR", out int str) && str > 0 ? str : AverageScore;
+
     /// <summary>A soul's death threshold: their CON. Returns <see cref="DefaultDeathAt"/> for a soul
     /// with no sheet, which is every hand-entered row on the Posse tab.</summary>
     public static int DeathThresholdFor(CharacterSheet s)
@@ -1306,6 +1412,121 @@ public static class Rules
             : $"{c.Name} has {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left and this costs {beats}.";
     }
 
+    // ---- The seven Beat actions (Ch. XI, "Rounds, Turns, and the Three Beats") ----
+    //
+    // Named ONCE, here, and rendered outward — the Reference deck's leaf and the Tracker's menu are
+    // two views of this array rather than two lists that agree until somebody edits one. Same
+    // discipline as RefLeafTitles, and it exists because of what the alternative cost: the deck
+    // printed "Strike · Stride · Aim/Brace · Interact · Reload · Take Cover" to the Keeper for six
+    // releases while the app could carry out exactly one of the six.
+
+    /// <summary>One row of the chapter's action table.</summary>
+    public record BeatAction(string Key, string Name, int Beats, string What);
+
+    public static readonly BeatAction[] BeatActions =
+    {
+        new("aim",      "Aim / Brace",   1, "+2 on your next Strike before your turn ends; braces a Kickback weapon."),
+        new("interact", "Interact",      1, "Draw or stow a weapon, clear a jam, work a lever, open a door, fetch a tonic."),
+        new("reload",   "Reload",        1, "Make a spent weapon ready; the cost is the weapon's own."),
+        new("steady",   "Steady a Soul", 1, "A shout, a hand, a Command — many Calling features cost a Beat."),
+        new("stride",   "Stride",        1, "Move up to your Speed. Mounted, move your horse's Speed."),
+        new("strike",   "Strike",        1, "One attack with a readied weapon. Subject to the Multiple Attack Penalty."),
+        new("cover",    "Take Cover",    1, "Press to available cover, improving its bonus by one step until you leave it."),
+    };
+
+    /// <summary>What happened, and the sentence to log. A false <see cref="ActionResult.Done"/>
+    /// always carries a reason: a Beat that goes nowhere without a word is precisely the failure
+    /// this app refuses to make.</summary>
+    public record ActionResult(bool Done, string Line);
+
+    /// <summary>Spend a Beat on one of the chapter's actions. Strike and Reload have their own
+    /// dialogs and are not routed here; everything else is this one call, so the Tracker's menu and
+    /// the keyboard both reach the same rule by the same road.</summary>
+    public static ActionResult TakeAction(Combatant c, string key)
+    {
+        var act = BeatActions.FirstOrDefault(a => a.Key == key);
+        if (act == null) return new(false, $"There is no such action as \"{key}\".");
+        if (WhyNoBeats(c, act.Beats) is string why) return new(false, why);
+
+        switch (key)
+        {
+            case "aim":
+                // Appendix B has said "cannot Aim" about Fatigued since v1.4, and until there was
+                // an Aim action to refuse it was a sentence in a cell. There is one now.
+                if ((c.Conditions ?? "").Contains("Fatigued", StringComparison.OrdinalIgnoreCase))
+                    return new(false, $"{c.Name} is Fatigued, and the Fatigued cannot Aim or run. Rest sheds it.");
+                if (c.Aimed) return new(false, $"{c.Name} is already aimed — the +2 does not stack with itself.");
+                c.Aimed = true;
+                c.Beats -= act.Beats;
+                return new(true, $"{c.Name} takes aim — +2 on the next Strike this turn, and braced against the recoil.");
+
+            case "stride":
+                // "You Aimed and DID NOT MOVE." Striding is exactly the moving.
+                bool lost = c.Aimed;
+                c.Aimed = false;
+                c.Beats -= act.Beats;
+                return new(true, $"{c.Name} strides." + (lost ? " The aim is lost in the moving." : ""));
+
+            case "cover":
+                if (c.Cover == IronCode.Cover.Heavy)
+                    return new(false, $"{c.Name} is already behind heavy cover — there is no better step to take.");
+                c.Cover = c.Cover == IronCode.Cover.None ? IronCode.Cover.Light : IronCode.Cover.Heavy;
+                c.Beats -= act.Beats;
+                return new(true, $"{c.Name} presses to cover — now {c.Cover.ToString().ToLowerInvariant()}, "
+                               + "and it holds until they leave it.");
+
+            case "interact":
+                c.Beats -= act.Beats;
+                return new(true, $"{c.Name} takes a Beat to work something — a lever, a jam, a door, a tonic.");
+
+            case "steady":
+                c.Beats -= act.Beats;
+                return new(true, $"{c.Name} spends a Beat steadying a soul — the Calling feature says what it does.");
+
+            default:
+                return new(false, $"{act.Name} is resolved in its own dialog, not here.");
+        }
+    }
+
+    /// <summary>Leaving cover. It is held "until you leave it", and nothing else would put it down.</summary>
+    public static void LeaveCover(Combatant c) { if (c != null) c.Cover = IronCode.Cover.None; }
+
+    // ---- Reactions (Ch. XI, "Free of charge") ----
+
+    /// <summary>Whether this one still has the single reaction they get between their turns.</summary>
+    public static bool CanReact(Combatant c)
+        => c != null && !c.IsSign && !c.ReactionSpent && !c.Dead && (!c.Down || c.Upright);
+
+    /// <summary>Why not, in a sentence, or null when they can — the pair to <see cref="CanReact"/>,
+    /// for the same reason <see cref="WhyNoBeats"/> is the pair to <see cref="CanSpendBeats"/>.</summary>
+    public static string WhyNoReaction(Combatant c)
+    {
+        if (c == null) return "Nobody is selected.";
+        if (c.IsSign) return $"{c.Name} is sign on the trail — it takes no reactions.";
+        if (c.Dead) return $"{c.Name} is dead.";
+        if (c.Down && !c.Upright) return $"{c.Name} is down, and the fallen do not dive.";
+        if (c.ReactionSpent) return $"{c.Name} has already reacted — one between your turns, and it is spent.";
+        return null;
+    }
+
+    /// <summary>Dive for Cover, the reaction the chapter names: drop prone, take the benefit of
+    /// cover against that one attack, and be Prone when you rise.
+    ///
+    /// <para>The cover is <b>Light</b>, deliberately — the book says "the benefit of cover" without
+    /// naming a step, and light is what the unqualified word buys everywhere else in the chapter.
+    /// The Prone is handed BACK rather than written onto <see cref="Combatant.Conditions"/>, because
+    /// that string is the Keeper's and the engine never writes there; it is offered exactly the way
+    /// a creature's attack rider is.</para></summary>
+    public record Dive(bool Taken, IronCode.Cover Cover, string Condition, string Line);
+
+    public static Dive DiveForCover(Combatant c)
+    {
+        if (WhyNoReaction(c) is string no) return new(false, IronCode.Cover.None, null, no);
+        c.ReactionSpent = true;
+        return new(true, IronCode.Cover.Light, "Prone",
+            $"{c.Name} dives — cover against this one shot, and Prone when they rise.");
+    }
+
     /// <summary>The order the field acts in — and the order the tracker shows it in. One answer to
     /// one question, which is the whole point of it living here.
     ///
@@ -1377,7 +1598,8 @@ public static class Rules
             // off it, which is why this asks the row rather than writing three. A trace takes no
             // turn and is left alone; the dead are left alone too, so a corpse on the field never
             // reads as a row with three Beats waiting to be spent.
-            if (!c.IsSign && !c.Dead) { c.Beats = c.BeatsThisTurn; c.MapStep = 1; }
+            if (!c.IsSign && !c.Dead)
+            { c.Beats = c.BeatsThisTurn; c.MapStep = 1; c.Aimed = false; c.Recoiling = false; c.ReactionSpent = false; }
             foreach (var done in c.TickWorked()) ended.Add((c, done));
         }
         return ended;
@@ -1402,7 +1624,10 @@ public static class Rules
     public static bool FightResidue(Combatant c)
         => c != null && (!string.IsNullOrWhiteSpace(c.Conditions) || c.Beats != 3 || c.MapStep != 1
             || c.Acting || c.HasActed || c.Upright || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
-            || c.Worked is { Count: > 0 });
+            || c.Worked is { Count: > 0 }
+            // The turn state the Iron Code added: an aim held, a recoil standing, cover pressed to,
+            // a reaction spent. All of them are of the fight and none should outlive it.
+            || c.Aimed || c.Recoiling || c.ReactionSpent || c.Cover != IronCode.Cover.None);
 
     /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue"/>
     /// over everyone standing on it.</summary>
@@ -1425,6 +1650,10 @@ public static class Rules
             if (c == null) continue;
             c.Conditions = ""; c.Beats = 3; c.MapStep = 1;
             c.Acting = false; c.HasActed = false; c.Upright = false;
+            // The Iron Code's turn state goes with the rest of it. Senseless and the Gait do NOT:
+            // being laid out is a fact about a body and carries between fights exactly as Blood
+            // does, and a rider who was in the saddle when the shooting stopped is still in it.
+            c.Aimed = false; c.Recoiling = false; c.ReactionSpent = false; c.Cover = IronCode.Cover.None;
             c.ClearLast();
             foreach (var w in c.Worked.ToList()) c.Unwork(w);
         }
@@ -1798,13 +2027,28 @@ public static class Rules
     {
         public static readonly Burden None = new(0, 0, 0, 0, 0, 0, "");
 
+        /// <summary>Whether standing Off-Guard is among the conditions summed here — either named
+        /// outright or carried by one that includes it, as Grabbed does. Init-only and outside the
+        /// positional list so that every existing <c>new(…)</c> still reads as the book's six
+        /// numbers and a note. The engine asks this before applying the recoil of an unbraced
+        /// Kickback weapon: a soul cannot be doubly Off-Guard, and −4 Defense for one lapse is a
+        /// number the book never prints.</summary>
+        public bool OffGuard { get; init; }
+
+        /// <summary>Whether Prone is among them. Carried for the same reason as
+        /// <see cref="OffGuard"/>: the condition has a half that only makes sense with an attacker
+        /// in view — "+4 to others' ranged against you" — and that half cannot be a number on this
+        /// record, because this record describes one soul and that rule describes two.</summary>
+        public bool Prone { get; init; }
+
         public bool Any => Strike != 0 || Defense != 0 || Check != 0 || Save != 0 || Damage != 0 || BeatsLost != 0;
         public bool Anything => Any || Note.Length > 0;
 
         public Burden Plus(Burden o) => o == null ? this : new(
             Strike + o.Strike, Defense + o.Defense, Check + o.Check, Save + o.Save,
             Damage + o.Damage, BeatsLost + o.BeatsLost,
-            Note.Length == 0 ? o.Note : o.Note.Length == 0 ? Note : Note + "\n" + o.Note);
+            Note.Length == 0 ? o.Note : o.Note.Length == 0 ? Note : Note + "\n" + o.Note)
+            { OffGuard = OffGuard || o.OffGuard, Prone = Prone || o.Prone };
 
         static string Sign(int n) => n > 0 ? $"+{n}" : n.ToString();
 
@@ -1845,10 +2089,10 @@ public static class Rules
             "dying"     => new(0, 0, 0, 0, 0, 0, "Dying — unconscious at 0 Blood, bleeding toward −CON. The tracker runs this itself."),
             "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued — and cannot Aim or run. Rest sheds it."),
             "frightened"=> new(-n, -n, -n, -n, 0, 0, $"Frightened {n} — −{n} on everything; it lessens by one step each turn as they master it."),
-            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed — held fast and Off-Guard, at −4 DEX, and it takes a check to break free."),
-            "off-guard" => new(0, -2, 0, 0, 0, 0, ""),
-            "offguard"  => new(0, -2, 0, 0, 0, 0, ""),
-            "prone"     => new(-4, 0, 0, 0, 0, 0, "Prone — the −4 is to melee; anyone SHOOTING at them has +4 instead, and rising costs a Beat."),
+            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed — held fast and Off-Guard, at −4 DEX, and it takes a check to break free.") { OffGuard = true },
+            "off-guard" => new(0, -2, 0, 0, 0, 0, "Off-Guard — cannot properly defend: unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "offguard"  => new(0, -2, 0, 0, 0, 0, "Off-Guard — cannot properly defend: unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "prone"     => new(-4, 0, 0, 0, 0, 0, "Prone — the −4 is to melee; anyone SHOOTING at them has +4 instead, and rising costs a Beat.") { Prone = true },
             "sickened"  => new(-2, 0, -2, -2, -2, 0, "Sickened — Strikes, damage, checks and saves alike."),
             "slowed"    => new(0, 0, 0, 0, 0, n, $"Slowed {n} — {n} fewer Beat{(n == 1 ? "" : "s")} each turn. They may still defend."),
             "stunned"   => new(0, -2, 0, 0, 0, 3, "Stunned — they drop what they are holding and lose the whole turn."),

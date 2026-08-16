@@ -160,6 +160,328 @@ public static class IronCode
          : strikeNumber == 2 ? (agile ? -4 : -5)
          : (agile ? -8 : -10);
 
+    // ---- Aim, brace, and the Kickback weapon (Ch. XI, "Aiming and Bracing") ----
+
+    /// <summary>What a Beat spent to Aim buys on the next Strike before the turn ends. The
+    /// Circumstance table prints the same +2 for "you Aimed and did not move", which is the same
+    /// rule seen from the other side rather than a second one that stacks with it.</summary>
+    public const int AimBonus = 2;
+
+    /// <summary>What a Kickback weapon costs the hasty, on top of leaving them Off-Guard.</summary>
+    public const int KickbackPenalty = -2;
+
+    /// <summary>The STR at which a soul holds a Kickback weapon steady without spending the Beat.
+    /// The book gives the strong an outright exemption, not a smaller penalty.</summary>
+    public const int BraceStrength = 12;
+
+    /// <summary>Whether the recoil bites: a Kickback weapon, fired without the Beat spent to brace,
+    /// by somebody under <see cref="BraceStrength"/> STR.</summary>
+    public static bool KickbackBites(WeaponTraits tr, bool braced, int strScore)
+        => (tr?.Kickback ?? false) && !braced && strScore < BraceStrength;
+
+    // ---- Circumstance (Ch. XI, "Circumstance") ----
+
+    /// <summary>What stands between the shot and the target.</summary>
+    public enum Cover { None, Light, Heavy }
+
+    /// <summary>Adjacent, in feet — one square, and the range at which a long gun becomes a
+    /// nuisance rather than a reach.</summary>
+    public const int PointBlankFeet = 5;
+
+    /// <summary>The facts of a shot that the engine cannot see from a tracker row: how far, what is
+    /// in the way, whether it is fired into a scrum, and whether the target can be seen at all. The
+    /// app models no ground, so the Keeper is the only one who knows these — but once they are
+    /// known the whole Circumstance table is arithmetic, and the arithmetic is the engine's.</summary>
+    public record Shot
+    {
+        /// <summary>Feet to the target. <b>Zero means the Keeper did not say</b>, and every
+        /// distance rule is then left alone rather than guessed at.</summary>
+        public int Distance { get; init; }
+        public Cover Cover { get; init; }
+        public bool IntoMelee { get; init; }
+        /// <summary>Target fully concealed: cannot be targeted directly, and firing blind into
+        /// the guessed square is its own penalty.</summary>
+        public bool Concealed { get; init; }
+
+        /// <summary>Declared before the roll (Ch. XI, "Two Kinds of Fighting"): this blow is meant
+        /// to subdue. Most arms take −2 to pull it; fists and a club do it by nature.</summary>
+        public bool Nonlethal { get; init; }
+
+        /// <summary>How the striker's horse is moving. Filled in by the engine from the row rather
+        /// than asked of the Keeper — unlike the distance and the cover, this is something the app
+        /// already knows.</summary>
+        public Gait Gait { get; init; }
+
+        /// <summary>Whether the target is themselves mounted, which decides the +1 a rider gets
+        /// striking down at a footman. Also filled from the rows.</summary>
+        public bool TargetMounted { get; init; }
+
+        /// <summary>Whether the target is sprawling. Appendix B gives Prone two halves and the
+        /// Burden can only carry one of them: the −4 it costs the prone soul's OWN melee Strikes
+        /// rides on their row, while the +4 it hands everyone SHOOTING at them can only be reckoned
+        /// here, where both parties are in view. Filled from the target's row.</summary>
+        public bool TargetProne { get; init; }
+
+        public static readonly Shot Plain = new();
+    }
+
+    /// <summary>What the moment costs a Strike, and the reason for each part of it. A Keeper who is
+    /// shown only a total has to remember why it moved, and mid-fight nobody remembers anything.
+    ///
+    /// <para><b>Two rows of the book's table are deliberately NOT here.</b> <em>Target Off-Guard</em>
+    /// is already paid by <see cref="Rules.ConditionBurden"/> as −2 to their Defense, and
+    /// <em>You Aimed and did not move</em> is already paid by <see cref="Combatant.Aimed"/> in
+    /// <c>CombatFlow.StrikeAndApply</c>. Adding either here would charge it twice, which is
+    /// exactly the fault the derived-Burden design exists to prevent.</para></summary>
+    public record Reckoning(int Total, List<string> Parts, bool CannotTarget);
+
+    /// <summary>Whether this is a long gun — rifle, carbine, shotgun or repeater — which the Code
+    /// handles differently at point-blank and from the saddle. Read off the NAME on purpose: Ch. X's
+    /// glossary defines a <em>Two-Handed</em> trait and then prints it on no weapon in either table,
+    /// so there is no trait to read. Ch. XI names them the same way — "a two-handed long gun
+    /// (rifle, carbine, shotgun)" — so this follows the book rather than inventing data for it.</summary>
+    public static bool IsLongGun(CgWeapon w)
+    {
+        if (!string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)) return false;
+        string n = w.name ?? "";
+        return n.Contains("Rifle", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Shotgun", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Carbine", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Repeater", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Musket", StringComparison.OrdinalIgnoreCase);
+    }
+
+    // ---- Fighting from the Saddle (Ch. XI) ----
+
+    /// <summary>How the horse under you is moving, which is what the saddle rules turn on.
+    /// <see cref="Afoot"/> is not mounted at all.</summary>
+    public enum Gait { Afoot, Standing, Walking, Trotting, Galloping }
+
+    /// <summary>A moving platform — trotting or galloping. Standing and walking shoot as normal,
+    /// which the book says in as many words.</summary>
+    public static bool IsMoving(Gait g) => g == Gait.Trotting || g == Gait.Galloping;
+
+    /// <summary>Feet of straight line a mount must cover to make a Charge.</summary>
+    public const int ChargeFeet = 20;
+
+    /// <summary>Feet of straight line at which a gallop will ride a foe down or break a line.</summary>
+    public const int RideDownFeet = 30;
+
+    /// <summary>The DC to keep the saddle, or to master a green or frightened animal.</summary>
+    public const int RideDc = 15;
+
+    /// <summary>The charge weapons — lance, spear, saber. A knife or a hatchet earns no charge
+    /// bonus, which the book's by-weapon box says outright.</summary>
+    public static bool IsChargeWeapon(CgWeapon w)
+    {
+        string n = w?.name ?? "";
+        return n.Contains("Saber", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Lance", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Spear", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>A two-handed melee weapon, which is awkward swung from the saddle. Read off the
+    /// name, and note that <b>no melee weapon in the arms table is one today</b> — the book prints
+    /// a Two-Handed trait in Ch. X's glossary and applies it to nothing in either table. The rule
+    /// is implemented rather than left out so that a pike or a polearm added later is handled;
+    /// today it is correctly a no-op for every weapon a soul can actually buy.</summary>
+    public static bool IsTwoHandedMelee(CgWeapon w)
+    {
+        if (string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)) return false;
+        string n = w?.name ?? "";
+        return n.Contains("Lance", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Pike", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Polearm", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Spear", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Whether a shot may be aimed or braced at all. You cannot from a moving horse, which
+    /// also means a Kickback weapon can never be braced at a gallop — the shotgun's recoil and the
+    /// horse's motion arrive together, exactly as the chapter implies.</summary>
+    public static bool CanAim(Gait g) => !IsMoving(g);
+
+    /// <summary>The Charge (Ch. XI): twenty feet of straight line into a foe with a lance, spear or
+    /// saber is worth an extra die of damage, and a couched lance doubles the dice instead. You are
+    /// committed and off-balance after, at −2 Defense until your next turn.</summary>
+    public record ChargeResult(bool Made, int ExtraDice, bool DoubleDice, int DefenseAfter, string Line);
+
+    public static ChargeResult Charge(CgWeapon w, int feetStraight, bool couchedLance = false)
+    {
+        if (feetStraight < ChargeFeet)
+            return new(false, 0, false, 0, $"a charge wants {ChargeFeet} feet of straight line, and this had {feetStraight}");
+        if (!IsChargeWeapon(w))
+            return new(false, 0, false, 0, $"{w?.name ?? "this"} earns no charge bonus — the lance, the spear and the saber do");
+        return couchedLance && (w.name ?? "").Contains("Lance", StringComparison.OrdinalIgnoreCase)
+            ? new(true, 0, true, -2, "a couched lance — double dice, and −2 Defense until your next turn")
+            : new(true, 1, false, -2, "+1 die on the charge, and −2 Defense until your next turn");
+    }
+
+    /// <summary>Keeping the saddle: a Ride save against DC 15, or the attacker's own result. Failing
+    /// it puts you on the ground, prone, a few feet from the animal, with 1d6 to show for it.</summary>
+    public static (bool Kept, int Damage, string Line) KeepTheSaddle(int rideTotal, int dc = RideDc)
+        => rideTotal >= dc
+            ? (true, 0, "kept the saddle")
+            : (false, Rules.Rng.Next(1, 7), "unhorsed — prone, and a few feet from the animal");
+
+    // ---- Two Kinds of Fighting (Ch. XI) ----
+
+    /// <summary>What it costs to pull a blow with an arm not made for it.</summary>
+    public const int PulledBlowPenalty = -2;
+
+    /// <summary>Whether this arm subdues by nature — fists and a club — so striking nonlethally
+    /// with it costs nothing. Read off the printed Notes column, which is where the book says it:
+    /// "nonlethal by choice", "Nonlethal unless you mean it".</summary>
+    public static bool NonlethalByNature(CgWeapon w)
+        => (w?.traits ?? "").Contains("nonlethal", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>How many full range increments past the first this shot is thrown across. Zero
+    /// inside the first increment, and zero as well when either number is unknown.</summary>
+    public static int IncrementsPast(int distance, int rangeIncrement)
+        => distance <= 0 || rangeIncrement <= 0 ? 0
+         : Math.Max(0, (distance + rangeIncrement - 1) / rangeIncrement - 1);
+
+    public static Reckoning Reckon(Shot s, CgWeapon w, bool braced = false)
+    {
+        s ??= Shot.Plain;
+        var tr = WeaponTraits.Parse(w?.traits);
+        int total = 0; var parts = new List<string>();
+        void Take(int n, string why) { if (n != 0) { total += n; parts.Add($"{(n > 0 ? "+" : "")}{n} {why}"); } }
+
+        bool pointBlank = s.Distance > 0 && s.Distance <= PointBlankFeet;
+
+        // Range. Point-blank waives the increment penalty outright — you are not missing a man at
+        // arm's length because the barrel is rated for two hundred yards.
+        if (!pointBlank)
+        {
+            int past = IncrementsPast(s.Distance, w?.range ?? 0);
+            Take(-2 * past, past == 1 ? "beyond the first range increment"
+                                      : $"{past} increments beyond the first");
+        }
+        else if (IsLongGun(w) && !braced)
+            Take(-2, "a long gun at arm's length, unbraced");
+
+        // Volley: this long iron is made for distance, and resents being used up close.
+        if (tr.Volley > 0 && s.Distance > 0 && s.Distance <= tr.Volley)
+            Take(-2, $"inside the Volley {tr.Volley} ft this iron wants");
+
+        Take(s.Cover switch { Cover.Light => -2, Cover.Heavy => -4, _ => 0 },
+             s.Cover == Cover.Heavy ? "heavy cover" : "light cover");
+        Take(s.IntoMelee ? -4 : 0, "fired into melee");
+        Take(s.Concealed ? -8 : 0, "fired blind at a guessed square");
+        Take(s.Nonlethal && !NonlethalByNature(w) ? PulledBlowPenalty : 0, "pulling the blow");
+
+        // The other half of Prone (Appendix B): a sprawling target is easier to SHOOT and harder to
+        // reach with a blade. The −4 on their own Strikes is already the Burden's; this is the +4
+        // the book hands the shooter, and it has no other place it could live.
+        bool ranged = string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)
+                   || (w?.traits ?? "").Contains("Thrown", StringComparison.OrdinalIgnoreCase)
+                   || (w?.traits ?? "").Contains("Throwable", StringComparison.OrdinalIgnoreCase);
+        Take(s.TargetProne && ranged ? 4 : 0, "shooting at a sprawling target");
+
+        // ---- from the saddle (Ch. XI) ----
+        bool gun = string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase);
+        bool thrown = (w?.traits ?? "").Contains("Thrown", StringComparison.OrdinalIgnoreCase)
+                   || (w?.traits ?? "").Contains("Throwable", StringComparison.OrdinalIgnoreCase);
+        if (s.Gait != Gait.Afoot)
+        {
+            if (IsMoving(s.Gait))
+            {
+                // The moving platform. Ranged and thrown alike; a pistol at a walk is free, which is
+                // the whole reason the horseman carries one.
+                Take(gun || thrown ? -2 : 0, "shooting from a moving horse");
+                // And a long gun is doubly awkward up there — the box's −4 in all.
+                Take(gun && IsLongGun(w) ? -2 : 0, "a two-handed long gun from the saddle");
+            }
+            // Striking down at a footman. The saber is the horseman's blade and waives the mounted
+            // penalty; everything else two-handed is awkward from up there.
+            if (!gun && !thrown)
+            {
+                Take(!s.TargetMounted ? 1 : 0, "striking down at a man on foot");
+                bool saber = (w?.name ?? "").Contains("Saber", StringComparison.OrdinalIgnoreCase);
+                Take(IsTwoHandedMelee(w) && !saber ? -2 : 0, "a two-handed weapon swung from the saddle");
+            }
+        }
+
+        return new Reckoning(total, parts, s.Concealed);
+    }
+
+    // ---- Scatter (Ch. X, "Scatter X") ----
+
+    /// <summary>Where a Scatter weapon's splash falls. On a hit, everything within the radius takes
+    /// 1d6. On a MISS inside the first range increment the target still wears it, which is the whole
+    /// argument for a shotgun. Who is standing within the radius is the Keeper's to say — the app
+    /// models no ground — so this answers whether the splash falls, not on whom.</summary>
+    public static (bool Falls, int Radius, bool TargetToo) ScatterFalls(
+        WeaponTraits tr, CgWeapon w, bool hit, int distance)
+    {
+        int radius = tr?.Scatter ?? 0;
+        if (radius <= 0) return (false, 0, false);
+        if (hit) return (true, radius, false);
+        bool insideFirst = w != null && w.range > 0 && distance > 0 && distance <= w.range;
+        return (insideFirst, radius, insideFirst);
+    }
+
+    /// <summary>One creature's share of the splash.</summary>
+    public static int ScatterDamage() => Rules.Rng.Next(1, 7);
+
+    // ---- Reloading (Ch. XI, "Reloading" · Ch. X, the arms table's Reload column) ----
+
+    /// <summary>How a weapon is fed, off the arms table's printed Reload column.</summary>
+    public enum ReloadKind { None, Single, PerShot, Slow }
+
+    /// <summary>A cap-and-ball cylinder is three rounds of dedicated work, and cannot be part-filled
+    /// in a hurry. Rounds, not Beats — it is the one reload the book prices in whole rounds.</summary>
+    public const int SlowReloadRounds = 3;
+
+    /// <summary>Read the arms table's Reload column. Anything unrecognised is
+    /// <see cref="ReloadKind.None"/> rather than a guess: a blade has no such column.</summary>
+    public static ReloadKind ReadReload(string reload) => (reload ?? "").Trim().ToLowerInvariant() switch
+    {
+        "1/shot" => ReloadKind.PerShot,
+        "slow"   => ReloadKind.Slow,
+        "1"      => ReloadKind.Single,
+        _        => ReloadKind.None,
+    };
+
+    /// <summary>What making a weapon ready again costs, in the units the book prices it in.</summary>
+    public record ReloadCost(ReloadKind Kind, int Beats, int Rounds, string Line);
+
+    /// <summary>What making this weapon ready costs. <paramref name="full"/> asks for a top-off
+    /// rather than a single round; <paramref name="practiced"/> is the <em>Practiced Reload</em>
+    /// Edge, which shaves one Beat off a weapon you favor and can never take it below one.</summary>
+    public static ReloadCost Reloading(CgWeapon w, bool full = true, bool practiced = false)
+    {
+        var kind = ReadReload(w?.reload);
+        int cap  = Math.Max(0, w?.cap ?? 0);
+        switch (kind)
+        {
+            case ReloadKind.Slow:
+                // No partial loading in a hurry — the book is explicit, so there is no single-round
+                // branch here to offer.
+                return new(kind, 0, SlowReloadRounds,
+                    $"{SlowReloadRounds} rounds of dedicated work — a cylinder is charged, not thumbed");
+
+            case ReloadKind.Single:
+                // A break-action is one Interact whether it holds one barrel or two.
+                return new(kind, 1, 0, "one Interact, and it is whole again");
+
+            case ReloadKind.PerShot when !full:
+                return new(kind, 1, 0, "one Beat thumbs a single round in");
+
+            case ReloadKind.PerShot:
+            {
+                // Beats equal to half its capacity, rounded up — a six-gun three, a twelve-shot six.
+                int beats = Math.Max(1, (cap + 1) / 2 - (practiced ? 1 : 0));
+                return new(kind, beats, 0,
+                    $"{beats} Beat{(beats == 1 ? "" : "s")} to top off {cap}"
+                    + (practiced ? ", one shaved by Practiced Reload" : ""));
+            }
+
+            default:
+                return new(ReloadKind.None, 0, 0, "nothing to reload");
+        }
+    }
+
     // ---- the Strike (Ch. XI, "The Four Degrees of Success") ----
     public record StrikeOutcome(int Die, int Total, int Defense, int Degree, string DegreeName,
         bool Hit, bool Crit, bool Jam, string Detail);
@@ -281,7 +603,8 @@ public static class CombatFlow
     /// <see cref="Rules.InflictedConditions"/> and handed back rather than applied, because the
     /// riders are English and half of them hang on a save the Keeper has to call. The UI offers
     /// them; the engine never lays one on by itself.</summary>
-    public record StrikeReport(IronCode.Resolution Res, int Map, string Line, List<string> Inflicts);
+    public record StrikeReport(IronCode.Resolution Res, int Map, string Line, List<string> Inflicts,
+        IronCode.Reckoning Circ = null);
 
     /// <summary>Take one Strike from <paramref name="attacker"/> at <paramref name="target"/> and
     /// apply it: spend a Beat, resolve at the attacker's current MAP step, subtract the damage
@@ -290,13 +613,14 @@ public static class CombatFlow
     /// and its damage type — through the identical path a posse gun takes. The Bestiary's numbers
     /// finally reach the table: a ghoul claws with +6 (1d8+3), not with the party's revolver.</summary>
     public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CreatureAttack attack,
-        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null)
+        int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null,
+        IronCode.Shot shot = null)
         => StrikeAndApply(attacker, target, attack.ToWeapon(), attackBonus, targetDr, forcedDie, attack.Type,
-                          attack.Effect);
+                          attack.Effect, shot);
 
     public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CgWeapon weapon,
         int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null, string forceType = null,
-        string rider = null)
+        string rider = null, IronCode.Shot shot = null)
     {
         var tr = WeaponTraits.Parse(weapon?.traits);
         int map = IronCode.MapPenalty(attacker?.MapStep ?? 1, tr.Agile);
@@ -308,9 +632,36 @@ public static class CombatFlow
         // neither ever sets a condition, so both Burdens come out empty and the arithmetic is what
         // it always was. It only bites once somebody is actually Frightened, which is the point.
         var mine   = attacker?.Load ?? Rules.Burden.None;
-        var theirs = target.Load;
         int defense = target.EffectiveDefense;
-        var res = IronCode.Strike(attackBonus + map + mine.Strike, defense, weapon, targetDr, forcedDie, forceType);
+
+        // What the rows already know, filled in rather than asked of the Keeper: the gait of the
+        // horse under the striker, and whether the target is mounted too. Distance and cover stay
+        // the Keeper's to say, because the app models no ground — these two it can see.
+        var facts = (shot ?? IronCode.Shot.Plain) with
+        {
+            Gait = attacker?.Gait ?? IronCode.Gait.Afoot,
+            TargetMounted = target.Mounted,
+            TargetProne = target.Load.Prone,
+        };
+
+        // Aim and brace are ONE action in the book, so one flag answers for both: the Beat spent
+        // buys +2 on this Strike and it is also what "braced" means to a Kickback weapon. The
+        // strong are exempt from the recoil outright rather than taking a lesser penalty.
+        //
+        // From a moving horse you can do neither, which the chapter says outright — so a shotgun
+        // fired at a gallop recoils however strong the arm holding it was going to be about it.
+        bool braced = (attacker?.Aimed ?? false) && IronCode.CanAim(facts.Gait);
+        int aim     = braced ? IronCode.AimBonus : 0;
+        bool kicks  = IronCode.KickbackBites(tr, braced, attacker?.Strength ?? Rules.AverageScore);
+        int kick    = kicks ? IronCode.KickbackPenalty : 0;
+
+        // What the moment costs (Ch. XI, "Circumstance"). A caller that says nothing about the
+        // ground — the playtest harness, the smoke fights — gets Shot.Plain and no range rule runs,
+        // so the numbers those were measured against do not move.
+        var circ = IronCode.Reckon(facts, weapon, braced);
+
+        var res = IronCode.Strike(attackBonus + map + mine.Strike + aim + kick + circ.Total, defense,
+                                  weapon, targetDr, forcedDie, forceType);
         // Sickened takes its −2 off the damage as well as the Strike, and the adjustment is folded
         // back into the Resolution rather than applied at the wound: every caller downstream reads
         // AfterDR — the log line, the grievous-blow check, the tracker's Last column — and a number
@@ -322,6 +673,11 @@ public static class CombatFlow
         {
             if (attacker.Beats > 0) attacker.Beats -= 1;   // a Strike is one Beat (Ch. XI)
             attacker.MapStep += 1;                          // the next Strike this turn is at higher MAP
+            // The Aim is spent by the Strike that used it, hit or miss — the book buys ONE Strike
+            // with that Beat, not every Strike left in the turn.
+            attacker.Aimed = false;
+            // And the shotgun fired from the hip leaves them open until their own turn comes round.
+            if (kicks) attacker.Recoiling = true;
         }
 
         string who = $"{attacker?.Name ?? "—"} → {target.Name}";
@@ -329,7 +685,13 @@ public static class CombatFlow
         // Say so when a condition moved the numbers. A roll that silently came out different from
         // the one the Keeper expected is the fastest way to lose their trust in the engine.
         if (mine.Strike != 0)    mapNote += $" ({(mine.Strike > 0 ? "+" : "")}{mine.Strike} on them)";
-        if (theirs.Defense != 0) mapNote += $" (vs Defense {defense}, was {target.Defense})";
+        if (aim != 0)            mapNote += $" (+{aim} aimed)";
+        if (kick != 0)           mapNote += $" ({kick} unbraced, and Off-Guard until their turn)";
+        foreach (var part in circ.Parts) mapNote += $" ({part})";
+        // Read off the two numbers rather than off the conditions alone: a target standing
+        // Off-Guard from their own unbraced shotgun has moved their Defense without a word of it
+        // being in Load.
+        if (defense != target.Defense) mapNote += $" (vs Defense {defense}, was {target.Defense})";
         string line;
         // What this blow's own rider would lay on them, if it landed. A creature's attacks line is
         // the source: "pick and claw +4 (1d6+2 and grab)" means Grabbed, and until now that was a
@@ -341,12 +703,13 @@ public static class CombatFlow
         {
             // Through Wound rather than straight at BloodCur, so the tracker's "Last" column shows
             // an engine-resolved hit exactly the way it shows a hand-typed one. One route in.
-            target.Wound(-res.AfterDR);
+            target.Wound(-res.AfterDR, nonlethal: shot?.Nonlethal ?? false);
             string drNote = res.Damage != null && res.AfterDR != res.Damage.Total
                 ? $" ({res.Damage.Total} − DR)" : "";
             line = $"{who}{mapNote}: {res.Strike.DegreeName}{(res.Strike.Crit ? " —" : "")} "
                  + $"{res.AfterDR} Blood{drNote}. {target.Name} at {target.BloodCur}."
-                 + (target.Down ? " DOWN." : "");
+                 + (target.Senseless ? " SENSELESS — laid out, not killed."
+                  : target.Down ? " DOWN." : "");
         }
         else
         {
@@ -355,6 +718,6 @@ public static class CombatFlow
             line = $"{who}{mapNote}: {res.Strike.DegreeName} — "
                  + (res.Strike.Jam ? "the iron JAMS (clear it: Interact + Repair)." : "a miss.");
         }
-        return new StrikeReport(res, map, line, inflicts);
+        return new StrikeReport(res, map, line, inflicts, circ);
     }
 }
