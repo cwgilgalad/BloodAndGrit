@@ -6,11 +6,11 @@
 # keyed and run: every scene placed, every person given a want, every fight played on the engine
 # before a word was written about how hard it is. The numbers in "What the night costs" came out
 # of GK/playtest and nowhere else.
-from modules_common import (shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.0"
+VERSION = "1.1"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -491,17 +491,14 @@ COST = '''
   and no Sign or Miracle worked, and once <em>tended</em>, with the posse back to half Blood between
   acts. The point of the second was to find out whether the night is an attrition problem.</p>
 
-  <table class="playtest">
-    <tr><th>Fight</th><th>Tier</th><th>Cleared</th><th>Broke off</th><th>Rounds</th><th>Posse hits</th><th>Its hits</th></tr>
-    <tr><td>The dead getting up (Act Two)</td><td>I</td><td>2 of 12</td><td>7 of 12</td><td>1.6</td><td>32%</td><td>51%</td></tr>
-    <tr><td>The Nightwalker (Act Three)</td><td>III</td><td>0 of 12</td><td>&mdash;</td><td>1.5</td><td>12%</td><td>67%</td></tr>
-  </table>
+''' + night_costs("The Salt at Coffin Wells",
+      ["The dead getting up (Act Two)", "The Nightwalker (Act Three)"]) + '''
 
   <p>Read the second row and then read it again. Twelve posses, cold and tended both, and the
   Nightwalker was never once put down by shooting it. Giving the posse back half its Blood between
   every act changed that count by nothing, which is how you know it is not an attrition problem.
   Twelve Strikes a round at rising MAP land about one time in eight against Defense 18, and the thing
-  hits back two times in three.</p>
+  hits back three times in four.</p>
 
   ''' + keeper(
     "<p><strong>So the module says it plainly: Act Three is not a fight.</strong> It is a room with "

@@ -12,11 +12,11 @@ The posse is the same four callings every time — **Gunhand, Preacher, Mountain
 
 **Coffin Wells · a posse of four at level 1 · party Tier 1**
 
-- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 8. Put down to the last soul: 4.
-- Souls down at the end, on average: **2.8 of 4**.
-- Nerve left across the whole posse, on average: **54.1 of 60**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 10. Put down to the last soul: 2.
+- Souls down at the end, on average: **2.7 of 4**.
+- Nerve left across the whole posse, on average: **52.3 of 60**. Runs in which at least one soul broke (Nerve to 0): **1** of 12.
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 4.
+- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 2.
 
 ### Fight by fight
 
@@ -24,8 +24,8 @@ The posse is the same four callings every time — **Gunhand, Preacher, Mountain
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the Pell place — the dead getting up | TI | 2/12 | 7/12 | 1.6 | 32% | 51% |
-| the Nightwalker at the opened grave | TIII ⚠ | 0/2 | 1/2 | 1.5 | 12% | 67% |
+| the Pell place — the dead getting up | TI | 2/12 | 8/12 | 1.6 | 31% | 49% |
+| the Nightwalker at the opened grave | TIII ⚠ | 0/2 | 2/2 | 2.0 | 13% | 75% |
 
 ### The way through
 
@@ -44,8 +44,8 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 **Saltlick Station · a posse of four at level 3 · party Tier 2**
 
 - **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 12. Put down to the last soul: 0.
-- Souls down at the end, on average: **2.3 of 4**.
-- Nerve left across the whole posse, on average: **49.3 of 71**. Runs in which at least one soul broke (Nerve to 0): **1** of 12.
+- Souls down at the end, on average: **2.2 of 4**.
+- Nerve left across the whole posse, on average: **49.6 of 71**. Runs in which at least one soul broke (Nerve to 0): **1** of 12.
 
 - **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 0.
 
@@ -55,8 +55,8 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the tack room, and the two it has already been inside | TII | 10/12 | 2/12 | 2.3 | 43% | 53% |
-| the yard at first light | TIII | 0/10 | 10/10 | 1.5 | 15% | 73% |
+| the tack room, and the two it has already been inside | TII | 8/12 | 4/12 | 2.1 | 42% | 59% |
+| the yard at first light | TIII | 0/8 | 8/8 | 1.5 | 20% | 72% |
 
 ### The way through
 
@@ -66,17 +66,17 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 ---
 
-## The Reckoning of the Wells
+## What the Water Answers
 
 *A third reckoning — the water is going bad from the bottom up, and the mission knows why*
 
 **Mission San Clavo · a posse of four at level 5 · party Tier 3**
 
-- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 10. Put down to the last soul: 2.
-- Souls down at the end, on average: **2.8 of 4**.
-- Nerve left across the whole posse, on average: **66.7 of 75**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 9. Put down to the last soul: 3.
+- Souls down at the end, on average: **2.9 of 4**.
+- Nerve left across the whole posse, on average: **70.1 of 75**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 1.
+- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 2.
 
 ### Fight by fight
 
@@ -84,9 +84,9 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the ones who drank first | TII | 9/12 | 3/12 | 2.9 | 43% | 57% |
-| what has been living in the nave | TII | 3/9 | 5/9 | 2.1 | 47% | 53% |
-| the thing the first binding was for | TIII | 0/3 | 2/3 | 1.0 | 33% | 64% |
+| the ones who drank first | TII | 8/12 | 4/12 | 3.0 | 41% | 57% |
+| what has been living in the nave | TII | 1/8 | 5/8 | 1.4 | 61% | 60% |
+| the thing the first binding was for | TIII | 0/1 | 0/1 | 2.0 | 83% | 33% |
 
 ### The way through
 
@@ -100,7 +100,7 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 | Adventure | Level | Finished (cold) | Finished (tended) | Broke off | Put down | Avg souls down |
 |---|---|---|---|---|---|---|
-| The Salt at Coffin Wells | 1 | 0/12 | 0/12 | 8 | 4 | 2.8 |
-| A Face Not His Own | 3 | 0/12 | 0/12 | 12 | 0 | 2.3 |
-| The Reckoning of the Wells | 5 | 0/12 | 0/12 | 10 | 2 | 2.8 |
+| The Salt at Coffin Wells | 1 | 0/12 | 0/12 | 10 | 2 | 2.7 |
+| A Face Not His Own | 3 | 0/12 | 0/12 | 12 | 0 | 2.2 |
+| What the Water Answers | 5 | 0/12 | 0/12 | 9 | 3 | 2.9 |
 
