@@ -39,6 +39,88 @@ def creature(name):
     return c
 
 
+PLAYTEST = "PLAYTEST.md"
+# Fewer posses than this reaching a fight makes its percentages an anecdote rather than a rate.
+THIN_SAMPLE = 3
+_NIGHTS = None
+
+
+def _playtest():
+    """Every adventure's fight-by-fight table, off PLAYTEST.md, keyed by the heading it sits under.
+
+    PLAYTEST.md is written by `GK/playtest`, which plays the three adventures on the real rules
+    library. It has always been the source for these numbers and the transfer was always by hand --
+    typed into each builder and checked by nobody. That drifted twice in one day on 2026-08-16:
+    GritKeeper v1.40.0 changed what the engine charges for an unbraced shotgun, and the harness had
+    been calling Module III by a title retired in modules-v1.1. Generated from the file, neither can
+    happen again."""
+    global _NIGHTS
+    if _NIGHTS is not None:
+        return _NIGHTS
+    _NIGHTS, night, in_table = {}, None, False
+    for line in open(PLAYTEST, encoding="utf-8"):
+        if line.startswith("## "):
+            night, in_table = line[3:].strip(), False
+            _NIGHTS.setdefault(night, [])
+        elif line.startswith("| Fight |"):
+            in_table = True
+        elif in_table and line.startswith("|---"):
+            continue
+        elif in_table and line.startswith("|"):
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) == 7 and night:
+                _NIGHTS[night].append(cells)
+        elif in_table:
+            in_table = False
+    return _NIGHTS
+
+
+def night_costs(adventure, labels):
+    """The What the Night Costs table, generated from PLAYTEST.md rather than typed.
+
+    `labels` renames each row in the module's own voice ("The dead getting up (Act Two)"), because
+    the harness names a fight the way the engine sees it and the module names it the way a Keeper
+    reads it. Everything else -- the tier, the counts, the rounds, both hit rates -- comes off the
+    file. A label list that does not match the number of fights is a loud failure, not a short table:
+    a row silently dropped is a fight the Keeper is never told the cost of."""
+    rows = _playtest().get(adventure)
+    if not rows:
+        raise SystemExit(f"PLAYTEST.md has no fight table under '## {adventure}'. "
+                         f"It knows: {', '.join(k for k, v in _playtest().items() if v)}.")
+    if len(labels) != len(rows):
+        raise SystemExit(f"'{adventure}' has {len(rows)} fights in PLAYTEST.md and {len(labels)} "
+                         f"labels in the builder. Name every fight or none.")
+    out = ['  <table class="playtest">',
+           "    <tr><th>Fight</th><th>Tier</th><th>Cleared</th><th>Broke off</th><th>Rounds</th>"
+           "<th>Posse hits</th><th>Its hits</th></tr>"]
+    thin = False
+    for label, (_fight, tier, cleared, broke, rounds, ours, theirs) in zip(labels, rows):
+        # "TIII ⚠" is the harness flagging a fight two tiers over the posse; the module says that in
+        # prose where it has room to explain it, so only the numeral travels.
+        tier = tier.replace("T", "").replace("⚠", "").strip()
+        # A late fight is only reached by the posses that survived the earlier ones, so its
+        # denominator is not twelve and can be very small. A hit rate off one posse sitting in the
+        # same column as one off twelve is the most misleading thing this table could print --
+        # Module III's Act Three came out of a single run and read 83%, against a Tier III. Mark it
+        # rather than let a Keeper read it as a rate.
+        try:
+            reached = int(cleared.split("/")[1])
+        except (IndexError, ValueError):
+            reached = 12
+        mark = ""
+        if reached < THIN_SAMPLE:
+            mark, thin = "&#8224;", True
+        out.append(f"    <tr><td>{label}{mark}</td><td>{tier}</td>"
+                   f"<td>{cleared.replace('/', ' of ')}</td><td>{broke.replace('/', ' of ')}</td>"
+                   f"<td>{rounds}</td><td>{ours}</td><td>{theirs}</td></tr>")
+    out.append("  </table>")
+    if thin:
+        out.append('  <p class="note">&#8224; So few posses got this far that the rates on this row '
+                   'are a handful of fights rather than a rate. Read the count; treat the '
+                   'percentages as an anecdote.</p>')
+    return "\n".join(out)
+
+
 ROMAN = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
 
 

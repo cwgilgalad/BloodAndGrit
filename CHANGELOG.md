@@ -8,6 +8,52 @@ Desktop\Git repos.)
 
 ---
 
+- **Modules I & II v1.1 · Module III v1.2 — the night's cost is generated, and something reads the
+  harness at last (2026-08-16).**
+  Every module carries a *What the Night Costs* page: twelve posses run end to end through its three
+  acts on the real rules library, printed as a table. Those tables were typed by hand off a
+  `PLAYTEST.md` written on 2026-08-09. Then v1.40.0 taught the engine Kickback, Volley, the range
+  increment and the rest of Ch. XI's circumstance arithmetic — and the harness's `BestWeapon` picks
+  the hardest-hitting thing in a Calling's kit, which for the Preacher is a Double-Barrel, *Scatter
+  10 ft, Kickback, Fatal d12*. Every fight in all three modules moved. Three shipped books went on
+  printing figures the engine no longer produces.
+
+  **`modules_common.night_costs()` reads `PLAYTEST.md` and emits the table.** A module hands it the
+  row labels and nothing else; the counts, the rounds and the two hit rates come out of the file the
+  harness wrote. That is `statblock()` reading `creatures.json`, one artifact over: a number the book
+  prints is a number the engine produced, or the build has nowhere to get it from.
+
+  **A fight nobody reached gets a dagger.** Module I's Nightwalker was fought twice in twelve runs
+  and the thing at the bottom of the shaft once, and a percentage off one fight sets in the same
+  type as a percentage off twelve. Any row whose denominator is under three now carries a footnote
+  saying to read the count and treat the rate as an anecdote.
+
+  The prose around the tables had drifted with them, and some of it was wrong before it drifted.
+  Module II told the Keeper *"Fifteen per cent, against seventy-three"* where the row now reads
+  twenty and seventy-two, and printed *"Two rounds of that is the whole fight"* twice in a row —
+  that duplication shipped in v1.0 and nothing has ever read these pages against anything. Module
+  III had the posse shooting better in the nave *"(47 per cent against 43)"* and clearing it half as
+  often; it is 61 against 41, and one clear in eight where the dooryard cleared two in three.
+
+  **`audit_names.py` reads the playtest harness now** — the gap the v1.40.0 entry named and left
+  open. Every adventure in `GK/playtest/Adventures.cs` must carry a slug that matches a shipped
+  module file and a title that matches that module's own, and `PLAYTEST.md`, which ships inside
+  `BloodAndGrit-Modules.zip`, must name all three by those titles. It catches the retired *"The
+  Reckoning of the Wells"* on both counts. It also catches the thing that went wrong twice during
+  this session: the harness writes the file only when it is given `--out`, so a run that looks like
+  a regeneration prints to the terminal and leaves `PLAYTEST.md` exactly as it was.
+
+  And it holds the repo's own docs to the same standard, which found one more survivor of that
+  rename immediately. `README.md` told a stranger the three files are
+  `module-salt-at-coffin-wells.html`, `module-a-face-not-his-own.html` and
+  **`module-the-reckoning-of-the-wells.html`** — a path that has never existed on disk, sitting in
+  the first document anybody reads. Any `module-*.html` named in `README.md`, `CLAUDE.md` or
+  `audits/README.md` must now be a file a builder actually writes.
+
+  One fix in the harness itself. `BestWeapon` returned `null` when a Calling's kit held no weapon it
+  recognised, and the fallback should be Fists / Boots — a weapon the arms table did not carry at
+  all until v1.40.0 went looking for it.
+
 - **GritKeeper v1.40.1 — the spread reaches the table (2026-08-16).**
   v1.40.0 taught the engine where a Scatter weapon's splash falls and then routed it nowhere, so a
   shotgun still hit exactly one row. That is the fault the whole of v1.40.0 was about, shipped inside
