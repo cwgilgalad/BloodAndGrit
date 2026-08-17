@@ -462,7 +462,10 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   unreachable from a press and is not a refusal. Both were principled rules rather than an exemption
   list, deliberately: `mapPanel.Model` looks identical to the compiler and *is* a real refusal a
   Keeper needs told, so an exemption list would have suppressed it too.
-  Currently 134 buttons, 121 refusal-checked handlers, 20 dialogs, 23 access keys. (It was 132 until v1.32.0 turned the Tracker's
+  Currently 135 buttons, 121 refusal-checked handlers, 24 dialogs, 23 access keys — measured
+  2026-08-16, and it had drifted from a typed 134/20, which is this file failing the very rule the
+  app is held to (*counts that appear in prose must be derived*). Read the numbers off
+  `audits/audit_ui.py` before quoting them. (It was 132 until v1.32.0 turned the Tracker's
   ＋ Turn glass button into a `CheckBox` toggle — a drop of one here means a `Btn` became something
   else, so check that before assuming a control went missing. It went to 134 in v1.33.0 when the
   tour callout's three buttons were rebuilt on `MainForm.Btn` and `TourBtn` was registered in

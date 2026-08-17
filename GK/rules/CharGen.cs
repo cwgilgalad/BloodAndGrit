@@ -258,6 +258,21 @@ public static class CharGen
          : hedgeMagic ? D.signs.Where(x => x.list == "common" && x.rank == 1).ToList()
          : new();
 
+    /// <summary>Does this Calling work anything at all, at any level it can reach? A Gunhand knows
+    /// no Signs and no Miracles at 1st and still knows none at 10th, and that is the rule rather
+    /// than a gap in their sheet — so a screen offering "what do they work?" has to be able to tell
+    /// a soul who works nothing from a soul who has simply not learned one yet, and say which.
+    /// <para>Reads the CALLING's lists rather than the soul's known names, which is the whole point:
+    /// a Preacher with an empty <c>MiraclesKnown</c> is a different sentence from a Gunhand with
+    /// one. <em>Hedge Magic</em> is deliberately excluded — the Edge opens the shallow end for a
+    /// soul who takes it, and this question is about the Calling.</para></summary>
+    public static bool CallingWorksNothing(string calling)
+    {
+        var cal = D?.callings?.Find(c => c.name == calling);
+        if (cal == null) return false;                 // unknown Calling: say nothing rather than guess
+        return SignsFor(cal, 10).Count == 0 && MiraclesFor(cal, 10).Count == 0;
+    }
+
     // ---- armor (Player's Book Ch. X, "On Armor") ----
 
     /// <summary>What a soul is actually wearing, read off the gear they ended up with. The book

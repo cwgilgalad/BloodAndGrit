@@ -423,30 +423,40 @@ public partial class MainForm
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
         encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {Rules.BudgetVerdict(spend, budget)}";
         encVerdict.ForeColor = BudgetColor(spend, budget);
+        // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
+        int lvl = (int)encLevel.Value;
+        Tip.SetToolTip(encLevel, Rules.JuniorForTier(lvl)
+            ? $"Sets each creature's role and cost against the posse.\r\n"
+            + $"At level {lvl} the posse stands at Tier {Rules.Roman(Rules.PartyTier(lvl))} because Ch. IV rounds "
+            + $"half the party's level TOWARD danger — so an even foe here is the Tier the Bestiary "
+            + $"reserves for level {lvl + 1}, and the posse is the junior half of its range."
+            : "Sets each creature's role and cost against the posse");
         encSpend = spend; encBudget = budget;
         encBar?.Invalidate();
     }
 
     /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can
-    /// never disagree. Green ONLY at exactly budget — that is the balanced fight, and it should be
-    /// the one reading on this tab you can spot without reading. Red the moment it goes over, at
-    /// any depth; the words are what say how far over.</summary>
+    /// never disagree. Green at STANDARD — the fight the chapter says the party should win bloodied,
+    /// and the one reading on this tab you should be able to spot without reading it. Red from
+    /// DEADLY on, which is where Ch. IV starts saying somebody may not walk away; the words are what
+    /// say how far past. HARD is deliberately neither — a hard fight is a thing a Keeper builds on
+    /// purpose, and colouring it as a warning would train the eye to ignore the warning.</summary>
     public static Color BudgetColor(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
     {
-        Rules.Weight.Exact    => Verdigris,   // perfectly balanced
-        Rules.Weight.Over     => Blood,
-        Rules.Weight.WellOver => Blood,
-        _                     => Ink,         // empty or under — safe, and not worth a color
+        Rules.Weight.Standard => Verdigris,   // the budget spent — win bloodied
+        Rules.Weight.Deadly   => Blood,
+        Rules.Weight.Beyond   => Blood,
+        _                     => Ink,         // empty, easy or hard — not worth a color
     };
 
-    /// <summary>The same reading, as a solid fill. Under budget takes a muted tan rather than the
+    /// <summary>The same reading, as a solid fill. Everything quiet takes a muted tan rather than the
     /// text's Ink: a bar filled with near-black weighs heavier on the eye than the red one beside
-    /// it, which would make the safe state look like the loud one. Only over budget gets to shout.</summary>
+    /// it, which would make the safe state look like the loud one. Only deadly gets to shout.</summary>
     public static Color BudgetFill(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
     {
-        Rules.Weight.Exact    => Verdigris,
-        Rules.Weight.Over     => Blood,
-        Rules.Weight.WellOver => Blood,
+        Rules.Weight.Standard => Verdigris,
+        Rules.Weight.Deadly   => Blood,
+        Rules.Weight.Beyond   => Blood,
         _                     => Color.FromArgb(176, 163, 138),
     };
 
@@ -3338,9 +3348,19 @@ public partial class MainForm
             what.SelectedIndex = 0;
 
             var soul = SoulOf(worker);
+            // An empty list is the commonest thing this dialog shows — four of the six pregens work
+            // nothing, correctly — and it used to show it as a bare "— something else —" over
+            // nothing, which reads as the app having lost the soul's Signs. Say which empty it is:
+            // a Calling that works none, or one that has simply not learned one yet.
             whoNote.Text = soul?.Sheet is CharacterSheet sh
-                ? $"{sh.Calling}, level {sh.Level} — {options.Count(o => o.Kind == "Sign")} Signs, "
-                  + $"{options.Count(o => o.Kind == "Miracle")} Miracles known"
+                ? options.Count > 0
+                    ? $"{sh.Calling}, level {sh.Level} — {options.Count(o => o.Kind == "Sign")} Signs, "
+                      + $"{options.Count(o => o.Kind == "Miracle")} Miracles known"
+                    : CharGen.CallingWorksNothing(sh.Calling)
+                        ? $"{sh.Calling}, level {sh.Level} — works no Signs and no Miracles at any level. "
+                          + "That is the Calling, not a gap; name anything else they do by hand below."
+                        : $"{sh.Calling}, level {sh.Level} — knows none yet. The Calling works them and "
+                          + "this soul has not learned one; name what they do by hand below."
                 : soul != null ? "no sheet on this soul — name what they work by hand"
                 : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
                 : "an ad-hoc combatant — name what they work by hand";
@@ -4379,12 +4399,23 @@ public partial class MainForm
             }));
 
         RH(r, "The Encounter Budget");
-        RTbl(r, new[] { 34, 6 }, new[] { "The fight", "Cost" },
+        RTbl(r, new[] { 34, 6 }, new[] { "What it costs", "Cost" },
             new[] { "The budget, per player character", "4" },
             new[] { "An even-Tier foe",                 "4" },
             new[] { "A mook (a Tier or two down)",      "1" },
             new[] { "A standout (a Tier up)",           "8" });
+        // Rendered from Rules.BudgetFights, which is also what the Encounter tab's verdict line
+        // reads. The leaf and the tab printed different scales until v1.41.0 — the leaf gave the
+        // Bestiary's one-liner and the tab called the exact budget "a fair, hard fight", which is
+        // Ch. IV's word for half again over it.
+        RTbl(r, new[] { 12, 18, 40 }, new[] { "The fight", "Spend", "What Ch. IV promises" },
+            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? "—" }));
         RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
+        RI(r, "At double, the chapter does not only price it — it says to tell the fiction so, with a "
+             + "sight, an omen, a dead man already on the ground, before the players commit.");
+        RI(r, "Half the party's level is rounded TOWARD danger, so at an odd level the posse is the "
+             + "junior half of the Tier it is matched against — the Bestiary's line reads the same "
+             + "rule from the creature's end: a fair, hard fight for a party of twice its Tier.");
 
         RH(r, "The Safe-Table Rule — Sign & Spoor");
         RT(r, "A horror two or more Tiers over the posse does not arrive in the flesh. It arrives as "
