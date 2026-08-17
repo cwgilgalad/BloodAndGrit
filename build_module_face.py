@@ -6,11 +6,11 @@
 # paragraph keyed: eight souls under one roof, a tell that a posse in a hurry will shoot past, and
 # a Tier III thing the safe-table rule does NOT refuse — which makes it the opposite lesson from
 # module I. Every number under "What the Night Costs" came out of GK/playtest.
-from modules_common import (shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.0"
+VERSION = "1.1"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -508,15 +508,12 @@ COST = '''
   and no Sign or Miracle worked, and once <em>tended</em>, with the posse back to half Blood between
   acts.</p>
 
-  <table class="playtest">
-    <tr><th>Fight</th><th>Tier</th><th>Cleared</th><th>Broke off</th><th>Rounds</th><th>Posse hits</th><th>Its hits</th></tr>
-    <tr><td>The tack room (Act Two)</td><td>II</td><td>10 of 12</td><td>2 of 12</td><td>2.3</td><td>43%</td><td>53%</td></tr>
-    <tr><td>The yard at first light (Act Three)</td><td>III</td><td>0 of 10</td><td>10 of 10</td><td>1.5</td><td>15%</td><td>73%</td></tr>
-  </table>
+''' + night_costs("A Face Not His Own",
+      ["The tack room (Act Two)", "The yard at first light (Act Three)"]) + '''
 
   <p>Nobody died. Across twelve cold runs the posse was never put down to the last soul, not
   once, and they never finished the night on their feet either. Twelve out of twelve broke
-  off and rode out. Souls down at the end averaged 2.3 of 4, and Nerve finished at 49.3 of a
+  off and rode out. Souls down at the end averaged 2.2 of 4, and Nerve finished at 49.6 of a
   possible 71, with one run in twelve seeing a soul break outright.</p>
 
   <p>That is a very particular shape and it is the shape this module was built for. The Act Two
@@ -525,22 +522,21 @@ COST = '''
   between the two rows is not attrition.</p>
 
   ''' + keeper(
-    "<p><strong>Fifteen per cent, against seventy-three.</strong> That is the Act Three row in six "
-    "words. Four souls trading Strikes at rising MAP against Defense 17 land about one blow in "
-    "seven, and it hits back nearly three times in four. Two rounds of that is the whole fight. "
-    "Two rounds of that is the whole fight. Bring nothing to the yard, and the yard is a "
-    "countdown.</p>"
+    "<p><strong>Twenty per cent, against seventy-two.</strong> That is the Act Three row, whole. "
+    "Four souls trading Strikes at rising MAP against Defense 17 land one blow in five, and it "
+    "hits back nearly three times in four. A round and a half of that is the entire fight. Bring "
+    "nothing to the yard, and the yard is a countdown.</p>"
     "<p>Now put one prepared thing in their hands. A mirror off the bunk-room wall costs it its "
     "first round. A line of ash and bone takes the yard away from it. Silver or prayed-over shot "
-    "moves that fifteen per cent to something that matters. None of those is a house rule: "
+    "moves that twenty per cent to something that matters. None of those is a house rule: "
     "all three are printed in the creature's own entry, three pages back.</p>") + '''
 
   <h2 id="cost-compare">Against Module I</h2>
   <p>The same harness ran <em>The Salt at Coffin Wells</em> at 1st level and this at 3rd, and the two
   Tier III fights failed differently. The Nightwalker was never beaten and never could be: it is two
   Tiers over the posse and the safe-table rule says so out loud. The Skin-Walker is one Tier over,
-  the app seats it without complaint, and the engine still cleared it zero times in twelve;
-  but every one of those twelve was a posse that only shot at it.</p>
+  the app seats it without complaint, and the engine never once cleared it;
+  but every posse that reached the yard was a posse that only shot at it.</p>
 
   <p><strong>Module I's lesson is that some things are not fights. This one's is narrower and
   harder: some things are fights you lose unless you did something first.</strong></p>

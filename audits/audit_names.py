@@ -39,6 +39,23 @@ MODULES = [
     ("III", "module-what-the-water-answers.html"),
 ]
 
+# The playtest harness names the same three adventures a second time, in C#, and PLAYTEST.md is
+# what it prints. Both ship: PLAYTEST.md goes inside BloodAndGrit-Modules.zip, so a name that is
+# wrong here is wrong in a stranger's download.
+HARNESS = "GK/playtest/Adventures.cs"
+PLAYTEST = "PLAYTEST.md"
+# `public static readonly Adventure Wells = new("what-the-water-answers", "What the Water Answers",`
+ADVENTURE = re.compile(
+    r'readonly\s+Adventure\s+(\w+)\s*=\s*new\(\s*"([^"]+)"\s*,\s*"([^"]+)"', re.S
+)
+H2 = re.compile(r"^##\s+(.+?)\s*$", re.M)
+
+# The docs a stranger reads first. A module filename written into either of them is a claim about
+# a file on disk, and a retitled module silently makes it false — README.md pointed at
+# `module-the-reckoning-of-the-wells.html` for a week after that name was retired.
+DOCS = ["README.md", "CLAUDE.md", "audits/README.md"]
+MODULE_FILE = re.compile(r"module-[a-z0-9-]+\.html")
+
 # Words that carry no identity. Two titles sharing one have not collided — "the" is not what makes
 # "The Long Debt" and "The Cold Water" different titles. Mirrors Namer.Bland in GK/rules/Names.cs;
 # the two lists answer the same question on either side of the language boundary.
@@ -221,6 +238,75 @@ def main():
         print("  country; a recurring PERSON or TOWN is two modules using one name.")
     else:
         print("  ok       no proper noun appears in two modules")
+
+    # ---- the playtest harness, and what it prints ----
+    # The fault this catches, in full, because it already happened: Module III was retitled in
+    # modules-v1.1 and GK/playtest/Adventures.cs kept calling it "The Reckoning of the Wells" for
+    # six days. The harness prints PLAYTEST.md, PLAYTEST.md ships inside BloodAndGrit-Modules.zip,
+    # and so the dead title went out in the same download as the module that no longer had it.
+    # Every check in this repo looked straight past it: the auditors above read the BUILT modules
+    # and names.json, the smoke suite reads the rules library, and nothing at all reads the
+    # harness. A name written down twice needs a check that reads both copies — the same shape as
+    # the arms table, and as the version cascade.
+    print("\nThe playtest harness")
+    adv_path = HERE / HARNESS
+    if not adv_path.exists():
+        print(f"  MISSING  {HARNESS}")
+        hard += 1
+    else:
+        found = ADVENTURE.findall(adv_path.read_text(encoding="utf-8"))
+        by_slug = {slug: (field, title) for field, slug, title in found}
+        if len(found) != len(MODULES):
+            print(f"  COUNT    {HARNESS} declares {len(found)} adventures, {len(MODULES)} modules ship")
+            hard += 1
+        for num, fname in MODULES:
+            slug = fname[len("module-"):-len(".html")]      # the file IS named for the slug
+            if slug not in by_slug:
+                print(f"  MISSING  no adventure with slug '{slug}' (module {num}, {fname})")
+                hard += 1
+                continue
+            field, title = by_slug[slug]
+            if title != seen[num]["title"]:
+                print(f"  STALE    Adventures.{field} says '{title}'")
+                print(f"           module {num} ships as '{seen[num]['title']}'")
+                hard += 1
+            else:
+                print(f"  ok       Adventures.{field:<6} {title}")
+
+    play_path = HERE / PLAYTEST
+    if not play_path.exists():
+        print(f"  MISSING  {PLAYTEST} — regenerate it: dotnet run --project GK/playtest -- --out PLAYTEST.md")
+        hard += 1
+    else:
+        # The harness only writes this file when it is given --out, so a run that looks like it
+        # regenerated PLAYTEST.md may have printed to the terminal and left the file alone. That
+        # is a silent no-op, and this is what notices.
+        heads = {h.strip() for h in H2.findall(play_path.read_text(encoding="utf-8"))}
+        absent = [f"{num}: {seen[num]['title']}" for num, _ in MODULES if seen[num]["title"] not in heads]
+        if absent:
+            for a in absent:
+                print(f"  STALE    {PLAYTEST} has no section for module {a}")
+            print(f"           regenerate: dotnet run --project GK/playtest -- --out {PLAYTEST}")
+            hard += len(absent)
+        else:
+            print(f"  ok       {PLAYTEST} names all three by their shipped titles")
+
+    # ---- module filenames written into the repo's own docs ----
+    shipped = {fname for _, fname in MODULES}
+    print("\nModule filenames cited in the docs")
+    cited = dead = 0
+    for doc in DOCS:
+        dpath = HERE / doc
+        if not dpath.exists():
+            continue
+        for name in sorted(set(MODULE_FILE.findall(dpath.read_text(encoding="utf-8")))):
+            cited += 1
+            if name not in shipped:
+                print(f"  DEAD     {doc} names {name}, which no module builds")
+                dead += 1
+    hard += dead
+    if not dead:
+        print(f"  ok       {cited} filename(s) across {len(DOCS)} docs, all of them real")
 
     # ---- the stock's own record of what has been spent ----
     # GK/rules/Data/names.json carries a "spent" list — the words already on published work, which
