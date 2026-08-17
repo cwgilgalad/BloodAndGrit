@@ -20,7 +20,7 @@ files now, and which ones run is a decision somebody makes.
 
 | File | Checks | Cost | Needs |
 |---|---|---|---|
-| `audit_names.py` | No two modules share a name. Hard-fails on a distinctive word shared between two titles **or a shared title grammar**; lists shared proper nouns for a human to judge; cross-checks `names.json`'s spent-word list against the shipped titles. | instant | built modules |
+| `audit_names.py` | No two modules share a name. Hard-fails on a distinctive word shared between two titles **or a shared title grammar**; lists shared proper nouns for a human to judge; cross-checks `names.json`'s spent-word list against the shipped titles; holds `GK/playtest/Adventures.cs` and `PLAYTEST.md` to the titles the modules actually ship under, and every `module-*.html` named in the repo's docs to a file that exists. | instant | built modules, `Adventures.cs`, `PLAYTEST.md`, `README.md`, `CLAUDE.md` |
 | `verify_release.py` | One version everywhere (csproj ↔ CHANGELOG ↔ README ↔ CLAUDE.md), and every GritKeeper version in the CHANGELOG except the newest has a `gritkeeper-vX.Y.Z` tag. `--delivered` adds the local-only check that the packaged exe carries the source's version. | instant | git tags (a shallow clone sees none) |
 | `verify_rules.py` | 697 cross-checks of the printed Player's Book against `chargen.json` against the spine formula. The guard the whole project rests on. | instant | `blood-and-grit.html` |
 | `audit_ui.py` | Every interactive control in the app is wired and tipped; every modal dialog answers Esc; nothing refuses in silence. | instant | `GK/source/*.cs` |

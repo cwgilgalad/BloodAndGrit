@@ -6,11 +6,11 @@
 # under the wells, failing one well at a time — and then stops at the mission door. Both earlier
 # modules end within sight of San Clavo and neither goes in. This one goes in, and then goes under.
 # Every number under "What the Night Costs" came out of GK/playtest.
-from modules_common import (shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.1"
+VERSION = "1.2"
 SLUG = "what-the-water-answers"
 
 H = shell(
@@ -499,21 +499,18 @@ COST = '''
   were run through all three acts on the same rules library the app runs on, with the Bestiary&rsquo;s
   numbers for every foe and the book&rsquo;s dice for every roll. The runs are seeded and reproduce.</p>
 
-  <table class="playtest">
-    <tr><th>Fight</th><th>Tier</th><th>Cleared</th><th>Broke off</th><th>Rounds</th><th>Posse hits</th><th>Its hits</th></tr>
-    <tr><td>The ones who drank first (Act One)</td><td>II</td><td>9 of 12</td><td>3 of 12</td><td>2.9</td><td>43%</td><td>57%</td></tr>
-    <tr><td>What lives in the nave (Act Two)</td><td>II</td><td>3 of 9</td><td>5 of 9</td><td>2.1</td><td>47%</td><td>53%</td></tr>
-    <tr><td>The thing at the bottom (Act Three)</td><td>III</td><td>0 of 3</td><td>2 of 3</td><td>1.0</td><td>33%</td><td>64%</td></tr>
-  </table>
+''' + night_costs("What the Water Answers",
+      ["The ones who drank first (Act One)", "What lives in the nave (Act Two)", "The thing at the bottom (Act Three)"]) + '''
 
   <p>Read the first two rows together, because they are the interesting pair. Both fights are Tier
-  II. In the second one the posse actually shoots <em>better</em> (47 per cent against 43)
-  and clears it half as often. Same tier, same party, better dice, worse outcome.</p>
+  II. In the second one the posse shoots half again as well &mdash; 61 per cent against 41 &mdash;
+  and clears it one time in eight where it cleared the first two times in three. Same tier, same
+  party, better dice, far worse outcome.</p>
 
-  <p>What changed is that the posse arrived at the nave already spent. Three quarters of the runs
-  that reached it had a soul down and none had full Blood, and the Act One fight ran nearly three
-  rounds where the nave ran two, because a shorter fight is what losing looks like at this level.
-  Nine of twelve reached the nave; three of nine got past it.</p>
+  <p>What changed is that the posse arrived at the nave already spent. The round counts say it:
+  Act One runs three rounds, and the nave is finished inside a round and a half, which at this
+  level is what losing looks like rather than what winning looks like. Eight of twelve reached the
+  nave; one of eight got past it.</p>
 
   ''' + keeper(
     "<p><strong>This is the module's own lesson about itself.</strong> Attrition is the enemy here, "
@@ -525,8 +522,8 @@ COST = '''
     "charge exactly that and no more.</p>") + '''
 
   <h2 id="cost-night">The Night, End to End</h2>
-  <p>Zero of twelve finished the night on their feet. Ten broke off and rode out; two were put down
-  to the last soul. Souls down at the end averaged 2.8 of 4. Nerve, though, finished at 66.7 of a
+  <p>Zero of twelve finished the night on their feet. Nine broke off and rode out; three were put down
+  to the last soul. Souls down at the end averaged 2.9 of 4. Nerve, though, finished at 70.1 of a
   possible 75, and <strong>not one soul broke in twelve runs</strong>: the lowest Nerve cost
   of the three modules, at the highest level, against the worst things.</p>
 

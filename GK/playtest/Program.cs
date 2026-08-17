@@ -315,7 +315,14 @@ CgWeapon BestWeapon(CharacterSheet s)
         double avg = AvgOf(w.dmg);
         if (avg > bestAvg) { bestAvg = avg; best = w; }
     }
-    return best ?? new CgWeapon { name = "fists", dmg = "1d4", traits = "", kind = "blade" };
+    // A soul who bought no weapon still gets a turn, and the book has a row for exactly that —
+    // Fists / Boots, 1d3 and Agile. This used to invent a "fists 1d4" with no traits, which was a
+    // harder punch than the book prints and one that did not soften the MAP; it was invented because
+    // Fists / Boots was missing from chargen.json until the arms table was audited in v1.40.0. It
+    // matters more than it looks: the Mountain Man's buyPlan carries no gun and no blade, so this
+    // fallback is what a quarter of every posse in this harness fights with.
+    return best ?? CharGen.D?.weapons?.FirstOrDefault(w => w.name == "Fists / Boots")
+                ?? new CgWeapon { name = "Fists / Boots", dmg = "1d3", traits = "Agile", kind = "melee" };
 }
 
 // The mean of a damage expression, computed rather than rolled. Rolling to compare two weapons
