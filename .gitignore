@@ -67,6 +67,15 @@ startup-error.txt
 DESIGN-online-play.md
 ONLINE-PLAY-BRIEF.md
 editorial-denials.md
+#   * the session handoffs and audit records. Same class: what was found and why a thing was done
+#     the way it was, written for the next session rather than for a reader of the repo. Every one
+#     of them has a durable half that IS published — the changes in CHANGELOG.md, the decisions in
+#     GK/CLAUDE.md. They are listed here rather than merely left untracked because `git add -A`
+#     sweeps an untracked file in without asking, and doing exactly that on 2026-08-16 staged
+#     three of them plus a tree of build artifacts.
+HANDOFF-*.md
+AUDIT-*.md
+_combatlab/
 #   * a dead one-shot: add_index.py baked the v2.9 Index into a source file that no longer exists
 #     (player-src.html, retired 2026-07-18) and has been marked "do not re-run" ever since.
 add_index.py

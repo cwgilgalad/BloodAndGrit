@@ -8,6 +8,55 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.41.0 — the Encounter tab builds the four fights Ch. IV names (2026-08-16).**
+  The chapter prices a fight on a scale: *"Spend the budget for a **standard** fight the party
+  should win bloodied. Spend half for an **easy** one; spend half again over for a **hard** one;
+  double it for a **deadly** one someone may not walk away from — and tell the fiction so, with a
+  sight, an omen, a dead man already on the ground, before the players commit."* The app had five
+  bands of its own invention on top of that, and they were wrong in three separate ways.
+
+  It called the exact budget **"a fair, hard fight"** — the book's word for half again over it — and
+  told a Keeper who had spent half that they had built "a fight they should win", which is what the
+  chapter says about the FULL budget. Its over-budget boundary was a flat `budget + 4`: 1.5× for a
+  two-hand posse and 1.17× for a six, so a band meant a different fight depending on how many souls
+  were at the table. And the deadly band never passed on the instruction that comes with it, which
+  is the only line in the whole rule addressed to the Keeper rather than to the arithmetic.
+
+  **`Rules.BudgetFights` is the scale, once**, and the Encounter tab's verdict and the Reference
+  deck's *Long Odds* leaf both render from it — the same discipline `BeatActions` put on the Iron
+  Code leaf in v1.40.0, after that leaf spent six releases printing actions the app could not spend.
+  The leaf had been showing the Bestiary's one-liner while the tab showed the app's invention;
+  a Keeper reading the rule on one screen and building the fight on the other was reading two
+  different scales. Green now means STANDARD. Hard is deliberately uncoloured — a hard fight is
+  something a Keeper builds on purpose, and colouring it as a warning teaches the eye to skip the
+  warning.
+
+  **"Even foe" was two different nights printed as one.** Ch. IV takes half the party's level
+  *rounded toward danger*, so at an odd level the posse is matched against the Tier the Bestiary
+  reserves for the level above them — and both books are right. Measured on the engine, that
+  rounding is worth about a whole creature at every Tier: four souls at 2nd level take three Tier I
+  things and win nine times in ten, the same four at 1st take two and lose half the fights at three.
+  The role column says *"Even foe — posse is junior"* and the level spinner's tooltip says why.
+
+  **The measurement itself is the other half of this release, and it is not comfortable reading.**
+  A posse of four run against the bare Threat-by-Tier row, 200 seeded fights a cell, driven the
+  Keeper's way rather than `GK/playtest`'s ideal one: **spending the budget exactly wipes the posse
+  76–100% of the time at every level from 1 to 6.** "Win bloodied" actually falls at about two
+  points per character. That is a question for the books rather than a thing to quietly retune in
+  the app, and it is written up in `AUDIT-encounter-budget.md` — the app ships saying exactly what
+  Ch. IV says.
+
+  One thing the sweep settled on the way past: **Ch. XI's Aim earns its Beat.** Two aimed Strikes
+  at +2 beat three at rising MAP on hit rate (43% against 27%) and on outcome, at every level
+  measured. The engine has only been able to spend that Beat since v1.40.0.
+
+  **And the Work dialog says which kind of empty it is showing.** Four of the six pregens work no
+  Signs and no Miracles, which is correct and is the commonest thing that dialog has to display —
+  and it displayed it as a bare *"— something else —"* over nothing, which from the far side of the
+  table is indistinguishable from the app having lost a soul's Signs. `CharGen.CallingWorksNothing`
+  reads the Calling's own lists rather than the soul's known names, so a Gunhand who works none at
+  any level and a Preacher who has not learned one yet get different sentences.
+
 - **Modules I & II v1.1 · Module III v1.2 — the night's cost is generated, and something reads the
   harness at last (2026-08-16).**
   Every module carries a *What the Night Costs* page: twelve posses run end to end through its three

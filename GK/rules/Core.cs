@@ -2172,31 +2172,88 @@ public static class Rules
         int pt = PartyTier(partyLevel);
         if (creatureTier >= pt + 2) return (8, "BEYOND the party — sign & spoor only (safe-table rule)", true);
         if (creatureTier >  pt)     return (8, "Standout", false);
-        if (creatureTier == pt)     return (4, "Even foe", false);
+        // "Even foe" is two different nights and the app used to print it as one — see JuniorForTier.
+        if (creatureTier == pt)     return (4, JuniorForTier(partyLevel) ? "Even foe — posse is junior" : "Even foe", false);
         return (1, "Mook", false);
     }
 
-    /// How a costed encounter stands against the budget. Lives here, not in the Encounter tab, so
-    /// the words and the color the tab shows are decided in one place the smoke rig can hold to
-    /// the book's rule — spend the budget exactly and the fight is fair; overspend and you had
-    /// better mean it (Keeper's Book Ch. IV).
-    public enum Weight { Empty, Under, Exact, Over, WellOver }
+    /// <summary>How a costed encounter stands against the budget — <b>the four fights Ch. IV names,
+    /// and no others</b>. Lives here rather than in the Encounter tab so the words and the colour
+    /// are decided in one place the smoke rig can hold to the book.
+    /// <para>The chapter is explicit and it is a scale, not a threshold: <i>"Spend the budget for a
+    /// STANDARD fight the party should win bloodied. Spend half for an EASY one; spend half again
+    /// over for a HARD one; double it for a DEADLY one someone may not walk away from."</i> Four
+    /// points — ½×, 1×, 1½×, 2× — so a spend belongs to whichever it is nearest, and the boundaries
+    /// fall at the midpoints. Past double is off the end of the book's own scale, and the Bestiary
+    /// supplies the only sentence there is for it: <i>"overspend and you had better mean it."</i>
+    /// </para>
+    /// <para>Until v1.41.0 this had five bands of the app's own invention. It called the exact
+    /// budget "a fair, hard fight" — the book's STANDARD wearing the book's word for 1½× — told a
+    /// Keeper who had spent half that they had built "a fight they should win" when the book calls
+    /// the FULL budget that, and drew its Over boundary at a flat <c>budget + 4</c>, which is 1.5×
+    /// for a two-hand posse and 1.17× for a six. A band that means a different fight depending on
+    /// how many souls are at the table is not a band.</para></summary>
+    public enum Weight { Empty, Easy, Standard, Hard, Deadly, Beyond }
 
-    public static Weight BudgetBand(int spend, int budget) =>
-        spend <= 0            ? Weight.Empty :
-        spend <  budget       ? Weight.Under :
-        spend == budget       ? Weight.Exact :
-        spend <= budget + 4   ? Weight.Over :
-                                Weight.WellOver;
-
-    public static string BudgetVerdict(int spend, int budget) => BudgetBand(spend, budget) switch
+    /// <summary>Which of Ch. IV's four fights a spend has built. Integer arithmetic throughout:
+    /// the midpoints are ¾, 1¼, 1¾ and 2¼ of the budget, written ×4 to keep it exact.</summary>
+    public static Weight BudgetBand(int spend, int budget)
     {
-        Weight.Empty    => "Empty — add creatures above, or send them over from the Bestiary tab.",
-        Weight.Under    => "Under budget — a fight they should win.",
-        Weight.Exact    => "ON BUDGET — a fair, hard fight.",
-        Weight.Over     => "Over budget — mean. Somebody bleeds.",
-        _               => "WELL over budget — you had better mean it.",
+        if (spend <= 0) return Weight.Empty;
+        if (budget <= 0) return Weight.Beyond;      // souls with no budget: anything at all is past it
+        if (spend * 4 <= budget * 3) return Weight.Easy;
+        if (spend * 4 <= budget * 5) return Weight.Standard;
+        if (spend * 4 <= budget * 7) return Weight.Hard;
+        if (spend * 4 <= budget * 9) return Weight.Deadly;
+        return Weight.Beyond;
+    }
+
+    /// <summary>One of Ch. IV's four fights: what it is called, what it costs, and what the chapter
+    /// promises of it — <c>null</c> where the chapter promises nothing, because it glosses only two
+    /// of the four and inventing the other two would put words in the book's mouth.</summary>
+    public record BudgetFight(Weight Band, string Name, string Spend, string Promise);
+
+    /// <summary>The scale, once. The Encounter tab's verdict and the Reference deck's Long Odds leaf
+    /// both render from this, so the screen a Keeper builds a fight on and the screen they read the
+    /// rule off cannot print different scales — the same discipline <see cref="BeatActions"/> put on
+    /// the Iron Code leaf in v1.40.0, and for the same reason.</summary>
+    public static readonly BudgetFight[] BudgetFights =
+    {
+        new(Weight.Easy,     "Easy",     "half the budget", null),
+        new(Weight.Standard, "Standard", "the budget",      "the party should win bloodied"),
+        new(Weight.Hard,     "Hard",     "half again over", null),
+        new(Weight.Deadly,   "Deadly",   "double",          "someone may not walk away"),
     };
+
+    /// <summary>The band in the book's own words, with the Keeper's instruction attached to the one
+    /// band that carries one — Ch. IV does not merely price a deadly fight, it says to <i>tell the
+    /// fiction so, with a sight, an omen, a dead man already on the ground, before the players
+    /// commit</i>. A warning the app knows to give and does not give is the same fault as a Beat
+    /// action it prints and cannot spend.</summary>
+    public static string BudgetVerdict(int spend, int budget)
+    {
+        var band = BudgetBand(spend, budget);
+        if (band == Weight.Empty) return "Empty — add creatures above, or send them over from the Bestiary tab.";
+        if (band == Weight.Beyond) return "PAST DEADLY — over twice the budget. You had better mean it.";
+        var f = BudgetFights.First(x => x.Band == band);
+        string line = $"{f.Name.ToUpperInvariant()} — {f.Spend}"
+                    + (f.Promise == null ? "." : $": {f.Promise}.");
+        return band == Weight.Deadly
+            ? line + " Show them a sight, an omen, a dead man already on the ground, before they commit."
+            : line;
+    }
+
+    /// <summary>Is the posse the junior half of its Tier's range? Ch. IV prices a fight off "half
+    /// the party's level, <b>rounded toward danger</b>", which <see cref="PartyTier"/> does — so at
+    /// an odd level the party is matched against the Tier the Bestiary reserves for the level above
+    /// them ("a creature is a fair, hard fight for a party of twice its Tier in levels").
+    /// <para>Both books are right and they are not the same fight, which is what this exists to
+    /// say. Measured on the engine over 200 seeded fights a cell: a posse of four at level 2 takes
+    /// three Tier I things and wins 89% of them; the same posse at level 1 takes two and wins 92%,
+    /// and at three it wins half. One rung of level is worth a whole creature, every Tier, all the
+    /// way up. The Encounter tab says so rather than reporting "Even foe" twice and meaning two
+    /// different nights.</para></summary>
+    public static bool JuniorForTier(int partyLevel) => partyLevel > 0 && partyLevel % 2 == 1;
 }
 
 // ============================================================ DATA STORE
