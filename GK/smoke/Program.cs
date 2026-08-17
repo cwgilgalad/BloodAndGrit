@@ -1557,46 +1557,145 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 
 // ---- The budget verdict (what the Encounter tab's bar and line both read from) ----
 {
-    // The band the whole tab hangs on: exactly on budget is the balanced fight, and it is the
-    // ONLY band that reads green. Anything over reads red, however far over.
-    T("budget: nothing costed is Empty",   Rules.BudgetBand(0, 24) == Rules.Weight.Empty);
-    T("budget: under is Under",            Rules.BudgetBand(23, 24) == Rules.Weight.Under);
-    T("budget: exact is Exact",            Rules.BudgetBand(24, 24) == Rules.Weight.Exact);
-    T("budget: one over is Over",          Rules.BudgetBand(25, 24) == Rules.Weight.Over);
-    T("budget: +4 is still Over",          Rules.BudgetBand(28, 24) == Rules.Weight.Over);
-    T("budget: +5 is WellOver",            Rules.BudgetBand(29, 24) == Rules.Weight.WellOver);
+    // Ch. IV names FOUR fights and prices each as a multiple of the budget: half is easy, the
+    // budget is standard ("the party should win bloodied"), half again over is hard, double is
+    // deadly. Nothing else is a band. Until v1.41.0 the app had five of its own invention and
+    // called the exact budget "a fair, hard fight" — the book's word for 1.5x.
+    T("budget: nothing costed is Empty",     Rules.BudgetBand(0, 24) == Rules.Weight.Empty);
+    T("budget: half is Easy",                Rules.BudgetBand(12, 24) == Rules.Weight.Easy);
+    T("budget: the budget is Standard",      Rules.BudgetBand(24, 24) == Rules.Weight.Standard);
+    T("budget: half again over is Hard",     Rules.BudgetBand(36, 24) == Rules.Weight.Hard);
+    T("budget: double is Deadly",            Rules.BudgetBand(48, 24) == Rules.Weight.Deadly);
+    T("budget: past double is Beyond",       Rules.BudgetBand(60, 24) == Rules.Weight.Beyond);
 
-    // A one-soul posse (budget 4) is the tightest case — Exact must not be swallowed by the
-    // "within 4 of budget" Over band, which spans the same width.
-    T("budget: 4/4 exact on a lone soul",  Rules.BudgetBand(4, 4) == Rules.Weight.Exact);
-    T("budget: 5/4 is Over",               Rules.BudgetBand(5, 4) == Rules.Weight.Over);
-    T("budget: 9/4 is WellOver",           Rules.BudgetBand(9, 4) == Rules.Weight.WellOver);
+    // The boundaries fall at the MIDPOINTS between the named multiples — 3/4, 5/4, 7/4, 9/4 — so a
+    // spend belongs to whichever of the four it is nearest.
+    T("budget: 3/4 of budget is still Easy", Rules.BudgetBand(18, 24) == Rules.Weight.Easy);
+    T("budget: a point past 3/4 is Standard",Rules.BudgetBand(19, 24) == Rules.Weight.Standard);
+    T("budget: 5/4 is still Standard",       Rules.BudgetBand(30, 24) == Rules.Weight.Standard);
+    T("budget: a point past 5/4 is Hard",    Rules.BudgetBand(31, 24) == Rules.Weight.Hard);
+    T("budget: 9/4 is still Deadly",         Rules.BudgetBand(54, 24) == Rules.Weight.Deadly);
+    T("budget: a point past 9/4 is Beyond",  Rules.BudgetBand(55, 24) == Rules.Weight.Beyond);
 
-    // Empty wins over Exact when the posse is empty too — a budget of 0 with nothing costed is
-    // an empty tab, not a perfectly balanced fight. (The tab floors the budget at 4, but the
-    // rule shouldn't depend on the caller to keep it honest.)
+    // The band is a RATIO, and this is the whole reason the old flat "budget + 4" had to go: it
+    // made one point past the budget mean a different fight for a two-hand posse than for a six.
+    // The same fraction must read the same band at every party size.
+    for (int souls = 1; souls <= 8; souls++)
+    {
+        int b = 4 * souls;
+        if (Rules.BudgetBand(b, b) != Rules.Weight.Standard)
+            { T($"budget: {souls} souls — the budget must be Standard", false); goto doneBudget; }
+        if (Rules.BudgetBand(b * 2, b) != Rules.Weight.Deadly)
+            { T($"budget: {souls} souls — double must be Deadly", false); goto doneBudget; }
+    }
+    T("budget: the same fraction reads the same band at every party size", true);
+
+    // Empty wins when nothing is costed, whatever the budget.
     T("budget: 0 spend, 0 budget is Empty", Rules.BudgetBand(0, 0) == Rules.Weight.Empty);
     T("budget: negative spend is Empty",    Rules.BudgetBand(-3, 12) == Rules.Weight.Empty);
 
-    // Exactly one band per spend, and every band has words.
+    // Every spend lands in exactly one band, the bands only ever climb, and all of them have words.
     for (int budget = 4; budget <= 40; budget += 4)
+    {
+        var last = Rules.Weight.Empty;
         for (int spend = 0; spend <= budget * 3; spend++)
         {
             var band = Rules.BudgetBand(spend, budget);
-            if (spend > 0 && spend == budget && band != Rules.Weight.Exact)
-                { T($"budget: {spend}/{budget} must be Exact", false); goto doneBudget; }
-            if (spend > budget && band != Rules.Weight.Over && band != Rules.Weight.WellOver)
-                { T($"budget: {spend}/{budget} must read over", false); goto doneBudget; }
-            if (spend > 0 && spend < budget && band != Rules.Weight.Under)
-                { T($"budget: {spend}/{budget} must be Under", false); goto doneBudget; }
+            if (band < last)
+                { T($"budget: {spend}/{budget} went backwards down the scale", false); goto doneBudget; }
+            last = band;
             if (string.IsNullOrWhiteSpace(Rules.BudgetVerdict(spend, budget)))
                 { T($"budget: {spend}/{budget} has no words", false); goto doneBudget; }
         }
-    T("budget: every spend 0..3x budget lands in one band, with words", true);
+    }
+    T("budget: every spend 0..3x budget lands in one band, and the scale only climbs", true);
     doneBudget: ;
 
-    T("budget: the exact verdict says so", Rules.BudgetVerdict(24, 24).Contains("ON BUDGET"));
-    T("budget: the over verdict says so",  Rules.BudgetVerdict(30, 24).Contains("WELL over"));
+    T("budget: the standard verdict says so", Rules.BudgetVerdict(24, 24).Contains("STANDARD"));
+    T("budget: standard promises bloodied",   Rules.BudgetVerdict(24, 24).Contains("win bloodied"));
+    T("budget: the deadly verdict says so",   Rules.BudgetVerdict(48, 24).Contains("DEADLY"));
+
+    // Ch. IV does not only price a deadly fight, it tells the Keeper to warn the table first. A
+    // warning the app knows to give and does not give is the same fault as a Beat action it prints
+    // and cannot spend.
+    T("budget: deadly carries the warning",   Rules.BudgetVerdict(48, 24).Contains("before they commit"));
+
+    // The scale is written down ONCE. The Reference deck's Long Odds leaf renders from this same
+    // array, so leaf and tab cannot print different scales the way they did for six releases.
+    T("budget: four fights, in the book's order",
+        Rules.BudgetFights.Length == 4
+        && Rules.BudgetFights[0].Band == Rules.Weight.Easy
+        && Rules.BudgetFights[1].Band == Rules.Weight.Standard
+        && Rules.BudgetFights[2].Band == Rules.Weight.Hard
+        && Rules.BudgetFights[3].Band == Rules.Weight.Deadly);
+    T("budget: every named fight has a name and a spend",
+        Rules.BudgetFights.All(f => !string.IsNullOrWhiteSpace(f.Name) && !string.IsNullOrWhiteSpace(f.Spend)));
+    // The chapter glosses two of the four and no more; the other two carry null rather than words
+    // the book never wrote.
+    T("budget: only the two the chapter glosses carry a promise",
+        Rules.BudgetFights.Count(f => f.Promise != null) == 2);
+    T("budget: the verdict for a band renders from that band's own row",
+        Rules.BudgetFights.All(f => Rules.BudgetVerdict(0, 0) != null
+            && Rules.BudgetVerdict(f.Band == Rules.Weight.Easy ? 12
+                                 : f.Band == Rules.Weight.Standard ? 24
+                                 : f.Band == Rules.Weight.Hard ? 36 : 48, 24)
+                 .Contains(f.Name.ToUpperInvariant())));
+}
+
+// ---- Junior for the Tier: the odd level is not the same fight as the even one ----
+{
+    // Ch. IV rounds half the party's level TOWARD danger, so a posse at an odd level is matched
+    // against the Tier the Bestiary reserves for the level above them. Both books are right and
+    // they are not the same night — measured on the engine, one rung of level is worth about a
+    // whole creature at every Tier. The app used to print "Even foe" for both and mean two things.
+    T("junior: level 1 is the junior half of Tier I",  Rules.JuniorForTier(1));
+    T("junior: level 2 is not",                        !Rules.JuniorForTier(2));
+    T("junior: level 3 is the junior half of Tier II", Rules.JuniorForTier(3));
+    T("junior: level 5 is the junior half of Tier III",Rules.JuniorForTier(5));
+    T("junior: level 0 is nobody",                     !Rules.JuniorForTier(0));
+
+    // The junior levels are exactly the ones where PartyTier rounds UP past level/2.
+    for (int lvl = 1; lvl <= 10; lvl++)
+        if (Rules.JuniorForTier(lvl) != (Rules.PartyTier(lvl) * 2 > lvl))
+            { T($"junior: level {lvl} disagrees with PartyTier's rounding", false); goto doneJunior; }
+    T("junior: the flag is exactly PartyTier rounding toward danger", true);
+    doneJunior: ;
+
+    T("junior: an even foe at an odd level says the posse is junior",
+        Rules.Cost(1, 1).role.Contains("junior") && Rules.Cost(1, 1).cost == 4);
+    T("junior: an even foe at an even level says only Even foe",
+        Rules.Cost(1, 2).role == "Even foe");
+    // A mook or a standout is priced off the same Tier ladder and gains nothing from the note.
+    T("junior: a mook is still just a Mook at an odd level", Rules.Cost(1, 5).role == "Mook");
+}
+
+// ---- A Calling that works nothing works nothing at TENTH level either ----
+{
+    // The Work dialog's commonest state is an empty list — four of the six pregens work nothing,
+    // correctly — and it showed that as a bare "— something else —" over nothing, which reads from
+    // the far side of the table as the app having lost the soul's Signs. This is what lets it say
+    // WHICH empty: the Calling works none, or this soul has not learned one yet.
+    T("works-nothing: a Gunhand works nothing",     CharGen.CallingWorksNothing("Gunhand"));
+    T("works-nothing: a Sawbones works nothing",    CharGen.CallingWorksNothing("Sawbones"));
+    T("works-nothing: a Preacher works Miracles",   !CharGen.CallingWorksNothing("Preacher"));
+    T("works-nothing: a Hexer works Signs",         !CharGen.CallingWorksNothing("Hexer"));
+    // An unknown Calling says nothing rather than guessing — a wrong sentence is worse than none.
+    T("works-nothing: an unknown Calling is not claimed", !CharGen.CallingWorksNothing("Riverboat Gambler"));
+
+    // The claim is about the CALLING and must hold at every level it can reach, or the dialog would
+    // tell a 1st-level Preacher they work nothing and then contradict itself at 3rd.
+    foreach (var cal in CharGen.D.callings)
+    {
+        bool never = CharGen.CallingWorksNothing(cal.name);
+        for (int lvl = 1; lvl <= 10; lvl++)
+        {
+            bool anyHere = CharGen.SignsFor(cal, lvl).Count > 0 || CharGen.MiraclesFor(cal, lvl).Count > 0;
+            if (never && anyHere)
+                { T($"works-nothing: {cal.name} works something at level {lvl}", false); goto doneWorks; }
+        }
+    }
+    T("works-nothing: no Calling it denies works anything at any level 1-10", true);
+    doneWorks: ;
 }
 
 // ---- Recovering Nerve (the Posse tab's Steady menu) ----
