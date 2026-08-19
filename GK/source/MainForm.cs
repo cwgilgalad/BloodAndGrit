@@ -28,6 +28,13 @@ public partial class MainForm : Sheet
     // autosave an empty string over notes it had loaded but never shown.
     readonly List<string> logLines = new();   // newest first, same order as the ListBox
     string notesText = "";                    // the Keeper's ledger (Session tab)
+
+    // The survey, held here as well as on the Map tab, and for the ledger's reason: the tab is
+    // built on first visit, so a session can be loaded, autosaved and undone several times before
+    // any map control exists. The field is what a snapshot reads when the tab has never been
+    // opened; once it has, CurrentSurvey() reads the controls themselves and this is only the
+    // carrier between load and first visit.
+    Survey surveyState;
     int partyLevelHint = 2;                   // encounter-budget party level (Encounter tab)
 
     // ---- shared theme (frontier-book palette) ----
@@ -1696,7 +1703,7 @@ public partial class MainForm : Sheet
             // nowhere to keep one. Said plainly rather than silently missing — the same shape the
             // Level up line already uses for the same reason.
             MI(menu, p.Sheet != null ? "Draw a new look…" : "Draw a new look — needs a New Soul sheet",
-                () => DrawLookFor(p.Sheet, () => { RefreshSoulCard(p); posseGrid?.Refresh(); }), p.Sheet != null);
+                () => DrawLookFor(p.Sheet, () => { CaptureUndo(); RefreshSoulCard(p); posseGrid?.Refresh(); }), p.Sheet != null);
             MISep(menu);
             // The two things the game says are permanent. Written here by hand for anything the
             // engine did not produce — an old wound the character arrived with, a scar from a
@@ -1723,6 +1730,28 @@ public partial class MainForm : Sheet
                 }
                 menu.Items.Add(scars);
             }
+            // Putting a sheet BACK. Each of the three could be added and none could be taken away
+            // wholesale — see StartClean. Grouped rather than three top-level lines, because this is
+            // the destructive corner of the menu and it should read as one.
+            var trkRow = tracker.FirstOrDefault(t => t.IsSoul(p));
+            int scarN = p.Scars?.Count ?? 0;
+            bool hasLook = p.Sheet?.Look is { Any: true };
+            bool hasCond = !string.IsNullOrWhiteSpace(trkRow?.Conditions);
+            var clean = new ToolStripMenuItem("Start them clean…")
+            { Enabled = scarN > 0 || hasLook || hasCond, ToolTipText = "Put the sheet back — strike the scars, drop the look, lift the conditions" };
+            void CleanItem(string label, bool on, bool sc, bool lk, bool cd)
+            {
+                var it = new ToolStripMenuItem(Amp(label), null, (s2, e2) => StartClean(p, sc, lk, cd)) { Enabled = on };
+                clean.DropDownItems.Add(it);
+            }
+            CleanItem(scarN > 0 ? $"Strike off what they carry  ({scarN})" : "Nothing carried", scarN > 0, true, false, false);
+            CleanItem(hasLook ? "Clear their look" : "No look drawn", hasLook, false, true, false);
+            CleanItem(hasCond ? $"Lift their conditions  ({trkRow.Conditions})"
+                              : trkRow == null ? "Conditions — not on the field" : "No conditions on them",
+                      hasCond, false, false, true);
+            clean.DropDownItems.Add(new ToolStripSeparator());
+            CleanItem("All three — a clean sheet", clean.Enabled, true, true, true);
+            menu.Items.Add(clean);
             MISep(menu);
             MI(menu, $"Damage {adjAmount.Value}", () => AdjustPC(-1));
             MI(menu, $"Heal {adjAmount.Value}", () => AdjustPC(+1));
@@ -2123,7 +2152,7 @@ public partial class MainForm : Sheet
             if (c.BloodCur < wasBlood && c.Down) c.Stable = false;
             if (c.BloodCur > 0) { c.Bleed = 0; c.Stable = false; c.Upright = false; }
             trkGrid?.Refresh();
-            CheckFalling(c, wasDown, wasDead);
+            CheckFalling(c, wasDown, wasDead, Math.Max(0, wasBlood - c.BloodCur));
         }
     }
 
@@ -2570,7 +2599,8 @@ public partial class MainForm : Sheet
         PartyLevelHint = (int)(encLevel?.Value ?? partyLevelHint),
         Tracker = tracker.ToList(), Signs = signs.ToList(), Round = round,
         MapMarkers = mapMarkers.ToList(),
-        Rides = rides.ToList()
+        Rides = rides.ToList(),
+        Survey = CurrentSurvey()
     };
 
     // Write the session WHOLE or not at all. WriteAllText truncates the file and then fills
@@ -2655,6 +2685,8 @@ public partial class MainForm : Sheet
             foreach (var c in s.Clocks ?? new()) clocks.Add(c);
             notesText = s.Notes ?? "";
             if (notesBox != null) notesBox.Text = notesText;
+            surveyState = s.Survey;
+            ApplySurvey();
             foreach (var n in s.EncounterCreatures ?? new())
             { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
             if (s.PartyLevelHint >= 1)

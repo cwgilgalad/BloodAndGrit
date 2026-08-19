@@ -1,4 +1,4 @@
-﻿namespace BloodAndGritKeeper;
+namespace BloodAndGritKeeper;
 
 public enum TrkSort { InitDesc, InitAsc, NameAsc, NameDesc, BloodDesc, BloodAsc }
 
@@ -2075,7 +2075,7 @@ public partial class MainForm
             + (c.Dying ? $"  — DYING, −{c.Bleed} of {c.DeathAt}." : c.Down ? "  — PUT DOWN." : ""));
         trkGrid.Refresh();
         if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
-        CheckFalling(c, wasDown, wasDead);
+        CheckFalling(c, wasDown, wasDead, Math.Max(0, was - c.BloodCur));
     }
 
     /// <summary>Put the selected combatant back to full Blood — the ad-hoc heal a Keeper wants
@@ -2560,12 +2560,10 @@ public partial class MainForm
             // A terrible blow. The rule has been printed on the Keeper's screen since v1.4 and was
             // implemented nowhere — the app read it out and then left the Keeper to remember it in
             // the middle of a fight, which is the one moment nobody remembers anything.
-            if (SoulOf(tgt) is PartyMember hurt
-                && Rules.IsGrievous(rep.Res.AfterDR, tgt.BloodMax, rep.Res.Strike.Crit))
-                OfferGrievous(hurt, tgt, rep.Res.AfterDR, rep.Res.Strike.Crit);
+            // The test itself now lives in CheckFalling, so every door asks it — see there.
             // And the blow that put them on the ground. After the grievous offer on purpose: the
             // Lasting Injury is what the hit did, and refusing to fall is what they do about it.
-            CheckFalling(tgt, tgtWasDown, tgtWasDead);
+            CheckFalling(tgt, tgtWasDown, tgtWasDead, rep.Res.AfterDR, rep.Res.Strike.Crit);
             // What the blow's own rider does beyond the Blood — a claw that grabs, a bite that
             // sickens. Last of the three, because a condition on somebody who is already dying is
             // the least of what just happened to them.
@@ -2680,9 +2678,19 @@ public partial class MainForm
     /// Damage button, a working that deals damage — for the same reason every route onto the field
     /// goes through AddCreatureToTracker: a rule asked in three places is a rule forgotten in
     /// one.</para></summary>
-    void CheckFalling(Combatant c, bool wasDown, bool wasDead)
+    void CheckFalling(Combatant c, bool wasDown, bool wasDead, int damage = 0, bool crit = false)
     {
         if (c == null || c.IsSign) return;
+        // Ch. XI's terrible blow, asked on EVERY route that takes Blood off a soul rather than only
+        // in the Strike dialog. It lived at the Strike's call site for four releases, which meant a
+        // dice-and-books Keeper — who types the damage the physical dice rolled — never once got
+        // offered the Fortitude save, and the Lasting Injury the rule promises never happened. That
+        // is the same fault this method's own docstring was written about, one rule down.
+        // Asked BEFORE the falling below: a soul can take a terrible blow and stay on their feet,
+        // and the early returns underneath are all about being off them.
+        if (damage > 0 && !c.Dead && SoulOf(c) is PartyMember hurt
+            && Rules.IsGrievous(damage, c.BloodMax, crit))
+            OfferGrievous(hurt, c, damage, crit);
         if (c.Dead && !wasDead)
         {
             Log($"{c.Name} is killed outright — the blow carried past −{c.DeathAt}.");
@@ -3019,6 +3027,48 @@ public partial class MainForm
             + (because.Length > 0 ? $"  ({because})" : "")
             + (scar.Note.Length > 0 ? Environment.NewLine + "    " + scar.Note : ""));
         Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}. Written into the Keeper's ledger.");
+    }
+
+    /// <summary>Put a soul back to a clean sheet — strike the scars, drop the look, lift the
+    /// conditions. Any combination of the three, asked about once and done in one undo step.
+    ///
+    /// <para>Each of the three could already be undone ONE AT A TIME — a scar off the Posse menu,
+    /// a redraw of the look, conditions off the Tracker row — and none of them could be cleared.
+    /// A soul handed to a new player, a pregen reused for a second table, a sheet the Keeper wants
+    /// back at zero: all of them meant striking six scars off one at a time through six confirms,
+    /// and there was no way at all to take a look off once one had been drawn.</para>
+    ///
+    /// <para>The conditions live on the TRACKER row, not the soul, so a soul who is not on the
+    /// field has none to lift and the line says so rather than lying about what it did.</para>
+    /// </summary>
+    void StartClean(PartyMember p, bool scars, bool look, bool conds)
+    {
+        if (p == null) return;
+        var row = tracker.FirstOrDefault(t => t.IsSoul(p));
+        int nScars = scars ? p.Scars?.Count ?? 0 : 0;
+        bool hasLook = look && p.Sheet?.Look is { Any: true };
+        bool hasCond = conds && !string.IsNullOrWhiteSpace(row?.Conditions);
+        if (nScars == 0 && !hasLook && !hasCond) { Nope($"{p.Name} has nothing of that to clear."); return; }
+
+        var parts = new List<string>();
+        if (nScars > 0) parts.Add($"{nScars} scar{(nScars == 1 ? "" : "s")} — what they carry out of the bad nights");
+        if (hasLook) parts.Add("their look — build, face, dress and detail");
+        if (hasCond) parts.Add($"their conditions ({row.Conditions})");
+        if (!Confirm($"Start {p.Name} clean?" + Environment.NewLine + Environment.NewLine
+                   + "This wipes " + string.Join(Environment.NewLine + "  · ", parts.Prepend("")).TrimStart()
+                   + Environment.NewLine + Environment.NewLine
+                   + "A Lasting Injury and an Affliction are meant to last, so this is the deliberate door. Undo will put it back."))
+            return;
+
+        var did = new List<string>();
+        if (nScars > 0) { p.Scars.Clear(); did.Add($"{nScars} scar{(nScars == 1 ? "" : "s")} struck off"); }
+        if (hasLook) { p.Sheet.Look = null; did.Add("look cleared"); }
+        if (hasCond) { row.Conditions = ""; did.Add("conditions lifted"); }
+        CaptureUndo();
+        posseGrid?.Refresh(); trkGrid?.Refresh();
+        RefreshSoulCard(p);
+        Log($"{p.Name} starts clean — {string.Join(", ", did)}.");
+        ToLedger($"{p.Name} — the sheet is put back to clean: {string.Join(", ", did)}.");
     }
 
     /// <summary>Append a dated line to the Keeper's ledger on the Session tab — the app's own hand
@@ -3654,7 +3704,7 @@ public partial class MainForm
                     var before = targets.ToDictionary(t => t, t => (t.Down, t.Dead));
                     foreach (var t in targets)
                     { t.Wound(-applied, $"−{applied}"); if (SoulOf(t) is PartyMember dp) dp.BloodCur = t.BloodCur; }
-                    foreach (var t in targets) CheckFalling(t, before[t].Down, before[t].Dead);
+                    foreach (var t in targets) CheckFalling(t, before[t].Down, before[t].Dead, applied);
                     // The Hungering Hand and its kin: half of what was taken goes to the worker.
                     if (w.DrainsToWorker && applied > 0)
                     {
@@ -3850,6 +3900,13 @@ public partial class MainForm
                       + $"\n    Then:           a {Rules.SpoorClockSegments}-segment clock. Each fresh sign fills one;"
                       + "\n                    a full clock is the night it comes in the flesh.";
             }
+            // Seven grounds the MAP can draw are not in the Bestiary's Appendix yet, and their
+            // tables are the book's nearest kin pooled rather than pages the book has. Said out
+            // loud, once, with the roll: a Keeper who goes looking for "The Gulf Coast" in the
+            // Bestiary should not have to find out from its absence.
+            if (Db.GroundIsBorrowed(t))
+                extra += "\n  This ground is the app's, not the Bestiary's — its table is the book's"
+                       + "\n  nearest country pooled, so everything above is a creature the book prints.";
             Gen($"{t.ToUpper()} — {pick}{extra}");
         }
         var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -3858,7 +3915,10 @@ public partial class MainForm
         Tip.SetToolTip(terr, "Which ground the posse is on — each of the Grounds has its own table of what "
             + "is out there, so a roll on the high desert can't hand you a swamp thing.\nRoll below. What "
             + "comes up is reported with its Tier, and where it is too much for the posse to meet head-on "
-            + "you are given its sign and its clock instead: the safe-table rule, applied for you.");
+            + "you are given its sign and its clock instead: the safe-table rule, applied for you.\n"
+            + "The last seven are the app's own country — timber, bayou, canyon, shortgrass, brush, "
+            + "alkali and coast marsh. The Bestiary has no page for them yet, so each rolls on the "
+            + "book's nearest grounds pooled, and the roll says so.");
         left.Controls.Add(terr);
         left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground — the safe-table rule is applied for you"));
         left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
@@ -3880,6 +3940,33 @@ public partial class MainForm
         }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        // A read-only RichTextBox gets no menu from WinForms, so a right-click on a rolled-up town
+        // did nothing whatever — not even Copy on the selection the Keeper had just made. Everything
+        // here exists as a button below; what the menu adds is the roll going straight into the
+        // ledger, which is where most rolls are headed anyway.
+        genOut.MouseUp += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Right) return;
+            var menu = PopupMenu();
+            bool some = genOut.TextLength > 0;
+            string sel = genOut.SelectedText ?? "";
+            MI(menu, sel.Length > 0 ? "Copy what's selected" : "Copy — nothing selected",
+               () => Clipboard.SetText(sel), sel.Length > 0);
+            MI(menu, "Copy everything rolled", () =>
+            { Clipboard.SetText(genOut.Text); Log("The generator's output is on the clipboard."); }, some);
+            MISep(menu);
+            MI(menu, sel.Length > 0 ? "Write what's selected into the ledger" : "Write the last roll into the ledger",
+               () =>
+               {
+                   string what = sel.Length > 0 ? sel : genOut.Text.Split(new[] { "\n\n" + new string('\u2014', 44) }, StringSplitOptions.None)[0];
+                   ToLedger(what.Trim());
+                   Log("Written into the Keeper's ledger.");
+               }, some);
+            MISep(menu);
+            MI(menu, "Clear the output", () =>
+            { if (Confirm("Clear the generator output?")) genOut.Clear(); }, some);
+            menu.Show(genOut, e.Location);
+        };
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(Pad(genOut, 12));
         page.Controls.Add(split);
@@ -4586,6 +4673,55 @@ public partial class MainForm
         return page;
     }
 
+    /// <summary>The thread's own menu, hung on the row and on every label in it.
+    ///
+    /// <para>The four buttons on the row are a tick, an untick, a rename and a delete, which is the
+    /// whole of what a clock can do — except the two things a Keeper actually reaches for mid-scene
+    /// and had no way to ask for: run it out to the end (the thing has come due, now, not in four
+    /// clicks) and put the thread into the written ledger. Both are here, with the four.</para>
+    ///
+    /// <para>Hung on the labels as well as the panel because a FlowLayoutPanel is mostly its
+    /// children: right-clicking the pips or the name is the natural aim, and a menu that only
+    /// answers on the two pixels of gap between them is a menu nobody finds.</para></summary>
+    void ClockMenu(Control row, CampaignClock c)
+    {
+        var menu = PopupMenu();
+        menu.Opening += (s, e) =>
+        {
+            menu.Items.Clear();
+            MIHead(menu, $"{c.Name}  ({c.Filled}/{c.Segments})");
+            MI(menu, "Tick it forward", () =>
+            {
+                c.Filled = Math.Min(c.Segments, c.Filled + 1);
+                if (c.Filled == c.Segments) Log($"THREAD COMPLETE — {c.Name}. It comes due.");
+                RefreshClocks();
+            }, c.Filled < c.Segments);
+            MI(menu, "Untick a segment", () => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, c.Filled > 0);
+            MI(menu, "It comes due now — fill it", () =>
+            {
+                if (!Confirm($"Run \"{c.Name}\" out to the end? It comes due this scene.")) return;
+                c.Filled = c.Segments;
+                Log($"THREAD COMPLETE — {c.Name}. It comes due.");
+                ToLedger($"{c.Name} — the clock is full. It comes due.");
+                RefreshClocks();
+            }, c.Filled < c.Segments);
+            MI(menu, "Wind it back to nothing", () => { c.Filled = 0; RefreshClocks(); }, c.Filled > 0);
+            MISep(menu);
+            MI(menu, "Rename this thread…", () => RenameThread(c));
+            MI(menu, "Write it into the ledger", () =>
+            {
+                ToLedger($"{c.Name} — {c.Filled} of {c.Segments} segments"
+                       + (c.Filled >= c.Segments ? ", and it comes due." : "."));
+                Log($"{c.Name} written into the Keeper's ledger.");
+            });
+            MISep(menu);
+            MI(menu, "Delete this thread", () =>
+            { if (Confirm($"Delete the thread \"{c.Name}\"?")) { clocks.Remove(c); RefreshClocks(); } });
+        };
+        row.ContextMenuStrip = menu;
+        foreach (Control kid in row.Controls) if (kid is not Button) kid.ContextMenuStrip = menu;
+    }
+
     void NewThread()
     {
         using var f = new Sheet { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
@@ -4650,6 +4786,7 @@ public partial class MainForm
             row.Controls.Add(Btn("−", (s, e) => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, 34, "Untick a segment"));
             row.Controls.Add(Btn("✎", (s, e) => RenameThread(c), 34, "Rename this thread"));
             row.Controls.Add(Btn("✕", (s, e) => { if (Confirm($"Delete the thread \"{c.Name}\"?")) { clocks.Remove(c); RefreshClocks(); } }, 34, "Delete this thread"));
+            ClockMenu(row, c);
             clockPanel.Controls.Add(row);
         }
     }
