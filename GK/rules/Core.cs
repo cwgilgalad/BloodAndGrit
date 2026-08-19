@@ -984,6 +984,9 @@ public class GameSession
     public List<MapMarker> MapMarkers { get; set; } = new();
     public List<Ride> Rides { get; set; } = new();
 
+    /// <summary>The survey on the Map tab. Null when none has been drawn.</summary>
+    public Survey Survey { get; set; }
+
     /// <summary>Nothing in it at all — the only state in which handing a Keeper the Appendix D
     /// pregens is help rather than a mess.
     ///
@@ -998,11 +1001,48 @@ public class GameSession
     /// work is kept, and it is the kind of thing that is only ever wrong months later.</summary>
     [JsonIgnore]
     public bool IsUntouched =>
+        Survey?.Spec == null &&
         (Party is not { Count: > 0 }) && (Tracker is not { Count: > 0 })
         && (Signs is not { Count: > 0 }) && (Clocks is not { Count: > 0 })
         && (Rides is not { Count: > 0 }) && (MapMarkers is not { Count: > 0 })
         && (EncounterCreatures is not { Count: > 0 })
         && string.IsNullOrWhiteSpace(Notes);
+}
+
+/// <summary>A drawn survey, small enough to keep: the spec that DRAWS it, plus the Keeper's own
+/// hand laid on top.
+///
+/// <para>The geometry is deliberately NOT stored. The same spec and the same seed draw the same
+/// country — a guarantee this generator already makes and the smoke rig already asserts -- so
+/// keeping several hundred kilobytes of prims in every session file and every undo snapshot would
+/// be storing what can be recomputed. What cannot be recomputed is what the Keeper MOVED, so that
+/// is exactly what is written down.</para>
+///
+/// <para>Landmarks are keyed by NAME and secrets by index, matching how the Map tab has always
+/// held its edits: a landmark keeps its name across a redraw at a different hour, and a secret has
+/// no name to keep.</para>
+///
+/// <para>Before this existed the map was in no snapshot at all, so every CaptureUndo() the map code
+/// made captured a state that could not see it: moving a landmark, renaming a marker or recolouring
+/// one pushed an undo step that rolled the TABLE back instead, and the survey itself never survived
+/// a restart.</para></summary>
+public class Survey
+{
+    public MapSpec Spec { get; set; }
+
+    /// The seed the edits below were made against, so a survey redrawn at a new number starts clean
+    /// and one rebuilt at the same number keeps the Keeper's placements. Mirrors the Map tab's own
+    /// rule rather than restating it.
+    public int EditSeed { get; set; } = -1;
+
+    /// Landmark name -> the two floats of where the Keeper put it.
+    public Dictionary<string, float[]> Landmarks { get; set; } = new();
+
+    /// Secret index -> the two floats of where the Keeper put it.
+    public Dictionary<int, float[]> Secrets { get; set; } = new();
+
+    /// Where the town was dragged to, or null if it still sits where the survey seated it.
+    public float[] Town { get; set; }
 }
 
 // ============================================================ RULES & DICE
