@@ -30,22 +30,30 @@ public sealed class Prim
 
 public sealed class MapSpec
 {
-    public string Terrain = "The Trail & the Open Range";
-    public int Scale;                // 0 gunfight · 1 homestead · 2 county · 3 territory
-    public int Time = 1;             // 0 first light · 1 high noon · 2 dusk · 3 dead of night
-    public int Water;                // index into MapGen.Waters
-    public bool Trail = true, Rail, Town = true, Grid, Secrets;
-    public int Landmarks = 5;
-    public int Seed;
+    // Auto-properties rather than fields, and that is not decoration: a survey is written into
+    // session.json and into every undo snapshot, and System.Text.Json does not serialize fields.
+    // Source-compatible with the fields these were -- every read and every object initializer
+    // stands unchanged.
+    public string Terrain { get; set; } = "The Trail & the Open Range";
+    public int Scale { get; set; }                // 0 gunfight · 1 homestead · 2 county · 3 territory
+    public int Time { get; set; } = 1;            // 0 first light · 1 high noon · 2 dusk · 3 dead of night
+    public int Water { get; set; }                // index into MapGen.Waters
+    public bool Trail { get; set; } = true;
+    public bool Rail { get; set; }
+    public bool Town { get; set; } = true;
+    public bool Grid { get; set; }
+    public bool Secrets { get; set; }
+    public int Landmarks { get; set; } = 5;
+    public int Seed { get; set; }
     // The sky over the survey: an index into MapGen.Weathers, 0 = let the country decide.
     // Appended last so every stored Scale/Time/Water index keeps its old meaning.
-    public int Weather;
+    public int Weather { get; set; }
 
     /// <summary>What this place is called, when the Keeper already knows — the town rolled on the
     /// Generators tab, or a name typed on the Map bar. Empty means the survey names it itself. It
     /// replaces the drawn name only; the roll that would have produced one is still made, so
     /// naming a place never redraws the country under it.</summary>
-    public string PlaceName = "";
+    public string PlaceName { get; set; } = "";
 }
 
 // A named landmark the Keeper can pick up and move: its anchor (the symbol's

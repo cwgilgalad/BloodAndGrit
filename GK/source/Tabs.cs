@@ -3940,6 +3940,33 @@ public partial class MainForm
         }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        // A read-only RichTextBox gets no menu from WinForms, so a right-click on a rolled-up town
+        // did nothing whatever — not even Copy on the selection the Keeper had just made. Everything
+        // here exists as a button below; what the menu adds is the roll going straight into the
+        // ledger, which is where most rolls are headed anyway.
+        genOut.MouseUp += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Right) return;
+            var menu = PopupMenu();
+            bool some = genOut.TextLength > 0;
+            string sel = genOut.SelectedText ?? "";
+            MI(menu, sel.Length > 0 ? "Copy what's selected" : "Copy — nothing selected",
+               () => Clipboard.SetText(sel), sel.Length > 0);
+            MI(menu, "Copy everything rolled", () =>
+            { Clipboard.SetText(genOut.Text); Log("The generator's output is on the clipboard."); }, some);
+            MISep(menu);
+            MI(menu, sel.Length > 0 ? "Write what's selected into the ledger" : "Write the last roll into the ledger",
+               () =>
+               {
+                   string what = sel.Length > 0 ? sel : genOut.Text.Split(new[] { "\n\n" + new string('\u2014', 44) }, StringSplitOptions.None)[0];
+                   ToLedger(what.Trim());
+                   Log("Written into the Keeper's ledger.");
+               }, some);
+            MISep(menu);
+            MI(menu, "Clear the output", () =>
+            { if (Confirm("Clear the generator output?")) genOut.Clear(); }, some);
+            menu.Show(genOut, e.Location);
+        };
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(Pad(genOut, 12));
         page.Controls.Add(split);
@@ -4646,6 +4673,55 @@ public partial class MainForm
         return page;
     }
 
+    /// <summary>The thread's own menu, hung on the row and on every label in it.
+    ///
+    /// <para>The four buttons on the row are a tick, an untick, a rename and a delete, which is the
+    /// whole of what a clock can do — except the two things a Keeper actually reaches for mid-scene
+    /// and had no way to ask for: run it out to the end (the thing has come due, now, not in four
+    /// clicks) and put the thread into the written ledger. Both are here, with the four.</para>
+    ///
+    /// <para>Hung on the labels as well as the panel because a FlowLayoutPanel is mostly its
+    /// children: right-clicking the pips or the name is the natural aim, and a menu that only
+    /// answers on the two pixels of gap between them is a menu nobody finds.</para></summary>
+    void ClockMenu(Control row, CampaignClock c)
+    {
+        var menu = PopupMenu();
+        menu.Opening += (s, e) =>
+        {
+            menu.Items.Clear();
+            MIHead(menu, $"{c.Name}  ({c.Filled}/{c.Segments})");
+            MI(menu, "Tick it forward", () =>
+            {
+                c.Filled = Math.Min(c.Segments, c.Filled + 1);
+                if (c.Filled == c.Segments) Log($"THREAD COMPLETE — {c.Name}. It comes due.");
+                RefreshClocks();
+            }, c.Filled < c.Segments);
+            MI(menu, "Untick a segment", () => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, c.Filled > 0);
+            MI(menu, "It comes due now — fill it", () =>
+            {
+                if (!Confirm($"Run \"{c.Name}\" out to the end? It comes due this scene.")) return;
+                c.Filled = c.Segments;
+                Log($"THREAD COMPLETE — {c.Name}. It comes due.");
+                ToLedger($"{c.Name} — the clock is full. It comes due.");
+                RefreshClocks();
+            }, c.Filled < c.Segments);
+            MI(menu, "Wind it back to nothing", () => { c.Filled = 0; RefreshClocks(); }, c.Filled > 0);
+            MISep(menu);
+            MI(menu, "Rename this thread…", () => RenameThread(c));
+            MI(menu, "Write it into the ledger", () =>
+            {
+                ToLedger($"{c.Name} — {c.Filled} of {c.Segments} segments"
+                       + (c.Filled >= c.Segments ? ", and it comes due." : "."));
+                Log($"{c.Name} written into the Keeper's ledger.");
+            });
+            MISep(menu);
+            MI(menu, "Delete this thread", () =>
+            { if (Confirm($"Delete the thread \"{c.Name}\"?")) { clocks.Remove(c); RefreshClocks(); } });
+        };
+        row.ContextMenuStrip = menu;
+        foreach (Control kid in row.Controls) if (kid is not Button) kid.ContextMenuStrip = menu;
+    }
+
     void NewThread()
     {
         using var f = new Sheet { Width = 360, Height = 200, Text = "New thread", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
@@ -4710,6 +4786,7 @@ public partial class MainForm
             row.Controls.Add(Btn("−", (s, e) => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, 34, "Untick a segment"));
             row.Controls.Add(Btn("✎", (s, e) => RenameThread(c), 34, "Rename this thread"));
             row.Controls.Add(Btn("✕", (s, e) => { if (Confirm($"Delete the thread \"{c.Name}\"?")) { clocks.Remove(c); RefreshClocks(); } }, 34, "Delete this thread"));
+            ClockMenu(row, c);
             clockPanel.Controls.Add(row);
         }
     }

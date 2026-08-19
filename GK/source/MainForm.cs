@@ -28,6 +28,13 @@ public partial class MainForm : Sheet
     // autosave an empty string over notes it had loaded but never shown.
     readonly List<string> logLines = new();   // newest first, same order as the ListBox
     string notesText = "";                    // the Keeper's ledger (Session tab)
+
+    // The survey, held here as well as on the Map tab, and for the ledger's reason: the tab is
+    // built on first visit, so a session can be loaded, autosaved and undone several times before
+    // any map control exists. The field is what a snapshot reads when the tab has never been
+    // opened; once it has, CurrentSurvey() reads the controls themselves and this is only the
+    // carrier between load and first visit.
+    Survey surveyState;
     int partyLevelHint = 2;                   // encounter-budget party level (Encounter tab)
 
     // ---- shared theme (frontier-book palette) ----
@@ -2592,7 +2599,8 @@ public partial class MainForm : Sheet
         PartyLevelHint = (int)(encLevel?.Value ?? partyLevelHint),
         Tracker = tracker.ToList(), Signs = signs.ToList(), Round = round,
         MapMarkers = mapMarkers.ToList(),
-        Rides = rides.ToList()
+        Rides = rides.ToList(),
+        Survey = CurrentSurvey()
     };
 
     // Write the session WHOLE or not at all. WriteAllText truncates the file and then fills
@@ -2677,6 +2685,8 @@ public partial class MainForm : Sheet
             foreach (var c in s.Clocks ?? new()) clocks.Add(c);
             notesText = s.Notes ?? "";
             if (notesBox != null) notesBox.Text = notesText;
+            surveyState = s.Survey;
+            ApplySurvey();
             foreach (var n in s.EncounterCreatures ?? new())
             { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
             if (s.PartyLevelHint >= 1)

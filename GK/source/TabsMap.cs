@@ -304,7 +304,10 @@ public partial class MainForm
         mapHost.Controls.Add(rowView);
         mapHost.Controls.Add(rowGen);
         page.Controls.Add(mapHost);
-        MapDraw(true);
+        // A survey loaded (or undone to) before the Keeper ever opened this tab is waiting in the
+        // stash; draw THAT rather than a fresh random one, or opening the Map would silently throw
+        // away the survey the session was carrying.
+        if (surveyState?.Spec != null) ApplySurvey(); else MapDraw(true);
         return page;
     }
 
@@ -489,7 +492,55 @@ public partial class MainForm
         Log($"{what} — surveyed as map N° {(int)mapSeed.Value}.");
     }
 
-    internal void MapDraw(bool newSeed)
+    /// <summary>The survey as it stands, for a snapshot. Read off the CONTROLS when the Map tab
+    /// has been built, because they are the truth then; off the stash when it has not, because a
+    /// session can be loaded and autosaved without the tab ever being opened.</summary>
+    Survey CurrentSurvey()
+    {
+        if (mapGround == null) return surveyState;
+        var sv = new Survey { Spec = MapSpecFromUi(), EditSeed = lmEditSeed };
+        foreach (var kv in lmEdits) sv.Landmarks[kv.Key] = new[] { kv.Value.x, kv.Value.y };
+        foreach (var kv in secEdits) sv.Secrets[kv.Key] = new[] { kv.Value.x, kv.Value.y };
+        if (townEdit is (float tx, float ty)) sv.Town = new[] { tx, ty };
+        return sv;
+    }
+
+    /// <summary>Put a stored survey back on the Map tab and redraw it. A no-op until the tab has
+    /// been built — BuildMapTab calls this at the end of its own construction, so a survey loaded
+    /// before the Keeper ever opened the Map is drawn the moment they do.</summary>
+    void ApplySurvey()
+    {
+        var sv = surveyState;
+        if (sv?.Spec == null || mapGround == null) return;
+        bool was = mapBusy;
+        mapBusy = true;
+        try
+        {
+            int gi = Array.IndexOf(MapGen.Terrains, sv.Spec.Terrain);
+            if (gi >= 0) mapGround.SelectedIndex = gi;
+            mapScale.SelectedIndex = Math.Clamp(sv.Spec.Scale, 0, mapScale.Items.Count - 1);
+            mapTime.SelectedIndex = Math.Clamp(sv.Spec.Time, 0, mapTime.Items.Count - 1);
+            mapWater.SelectedIndex = Math.Clamp(sv.Spec.Water, 0, mapWater.Items.Count - 1);
+            mapSky.SelectedIndex = Math.Clamp(sv.Spec.Weather, 0, mapSky.Items.Count - 1);
+            mapTrail.Checked = sv.Spec.Trail; mapRail.Checked = sv.Spec.Rail;
+            mapTown.Checked = sv.Spec.Town; mapGrid.Checked = sv.Spec.Grid;
+            mapSecrets.Checked = sv.Spec.Secrets;
+            mapLm.Value = Math.Clamp(sv.Spec.Landmarks, (int)mapLm.Minimum, (int)mapLm.Maximum);
+            mapSeed.Value = Math.Clamp(sv.Spec.Seed, (int)mapSeed.Minimum, (int)mapSeed.Maximum);
+            if (mapName != null) mapName.Text = sv.Spec.PlaceName ?? "";
+
+            lmEdits.Clear();
+            foreach (var kv in sv.Landmarks ?? new()) if (kv.Value is { Length: 2 }) lmEdits[kv.Key] = (kv.Value[0], kv.Value[1]);
+            secEdits.Clear();
+            foreach (var kv in sv.Secrets ?? new()) if (kv.Value is { Length: 2 }) secEdits[kv.Key] = (kv.Value[0], kv.Value[1]);
+            townEdit = sv.Town is { Length: 2 } t ? (t[0], t[1]) : null;
+            lmEditSeed = sv.EditSeed;
+        }
+        finally { mapBusy = was; }
+        MapDraw(false, quiet: true);
+    }
+
+    internal void MapDraw(bool newSeed, bool quiet = false)
     {
         if (mapBusy) return;
         mapBusy = true;
@@ -511,6 +562,12 @@ public partial class MainForm
         mapPanel.Model = curMap;
         mapPanel.Invalidate();
         mapBusy = false;
+        // The survey rides in the snapshot, so drawing one is an undoable act like any other edit
+        // to the table. Suppressed during ApplySession, which is where the restoring call comes
+        // from — CaptureUndo returns early while suppressUndo is up.
+        surveyState = CurrentSurvey();
+        CaptureUndo();
+        if (quiet) return;
         // Name the sky as well as the map — when the Keeper leaves it on "as the sky wills", the
         // country rolls its own, and they're owed the answer without squinting at the cartouche.
         Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value} — {MapGen.WeatherLine(Array.IndexOf(MapGen.Weathers, curMap.Weather))}.");
@@ -754,7 +811,7 @@ public partial class MainForm
                     var m2 = mapPanel.Model;
                     int li = HitLandmark(e.Location), si = li >= 0 ? -1 : HitSecret(e.Location);
                     bool onTown = li < 0 && si < 0 && HitTown(e.Location);
-                    if (li < 0 && si < 0 && !onTown) return;
+                    if (li < 0 && si < 0 && !onTown) { ShowSheetMenu(e.Location); return; }
                     if (onTown)
                     {
                         var town = m2.Town;
@@ -768,6 +825,7 @@ public partial class MainForm
                             townEdit = (nx, ny);
                             lmEditSeed = (int)mapSeed.Value;
                             Log($"{town.Name} moved off the water.");
+                            CaptureUndo();
                             mapPanel.Invalidate();
                         });
                         dry.Enabled = wet;
@@ -776,6 +834,7 @@ public partial class MainForm
                         {
                             MapGen.MoveTown(m2, town.GenX, town.GenY);
                             townEdit = null;
+                            CaptureUndo();
                             mapPanel.Invalidate();
                         });
                         tmenu.Show(mapPanel, e.Location);
@@ -789,6 +848,7 @@ public partial class MainForm
                         {
                             MapGen.MoveLandmark(m2, li, lm.GenX, lm.GenY);
                             lmEdits.Remove(lm.Name);
+                            CaptureUndo();
                             mapPanel.Invalidate();
                         });
                     }
@@ -799,6 +859,7 @@ public partial class MainForm
                         {
                             MapGen.MoveSecret(m2, si, sec.GenX, sec.GenY);
                             secEdits.Remove(si);
+                            CaptureUndo();
                             mapPanel.Invalidate();
                         });
                     }
@@ -812,10 +873,13 @@ public partial class MainForm
                         for (int i = 0; i < m2.Secrets.Count; i++)
                             MapGen.MoveSecret(m2, i, m2.Secrets[i].GenX, m2.Secrets[i].GenY);
                         lmEdits.Clear(); secEdits.Clear();
+                        CaptureUndo();
                         mapPanel.Invalidate();
                     });
                     menu.Show(mapPanel, e.Location);
+                    return;
                 }
+                ShowSheetMenu(e.Location);
                 return;
             }
             if (dragMarker != null)
@@ -832,6 +896,7 @@ public partial class MainForm
                     var lm = mapPanel.Model.Landmarks[lmDragIdx];
                     lmEdits[lm.Name] = (lm.X, lm.Y);
                     lmEditSeed = (int)mapSeed.Value;
+                    CaptureUndo();                 // one undo step per completed drag, as the marker has
                 }
                 lmDragIdx = -1;
                 mapPanel.Invalidate();
@@ -844,6 +909,7 @@ public partial class MainForm
                     var sec = mapPanel.Model.Secrets[secDragIdx];
                     secEdits[secDragIdx] = (sec.X, sec.Y);
                     lmEditSeed = (int)mapSeed.Value;
+                    CaptureUndo();
                 }
                 secDragIdx = -1;
                 mapPanel.Invalidate();
@@ -855,6 +921,7 @@ public partial class MainForm
                 {
                     townEdit = (mapPanel.Model.Town.X, mapPanel.Model.Town.Y);
                     lmEditSeed = (int)mapSeed.Value;
+                    CaptureUndo();
                 }
                 townDrag = false;
                 mapPanel.Invalidate();
@@ -955,17 +1022,87 @@ public partial class MainForm
     void ShowMarkerMenu(Button host)
     {
         var menu = PopupMenu();
+        FillMarkerMenu(menu, null);
+        menu.Show(host, new Point(0, host.Height));
+    }
+
+    /// <summary>The "who goes on the map" list, shared by the toolbar button and the sheet's own
+    /// right-click menu, so the two can never come to offer different people.</summary>
+    void FillMarkerMenu(ToolStripDropDown menu, PointF? at)
+    {
         foreach (var p in party)
         {
             var soul = p;
-            menu.Items.Add($"{soul.Name}  ({soul.Calling})", null, (s, e) => AddMarker(soul.Name, "posse"));
+            menu.Items.Add(Amp($"{soul.Name}  ({soul.Calling})"), null, (s, e) => AddMarker(soul.Name, "posse", at));
         }
         if (party.Count > 0) menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("An NPC…", null, (s, e) =>
-        { string n = AskLine("Name the NPC", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "npc"); });
+        { string n = AskLine("Name the NPC", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "npc", at); });
         menu.Items.Add("A creature…", null, (s, e) =>
-        { string n = AskLine("Name the creature", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "creature"); });
-        menu.Show(host, new Point(0, host.Height));
+        { string n = AskLine("Name the creature", ""); if (!string.IsNullOrWhiteSpace(n)) AddMarker(n.Trim(), "creature", at); });
+    }
+
+    /// <summary>The sheet's own menu: what a right-click on open map should offer.
+    ///
+    /// <para>It offered nothing at all. A right-click landed on a marker or, with Moving on, a
+    /// landmark; anywhere else on the paper it was swallowed. Everything below already existed as a
+    /// button on one of three toolbars, which is fine until the Keeper is full-screen with the table
+    /// watching and the bars are the thing they are trying not to look at.</para></summary>
+    void ShowSheetMenu(Point where)
+    {
+        var m = mapPanel.Model;
+        var menu = PopupMenu();
+        var at = ModelPointAt(where);
+
+        var mark = new ToolStripMenuItem("Put a marker here") { Enabled = m != null };
+        if (m != null) FillMarkerMenu(mark.DropDown, at);
+        menu.Items.Add(mark);
+        menu.Items.Add("Everyone on the Tracker, onto the map", null, (s, e) => TrackerToMap())
+            .Enabled = m != null && tracker.Count > 0;
+        var clearMk = menu.Items.Add($"Clear the markers  ({mapMarkers.Count})", null, (s, e) =>
+        {
+            if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
+            mapMarkers.Clear(); CaptureUndo(); mapPanel.Invalidate();
+            Log("The map is cleared of markers.");
+        });
+        clearMk.Enabled = mapMarkers.Count > 0;
+
+        menu.Items.Add(new ToolStripSeparator());
+        var move = (ToolStripMenuItem)menu.Items.Add("Move things", null, (s, e) =>
+        { if (lmEditBtn != null) lmEditBtn.Checked = !lmEditBtn.Checked; });
+        move.Checked = lmEditMode;
+        move.ToolTipText = "Pick up the town, a landmark or a red secret and drag it. Right-click one to put it back.";
+        menu.Items.Add("Draw a new survey  (a new number)", null, (s, e) => MapDraw(true));
+        menu.Items.Add("Redraw this number", null, (s, e) => MapDraw(false)).Enabled = m != null;
+
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Fit the sheet to the window", null, (s, e) =>
+        { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); });
+        // Esc leaves full screen, so the menu only ever offers the way IN. Offering "leave" from a
+        // window that is already gone is the kind of item that is wrong exactly when it is pressed.
+        menu.Items.Add("Full screen", null, (s, e) => MapFullScreen()).Enabled = !mapFull;
+
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Copy the survey as SVG", null, (s, e) =>
+        {
+            if (curMap == null) { Nope(NoSurvey); return; }
+            Clipboard.SetText(MapGen.ToSvg(curMap, MarkerOverlay()));
+            Log("Map SVG copied to the clipboard" + MarkerNote() + ".");
+        }).Enabled = m != null;
+        menu.Items.Add("Save as SVG…", null, (s, e) => MapSaveSvg()).Enabled = m != null;
+        menu.Items.Add("Save as PDF…", null, (s, e) => MapSavePdf()).Enabled = m != null;
+
+        menu.Show(mapPanel, where);
+    }
+
+    /// Where a point on the panel lands in map-model space — the inverse of MapXform, which is what
+    /// every hit test here already does by hand.
+    PointF? ModelPointAt(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m == null) return null;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        return s > 0 ? new PointF((p.X - ox) / s, (p.Y - oy) / s) : null;
     }
 
     // ---------------------------------------------------------- marker ink
@@ -1051,9 +1188,24 @@ public partial class MainForm
         Prefs.Save(d);
     }
 
-    void AddMarker(string label, string kind)
+    /// <summary>Put a marker on the sheet.</summary>
+    /// <param name="label">What it is called on the map.</param>
+    /// <param name="kind">"posse", "npc" or "creature" — which sets its ink.</param>
+    /// <param name="at">Where to put it, in map-model space. Null cascades from the centre of the
+    /// current view, which is right for the toolbar button and wrong for a right-click: a Keeper who
+    /// points at a spot and asks for a marker means THAT spot.</param>
+    void AddMarker(string label, string kind, PointF? at = null)
     {
         var m = mapPanel.Model; if (m == null) return;
+        if (at is PointF p)
+        {
+            mapMarkers.Add(new MapMarker
+            { Label = label, Kind = kind, X = Math.Clamp(p.X, 0, m.W), Y = Math.Clamp(p.Y, 0, m.H) });
+            CaptureUndo();
+            mapPanel.Invalidate();
+            Log($"Marker placed: {label}.");
+            return;
+        }
         // new markers cascade from the center of the CURRENT VIEW (matters zoomed in),
         // so several drops don't stack invisibly
         var dest = mapPanel.ClientRectangle;
