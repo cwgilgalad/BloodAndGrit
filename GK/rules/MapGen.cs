@@ -30,22 +30,30 @@ public sealed class Prim
 
 public sealed class MapSpec
 {
-    public string Terrain = "The Trail & the Open Range";
-    public int Scale;                // 0 gunfight · 1 homestead · 2 county · 3 territory
-    public int Time = 1;             // 0 first light · 1 high noon · 2 dusk · 3 dead of night
-    public int Water;                // index into MapGen.Waters
-    public bool Trail = true, Rail, Town = true, Grid, Secrets;
-    public int Landmarks = 5;
-    public int Seed;
+    // Auto-properties rather than fields, and that is not decoration: a survey is written into
+    // session.json and into every undo snapshot, and System.Text.Json does not serialize fields.
+    // Source-compatible with the fields these were -- every read and every object initializer
+    // stands unchanged.
+    public string Terrain { get; set; } = "The Trail & the Open Range";
+    public int Scale { get; set; }                // 0 gunfight · 1 homestead · 2 county · 3 territory
+    public int Time { get; set; } = 1;            // 0 first light · 1 high noon · 2 dusk · 3 dead of night
+    public int Water { get; set; }                // index into MapGen.Waters
+    public bool Trail { get; set; } = true;
+    public bool Rail { get; set; }
+    public bool Town { get; set; } = true;
+    public bool Grid { get; set; }
+    public bool Secrets { get; set; }
+    public int Landmarks { get; set; } = 5;
+    public int Seed { get; set; }
     // The sky over the survey: an index into MapGen.Weathers, 0 = let the country decide.
     // Appended last so every stored Scale/Time/Water index keeps its old meaning.
-    public int Weather;
+    public int Weather { get; set; }
 
     /// <summary>What this place is called, when the Keeper already knows — the town rolled on the
     /// Generators tab, or a name typed on the Map bar. Empty means the survey names it itself. It
     /// replaces the drawn name only; the roll that would have produced one is still made, so
     /// naming a place never redraws the country under it.</summary>
-    public string PlaceName = "";
+    public string PlaceName { get; set; } = "";
 }
 
 // A named landmark the Keeper can pick up and move: its anchor (the symbol's
@@ -97,7 +105,16 @@ public static class MapGen
     {
         "The Trail & the Open Range", "Rivers, Lakes & Swamps", "Towns, Homesteads & Haunted Houses",
         "Graveyards & Battlefields", "Mines & Under the Earth", "Winter & the High Country",
-        "Desert & the Badlands", "The Old Places", "The Lamplit City"
+        "Desert & the Badlands", "The Old Places", "The Lamplit City",
+        // Appended, never inserted: every index above is the Bestiary's Appendix "The Grounds" in
+        // the book's own order, and a stored MapSpec.Terrain, a WeatherByGround row and a saved
+        // survey all read by position. The seven below are the app's, drawn from the country west
+        // and south of the Mississippi that the nine did not already name — timber, black water,
+        // canyon, shortgrass, thornscrub, alkali and salt marsh. No state is named in any of them:
+        // this is a frontier a table can put wherever their trail runs.
+        "Pinewoods & the Deep Timber", "Bayou, Cypress & the Delta", "Canyon Country & the Mesas",
+        "Shortgrass & the Staked Plain", "Brush Country & the Border", "Salt Flats & the Alkali Sink",
+        "The Gulf Coast & the Marshes"
     };
     /// <summary>The countries a settlement can be set down in: every terrain except the Lamplit
     /// City, which is not ground you stand a town on — it IS the town, at a different scale.
@@ -136,12 +153,22 @@ public static class MapGen
         new[] { 2, 2, 2, 1, 7, 7, 7, 5, 10 },       // 6 badlands — heat and blowing sand
         new[] { 6, 6, 3, 3, 4, 1, 11, 5, 7 },       // 7 the old places — fog suits them
         new[] { 3, 3, 4, 6, 6, 7, 1, 2, 5 },        // 8 a city ward — coal smoke and river fog
+        new[] { 1, 3, 3, 4, 4, 6, 6, 5, 8 },        // 9 deep timber — overcast, rain, and fog in it
+        new[] { 2, 4, 4, 5, 5, 6, 6, 3, 1 },        // 10 the bayou — hot, wet, thunder off the Gulf
+        new[] { 1, 2, 2, 3, 7, 7, 5, 10, 4 },       // 11 canyon country — sun, wind, a flash flood
+        new[] { 7, 7, 2, 1, 5, 5, 10, 9, 3 },       // 12 the shortgrass — wind, hail, and the blizzard
+        new[] { 2, 2, 2, 1, 7, 5, 3, 4, 10 },       // 13 brush country — heat, and heat, and heat
+        new[] { 2, 2, 1, 7, 7, 3, 11, 5, 10 },      // 14 the alkali sink — glare by day, freezing by night
+        new[] { 4, 4, 5, 5, 6, 6, 2, 3, 1 },        // 15 the coast marshes — rain, fog, and the big blow
     };
 
     // ---- palette (the books' frontier colors, map-toned) ----
     const string Ink = "#4a3826", Dark = "#3a2c1e", Blood = "#8f1d1d", Gold = "#967432";
     const string WaterEdge = "#7d98a1", WaterFill = "#b9cbcf", TrailBrown = "#7a5c38";
     const string Green = "#6f7d54", PineGreen = "#5d6f52", Tan = "#d8c49a", Bone = "#b5a98c";
+    // The clear paper a ward's street grid leaves round itself. The grid is laid to it, and the
+    // country roads are cut back to it, so the two agree by construction rather than by luck.
+    const float WardMargin = 40;
 
     // ---------------------------------------------------------- generation
     public static MapModel Generate(MapSpec sp)
@@ -173,17 +200,33 @@ public static class MapGen
         string bg = ti switch
         {
             0 => "#eee7cf", 1 => "#e6e9d3", 2 => "#efe8d2", 3 => "#e9e2cf",
-            4 => "#ece2cc", 5 => "#eef0ee", 6 => "#f2e5c6", 8 => "#e7e4dc", _ => "#e8e0cf"
+            4 => "#ece2cc", 5 => "#eef0ee", 6 => "#f2e5c6", 8 => "#e7e4dc",
+            9 => "#e4e8d6", 10 => "#dee7dc", 11 => "#f0e0cb", 12 => "#ece9d2",
+            13 => "#e9e5cc", 14 => "#f1f0e7", 15 => "#e2e8e2",
+            _ => "#e8e0cf"
         };
         P.Add(Rect(0, 0, W, H, bg, null, 0));
 
         // keep-out circles: features, labels, and furniture never overprint each other
         var blocked = new List<(float x, float y, float r)>
         {
-            (170, 70, 190),                     // cartouche
             (W - 64, 92, 95),                   // compass
             (150, H - 40, 170),                 // scale bar
         };
+        // The cartouche, covered by a ROW of circles along its spine rather than one round the whole
+        // box: a circle wide enough for a 460x92 box also blocks two hundred pixels of clear country
+        // underneath it, which is country the survey could have used.
+        float cartW = CartoucheMaxWidth(sp, ti, city);
+        // A local function and not two copies: the ward below CLEARS this list and rebuilds it, and
+        // when the row of circles lived inline the ward's rebuild kept the old typed circle at
+        // (170,70) r190 — which reaches x=360 against a box that reaches 523. Every ward printed a
+        // landmark half under the cartouche, and the fix here never touched them.
+        void BlockCartouche()
+        {
+            for (float bx = 26 + 50; bx < 26 + cartW - 50; bx += 66) blocked.Add((bx, 72, 68));
+            blocked.Add((26 + cartW - 50, 72, 68));
+        }
+        BlockCartouche();
         bool Free(float x, float y, float r) =>
             x > 24 + r && x < W - 24 - r && y > 24 + r && y < H - 24 - r &&
             blocked.All(b => Sq(b.x - x) + Sq(b.y - y) > Sq(b.r + r));
@@ -199,7 +242,14 @@ public static class MapGen
 
         // ---- water ----
         int water = sp.Water == 0
-            ? ti switch { 1 => 5, 5 => 4, 6 => 1, 3 => rngWater.Next(2) == 0 ? 2 : 1, _ => rngWater.Next(3) == 0 ? 2 : 1 }
+            ? ti switch
+              {
+                  1 => 5, 5 => 4, 6 => 1, 3 => rngWater.Next(2) == 0 ? 2 : 1,
+                  10 => 5, 15 => 4,                          // the bayou and the coast ARE their water
+                  9 or 11 or 13 => 3,                        // timber creeks, the canyon's cutter, the border river
+                  12 or 14 => 1,                             // the staked plain and the sink hold none
+                  _ => rngWater.Next(3) == 0 ? 2 : 1
+              }
             : sp.Water;
         float[] riverPts = null;
         (float x, float y, float r) lake = default;
@@ -209,14 +259,20 @@ public static class MapGen
         int waterStart = P.Count;
         float waterHalf = 0f;
 
-        var clipR = (x0: ClipInset, y0: ClipInset, x1: W - ClipInset, y1: H - ClipInset);
+        // One clip per stroke width, not one for the sheet — see ClipFor. A river's edge is 13px and
+        // its round cap paints half of that past the last vertex, which is how blue ink came to sit
+        // on the outer frame of a rendered city ward.
+        var clipRiver = ClipFor(13f, W, H);
+        var clipCreek = ClipFor(4.5f, W, H);
+        var clipTrail = ClipFor(2.6f, W, H);
+        var clipRail  = ClipFor(2.2f, W, H);
         if (water is 3 or 5)                                     // a river, edge to edge
         {
             bool vert = rngWater.Next(2) == 0;
             var raw = vert
                 ? Meander(rngWater, Lerp(rngWater, 0.25f, 0.75f) * W, -12, Lerp(rngWater, 0.25f, 0.75f) * W, H + 12, 7, 90)
                 : Meander(rngWater, -12, Lerp(rngWater, 0.25f, 0.75f) * H, W + 12, Lerp(rngWater, 0.25f, 0.75f) * H, 7, 90);
-            var runs = ClipPolyline(raw, clipR.x0, clipR.y0, clipR.x1, clipR.y1);
+            var runs = ClipPolyline(raw, clipRiver.x0, clipRiver.y0, clipRiver.x1, clipRiver.y1);
             foreach (var run in runs)                            // edge under, water over — layer order kept
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = WaterEdge, StrokeW = 13 });
             foreach (var run in runs)
@@ -231,7 +287,7 @@ public static class MapGen
             var raw = vert
                 ? Meander(rngWater, Lerp(rngWater, 0.2f, 0.8f) * W, -12, Lerp(rngWater, 0.2f, 0.8f) * W, H + 12, 8, 110)
                 : Meander(rngWater, -12, Lerp(rngWater, 0.2f, 0.8f) * H, W + 12, Lerp(rngWater, 0.2f, 0.8f) * H, 8, 110);
-            foreach (var run in ClipPolyline(raw, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+            foreach (var run in ClipPolyline(raw, clipCreek.x0, clipCreek.y0, clipCreek.x1, clipCreek.y1))
             {
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = WaterEdge, StrokeW = 4.5f });
                 if (riverPts == null || run.Length > riverPts.Length) riverPts = run;
@@ -297,21 +353,36 @@ public static class MapGen
             m.TownSeated = seat.x != tx || seat.y != ty;
             (tx, ty) = seat;
         }
+        // Where the roads' ink begins and ends. A ward stamps its blocks over everything drawn so
+        // far, which buried the trail and the rail and left them as disconnected stubs in the street
+        // gaps — the strange shading a Keeper reported. The span is re-inked on top of the blocks,
+        // the same way the water already is.
+        bool ward = city && sp.Town;
+        int roadStart = P.Count;
+        float[] railPts = null;
         if (sp.Trail)
         {
             bool vert = rngTrail.Next(2) == 0;
             float a0 = Lerp(rngTrail, 0.2f, 0.8f), a1 = Lerp(rngTrail, 0.2f, 0.8f);
             var leg1 = vert ? Meander(rngTrail, a0 * W, -12, tx, ty, 5, 60) : Meander(rngTrail, -12, a0 * H, tx, ty, 5, 60);
             var leg2 = vert ? Meander(rngTrail, tx, ty, a1 * W, H + 12, 5, 60) : Meander(rngTrail, tx, ty, W + 12, a1 * H, 5, 60);
+            // Round the lake, across the river. A trail does not swim.
+            SkirtLake(leg1, lake.x, lake.y, lake.r, 14);
+            SkirtLake(leg2, lake.x, lake.y, lake.r, 14);
             foreach (var leg in new[] { leg1, leg2 })
-                foreach (var run in ClipPolyline(leg, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+            {
+                foreach (var run in RoadRuns(leg, clipTrail, ward, W, H))
                     P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = TrailBrown, StrokeW = 2.6f, Dash = new[] { 8f, 5f } });
+                MarkCrossings(P, m, leg, rail: false);
+            }
             if (sp.Scale >= 2 && rngTrail.Next(2) == 0)          // a fork, at riding scales
             {
                 int j = rngTrail.Next(leg2.Length / 4) * 2;
                 var fork = Meander(rngTrail, leg2[j], leg2[j + 1], rngTrail.Next(2) == 0 ? -12 : W + 12, Lerp(rngTrail, 0.15f, 0.85f) * H, 4, 70);
-                foreach (var run in ClipPolyline(fork, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+                SkirtLake(fork, lake.x, lake.y, lake.r, 14);
+                foreach (var run in RoadRuns(fork, clipTrail, ward, W, H))
                     P.Add(new Prim { Kind = PrimKind.Line, Pts = run, Stroke = TrailBrown, StrokeW = 2f, Dash = new[] { 7f, 5f } });
+                MarkCrossings(P, m, fork, rail: false);
             }
         }
 
@@ -319,7 +390,11 @@ public static class MapGen
         if (sp.Rail)
         {
             var rawRail = Meander(rngRail, -12, Lerp(rngRail, 0.25f, 0.75f) * H, W + 12, Lerp(rngRail, 0.25f, 0.75f) * H, 3, 30);
-            foreach (var rail in ClipPolyline(rawRail, clipR.x0, clipR.y0, clipR.x1, clipR.y1))
+            // A railroad bends round a lake and trestles a river. Straight as money, but not through
+            // water: the grade goes round the standing water and over the running.
+            SkirtLake(rawRail, lake.x, lake.y, lake.r, 20);
+            railPts = rawRail;
+            foreach (var rail in ClipPolyline(rawRail, clipRail.x0, clipRail.y0, clipRail.x1, clipRail.y1))
             {
                 P.Add(new Prim { Kind = PrimKind.Line, Pts = rail, Stroke = "#4a4038", StrokeW = 2.2f });
                 for (int i = 0; i + 3 < rail.Length; i += 2)     // cross-ties
@@ -331,12 +406,19 @@ public static class MapGen
                     {
                         float px = rail[i] + dx * d / len, py = rail[i + 1] + dy * d / len;
                         float nx = -dy / len * 5, ny = dx / len * 5;
-                        if (px < 20 || px > W - 20) continue;
+                        // A tie reaches 5px either side of the rail, so the guard has to hold in
+                        // BOTH axes or a tie on a rail running near the top edge pokes past the
+                        // neatline — the same fault the river's stroke cap had.
+                        if (px < 22 || px > W - 22 || py < 22 || py > H - 22) continue;
+                        // No ties laid on the water: a trestle is drawn as one by MarkCrossings.
+                        if (OnWater(m, px, py, 0)) continue;
                         P.Add(new Prim { Kind = PrimKind.Line, Pts = new[] { px - nx, py - ny, px + nx, py + ny }, Stroke = "#4a4038", StrokeW = 1.2f });
                     }
                 }
             }
+            MarkCrossings(P, m, rawRail, rail: true);
         }
+        int roadEnd = P.Count;
 
         // ---- the settlement ----
         // The town's name and ground are claimed whether or not it's shown, so toggling
@@ -353,7 +435,7 @@ public static class MapGen
             // A ward: avenues and cross streets, the blocks between them, and the
             // three things every city in Ch. XIV has — a depot, works that smoke,
             // and a quarter the city would rather not look at.
-            const float m0 = 40;
+            const float m0 = WardMargin;
             float gw = W - m0 * 2, gh = H - m0 * 2;
             int cols = 5 + rngTown.Next(2), rows = 3 + rngTown.Next(2);
             float colW = gw / cols, rowH = gh / rows;
@@ -371,8 +453,24 @@ public static class MapGen
                     float bw = colW - 14, bh = rowH - 14;
                     // No block is raised in the river or the lake — the waterway stays open ground,
                     // so the water reads as one course through the city, not blue scraps between roofs.
+                    float rr = Math.Min(bw, bh) * 0.35f;
                     if (waterHalf > 0 || lake.r > 0)
-                        if (OverWater(bx + bw / 2, by + bh / 2, Math.Min(bw, bh) * 0.35f)) continue;
+                        if (OverWater(bx + bw / 2, by + bh / 2, rr))
+                        {
+                            // Not a hole punched in the ward: the ground a city keeps beside its
+                            // water. Levee, yard and mud, so the waterfront reads as somewhere a
+                            // posse can stand rather than as a block the generator forgot.
+                            P.Add(Rect(bx, by, bw, bh, Bone, null, 0, 0.3f));
+                            continue;
+                        }
+                    // A railroad takes its right-of-way through a ward the way it does through a real
+                    // city — the blocks give way to the grade, not the other way about — and the line
+                    // is re-inked below so it runs unbroken instead of surfacing in the street gaps.
+                    if (railPts != null && PolyDistSq(railPts, bx + bw / 2, by + bh / 2) < Sq(rr + 14))
+                    {
+                        P.Add(Rect(bx, by, bw, bh, Bone, null, 0, 0.3f));
+                        continue;
+                    }
                     P.Add(Rect(bx, by, bw, bh, "#d9cba8", Dark, 1.2f));
                     // a couple of blocks are dense tenement rows rather than one mass
                     if (rngTown.Next(3) == 0)
@@ -390,9 +488,19 @@ public static class MapGen
                 P.Add(new Prim { Kind = wp.Kind, Pts = wp.Pts, Fill = wp.Fill, Stroke = wp.Stroke,
                                  StrokeW = wp.StrokeW, Dash = wp.Dash, Alpha = wp.Alpha });
             }
+            // The same hand, the same pass: rail and road re-inked over the blocks. The trail was cut
+            // back to the ward's edge above, so nothing dashed crosses a roof — only the rail runs
+            // through, and it runs through ground the blocks were told to leave it.
+            for (int i = roadStart; i < roadEnd; i++)
+            {
+                var rp = P[i];
+                P.Add(new Prim { Kind = rp.Kind, Pts = rp.Pts, Fill = rp.Fill, Stroke = rp.Stroke,
+                                 StrokeW = rp.StrokeW, Dash = rp.Dash, Alpha = rp.Alpha });
+            }
             // The furniture keeps its keep-out; so does the water, so no depot or landmark lands in it.
             blocked.Clear();
-            blocked.Add((170, 70, 190)); blocked.Add((W - 64, 92, 95)); blocked.Add((150, H - 40, 170));
+            BlockCartouche();
+            blocked.Add((W - 64, 92, 95)); blocked.Add((150, H - 40, 170));
             blocked.Add((W - 144, H - 104, 135));            // the key's corner — nothing gets planted under it
             if (riverPts != null) BlockAlong(blocked, riverPts, waterHalf + 8);
             if (lake.r > 0) blocked.Add((lake.x, lake.y, lake.r + 14));
@@ -462,6 +570,20 @@ public static class MapGen
                          "mountain", "mountain", "range", "bluff", "pinestand", "pinestand", "ridge" },
             6 => new[] { "cactus", "cactus", "cactus", "mesa", "mesa", "dune", "dune", "bones", "bones",
                          "scrub", "rock", "butte", "butte", "hoodoo", "hoodoo", "bluff", "ridge" },
+            9 => new[] { "pine", "pine", "pinestand", "pinestand", "forest", "forest", "tree", "tree",
+                         "rock", "deadtree", "hill", "hills", "ridge", "spring", "tuft" },
+            10 => new[] { "reeds", "reeds", "reeds", "marsh", "marsh", "marsh", "deadtree", "deadtree",
+                          "tuft", "tuft", "forest", "wharf", "spring", "grass" },
+            11 => new[] { "mesa", "mesa", "butte", "butte", "hoodoo", "hoodoo", "bluff", "bluff",
+                          "ridge", "rock", "rock", "scrub", "cactus", "ruin", "stone" },
+            12 => new[] { "grass", "grass", "grass", "grass", "tuft", "tuft", "scrub", "bones", "bones",
+                          "hill", "hills", "ridge", "well", "windmill" },
+            13 => new[] { "scrub", "scrub", "scrub", "cactus", "cactus", "tuft", "mesa", "rock",
+                          "deadtree", "hills", "ridge", "corral", "spring", "bones" },
+            14 => new[] { "dune", "dune", "bones", "bones", "rock", "scrub", "mesa", "butte", "hoodoo",
+                          "tuft", "ridge", "bluff", "well" },
+            15 => new[] { "marsh", "marsh", "marsh", "reeds", "reeds", "dune", "dune", "tuft",
+                          "deadtree", "wharf", "forest", "grass", "spring" },
             _ => new[] { "stone", "stone", "stone", "ruin", "ruin", "deadtree", "deadtree", "mound", "tree",
                          "grass", "hill", "forest", "hoodoo" },
         };
@@ -600,7 +722,7 @@ public static class MapGen
         // Over the hour, because the sky is the nearer thing: a blizzard whitens noon and midnight
         // alike. Drawn from its own stream so forcing rain doesn't move a single rock.
         int wx = WeatherFor(sp.Weather, ti, rngSky);
-        DrawWeather(P, rngSky, wx, W, H);
+        DrawWeather(P, rngSky, wx, W, H, m);
 
         // ---- the Keeper's layer, in red ----
         if (sp.Secrets)
@@ -636,12 +758,7 @@ public static class MapGen
         // On a ward map the cartouche IS the city's name — the generated map title and a
         // separate settlement label put two different names on one place.
         m.Title = city ? townName : namer.MapTitle(stock, ti);
-        string ground = ti switch
-        {
-            0 => "the open range", 1 => "the river bottoms", 2 => "settled country", 3 => "a field of the dead",
-            4 => "mining country", 5 => "the high country", 6 => "the badlands",
-            8 => "a city ward", _ => "the old places"
-        };
+        string ground = GroundWord(ti);
         m.Weather = Weathers[wx];
         m.Sub = $"{ground}  ·  {ScaleLine(sp.Scale)}  ·  {Times[sp.Time].ToLowerInvariant()}  ·  {WeatherLine(wx)}";
         // What KIND of name the big one is, in the small line above it. The cartouche used to state
@@ -709,8 +826,17 @@ public static class MapGen
 
     /// <summary>Ink the sky over everything else. Each is a wash plus its own marks, kept light —
     /// the map still has to be read through it.</summary>
-    static void DrawWeather(List<Prim> P, Random rng, int w, float W, float H)
+    static void DrawWeather(List<Prim> P, Random rng, int w, float W, float H, MapModel m)
     {
+        // The WASH is the sky's colour over the whole sheet and belongs on the water as much as on
+        // the ground — a lake under a thunderhead is a darker lake. The scattered strokes are the
+        // other thing: hatching thrown across open water reads as scratches in the ink rather than
+        // as rain, and that is what a rendered city ward looked like. So every stroke asks whether
+        // it landed in the water and drops itself if it did.
+        //
+        // The reject happens AFTER the position is drawn, never instead of drawing it — a skipped
+        // stroke must still consume its rolls or every seed's sky would change.
+        bool Dry(float x, float y) => !OnWater(m, x, y, 0);
         void Wash(string col, float a) => P.Add(Rect(0, 0, W, H, col, null, 0, a));
         // A run of slanted strokes, thrown across the whole sheet: rain, snow on the wind, hail.
         // Every stroke is started far enough in that its far end still lands on the paper — line
@@ -722,6 +848,7 @@ public static class MapGen
             {
                 float x = (dx < 0 ? -dx : 0) + (float)rng.NextDouble() * spanX;
                 float y = (float)rng.NextDouble() * spanY;
+                if (!Dry(x + dx / 2, y + len / 2)) continue;
                 P.Add(new Prim
                 {
                     Kind = PrimKind.Line, Pts = new[] { x, y, x + dx, y + len },
@@ -732,12 +859,12 @@ public static class MapGen
         void Specks(int n, float r, string col, float a)
         {
             for (int i = 0; i < n; i++)
-                P.Add(new Prim
-                {
-                    Kind = PrimKind.Circle,
-                    Pts = new[] { (float)rng.NextDouble() * W, (float)rng.NextDouble() * H, r * (0.6f + (float)rng.NextDouble()) },
-                    Fill = col, Alpha = a
-                });
+            {
+                float sx = (float)rng.NextDouble() * W, sy = (float)rng.NextDouble() * H;
+                float sr = r * (0.6f + (float)rng.NextDouble());
+                if (!Dry(sx, sy)) continue;
+                P.Add(new Prim { Kind = PrimKind.Circle, Pts = new[] { sx, sy, sr }, Fill = col, Alpha = a });
+            }
         }
         // Long shallow curves — the shape wind and fog take on a surveyor's sheet. An Arc spans
         // ±rx across and rises ry above its center, so the center is kept that far off the edges.
@@ -893,6 +1020,48 @@ public static class MapGen
         {
             ("mound", "The Barrow"), ("hoodoo", "The Watcher"), ("forest", "The Old Wood"),
             ("hill", "The Sleeping Hill"), ("stone", "The Ring"), ("ridge", "The Long Wall"),
+        },
+        9 => new[]                                         // pinewoods & the deep timber
+        {
+            ("pinestand", "The Big Timber"), ("forest", "The Brakes"), ("ridge", "The Divide"),
+            ("spring", "Cold Spring"), ("hill", "Lookout Knob"), ("deadtree", "The Burn"),
+            ("hills", "The Knobs"), ("camp", "The Cutting"),
+        },
+        10 => new[]                                        // bayou, cypress & the delta
+        {
+            ("marsh", "The Bayou"), ("forest", "The Cypress Brake"), ("wharf", "The Landing"),
+            ("mound", "Shell Mound"), ("marsh", "Black Water"), ("deadtree", "The Drowned Wood"),
+            ("spring", "The Blue Hole"), ("soddy", "The Stilt House"),
+        },
+        11 => new[]                                        // canyon country & the mesas
+        {
+            ("butte", "Chimney Rock"), ("mesa", "The Mesa"), ("hoodoo", "The Sentinels"),
+            ("bluff", "The Rim"), ("ruin", "The Cliff House"), ("ridge", "The Slot"),
+            ("stone", "The Painted Wall"), ("spring", "The Seep"),
+        },
+        12 => new[]                                        // shortgrass & the staked plain
+        {
+            ("hills", "The Swells"), ("well", "The Dug Well"), ("windmill", "The Windmill"),
+            ("bones", "The Bone Field"), ("ridge", "The Caprock"), ("spring", "Seep Spring"),
+            ("hill", "Wagon Mound"), ("corral", "The Half-Way House"),
+        },
+        13 => new[]                                        // brush country & the border
+        {
+            ("scrub", "The Thicket"), ("ridge", "The Rimrock"), ("corral", "The Holding Pens"),
+            ("spring", "The Tinaja"), ("mesa", "The Table"), ("bones", "The Dry Wash"),
+            ("hills", "The Malpais"), ("ford", "The Crossing"),
+        },
+        14 => new[]                                        // salt flats & the alkali sink
+        {
+            ("dune", "The White Sands"), ("bones", "The Bone Playa"), ("spring", "The Bitter Spring"),
+            ("butte", "The Needle"), ("bluff", "The Rim of the Sink"), ("ridge", "The Salt Ridge"),
+            ("ruin", "The Borax Works"),
+        },
+        15 => new[]                                        // the gulf coast & the marshes
+        {
+            ("marsh", "The Salt Marsh"), ("wharf", "The Fish Camp"), ("dune", "The Barrier Sand"),
+            ("mound", "The Shell Ridge"), ("forest", "The Live Oaks"), ("deadtree", "The Hurricane Wood"),
+            ("reeds", "The Grass Flats"), ("church", "The Chapel on the Point"),
         },
         _ => Array.Empty<(string, string)>(),
     };
@@ -1156,6 +1325,101 @@ public static class MapGen
         return RiverDistSq(m, x, y) < half * half;
     }
 
+    /// <summary>Walk a line around a lake instead of straight across it.
+    /// <para>A trail drawn edge to edge and a lake dropped on the same sheet had nothing to say to
+    /// each other: on a rendered ward the trail entered the north shore and left the south, with no
+    /// ford, no ferry and no acknowledgement that there was water there. Pushing every vertex that
+    /// lands in the lake out to the shore bends the line round it, which is what a trail does in
+    /// fact. It consumes no randomness, so the same seed still draws the same country.</para>
+    /// <para>A RIVER is deliberately left alone: a trail crossing a river is a ford, and it earns a
+    /// mark rather than a detour. See <see cref="MarkCrossings"/>.</para></summary>
+    public static void SkirtLake(float[] pts, float lx, float ly, float lr, float margin)
+    {
+        if (pts == null || lr <= 0) return;
+        float keep = lr + margin;
+        for (int i = 0; i + 1 < pts.Length; i += 2)
+        {
+            float dx = pts[i] - lx, dy = pts[i + 1] - ly;
+            float d = (float)Math.Sqrt(dx * dx + dy * dy);
+            if (d >= keep) continue;
+            if (d < 0.001f) { dx = 1; dy = 0; d = 1; }        // dead centre: any bearing will do
+            pts[i] = lx + dx / d * keep;
+            pts[i + 1] = ly + dy / d * keep;
+        }
+    }
+
+    /// <summary>The runs of a country road that belong on the sheet.
+    /// <para>On open country that is the whole line, clipped to the neatline. On a CITY WARD it is
+    /// only the part outside the street grid: inside the grid the streets are the roads, already
+    /// drawn, and a dashed trail inked across the roofs reads as neither a street nor a trail. So the
+    /// highway comes in off the sheet edge, meets the ward, and stops — which is what a ward map of a
+    /// real place shows. Four margin bands rather than one rectangle-complement: a line clipped twice
+    /// at a corner paints the same ink twice and nobody can tell.</para></summary>
+    static List<float[]> RoadRuns(float[] pts, (float x0, float y0, float x1, float y1) clip,
+                                  bool ward, float W, float H)
+    {
+        if (!ward) return ClipPolyline(pts, clip.x0, clip.y0, clip.x1, clip.y1);
+        var runs = new List<float[]>();
+        var bands = new[]
+        {
+            (clip.x0, clip.y0, clip.x1, Math.Min(clip.y1, WardMargin)),          // north of the grid
+            (clip.x0, Math.Max(clip.y0, H - WardMargin), clip.x1, clip.y1),      // south
+            (clip.x0, clip.y0, Math.Min(clip.x1, WardMargin), clip.y1),          // west
+            (Math.Max(clip.x0, W - WardMargin), clip.y0, clip.x1, clip.y1),      // east
+        };
+        foreach (var (x0, y0, x1, y1) in bands)
+            if (x1 > x0 && y1 > y0) runs.AddRange(ClipPolyline(pts, x0, y0, x1, y1));
+        return runs;
+    }
+
+    /// <summary>Stamp the surveyor's mark wherever a line crosses the river.
+    /// <para>A trail or a rail inked straight over a river with nothing on it reads as a fault
+    /// because it is one — the country does not let you walk across water because two strokes happen
+    /// to overlap. This finds each place the line ENTERS the channel and puts there what would
+    /// actually be there: a ford's pair of bank marks for a trail, a trestle's deck and piers for a
+    /// rail. It is drawn after the water, so the mark sits on the blue rather than under it.</para>
+    /// </summary>
+    static void MarkCrossings(List<Prim> P, MapModel m, float[] pts, bool rail)
+    {
+        if (pts == null || m?.RiverPts == null || m.RiverHalf <= 0) return;
+        float half = m.RiverHalf;
+        bool wasWet = false;
+        for (int i = 0; i + 3 < pts.Length; i += 2)
+        {
+            float ax = pts[i], ay = pts[i + 1], bx = pts[i + 2], by = pts[i + 3];
+            float mx = (ax + bx) / 2, my = (ay + by) / 2;
+            bool wet = RiverDistSq(m, mx, my) < half * half;
+            if (wet && !wasWet)
+            {
+                float dx = bx - ax, dy = by - ay;
+                float len = (float)Math.Sqrt(dx * dx + dy * dy);
+                if (len < 0.5f) { wasWet = true; continue; }
+                float nx = -dy / len, ny = dx / len;            // across the line of travel
+                float reach = half + 4;
+                if (rail)
+                {
+                    // A trestle: the deck carried across, and a pier at each bank.
+                    P.Add(new Prim { Kind = PrimKind.Line, StrokeW = 3.4f, Stroke = "#4a4038",
+                        Pts = new[] { mx - dx / len * reach, my - dy / len * reach,
+                                      mx + dx / len * reach, my + dy / len * reach } });
+                    for (int s = -1; s <= 1; s += 2)
+                        P.Add(new Prim { Kind = PrimKind.Line, StrokeW = 1.2f, Stroke = "#4a4038",
+                            Pts = new[] { mx + dx / len * reach * s - nx * 5, my + dy / len * reach * s - ny * 5,
+                                          mx + dx / len * reach * s + nx * 5, my + dy / len * reach * s + ny * 5 } });
+                }
+                else
+                {
+                    // A ford: the two banks marked, and nothing between them, which is the point.
+                    for (int s = -1; s <= 1; s += 2)
+                        P.Add(new Prim { Kind = PrimKind.Line, StrokeW = 2f, Stroke = TrailBrown,
+                            Pts = new[] { mx + dx / len * reach * s - nx * 6, my + dy / len * reach * s - ny * 6,
+                                          mx + dx / len * reach * s + nx * 6, my + dy / len * reach * s + ny * 6 } });
+                }
+            }
+            wasWet = wet;
+        }
+    }
+
     /// How far a spot stands from the nearest water — negative when it's standing in it.
     /// A map with no water at all answers with a large number rather than a special case.
     public static float WaterClearance(MapModel m, float x, float y)
@@ -1173,9 +1437,12 @@ public static class MapGen
     /// every caller passes a pad wider than that, but it was only near enough by luck: shrink the
     /// pad and a town could be seated mid-channel on a straight reach and called dry.
     /// Answers float.MaxValue when the map has no river at all.
-    static float RiverDistSq(MapModel m, float x, float y)
+    static float RiverDistSq(MapModel m, float x, float y) => PolyDistSq(m.RiverPts, x, y);
+
+    /// How far a spot is from a drawn line, squared. The river's own version is this one; the ward's
+    /// block test asks it of the rail as well, and both want a segment answer rather than a vertex one.
+    static float PolyDistSq(float[] p, float x, float y)
     {
-        var p = m.RiverPts;
         if (p == null || p.Length < 2) return float.MaxValue;
         if (p.Length == 2) return Sq(p[0] - x) + Sq(p[1] - y);        // a one-point run
         float best = float.MaxValue;
@@ -1311,9 +1578,66 @@ public static class MapGen
         return runs;
     }
 
-    // The map content's edge: the inner neatline. Line ends land ON it, and even a
-    // wide river's round stroke cap stays inside the outer frame.
+    // The map content's edge: the inner neatline, drawn at 15px inside the sheet with the outer
+    // frame at 8px.
     const float ClipInset = 15f;
+
+    /// <summary>The clip rectangle for a line of a given stroke width, so the INK lands on the
+    /// neatline rather than the geometry.
+    /// <para>This was a real fault and the old comment here denied it: clipping the polyline at
+    /// <see cref="ClipInset"/> puts the last VERTEX on the neatline, and a round cap then paints
+    /// half the stroke width further out. A river's edge stroke is 13px, so its cap reached 8.5px —
+    /// on top of the outer frame at 8px — and a rendered city ward showed a blue stub sitting across
+    /// the border. Pulling the clip in by half the stroke puts the cap's outer edge exactly on the
+    /// neatline, which is where the ink was always supposed to stop.</para></summary>
+    static (float x0, float y0, float x1, float y1) ClipFor(float w, float W, float H)
+    {
+        float d = ClipInset + w / 2f;
+        return (d, d, W - d, H - d);
+    }
+
+    /// <summary>The widest the cartouche can be on this survey.
+    /// <para>The box is <b>measured</b> from its own three lines when it is drawn — five hundred
+    /// lines below here, after the sky and the name have been rolled. The keep-out that stops a
+    /// landmark being planted under it therefore has to be computed HERE, from what is known: the
+    /// scale, the hour and the ground are fixed by the spec, and the two that are not — the title
+    /// and the weather — take their longest possible value.</para>
+    /// <para>It used to be a typed circle at (170,&#160;70) r190, covering out to x&#160;=&#160;360
+    /// against a box that reaches 466 once the weather joined the subtitle. A rendered ward printed
+    /// <i>The Shanties</i> as <i>hanties</i> with the rest under the box. Measured furniture with a
+    /// typed keep-out is the same fault as a typed count in prose, and this project already has a
+    /// rule about that.</para></summary>
+    static float CartoucheMaxWidth(MapSpec sp, int ti, bool city)
+    {
+        string of = city ? "the city ward of" : sp.Scale switch
+        {
+            0 => "the ground at", 1 => "the country about", 2 => "the county of", _ => "the territory of"
+        };
+        string ground = GroundWord(ti);
+        // The sky is not rolled yet, so price the longest line it could produce.
+        int widestSky = 0;
+        for (int w = 0; w < Weathers.Length; w++) widestSky = Math.Max(widestSky, WeatherLine(w).Length);
+        int subLen = ground.Length + ScaleLine(sp.Scale).Length + Times[sp.Time].Length + widestSky + 12;
+        return Math.Max(280, Math.Max(MaxTitleChars * 12.5f + 40,
+                                      Math.Max(subLen * 5.2f + 34, of.Length * 6.5f + 96)));
+    }
+
+    /// <summary>The longest map title the namer can hand back. A bound rather than a measurement,
+    /// because the title is not drawn until long after the keep-out is needed — and the smoke suite
+    /// asserts it against thousands of real draws, so it is a checked claim and not a guess.</summary>
+    public const int MaxTitleChars = 34;
+
+    /// <summary>What the cartouche's subtitle calls this ground. Lives here rather than inline in
+    /// the cartouche because <see cref="CartoucheMaxWidth"/> has to price the same words.</summary>
+    static string GroundWord(int ti) => ti switch
+    {
+        0 => "the open range", 1 => "the river bottoms", 2 => "settled country", 3 => "a field of the dead",
+        4 => "mining country", 5 => "the high country", 6 => "the badlands",
+        8 => "a city ward",
+        9 => "deep timber", 10 => "the bayou country", 11 => "canyon country", 12 => "the shortgrass",
+        13 => "the brush country", 14 => "the alkali flats", 15 => "the coast marshes",
+        _ => "the old places"
+    };
 
     static float[] Meander(Random rng, float x0, float y0, float x1, float y1, int segs, float wobble)
     {
