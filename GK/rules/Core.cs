@@ -2345,9 +2345,64 @@ public static class Db
         // tables_extra.json carries the app's own additions, so a re-extraction can't eat them.
         MergeTables(ReadData("tables.json"));
         MergeTables(ReadData("tables_extra.json"));
+        BorrowGrounds();
 
         Rides = JsonSerializer.Deserialize<List<RideTemplate>>(ReadData("rides.json"), opts) ?? new();
     }
+
+    /// <summary>The grounds the MAP can draw that the BESTIARY has not yet named, given an
+    /// encounter table borrowed from the book's nearest kin.
+    ///
+    /// <para>MapGen.Terrains grew past the Bestiary's nine — deep timber, bayou, canyon, shortgrass,
+    /// brush country, alkali and the coast marshes — and the Grounds generator reads Db.Terrain, so
+    /// a Keeper who surveyed a bayou could not roll an encounter on one. The fix is deliberately
+    /// NOT to invent creatures: the Appendix is transcription, and writing new rows into it here
+    /// would put the app and the Bestiary in disagreement, which is the one thing this project's
+    /// discipline exists to prevent. Each new ground therefore takes the UNION of the book's
+    /// grounds nearest to it, deduplicated. Every entry a Keeper rolls is a creature the Bestiary
+    /// actually prints.</para>
+    ///
+    /// <para>Only ever ADDS keys. If a later Bestiary names one of these grounds for itself, the
+    /// JSON wins and this leaves it alone — so promoting a ground into the book is one edit to the
+    /// data and nothing here to remember.</para></summary>
+    static readonly (string ground, string[] from)[] BorrowedGrounds =
+    {
+        ("Pinewoods & the Deep Timber",
+            new[] { "The Trail & the Open Range", "Winter & the High Country", "The Old Places" }),
+        ("Bayou, Cypress & the Delta",
+            new[] { "Rivers, Lakes & Swamps", "Graveyards & Battlefields", "The Old Places" }),
+        ("Canyon Country & the Mesas",
+            new[] { "Desert & the Badlands", "Mines & Under the Earth", "The Old Places" }),
+        ("Shortgrass & the Staked Plain",
+            new[] { "The Trail & the Open Range", "Graveyards & Battlefields" }),
+        ("Brush Country & the Border",
+            new[] { "Desert & the Badlands", "The Trail & the Open Range" }),
+        ("Salt Flats & the Alkali Sink",
+            new[] { "Desert & the Badlands", "The Old Places" }),
+        ("The Gulf Coast & the Marshes",
+            new[] { "Rivers, Lakes & Swamps", "The Trail & the Open Range" }),
+    };
+
+    static void BorrowGrounds()
+    {
+        foreach (var (ground, from) in BorrowedGrounds)
+        {
+            if (Terrain.ContainsKey(ground)) continue;        // the book named it: the book wins
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var rows = new List<string>();
+            foreach (var kin in from)
+                if (Terrain.TryGetValue(kin, out var l))
+                    foreach (var row in l)
+                        if (seen.Add(row)) rows.Add(row);
+            if (rows.Count > 0) Terrain[ground] = rows;
+        }
+    }
+
+    /// <summary>True when a ground's encounter table was borrowed from the book's nearest kin
+    /// rather than printed for it — so the Generators tab can say so instead of implying the
+    /// Bestiary has a page it does not.</summary>
+    public static bool GroundIsBorrowed(string ground) =>
+        System.Array.Exists(BorrowedGrounds, g => g.ground == ground);
 
     /// The roster of mounts and vehicles a Keeper can put in the corral or the yard.
     public static List<RideTemplate> Rides { get; private set; } = new();
