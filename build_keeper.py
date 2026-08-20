@@ -32,16 +32,19 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.26 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.12 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.26)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.12)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.13 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.13)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.26</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.12</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.13</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.26 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.12 · For the Keeper Alone</p>'),
+ ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.27 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.13 · For the Keeper Alone</p>'),
 ]
-for a,b in _meta:
-    if a in H: H = H.replace(a,b,1)
+for a, b in _meta:
+    # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
+    # shipped three modules wearing the Player's Book title. Say so instead of guessing.
+    assert a in H, "the Player's Book cover no longer carries: " + a[:70]
+    H = H.replace(a, b, 1)
 
 # replace the two carried-over Player's epigraph quotes with Keeper-specific ones
 import re as _re
@@ -410,7 +413,8 @@ CH3 = f"""<!-- III -->
     </tbody>
   </table>
   <p>Afflictions heal slowly and seldom on their own. A full season of safety, a true sanctification, the care of an
-  Alienist (a Sawbones art &mdash; Player's Book, Ch. V), or the facing-down of the very thing that caused it may lift one. Some will not
+  Alienist &mdash; a doctor of the mind, and an art of the Sawbones, which is what the West called a doctor (Player's Book,
+  Ch. V) &mdash; or the facing-down of the very thing that caused it may lift one. Some will not
   fade until the larger wrong of the campaign is righted &mdash; and that is the point of them.</p>
   <div class="keeper-note"><span class="kn-tag">A kindness</span>An Affliction is a story hook, not a punishment. Name
   it, let the table watch it work on their friend, and offer &mdash; somewhere down the trail &mdash; a hard road to
