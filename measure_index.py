@@ -65,13 +65,36 @@ untoc = [e for e in desk["toc2"] if e["pg"] in ("", "0", None)]
 assert not untoc, f"unresolved detailed-TOC anchors: {untoc[:8]}"
 print(f"detailed TOC: {len(desk['toc2'])} lines, all anchors resolved")
 
-# ---- verify the source's simple-TOC chapter statics vs rendered detailed TOC ----
+# ---- patch the source's simple-TOC chapter statics from the rendered detailed TOC ----
+# Reported rather than patched until 2026-08-19, which let the contents page drift by as much as
+# thirty-two pages: it offered Callings on 29 when they render on 38, and the Ledger on 164 when it
+# is on 196. Every one of these is rewritten from the real page the moment the book opens in a
+# browser, so nobody reading it on a screen ever saw the wrong number -- and the one reader who
+# does see it, the one who has printed the file or turned JavaScript off, is the reader a fallback
+# exists for. Scoped to the <ul class="toc"> block so the index below it keeps its own pass.
 src = open("build_player.py", encoding="utf-8").read()
 toc2map = {e["a"]: e["pg"] for e in desk["toc2"]}
-for m in re.finditer(r'<li><a href="(#[\w-]+)">[^<]*</a><span class="pg">(\d+)</span></li>', src):
-    href, stat = m.group(1), m.group(2)
-    if href in toc2map and href != "#index" and toc2map[href] != stat:
-        print(f"  TOC drift: {href} static {stat} vs rendered {toc2map[href]}")
+tu = src.index('<ul class="toc">'); te = src.index("</ul>", tu)
+moved = []
+
+
+def _toc(m):
+    href, stat = m.group(2), m.group(3)
+    want = toc2map.get(href)
+    if want is None or href == "#index" or want == stat:
+        return m.group(0)
+    moved.append((href, stat, want))
+    return m.group(1) + want + m.group(4)
+
+
+src = (src[:tu]
+       + re.sub(r'(<li><a href="(#[\w-]+)">[^<]*</a><span class="pg">)(\d+)(</span></li>)',
+                _toc, src[tu:te])
+       + src[te:])
+for href, was, now in moved:
+    print(f"  contents: {href} {was} -> {now}")
+if not moved:
+    print("  contents: every chapter line already on the right page")
 
 # ---- patch index statics + TOC index line ----
 iu = src.index('<ul class="ix">'); ie = src.index("</ul>", iu)
@@ -97,5 +120,5 @@ with sync_playwright() as pw:
     final = render(b.new_page(viewport={"width": 1400, "height": 1000}), url)
     b.close()
 assert final["pages"] == desk["pages"], "page count changed after patch"
-print(f"patched {len(desk['ix'])} index entries; TOC Index -> p.{tocpg}; "
-      f"final {final['pages']} pages; build idempotent ({h1[:8]})")
+print(f"patched {len(desk['ix'])} index entries and {len(moved)} contents line(s); "
+      f"TOC Index -> p.{tocpg}; final {final['pages']} pages; build idempotent ({h1[:8]})")

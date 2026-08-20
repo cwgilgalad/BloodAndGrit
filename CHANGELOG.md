@@ -8,6 +8,72 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.27 · Keeper's Book v2.13 — the country gets a glossary, and the contents page
+  gets the right pages (2026-08-19).** A reader asked what a *sawbones* is, which is a fair question
+  in 2026 and one the book had never troubled to answer. It answers it three times over now. Chapter
+  III opens the Callings with **Words of the Country**, a gold box glossing the dozen frontier terms
+  the book uses without introduction — sawbones, alienist, iron, shootist, road agent, laudanum,
+  drover and remuda, greenhorn, grubstake and assay, proving up, arroyo, Pinkerton. The Chapter V
+  roster names *"Sawbones (the frontier's word for a doctor)"* where it first lists the eight Worldly
+  Callings, the Sawbones entry itself now opens by saying what the word means before it says what the
+  trade costs, and the Index carries *Sawbones (the word)* pointing at the glossary beside *Sawbones
+  (Calling)* pointing at the chapter. The Keeper's Book does the same favour for *Alienist*, which it
+  had been using in the Afflictions rules as though everyone knew it was a doctor of the mind.
+
+  Separately, and found while rebuilding: **the contents page had drifted by as much as thirty-two
+  pages.** It offered Callings on 29 where they render on 38, the Ledger on 164 where it is on 196.
+  Nobody reading in a browser ever saw a wrong number — the paginator rewrites every `span.pg` from
+  the real page as the book opens — but the static number is the fallback for a reader who has
+  printed the file or turned JavaScript off, and a fallback that is wrong is worse than none.
+  `measure_index.py` had been *reporting* that drift for months while patching only the index below
+  it. It patches both now, and the twenty chapter lines are on the pages they say.
+
+- **GritKeeper v1.42.0 — the Callings can be played from the Tracker, and the app finally says
+  what a Sawbones is (2026-08-19).** Two halves of one complaint. A player asked what the word
+  *sawbones* means, which nobody at a table in 2026 is expected to know, and the app's Calling
+  picker turned out to have no answer: it could tell you a Sawbones rolls a d8 for Blood and could
+  not tell you the word is the frontier's name for a doctor, after the saw in the bag. Every
+  Calling now carries a **blurb** — its opening words in the Player's Book — in the picker, in its
+  tooltip, and at the head of its card. The blurb is derived rather than typed: the opening
+  paragraph, whole sentences, until there are ninety characters, which is what it takes to carry
+  the short ones (*"Where the Preacher improvises, the Padre inherits"* says nothing standing
+  alone) without dragging the Shaman's entire first breath into a tooltip.
+
+  The other half is that **thirty-one of the hundred and sixteen class features carry a limit the
+  book states plainly and nothing in the app counted.** Once per session, once per scene, a number
+  of times per scene equal to your PRE modifier. A Marshal's Last Stand is the reason the Marshal
+  is at the table on the night it matters, and whether it had already been spent was a question
+  four people answered differently. The Tracker now carries a **Calling strip** under the field:
+  one card per rationed feature, the count on its face, the book's whole rule in its tooltip, a
+  button that spends one and a ↺ that gives it back. What returns it is the boundary that already
+  existed — a new fight for the once-a-scene things, a long rest for the ones prepared at dawn, the
+  New session button for the fourteen the book allows once a night. The turn hands back the
+  once-a-turn features on its own, so nobody has to press anything for those at all. **Read the
+  Calling ▸** opens the whole list, rationed or not, in the book's words, and the Ledger sheet
+  prints the same tally beside the same features.
+
+  Reading the features properly meant reading them at all, and **the transcription turned out to be
+  rotten in four separate ways.** Twenty of the descriptions stopped dead at exactly 420
+  characters, most of them mid-word: a Prospector was told his Powderman blast rises "to 3d6 at 4th
+  level, 4d6 at 7th, and 5d6 at 10" and that was the end of the sentence, the feature, and his
+  understanding of it. Seven had gone stale against a book that had moved — the app still described
+  Signs the way Ch. XIII read before the Common Signs and the Bargain were split into Ranks, so a
+  Hexer picking from the app and a Hexer picking from the book were choosing off two different
+  lists. Three had swallowed the pull-quote that follows the feature and printed a dead Marshal's
+  epitaph as a rule. And seventeen of the fifty-six 3rd-level paths had swallowed the printed
+  page's furniture: choosing The Mechanic told you his mastery lets you *"take the better result on
+  every roll for a round. 13 V. Worldly CallingsBlood & Grit"*, folio and running head sitting
+  inside the rule.
+
+  All of it is repaired from the book and **all of it is now audited**. `audits/verify_rules.py`
+  reads the Player's Book the way a reader does — heading to heading, cutting pull-quotes and stat
+  tables on the way through — and holds every description, every path and every blurb up against
+  it: 980 cross-checks, up from 791. The Calling tables had been guarded since the beginning and
+  the paragraphs printed beside them were not, which is the same lesson the arms table taught in
+  v1.40.1 and the same one this file wrote down then: **anything transcribed out of a book gets an
+  auditor in the same session.** Two thousand words of rules had been drifting in plain sight for
+  months with every test in the repo green.
+
 - **GritKeeper v1.41.0 — the Encounter tab builds the four fights Ch. IV names (2026-08-16).**
   The chapter prices a fight on a scale: *"Spend the budget for a **standard** fight the party
   should win bloodied. Spend half for an **easy** one; spend half again over for a **hard** one;

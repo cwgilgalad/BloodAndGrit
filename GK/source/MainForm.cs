@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.Json;
 
 namespace BloodAndGritKeeper;
@@ -634,6 +634,27 @@ public partial class MainForm : Sheet
     /// PrimaryBtn and DangerBtn set their own border AFTER this returns, so the first blur would
     /// have reset a red-edged button to a hairline one. A ring drawn over the top belongs to no
     /// weight in particular and so cannot overwrite any of them.</para></summary>
+    /// <summary>Break a long line by hand. A tooltip is drawn as one unbroken line otherwise, and
+    /// so is a feature's whole rule in the Calling card. Lived inside the wizard until v1.42.0,
+    /// where the Tracker could not reach it.</summary>
+    static string Wrap(string t, int width = 84)
+    {
+        if (string.IsNullOrEmpty(t)) return t;
+        var sb = new System.Text.StringBuilder();
+        foreach (var para in t.Split('\n'))
+        {
+            int line = 0;
+            foreach (var word in para.Split(' '))
+            {
+                if (line > 0 && line + word.Length + 1 > width) { sb.Append('\n'); line = 0; }
+                else if (line > 0) { sb.Append(' '); line++; }
+                sb.Append(word); line += word.Length;
+            }
+            sb.Append('\n');
+        }
+        return sb.ToString().TrimEnd('\n');
+    }
+
     internal static Button Btn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = new Button { Text = text, Width = w, Height = 32, Margin = new Padding(3) };
@@ -1874,10 +1895,20 @@ public partial class MainForm : Sheet
             ("A week of true peace  (all of it)", (s, e) => Steady(true, null, "takes a week of true peace")),
             ("Steady by hand…", (s, e) => SteadyByHand(true))));
 
+        // A new session is the boundary the book rations fourteen features by — Last Stand,
+        // Miracle Worker, Hands of Life, the one great thing a Calling may do in a night — and
+        // until v1.42.0 nothing in the app handed any of them back, because nothing counted them
+        // in the first place. This button already meant "the last night is over"; now it says so
+        // to the feature ledger too.
+        //
+        // (Kept above the call rather than inside it: audit_ui.py walks a call character by
+        // character and reads an apostrophe as the start of a char literal, so a comment about a
+        // Marshal's Last Stand written between these parentheses eats the tooltip behind it.)
         bar.Controls.Add(Btn("New session", (s, e) =>
         {
-            if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, and refreshes the "
-                       + "faith pool for every soul. Blood is not healed — that is what Rest is for.")) return;
+            if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, refreshes the faith "
+                       + "pool, and hands back every once-a-session feature. Blood is not healed — "
+                       + "that is what Rest is for.")) return;
             // Grit is "three per soul, refreshed each session" (Ch. XIII) and Nerve comes back with
             // safety. The faith pool "refreshes with the dawn" (Ch. VI), and a new session opens on
             // a new day — leaving it out meant a Padre sat down to every session with an empty pool
@@ -1885,9 +1916,12 @@ public partial class MainForm : Sheet
             // rest they had not earned. Blood is deliberately untouched: wounds carry.
             foreach (var p in party) { p.NerveCur = p.NerveMax; p.Grit = 3; p.PoolCur = p.PoolMax; }
             int faithful = party.Count(p => p.PoolMax > 0);
+            int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
+            RefreshCalling();
             Log("New session — Nerve refilled and Grit reset to 3 for the whole posse"
-                + (faithful > 0 ? $", and the faith pool refreshed for {faithful} of them." : "."));
-        }, 100, "Refill Nerve, reset Grit, and refresh the faith pool for everyone"));
+                + (faithful > 0 ? $", and the faith pool refreshed for {faithful} of them." : ".")
+                + (given > 0 ? " " + given + (given == 1 ? " rationed feature comes" : " rationed features come") + " back with it." : ""));
+        }, 100, "Refill Nerve, reset Grit, refresh the faith pool, and hand back every once-a-session feature"));
         bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest — restore Blood and Nerve to full",
             ("Whole posse — heal to full", (s, e) => RestPosse()),
             ("Selected soul — heal to full", (s, e) => RestSoul(SelectedPC()))));
@@ -1999,7 +2033,10 @@ public partial class MainForm : Sheet
         if (!Confirm("A long rest for the whole posse? Restores every soul's Blood, Nerve, and pool to full.")) return;
         foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; MirrorToTracker(p); }
         posseGrid?.Refresh();
-        Log("The posse takes a long rest — Blood, Nerve, and the day's pool restored to full.");
+        int gave = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Dawn));
+        RefreshCalling();
+        Log("The posse takes a long rest — Blood, Nerve, and the day's pool restored to full."
+            + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
     }
 
     void RestSoul(PartyMember p)
@@ -2007,7 +2044,10 @@ public partial class MainForm : Sheet
         if (p == null) { Nope(NoSoulPicked); return; }
         p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax;
         MirrorToTracker(p); posseGrid?.Refresh();
-        Log($"{p.Name} rests — Blood, Nerve, and pool restored to full.");
+        int gave = CharGen.RefreshFeatures(p, FeatureCadence.Dawn);
+        RefreshCalling();
+        Log($"{p.Name} rests — Blood, Nerve, and pool restored to full."
+            + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
     }
 
     // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
