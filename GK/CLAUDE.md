@@ -328,6 +328,86 @@ into its traits string, and left out Fists / Boots and the book's whole second t
 cross-checks now, up from 697. **Any new book table transcribed into `chargen.json` gets an auditor
 in the same session** — that is the lesson, and it is cheaper than the six months this one cost.
 
+## The prose beside the tables is audited too (2026-08-19)
+
+Same lesson, second helping. The Calling tables were guarded and the paragraphs printed next to
+them were not, so a hand transcription rotted in place: twenty of the 116 `featureDescs` stopped
+dead at exactly 420 characters, most of them mid-word. A Prospector reading Powderman in this app
+was told his blast rises "to 3d6 at 4th level, 4d6 at 7th, and 5d6 at 10" — and that was the end
+of the sentence, the feature, and his understanding of it. Seven more had gone stale against the
+book: the app still described Signs the way Ch. XIII read before the Common Signs and the Bargain
+were split into Ranks, so a Hexer picking from the app and a Hexer picking from the book were
+choosing off two different lists. Three had swallowed the pull-quote that follows the feature,
+attribution and all, and printed a dead Marshal's epitaph as if it were a rule.
+
+`check_features` in `audits/verify_rules.py` reads the book the way a reader does — heading to
+heading — cutting pull-quotes and stat tables on the way through, and holds every transcription
+up against it. It also re-derives each Calling's **blurb**, the opening words the wizard's picker
+shows, by rule rather than by trust: the opening paragraph, whole sentences, until there are
+ninety characters. Ninety is what it takes to carry the short ones — *"Where the Preacher
+improvises, the Padre inherits"* means nothing standing alone — without dragging the Shaman's
+entire first breath into a tooltip.
+
+`check_subpaths` reads the 3rd-level paths the same way, and found worse. Seventeen of the
+fifty-six boons had swallowed the printed page's furniture: a player choosing The Mechanic was
+told his mastery lets him *"take the better result on every roll for a round. 13 V. Worldly
+CallingsBlood & Grit"* — folio, running head and book title, sitting inside the rule where a
+sentence should end. Three more stopped at exactly 400 characters. 980 cross-checks now.
+
+The blurb exists because the picker could tell you a Sawbones rolls a d8 for Blood and could not
+tell you what a sawbones **is**. It is the frontier's word for a doctor, after the saw in the bag,
+and a player who has never met the word now reads that before they choose.
+
+## The Callings are playable from the Tracker (v1.42.0)
+
+Every number a posse soul has was on the Tracker and every rule they had was not. A Marshal's
+player asking "can I still Last Stand?" was asking a question the app held all the parts of — the
+Calling, the level, the book's own sentence — and had nowhere to put.
+
+**`CharGen.ReadLimit` reads how often a feature may be used out of the feature's own prose**, and
+that is deliberate: a `uses` column typed into `chargen.json` beside the description would be a
+second copy of a fact, and the twenty descriptions repaired the same day are what a second copy
+does when nobody audits it. Thirty-one of the hundred and sixteen features state a limit on an
+*activation* — "Once per session, when an ally within sight would drop to 0 Blood…", "Usable a
+number of times per scene equal to your PRE modifier (minimum 1)" — and those are what the reader
+matches. Sentences about something ongoing are deliberately left alone: *"allies inside recover
+Nerve each round"* is not a thing anybody presses, and a counter beside a feature nobody activates
+teaches a Keeper to stop trusting the counters that matter.
+
+`FeatureCadence` is ordered on purpose — Turn, Round, Scene, Dawn, Trigger, Session — because the
+reset rule is "everything at or below the boundary that just passed comes back". A scene returns
+the turn, round and scene features and leaves the once-a-session ones spent. **Trigger** is the odd
+one and the book has two: the Witch Hunter's Judgment returns "when you name a new quarry" and the
+Sawbones' Field Surgery is "once per wound". No clock returns those, so nothing but the Keeper's
+hand and a new session does either.
+
+**What returns a feature is a boundary the app already had.** New fight and Restore field are the
+scene; Rest is the dawn; New session is the night. `NextTurn` hands back the once-a-turn features
+on its own and `NextRound` the once-a-round ones for the whole posse, so nobody presses anything
+for those. Nothing new was invented for a Keeper to remember.
+
+Two seams worth knowing about, both found by writing the reader:
+
+- **`CharGen.FeatureKey` is the one place a level table's name and a prose heading are reconciled.**
+  The table prints the die in the column — "Judgment 3d8", "Dead Aim +1d6" — and three features can
+  share one heading, as the Drifter's *Ghost / Uncanny Step / Vanish* does. Those three chained
+  lookups used to sit inline in `CharGen.Render`, where nothing else could reach them.
+- **The 3rd-level path is found by the suffix the book prints**, not by "this name has no
+  description". Every Calling has a `<Word>` at 3rd and a `<Word> Mastery` at 10th — `(Greater)` at
+  9th for the three of the Old Dark — and the rules live in `subpath.options`, one boon apiece.
+  The Dark Cultist is why the rule has to be structural: their table prints **Devotion** at 1st for
+  the pool they spend and **Devotion** again at 3rd for the path they walk, and a rule that keys off
+  a missing description gives the second one the first one's text.
+
+`PartyMember.FeatureSpent` stores what has been spent rather than what is left, so a soul who levels
+up into more uses does not need topping up: the maximum is re-derived from the sheet every time the
+strip is drawn. It is a public property, so it rides along in `session.json` without being told.
+
+One trap, and it cost half an hour: **`audits/audit_ui.py` walks a call character by character and
+reads an apostrophe as the start of a char literal.** A comment about "a Marshal's Last Stand"
+written between the parentheses of a `Btn(...)` call swallows everything after it, and the tooltip
+behind the comment vanishes from the audit. Keep prose comments above the call.
+
 ## The Beats are enforced, and a refusal says why (v1.38.0)
 
 `Rules.CanSpendBeats(c, n)` and `Rules.WhyNoBeats(c, n)` are a pair on purpose: the answer and the

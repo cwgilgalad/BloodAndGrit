@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.26 · Keeper's Book v2.12 · Bestiary v2.11 ·
-GritKeeper app v1.41.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.27 · Keeper's Book v2.13 · Bestiary v2.11 ·
+GritKeeper app v1.42.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -289,7 +289,9 @@ still runs automatically, and only on `main` and pull requests.
 - **JS valid** — extract the `<script>` and run `node --check`.
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
-  seventeen Calling tables against `chargen.json` and the spine formula (697 cross-checks).
+  seventeen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
+  since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
+  player (980 cross-checks).
 - **No two modules have the same name** — `python audits/audit_names.py`. The only auditor here that reads
   more than one artifact, and it exists because of what that gap cost: every other check asks
   whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
@@ -501,7 +503,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.41.0) — the C# desktop app
+## GritKeeper (v1.42.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

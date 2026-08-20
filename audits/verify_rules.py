@@ -15,6 +15,7 @@ and asserts the book agrees with the data AND both agree with the one spine form
 Run it in the verify step (it needs a current blood-and-grit.html). Exit code 0 = the book, the
 data, and the formula are one; non-zero = a drift the eye would have missed.
 """
+import html
 import json
 import re
 import sys
@@ -176,6 +177,185 @@ def check_arms(problems):
     return checks
 
 
+# ------------------------------------------------- the Calling prose beside the tables
+
+# Added 2026-08-19, and this one is worth the paragraph. The Calling *tables* were guarded from the
+# beginning; the prose printed beside them was not. Every value in a Calling's featureDescs is a
+# hand transcription of a heading and its paragraphs in the Player's Book, and twenty-six of them
+# had been cut off at exactly 420 characters -- mid-word, mid-rule -- while every test in this repo
+# stayed green. A player reading the Prospector's Powderman in GritKeeper was told his blast rose
+# "to 3d6 at 4th level, 4d6 at 7th, and 5d6 at 10" and nothing after that. Seven more had gone
+# quietly stale: the app still described Signs the way the book described them before the Common
+# Signs and the Bargain were split into Ranks, so the app and the book gave a Hexer two different
+# lists to choose from. Three had swallowed the pull-quote that follows the feature, attribution
+# and all, and printed it as if it were a rule.
+#
+# So read the prose the way a reader reads it -- heading by heading, to the next heading -- and
+# hold the transcription up against it. Pull-quotes and stat tables are cut on the way through: a
+# quote is not a rule, and a table is read from the table.
+
+HEAD_RE = re.compile(r"<h([234])\b[^>]*>(.*?)</h\1>", re.S)
+QUOTE_RE = re.compile(r'<div class="quote">.*?</div>', re.S)
+TABLE_RE = re.compile(r"<table\b.*?</table>", re.S)
+BLOCK_END_RE = re.compile(r"</(?:p|li|h[1-6]|div|td|tr|ul|ol)>")
+TAG_RE = re.compile(r"<[^>]+>")
+
+# The book prints curly quotes; chargen.json is typed with straight ones. Compare across the
+# difference rather than pretending it is drift.
+CURLY = {0x2018: "'", 0x2019: "'", 0x201c: '"', 0x201d: '"'}
+
+# A level table names a feature in as few words as fit the column; the prose heads its own section
+# in full. Where the two differ on purpose, say so here rather than renaming one of them.
+FEATURE_ALIAS = {("Witch Hunter", "Zeal"): "Zeal & the Consecrations"}
+
+
+def _prose(chunk):
+    chunk = QUOTE_RE.sub(" ", chunk)
+    chunk = TABLE_RE.sub(" ", chunk)
+    chunk = BLOCK_END_RE.sub(" ", chunk)
+    return _tidy(TAG_RE.sub("", chunk))
+
+
+def _tidy(s):
+    return re.sub(r"\s+", " ", html.unescape(s).translate(CURLY)).strip()
+
+
+def load_book_features():
+    """{Calling: {heading: the prose under it}} -- everything from an h2 id="ix-c-..." to the next h2."""
+    text = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    starts = [m.start() for m in re.finditer(r"<h2\b", text)]
+    out = {}
+    for m in re.finditer(r'<h2 id="ix-c-[^"]*">(.*?)</h2>', text, re.S):
+        stop = next((p for p in starts if p > m.start()), len(text))
+        section = text[m.end():stop]
+        heads = list(HEAD_RE.finditer(section))
+        feats = {}
+        for i, h in enumerate(heads):
+            nxt = heads[i + 1].start() if i + 1 < len(heads) else len(section)
+            body = _prose(section[h.end():nxt])
+            if body:
+                feats.setdefault(_tidy(TAG_RE.sub("", h.group(2))), body)
+        out[_tidy(TAG_RE.sub("", m.group(1)))] = feats
+    return out
+
+
+# The picker used to tell a player everything about a Calling except what it is, which is how a
+# table ends up with someone who picked the Sawbones without knowing the word means a doctor. Each
+# Calling now carries a blurb, and a blurb is DERIVED, not typed: the Calling's opening paragraph
+# in the book, whole sentences, until there are at least ninety characters. Ninety is what it takes
+# to carry the short ones -- "Where the Preacher improvises, the Padre inherits" says nothing on
+# its own -- without dragging the Shaman's entire first breath into a tooltip.
+
+BLURB_MIN = 90
+SENTENCE_RE = re.compile(r'(?<=[.!?])\s+(?=[A-Z"])')
+
+
+def blurb_from(opening):
+    out = ""
+    for part in SENTENCE_RE.split(opening):
+        out = (out + " " + part).strip()
+        if len(out) >= BLURB_MIN:
+            break
+    return out
+
+
+def load_book_blurbs():
+    """{Calling: the opening words the picker should be showing}."""
+    text = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    out = {}
+    for m in re.finditer(r'<h2 id="ix-c-[^"]*">(.*?)</h2>(.*?)<table class="lvl">', text, re.S):
+        paras = [p for p in re.findall(r"<p>(.*?)</p>", m.group(2), re.S) if 'class="statline"' not in p]
+        if paras:
+            out[_tidy(TAG_RE.sub("", m.group(1)))] = blurb_from(_tidy(TAG_RE.sub("", paras[0])))
+    return out
+
+
+# ------------------------------------------------- the 3rd-level paths beside the features
+
+# Found on the same day and by the same reasoning as the feature prose above, and the damage was
+# worse. Every Calling offers a handful of paths at 3rd level -- Games of the Gambler, Oaths of
+# Office, Witch's Crafts -- and each one is a bolded list item in the book copied by hand into
+# chargen.json. Seventeen of the fifty-six had swallowed the PAGE FURNITURE on the way out: a
+# player choosing The Mechanic read "...take the better result on every roll for a round. 13
+# V. Worldly CallingsBlood & Grit", folio and running head and all, as though it were part of the
+# rule. Three more stopped dead at exactly 400 characters. Nothing read them, so nothing said so.
+
+BOLD_LI_RE = re.compile(r"<li\b[^>]*>\s*<strong>(.*?)</strong>(.*?)</li>", re.S)
+
+
+def load_book_boons():
+    """{bolded name: [the text that follows it]} -- a name can be printed more than once."""
+    text = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    out = {}
+    for m in BOLD_LI_RE.finditer(text):
+        out.setdefault(_tidy(TAG_RE.sub("", m.group(1))).rstrip("."), []).append(_prose(m.group(2)))
+    return out
+
+
+def check_subpaths(problems):
+    book = load_book_boons()
+    data = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    checks = 0
+    for c in data["callings"]:
+        sub = c.get("subpath")
+        if not sub:
+            problems.append(f"{c['name']}: no 3rd-level path in the data")
+            continue
+        for opt in sub.get("options", []):
+            checks += 1
+            said = _tidy(opt.get("boon") or "")
+            printed = book.get(_tidy(opt["name"]).rstrip("."))
+            if not printed:
+                problems.append(f"{c['name']} / {opt['name']}: the book prints no such path")
+            elif said not in printed:
+                best = max(printed, key=lambda p: len(set(p.split()) & set(said.split())))
+                at = next((i for i in range(min(len(best), len(said))) if best[i] != said[i]),
+                          min(len(best), len(said)))
+                what = ("the app stops early" if best.startswith(said) else
+                        "the app runs past the book" if said.startswith(best) else
+                        "the wording differs")
+                problems.append(f"{c['name']} / {opt['name']}: {what} at character {at} "
+                                f"(book {len(best)} chars, data {len(said)}); "
+                                f"book: ...{best[at:at + 70]!r}")
+    return checks
+
+
+def check_features(problems):
+    book = load_book_features()
+    blurbs = load_book_blurbs()
+    data = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    checks = 0
+    for c in data["callings"]:
+        checks += 1
+        want = blurbs.get(c["name"])
+        if want is None:
+            problems.append(f"{c['name']}: no opening paragraph found in the book")
+        elif _tidy(c.get("blurb") or "") != want:
+            problems.append(f"{c['name']}: blurb is not the book's opening words; "
+                            f"book says {want!r}")
+        feats = book.get(c["name"])
+        if feats is None:
+            problems.append(f"{c['name']}: no Calling section found in the book")
+            continue
+        for key, said in (c.get("featureDescs") or {}).items():
+            checks += 1
+            heading = FEATURE_ALIAS.get((c["name"], _tidy(key)), _tidy(key))
+            prints = feats.get(heading)
+            if prints is None:
+                problems.append(f"{c['name']} / {key}: the book has no such heading")
+            elif prints != _tidy(said):
+                said = _tidy(said)
+                at = next((i for i in range(min(len(prints), len(said))) if prints[i] != said[i]),
+                          min(len(prints), len(said)))
+                what = ("the app stops early" if prints.startswith(said) else
+                        "the app runs past the book" if said.startswith(prints) else
+                        "the wording differs")
+                problems.append(f"{c['name']} / {key}: {what} at character {at} "
+                                f"(book {len(prints)} chars, data {len(said)}); "
+                                f"book: ...{prints[at:at + 70]!r}")
+    return checks
+
+
 def main():
     data, book = load_data(), load_book()
     problems = []
@@ -209,13 +389,16 @@ def main():
 
     checks = sum(1 + 10 * 4 for _ in data)   # rank + 10 levels × (atk + 3 saves), per Calling
     checks += check_arms(problems)
+    checks += check_features(problems)
+    checks += check_subpaths(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
-    print(f"book <-> data <-> formula: in step across {len(data)} Callings and the arms table "
-          f"({checks} cross-checks, 0 drift).")
+    print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
+          f"prose, their 3rd-level paths, and the arms table ({checks} cross-checks, "
+          f"0 drift).")
     return 0
 
 

@@ -590,6 +590,7 @@ public partial class MainForm
         ShowRound();
         UpdateTurnLine();
         ShowTurnFace();
+        RefreshCalling();
     }
 
     /// <summary>Say in words what the turn state is, because Beats and the MAP step are small
@@ -1422,7 +1423,11 @@ public partial class MainForm
 
             MISep(menu);
             if (!string.IsNullOrEmpty(c.Ref)) MI(menu, "Open the stat block", () => { if (Db.Find(c.Ref) is Creature b) ShowCreatureCard(b); });
-            else if (c.IsPC && SoulOf(c) is PartyMember soul) MI(menu, "Open the Ledger", () => ShowSoulCard(soul));
+            else if (c.IsPC && SoulOf(c) is PartyMember soul)
+            {
+                MI(menu, "Open the Ledger", () => ShowSoulCard(soul));
+                MI(menu, "Read the Calling", () => ShowCallingCard(soul));
+            }
             MI(menu, "Take them off the field", () => RemoveSelectedCombatant());
         });
 
@@ -1452,10 +1457,23 @@ public partial class MainForm
         head.Controls.Add(bar, 0, 0);
         head.Controls.Add(BuildTurnGlass(), 1, 0);
 
+        // Docked bottom, and added between the grid and the sign strip so the resolution order
+        // reads head, sign, Calling, grid: the field keeps the middle and grows into whatever the
+        // strip is not using.
+        callingPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Bottom, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Visible = false,
+            Padding = new Padding(8, 6, 8, 6), BackColor = StripBack
+        };
+
         page.Controls.Add(trkGrid);
+        page.Controls.Add(callingPanel);
         page.Controls.Add(signPanel);
         page.Controls.Add(head);
         RefreshSigns();
+        trkGrid.SelectionChanged += (s, e) => RefreshCalling();
+        RefreshCalling();
 
         // empty-state hint — the tracker fills from OTHER tabs, which is invisible until told
         var hint = new Label
@@ -1611,6 +1629,8 @@ public partial class MainForm
         // and who was still to go when they did.
         Daybook.Note("turn", $"round {round}: {up.Name} (init {up.Init}) — still to go: "
             + (string.Join(", ", Rules.InTurnOrder(tracker.Where(Rules.CanAct)).Select(c => c.Name)) is { Length: > 0 } rest ? rest : "nobody"));
+        if (SoulOf(up) is PartyMember soul) CharGen.RefreshFeatures(soul, FeatureCadence.Turn);
+        RefreshCalling();
         Log($"{up.Name}'s turn — 3 Beats, a clean shot.");
     }
 
@@ -1618,6 +1638,9 @@ public partial class MainForm
     {
         round++;
         ShowRound();
+        // Once-a-round features belong to the round, not to the soul's own turn — a Gambler who
+        // has not acted yet this round still gets their Stack the Odds when the round turns over.
+        foreach (var p in party) CharGen.RefreshFeatures(p, FeatureCadence.Round);
         // A new round means nobody has been handed the turn yet — the gold row would otherwise
         // sit on last round's combatant and read as though they were still up. The "Last" notes go
         // with it: they answer "what just happened", and at the top of a round nothing has.
@@ -1837,6 +1860,7 @@ public partial class MainForm
         // and nothing still working from the last one (Rules.ResetForNewFight, so it is testable)
         Rules.ResetForNewFight(tracker);
         round = 1; ShowRound(); RefreshTracker();
+        ReturnFeatures(FeatureCadence.Scene, "A new fight");
         Log("New fight — foes cleared, the trail wiped, the posse holds the field, Round 1.");
     }
 
@@ -1868,6 +1892,171 @@ public partial class MainForm
         Log($"{name} — the trace, not the thing. Survival DC {readDc} to read it"
             + (dreadDc == 0 ? ", and it costs no Nerve" : $", Dread DC {dreadDc}")
             + $". A {Rules.SpoorClockSegments}-segment clock; a full one is the night it comes in the flesh.");
+    }
+
+    // ---- the Calling strip: what this soul can DO, under the field, where their turn is ----
+
+    // Every number a posse soul has was on this tab and every rule they had was not. A Marshal's
+    // player asking "can I still Last Stand?" was asking a question the app held the answer to —
+    // the Calling, the level, the book's own sentence — and had no place to put. The strip is that
+    // place: one card per limited feature, the count on its face, the whole rule in its tooltip.
+    //
+    // Under the grid rather than over it, and only for the posse, because the field is what a
+    // Keeper watches and the Calling is what a player asks about. Hidden outright when the
+    // selected row has nothing to show, the same way the sign strip is.
+    FlowLayoutPanel callingPanel;
+
+    static readonly Color StripBack = Color.FromArgb(240, 234, 216);
+
+    /// <summary>Rebuild the Calling strip for whoever is selected on the field.</summary>
+    void RefreshCalling()
+    {
+        if (callingPanel == null) return;
+        var soul = trkGrid?.CurrentRow?.DataBoundItem is Combatant c ? SoulOf(c) : null;
+
+        callingPanel.SuspendLayout();
+        foreach (Control old in callingPanel.Controls.Cast<Control>().ToList())
+        { callingPanel.Controls.Remove(old); old.Dispose(); }
+
+        var ledger = soul == null ? new() : CharGen.LedgerFor(soul);
+        if (soul == null || string.IsNullOrEmpty(soul.Calling))
+        { callingPanel.Visible = false; callingPanel.ResumeLayout(); return; }
+
+        var head = new Label
+        {
+            Text = ledger.Count == 0
+                ? $"{soul.Name} — {soul.Calling}, level {soul.Level}. Nothing here is rationed; read the Calling for the whole of it."
+                : $"{soul.Name} — {soul.Calling}, level {soul.Level}. What is rationed, and what is left of it:",
+            AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
+            Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
+        };
+        callingPanel.Controls.Add(head);
+        var read = Btn("Read the Calling ▸", (s, e) => ShowCallingCard(soul), 132,
+            "Every feature this soul has, in the book's own words — including the ones nobody counts");
+        read.Height = 24; read.Margin = new Padding(6, 0, 0, 4);
+        callingPanel.Controls.Add(read);
+        callingPanel.SetFlowBreak(read, true);
+
+        foreach (var row in ledger) callingPanel.Controls.Add(FeatureCard(soul, row));
+
+        callingPanel.Visible = true;
+        callingPanel.ResumeLayout();
+    }
+
+    /// <summary>One rationed feature: its name, what is left, and the button that spends it. The
+    /// tooltip carries the book's whole rule, because the card is where a player looks and the
+    /// Player's Book is usually across the table under somebody's dice.</summary>
+    Control FeatureCard(PartyMember soul, (string Name, string Desc, FeatureLimit Limit, int Left, int Of) row)
+    {
+        const int CW = 232;
+        var card = new Panel { Width = CW, Height = 52, BackColor = Paper, Margin = new Padding(2, 0, 8, 6) };
+        bool spent = row.Left == 0;
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(spent ? BarEdge : Gold, spent ? 1f : 1.4f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 74, Height = 17, Text = row.Name, UseMnemonic = false,
+            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = spent ? Faint : Ink,
+            AutoEllipsis = true
+        };
+        var left = new Label
+        {
+            Left = 8, Top = 23, Width = CW - 74, Height = 16,
+            Text = row.Of == 1 ? (spent ? "spent — " + row.Limit.Says(soul.Sheet) : row.Limit.Says(soul.Sheet))
+                               : $"{row.Left} of {row.Of} left — {row.Limit.Says(soul.Sheet)}",
+            Font = new Font("Segoe UI", 8.25f), ForeColor = spent ? Blood : Faint
+        };
+
+        var use = Btn(spent ? "↺" : "Use", (s, e) =>
+        {
+            if (spent)
+            {
+                if (CharGen.UnspendFeature(soul, row.Name))
+                    Log($"{soul.Name} takes back {row.Name} — {CharGen.LedgerFor(soul).First(r => r.Name == row.Name).Left} left.");
+            }
+            else if (CharGen.SpendFeature(soul, row.Name))
+            {
+                int now = CharGen.LedgerFor(soul).First(r => r.Name == row.Name).Left;
+                Log($"{soul.Name} spends {row.Name} — {(now == 0 ? "that was the last of it" : now + " left")}.");
+                Daybook.Note("feature", $"{soul.Name} used {row.Name} ({row.Limit.Says(soul.Sheet)}), {now} left");
+            }
+            else Nope(CharGen.WhyNotFeature(soul, row.Name));
+            RefreshCalling();
+        }, 54, $"{(spent ? "Give it back — a mis-click, or a rule the table read differently" : "Spend one use of " + row.Name)}");
+        use.Left = CW - 62; use.Top = 10; use.Height = 30;
+
+        card.Controls.Add(name); card.Controls.Add(left); card.Controls.Add(use);
+        string tip = $"{row.Name} — {row.Limit.Says(soul.Sheet)}\n\n{Wrap(row.Desc ?? row.Limit.Phrase ?? "")}";
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(left, tip);
+        return card;
+    }
+
+    /// <summary>The whole Calling, in the book's words — every feature the soul has at their level,
+    /// rationed or not, with the count beside the ones that are. Modeless and one per soul, the
+    /// same shape as the creature cards, so a player can keep it open and the Keeper can keep
+    /// running the fight.</summary>
+    readonly Dictionary<string, Form> callingWindows = new(StringComparer.Ordinal);
+    void ShowCallingCard(PartyMember soul)
+    {
+        if (soul == null) { Nope("Select a posse soul on the field first."); return; }
+        if (callingWindows.TryGetValue(soul.Id, out var open) && !open.IsDisposed)
+        { open.BringToFront(); open.Activate(); return; }
+
+        var win = new Sheet
+        {
+            Text = $"{soul.Name} — {soul.Calling}", Width = 560, Height = 660, BackColor = Paper,
+            MinimumSize = new Size(360, 320), StartPosition = FormStartPosition.CenterParent
+        };
+        if (AppIcon != null) win.Icon = AppIcon;
+        var rtf = new RichTextBox
+        {
+            ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
+            Font = new Font("Segoe UI", 10f), Text = CallingCardText(soul)
+        };
+        var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
+        bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
+        bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
+        win.Controls.Add(Pad(rtf, 16));
+        win.Controls.Add(bar);
+        win.FormClosed += (s, e) => callingWindows.Remove(soul.Id);
+        callingWindows[soul.Id] = win;
+        win.Show(this);
+    }
+
+    string CallingCardText(PartyMember soul)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"{soul.Name} — {soul.Calling}, level {soul.Level}");
+        var cal = CharGen.D.callings.FirstOrDefault(c => c.name == soul.Calling);
+        if (cal?.blurb != null) sb.AppendLine().AppendLine(Wrap(cal.blurb));
+        sb.AppendLine();
+        var spent = CharGen.LedgerFor(soul).ToDictionary(r => r.Name, r => (r.Left, r.Of));
+        foreach (var f in CharGen.FeaturesAt(soul.Calling, soul.Level, soul.Sheet?.Subpath))
+        {
+            string tally = spent.TryGetValue(f.Name, out var t)
+                ? $"   [{(t.Of == 1 ? (t.Left == 1 ? "ready" : "spent") : $"{t.Left} of {t.Of} left")} — {f.Limit.Says(soul.Sheet)}]"
+                : "";
+            sb.AppendLine(f.Name + tally);
+            if (f.Desc != null) sb.AppendLine(Wrap("    " + f.Desc, 78));
+            sb.AppendLine();
+        }
+        if (!string.IsNullOrEmpty(soul.Sheet?.CallingChoice)) sb.AppendLine(soul.Sheet.CallingChoice);
+        return sb.ToString();
+    }
+
+    /// <summary>A boundary passed: hand the posse back everything that comes back at it, and say
+    /// so. Silent when nothing was spent — a line about a reset that reset nothing teaches a
+    /// Keeper to stop reading the log.</summary>
+    void ReturnFeatures(FeatureCadence upTo, string because)
+    {
+        int gave = party.Sum(p => CharGen.RefreshFeatures(p, upTo));
+        if (gave > 0)
+            Log($"{because} — {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back to the posse.");
+        RefreshCalling();
     }
 
     // ---- the sign strip: what is out there, above the field, where nothing takes a turn ----
@@ -2126,6 +2315,7 @@ public partial class MainForm
         foreach (var p in party.Where(p => tracker.Any(t => t.IsSoul(p) && !t.Dead)))
         { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; }
         posseGrid?.Refresh(); RefreshTracker();
+        ReturnFeatures(FeatureCadence.Scene, "The field is restored");
         Log($"The field is restored — {bodies.Count} back to full Blood, the posse's Nerve with them.");
     }
 
