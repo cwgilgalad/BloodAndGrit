@@ -216,9 +216,14 @@ version on the cover**, and **update this doc's version table + Changelog.**
 ### The version cascade (important, easy to miss)
 `build_keeper.py` and `build_bestiary.py` splice each book's own cover onto the Player shell
 by **string-replacing the Player's version strings** with their own. Those match strings are
-hard-coded (currently "…Version 2.25…" / "…v2.25…", four per script). They are the Player's
-version, never the splicing book's own — check them against `build_player.py` rather than
-against this line, which has gone stale before.
+hard-coded (four per script). They are the Player's version, never the splicing book's own — check
+them against `build_player.py` rather than against this line, which has gone stale before.
+
+**Since 2026-08-19 the swap asserts.** A match that no longer matches used to be a silent no-op —
+`if a in H: H = H.replace(a, b, 1)` — and that is the whole mechanism of the failure described
+below, which happened twice. All three splices now assert the string was there, so a missed
+cascade stops the build with the string it could not find instead of shipping a book wearing
+somebody else's name.
 
 **Any time you bump the Player's Book version, you must also update those match strings in all
 FOUR places** — the two book builders **and `modules_common.py`**, which carries the same transform
@@ -238,9 +243,17 @@ they were perfectly good books, just not their own. Nothing in the repo checks t
 says the book's own name, which is why this is written down here instead. The trap is that the
 transform **moved**: it was copied into each module builder until 2026-08-09, when it became
 `modules_common.py`, and this note was not updated with it. When a shared transform moves, the
-cascade list moves with it. Bumping only the
-Keeper or only the Bestiary needs no cascade (their version strings are only on the *right*
-side of the tuples; bump them directly in their own build script).
+cascade list moves with it.
+
+**And it happened again on 2026-08-19, with this note sitting right here.** The v2.27 bump patched
+`build_player.py`, `build_keeper.py` and `build_bestiary.py` and not `modules_common.py`, and all
+three modules rebuilt as *"The Player's Book (Revised &amp; Expanded · v2.27)"* — caught only
+because `git diff` on a module was read before committing. A warning that has failed twice is not a
+control, which is why the swap now asserts rather than trusting anybody to have read this
+paragraph. Keep the sed line; it is still the quickest way to do the bump right the first time.
+
+Bumping only the Keeper or only the Bestiary needs no cascade (their version strings are only on
+the *right* side of the tuples; bump them directly in their own build script).
 
 ---
 
