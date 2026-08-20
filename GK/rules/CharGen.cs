@@ -90,6 +90,10 @@ public class CgSubpath { public string section { get; set; } public List<CgSubOp
 public class CgCalling
 {
     public string name { get; set; } public string group { get; set; }
+    /// <summary>The Calling's opening words in the Player's Book, so the picker can say what a
+    /// Calling <em>is</em> and not only what it rolls. Transcribed from the book, guarded by
+    /// audits/verify_rules.py.</summary>
+    public string blurb { get; set; }
     public int hitDie { get; set; } public int trainedSkills { get; set; }
     public string strongSaves { get; set; }
     public List<CgRow> rows { get; set; } = new();
@@ -185,6 +189,75 @@ public class CharacterSheet
 }
 
 // ============================================================ GENERATOR
+// ================================================= how often a feature may be used (v1.42.0)
+
+/// <summary>The boundary a limited feature comes back at. Ordered, and the order is the whole
+/// point: everything at or below the boundary that just passed comes back, so a scene returns
+/// the Turn, Round and Scene features and leaves the once-a-session ones spent. Dawn sits under
+/// Session because a posse can sleep twice in one night's play and the session's one great
+/// mercy is still spent.
+///
+/// <para><b>Trigger</b> is the odd one, and it is here because the book has two of them: the
+/// Witch Hunter's Judgment comes back "when you name a new quarry" and the Sawbones' Field
+/// Surgery is "once per wound". No clock returns those, so nothing but the Keeper's hand and a
+/// new session does either — which is exactly why it sits directly under Session.</para></summary>
+public enum FeatureCadence { None = 0, Turn = 1, Round = 2, Scene = 3, Dawn = 4, Trigger = 5, Session = 6 }
+
+/// <summary>What a Calling's feature says about how often it may be used, read out of the book's
+/// own sentence rather than typed into the data a second time.
+///
+/// <para>Forty-six of the hundred and sixteen features print a limit, and thirty-one of those are
+/// a limit on an <em>activation</em> — "Once per session, when an ally within sight would drop to
+/// 0 Blood…". Those are the ones a table forgets, and the ones this reads. The rest describe
+/// something ongoing ("allies inside recover Nerve each round"), which is not a thing anybody
+/// presses, so it is deliberately not matched: a counter beside a feature nobody activates is
+/// noise that teaches a Keeper to stop trusting the counters that matter.</para></summary>
+public readonly struct FeatureLimit
+{
+    public FeatureCadence Cadence { get; init; }
+    /// <summary>A flat number of uses, or 0 when <see cref="Ability"/> decides it.</summary>
+    public int Uses { get; init; }
+    /// <summary>"PRE", "WIT"… when the book counts the uses off a modifier, else null.</summary>
+    public string Ability { get; init; }
+    public bool HalfLevel { get; init; }
+    public int Min { get; init; }
+    /// <summary>The book's own words, for the tooltip. A Keeper deserves the sentence, not a code.</summary>
+    public string Phrase { get; init; }
+
+    static readonly System.Text.RegularExpressions.Regex TriggerNoun =
+        new(@"per (quarry|wound|patient|target)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    public bool Any => Cadence != FeatureCadence.None;
+
+    /// <summary>How many uses a soul of this sheet actually gets. A hand-entered soul with no
+    /// sheet has no modifier to read, so the floor is the answer — never zero, which would render
+    /// as a feature that can never be used.</summary>
+    public int UsesFor(CharacterSheet s)
+    {
+        if (Ability == null) return Math.Max(1, Uses);
+        if (s == null || !s.Scores.TryGetValue(Ability, out int score)) return Math.Max(1, Min);
+        int n = CharGen.Mod(score) + (HalfLevel ? s.Level / 2 : 0);
+        return Math.Max(Math.Max(1, Min), n);
+    }
+
+    public string Says(CharacterSheet s)
+    {
+        if (!Any) return "";
+        string when = Cadence switch
+        {
+            FeatureCadence.Turn => "per turn",
+            FeatureCadence.Round => "per round",
+            FeatureCadence.Scene => "per scene",
+            FeatureCadence.Dawn => "each dawn",
+            FeatureCadence.Trigger => TriggerNoun.Match(Phrase ?? "") is { Success: true } t
+                                      ? "per " + t.Groups[1].Value.ToLowerInvariant() : "per quarry",
+            _ => "per session",
+        };
+        int n = UsesFor(s);
+        return n == 1 ? "once " + when : $"{n}× {when}";
+    }
+}
+
 public static class CharGen
 {
     // ---- the progression spine (Player's Book Ch. XIV, "Attack Rank and the Saves") ----
@@ -1318,11 +1391,10 @@ public static class CharGen
         sb.AppendLine("FEATURES");
         foreach (var f in s.Features)
         {
-            string key = cal.featureDescs.Keys.FirstOrDefault(k => f.StartsWith(k))
-                      ?? cal.featureDescs.Keys.FirstOrDefault(k => k.StartsWith(f.Split(" +")[0].Split(" 1d")[0]))
-                      ?? cal.featureDescs.Keys.FirstOrDefault(k => k.Contains(f));
-            string desc = key != null ? cal.featureDescs[key] : null;
-            sb.AppendLine("   " + f + (desc != null ? " — " + FirstSentence(desc) : ""));
+            string desc = FeatureText(cal, f);
+            var lim = ReadLimit(desc);
+            sb.AppendLine("   " + f + (lim.Any ? $"  [{lim.Says(s)}]" : "")
+                                    + (desc != null ? " — " + FirstSentence(desc) : ""));
         }
         if (s.Subpath != null)
         {
@@ -1385,6 +1457,285 @@ public static class CharGen
             Row("Detail:", s.Look.Detail);
         }
         return sb.ToString();
+    }
+
+    // ============================================ reading a feature's limit out of its own prose
+
+    // The book states every limit in the sentence, so the sentence is where this reads it. The
+    // alternative — a `uses` column typed into chargen.json beside the description — is a second
+    // copy of a fact, and the twenty repaired descriptions of 2026-08-19 are what a second copy
+    // does when nobody is auditing it. See audits/verify_rules.py.
+    //
+    // Ordered most specific first. "a number of times per scene equal to your PRE modifier" has to
+    // beat the bare "per scene", and a fight and an encounter are a scene by another name.
+    static readonly System.Text.RegularExpressions.Regex FormulaUses = new(
+        @"a number of times per (?<when>turn|round|scene|fight|encounter|session)\s+equal to your\s+"
+        + @"(?<abl>STR|DEX|CON|WIT|RES|PRE) modifier(?<half>\s*\+\s*half your level)?"
+        + @"(?:\s*\(minimum (?<min>\d+)\))?",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    static readonly System.Text.RegularExpressions.Regex PreparedEachDawn = new(
+        @"(?:each|every) dawn[^.]{0,40}?prepare a number of [a-z ]{1,24}equal to your\s+"
+        + @"(?<abl>STR|DEX|CON|WIT|RES|PRE) modifier(?<half>\s*\+\s*half your level)?"
+        + @"(?:\s*\(minimum (?<min>\d+)\))?",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    static readonly System.Text.RegularExpressions.Regex CountedUses = new(
+        @"\b(?<n>once|twice|three times|four times|five times|\d+ times) per\s+"
+        + @"(?<when>turn|round|scene|fight|encounter|session|quarry|wound|patient|target)\b",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    static FeatureCadence WhenOf(string w) => w.ToLowerInvariant() switch
+    {
+        "turn" => FeatureCadence.Turn,
+        "round" => FeatureCadence.Round,
+        // A fight IS a scene at this table, and the book uses both words for the same boundary.
+        "scene" or "fight" or "encounter" => FeatureCadence.Scene,
+        // Once per quarry, once per wound: the fiction says when, so the Keeper does.
+        "quarry" or "wound" or "patient" or "target" => FeatureCadence.Trigger,
+        _ => FeatureCadence.Session,
+    };
+
+    static int CountOf(string n) => n.ToLowerInvariant() switch
+    {
+        "once" => 1, "twice" => 2, "three times" => 3, "four times" => 4, "five times" => 5,
+        _ => int.TryParse(n.Split(' ')[0], out int v) ? v : 1,
+    };
+
+    /// <summary>The sentence a limit lives in, so the tooltip can show the rule and not a summary.</summary>
+    static string SentenceAround(string text, int at)
+    {
+        int lo = text.LastIndexOf(". ", Math.Min(at, text.Length - 1), StringComparison.Ordinal);
+        lo = lo < 0 ? 0 : lo + 2;
+        int hi = text.IndexOf(". ", at, StringComparison.Ordinal);
+        hi = hi < 0 ? text.Length : hi + 1;
+        return text.Substring(lo, hi - lo).Trim();
+    }
+
+    /// <summary>How often this feature may be used, read from its description. A description that
+    /// states no limit — or states one about something ongoing rather than something pressed —
+    /// comes back as <see cref="FeatureCadence.None"/>.</summary>
+    public static FeatureLimit ReadLimit(string desc)
+    {
+        if (string.IsNullOrWhiteSpace(desc)) return default;
+
+        var m = FormulaUses.Match(desc);
+        if (m.Success)
+            return new FeatureLimit
+            {
+                Cadence = WhenOf(m.Groups["when"].Value),
+                Ability = m.Groups["abl"].Value.ToUpperInvariant(),
+                HalfLevel = m.Groups["half"].Success,
+                Min = m.Groups["min"].Success ? int.Parse(m.Groups["min"].Value) : 1,
+                Phrase = SentenceAround(desc, m.Index),
+            };
+
+        m = PreparedEachDawn.Match(desc);
+        if (m.Success)
+            return new FeatureLimit
+            {
+                Cadence = FeatureCadence.Dawn,
+                Ability = m.Groups["abl"].Value.ToUpperInvariant(),
+                HalfLevel = m.Groups["half"].Success,
+                Min = m.Groups["min"].Success ? int.Parse(m.Groups["min"].Value) : 1,
+                Phrase = SentenceAround(desc, m.Index),
+            };
+
+        m = CountedUses.Match(desc);
+        if (m.Success)
+            return new FeatureLimit
+            {
+                Cadence = WhenOf(m.Groups["when"].Value),
+                Uses = CountOf(m.Groups["n"].Value),
+                Phrase = SentenceAround(desc, m.Index),
+            };
+
+        return default;
+    }
+
+    /// <summary>Which key in <see cref="CgCalling.featureDescs"/> a level table's feature name means.
+    ///
+    /// <para>The two do not always match on the nose: a level row prints "Judgment 3d8" or
+    /// "Dead Aim +1d6" where the prose heads its section "Judgment", and the Drifter's 6th-level
+    /// row names one entry that the book writes up as "Ghost / Uncanny Step / Vanish". This is the
+    /// one place that reconciliation lives — it used to be three chained lookups inline in
+    /// <c>Render</c>, where nothing else could reach it.</para></summary>
+    public static string FeatureKey(CgCalling cal, string feature)
+    {
+        if (cal?.featureDescs == null || string.IsNullOrEmpty(feature)) return null;
+        var keys = cal.featureDescs.Keys;
+        if (keys.Contains(feature)) return feature;
+
+        // A level table prints the die in the column — "Judgment 3d8", "Dead Aim +1d6",
+        // "Precise Strike 2d6" — where the prose heads the section by name alone.
+        string stem = DieSuffix.Replace(feature, "").Trim();
+        foreach (var k in keys) if (k == stem) return k;
+        foreach (var k in keys) if (feature.StartsWith(k, StringComparison.Ordinal)) return k;
+
+        // Three features can share one heading: the Drifter's "Ghost / Uncanny Step / Vanish" is
+        // written up once and named a level at a time, and so is the Marshal's "Hold the Line /
+        // Unflinching" and the Sawbones' "Anatomist / Precise Strike".
+        foreach (var k in keys)
+            foreach (var part in k.Split(" / "))
+                if (part == stem || part == feature) return k;
+
+        foreach (var k in keys) if (k.Contains(stem, StringComparison.Ordinal)) return k;
+        return null;
+    }
+
+    static readonly System.Text.RegularExpressions.Regex DieSuffix =
+        new(@"\s*\+?\s*\d+d\d+\s*$");
+
+    /// <summary>The whole of what the book says about this feature, or null.</summary>
+    public static string FeatureText(CgCalling cal, string feature)
+        => FeatureKey(cal, feature) is string k ? cal.featureDescs[k] : null;
+
+    /// <summary>How often this Calling's feature may be used.</summary>
+    public static FeatureLimit LimitOf(CgCalling cal, string feature)
+        => ReadLimit(FeatureText(cal, feature));
+
+    /// <summary>Every feature a soul of this Calling and level has, paired with its limit — the
+    /// list the Tracker's Calling strip is built from. Features that are really a slot rather than
+    /// a thing you do (an Edge, a Sign learned, a Stolen Wonder) are left out, the same three the
+    /// sheet's own feature list leaves out.</summary>
+    public static List<(string Name, string Desc, FeatureLimit Limit)> FeaturesAt(
+        string callingName, int level, string subpathChoice = null)
+    {
+        var cal = D?.callings?.FirstOrDefault(c => c.name == callingName);
+        var list = new List<(string, string, FeatureLimit)>();
+        if (cal == null) return list;
+
+        // The printed table sets the two subpath entries in bold; the data cannot carry weight, so
+        // find them by the suffix instead — "Trade Mastery" at 10th for the Worldly and the
+        // Faithful, "Devotion (Greater)" at 9th for the three of the Old Dark. The word in front of
+        // that suffix is what the 3rd-level row calls the choice, and the two are a pair.
+        string greater = cal.rows.Where(r => r.level >= 9).SelectMany(r => r.features ?? new())
+            .FirstOrDefault(f => f.EndsWith(" Mastery", StringComparison.Ordinal)
+                              || f.EndsWith(" (Greater)", StringComparison.Ordinal));
+        string pick = greater?.Replace(" Mastery", "").Replace(" (Greater)", "");
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var row in cal.rows.Where(r => r.level <= Math.Clamp(level, 1, 10)).OrderBy(r => r.level))
+            foreach (var f in row.features ?? new())
+            {
+                if (f == "Edge" || f.StartsWith("Sign learned", StringComparison.Ordinal)
+                                || f.StartsWith("Stolen Wonder", StringComparison.Ordinal)) continue;
+                // Level 3 and up, because the Dark Cultist's 1st-level Devotion is the pool they
+                // spend and their 3rd-level Devotion is the path they walk. Same word, and the
+                // book means two different things by it.
+                bool isPath = cal.subpath != null && row.level >= 3 && (f == pick || f == greater);
+                var entry = isPath ? Subpath(cal, f == greater, subpathChoice)
+                                   : (f, FeatureText(cal, f), LimitOf(cal, f));
+                if (seen.Add(entry.Item1)) list.Add(entry);
+            }
+        return list;
+    }
+
+    /// <summary>The 3rd-level path and its 10th-level mastery — "Game" and "Game Mastery" on the
+    /// Gambler's table, "Order" and "Order Mastery" on the Padre's. No featureDescs entry covers
+    /// them: the rules live in <see cref="CgSubpath.options"/>, one boon per option, and half the
+    /// Callings' Mastery abilities are in there. Left unresolved they were the only features in
+    /// the app with no text at all — the 3rd-level choice a player makes and then cannot read.
+    ///
+    /// <para>Once a soul has chosen, this narrows to their own boon, and the mastery half narrows
+    /// again to the sentence after the marker. Before they have chosen, it lists what is on
+    /// offer, which is what a player at 3rd level is actually deciding between.</para></summary>
+    static (string, string, FeatureLimit) Subpath(CgCalling cal, bool greater, string chosen)
+    {
+        var opt = cal.subpath.options.FirstOrDefault(o => o.name == chosen);
+        if (opt == null)
+            return (cal.subpath.section + (greater ? " — the greater boon" : ""),
+                    cal.subpath.section + " — chosen at 3rd level: "
+                        + string.Join("; ", cal.subpath.options.Select(o => o.name)),
+                    default);
+
+        string boon = opt.boon;
+        int cut = MasteryMark.Match(boon) is { Success: true } m ? m.Index : -1;
+        string text = cut < 0 ? boon
+                    : greater ? boon.Substring(cut).Trim()
+                              : boon.Substring(0, cut).Trim();
+        return ($"{cal.subpath.section}: {opt.name}" + (greater ? " — greater" : ""),
+                text, ReadLimit(text));
+    }
+
+    // Worldly and Faith paths deepen at 10th and say "Mastery (10th):"; the three Callings of the
+    // Old Dark deepen a level earlier and say "Greater (9th):". Both are the same seam.
+    static readonly System.Text.RegularExpressions.Regex MasteryMark =
+        new(@"(?:Mastery \(10th\)|Greater \(9th\))\s*:", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    // ------------------------------------------- spending a feature, and getting it back
+
+    /// <summary>Every limited feature this soul has, with how many uses are left on each. The
+    /// Tracker's Calling strip is drawn straight off this, and so is the answer to "can I?".</summary>
+    public static List<(string Name, string Desc, FeatureLimit Limit, int Left, int Of)> LedgerFor(PartyMember p)
+    {
+        var outp = new List<(string, string, FeatureLimit, int, int)>();
+        if (p == null) return outp;
+        foreach (var f in FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath))
+        {
+            if (!f.Limit.Any) continue;
+            int of = f.Limit.UsesFor(p.Sheet);
+            p.FeatureSpent.TryGetValue(f.Name, out int used);
+            outp.Add((f.Name, f.Desc, f.Limit, Math.Max(0, of - used), of));
+        }
+        return outp;
+    }
+
+    /// <summary>Why this feature cannot be used right now, or null when it can. Paired with
+    /// <see cref="SpendFeature"/> on purpose: a control that greys without saying why is reported
+    /// as broken, so the answer and the reason come from one place (same shape as
+    /// <c>Rules.CanSpendBeats</c> and <c>Rules.WhyNoBeats</c>).</summary>
+    public static string WhyNotFeature(PartyMember p, string feature)
+    {
+        if (p == null) return "Nobody is selected.";
+        var row = LedgerFor(p).FirstOrDefault(r => r.Name == feature);
+        if (row.Name == null) return $"{p.Name} has no feature called {feature}.";
+        if (row.Left > 0) return null;
+        return row.Limit.Cadence switch
+        {
+            FeatureCadence.Turn => $"{feature} is spent for this turn — it comes back on their next one.",
+            FeatureCadence.Round => $"{feature} is spent for this round.",
+            FeatureCadence.Scene => $"{feature} is spent for this scene — a new fight returns it.",
+            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn — a long rest returns it.",
+            FeatureCadence.Trigger => $"{feature} is spent. {row.Limit.Phrase}",
+            _ => $"{feature} is spent for the session. Nothing short of the next one returns it.",
+        };
+    }
+
+    /// <summary>Spend one use. False when there was none to spend — ask
+    /// <see cref="WhyNotFeature"/> for the sentence to show.</summary>
+    public static bool SpendFeature(PartyMember p, string feature)
+    {
+        if (WhyNotFeature(p, feature) != null) return false;
+        p.FeatureSpent.TryGetValue(feature, out int used);
+        p.FeatureSpent[feature] = used + 1;
+        return true;
+    }
+
+    /// <summary>Give one back — the Keeper's undo for a press that was a mis-click or a rule the
+    /// table decided differently.</summary>
+    public static bool UnspendFeature(PartyMember p, string feature)
+    {
+        if (p == null || !p.FeatureSpent.TryGetValue(feature, out int used) || used <= 0) return false;
+        if (used == 1) p.FeatureSpent.Remove(feature); else p.FeatureSpent[feature] = used - 1;
+        return true;
+    }
+
+    /// <summary>A boundary has passed: return everything that comes back at or before it. A scene
+    /// returns the turn, round and scene features and leaves the once-a-session ones spent; a long
+    /// rest reaches the dawn ones as well; a new session returns the lot. Answers with how many
+    /// features actually came back, so the caller can say so rather than logging a boundary that
+    /// changed nothing.</summary>
+    public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
+    {
+        if (p == null || p.FeatureSpent.Count == 0) return 0;
+        int gave = 0;
+        foreach (var row in LedgerFor(p))
+        {
+            if (row.Limit.Cadence > upTo) continue;
+            if (p.FeatureSpent.Remove(row.Name)) gave++;
+        }
+        return gave;
     }
 
     static string FirstSentence(string t)

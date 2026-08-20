@@ -262,24 +262,27 @@ def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
         H = H.replace("</style>", css, 1)
 
     meta = [
-        ("<!-- Blood & Grit — The Player's Book · Version 2.26 -->",
+        ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->",
          f"<!-- Blood & Grit — {foot} · Version {version} -->"),
-        ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.26)</title>",
+        ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>",
          f"<title>Blood &amp; Grit — {foot} (v{version})</title>"),
         ('<div class="kicker">Being a Field Manual for the Living</div>',
          f'<div class="kicker">{kicker}</div>'),
         ("<div class=\"t-foot\">The Player's Book</div>",
          f'<div class="t-foot">{foot}</div>'),
-        ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.26</div>',
+        ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>',
          f'<div class="t-tiny">{tiny_edition} · Version {version}</div>'),
         ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>',
          f'<div class="t-tiny">{tiny_blurb}</div>'),
-        ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.26 · First Complete Edition</p>',
+        ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.27 · First Complete Edition</p>',
          f'<p class="note" style="text-align:center; margin:0;">{colophon}</p>'),
     ]
     for a, b in meta:
-        if a in H:
-            H = H.replace(a, b, 1)
+        # See build_keeper.py. This loop is the one that actually failed: four of these
+        # strings carry the Player's Book version, and the 2.26 -> 2.27 bump moved them out
+        # from under it while the build went on reporting success.
+        assert a in H, "the Player's Book cover no longer carries: " + a[:70]
+        H = H.replace(a, b, 1)
 
     old1 = ('"We came west to be made new, and found instead that the country was older\n'
             '    than newness, older than God, and had been waiting a long while in the quiet for company."\n'

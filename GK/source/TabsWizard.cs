@@ -228,24 +228,6 @@ public partial class MainForm
         static T Tipped<T>(T c, string tip) where T : Control
         { if (!string.IsNullOrEmpty(tip)) Tip.SetToolTip(c, Wrap(tip)); return c; }
 
-        /// A tooltip is drawn as one long line unless it is broken by hand.
-        static string Wrap(string t, int width = 84)
-        {
-            if (string.IsNullOrEmpty(t)) return t;
-            var sb = new System.Text.StringBuilder();
-            foreach (var para in t.Split('\n'))
-            {
-                int line = 0;
-                foreach (var word in para.Split(' '))
-                {
-                    if (line > 0 && line + word.Length + 1 > width) { sb.Append('\n'); line = 0; }
-                    else if (line > 0) { sb.Append(' '); line++; }
-                    sb.Append(word); line += word.Length;
-                }
-                sb.Append('\n');
-            }
-            return sb.ToString().TrimEnd('\n');
-        }
 
         /// Per-row tooltips for a ListBox or CheckedListBox. WinForms has none of its own, so
         /// follow the pointer and re-point the shared ToolTip whenever it crosses into a new row.
@@ -374,7 +356,8 @@ public partial class MainForm
             {
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.Items[i]);
                 if (c == null) return null;
-                return $"{c.name} — a Calling of the {c.group}. Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
+                return $"{c.name} — a Calling of the {c.group}.\n{c.blurb}\n\n"
+                     + $"Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
                      + $"trains {c.trainedSkills} skills plus your WIT modifier; leans on {string.Join(", ", c.keyAbilities.Take(2))}."
                      + (c.signsKnownAt != null ? " Works the Signs of Ch. XIII." : "")
                      + (c.miracleLists != null ? " Works Miracles, paid from its own pool." : "")
@@ -386,12 +369,15 @@ public partial class MainForm
           + "whether they work Signs or Miracles at all. Grouped by the three kinds: the Worldly, the "
           + "Faithful, and the Old Dark.\nHover a name for its numbers; the panel to the right carries the "
           + "whole of it. Changing it later clears the picks that depended on it.");
-            var detail = new Label { Width = 440, Height = 330, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
+            var detail = new Label { AutoSize = true, MaximumSize = new Size(432, 0), ForeColor = Ink,
+                                     Font = new Font("Segoe UI", 9.5f) };
+            var detailBox = new Panel { Width = 452, Height = 330, AutoScroll = true };
+            detailBox.Controls.Add(detail);
             wCalList.SelectedIndexChanged += (s, e) =>
             {
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.SelectedItem);
                 if (c == null) { detail.Text = ""; return; }
-                detail.Text = $"{c.name} — a Calling of the {c.group}\n\n" +
+                detail.Text = $"{c.name} — a Calling of the {c.group}\n\n{c.blurb}\n\n" +
                     $"Hit Die: d{c.hitDie}\nStrong saves: {c.strongSaves}\nTrained skills: {c.trainedSkills} + WIT modifier\n" +
                     $"Key abilities (in order): {string.Join(", ", c.keyAbilities)}\n" +
                     (c.signsKnownAt != null ? "Works the Signs.\n" : "") +
@@ -401,7 +387,7 @@ public partial class MainForm
             };
             wCalList.SelectedItem = calName ?? (string)null;
             if (wCalList.SelectedIndex < 0) wCalList.SelectedIndex = 0;
-            row.Controls.Add(wCalList); row.Controls.Add(detail);
+            row.Controls.Add(wCalList); row.Controls.Add(detailBox);
             col.Controls.Add(row);
             return col;
         }

@@ -248,6 +248,19 @@ public class PartyMember : INotifyPropertyChanged
     public string ScarLine => Scars is not { Count: > 0 } ? ""
         : $"{Scars.Count}: " + string.Join(", ", Scars.Select(s => s.Name));
 
+    /// <summary>What this soul has already spent of their Calling's limited features, keyed by the
+    /// name the Tracker's Calling strip shows — "Last Stand", "Games of the Gambler: The Duelist".
+    ///
+    /// <para>Thirty-one of the hundred and sixteen class features carry a limit the book states in
+    /// its own sentence — once per session, once per scene, a number of times per scene equal to
+    /// your PRE modifier — and until v1.42.0 not one of them was counted anywhere. A Marshal's
+    /// Last Stand is the whole reason the Marshal is at the table on the night it matters, and
+    /// whether it had already been spent was a question four people answered differently.</para>
+    ///
+    /// <para>Spent, not remaining, so a soul who levels up and gains uses does not have to be
+    /// topped up: the maximum is re-derived from the sheet every time it is drawn.</para></summary>
+    public Dictionary<string, int> FeatureSpent { get; set; } = new();
+
     // The full character sheet, when this soul came out of the New Soul tab (generated,
     // wizard-built, or tweaked). Null for hand-entered rows; the Ledger window shows a
     // half-filled sheet in that case. Rides along in session.json.

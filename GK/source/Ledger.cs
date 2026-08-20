@@ -459,8 +459,19 @@ public sealed class LedgerView : Panel
             var lines = new List<(string, bool)>();
             if (sheet != null)
             {
-                foreach (var f in sheet.Features) lines.Add(("• " + f, false));
-                if (sheet.Subpath != null) lines.Add(("• Path: " + sheet.Subpath, false));
+                // What is rationed says so, and says what is left of it — the same ledger the
+                // Tracker's Calling strip is drawn from, so the two can never tell a player
+                // different numbers about their own Last Stand.
+                var rationed = member == null ? new() : CharGen.LedgerFor(member);
+                string Tally(string name)
+                {
+                    var r = rationed.FirstOrDefault(x => x.Name == name || x.Name.EndsWith(": " + name));
+                    if (r.Name == null) return "";
+                    return r.Of == 1 ? (r.Left == 1 ? "  — ready, " + r.Limit.Says(sheet) : "  — SPENT, " + r.Limit.Says(sheet))
+                                     : $"  — {r.Left} of {r.Of} left, {r.Limit.Says(sheet)}";
+                }
+                foreach (var f in sheet.Features) lines.Add(("• " + f + Tally(f), false));
+                if (sheet.Subpath != null) lines.Add(("• Path: " + sheet.Subpath + Tally(sheet.Subpath), false));
                 if (sheet.CallingChoice != null) lines.Add(("• " + sheet.CallingChoice, false));
                 if (sheet.PoolLine != null) lines.Add(("• " + sheet.PoolLine, false));
                 if (sheet.Features.Count > 0 || sheet.Edges.Count > 0) lines.Add((" ", false));

@@ -3784,5 +3784,204 @@ Daybook.Close();
 T("daybook: closing forgets everything", !Daybook.On && Daybook.Count == 0);
 T("daybook: and says so rather than reading as an empty night", Daybook.Dump().Contains("not recording"));
 
+// ---- what a Calling's features let you do, and how often (v1.42.0) ----
+// The limit is READ OUT OF THE BOOK'S SENTENCE, never typed beside it, so these tests are really
+// two questions: does the reader understand the sentences the book uses today, and has the book
+// started using a sentence it does not understand? The second is the one that bites — a new
+// Calling written with "no more than twice in a scene" would sail past a reader that only knows
+// "twice per scene", and the feature would quietly become unlimited at every table.
+{
+    var callings = CharGen.D.callings;
+
+    // --- the reader agrees with a plain scan of the prose ---
+    var broad = new System.Text.RegularExpressions.Regex(
+        @"\b(once|twice|three times|four times|five times|\d+ times|a number of times) per "
+        + @"(turn|round|scene|fight|encounter|session|quarry|wound|patient|target)\b",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    int stated = 0, read = 0;
+    foreach (var cal in callings)
+        foreach (var kv in cal.featureDescs)
+        {
+            bool says = broad.IsMatch(kv.Value);
+            var lim = CharGen.ReadLimit(kv.Value);
+            if (says) stated++;
+            if (says && lim.Any) read++;
+            T($"limit read where the book states one: {cal.name}/{kv.Key}", !says || lim.Any);
+            // and nothing invented where the book states nothing
+            T($"no limit invented: {cal.name}/{kv.Key}",
+              says || !lim.Any || lim.Cadence == FeatureCadence.Dawn);
+        }
+    T("every stated limit is read", stated == read);
+    T("the book still states as many limits as it did", stated == 33);
+
+    // --- the shapes the book actually uses ---
+    CgCalling Cal(string n) => callings.First(c => c.name == n);
+    FeatureLimit Lim(string cal, string feat) => CharGen.LimitOf(Cal(cal), feat);
+
+    var command = Lim("Marshal", "Command");
+    T("Command is per scene",            command.Cadence == FeatureCadence.Scene);
+    T("Command counts off PRE",          command.Ability == "PRE");
+    T("Command has a floor of 1",        command.Min == 1);
+    T("Command is not half-level",       !command.HalfLevel);
+
+    var powder = Lim("Prospector", "Powderman");
+    T("Powderman is prepared each dawn", powder.Cadence == FeatureCadence.Dawn);
+    T("Powderman counts off WIT",        powder.Ability == "WIT");
+    T("Powderman adds half a level",     powder.HalfLevel);
+    T("Powderman floors at 2",           powder.Min == 2);
+
+    T("Tonics are prepared each dawn",   Lim("Sawbones", "Tonics").Cadence == FeatureCadence.Dawn);
+    T("Bushwhack is once a turn",        Lim("Bounty Hunter", "Bushwhack").Cadence == FeatureCadence.Turn);
+    T("Stack the Odds is once a round",  Lim("Gambler", "Stack the Odds").Cadence == FeatureCadence.Round);
+    T("Cold Deck is once a scene",       Lim("Gambler", "Cold Deck").Cadence == FeatureCadence.Scene);
+    T("a fight is a scene",              Lim("Gunhand", "Lightning Hand").Cadence == FeatureCadence.Scene);
+    T("Last Stand is once a session",    Lim("Marshal", "Last Stand").Cadence == FeatureCadence.Session);
+    T("Last Stand is one use",           Lim("Marshal", "Last Stand").Uses == 1);
+
+    // --- the two the fiction returns rather than a clock ---
+    var judgment = Lim("Witch Hunter", "Judgment");
+    T("Judgment is a trigger, not a clock", judgment.Cadence == FeatureCadence.Trigger);
+    T("Judgment says what returns it",      judgment.Says(null) == "once per quarry");
+    T("Field Surgery is per wound",         Lim("Sawbones", "Field Surgery").Says(null) == "once per wound");
+    T("a scene does not return a trigger",  FeatureCadence.Trigger > FeatureCadence.Scene);
+    T("a new session does",                 FeatureCadence.Trigger < FeatureCadence.Session);
+
+    // --- the level table's name and the prose's heading are reconciled in ONE place ---
+    T("a die in the column is not a new feature",
+      CharGen.FeatureKey(Cal("Witch Hunter"), "Judgment 3d8") == "Judgment");
+    T("a plus and a die, likewise",
+      CharGen.FeatureKey(Cal("Mountain Man"), "Dead Aim +1d6") == "Dead Aim");
+    T("three features may share one heading",
+      CharGen.FeatureKey(Cal("Drifter"), "Vanish") == "Ghost / Uncanny Step / Vanish");
+    T("and the Sawbones' pair does",
+      CharGen.FeatureKey(Cal("Sawbones"), "Precise Strike 2d6") == "Anatomist / Precise Strike");
+
+    // --- and nothing that merely happens every round is mistaken for something you press ---
+    T("Sanctuary is not a counter",      !Lim("Padre", "Sanctuary").Any);
+    T("the Rite is not a counter",       !Lim("Padre", "Rite of Exorcism").Any);
+    T("the Hawken is not a counter",     !Lim("Mountain Man", "Hawken Rifle").Any);
+    T("Cardsharp is not a counter",      !Lim("Gambler", "Cardsharp").Any);
+
+    // --- the sentence rides along, because a Keeper deserves the rule and not a code ---
+    T("the limit carries the book's sentence",
+      Lim("Marshal", "Last Stand").Phrase.StartsWith("Once per session, when an ally within sight"));
+
+    // --- how many uses a given soul gets ---
+    var marshal = CharGen.Generate(6, false, "Marshal");
+    int pre = CharGen.Mod(marshal.Scores["PRE"]);
+    T("Command's uses follow PRE",   command.UsesFor(marshal) == Math.Max(1, pre));
+    T("a floor is never zero uses",  command.UsesFor(null) >= 1);
+    T("once per session reads as one use", Lim("Marshal", "Last Stand").UsesFor(marshal) == 1);
+    T("Says is the book's cadence",  Lim("Marshal", "Last Stand").Says(marshal) == "once per session");
+
+    // --- the strip's own list ---
+    var gambler = CharGen.FeaturesAt("Gambler", 10);
+    T("a 10th-level Gambler has features",   gambler.Count >= 8);
+    T("the strip leaves out the Edge slots", gambler.All(f => f.Name != "Edge"));
+    T("the strip knows Cold Deck's limit",
+      gambler.Any(f => f.Name == "Cold Deck" && f.Limit.Cadence == FeatureCadence.Scene));
+    T("the strip carries the whole rule",
+      gambler.All(f => f.Desc == null || f.Desc.Length > 20));
+    var green = CharGen.FeaturesAt("Gambler", 1);
+    T("a green Gambler has fewer",           green.Count < gambler.Count);
+    T("an unknown Calling is empty, not a throw", CharGen.FeaturesAt("Rustler", 5).Count == 0);
+
+    // --- the 3rd-level path, which no featureDescs entry covers ---
+    var unchosen = CharGen.FeaturesAt("Gambler", 10).First(f => f.Name == "Games of the Gambler");
+    T("an unchosen path offers the list", unchosen.Desc.Contains("The Duelist"));
+    T("and claims no limit yet",          !unchosen.Limit.Any);
+    var duelist = CharGen.FeaturesAt("Gambler", 10, "The Duelist");
+    T("a chosen path is named",     duelist.Any(f => f.Name == "Games of the Gambler: The Duelist"));
+    var chosen = duelist.First(f => f.Name == "Games of the Gambler: The Duelist");
+    T("the 3rd-level boon stops at the mastery", !chosen.Desc.Contains("Mastery (10th)"));
+    var mast = duelist.First(f => f.Name.EndsWith("— greater"));
+    T("the mastery half is the mastery",  mast.Desc.StartsWith("Mastery (10th)"));
+    T("and carries its own limit",        mast.Limit.Cadence == FeatureCadence.Scene);
+    T("an Old Dark path deepens at 9th",
+      CharGen.FeaturesAt("Witch", 10, "The Familiar-Bound").First(f => f.Name.EndsWith("— greater"))
+             .Desc.StartsWith("Greater (9th)"));
+    T("a 9th-level path is not offered at 8th",
+      !CharGen.FeaturesAt("Witch", 8, "The Familiar-Bound").Any(f => f.Name.EndsWith("— greater")));
+
+    // The Dark Cultist prints Devotion twice: the pool at 1st, the path at 3rd. Both must survive,
+    // and the pool must keep its own rules rather than inheriting the path's list of options.
+    var cultist = CharGen.FeaturesAt("Dark Cultist", 9, "The Whisperer");
+    T("the pool keeps its own name",  cultist.Any(f => f.Name == "Devotion"));
+    T("and its own rules",            cultist.First(f => f.Name == "Devotion").Desc.Contains("pool"));
+    T("the path is the path",         cultist.Any(f => f.Name == "Dark Cultist’s Devotions: The Whisperer"));
+    T("and deepens at 9th",           cultist.Any(f => f.Name.EndsWith("— greater")));
+
+    // --- the level table's names reconcile with the prose's headings ---
+    foreach (var cal in callings)
+        foreach (var f in CharGen.FeaturesAt(cal.name, 10))
+            T($"every feature has its rule: {cal.name}/{f.Name}", f.Desc != null);
+}
+
+// ---- spending a rationed feature, and the boundaries that hand it back (v1.42.0) ----
+// The counting is the whole point. A once-per-session feature that nobody counts is a feature the
+// table argues about at exactly the moment it matters, and the answer four people give is four.
+{
+    // 10th level, because Last Stand is the Marshal’s capstone and the capstone is the
+    // once-a-session feature this whole ledger exists for.
+    var sheet = CharGen.Generate(10, false, "Marshal");
+    var soul = new PartyMember { Name = "Coyle", Calling = "Marshal", Level = 10, Sheet = sheet };
+
+    var ledger = CharGen.LedgerFor(soul);
+    T("the Marshal's rationed features are found", ledger.Count >= 2);
+    T("Last Stand is one of them", ledger.Any(r => r.Name == "Last Stand"));
+    T("nothing starts spent", ledger.All(r => r.Left == r.Of));
+
+    T("Last Stand can be spent",  CharGen.SpendFeature(soul, "Last Stand"));
+    T("and then it is gone",      CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 0);
+    T("and says why",             CharGen.WhyNotFeature(soul, "Last Stand").Contains("session"));
+    T("and refuses a second",     !CharGen.SpendFeature(soul, "Last Stand"));
+    T("a feature they lack is refused by name",
+      CharGen.WhyNotFeature(soul, "Powderman").Contains("no feature"));
+
+    // A scene does not return a session's one great moment. This is the check that matters:
+    // getting it wrong in the generous direction is worse than not counting at all.
+    T("a scene leaves it spent",  CharGen.RefreshFeatures(soul, FeatureCadence.Scene) == 0);
+    T("still spent after the scene", CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 0);
+    T("a long rest does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
+    T("a new session does",       CharGen.RefreshFeatures(soul, FeatureCadence.Session) == 1);
+    T("and it is back",           CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
+
+    // Command is counted off PRE, so it takes as many presses as the modifier allows and no more.
+    var cmd = CharGen.LedgerFor(soul).FirstOrDefault(r => r.Name == "Command");
+    if (cmd.Name != null)
+    {
+        int of = cmd.Of;
+        for (int i = 0; i < of; i++) T($"Command press {i + 1} of {of}", CharGen.SpendFeature(soul, "Command"));
+        T("and no more than the modifier allows", !CharGen.SpendFeature(soul, "Command"));
+        T("a scene returns the scene's own",      CharGen.RefreshFeatures(soul, FeatureCadence.Scene) == 1);
+        T("all of them at once",                  CharGen.LedgerFor(soul).First(r => r.Name == "Command").Left == of);
+    }
+
+    // Taking one back, for the press that was a mis-click
+    CharGen.SpendFeature(soul, "Last Stand");
+    T("a use can be handed back",  CharGen.UnspendFeature(soul, "Last Stand"));
+    T("and the count agrees",      CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
+    T("but not below nothing",     !CharGen.UnspendFeature(soul, "Last Stand"));
+
+    // The ledger is derived, so levelling changes what is on it rather than needing a top-up
+    var green = new PartyMember { Name = "Green", Calling = "Marshal", Level = 1, Sheet = CharGen.Generate(1, false, "Marshal") };
+    T("a 1st-level Marshal has no Last Stand", CharGen.LedgerFor(green).All(r => r.Name != "Last Stand"));
+
+    // A hand-entered soul has no sheet at all and must still be readable rather than a throw
+    var handmade = new PartyMember { Name = "Nobody", Calling = "Marshal", Level = 10 };
+    T("a soul with no sheet still reads",   CharGen.LedgerFor(handmade).Count >= 2);
+    T("and its counts floor at one",        CharGen.LedgerFor(handmade).All(r => r.Of >= 1));
+    T("a soul with no Calling is empty",    CharGen.LedgerFor(new PartyMember()).Count == 0);
+    T("and null is empty, not a throw",     CharGen.LedgerFor(null).Count == 0);
+    T("null refuses with a sentence",       CharGen.WhyNotFeature(null, "Last Stand") != null);
+
+    // What is spent rides along in the save file — the property is public, so the session's
+    // serializer carries it without being told twice.
+    soul.FeatureSpent["Last Stand"] = 1;
+    var round = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
+        System.Text.Json.JsonSerializer.Serialize(soul));
+    T("what was spent survives a save", round.FeatureSpent.TryGetValue("Last Stand", out int st) && st == 1);
+}
+
 Console.WriteLine($"\n{pass} passed, {fail} failed");
 return fail == 0 ? 0 : 1;
