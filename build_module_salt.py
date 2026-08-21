@@ -10,7 +10,7 @@ from modules_common import (night_costs, shell, splice, finish, report, runhead,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.1"
+VERSION = "1.2"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(

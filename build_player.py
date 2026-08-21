@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.27 -->
+<!-- Blood & Grit — The Player's Book · Version 2.28 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.28)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.28</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.27 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.28 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -414,8 +414,9 @@ body{ background:#525659; }
 
   <h2 id="ix-truths">The Three Truths</h2>
   <p>And here, before you go a page further, the truth the handbills leave out. They will tell you the
-  frontier is empty. They are wrong, and the wrongness of it is the whole of this game. The land between
-  the last church and the first ocean is not empty — it is <em>occupied</em>. The horror of this game is
+  frontier is empty. They are wrong, and the wrongness of it is the whole of this game. Something already
+  holds the land between the last church and the first ocean. Call the country <em>occupied</em>, and know
+  that the tenants were here a long while before the surveyors. The horror of this game is
   not that monsters exist. The horror is that the world was never arranged for your comfort, and has
   only now begun to show you so. Everything in this book grows from three plain ideas. Hold them in
   mind and the rest will follow.</p>
@@ -2802,7 +2803,8 @@ body{ background:#525659; }
   ordinary fire. Against a thing that should not be, the right ammunition is the difference between a fight and a funeral — yours.</p>
 
   <h2 id="ix-mounts">Mounts &amp; Tack</h2>
-  <p>A horse is not a luxury here; it is the line between a journey and a death. The mount you ride decides how far you go
+  <p>A horse is the line between a journey and a death. A man out here will go hungry a day before his
+  horse does, and he is right to. The mount you ride decides how far you go
   in a day, what you can carry, and whether you outrun trouble or are run down by it.</p>
   <table>
     <thead><tr><th>Mount</th><th class="c">Speed</th><th class="c">Blood</th><th class="c">Def</th><th class="c">Carry</th><th class="c">Cost</th></tr></thead>
@@ -3568,8 +3570,9 @@ body{ background:#525659; }
   does, and its <strong>Backlash</strong> — what the dark exacts when the working slips. There are forty of them here,
   across three lists, and no single soul will ever hold more than a handful.</p>
   <h2 id="ix-sign-rank">Rank and Reach</h2>
-  <p>Every Sign carries a <strong>Rank</strong> from one to five. The Rank is not how hard the Sign is to say;
-  it is how far into the old country you have to reach to say it, and how much of you comes back with it. You may
+  <p>Every Sign carries a <strong>Rank</strong> from one to five. The Rank measures the reach: how far into
+  the old country you have to go to fetch the words, and how much of you comes back with them. A Rank Five
+  Sign is no harder to pronounce than a Rank One. It simply costs more to mean it. You may
   learn and work any Sign of a Rank your level allows, and no other. There is no arguing the point with a Sign
   of a Rank above you: the words are there, the meaning is not, and nothing happens at all.</p>
   <table>
