@@ -75,13 +75,16 @@ tools — documented in their own sections below.
   + build scripts. The big self-contained HTML and the PDFs are generated artifacts, never
   the thing to hand-edit. Ranking, cheapest → most expensive to version:
   **lean source + external assets  ›  self-contained HTML  ›  PDF.**
-- **PDFs: automatic here, on request everywhere else (updated 2026-07-22).** When the work is
-  being done **in Claude Code / PowerShell CLI on my laptop**, regenerate the PDFs as part of
-  any change that touches book content — run `python make_pdf.py` once the books build and
-  measure clean, and hand them back with the HTML. No need to ask. **In any other
-  environment, the old rule stands:** don't run the PDF pipeline unless I say "save to PDF"
-  (or similar) in so many words. Either way the lean sources and the self-contained HTML
-  remain the primary deliverables; the PDFs are an extra, never a replacement.
+- **PDFs: only when I ask for them, in every environment (settled 2026-08-03).** Don't run
+  the PDF pipeline as a side effect of a book change — wait for "save to PDF" or words to
+  that effect. The lean sources and the self-contained HTML are the deliverable; the PDFs are
+  an extra, never a replacement. The recipe is under *"Save to PDF" — my standing preference*
+  below, which has always said this. **This bullet used to say the opposite** — that the CLI
+  should regenerate them automatically (a note from 2026-07-22) — so the doc gave a fresh
+  session two different answers depending on which half it read first. I settled it in favour
+  of the section below on 2026-08-03 and the bullet was never corrected, so it went on
+  contradicting the answer for another two and a half weeks. Rewritten 2026-08-20, after it
+  sent a session looking for the tiebreak a second time.
 - **Keep this handoff doc current.** When I make changes, update the version table, the
   Changelog, and any affected section so a fresh chat is never working from stale facts.
 - **Work on session branches, merge on success — every edit, no exceptions.** Before making
@@ -109,7 +112,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.27 | 201 | one inline SVG map (Appendix E) + cover emblem |
+| The Player's Book | v2.27 | 203 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.14 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.12 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.1 | 26 | one inline SVG map, downloadable |
