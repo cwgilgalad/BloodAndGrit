@@ -112,7 +112,7 @@ public partial class MainForm
             + "dice tumble in the tray and land on the true result, and everything the app rolls "
             + "anywhere lands in the log on the right."),
 
-        new("Bestiary", () => beastList, "All 150 creatures, word for word",
+        new("Bestiary", () => beastList, $"All {Db.Creatures.Count} creatures, word for word",
             "Taken straight out of the Bestiary — lore, stat block, witness quotes and all. Search "
             + "by name, filter by Tier or chapter. Double-click one to pop it out into its own "
             + "window so several horrors can sit side by side, and send it to the Encounter or "

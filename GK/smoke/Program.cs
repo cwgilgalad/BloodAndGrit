@@ -73,7 +73,7 @@ for (int i = 0; i < 50; i++)
 
 // ---- Data loads, extra tables merge, terrain entries resolve to real creatures ----
 Db.Load();
-T("150 creatures", Db.Creatures.Count == 150);
+T("175 creatures", Db.Creatures.Count == 175);
 T("creature names unique", Db.Creatures.Select(c => c.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() == Db.Creatures.Count);
 T("all stat blocks parse", Db.Creatures.All(c => c.BloodValue > 0 && c.DefenseValue > 0));
 T("eight creature chapters", Db.Creatures.Select(c => c.chapter).Distinct().Count() == 8);   // Bestiary II-IX; I is How to Read the Dead
@@ -1452,13 +1452,15 @@ foreach (var (table, floor) in new[]
     T("working: a printed save reaches the working", W("The Stilling").Save == "Will");
     T("working: at least twenty workings ask for one", all.Count(w => w.HasSave) >= 20);
 
-    // A creature's power is a standing TRAIT, not something worked on anybody. All 150 Bestiary
-    // special lines are written that way and not one carries a die, a save, or a radius — so the
-    // dialog must stop asking who it is being worked on and for how long.
+    // A creature's power is a standing TRAIT, not something worked on anybody. Every Bestiary
+    // special line is written that way and not one carries a die, a save, or a radius — so the
+    // dialog must stop asking who it is being worked on and for how long. Counted against the
+    // roster rather than a typed number: the claim is that EVERY creature has one, and a literal
+    // here would have to be edited every time the Bestiary grows, which is how it goes stale.
     var powers = Db.Creatures.Where(c => !string.IsNullOrWhiteSpace(c.special))
         .Select(c => { var (n, e) = Rules.ParsePower(c.special); return Rules.ReadWorking(n, "Power", 0, "", e, 6); })
         .ToList();
-    T("working: every creature's special line is read", powers.Count == 150);
+    T("working: every creature's special line is read", powers.Count == Db.Creatures.Count);
     T("working: a creature's power reads as a trait, not a targeting",
         powers.Count(w => w.IsTrait) >= 140);
     T("working: a trait has nothing to roll", powers.Where(w => w.IsTrait).All(w => !w.Resolves));

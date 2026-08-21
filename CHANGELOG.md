@@ -8,6 +8,85 @@ Desktop\Git repos.)
 
 ---
 
+- **Bestiary v2.12 · Keeper's Book v2.14 — twenty-five more of the traditional horrors, and the
+  families they belong to (2026-08-20).** The catalogue was thin exactly where a horror western
+  ought to be thickest. It held **one vampire** (the Nightwalker), **no werewolf at all**, one
+  poltergeist, and a dozen hauntings, which is a strange shortage for a book with a hundred and
+  fifty entries in it. Twenty-five new creatures fix that, and they are written as *families with a
+  ladder* rather than as twenty-five separate nights: a Keeper can now run vampires or wolves as an
+  arc that climbs a Tier at a time.
+
+  **The blood-drinkers, Ch. II (six).** *The Blood-Thin* (I) is the new-made thing in the root
+  cellar that the family is still lying about; give it three months and it is a Nightwalker, give
+  it three days and it is a frightened girl asking you to shut the door. *The Grave-Eater* (II) is
+  the boneyard ghoul that has kept a polite bargain with the sexton for thirty years and comes up
+  when somebody moves a grave for a right-of-way. *The Wasting Kin* (II) is the New England vampire
+  panic gone west — a family dying in order, a doctor who says consumption and is half right, and
+  the neighbors opening the plot one grave at a time until they find the one with blood still in
+  the heart. *The Coffin-Rider* (II) ships as freight in a crate of its own graveyard dirt, which
+  makes it a paper chase: a depot ledger and a waybill end it at three in the afternoon without a
+  shot. *The Brood* (III) is the Chapter I **Swarm** template doing real work, a nest of the
+  new-made down a played-out drift. And *The Old Blood* (IV) holds the notes on half the county —
+  it cannot cross an uninvited threshold and has never once been refused, because the invitation is
+  in the paper, and the way to beat it is the deed book rather than the stake.
+
+  **The wolf-shapes, Chs. III and IV (six).** The book already had the Skin-Walker, who *puts the
+  hide on* by craft and by choice, so lycanthropy here is deliberately the opposite: a disease with
+  a calendar, caught rather than chosen, and each entry says so. *The Bitten* (I) is a man with
+  about a month of himself left who knows it and has bought a chain. *The Moon-Sick* (II) does not
+  know, rides with the posse, and takes a turn on watch. *The Moon-Cursed* (III) is the wolf itself,
+  caught by the almanac rather than the lantern — three nights a month, a day's ride, the same range
+  every time. *The Loup-Garou* (III) came up the river with the people who knew about it and is
+  counting a hundred and one days toward whoever it last bled. *The Moon's Own* (IV) never went
+  back, and runs a pack of the moon-sick who wake up human when it falls. Beside them, *The Black
+  Dog* (II), which is an omen with teeth and only ever shows itself to one of you at a time.
+
+  **The haints, Ch. V (eleven), and two made men.** *The Hitchhiker* (I) and *The Tommyknocker* (I)
+  teach the chapter's rule at no cost in Blood. *The Answering Voice* (II) is the poltergeist that
+  stopped needing hands and learned the family's voices, and it gets one word wrong every time.
+  *The Boo Hag* (II) and *The Plat-Eye* (II) came west with the Gullah families who carried them,
+  and both keep their own remedies — salt and pepper in the hanging skin, a broom across the sill,
+  and the plain refusal to run on a levee. *The Tintype* (II) is a memorial plate that changes only
+  between lookings. *The Field-Hand* (II) is what is in the straw on the place that has had nine
+  good years. *The Fetch* (III) is you, a street ahead, doing your business better than you do.
+  *The Fiddler at the Dance* (III) will not take a break. *The Wake* (III) offers you a chair and
+  means it kindly. *The Midnight Line* (III) keeps a schedule on a grade that was pulled up in
+  eighty-one, and the conductor holds the door. In Ch. IV, *The Day-Man* (II) is the living
+  bookkeeper who passes every test for salt, silver and iron because he is a man, and *The Stitched
+  Man* (III) is what an army surgeon made of a hard winter and five sets of hands.
+
+  Every one of them is priced off the **Ch. IV Threat-by-Tier bands** rather than by ear, and every
+  Dread DC lands on a rung the engine already reads (`Horror.DreadTier`), so the app takes the
+  Nerve off the right die without a special case. The **Appendix: The Grounds** grew with the
+  roster, because the smoke suite holds the rule that a creature no table ever offers is a creature
+  a Keeper has to already know about: seven tables to a bigger die — the Trail and Towns to d20,
+  Rivers, Graveyards, Winter and the Hand Behind It to d12, Mines to d10 — and each one re-sorted so
+  the new rows sit at their own Tier instead of on the end.
+
+  The Keeper's Book bumps with it for one reason worth naming: Chs. IV and V both told the reader
+  the Bestiary holds *"a hundred and fifty things to fight"*, which had been true and was about to
+  stop being. **That number is now counted rather than typed** — `build_keeper.py` reads the roster
+  out of `GK/rules/Data/creatures.json`, the same file the modules cite and the app embeds, and
+  spells it. Bestiary 166 → 199 pages, both measured clean at desktop and mobile.
+
+- **GritKeeper v1.43.0 — the roster the book grew, and two counts the app was reciting from
+  memory (2026-08-20).** `Data/creatures.json` re-extracted at **175 creatures** — twenty-five
+  added, none changed, none dropped, which is what the diff against the previous extraction says
+  and the only reason to trust the re-extraction at all. All 175 stat blocks parse, all 175 attack
+  lines yield Strikes or riders through `CreatureAttack.Parse`, and every new creature is reachable
+  from a terrain table, so the Generators tab can actually roll one. The smoke suite runs
+  **14,203 assertions**, up 4.
+
+  The counts are the part worth writing down. The Bestiary tab's help text told Keepers about
+  *"all 150 creatures"* and *"sixty-five of the hundred and fifty"*, and the guided tour said 150,
+  and all three were typed. This is the same failure the reference screen had in v1.20.1, when it
+  advertised eleven leaves while holding thirteen for two releases, and the rule that came out of
+  it is that a count in prose is read off the thing it counts. Both Bestiary numbers now come from
+  `Db.Creatures`, and the smoke suite's own *"every creature's special line is read"* stopped
+  comparing against a literal 150 and started comparing against the roster, which is the claim it
+  was always making.
+
+
 - **Player's Book v2.27 · Keeper's Book v2.13 — the country gets a glossary, and the contents page
   gets the right pages (2026-08-19).** A reader asked what a *sawbones* is, which is a fair question
   in 2026 and one the book had never troubled to answer. It answers it three times over now. Chapter
