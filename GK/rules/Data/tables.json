@@ -296,7 +296,15 @@
    "The Ghost Cat (II)",
    "The Whistler (III)",
    "The Restless Herd (II)",
-   "The Faceless Rider (IV) \u2014 ruin follows"
+   "The Faceless Rider (IV) \u2014 ruin follows",
+   "The Bitten (I) \u2014 and he knows it",
+   "The Hitchhiker (I)",
+   "The Black Dog (II) \u2014 an omen, and it comes back",
+   "The Field-Hand (II)",
+   "The Moon-Sick (II)",
+   "The Fiddler at the Dance (III) \u2014 a barn, a Saturday",
+   "The Midnight Line (III) \u2014 the old grade",
+   "The Stitched Man (III)"
   ],
   "Rivers, Lakes & Swamps": [
    "The Lantern-Light (I)",
@@ -308,7 +316,9 @@
    "The Weeping Woman (III)",
    "The Bull Gator (a living beast)",
    "The Horned Serpent (III)",
-   "The Old Man of the Swamp (a living beast)"
+   "The Old Man of the Swamp (a living beast)",
+   "The Plat-Eye (II) \u2014 the levee road",
+   "The Loup-Garou (III)"
   ],
   "Towns, Homesteads & Haunted Houses": [
    "The Cold Spot (I)",
@@ -322,7 +332,15 @@
    "The Cold Bride (II)",
    "The Nightwalker (III)",
    "The Dollmaker's Children (II)",
-   "The House That Hungers (IV)"
+   "The House That Hungers (IV)",
+   "The Blood-Thin (I) \u2014 in the cellar",
+   "The Answering Voice (II)",
+   "The Boo Hag (II)",
+   "The Coffin-Rider (II) \u2014 the freight shed",
+   "The Tintype (II) \u2014 on the mantel",
+   "The Fetch (III)",
+   "The Wake (III) \u2014 the house is lit",
+   "The Old Blood (IV) \u2014 it holds the paper"
   ],
   "Graveyards & Battlefields": [
    "The Risen (I)",
@@ -334,7 +352,9 @@
    "The Boneyard Host (II)",
    "The Revenant (III)",
    "The Hangman's Echo (II)",
-   "The Scalp-Taker's Ghost (III)"
+   "The Scalp-Taker's Ghost (III)",
+   "The Grave-Eater (II)",
+   "The Wasting Kin (II) \u2014 the family plot"
   ],
   "Mines & Under the Earth": [
    "The Mummied Prospector (I)",
@@ -344,7 +364,9 @@
    "The Rattlewyrm (III)",
    "The Devourer's Tongue (IV)",
    "The Grave-Wight (III)",
-   "The Stone Giant (IV)"
+   "The Stone Giant (IV)",
+   "The Tommyknocker (I) \u2014 mind your manners",
+   "The Brood (III)"
   ],
   "Winter & the High Country": [
    "The Wolf Pack (a living beast)",
@@ -356,7 +378,9 @@
    "The White Death (III)",
    "The Stone Giant (IV)",
    "The Hunger That Walks (III)",
-   "The Wendigo (IV)"
+   "The Wendigo (IV)",
+   "The Moon-Cursed (III)",
+   "The Moon's Own (IV)"
   ],
   "Desert & the Badlands": [
    "The Rattlesnake (a living beast)",
@@ -390,7 +414,9 @@
    "The Mesmerist (III) \u2014 other people's hands",
    "The Tallyman (III) \u2014 a debt come due",
    "Dark Cultist & the Hollow Prophet (II\u2013III)",
-   "The Crossroads Man (IV) \u2014 somebody dealt, and lost"
+   "The Crossroads Man (IV) \u2014 somebody dealt, and lost",
+   "The Day-Man (II) \u2014 he keeps the books",
+   "The Old Blood (IV) \u2014 every note in the county"
   ],
   "The Ordinary Country": [
    "The Rustlers (I)",

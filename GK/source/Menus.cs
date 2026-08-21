@@ -281,10 +281,14 @@ public partial class MainForm
           "is how you keep one.");
 
         H("3 · Know your horrors  (Bestiary)");
-        T("All 150 creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
+        // Both counts come off the roster. They were typed once, and the Bestiary grew, and the
+        // help text went on telling Keepers a number the app could have read off the shelf.
+        int horrors = Db.Creatures.Count;
+        int plain = Db.Creatures.Count(c => c.chapter is "Beasts of the Living World" or "Hard Men & Hard Country");
+        T($"All {horrors} creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
           "Double-click a creature (or hit ⧉ Pop out) to open it in its own window — open several side by side and " +
           "size the text to the light in the room. From here one click sends a creature to the Encounter builder or " +
-          "drops N copies straight onto the Tracker. Sixty-five of the hundred and fifty are the mundane half — " +
+          $"drops N copies straight onto the Tracker. {plain} of the {horrors} are the mundane half — " +
           "the two chapters Beasts of the Living World and Hard Men & Hard Country, which cost no Nerve and never " +
           "move the Mark. Filter to those for the slow-burn weeks before anything gets up that shouldn't.");
 

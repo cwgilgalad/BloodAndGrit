@@ -80,7 +80,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
   roll/event log, and an owner-drawn dice tray settling on the true per-die results from
   `Rules.RollExprFull`. Every die wears its colour (d4 green · d6 blue · d8 orange · d10 white ·
   d12 yellow · d20 red · d100 purple); the roll log is colour-coded by degree (`StyleRollLog`).
-- **Bestiary** — all **150 creatures**, machine-extracted from the rendered Bestiary HTML, so
+- **Bestiary** — all **175 creatures**, machine-extracted from the rendered Bestiary HTML, so
   lore/stats/witness quotes/keeper notes are word-for-word faithful to the book. Search, tier and
   chapter filters, one click to Encounter or Tracker, double-click to pop a creature into its own
   resizable window with A−/A＋ zoom — one window per creature, reused if open, cascading placement.
@@ -196,7 +196,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash — so failures are never silent. Opens the `Daybook` (and points it at `daybook.txt` under `--verbose`), and folds its dump into both error reports. Also hosts `--selftest`. |
 | **`Daybook.cs`** | The capped record of what the app just did — rolls, checks, session saves/loads, mode switches, generated souls, and **turn handoffs** (who went, on what initiative, who was still to go — the `turn` channel, added in v1.35.0, which is how the ordering fix was proved in the running app rather than only in the test rig) — for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
 | `app.ico` / `Assets/emblem.png` | The cover emblem as a multi-size Windows icon (regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded. |
-| `Data/creatures.json` | All 150 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
+| `Data/creatures.json` | All 175 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes — no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful — never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
 | **`Look.cs`** | What a soul looks like — `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. The two rules that govern it are below, under *What a soul looks like*. |
@@ -513,7 +513,7 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   — there was a real bug here once, a signed band scale with a gap at zero; fixed by moving to an
   ordered 0–3 scale), `RollExprFull` per-die/total agreement, encounter costs, the Nerve ladder,
   model clamping, `INotifyPropertyChanged` firing, serialization round-trips, full data-load checks
-  (150 creatures parse, table merge counts, no duplicates, **every terrain-table entry resolves to
+  (175 creatures parse, table merge counts, no duplicates, **every terrain-table entry resolves to
   a real creature by name**), `CharGen.Assemble` conformance sweeps with junk-choice fuzzing,
   `LevelUp` proved across every calling × ability method × level 1→10, Trail Maps
   generation/SVG/PDF structural + determinism checks, and `TurnClock`. Re-run after any
@@ -668,7 +668,7 @@ ordinary `Combatant`s.
 ## Creature attacks (v1.17.0)
 
 A creature on the tracker Strikes with its OWN attacks, parsed from the Bestiary's free-text `attacks`
-line by `CreatureAttack.Parse` in `IronCode.cs` (pure, smoke-tested across all 150 creatures) — no
+line by `CreatureAttack.Parse` in `IronCode.cs` (pure, smoke-tested across all 175 creatures) — no
 data-format change; the free-text stays the source of truth, like `WeaponTraits`.
 `CombatFlow.StrikeAndApply` has a `CreatureAttack` overload; `IronCode.Strike` takes an optional
 `forceType` so an elemental touch types past worn-armor DR.

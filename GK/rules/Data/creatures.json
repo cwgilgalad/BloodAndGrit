@@ -1,5 +1,27 @@
 [
  {
+  "name": "The Blood-Thin",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier I \u00b7 the new-made, still ashamed of it",
+  "tier": 1,
+  "defense": "13",
+  "blood": "14",
+  "speed": "fast, and then suddenly tired",
+  "saves": "Fort +5, Ref +6, Will +1",
+  "attacks": "clumsy hands +4 (1d6+2); bite (vs. grabbed or sleeping) +4 (1d6+2 and drain 1 Blood, healing as much)",
+  "special": "Starving and unschooled. It has none of the old ones' gifts yet \u2014 no mist, no command, no charm \u2014 and it has not learned that a threshold can stop it, so it walks in the front door and is surprised by the salt.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Iron, fire, or the sun. Or wait it out: a new-made thing that takes no living blood inside a month goes to dust where it lies, and a few of them are trying.",
+  "mark": "",
+  "lore": [
+   "Something got at a person and did not finish the job, and now there is a thing in the root cellar that used to help with the milking. The Blood-Thin is a vampire in its first weeks, before the cold gets all the way in. It still knows the house. It still answers to its name, and flinches when it hears it. Most of them start on the stock, because the stock cannot look at them, and a family will spend a fortnight blaming coyotes rather than say out loud what they have all worked out.",
+   "It is weak by the standards of its kind and terrible by the standards of a homestead. What makes it the hardest entry in this chapter to run is that the cure and the killing are the same act, and the people who love it are standing right there. Give it three months and the shame burns off and you have a Nightwalker. Give it three days and you have a frightened girl in a cellar asking you to shut the door."
+  ],
+  "found": "Cellars, smokehouses, and the dark under a floor, on a homestead where somebody has been dead a fortnight and is still eating. Always within a mile of where it lived.",
+  "keeperNote": "Run this one as a family problem, and put the fight last. The party arrives on a place where the stock is bled and the people are lying badly, and the whole first act is working out that the thing in the cellar is the daughter and the ones covering for it are her parents. Let the numbers be genuinely survivable \u2014 a Tier I is a fair fight for greenhorns \u2014 so that the difficulty is never tactical. The clock is the pressure: a Blood-Thin that feeds on a person is a Nightwalker by the season's end, and everyone in the room knows it. Offer both hard mercies honestly. The month of starvation works, and it takes a month, and somebody has to sit outside that door the whole time. Use it to open a vampire arc, and let the older thing that made it be the reason the party comes back.",
+  "witness": "They kept her a month. Fed her off the hogs and told the neighbors she had the fever. I do not blame them for the month. I blame the second one. \u2014 Deputy R. Ames, on the Halloran place"
+ },
+ {
   "name": "The Mummied Prospector",
   "chapter": "The Restless Dead",
   "tierText": "Tier I \u00b7 dried hard around his greed",
@@ -88,6 +110,28 @@
   "witness": ""
  },
  {
+  "name": "The Coffin-Rider",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier II \u00b7 the one that travels",
+  "tier": 2,
+  "defense": "15",
+  "blood": "26",
+  "speed": "normal; and never far from the box",
+  "saves": "Fort +8, Ref +6, Will +5",
+  "attacks": "a closing grasp +6 (1d8+3 and grab); bite (vs. grabbed) +6 (1d8+3 and drain 1d4 Blood, healing as much)",
+  "special": "Its own ground, carried with it. It must lie each dawn in the dirt it was buried in, which travels as a long crate on the freight; one sunrise away from that dirt and it drops a Tier, three and it is finished.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Find the crate on the waybill. Salt the earth in it or burn it, and the thing has nowhere to be at sunup \u2014 then the sun does the rest of the work for you.",
+  "mark": "",
+  "lore": [
+   "The old ones are bound to their ground and everybody knows it, which is exactly why the clever ones learned to bring the ground along. A Coffin-Rider ships as freight. A long crate, consigned to a name that turns out to be nobody, moving west by wagon and then by rail, riding in a car with the through freight and the mail. It sleeps the day in a bed of its own graveyard dirt and it works whatever town the crate stops in, and when the town gets restless the crate goes out on the next train.",
+   "It is a middling thing in a fight and a genuinely difficult thing to be rid of, because a country with a freight schedule is a country a vampire can live in forever. The one that worked Denver in the spring is the one that worked three towns in Kansas the winter before, and the depot agent has a record of it in his book without knowing what he wrote down. Kill the thing and it is dead. Find the crate first and you did not even need to."
+  ],
+  "found": "Depots, freight offices, warehouse row, the long shed behind a station. Wherever a heavy crate can sit unbothered from sunup to dark, on a line that runs somewhere else tomorrow.",
+  "keeperNote": "Run this as a paper chase and let the fight be an afterthought. The clue is a manifest, and the pleasure of the scenario is that a depot agent's ledger, an undertaker's receipt, and a livery bill will between them tell the party exactly where the thing sleeps, if anybody thinks to ask. Give them a town with a fresh drained body and a stack of records, and let them work. The Coffin-Rider's numbers are deliberately unremarkable so that the win comes from the wrong direction: salt in the crate at three in the afternoon ends the whole affair without a shot fired, which is enormously satisfying and teaches the table to look for the sleeping place. If they do corner it at night instead, run it smart. It knows the yard, it knows which car leaves at eleven, and a Coffin-Rider that senses the game is up will simply get on it. A creature that escapes is a creature that comes back, and this one keeps a schedule.",
+  "witness": ""
+ },
+ {
   "name": "The Cold Bride",
   "chapter": "The Restless Dead",
   "tierText": "Tier II \u00b7 jilted at the altar of the grave",
@@ -154,6 +198,28 @@
   "witness": ""
  },
  {
+  "name": "The Grave-Eater",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier II \u00b7 the thing that lives in the boneyard",
+  "tier": 2,
+  "defense": "15",
+  "blood": "24",
+  "speed": "fast; digs like a badger",
+  "saves": "Fort +8, Ref +7, Will +3",
+  "attacks": "claws +6 (1d8+3); bite +6 (1d8+3 and Fort DC 14 or the wound sours and will not close)",
+  "special": "It has a larder, and you are not in it. While a filled grave lies within reach it wants nothing to do with the living; open one, move one, or camp on one, and it comes up. Sees in pitch dark and smells a burial a mile downwind.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Plain lead does it above ground. In a hole it dug, it is worth three of itself \u2014 so make it come up, and do not follow it down.",
+  "mark": "",
+  "lore": [
+   "Every boneyard of any age has the look of being tended by somebody who is not the sexton. Graves settle wrong. The turf on the poor side gets moved and put back by a hand with no shovel. The Grave-Eater is a thing that was a man far enough back that nobody living knows which one, gone long and hungry in the ground until it stopped needing to be dead, and it has eaten in that yard ever since without troubling a soul above it.",
+   "That is the bargain, and it holds for years at a stretch. Bury your people, leave them where they lie, and the Grave-Eater is a rumor and a set of tracks. Rob a grave, or move a churchyard for a railroad right-of-way, or bed down on the mound because the ground is soft \u2014 and the bargain is off, and the thing that has been polite about it for thirty years comes up out of a hole behind you, fast."
+  ],
+  "found": "Old boneyards, potter's fields, battlefield trenches, and the mass graves of a bad winter. Also the fresh diggings of any town careless enough to bury shallow.",
+  "keeperNote": "The Grave-Eater is the chapter's best lesson in leaving well enough alone, so build the scenario around a reason the party cannot. Somebody has to move the graves \u2014 the railroad is coming through, the river has changed its mind, a family wants their boy home \u2014 and the work is honest and necessary and wakes the thing up. Play the polite years first: the sexton who has known about it for decades, feeds it the paupers, and would very much like the party to go away. That NPC is the whole entry. Mechanically it is straightforward, which is on purpose after the Blood-Thin: give the table one clean fight where the answer is lead and position. The one wrinkle worth honoring is the hole. It fights far better underground, and a party that chases it into its tunnels has decided to fight a badger in a badger's house. Make the surface the prize.",
+  "witness": ""
+ },
+ {
   "name": "The Plague-Dead",
   "chapter": "The Restless Dead",
   "tierText": "Tier II \u00b7 the dead of a bad season",
@@ -195,6 +261,50 @@
   ],
   "found": "The trails and river-crossings where a drive met disaster, the draws and cut banks that swallowed a herd. It runs on the anniversary, in the storm, or whenever the conditions of that first bad night come round again.",
   "keeperNote": "The Restless Herd is a hazard as much as a monster \u2014 run it like weather with intent. The terror of it is sensory: the distant rumble, the trembling ground, the realization of what is coming and the scramble to be anywhere but in the lane. Don't let the party fight it head-on; let them survive it, the way you survive a flood, by getting clear, gaining high ground, finding the rocks. The resolution lies with the drover at its head \u2014 lay him to rest, or turn the herd back over the same fatal ground that killed it, and the long stampede finally ends. A great chase set-piece and a good reminder that on this frontier, even the cattle can be ghosts. Pair it with a town that's been losing stock and riders on the same stretch of trail for thirty years, and let the players work out why.",
+  "witness": ""
+ },
+ {
+  "name": "The Wasting Kin",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier II \u00b7 the one in the family plot that is not rotting",
+  "tier": 2,
+  "defense": "14",
+  "blood": "22",
+  "speed": "slow; it is never in a hurry",
+  "saves": "Fort +8, Ref +4, Will +6",
+  "attacks": "it lays no hand on anyone \u2014 each night it visits, the sleeper wakes thinner (Fort DC 14 or lose 1d4 Blood that rest does not give back); cornered in daylight, a strangling grip +6 (1d8+3)",
+  "special": "Kin first, and in order. It comes only to its own blood, nearest first, and no lock or distance signifies; the family Bible with the names written in the front is the list it is working down.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Open the graves. The one with fresh blood in the heart is the one \u2014 burn that heart, and let the sick of the family breathe the smoke.",
+  "mark": "",
+  "lore": [
+   "A family starts to go. The eldest first, coughing, thin, sweating through the sheets; then the next, six weeks behind, with the same cough and the same look; then the next. A doctor will call it consumption and be half right, because that is exactly what it looks like and exactly what it is doing. What the doctor cannot account for is why the youngest keeps saying that her sister comes and sits on the bed, and why the sister has been in the ground since March.",
+   "The neighbors get there before the doctor does. They come with lanterns and spades and a great deal of shame, and they open the family plot one grave at a time until they find the one that has not gone the way a body goes \u2014 supple, fed, with liquid blood still in the heart. Then they burn the heart and make the living breathe the smoke, and often enough the coughing stops. Every western county that ever took in a New England family has one of these stories, and the ones who tell it will tell you they only did it the once."
+  ],
+  "found": "A family burying ground on a failing place, in the season after a funeral, in a household where the coughing has started to travel from the oldest bed to the youngest.",
+  "keeperNote": "This one is an investigation with a horrible shovel at the end of it, and the horror is entirely social. The party rides into a settlement where a family is dying in order and the neighbors are already talking about the graves. Let the medical explanation be genuinely available and genuinely reasonable \u2014 consumption ran through families exactly like this \u2014 so that the party has to decide whether to dig, and has to face the family to do it. Withhold the confirmation until the coffin is open. The dread is in the digging and in the four wrong graves you open first. Run the thing itself as nearly passive: it does not fight, it visits, and every night the party spends deciding costs somebody 1d4 Blood they do not get back. If they want a fight, they can have one by cornering it at noon, and it will be a poor one, and it will not solve anything. The heart and the smoke are the answer. Make them do it in front of the mother.",
+  "witness": "We opened five of our own before we found her. I would like it known that the family asked us to. I would like it known there was another way and nobody could name one. \u2014 signed statement of eleven men, Yarrow County, after"
+ },
+ {
+  "name": "The Brood",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier III \u00b7 a nest of the new-made, run as one",
+  "tier": 3,
+  "defense": "16",
+  "blood": "40",
+  "speed": "fast; through the old stopes and the timbering",
+  "saves": "Fort +11, Ref +9, Will +4",
+  "attacks": "hands and teeth +9 (2d6+4 to everyone standing close, and 1d4 Blood drained from each)",
+  "special": "Run as one (a swarm). Five to a dozen Blood-Thin sharing one pool and one hunger; no aimed shot finds a single one of them, and it thins as it bleeds rather than dropping one at a time.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Fire in a close place, or daylight let in on them. Whatever made them is sleeping deeper in the same hole, and killing the brood buys a night where killing the maker buys the valley.",
+  "mark": "",
+  "lore": [
+   "One vampire in a camp is an accident. Nine is somebody's project. A Brood is what a patient old thing builds when it wants labor and company and a wall of bodies between itself and the door \u2014 the missing of a mining camp, turned one at a time over a winter and kept down a played-out drift where the sun has never been. They are new-made and stupid with hunger. They do not scheme. They come all at once through a place too narrow to shoot properly, and there are always more of them coming than the party counted going in.",
+   "Everything about running a brood is about the ground. In the open they are a poor showing and a party with rifles will simply mow them. Down a drift, in a cellar, along a shaft with one ladder, they are a wall of hands, and the fight becomes a question of whether anybody gets back to the surface. That is why the old ones put them where they put them."
+  ],
+  "found": "Worked-out mines, cellars under a burned hotel, the crawl spaces of a big house, the storm drains of a town that grew fast. Always somewhere narrow, dark, and with a second way out that only they know.",
+  "keeperNote": "This is the Swarm template from Chapter I doing real work, and the entry exists to teach it. One Defense, one Blood pool, one attack that catches everyone standing close, no called shots \u2014 and it gets weaker as it bleeds instead of dropping bodies. Stage it underground and make the terrain the antagonist. The party's real decisions are about light, chokepoints, and whether anybody is willing to be last in line on the ladder. Seed the count wrong on purpose: the survivor said six. Then plant the actual point of the encounter, which is that a brood is evidence. Somebody made these, that somebody is close, and it is older and quieter and has been listening to the shooting. End the session on the sound of something unhurried coming up the drift behind them, and you have set your Old Blood without ever showing it.",
   "witness": ""
  },
  {
@@ -330,6 +440,28 @@
   "witness": ""
  },
  {
+  "name": "The Old Blood",
+  "chapter": "The Restless Dead",
+  "tierText": "Tier IV \u00b7 the one that holds the paper on the valley",
+  "tier": 4,
+  "defense": "20",
+  "blood": "70",
+  "speed": "fast; and it need not hurry",
+  "saves": "Fort +15, Ref +13, Will +14",
+  "attacks": "a hand that closes +13 (2d8+6 and grab); bite (vs. grabbed, sleeping, or willing) +13 (2d8+6 and drain 1d10 Blood, healing as much)",
+  "special": "It owns the country. Heals 10 Blood a round out of the sun, and its regard alone gives an order (Will DC 20 or obey it this round). It cannot cross a threshold uninvited \u2014 and it holds the notes on half the doors in the county, which is a kind of invitation the old rule never anticipated.",
+  "dread": "DC 20, 1d10",
+  "puttingItDown": "The threshold is the whole of it. Buy back the paper, burn the paper, or get the county to void it, and no door opens to the thing. Then the stake, the fire, and the sunrise, in that order and without a pause between them.",
+  "mark": "Taking its coin, its lease, or its offer of protection is +1 Mark, and a standing invitation it never has to ask for twice.",
+  "lore": [
+   "It came into the valley with money in the bad year and it has been the best neighbor anybody ever had. It carried the Hollisters through the drought. It bought the mortgage off the bank when the bank got hard about it. It never comes to church and it never comes by day and nobody thinks a thing of either, because it has the manners of a gentleman and a genuine record of decency, and it has been forty years building that record on purpose.",
+   "The old rule still binds it. It cannot come through a door it was not asked through, and it has never once been refused, because the invitation is in the paper. A man who signs a note signs a welcome, and every family in the valley signed one in a year when signing was the only thing between them and the road. The Old Blood does not feed often and it does not feed carelessly \u2014 a little, from the healthy, from people who wake tired and grateful and mean to pay their debt. What it wants is not one night. It is the valley, and it has most of it."
+  ],
+  "found": "The big house on the good water, and the county courthouse, where the record of what it owns is public and dull and complete. It is at neither during the day.",
+  "keeperNote": "An apex horror whose real body is the deed book, and the entry is built so force comes last. Run the first sessions as economics: the party notices that everybody's paper leads to one name, that the tired-and-grateful are all debtors, and that the thing has never entered a house it did not hold a note on. Give them the fight only after they understand what the fight is for, because at Tier IV against most parties it is an execution, and a posse that walks up the drive at midnight has chosen badly. The win they should find is the paper. Burning the deed book is a heist. Getting the county to void the notes is a courtroom. Buying them back is a season of work and a real cost, and any of the three ends the invitation and puts the thing outside in the dark with the sun coming. Let the Mark line do its job \u2014 every player who took its money is now part of the problem \u2014 and let one of them have taken it for a very good reason.",
+  "witness": "I have looked at the note four times now. There is nothing in it a lawyer would blink at. It is the plainest, kindest paper I ever read, and I cannot sign it and I cannot say why to my wife. \u2014 H. Cobb, who lost the place"
+ },
+ {
   "name": "The Chupacabra",
   "chapter": "Cursed Beasts & Wild Things",
   "tierText": "Tier I \u00b7 the goat-sucker",
@@ -394,6 +526,28 @@
   "found": "Anywhere its quarry runs \u2014 it crosses fences, towns, and territory lines without slowing. Look for its maker nearby: a Witch's cabin, a Hexer's wagon, a cuckolded rancher who paid cash for a curse.",
   "keeperNote": "The Hexed Beast is the party's introduction to the rule that runs half this book: kill the body, and the binding brings it back . Let them put it down the first night and feel the satisfaction, then have it come loping out of the dark the next night, whole and patient. The lesson is to follow the thread back to the hand that sent it. Use it as a clock and a breadcrumb \u2014 every night it returns, it points the party closer to its maker. The Tier band (I\u2013II) lets you scale it to whatever the table can handle. Drop the brand or the hair-knot somewhere they'll find it; let a tracker or a wise NPC name it as a sending. Then the real adventure begins: not the beast, but the person who wanted blood badly enough to buy it.",
   "witness": ""
+ },
+ {
+  "name": "The Black Dog",
+  "chapter": "Cursed Beasts & Wild Things",
+  "tierText": "Tier II \u00b7 the one that walks ahead of a death",
+  "tier": 2,
+  "defense": "15",
+  "blood": "22",
+  "speed": "very fast; never quite where the eye left it",
+  "saves": "Fort +8, Ref +8, Will +6",
+  "attacks": "a bite that arrives before the dog does +6 (1d8+3, and the cold of it stays in the wound a week)",
+  "special": "An omen with teeth. Seen once it is a warning; seen three nights running, the death it is walking for is yours. Lead passes through it unless the lead has been blessed, bought with silver, or carried by somebody it has already visited.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "You do not put down an omen. Find whose death it walks for and what earned it, and settle that \u2014 salt across the road, a name said over it, or a silver piece thrown down will each buy one more night.",
+  "mark": "",
+  "lore": [
+   "It is a big black dog on the road at dusk, and there is nothing whatever wrong with it until you notice that it has not moved its legs. It keeps pace with a horse at a walk and with a horse at a gallop and does neither differently. Dogs will not bark at it. Horses will, once, and then go quiet and will not go that way again for a week.",
+   "Every county has its own name for it and its own rules about it, and the rules mostly agree: it walks ahead of something, it comes back, and the third night is the one that matters. It is not the death. It is the notice of the death, and it has never once been wrong, and men have gone mad trying to work out whether killing the dog would change anything. A few have tried. The ones who managed it were carrying silver or a priest's blessing, and every one of them found out that the death still came, on time, for whoever it had been walking for."
+  ],
+  "found": "Lonely roads at dusk, churchyard lanes, the crossing outside a town, the last mile home. It appears to one person at a time and almost never where it can be shown to somebody else.",
+  "keeperNote": "Use the Black Dog as a clock the party can see and cannot read. Three appearances, three nights, and then somebody dies \u2014 and the entire scenario is the scramble to work out who and why while the party argues about whether the dog is even real, because it only ever shows itself to one of them at a time. That single-witness rule is the engine; run it hard, and let the player who keeps seeing it feel the table doubting them. Make the fight available and unsatisfying. Silver or a blessing will hurt it, and hurting it changes nothing, and a party that spends the second night hunting the dog has spent a night they needed for the real work. The real work is a debt, a killing nobody was punished for, a promise broken at a graveside. Settle that and the third night passes quiet. This is a fine creature to hang over a whole town for a season, and a fine one to bring back the moment the players start feeling safe.",
+  "witness": "Third night I sat up with the shotgun and the dog sat in the road and we looked at each other till light. Pa went off the barn roof at ten the next morning. The dog was not there for me at all. \u2014 T. Wicks, aged fourteen"
  },
  {
   "name": "The Carrion Cloud",
@@ -638,6 +792,50 @@
   "witness": ""
  },
  {
+  "name": "The Loup-Garou",
+  "chapter": "Cursed Beasts & Wild Things",
+  "tierText": "Tier III \u00b7 the bayou strain, and it is counting days",
+  "tier": 3,
+  "defense": "17",
+  "blood": "40",
+  "speed": "fast; swims the black water without a sound",
+  "saves": "Fort +11, Ref +9, Will +8",
+  "attacks": "claws +9 (2d6+4); bite +9 (2d6+4 and grab)",
+  "special": "A hundred and one days. The curse runs its term and then passes to whoever it last drew blood from \u2014 and this one knows the count, and is choosing. It will not cross a sill lined with coarse salt, and it cannot leave off counting a spilled measure of anything.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Draw its blood and say its christened name in the same breath and the term ends for both of you. Then say nothing of it to anyone for a year and a day, or it comes back on the one who broke silence.",
+  "mark": "",
+  "lore": [
+   "It came up the river with the people who knew about it, and it works the low country and the cane and the bottoms wherever they settled. The loup-garou is a wolf-shape that stands like a man and carries itself like one, and the whole of its horror is arithmetic. The curse holds a hundred and one days. On the last of them it goes to whoever the creature bled during the term, and the one who is loose of it wakes up in a ditch, human, filthy, and remembering the entire thing.",
+   "Which means this one is shopping. It does not kill everybody it catches, because a dead man cannot inherit; it opens people and lets them live and keeps a list, and it comes back to look them over as the count runs down. Ask around a parish that has one and you will find four or five folk with a healed gash they will not talk about, all of them counting the same days, all of them being visited."
+  ],
+  "found": "Cane fields, cypress, the shell roads and the back bayous, and the settlements of the people who carried the name west with them. It travels the water and it is never far from somebody it has already bled.",
+  "keeperNote": "Run this one as a countdown with names on it. The party comes into a parish where several people are quietly marking days on a wall, and every one of them is on a list, and one of them is going to be handed the thing on a date everybody can work out. That gives the table a deadline, a slate of NPCs worth caring about, and a wonderfully ugly temptation, because the fastest way to save four people is to let the fifth take it. Do not soften that. The breaking is a set-piece: get blood out of the creature and put its christened name to it in the same moment, which means somebody has to have gone and found out who it used to be. The year-and-a-day silence is where the horror lives afterward \u2014 the party wins, and then has to keep the win secret from everybody they would want to tell, including each other. And note the salt and the counting; a spilled sack of rice on a doorstep is an honest and very old answer to a night at the window.",
+  "witness": "Eighty-one days. I have it marked on the doorpost where my wife cannot see it. He come by Thursday and looked at me through the window a while and went off, and I have not slept since. \u2014 a man of Point Marie, to a passing preacher"
+ },
+ {
+  "name": "The Moon-Cursed",
+  "chapter": "Cursed Beasts & Wild Things",
+  "tierText": "Tier III \u00b7 the wolf-shape, three nights a month",
+  "tier": 3,
+  "defense": "17",
+  "blood": "42",
+  "speed": "very fast; runs down a horse over open ground",
+  "saves": "Fort +11, Ref +11, Will +5",
+  "attacks": "claws +9 (2d6+4); bite +9 (2d6+4, and Fort DC 16 or take the curse yourself)",
+  "special": "Heals as fast as you can cut. Closes 5 Blood a round from any wound not made by silver or fire. It is a man the other twenty-seven days, with no memory worth having of these three, and no way to know which man until the moon tells you.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Silver or fire, and fast, because everything else knits shut while you watch. The kinder answer is to find the man in daylight \u2014 and to have decided what you mean to do before you knock.",
+  "mark": "",
+  "lore": [
+   "This is not the Skin-Walker and it is important that a Keeper keep the two apart. A Skin-Walker puts the hide on. He went out and got it, he paid for it, and he wears it the way a man wears a coat he had made. The Moon-Cursed caught something. There was a bad night on a trail somewhere, and a bite that healed too clean, and now for three nights a month he is not consulted about what his body does.",
+   "The wolf-shape is bigger than a wolf and moves wrong for one, upright for a stride or two when it wants height. It hunts the way a man would if a man could run forty miles: it works out where the stock is penned, it opens gates, and it goes for the thing that is easiest and then the thing that is nearest. What it will not do is leave the country. Whatever else the curse takes, it leaves the man's habits, and the man lives here."
+  ],
+  "found": "Within a day's ride of wherever the man lives, on the three nights around the full. Look for the pattern in the stock losses before you look for the tracks; a calendar catches this one long before a lantern does.",
+  "keeperNote": "A hunt where the finding is the game. The party can chase the wolf all they like and will not catch it \u2014 it is faster than they are, it heals what they do to it, and it knows the country. What catches it is the calendar: three nights a month, a day's ride, the same range every time, so a party that maps the kills and reads a farmer's almanac has the man's name by the second month. Then the entry turns and asks the real question, which is what they do with a decent neighbor who has been begging somebody to find him out. Play the man honestly. He knows. He has been chaining himself in the root cellar and it has not been enough, and he will tell them where the silver is kept. Give the table a genuine choice among the killing, the chain, and the long search for a cure, and do not make any of the three easy. And if a player took a bite, do not walk that Fort DC 16 back afterward. Write it on next month's session.",
+  "witness": ""
+ },
+ {
   "name": "The Rattlewyrm",
   "chapter": "Cursed Beasts & Wild Things",
   "tierText": "Tier III \u00b7 the serpent grown long as a fence-line",
@@ -682,6 +880,28 @@
   "witness": ""
  },
  {
+  "name": "The Moon's Own",
+  "chapter": "Cursed Beasts & Wild Things",
+  "tierText": "Tier IV \u00b7 the one that never went back",
+  "tier": 4,
+  "defense": "20",
+  "blood": "72",
+  "speed": "very fast; tireless; it does not sleep any more",
+  "saves": "Fort +15, Ref +14, Will +8",
+  "attacks": "claws and bite +13 (2d8+6; a hit rakes twice); a shoulder that puts you down +13 (2d8+6 and prone)",
+  "special": "Years past its last change. Heals 10 Blood a round short of silver and fire, and the man in it is worn down to a habit or two. It runs a handful of the moon-sick who would still be people if it had left them alone, and it keeps them by being the worst thing in the country.",
+  "dread": "DC 20, 1d10",
+  "puttingItDown": "Silver, fire, and more guns than you brought. Break the thing at the head of the pack and every one of the others wakes up a person again \u2014 which is the entire argument for going.",
+  "mark": "",
+  "lore": [
+   "A man who catches the curse young and lives long enough with it stops coming back. It happens by degrees over years: the three nights become five, then a week, then the human stretches get shorter and stranger until one spring the shape simply stays. There is a little of him left in there. It favors a particular ridge because he was raised on it. It will not go near the church his mother is buried behind. Beyond that, nothing you could talk to.",
+   "It does not hunt alone any more either. A thing like this bites and does not finish, on purpose, and collects a following of the newly moon-sick who trail it and learn from it and are terrified of it. That is the ugliest part of the entry and the reason it is worth the trouble of hunting: five of the six things coming down the draw at you are somebody's son, and killing the sixth gives them back."
+  ],
+  "found": "The high broken country a long way from a road, on a range where the stock losses have been steady and enormous for a decade and the ranchers have stopped reporting them. Everywhere it lives, people have moved away.",
+  "keeperNote": "An apex hunt, and the party should arrive knowing they cannot brawl with it. Set the price of admission in preparation: silver enough to matter, fire they can carry, a place of their own choosing, and somebody who knows the ridge. Let them spend a session getting those and let each one cost something. In the fight itself, the pack is the puzzle. The moon-sick are Tier II and there are several, and every one of them can be dropped or spared, and the party will have to decide mid-fight whether to spend the rounds. Hold the reveal for the moment it matters \u2014 a young one caught in a lantern beam with a face somebody recognizes. Then honor the promise: put down the Moon's Own and the rest come out of it human, naked, freezing, and utterly wrecked, and the party has to get them home. That aftermath is the payoff, and it is worth more than the fight was.",
+  "witness": ""
+ },
+ {
   "name": "The Thunderbird",
   "chapter": "Cursed Beasts & Wild Things",
   "tierText": "Tier IV \u00b7 the storm that has eyes",
@@ -702,6 +922,28 @@
   "found": "The high plains and the mountain peaks, the open sky where the great storms build. It does not lair so much as range, vast and far-traveling; it comes when the weather comes.",
   "keeperNote": "The Thunderbird is one of the book's lessons that not everything is yours to kill . Its numbers are punishing on purpose \u2014 a stand-up fight is a losing proposition, and the table should sense that. Run it with grandeur and ancient indifference: it is weather with intent, not a beast with a grudge. The right resolution is almost never combat; it is respect, offering, retreat, reading the signs and giving the old thing its road. Use it to humble a party that has gotten used to winning, or as a force of nature woven through a larger story \u2014 the storm that guards a mountain pass, the omen that precedes a reckoning. If the players must drive it off, make it cost them, and make the victory feel like surviving a hurricane rather than slaying a monster. Some things you don't defeat. You endure them, and you're grateful they let you.",
   "witness": "\u201cThe storm had eyes. I will not be talked out of it. It looked at the herd, and it chose.\u201d \u2014 Eb Tuttle, trapper"
+ },
+ {
+  "name": "The Bitten",
+  "chapter": "Men, and the Shapes of Men",
+  "tierText": "Tier I \u00b7 a man with about a month of himself left",
+  "tier": 1,
+  "defense": "13",
+  "blood": "16",
+  "speed": "normal, and getting quicker",
+  "saves": "Fort +6, Ref +5, Will +2",
+  "attacks": "whatever he happens to be carrying +4 (1d6+2); past the third week, teeth he did not use to have +4 (1d6+2)",
+  "special": "A calendar, not a monster. Knits shut overnight, hears through walls, cannot keep food down, and dreams the same ridge every night. Whether he is dangerous this evening is a question about the moon, and he can do that arithmetic as well as you can.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "He is still a man. Silver worked into the wound inside a day of the bite draws it out; after that the choices narrow to a locked room with a chain in it, or the thing nobody at the table wants to volunteer for.",
+  "mark": "",
+  "lore": [
+   "Somebody survived a bad night. That is the whole of it, and it is the beginning of most of the wolf stories in this book. He came out of it with a gash that closed in three days and no fever at all, and he has spent every day since being quietly, privately certain about what is going to happen, and being right. The first week he is only tired. The second he starts hearing conversations two rooms off. By the third he has stopped eating with the family, and by the fourth he has bought a chain and told nobody what for.",
+   "Almost everything about the entry is the man. He is a person the party can talk to, ride with, like, and hire, and none of that changes the date. Played straight he gives a table its most useful thing: a horror that is happening to somebody rather than at them. Handled well, he is the reason the party goes looking for a cure. Handled badly, he is a Moon-Sick by the next full moon and the party knew him."
+  ],
+  "found": "Wherever the party left him. He is a hand at the livery, a guide, a wounded man they helped off a trail three weeks ago and have not thought about since.",
+  "keeperNote": "Run him as an NPC and not as an encounter, and give him to the party early enough that they have a stake. The stat block exists for one scene and probably at the end of a month, and if the campaign runs right it never gets used at all. Everything before that is bedside: he knows, he says so, and he asks for something. The asks are the drama \u2014 hold the rifle, lock the door, take the letter, do not tell my sister \u2014 and they are all easier to promise than to keep. Give the party real cures to chase, and let them be genuinely reachable and genuinely expensive: silver in the wound inside a day, which they have already missed; a Bruja who will do it for a price in Chapter IV; the loup-garou's naming, which needs the thing that bit him and its christened name. A party that spends three sessions on this and fails will remember it longer than any fight in the book. A party that succeeds has earned a friend for the campaign.",
+  "witness": "He asked me to hold onto his rifle and not give it back till the month was out, however he asked for it, whatever he said. Then he shook my hand. I have never had a worse thing asked of me by a friend. \u2014 from a letter home, never posted"
  },
  {
   "name": "The Bonepicker",
@@ -792,6 +1034,28 @@
   "witness": ""
  },
  {
+  "name": "The Day-Man",
+  "chapter": "Men, and the Shapes of Men",
+  "tierText": "Tier II \u00b7 the living hand that keeps the ledgers",
+  "tier": 2,
+  "defense": "15",
+  "blood": "26",
+  "speed": "normal",
+  "saves": "Fort +8, Ref +6, Will +2",
+  "attacks": "the shotgun kept behind the office door +6 (1d8+3); a knife for whatever gets past it +6 (1d8+3)",
+  "special": "Nothing about him is wrong. Salt, silver, iron, running water, and a priest all agree he is a man, because he is. He meets the freight, hires the hands, pays the county, keeps the books, and lies with the confidence of somebody who has been at it for years and is not remotely ashamed.",
+  "dread": "DC 13, 1d4 (once you understand what the job is)",
+  "puttingItDown": "Lead, like any man \u2014 and it costs you the thing he knows. Take him alive and his master hears about it inside the hour, so decide first whether you want him or the day you would spend on him.",
+  "mark": "",
+  "lore": [
+   "Behind every old thing that has lasted a while in a settled country there is a man with a desk. Somebody has to sign for the freight, because the freight comes at ten in the morning. Somebody has to hire, pay, evict, and be seen at church. The Day-Man is a living person in the full employ of something that cannot come out until dark, and the arrangement is old, formal, and in many cases perfectly voluntary.",
+   "What he gets is usually money and always time \u2014 the promise of the turning, some year, when he has earned it. Some of them have been promised that for thirty years. He is not enthralled, hexed, ridden, or possessed, and every test the party knows will confirm it, which is precisely why he is dangerous. He hires the men who search the wrong hills. He is on the committee. He was very helpful to the party this morning, and he sent a boy with a note the moment they left."
+  ],
+  "found": "An office in town, a desk in the big house, the front pew, the freight platform at ten. He is easy to find and almost impossible to see.",
+  "keeperNote": "The Day-Man is the reason a vampire arc has a middle. Without him the party's investigation runs straight at the monster; with him it runs at a helpful, respectable, entirely human obstacle who is three moves ahead because he has been reading their mail. Give him competence and give him charm, and let him be actually useful to them once or twice, early. His stat block is a formality \u2014 he is Tier II because a cornered man with a shotgun is dangerous and for no other reason \u2014 and the fight, if it happens, should feel like exactly what it is, which is shooting a bookkeeper. What you want is the interrogation, and the entry gives it a hard edge: he will not give up where the box is, and every hour they hold him is an hour his master is awake and informed. Play him as a man who made a bargain and has spent years making his peace with it. The best version of the scene is the one where he tries to recruit them, sincerely, with figures.",
+  "witness": "Mr. Prine has kept the Vance books nineteen years and never been short a cent. I would trust him with my daughter's inheritance. That is not a figure of speech; I have. \u2014 the president of the Yarrow bank, deposition"
+ },
+ {
   "name": "The Flock of the Open Eye",
   "chapter": "Men, and the Shapes of Men",
   "tierText": "Tier II \u00b7 a town that looked too long",
@@ -833,6 +1097,28 @@
   ],
   "found": "Drifting through towns and camps, selling small curses and luck-charms, settling scores for cash. He's often a hireling \u2014 the cheap muscle a richer villain buys to do the supernatural dirty work.",
   "keeperNote": "The Hexer is a pathetic, dangerous middle-man, useful as a recurring low-tier antagonist and as a window into how ordinary greed and desperation feed the dark. He's weak when disarmed \u2014 his power is all in his charms and his bag of tricks, and salt unworks his signs \u2014 so the tactical answer is to strip him of his tools, after which he's just a frightened marked man. The drama is in his ruin: he's visibly paying for his power, rotting from the inside, and a perceptive party might pity him even as they stop him. Use him as a hired gun for a bigger villain, a cautionary tale about the cost of bargains, or a desperate man the party could possibly save if they're inclined to mercy. The Mark warning cuts both ways \u2014 he's a tempter too, offering quick curses for a price, and a party member who buys from him starts down his road.",
+  "witness": ""
+ },
+ {
+  "name": "The Moon-Sick",
+  "chapter": "Men, and the Shapes of Men",
+  "tierText": "Tier II \u00b7 the one who does not know yet",
+  "tier": 2,
+  "defense": "15",
+  "blood": "24",
+  "speed": "fast",
+  "saves": "Fort +9, Ref +7, Will +3",
+  "attacks": "claws +6 (1d8+3); bite +6 (1d8+3, and Fort DC 14 or take it too)",
+  "special": "He wakes with a story he believes. Changes without warning and keeps none of it \u2014 comes to in a field, bloodied, with an account of the night that hangs together and is entirely invented. Closes 3 Blood a round from anything that is not silver or fire.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Silver and fire in the moment; there is no talking to it in the shape. By daylight the work is harder \u2014 prove it to him, with something he cannot argue with, and be somewhere he cannot reach when he finally believes you.",
+  "mark": "",
+  "lore": [
+   "The Bitten knows. The Moon-Sick does not, and that is the whole difference and the whole horror. He is a working man with a run of strange mornings: mud on boots he swears he never put on, a shirt he burned and cannot say why, three hours out of a Tuesday that he has filled in with something reasonable because the mind will always fill it in with something reasonable. He is not lying to the party. He passes every test of an honest man because he is one.",
+   "So he helps with the hunt. He rides out with the posse, takes a turn on watch, tracks with them, and is genuinely sick about the stock and the Kelso girl, and one of the nights he is out on watch is one of the nights. A party that has worked out that there is a wolf-thing in the district and has not worked out that it is the fellow holding their horses has arranged, without knowing it, exactly the ambush the thing would have arranged for itself."
+  ],
+  "found": "In the posse. At the store. On the neighboring claim. He lives where the killings are because he is doing them, and he has been helping look into them since the second one.",
+  "keeperNote": "This is a social-horror creature and the fight is nearly beside the point, so build the scenario as a mystery with the answer sitting at the table. Seed it fair. He is missing on the right nights and there is always a reason, his account of a night is a little too tidy, the dogs have gone strange with him, and he flinched at a coin somebody set down. Play the accounts as sincere, because they are. The turn that makes the entry sing is that the party usually works it out and then has to prove it to him, and he will fight that with everything a decent man has \u2014 he will be hurt, then angry, then frightened, and the moment he believes them is worse than the moment they believe it. Silver on the skin in front of witnesses is the classic proof and it is cruel and it works. If the table wants the merciful road, he is a Bitten who ran out of time, so the same cures apply and now with a man who will hold still for them.",
   "witness": ""
  },
  {
@@ -1034,6 +1320,28 @@
   "witness": "\u201cMy brother came back from the hunt wearing my brother. Took me three days to be sure, and by then it had slept in his bed a week.\u201d \u2014 as told to a mission doctor"
  },
  {
+  "name": "The Stitched Man",
+  "chapter": "Men, and the Shapes of Men",
+  "tierText": "Tier III \u00b7 what a surgeon made of a hard winter",
+  "tier": 3,
+  "defense": "16",
+  "blood": "46",
+  "speed": "slow; and it does not stop",
+  "saves": "Fort +13, Ref +4, Will +7",
+  "attacks": "hands +9 (2d6+4 and grab); a wrenching blow +9 (2d6+4 and prone)",
+  "special": "Built out of five men. Feels no cold, no pain, and no horror at its own condition; there is no single organ in it that ending will end, and it goes on working after damage that would settle any question about a person. It knows scraps of what its pieces knew, and says them at bad moments.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Take it apart, which is precisely as much work as it sounds, or burn it, which is quicker. It obeys the surgeon's voice and nothing else \u2014 including, if he can be made to say it, an order to stop.",
+  "mark": "",
+  "lore": [
+   "An army surgeon came out of the war with a wagon, a case of instruments, and a conviction he had earned honestly over four years of doing the best that could be done with what was left of people. He wintered somewhere north and quiet with the materials to hand. What he made walks, works, hauls, and does as it is told, and it has five men's hands in the sense that some of them are literally theirs.",
+   "It is not cruel. It is not even unwilling. Left alone it splits wood and carries water and stands out in the weather because nothing about the weather bothers it, and the horror of the thing is entirely in the accounting \u2014 that it is somebody's brother from the shoulder down and somebody else's from there up, and that it will now and then say a name in a voice that came with the throat. What it does when the surgeon dies is the question the whole entry is built around, and the answer is that it keeps working, and waits, and after a long while begins to go looking for him."
+  ],
+  "found": "A remote surgery, a wintering camp, a lumber outfit with one hand that never comes to the fire. Later \u2014 years later, when the doctor is under the snow somewhere \u2014 walking a road, looking.",
+  "keeperNote": "Run it as a tragedy with enormous shoulders. It should be genuinely non-hostile for most of a scenario: it works, it hauls, it does what it is told, and the party's problem is moral rather than tactical until somebody gives it a bad order or somebody it will not hear tries to stop it. Save the fight for when the party has decided it has to happen, and then make it awful in the right way \u2014 the thing does not fight back so much as continue, absorbing everything, and the Reflex save of +4 means they can hit it all night and it means nothing. The names are your best tool. Have it say one that a player recognizes, once, quietly, and let the table sit with it. Two endings are worth building toward: find the surgeon alive and get him to call it off, which turns the scenario into a manhunt for the actual monster; or find his grave, which is where it has been going the whole time, and let it lie down there. Neither of those is a fight, and both of them are better than one.",
+  "witness": "It carried my husband in out of the drift and set him by the stove and stood in the door dripping. I thanked it. It said \u2018Ellen\u2019 and I do not know an Ellen and neither does my husband. \u2014 Mrs. J. Teague, at the Grange"
+ },
+ {
   "name": "The Tallyman",
   "chapter": "Men, and the Shapes of Men",
   "tierText": "Tier III \u00b7 he who collects the dark's debts",
@@ -1078,6 +1386,28 @@
   "witness": ""
  },
  {
+  "name": "The Hitchhiker",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier I \u00b7 the one who only wants to get home",
+  "tier": 1,
+  "defense": "\u2014",
+  "blood": "10",
+  "speed": "walks; and never far from the road",
+  "saves": "Fort +6, Ref \u2014, Will +4",
+  "attacks": "none at all \u2014 she asks, and she is polite about it; refuse her three times and no horse of yours will take that stretch again (Will DC 12 or Shaken)",
+  "special": "She gives an address. Rides quiet behind the saddle or up on the wagon seat, says where she is going, and is gone off the horse between one fence post and the next. The house burned in the seventies, or the family in it buried a daughter the year you were born.",
+  "dread": "DC 10, 1",
+  "puttingItDown": "Take her where she asked. That is the whole of the remedy, and whoever does it is never troubled on that road again as long as they live.",
+  "mark": "",
+  "lore": [
+   "There is a stretch of road outside most towns of any age where somebody will be waiting after dark. She is young, she is dressed for weather that has not come, and she asks for a ride the way anyone asks, and there is not one thing wrong with her until the gate. Riders who have carried her say she talked about ordinary things \u2014 the crop, a brother in Missouri \u2014 and that they only understood afterward that they had been doing all the talking.",
+   "She has been trying to get home since a night that had a wagon in it, or ice on the ford, or a man who did not stop. She cannot manage the last quarter mile alone and she does not appear to know why. Most of the West's roads have one. The remarkable thing about the whole class of them is how many are laid to rest by somebody who simply did what was asked and thought no more about it, and how many are still out there because the road has changed and nobody can find the gate any more."
+  ],
+  "found": "A particular half mile of road after dark \u2014 the same bend, the same fence line \u2014 outside a town old enough to have lost somebody on it. She is never seen by daylight and never more than one at a time.",
+  "keeperNote": "Open the chapter with this one, or open a campaign with it. She is harmless, she is sad, and she teaches the whole chapter's ethos in a single scene without costing anybody a point of Blood: you do not shoot a haunting, you find out what it wants and you do it. Play the ride straight and let the party spend the entire conversation not realizing, and put the reveal at the gate rather than in a scare. What makes her worth a session rather than a scene is the last quarter mile. The house is gone, the road was rerouted in eighty-four, the family name is on a stone in a churchyard two counties over, and the party has to actually find where home was before they can take her there. That is a research errand through county records, old-timers, and a burned survey map, and it ends with somebody standing in a wheat field at midnight saying \u201chere, this was here,\u201d and it works every time. Reward it plainly. A laid-to-rest ghost is worth a friend, a clue, or a debt called in later.",
+  "witness": "I have carried her twice. First time I did not know. Second time I did, and I still stopped, because it is a cold road and she asked nice. \u2014 a mail rider, Territory route 4"
+ },
+ {
   "name": "The Lantern-Light",
   "chapter": "Spirits & Hauntings",
   "tierText": "Tier I \u00b7 the false light over the marsh",
@@ -1100,6 +1430,72 @@
   "witness": ""
  },
  {
+  "name": "The Tommyknocker",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier I \u00b7 the rapping in the rock ahead of you",
+  "tier": 1,
+  "defense": "14",
+  "blood": "12",
+  "speed": "quick in the dark; through solid stone",
+  "saves": "Fort +6, Ref +7, Will +5",
+  "attacks": "a dropped timber or a loosed stone +5 (1d6+2, on whoever is standing under it)",
+  "special": "It knocks before bad ground. A steady rapping in the rock ahead is a warning, or a joke at your expense, and the old hands will fight each other over which. Treated well it is worth more than a shift boss. Slighted, the knocking comes from behind you, and the roof comes down exactly where it swore it would not.",
+  "dread": "DC 10, 1",
+  "puttingItDown": "Nobody puts one down. Leave the crust of your pasty on the drift floor, never whistle underground, and never once say out loud that you do not believe in them.",
+  "mark": "",
+  "lore": [
+   "The Cornish brought them over with the pumps and the pasties and the deep-shaft trade, and every camp that ever hired a Cousin Jack has them now. They are small, they are heard far more than seen, and what they mostly do is knock \u2014 three raps in the rock ahead of a face that is about to go, a tapping that walks a man back up the drift a minute before the timbers speak. Half the West's mining camps have a story about a shift that came up early because of a knocking and stood on the collar listening to the level fall in.",
+   "They also steal. Tools go, lunch goes, a hat turns up on the far side of a sealed stope, and a man who complains too loudly about it finds his ladder loose. They keep a running account with everybody working under them, and the account is settled in courtesy: a share of the meal, a clean drift, and a mouth kept shut about them at the surface. The camps that stopped leaving the crusts are the camps that stopped coming up."
+  ],
+  "found": "Deep workings and old workings \u2014 the levels below the water, the sealed stopes, any drift where men have died and the camp still runs. Heard on the graveyard shift more than any other.",
+  "keeperNote": "This is a superb creature for a mine scenario because it is a mechanic disguised as a ghost. Run it as information: the party is underground, the knocking starts ahead of them, and they have to decide in the moment whether it is a warning or a lie. Make it a warning the first two times. Then have somebody in the party be rude \u2014 whistle, scoff, kick the offering aside \u2014 and let the third knocking come from the wrong direction. That is the whole of the entry and it will have the table policing each other's manners for the rest of the session, which is exactly the play you want. Its numbers are small on purpose: what hurts a party here is the rock, not the thing. Use it as a gate on any Chapter VII horror that lives underground, because a party in good standing with the knockers gets warned about the deep dark and a party in bad standing does not.",
+  "witness": "Superintendent from the East called it superstition and made us work the crusts up out of the drift. Fourteen dead in the eight-hundred that October. He is back East. \u2014 recorded in a union hall, Butte"
+ },
+ {
+  "name": "The Answering Voice",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier II \u00b7 the poltergeist that learned to talk",
+  "tier": 2,
+  "defense": "\u2014",
+  "blood": "22",
+  "speed": "fixed to the house",
+  "saves": "Fort +8, Ref +6, Will +9",
+  "attacks": "no hands of its own \u2014 it calls, in a voice from the next room (Will DC 14 or go and see); the stair it wanted you on +6 (1d8+3 in the fall)",
+  "special": "It has your people by heart. Calls in the voice of whichever of you is furthest away, from the one room nobody has checked. It gets a single word wrong every time \u2014 a name shortened that never gets shortened, a turn of phrase not quite theirs \u2014 and that word is the entire warning.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Answer nothing until every soul is counted and standing in the same room, then keep them there. It goes quiet when somebody says out loud and plainly what it is \u2014 which means saying that the voice calling from the kitchen is not their mother.",
+  "mark": "",
+  "lore": [
+   "Something in the house has been listening for a long while. It started the way the Throwing Spirit starts, with the crockery and the doors, and it stayed on past the family that fed it and past the next two, and somewhere in those decades it worked out that it did not need hands at all. Now it calls. It has the voices of everyone who has ever slept under that roof, and it uses whichever one will move you.",
+   "The rule that keeps people alive in such a house is a boring one and it is the reason old families in old houses have such strange manners: nobody answers a call from another room, and everybody is counted at every meal. What the voice wants is separation. It will spend an evening getting a family split up one member at a time, patient and pleasant, and the harm it eventually does is done by the cellar stair, the well, and the dark, which the house has plenty of and which do not require a poltergeist to have hands."
+  ],
+  "found": "An old house with a long tenancy and a hard history \u2014 the kind that has been sold three times cheap. It works after dark, and it works hardest on the first night a new family sleeps there.",
+  "keeperNote": "Run this at the table as a discipline problem, and make the rule explicit early so breaking it is a choice. Nobody answers a call from another room. Then spend the session tempting them: the voice is frightened, or hurt, or has found something, and it is coming from the one direction the party has not cleared. The single wrong word is the fair-play clue, so plant it every time and let sharp players catch it \u2014 a mother who suddenly says \u201cWill\u201d when she has called him William for forty years. Do not give it hands. The stair, the well, and the dark do all its work, and keeping it bodiless keeps the party from solving it with a gun. The naming is the answer, and it costs something real to say: somebody at that table has to stand in a dark hall and tell a voice that sounds exactly like their mother that it is not, in front of the rest of them, and mean it. Play the silence afterward.",
+  "witness": "Ma called me from the pantry and I went, and Ma was on the porch beside me the whole time with her hand on my arm. She had heard it too. We stood there and neither of us said one word. \u2014 as told to a schoolmistress, and written down"
+ },
+ {
+  "name": "The Boo Hag",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier II \u00b7 the one that rides you sleeping",
+  "tier": 2,
+  "defense": "14",
+  "blood": "20",
+  "speed": "very fast, and only between midnight and the first light",
+  "saves": "Fort +7, Ref +9, Will +8",
+  "attacks": "she takes the breath +6 (1d8+3, and the sleeper can neither move nor cry out); by day, whatever the borrowed hands are holding +6 (1d8+3)",
+  "special": "She rides, and then she wears. Comes skinless in the small hours and settles on the sleeping to take the wind out of them. Ridden three nights running, a soul stays ridden, and she puts on the skin and goes about their business in it \u2014 and she must be out of it again before the sun.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Find the skin she left hanging and work salt and pepper into it. She cannot get back in before daylight, and daylight settles it. A broom laid across the sill or a sieve hung by the bed will hold her off entire \u2014 she must count every straw and every hole before she can come in, and she cannot stop herself once she starts.",
+  "mark": "",
+  "lore": [
+   "The Gullah families carried her out of the low country and she travelled as well as they did, and every place they settled has somebody who wakes at three with a weight on the chest and no wind and no voice. That is her working. She comes without her skin, which she leaves hanging somewhere with a great deal of care, and she takes the breath a little at a time over hours, and the person she rode gets up in the morning exhausted, hollow-eyed, and short of an explanation.",
+   "Three nights running is the number. After the third the rider does not get off, and what walks around in that skin afterward is her \u2014 going to work, talking to the neighbors, sitting down to supper with the family, and doing a plausible job of all of it. The tells are small and they are always about routine, because she has the body and none of the habits: the left hand doing what the right hand did for thirty years, a sudden dislike of the dog, a woman who was raised in that kitchen looking for the flour."
+  ],
+  "found": "Bedrooms, on the third night as often as the first. She works a household rather than a place, and she goes on working it after she has taken somebody, because the family is right there.",
+  "keeperNote": "Two halves and they play completely differently. The first half is a siege of the night: somebody in the party or the household is waking up wrecked, the count is running, and the remedies are folk practice and genuinely effective, so a party that asks the right old woman the right question gets a broom and a sieve and a fighting chance. Run the paralysis honestly and let it be frightening \u2014 the character is awake, aware, and cannot move or shout \u2014 and never let it happen to the same player two sessions running. The second half is the impostor, and it is a different game entirely: she is wearing somebody, everybody can see her, and nobody can prove anything. Seed the routine tells rather than sinister ones, because the sinister version is a Skin-Walker and this is not that. Keep the remedy where the tradition put it, in salt and pepper and the skin she has to get back into, so the solution is a hunt for a hanging thing in an outbuilding rather than a fight. Treat the tradition with respect at the table; it belongs to living families, and it is better horror played straight than played exotic.",
+  "witness": "Grandmama kept the broom across the door and I thought it was for sweeping. She never said. I know now she never once forgot to lay it down, not one night in her life. \u2014 a woman of Kingfisher, at ninety"
+ },
+ {
   "name": "The Dollmaker's Children",
   "chapter": "Spirits & Hauntings",
   "tierText": "Tier II \u00b7 small things that move when unseen",
@@ -1120,6 +1516,28 @@
   "found": "A nursery, a toy-shop, the workshop or home of the dollmaker who made them. They cluster where children were \u2014 or where children were lost \u2014 and they spread, doll by doll, through the houses of a town.",
   "keeperNote": "The Dollmaker's Children turn attention into a resource the party has to manage, which makes for uniquely tense play. They only move when unobserved, so the table is forced to think about who's watching what, who's turning their back, what happens when the lantern swings away. Run the dread of glimpsed movement, the doll that's closer than it was, the miscount. Mechanically they're fragile and fire ends them \u2014 but the catch is you have to keep eyes on them until the flames actually take, and they're a swarm, so you can't watch them all. Stage it in a confined, doll-filled space (a nursery, a workshop) where there are always more than the party can cover. The 'never count them wrong' line is a perfect way to plant dread \u2014 have the count come out different twice. It's a set-piece for a tense, claustrophobic scene, and a creature that punishes panic and rewards discipline, teamwork, and a cool head. Pair with the tragedy of why the dolls woke for emotional weight.",
   "witness": ""
+ },
+ {
+  "name": "The Field-Hand",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier II \u00b7 the scarecrow that works the rows at night",
+  "tier": 2,
+  "defense": "15",
+  "blood": "24",
+  "speed": "still by day; quick down a furrow",
+  "saves": "Fort +8, Ref +6, Will +4",
+  "attacks": "a hooked hand +6 (1d8+3); the hay-knife it kept +6 (1d8+3 and the wound bleeds on)",
+  "special": "Perfectly still under any eye. Something was put into the straw \u2014 a hard man's coat, a hard man's grudge, or the hard man. The crop it tends comes in better than the neighbors' every year, in every weather, and the family has learned not to ask about it out loud.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Fire, and the field with it if the year has gone far enough to matter. Take the coat off it first and find out whose it was \u2014 you will want the name for the burying.",
+  "mark": "",
+  "lore": [
+   "It stands in the corn where it has always stood, on a cross of ash poles, in a coat that fit somebody. In daylight it is a scarecrow and a good one. The rows around it are the best rows on the place; the corn is a foot higher, the borers stay off, and the family has had a good crop nine years running in a district that has not. That is a great deal for a farm to give up, which is why nobody on that farm has ever gone out at night to look.",
+   "It works after dark and it works well \u2014 the hoeing done by morning, the gate shut that was left open, the stray dog gone. It does not leave the field it was set in. What it will not tolerate is somebody in its rows at night, and the argument it has about it is short. The coat is where the name is. Every one of these has a coat that belonged to somebody who is not anywhere else, and a family that will change the subject if you ask when the good years started."
+  ],
+  "found": "A cornfield, a bean field, a sorghum patch, on a place that has done unaccountably well since a particular season. Set well back from the road, and the family will walk you the long way around it.",
+  "keeperNote": "The trick with a scarecrow is the stillness, so use the same discipline the Dollmaker's Children use: it never moves while somebody is looking, and it is always closer when they look again. Play the daylight half as a farm mystery, because the interesting horror here is the family. They know. They have known for nine years, and they have children who are fed because of it, and they will lie smoothly and be ashamed of it and be doing it anyway. Let the party work out the bargain before they work out the monster. The coat is the key to the whole entry: pull it off and there is a name in the lining or a face somebody in town remembers, and the resolution is a burial and a fire and a family with a hard winter ahead of them. Give the party the choice of leaving it standing, and make the argument for leaving it a real one. That is a better ending than the fight, and the fight is only a scarecrow with a hay-knife.",
+  "witness": "Nine years of full cribs and a boy from the road missing every second or third fall. I am not saying what I think. I am saying I moved. \u2014 a neighbor, to the county sheriff"
  },
  {
   "name": "The Hangman's Echo",
@@ -1163,6 +1581,28 @@
   ],
   "found": "She appears wherever death is coming, to whoever is marked \u2014 a homestead before a tragedy, a trail before an ambush, a sickroom before the end. She is drawn by approaching death, not bound to a place.",
   "keeperNote": "The Mourner is an omen to interpret and race against rather than a monster to defeat, and she's one of the most useful tools in the chapter. When she appears and names someone, you've handed the party a ticking clock and a mystery: who's about to die, how, and can it be stopped? She can't be fought or fled, so the entire scenario becomes about heeding the warning \u2014 identifying the coming death and acting to cheat it. Sometimes it can be averted (the ambush avoided, the illness cured, the accident prevented); sometimes it can't, and the party has to sit with that. Use her to open a scenario with dread and urgency, to foreshadow a threat, or to give a doomed NPC weight. The Frightened effect is minor; her real power is narrative. Be fair with the cheating-death option \u2014 reward a party that moves fast and cleverly \u2014 but don't make her warnings empty. She works best as a recurring harbinger whose appearance makes the whole table go quiet, because they've learned what it means. The country's grief, arriving early, asking only to be heard.",
+  "witness": ""
+ },
+ {
+  "name": "The Plat-Eye",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier II \u00b7 the shape on the causeway that keeps growing",
+  "tier": 2,
+  "defense": "15",
+  "blood": "22",
+  "speed": "as fast as it needs to be, and no faster",
+  "saves": "Fort +8, Ref +7, Will +6",
+  "attacks": "it lays nothing on you \u2014 it swells, and comes on (Will DC 14 each round it closes or Frightened 1); the ground it herds you onto +6 (1d8+3 \u2014 the ditch, the cut, the water)",
+  "special": "One eye, and it grows. Meets you on a lonely stretch as a dog, a calf, a stump, something ordinary; then the single eye opens wide as a lantern and the shape comes up the size of a barn between one step and the next. It cannot touch a soul who will not run, and it knows exactly how few of those there are.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Stand still and it can do nothing whatever. Sulphur and gunpowder scattered in the road will turn it, and so will walking past without once looking at the eye, which is easily said.",
+  "mark": "",
+  "lore": [
+   "It waits on the causeway, the levee road, the long straight stretch between the last house and the crossroads, and it comes toward you as something you have seen a thousand times. A dog. A yearling calf standing in the road. Then the eye. There is one of it, in the middle, and it is enormous and it is watching, and the whole animal grows as it comes on \u2014 dog to calf to horse to something filling the road shoulder to shoulder \u2014 and every step it takes it is bigger and closer and there is no sound at all.",
+   "It cannot harm anybody. That is the truth of the thing and it is no comfort whatsoever at two in the morning on a levee with water on both sides. What it does is run people off the road, and the road is on a levee, and the water is deep, and the ditch has a rock bottom. It has killed a great many people without ever once touching one, and the ones it did not kill got home with a story nobody believed and never used that road again."
+  ],
+  "found": "Causeways, levees, shell roads, the long straight stretch with a ditch or the water on either hand. Buried treasure has been blamed for a good many of them, and so has a killing nobody answered for.",
+  "keeperNote": "A pure nerve encounter, and the rules of it are simple enough to state out loud at the table: it cannot hurt you, and it will kill you. Run the growth in beats and make the players describe what they do each time \u2014 dog, calf, horse, and then the thing that fills the road \u2014 with a Will save between each. The whole encounter is whether anybody breaks, and the terrain does the damage when somebody does. Put it somewhere with real consequence on both sides, which is what a levee is for, and put a horse under them, because a horse gets a vote. It makes a superb complication rather than a scenario: the party is carrying somebody bleeding, or riding to stop a hanging, and this is between them and the town, and standing still costs them the very thing they cannot spare. The remedies are worth handing out through an NPC beforehand so a prepared party feels clever. Sulphur in the road, and a firm rule about the eye.",
   "witness": ""
  },
  {
@@ -1210,6 +1650,28 @@
   "witness": ""
  },
  {
+  "name": "The Tintype",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier II \u00b7 the memorial plate that keeps sitting",
+  "tier": 2,
+  "defense": "\u2014",
+  "blood": "18",
+  "speed": "fixed to the plate",
+  "saves": "Fort +6, Ref \u2014, Will +10",
+  "attacks": "no hands \u2014 a face that appears beside the sitter has about a week (Fort DC 14 each night or lose 1d4 Blood that does not come back); the glass, broken wrong, cuts +6 (1d8+3)",
+  "special": "The dead sit for it again. A memorial plate in which the sitter's eyes are open on Tuesday and shut on Friday. Whoever is photographed after it, or looks at it too long, turns up in the emulsion standing at the dead one's shoulder \u2014 a little further forward each time it is looked at.",
+  "dread": "DC 13, 1d4",
+  "puttingItDown": "Burn the plate and the ones who appeared in it mend within the day. Sell it, and the trouble is somebody else's, which the last four owners also worked out.",
+  "mark": "",
+  "lore": [
+   "The trade was ordinary and everybody used it. A child died, a photographer was sent for, and the family sat for one plate with the dead one propped and dressed and painted a little around the eyes, and that was all the picture of her anybody would ever have. Ten thousand such plates were made in this country and nine thousand nine hundred of them are only sad. This one is not.",
+   "It changes. Slowly, and only between lookings, which is the cruelty of it \u2014 nobody can ever quite swear that the eyes were shut before, or that the hands were folded that way, or that there were two figures in it last month. Then somebody new appears at the dead sitter's shoulder, standing a little behind, and everyone who knows them recognizes them at once. That person starts to go thin. Each night they lose something they do not get back, and each time anybody in the house looks at the plate the figure in it has come forward a step, and when it is level with the sitter the going is finished."
+  ],
+  "found": "Parlors, mantels, the album on the table, an estate sale, a pawnbroker's back shelf, the lot bought sight unseen at auction. It travels well, because a photograph is a small thing and nobody throws away a picture of a child.",
+  "keeperNote": "This one belongs in a house the party is staying in rather than a place they raid, and the pleasure of it is that the horror is in an object they will keep picking up. Describe the plate once, in detail, early. Then change one small thing every time it is described again, and never announce the change \u2014 let the players catch it, because the moment a player says \u201cwait, her eyes were open before\u201d is worth more than any Dread Check. Put an NPC in the emulsion before you put a player in it, so the table learns the rule at somebody else's cost, and run the weeklong wasting as a clock they can watch getting worse. The remedy is easy and the finding is not. The plate has to be located, which means working out which of the forty photographs in the house it is, and burning a memorial picture of a dead child in front of the family who owns it is a scene worth playing all the way through. The pawnbroker who sold it on twice is a good source of a longer history if you want one.",
+  "witness": "My brother is in it. He is in it and he is upstairs asleep and I can hear him breathing and he is also in it. I have put it face down in the drawer and I can feel where it is in the house. \u2014 diary of a girl in Cottonwood, entry unfinished"
+ },
+ {
   "name": "The Weeping Walls",
   "chapter": "Spirits & Hauntings",
   "tierText": "Tier II \u00b7 the house that bleeds",
@@ -1232,6 +1694,72 @@
   "witness": ""
  },
  {
+  "name": "The Fetch",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier III \u00b7 yourself, a street ahead",
+  "tier": 3,
+  "defense": "17",
+  "blood": "36",
+  "speed": "as fast as you walk",
+  "saves": "Fort +9, Ref +9, Will +11",
+  "attacks": "it will not fight you \u2014 it takes your place (each day it is seen doing your business, Will DC 16 or lose 1d6 Blood and a piece of your standing in the world); cornered, your own hands +9 (2d6+4)",
+  "special": "Nobody it meets doubts it. Your coat, your walk, your voice, your signature. It runs your errands, keeps your appointments, and is a little better liked than you are. Seen by you, it means a year at the outside \u2014 unless you can get ahead of it and be somewhere it has already been.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "It cannot be in two places, and that is the only handle on it. Get it and yourself into one room in front of people who know you, and it comes apart \u2014 which means finding out where you are going to be tomorrow before it does.",
+  "mark": "",
+  "lore": [
+   "You are told about it before you ever see it. Somebody says they waved at you outside the bank on Tuesday and you were forty miles off on Tuesday. Somebody thanks you for a kindness you did not do. The teller has a note in your hand that you did not write and cannot fault. And then one afternoon you see it yourself from across a street, going the other way, in a coat you are wearing, and you get the only warning it ever gives.",
+   "It is not a mimic and it is not wearing anything. It is you, done again, and it does not appear to bear you the least ill will \u2014 it simply gets on with your life while yours gets harder to hold. Each day it is out there being you, you lose a little of the thing that makes people take you for yourself, and the world quietly, reasonably prefers the other one. Old folk will tell you the fetch means a year. What they generally leave out is the shape of the year. Nobody dies of the thing itself. They die of standing in a room at the end of it with nothing left to prove who they are with."
+  ],
+  "found": "Your own street, your own trade, your own people \u2014 a little ahead of you, or in the town you left last week. It is never anywhere you can send somebody to check.",
+  "keeperNote": "This is a horror to run against one player, so pick the one whose character has the most standing to lose and warn nobody. Start with hearsay, and keep it entirely benign for two sessions: waves, thanks, an errand done. Then start charging. Every day costs Blood and costs credit \u2014 the storekeeper is cool, the sheriff has a version of events he prefers, an ally hesitates \u2014 and the mechanical loss is nothing beside the social one, so make sure the rest of the party is present for the erosion. It is enormously important that the other players get a scene where they are not certain which one they are talking to; run one meeting where they cannot tell, and be scrupulously fair about the clues. The ending is an ambush the party has to lay on the future, which means they have to find out what the fetch has scheduled. A ledger, an invitation, an appointment book. Then everybody stands in one room and it comes apart, and the character is left with a year they were promised and cannot un-hear.",
+  "witness": "I have got my own name written down here forty times to look at. He signed the note better than I do. The bank took his. \u2014 found among the effects of a man in Aurora"
+ },
+ {
+  "name": "The Fiddler at the Dance",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier III \u00b7 the tune that will not end",
+  "tier": 3,
+  "defense": "16",
+  "blood": "38",
+  "speed": "he does not leave the platform",
+  "saves": "Fort +9, Ref +11, Will +12",
+  "attacks": "he lays no hand on anybody \u2014 the reel does it (Will DC 16 or dance; a dancer takes 1d6 a round, cannot stop, and cannot be spoken to); the floor, when it finally gives +9 (2d6+4)",
+  "special": "He will not take a break. A stranger with a good fiddle, a name nobody quite catches, and a reel that gets faster. Every soul on the boards is in it until the tune ends, and in one or two barns in this country the tune has not ended in forty years.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Break the fiddle, out-play him, or get the caller to call a different figure loud enough that the floor follows the caller instead. Cutting a dancer loose needs a hand strong enough to hold on and deaf enough to keep hold.",
+  "mark": "Taking the fiddle when he offers it \u2014 and he will offer, to the best player in the room \u2014 is +1 Mark, and the next barn is yours to play.",
+  "lore": [
+   "A barn dance in this country is the whole social life of a district, and a stranger with a fiddle is the most welcome man who ever walked in out of the dark. He plays better than anyone has heard. He takes no pay and no drink, he asks the caller for nothing, and about an hour in the reel changes into something nobody knows and everybody's feet do. The old people at the wall notice first, because they are the only ones not dancing.",
+   "The tune gets faster. It does not get louder and it never breaks time, and no dancer on that floor can stop, sit, speak, or be spoken to. Their boots go through and then their feet do. Somewhere around the third hour the ones at the edges begin to go down, and the reel steps over them without a stumble. He is perfectly courteous throughout. He will nod to a man who shouts at him. He will not stop playing, and there is no bargain to be had with him about it, and the only thing he ever offers anybody is the fiddle itself."
+  ],
+  "found": "A barn dance, a wedding, a harvest social, a Saturday night in a district that has been looking forward to it all month. He arrives late and alone, and nobody can say afterward which road he came in on.",
+  "keeperNote": "A set-piece, and one of the best in this chapter, because it puts a whole community on the floor and hands the party a rescue rather than a fight. Establish the dance as a good time first \u2014 let the players enjoy an evening, dance with somebody, meet the district \u2014 and give the turn to the old woman at the wall who has stopped talking. Then run it as a clock. Every round costs the dancers, the party can pull people off the floor one at a time at real cost, and the three ways to end it are all in the room: the fiddle, a better player, and the caller. That last one is the best of them, because it means finding the caller in the crowd and getting him to do his job with his own feet going, and it turns the win into something the community does rather than something the party does to it. Save the offer for the end. If somebody at your table plays, he will hold the fiddle out to them, politely, in front of everyone.",
+  "witness": "I got my sister off the floor by the hair with both hands over my ears and my brother-in-law helping and it took the two of us the better part of a reel. My brother-in-law is still in there. \u2014 sworn at the inquest, Harmon Springs"
+ },
+ {
+  "name": "The Midnight Line",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier III \u00b7 a train on a grade with no rails in it",
+  "tier": 3,
+  "defense": "18",
+  "blood": "44",
+  "speed": "as fast as the grade allows, and it keeps a schedule",
+  "saves": "Fort +13, Ref +5, Will +9",
+  "attacks": "it runs you down +9 (2d6+4 to everything on the roadbed, and prone); the crew, if you board +9 (2d6+4)",
+  "special": "It runs a road that was pulled up in eighty-one. Whistle, headlamp, and a full string of cars on a grade with not one rail left in it. It stops at the old halts and takes on whoever is waiting, and its passengers do not get off where they meant to.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Stay off the roadbed after dark and off the platform at the old halts. To end it, find the wreck it is still running toward and bury what the company never dug out.",
+  "mark": "",
+  "lore": [
+   "The line was cheap and it was built fast and it was abandoned inside a decade, and what is left of it is a raised bed of ballast running arrow-straight through country that has nothing else straight in it. The ties went for firewood and the iron went east and the grade is a good walking road, which is what it is mostly used for now. It is a good walking road until about half past eleven.",
+   "You hear it a long way off, because there is nothing else out there. Whistle first, then the working of it, then the headlamp coming up the straight, and it is a full train \u2014 engine, tender, baggage, three coaches with the lamps lit and people at the windows \u2014 running on nothing at all. It stops where the halts used to be. It stands there a decent interval with the door open and a conductor on the step looking down the platform, and then it goes on. Everybody in the district knows to be off the grade by eleven. Everybody in the district also knows the names of four or five people who were not."
+  ],
+  "found": "An abandoned grade, a pulled-up branch line, the roadbed of a company that failed \u2014 and the platforms of the halts along it, which are usually the only structures left standing for miles.",
+  "keeperNote": "The whole encounter is the offer, so build to it. Put the party on the grade at night for a good reason \u2014 it is the only straight road, it is the fast way, the weather has come in \u2014 and give them a long approach with the whistle in it. When it stops, the conductor is courteous and the coaches are warm and lit and it is very cold outside, and that is the scene. Nobody has to make a save to want it. If someone boards, do not resolve it in a round: they are on it, it pulls out, and the party has a session to get them off before the wreck it is running toward, which is the only place it will stop again. That gives you a chase along a roadbed with no train on it and a deadline made of a timetable. The ending is a dig. Find where the line went into the cut in seventy-nine, find what the company covered over rather than recover, and bury it \u2014 and the timetable finally runs out. A good long arc, and it pairs well with a railroad company that would rather the party did not.",
+  "witness": "The conductor was patient with me. He said there was room and he said it twice and he held the door, and the thing I cannot get past is that I wanted to. It was cold and I was a long way from anywhere and there were lamps. \u2014 a surveyor, who walked home instead"
+ },
+ {
   "name": "The Mirror-Dweller",
   "chapter": "Spirits & Hauntings",
   "tierText": "Tier III \u00b7 the thing in the glass",
@@ -1252,6 +1780,28 @@
   "found": "Anywhere there are mirrors and still water \u2014 a house full of looking-glasses, a town's barber-shop and parlors, a still pond. It has a home mirror it favors and spreads its reach through every reflection nearby.",
   "keeperNote": "The Mirror-Dweller makes every reflective surface a door, which makes every glass in the house a thing to watch. The party learns to fear mirrors, dark windows, still water, the polished surface of a gun \u2014 anywhere it can reach through or wear a stolen face back at them. The defensive rule is concrete and tactical: break or cover every reflection and it can't enter; a reflection-free room is a safe room. The win is finding and shattering its home mirror. The replacement horror gives it teeth beyond combat \u2014 if it takes someone, an impostor wearing their face is now loose, which can fuel a whole paranoid scenario (which of us is real?). Run the dread of the reflection that moves wrong, the face in the glass that smiles when you don't. It rewards a party that thinks about their environment and covers their mirrors, and punishes the one that walks past a looking-glass without a second thought. A gothic, claustrophobic favorite, and a great pairing with the Skin-Walker for a campaign about impostors and stolen identities.",
   "witness": ""
+ },
+ {
+  "name": "The Wake",
+  "chapter": "Spirits & Hauntings",
+  "tierText": "Tier III \u00b7 the same funeral, every night",
+  "tier": 3,
+  "defense": "\u2014",
+  "blood": "40",
+  "speed": "fixed to the house; it begins at dusk",
+  "saves": "Fort +11, Ref \u2014, Will +13",
+  "attacks": "no violence in them at all \u2014 they are perfectly civil (each hour, Will DC 16 or take the chair offered, and a soul who sits does not get up); the door, tried early +9 (2d6+4)",
+  "special": "They are pleased you came. Lamps lit, coffin open, neighbors in their good coats, the food laid out \u2014 and every one of them thirty years in the ground. They will offer you a chair and they mean it kindly, and the kindness is the whole of the trap.",
+  "dread": "DC 16, 1d6",
+  "puttingItDown": "Somebody in that house was never buried. Find whoever it is \u2014 the child in the wall, the stranger under the porch, the one the family could not admit to \u2014 put them properly in the ground, and the lamps go out and stay out.",
+  "mark": "",
+  "lore": [
+   "The house is lit when you come over the rise, which is a fine thing to see at the end of a cold day. There are horses at the rail and people on the porch and a hum of talk, and somebody opens the door before you knock and is glad you have come so far. Inside it is a wake, and a good one: the coffin open at the end of the room, the neighbors paying respects, cold ham and a decent whiskey and low conversation. Nobody is strange. Nobody is cold to the touch. The only thing wrong in the whole house is that every soul in it was buried in the seventies, and so was the house.",
+   "They keep having it because it never finished. Something about that funeral was not completed \u2014 a body that never came, a grave that was never dug, a name the family would not say over the hole \u2014 and the evening resets at dusk and runs again, and it has been picking up strays off the road for thirty years. The ones who sat down are in there. They are in the good coats too, now, and they are as pleasant as the rest, and they will urge you very warmly to take the weight off."
+  ],
+  "found": "A lonely place at the end of a long day, lit up and full of people, where the county records show a house burned or a family gone since before you were born. It only happens after dark, and it wants guests.",
+  "keeperNote": "Run this as hospitality horror and keep the pressure entirely social. Nothing attacks. Everybody is warm, the food is good, the party is tired, and every hour somebody offers a chair with real kindness \u2014 and the save is against courtesy rather than fear, which is far harder for players to fail gracefully and far more interesting when they do. Let them notice at their own pace: the same conversation coming round again, a clock that has not moved, the coats forty years out of fashion, somebody in the room they last saw on a missing notice. The investigation is right there in the house, because the wake is for somebody and the party can walk up and look in the coffin. What they need is the one who was never put in the ground, and that is a search through the place while being politely offered food. If a player sits, do not take them out of the scene \u2014 let them stay conversational, comfortable, and reluctant to get up, and let their friends have to argue them out of a chair. The burial ends it. Do the burying at dawn.",
+  "witness": "There was a man in there I knew from the freight office who went missing in eighty-eight, and he shook my hand and asked after my mother and offered me his chair, and I have not slept right since. \u2014 statement of the only one who walked out"
  },
  {
   "name": "The Whistler",
