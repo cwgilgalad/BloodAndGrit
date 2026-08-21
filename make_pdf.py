@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Print the three built books to true 8.5x11 US-Letter PDFs. ONLY on explicit request.
+"""Print the six built documents to true 8.5x11 US-Letter PDFs. ONLY on explicit request.
 
 Per the standing spec in CLAUDE.md: headless Chromium (system Edge) print-to-PDF
 with prefer_css_page_size + print_background and zero margins; the books define
 @page { size: Letter; margin: 0 } and fixed 8.5x11in sheets, so one sheet = one
 PDF page. Before printing: wait for .book.pages.ready and fonts, then force-decode
 every <img>. Verified with PyMuPDF: page count == rendered sheet count, 612x792pt.
+
+The three modules print through the same loop and need no special case: each is built
+from the Player's Book shell by `modules_common.py`, so it carries the same paginator,
+the same @page rule, and the same title page -- cover emblem, big title, kicker and all
+-- differing only in the three lines that name the adventure. (Added 2026-08-20; until
+then the modules shipped as HTML only, and GitHub serves raw .html as plain text.)
 """
 import pathlib, sys
 import fitz
@@ -15,6 +21,10 @@ BOOKS = [
     ("blood-and-grit.html",   "Blood-and-Grit-Players-Book.pdf"),
     ("keeper-handbook.html",  "Blood-and-Grit-Keepers-Book.pdf"),
     ("bestiary.html",         "Blood-and-Grit-Bestiary.pdf"),
+    # the three adventures, in module order rather than filename order
+    ("module-salt-at-coffin-wells.html",  "Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf"),
+    ("module-a-face-not-his-own.html",    "Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf"),
+    ("module-what-the-water-answers.html","Blood-and-Grit-Module-III-What-the-Water-Answers.pdf"),
 ]
 
 with sync_playwright() as pw:

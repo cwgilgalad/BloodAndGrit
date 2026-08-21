@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.27 · Keeper's Book v2.14 · Bestiary v2.12 ·
-GritKeeper app v1.43.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.28 · Keeper's Book v2.15 · Bestiary v2.13 ·
+GritKeeper app v1.43.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -112,12 +112,12 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.27 | 203 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.14 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.12 | 199 | none (175 creatures) |
-| Module I — The Salt at Coffin Wells | v1.1 | 26 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.1 | 27 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.2 | 26 | one inline SVG map (two panels), downloadable |
+| The Player's Book | v2.28 | 203 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.15 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.13 | 199 | none (175 creatures) |
+| Module I — The Salt at Coffin Wells | v1.2 | 26 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.2 | 27 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.3 | 26 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -218,9 +218,10 @@ version on the cover**, and **update this doc's version table + Changelog.**
 
 ### The version cascade (important, easy to miss)
 `build_keeper.py` and `build_bestiary.py` splice each book's own cover onto the Player shell
-by **string-replacing the Player's version strings** with their own. Those match strings are
-hard-coded (four per script). They are the Player's version, never the splicing book's own — check
-them against `build_player.py` rather than against this line, which has gone stale before.
+by **string-replacing the Player's version strings** with their own, and `modules_common.py` does
+the same for all three modules. **Since 2026-08-20 the Player's half of those match strings is
+read off the shell** — `_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H)` —
+so bumping the Player's Book no longer cascades anywhere. Bump it in `build_player.py` and stop.
 
 **Since 2026-08-19 the swap asserts.** A match that no longer matches used to be a silent no-op —
 `if a in H: H = H.replace(a, b, 1)` — and that is the whole mechanism of the failure described
@@ -228,17 +229,13 @@ below, which happened twice. All three splices now assert the string was there, 
 cascade stops the build with the string it could not find instead of shipping a book wearing
 somebody else's name.
 
-**Any time you bump the Player's Book version, you must also update those match strings in all
-FOUR places** — the two book builders **and `modules_common.py`**, which carries the same transform
-for all three modules:
-```bash
-sed -i 's/v2.13/v2.14/g; s/Version 2.13/Version 2.14/g' \
-  build_player.py build_keeper.py build_bestiary.py modules_common.py
-```
-— or the Keeper/Bestiary/module covers will silently keep the Player's version.
+**Until 2026-08-20 a Player's Book bump had to be repeated by hand in all FOUR places** — the two
+book builders and `modules_common.py` — or the Keeper/Bestiary/module covers would silently keep
+the Player's version. That history is kept below because it is the reason the number is derived
+now rather than typed. There is no sed line any more; there is nothing left to keep in step.
 
-**`modules_common.py` was missing from this line until 2026-08-15, and it cost exactly what the
-paragraph above predicts.** The v2.26 bump updated the two book builders, the modules' match
+**`modules_common.py` was missing from that cascade list until 2026-08-15, and it cost exactly
+what the paragraph above predicts.** The v2.26 bump updated the two book builders, the modules' match
 strings went on hunting for "Version 2.25" in a shell that no longer had it, the replacement found
 nothing, and all three modules built with *"The Player's Book (Revised &amp; Expanded · v2.26)"* on
 the cover and in the title bar. They measured clean — parity, zero clip, zero h-scroll — because
@@ -253,10 +250,15 @@ cascade list moves with it.
 three modules rebuilt as *"The Player's Book (Revised &amp; Expanded · v2.27)"* — caught only
 because `git diff` on a module was read before committing. A warning that has failed twice is not a
 control, which is why the swap now asserts rather than trusting anybody to have read this
-paragraph. Keep the sed line; it is still the quickest way to do the bump right the first time.
+paragraph. Deriving it was the third answer, and the only one that does not depend on somebody
+reading this section.
 
-Bumping only the Keeper or only the Bestiary needs no cascade (their version strings are only on
-the *right* side of the tuples; bump them directly in their own build script).
+Bumping only the Keeper or only the Bestiary was always cascade-free (their version strings sit
+only on the *right* side of the tuples; bump them in their own build script). **What none of this
+caught was a book disagreeing with itself:** the v2.13 → v2.14 bump patched three of the Keeper's
+Book's four version strings and left the colophon on the epigraph page saying v2.13, which then
+went out in `books-v1.2`. `audits/verify_release.py` now reads every built book and module back
+and requires each to show exactly one version — the one its own builder stamps.
 
 ---
 
@@ -368,7 +370,7 @@ appears in more than one place, wire it this way: one source, generated outward,
 
 ---
 
-## The Player's Book (v2.25) — structure
+## The Player's Book (v2.28) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -416,7 +418,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.12) — structure
+## The Keeper's Book (v2.15) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -439,7 +441,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.12) — structure & conventions
+## The Bestiary (v2.13) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **175 creatures** by name (from every `<p class="cr-name">`,
@@ -519,7 +521,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.43.0) — the C# desktop app
+## GritKeeper (v1.43.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
@@ -598,15 +600,21 @@ change them all:
   changes content or behavior adds an entry — and bumps the affected component's version — in
   the same commit. References to "the Changelog" elsewhere in this doc mean `CHANGELOG.md`.
 - Version bumps are **tagged** `component-vX.Y[.Z]` at the commit that ships them.
-- **Every tag gets a GitHub Release, and every Release carries a download.** Three components ship
-  out of this repo and each has its own line of tags and its own Release: `gritkeeper-vX.Y.Z`
-  (`GritKeeper.zip`), `books-vX.Y` (`BloodAndGrit-Books.zip` — the three HTML books plus the three
-  PDFs), and `modules-vX.Y` (`BloodAndGrit-Modules.zip` — the three module books, the three map
-  SVGs, and `PLAYTEST.md`). The zips exist because **GitHub serves raw `.html` as plain text**, so
-  without one there is no way for a stranger to actually get a book in a click. *(Established
-  2026-08-09, when the books and modules had no Release at all and `gritkeeper-v1.34.0` had a tag
-  with no page — the Releases list jumped 1.33.0 to 1.35.0. A tag with no Release is invisible;
-  backfill it notes-only rather than re-publishing a superseded binary.)*
+- **The Releases page carries the current release of each component and nothing else
+  (settled 2026-08-19).** Three components ship out of this repo and each has its own line of tags
+  and its own Release: `gritkeeper-vX.Y.Z` (`GritKeeper.zip`), `books-vX.Y`
+  (`BloodAndGrit-Books.zip` — the three HTML books and their PDFs), and `modules-vX.Y`
+  (`BloodAndGrit-Modules.zip` — the three module books, their PDFs, the three map SVGs, and
+  `PLAYTEST.md`). The zips exist because **GitHub serves raw `.html` as plain text**, so without one
+  there is no way for a stranger to actually get a book in a click. **When a component ships, delete
+  the Release page the new one supersedes.** The tag stays put, so `git checkout <tag>` still gets
+  that tree exactly as it shipped, and `RELEASES.md` — generated from the GitHub API by
+  `tools/release_index.py` — is the index that keeps every version findable. *(This bullet said the
+  opposite until 2026-08-20: every tag gets a Release and every Release carries a download, a rule
+  made on 2026-08-09 when the books and modules had no Release at all and `gritkeeper-v1.34.0` had a
+  tag with no page. It held for ten days. On 2026-08-19 thirty-four release pages carrying 1.9 GB of
+  zips nobody downloads were deleted, the history moved to `RELEASES.md`, and this bullet was not
+  corrected — so the doc and the repo disagreed until somebody read both.)*
 - **After cutting a books or modules Release, put the `Latest` flag back on GritKeeper**
   (`gh release edit gritkeeper-vX.Y.Z --latest`). GitHub gives `Latest` to whatever was published
   most recently, and `README.md` points its download button and this doc point at

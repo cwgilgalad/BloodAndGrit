@@ -57,14 +57,21 @@ _css = """
 </style>"""
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
+# The Player's Book version is read off the shell rather than typed here. It was typed
+# until 2026-08-20, and every bump then had to be repeated by hand in build_keeper.py,
+# build_bestiary.py and modules_common.py in lockstep. That was missed on v2.26 and
+# again on v2.27, and each time a companion book or all three modules built wearing the
+# Player's Book's own title. Derived, the cascade cannot be missed because there is
+# nothing left to remember.
+_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.14 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.14)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.15 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.15)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.14</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.15</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.27 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.13 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.15 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -686,8 +693,8 @@ CH4 = f"""<!-- IV -->
     of the thing escaping, is a defeat that still moves the story.</li>
     <li><strong>Let the cost be the cost.</strong> Sometimes someone dies, and that is the game keeping faith. When it
     comes, give it weight: the last word, the Grit spent to buy a friend's escape, the body that must be carried out or
-    left behind. A death the table saw coming and could not stop is not a failure of the game &mdash; it is the dread
-    made real, and it is why the rest will be remembered.</li>
+    left behind. A death the table saw coming and could not stop is the dread made real, and it is why the
+    rest will be remembered.</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The honest TPK</span>If the whole party falls fair &mdash; warned,
   bloodied, beaten by a thing they walked into eyes open &mdash; honor it. Don't fudge a total-party kill that the
@@ -704,8 +711,8 @@ CH4 = f"""<!-- IV -->
     is breathing wet and slow. What do you do?</p>
     <p><strong>Eli:</strong> I ease up to the door and listen &mdash; can I tell what it is?</p>
     <p><strong>Keeper:</strong> Give me a Notice. [<em>Uncertain and consequential, so a roll; the dark hides a
-    Risen, DC 15.</em>] &hellip; A 19. [<em>Success.</em>] It's a man's shape, swaying, and the breathing isn't
-    breathing at all &mdash; it's wind in a chest that doesn't work anymore. Then it turns, and its eyes catch your
+    Risen, DC 15.</em>] &hellip; A 19. [<em>Success.</em>] It's a man's shape, swaying, and the sound coming out
+    of him is wind in a chest that quit working a while back. Then it turns, and its eyes catch your
     lantern, and they are the wrong color clean through. [<em>First true sight of the walking dead &mdash; a Dread
     Check, Will DC 16.</em>] Give me a Will save against the dread of it.</p>
     <p><strong>Eli:</strong> &hellip;That's a 7. [<em>Failure: lose 1d6 Nerve, 4 rolled; Eli drops from 9 to 5.</em>]</p>
@@ -1107,8 +1114,8 @@ CH8 = f"""<!-- VIII -->
 
   <h2>Who Is Actually Out Here</h2>
   <p>A Keeper who peoples the frontier out of the picture-shows will run a thinner country than the real one, and a
-  duller game. The West of 1885 is the most mixed ground on the continent, and the mixing is not a footnote &mdash;
-  it is the trade, the vocabulary, and the town.</p>
+  duller game. The West of 1885 is the most mixed ground on the continent, and the mixing runs all through
+  the trade, the vocabulary, and the shape of the town itself.</p>
   <p>Start with the work itself. The cattle business is Mexican before it is anything else, and every player at your
   table already speaks its language: the <em>lariat</em> is <em>la reata</em>, the <em>chaps</em> are
   <em>chaparreras</em>, the <em>remuda</em> (the herd of spare mounts), the <em>corral</em>, the <em>rodeo</em>, the <em>mustang</em> out of
@@ -1137,8 +1144,8 @@ CH8 = f"""<!-- VIII -->
 
   <div class="keeper-note"><span class="kn-tag">On the dark, and whose it is</span>Two entries in the Bestiary
   &mdash; the Wendigo and the Skin-Walker &mdash; come out of Algonquian and Diné belief, and one comes out of
-  Mexican and New Mexican belief, the Bruja. These are not folklore anybody made up for a game; they are things
-  people hold, and in some cases hold sacred and do not discuss. Run them the way you would run something out of a
+  Mexican and New Mexican belief, the Bruja. Nobody made these up for a game. They are things people hold,
+  and in some cases hold sacred and do not discuss. Run them the way you would run something out of a
   neighbor's church: as terrible and real, never as costume, and never with an Indian or a Mexican character
   attached to explain it to the party. Where a horror comes out of a living tradition, the person who knows most
   about it should be the one the party is lucky to have on their side &mdash; and should be under no obligation to
@@ -1785,8 +1792,8 @@ CH12 = f"""<!-- XII -->
 
   <div class="keeper-note"><span class="kn-tag">The seed rule</span>Anything you roll here that makes the table lean
   forward is no longer a random result &mdash; it is now part of the campaign. Write it down, give it a cause, and hang
-  a thread from it (Ch. II). The tables are not filler; they are an oracle, and the players will treat whatever comes
-  out of them as deliberate. Let them be right.</div>
+  a thread from it (Ch. II). Treat the tables as an oracle. The players will read whatever comes out of them
+  as deliberate, so let them be right.</div>
 </section>
 """
 
@@ -1983,7 +1990,7 @@ CH14 = f"""<!-- XIV -->
   frightened in. Put the fear down. The dark does not need the dark. It needs to be able to work unremarked,
   and there has never been a better place for that than a city where nobody knows their neighbor's name.</div>
 
-  <p class="dropcap lead">By 1885 the West has cities, and they are not a compromise with the western &mdash; they are the
+  <p class="dropcap lead">By 1885 the West has cities, and they are the
   western's other half. Dodge is the cattle capital of the continent. Kansas City runs the beef trade of a nation out of the
   West Bottoms. San Francisco is the great city of the West and about the ninth in the nation. Butte sits on the richest
   hill on earth and is hollow underneath. Every trail your players ride ends in one of these places, because that is where the money is, and the
