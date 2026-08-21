@@ -241,8 +241,7 @@ MODULE_CSS = """
   table.playtest{ width:100%; border-collapse:collapse; margin:1em 0; font-size:13.2px; }
   table.playtest th{ background:var(--blood-d); color:#f2ead6; font-variant:small-caps; letter-spacing:.05em; padding:4px 7px; text-align:left; }
   table.playtest td{ border-bottom:1px solid var(--gold-d); padding:4px 7px; }
-""" + __import__("module_maps").MAP_CSS + """
-</style>"""
+""" + __import__("module_maps").MAP_CSS
 
 
 def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
@@ -253,6 +252,14 @@ def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
     from pag_patch import patch_paginator
     H = patch_paginator(H)
 
+    # MODULE_CSS deliberately does NOT close the block: the cover rules go inside it, and for
+    # three releases they did not. It carried its own </style>, so appending the cover rules
+    # after it shut the block early and left them as loose text in <head> -- which the parser
+    # relocates into <body> and the browser duly renders. Every module opened with three lines
+    # of raw CSS above its cover, and wore the Player's Book's cover colours rather than its
+    # own, because the rules that set them were never CSS at all. Nothing looked at the modules
+    # in print until 2026-08-20, and print is where it finally showed: an extra PDF page of
+    # stylesheet before page one.
     css = MODULE_CSS + f"""
   .title-page{{ background:{cover_bg}; box-shadow:0 0 0 4px {cover_bg} inset, 0 0 0 5px {cover_key} inset, 0 14px 40px rgba(0,0,0,.66); }}
   .title-page .t-foot{{ color:{cover_foot_ink}; }}
@@ -261,20 +268,31 @@ def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
     if ".statblock{" not in H:
         H = H.replace("</style>", css, 1)
 
+    head = H[:H.index("</head>")]
+    assert head.index(f"background:{cover_bg}") < head.index("</style>"), (
+        "the module's cover rules landed outside the style block")
+
+    # The Player's Book version is read off the shell rather than typed here. It was typed
+    # until 2026-08-20, and every bump then had to be repeated by hand in build_keeper.py,
+    # build_bestiary.py and modules_common.py in lockstep. That was missed on v2.26 and
+    # again on v2.27, and each time a companion book or all three modules built wearing the
+    # Player's Book's own title. Derived, the cascade cannot be missed because there is
+    # nothing left to remember.
+    _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
     meta = [
-        ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->",
+        (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->",
          f"<!-- Blood & Grit — {foot} · Version {version} -->"),
-        ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>",
+        (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>",
          f"<title>Blood &amp; Grit — {foot} (v{version})</title>"),
         ('<div class="kicker">Being a Field Manual for the Living</div>',
          f'<div class="kicker">{kicker}</div>'),
         ("<div class=\"t-foot\">The Player's Book</div>",
          f'<div class="t-foot">{foot}</div>'),
-        ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>',
+        (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>',
          f'<div class="t-tiny">{tiny_edition} · Version {version}</div>'),
         ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>',
          f'<div class="t-tiny">{tiny_blurb}</div>'),
-        ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.27 · First Complete Edition</p>',
+        (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>',
          f'<p class="note" style="text-align:center; margin:0;">{colophon}</p>'),
     ]
     for a, b in meta:

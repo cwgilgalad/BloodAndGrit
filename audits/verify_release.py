@@ -172,6 +172,45 @@ def book_versions():
     return out
 
 
+# Every built document, and the builder that stamps its version. The books' numbers come from
+# BOOK_SITES above; a module stamps its own in one place and the shell transform carries it to
+# the cover, the title bar, the header comment and the colophon.
+BUILT = {
+    "Player's Book": ("blood-and-grit.html",                 "build_player.py"),
+    "Keeper's Book": ("keeper-handbook.html",                "build_keeper.py"),
+    "Bestiary":      ("bestiary.html",                       "build_bestiary.py"),
+    "Module I":      ("module-salt-at-coffin-wells.html",    "build_module_salt.py"),
+    "Module II":     ("module-a-face-not-his-own.html",      "build_module_face.py"),
+    "Module III":    ("module-what-the-water-answers.html",  "build_module_water.py"),
+}
+
+
+def built_versions():
+    """Every version number a built document shows a reader, as a set per document.
+
+    A book carries its number in four places -- the header comment, the <title>, the cover's
+    fine print and the colophon on the epigraph page -- and the bump has to reach all four.
+    On 2026-08-19 it reached three: the Keeper's Book went to v2.14 and its colophon went on
+    saying v2.13, through a shipped Release, because nothing read the built file back. This
+    does. One document, one version, or say which one disagrees."""
+    out = {}
+    for label, (built, _) in BUILT.items():
+        h = read(built)
+        out[label] = set(re.findall(r"Version (\d+\.\d+)", h)) | set(re.findall(r"v(\d+\.\d+)\)", h))
+    return out
+
+
+def stamped_versions():
+    """What each builder says the document is. The books stamp a cover line; a module a constant."""
+    out = dict(book_versions())
+    for label, (_, builder) in BUILT.items():
+        if label in out:
+            continue
+        m = re.search(r'VERSION = "([\d.]+)"', read(builder))
+        out[label] = m.group(1) if m else None
+    return out
+
+
 def app_book_versions():
     """The C#-side copy of the same three numbers, which shows in the status bar."""
     m = re.search(r'PlayerBookVer = "([\d.]+)", KeeperBookVer = "([\d.]+)", BestiaryVer = "([\d.]+)"',
@@ -232,6 +271,21 @@ def main():
                                 f"stamps v{want}")
             elif not quiet:
                 print(f"  status bar   {book}: v{got}")
+
+    # ---- 1c. every built document shows one version, and it is the one its builder stamps ----
+    built, stamped = built_versions(), stamped_versions()
+    for label in BUILT:
+        want, shown = stamped[label], built[label]
+        if want is None:
+            findings.append(f"{BUILT[label][1]}: no version stamp found for {label} — "
+                            f"has the wording changed?")
+        elif not shown:
+            findings.append(f"{BUILT[label][0]}: shows no version at all")
+        elif shown != {want}:
+            findings.append(f"{BUILT[label][0]}: shows {', '.join('v' + v for v in sorted(shown))}, "
+                            f"{BUILT[label][1]} stamps v{want}")
+        elif not quiet:
+            print(f"  built        {label}: v{want}")
 
     # ---- 2. a version that has stopped being the newest must have been released ----
     versions, tagged = changelog_versions(), tags()
