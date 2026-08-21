@@ -59,6 +59,20 @@ Desktop\Git repos.)
   resolving. `creatures.json` re-extracted: 175 creatures, four prose fields changed, nothing
   added or removed.
 
+  **The release bundles are built now, not assembled.** `BloodAndGrit-Books.zip` and
+  `BloodAndGrit-Modules.zip` were put together by hand every time, which is how a books zip came
+  to be sitting on this disk holding a Bestiary three chapters out of date. `tools/make_bundles.py`
+  builds both from a declared list and refuses to bundle a book that does not show the version its
+  own builder stamps. It deliberately does not compare modification times: a `git checkout`
+  rewrites a working tree's mtimes wholesale, so that check would fire after every branch switch
+  and mean nothing.
+
+  **Seven releases were invisible to the tag check.** `changelog_versions()` matched entries whose
+  heading *opens* with `- **GritKeeper vX.Y.Z`, so a combined release written
+  `- **Books v2.25 / … · GritKeeper v1.29.2 — …` was never counted — and the check that every
+  shipped version has a tag could not see them. Widened to the heading line: 43 entries became 50,
+  and all 49 past ones turn out to have been tagged properly anyway.
+
 - **Bestiary v2.12 · Keeper's Book v2.14 — twenty-five more of the traditional horrors, and the
   families they belong to (2026-08-20).** The catalogue was thin exactly where a horror western
   ought to be thickest. It held **one vampire** (the Nightwalker), **no werewolf at all**, one

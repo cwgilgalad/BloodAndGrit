@@ -79,12 +79,19 @@ def csproj_version():
 def changelog_versions():
     """Every GritKeeper version entered in the CHANGELOG, newest first, deduplicated.
 
-    Matched on the entry's own heading shape — `- **GritKeeper v1.33.0 — title (date).**` — rather
+    Matched on the entry's own heading LINE — `- **GritKeeper v1.33.0 — title (date).**` — rather
     than on any mention of a version, so a sentence inside one entry referring back to an older
-    release cannot be mistaken for that release having its own entry.
+    release cannot be mistaken for that release having its own entry. Only a top-level entry
+    starts a line with `- **`; a sub-bullet is indented.
+
+    The heading does not have to OPEN with the app's version. A release that ships books and the
+    app together is written `- **Books v2.28 / ... · GritKeeper v1.43.1 — ...`, and until
+    2026-08-20 this pattern was anchored hard enough to miss every one of those — v1.29.2 among
+    them — so those releases were invisible to the tag check that is the point of the function.
     """
     seen, out = set(), []
-    for m in re.finditer(r"^- \*\*GritKeeper v(\d+\.\d+\.\d+)", read("CHANGELOG.md"), re.M):
+    for m in re.finditer(r"^- \*\*.*?GritKeeper v(\d+\.\d+\.\d+)",
+                         read("CHANGELOG.md"), re.M):
         v = m.group(1)
         if v not in seen:
             seen.add(v)
