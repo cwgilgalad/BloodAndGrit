@@ -8,6 +8,57 @@ Desktop\Git repos.)
 
 ---
 
+- **Books v2.28 / v2.15 / v2.13 · Modules v1.2 / v1.2 / v1.3 · GritKeeper v1.43.1 — the prose
+  reads clean, the modules print, and the covers were never wearing their own colours
+  (2026-08-20, user-requested).**
+
+  **Thirteen negative parallelisms, rewritten.** The one figure this project keeps having to cut
+  back — *X is not A, it is B* — had grown to thirteen across the three books: three in the
+  Player's Book, six in the Keeper's Book, four in the Bestiary. Every one was rewritten rather
+  than deleted, so the claim each sentence was making survives in the book's own register: the
+  frontier now *has something already holding it* instead of being "not empty — occupied", a horse
+  is "the line between a journey and a death" and a man will go hungry a day before his horse does,
+  and Rank "measures the reach" instead of being "not how hard the Sign is to say". The three
+  modules came back clean on the same scan and were left alone. `audits/audit_ai_tells.py` now
+  reports **no hard tells in any of the six documents**; the soft tells that remain (*leverage* in
+  a negotiation, *harness* on a tack-room wall, *vital* in the sense of where a bullet has to go)
+  are the correct words and stay.
+
+  **The modules have been printing three lines of stylesheet above their covers.** `modules_common.py`
+  built each module's cover CSS as `MODULE_CSS + <the cover rules>`, and `MODULE_CSS` carried its own
+  closing `</style>`. So the block shut early and the three rules that set a module's cover colours
+  became loose text in `<head>`, which the parser relocates into `<body>` and the browser duly
+  renders. Two consequences, both shipped: every module opened with a line of raw CSS above the
+  title page, and none of the three ever wore its own cover — Module I's oxblood-on-black, Module
+  II's cold grey, Module III's deep teal were all defined and none of them ever reached a page, so
+  all three have been wearing the Player's Book's cover this whole time. Nothing caught it because
+  nothing had ever printed a module: it took one PDF page count coming back 27 against 26 rendered
+  sheets. `shell()` now asserts the cover rules land inside the block.
+
+  **The modules print now.** `make_pdf.py` prints all six documents rather than three:
+  `Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf` and its two siblings, same headless
+  print-to-PDF, same verification, and each one opens on the same cover the books do because the
+  shell is the same shell. They ship in `BloodAndGrit-Modules.zip` beside the HTML and the maps.
+
+  **The Player's Book version stopped cascading.** Three files carried it as a typed literal on the
+  left of their cover-retext tuples, and every bump had to be repeated in all three by hand; that
+  was missed on v2.26 and again on v2.27, and both times a companion book or all three modules built
+  wearing the Player's Book's own title. `build_keeper.py`, `build_bestiary.py` and
+  `modules_common.py` now read it off the shell they are already holding. There is nothing left to
+  keep in step, so the sed line in `CLAUDE.md` is gone with it.
+
+  **And a book that disagreed with itself.** The v2.13 → v2.14 bump on 2026-08-19 patched three of
+  the Keeper's Book's four version strings; the colophon on the epigraph page went on saying
+  *Version 2.13*, and shipped that way in `books-v1.2`. `audits/verify_release.py` grew a third
+  check: read every built book and module back, and require each to show exactly one version
+  number, the one its own builder stamps. All six pass. The status-bar constants moved with the
+  books, which is what v1.43.1 is.
+
+  Six documents measure clean at desktop and mobile — 203 / 101 / 199 / 26 / 27 / 26 pages, page
+  parity, zero true-scale clipping, zero horizontal scroll, every Contents and Index anchor
+  resolving. `creatures.json` re-extracted: 175 creatures, four prose fields changed, nothing
+  added or removed.
+
 - **Bestiary v2.12 · Keeper's Book v2.14 — twenty-five more of the traditional horrors, and the
   families they belong to (2026-08-20).** The catalogue was thin exactly where a horror western
   ought to be thickest. It held **one vampire** (the Nightwalker), **no werewolf at all**, one
