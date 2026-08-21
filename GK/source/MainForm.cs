@@ -128,8 +128,13 @@ public partial class MainForm : Sheet
     internal static string AppVersion =>
         typeof(MainForm).Assembly.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{v.Build}" : "0.0.0";
     // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
-    // stamp. Bump these in the same breath as a book version (they show in the status bar).
-    internal const string PlayerBookVer = "2.26", KeeperBookVer = "2.12", BestiaryVer = "2.11";
+    // stamp. Bump these in the same breath as a book version (they show in the status bar, and in
+    // the About box). The instruction above was the whole of the control until 2026-08-20, and it
+    // failed the way a written instruction always eventually does: the Player's Book went to v2.27
+    // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
+    // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
+    // against these, so the next miss is a finding rather than a screenshot.
+    internal const string PlayerBookVer = "2.27", KeeperBookVer = "2.14", BestiaryVer = "2.12";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -546,7 +551,7 @@ public partial class MainForm : Sheet
     /// <summary>A plain list, selecting in the app's own colours.
     ///
     /// <para>Windows selects in <c>#0078D4</c>. On a warm parchment ground that is the one colour in
-    /// the app belonging to no palette here, and the Bestiary — a full-height list of 150 creatures
+    /// the app belonging to no palette here, and the Bestiary — a full-height list of every creature
     /// beside a page of prose — put a bright blue block in the middle of it every time a Keeper
     /// picked something. A grid already selects in Gold (<see cref="StyleGrid"/>); this makes the
     /// lists agree with the grids, so "the thing I chose" looks the same everywhere.</para>

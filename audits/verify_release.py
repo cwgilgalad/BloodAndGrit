@@ -151,6 +151,34 @@ def app_changed_since(sha):
     return [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
 
 
+
+# The three book versions, as the Python builders stamp them. Each builder splices its own cover
+# onto the Player's shell by string-replacing the Player's version with its own, so the number on
+# the RIGHT of each tuple is that book's own. build_player.py is the shell and carries its number
+# on the left of nothing — it is read out of its own cover line.
+BOOK_SITES = {
+    "Player's Book":  ("build_player.py",   r"Edition of 1885 · Version (\d+\.\d+)</div>"),
+    "Keeper's Book":  ("build_keeper.py",   r"The Keeper's Book · Version (\d+\.\d+) -->"),
+    "Bestiary":       ("build_bestiary.py", r"The Bestiary · Version (\d+\.\d+) -->"),
+}
+
+
+def book_versions():
+    """What each builder stamps on its own cover, or None where the wording has moved."""
+    out = {}
+    for book, (path, pat) in BOOK_SITES.items():
+        m = re.search(pat, read(path))
+        out[book] = m.group(1) if m else None
+    return out
+
+
+def app_book_versions():
+    """The C#-side copy of the same three numbers, which shows in the status bar."""
+    m = re.search(r'PlayerBookVer = "([\d.]+)", KeeperBookVer = "([\d.]+)", BestiaryVer = "([\d.]+)"',
+                  read("GK/source/MainForm.cs"))
+    return dict(zip(BOOK_SITES, m.groups())) if m else None
+
+
 def main():
     quiet = "--quiet" in sys.argv
     check_delivered = "--delivered" in sys.argv
@@ -184,6 +212,26 @@ def main():
             findings.append(f"{where}: no GritKeeper version found — has the wording changed?")
         elif claimed != src:
             findings.append(f"{where}: says v{claimed}, the csproj says v{src}")
+
+    # ---- 1b. the status bar names the books the app actually ships alongside ----
+    # A second copy of a number the Python builders own. It drifted through GritKeeper v1.42.0
+    # unnoticed because it is only ever READ at a glance, in a status bar, by somebody who has no
+    # reason to doubt it. Read both sides and compare.
+    stamped, in_app = book_versions(), app_book_versions()
+    if in_app is None:
+        findings.append("GK/source/MainForm.cs: the book-version constants are not where this "
+                        "check looks — has the wording changed?")
+    else:
+        for book in BOOK_SITES:
+            want, got = stamped[book], in_app[book]
+            if want is None:
+                findings.append(f"{BOOK_SITES[book][0]}: no cover version found for the {book} — "
+                                f"has the cover wording changed?")
+            elif want != got:
+                findings.append(f"status bar: says {book} v{got}, {BOOK_SITES[book][0]} "
+                                f"stamps v{want}")
+            elif not quiet:
+                print(f"  status bar   {book}: v{got}")
 
     # ---- 2. a version that has stopped being the newest must have been released ----
     versions, tagged = changelog_versions(), tags()
