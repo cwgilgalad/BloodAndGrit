@@ -7,6 +7,32 @@ H = open("blood-and-grit.html", encoding="utf-8").read()
 
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
+
+# ---- how many things the Bestiary holds. Counted, never typed.
+# This chapter told Keepers the number twice, and the Bestiary has grown four times since it was
+# written. `GK/rules/Data/creatures.json` is the roster the app embeds and the modules cite, so it
+# is the one place to ask. Spelled out because this book spells its numbers out.
+import json as _json
+
+_ONES = ("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+         "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+         "eighteen", "nineteen")
+_TENS = ("", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+
+
+def _spell(n):
+    """Small cardinals in the books' register: 'a hundred and seventy-five'."""
+    if n < 20:
+        return _ONES[n]
+    if n < 100:
+        return _TENS[n // 10] + ("-" + _ONES[n % 10] if n % 10 else "")
+    head = ("a" if n // 100 == 1 else _ONES[n // 100]) + " hundred"
+    return head + (" and " + _spell(n % 100) if n % 100 else "")
+
+
+BEST_COUNT = _spell(len(_json.load(open("GK/rules/Data/creatures.json", encoding="utf-8"))))
+
+
 H = _patch_paginator(H)
 
 # ---- stat-block + keeper CSS, and cover/meta retext ----
@@ -32,11 +58,11 @@ _css = """
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 _meta = [
- ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.13 -->"),
- ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.13)</title>"),
+ ("<!-- Blood & Grit — The Player's Book · Version 2.27 -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.14 -->"),
+ ("<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.27)</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.14)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.13</div>'),
+ ('<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.27</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.14</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
  ('<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version 2.27 · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.13 · For the Keeper Alone</p>'),
 ]
@@ -558,7 +584,7 @@ CH4 = f"""<!-- IV -->
   will spend nine sessions getting ready to fight, and every clock segment you fill is a session that writes itself.</div>
 
   <h2>Building a Threat from Scratch</h2>
-  <p>The Bestiary holds a hundred and fifty things to fight, and the country always has one more. To make your own,
+  <p>The Bestiary holds {BEST_COUNT} things to fight, and the country always has one more. To make your own,
   work down this list &mdash; it takes about a minute.</p>
   <div class="box">
     <h4>Six Steps to a Monster</h4>
@@ -718,7 +744,7 @@ CH5 = f"""<!-- V -->
   <div class="divider"></div>
   {quote("Know the thing before you set it loose. A monster the Keeper does not understand is a monster that kills the wrong player.", "from a Keeper's ledger")}
   <p class="dropcap lead">The creatures once kept in this chapter have a book of their own now &mdash; <em>The Bestiary</em>,
-  the third of these volumes, where a hundred and fifty of the things that walk the country are set down with the numbers
+  the third of these volumes, where {BEST_COUNT} of the things that walk the country are set down with the numbers
   to run them and the one hard truth that puts each one down. This chapter is the bridge: how to choose a horror, read
   its block, and wield it well. Keep the Bestiary at your elbow; this book tells you how to use it.</p>
 

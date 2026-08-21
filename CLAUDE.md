@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.27 · Keeper's Book v2.13 · Bestiary v2.11 ·
-GritKeeper app v1.42.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.27 · Keeper's Book v2.14 · Bestiary v2.12 ·
+GritKeeper app v1.43.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -109,9 +109,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.26 | 201 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.12 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.11 | 166 | none (150 creatures) |
+| The Player's Book | v2.27 | 201 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.14 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.12 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.1 | 26 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.1 | 27 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.2 | 26 | one inline SVG map (two panels), downloadable |
@@ -436,10 +436,10 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.11) — structure & conventions
+## The Bestiary (v2.12) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
-(`id="bookindex"`) that auto-lists all **150 creatures** by name (from every `<p class="cr-name">`,
+(`id="bookindex"`) that auto-lists all **175 creatures** by name (from every `<p class="cr-name">`,
 so it can never drift) plus ~19 curated chapter/concept entries. Note the long-standing
 Roll-by-Tier appendix keeps `id="index"` — the alphabetical index is a separate `id="bookindex"`.
 
@@ -516,7 +516,7 @@ its Tier in levels**):
 
 ---
 
-## GritKeeper (v1.42.0) — the C# desktop app
+## GritKeeper (v1.43.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
