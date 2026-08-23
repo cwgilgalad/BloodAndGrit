@@ -356,6 +356,108 @@ def check_features(problems):
     return checks
 
 
+# ---------------------------------------------------------------- the encounter budget
+# Ch. IV's ladder is printed in TWO books and typed into the app, and until v1.44.0 nothing held
+# the three together. That is not a hypothetical: the repricing to 4 · 8 · 16 was decided on
+# 2026-08-16 off a measured harness sweep and was still unshipped six days later in every one of
+# the five places, because no check could tell anybody they disagreed. The app end reads
+# Rules.BudgetRungs by design, so the whole app is one copy; this holds that copy to both books,
+# and each book to itself.
+RUNG_ORDER = ("Mook", "Even foe", "Standout")
+
+CS_PER_SOUL = re.compile(r"public const int BudgetPerSoul = (\d+);")
+CS_RUNGS    = re.compile(r"BudgetRungs\s*=\s*\{(.*?)\};", re.S)
+CS_RUNG     = re.compile(r'new\("([^"]+)",\s*"[^"]*",\s*(\d+)\)')
+
+
+def load_app_budget(problems):
+    """The app's ladder, off Rules.BudgetRungs — the one array everything in the app prices from."""
+    src = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
+    per = CS_PER_SOUL.search(src)
+    block = CS_RUNGS.search(src)
+    if not per or not block:
+        problems.append("Core.cs: could not find BudgetPerSoul and/or the BudgetRungs array")
+        return None, None
+    rungs = {name: int(cost) for name, cost in CS_RUNG.findall(block.group(1))}
+    if tuple(rungs) != RUNG_ORDER:
+        problems.append(f"Core.cs: BudgetRungs reads {tuple(rungs)}, expected {RUNG_ORDER} in that order")
+    return int(per.group(1)), rungs
+
+
+def _flat(p):
+    return re.sub(r"\s+", " ", (ROOT / p).read_text(encoding="utf-8"))
+
+
+def check_budget(problems):
+    per_soul, app = load_app_budget(problems)
+    if app is None:
+        return 0
+    checks = 1
+
+    keeper, bestiary = _flat("keeper-handbook.html"), _flat("bestiary.html")
+
+    # --- the Keeper's Book, Ch. IV: the budget line and the three rungs it is spent on
+    m = re.search(r"budget of <strong>(\d+) points per character</strong>", keeper)
+    if not m:
+        problems.append("Keeper's Book: Ch. IV's 'N points per character' budget line not found")
+    elif int(m.group(1)) != per_soul:
+        problems.append(f"Keeper's Book: budget {m.group(1)} points per character, "
+                        f"app has BudgetPerSoul {per_soul}")
+    checks += 1
+
+    for label, book_name in (("Mook", "A mook"), ("Even foe", "An even foe"), ("Standout", "A standout")):
+        m = re.search(r"<strong>" + book_name + r"</strong>[^<]*: <strong>(\d+) points?</strong>", keeper)
+        if not m:
+            problems.append(f"Keeper's Book: Ch. IV rung {book_name!r} not found")
+        elif int(m.group(1)) != app[label]:
+            problems.append(f"Keeper's Book: {book_name} costs {m.group(1)}, app prices "
+                            f"{label} at {app[label]}")
+        checks += 1
+
+    # --- and the Keeper's Book quick-reference card, which is the same rule printed twice in the
+    #     same book. A book disagreeing with ITSELF is what shipped in books-v1.2.
+    m = re.search(r"Budget (\d+) points/PC; even foe (\d+), mook (\d+), standout (\d+)\.", keeper)
+    if not m:
+        problems.append("Keeper's Book: the Threat-by-Tier quick-reference budget line not found")
+    else:
+        card = (int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4)))
+        want = (per_soul, app["Even foe"], app["Mook"], app["Standout"])
+        if card != want:
+            problems.append(f"Keeper's Book: the quick-reference card reads {card}, "
+                            f"Ch. IV and the app say {want}")
+    checks += 1
+
+    # --- the Bestiary states the same rule from the creature's end
+    m = re.search(r"<strong>The encounter budget:</strong> (\d+) points per player character\. "
+                  r"An even-Tier foe costs (\d+); a mook [^;]*costs (\d+); "
+                  r"a standout [^.]*costs (\d+)\.", bestiary)
+    if not m:
+        problems.append("Bestiary: the encounter-budget paragraph not found (or reworded)")
+    else:
+        got = (int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4)))
+        want = (per_soul, app["Even foe"], app["Mook"], app["Standout"])
+        if got != want:
+            problems.append(f"Bestiary: the encounter budget reads {got}, "
+                            f"the Keeper's Book and the app say {want}")
+    checks += 1
+
+    # --- and this repo's own handoff doc, which states the ladder a fifth time for a reader who
+    #     never opens either book. It is prose, so it is held loosely: the four numbers, in order.
+    m = re.search(r"\*\*Encounter budget:\*\* (\d+) points/PC; an even foe = (\d+), "
+                  r"a mook = (\d+), a standout = (\d+)\.", _flat("CLAUDE.md"))
+    if not m:
+        problems.append("CLAUDE.md: the encounter-budget line not found (or reworded)")
+    else:
+        got = tuple(int(g) for g in m.groups())
+        want = (per_soul, app["Even foe"], app["Mook"], app["Standout"])
+        if got != want:
+            problems.append(f"CLAUDE.md: the encounter budget reads {got}, the books and the app "
+                            f"say {want}")
+    checks += 1
+
+    return checks
+
+
 def main():
     data, book = load_data(), load_book()
     problems = []
@@ -391,14 +493,15 @@ def main():
     checks += check_arms(problems)
     checks += check_features(problems)
     checks += check_subpaths(problems)
+    checks += check_budget(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their 3rd-level paths, and the arms table ({checks} cross-checks, "
-          f"0 drift).")
+          f"prose, their 3rd-level paths, the arms table, and Ch. IV's encounter budget "
+          f"across both books ({checks} cross-checks, 0 drift).")
     return 0
 
 

@@ -294,7 +294,8 @@ public partial class MainForm
 
         H("4 · Weigh the fight  (Encounter)");
         T("The book's Long Odds math, live. Add creatures, set the party's level, and the bar at the bottom says " +
-          "plainly whether the fight is fair, mean, or a massacre — the budget is 4 points per soul seated on the " +
+          "plainly whether the fight is fair, mean, or a massacre — the budget is " + Rules.BudgetPerSoul +
+          " points per soul seated on the " +
           "Posse tab. When a horror stands two or more Tiers over the posse, the safe-table rule flags it in red: " +
           "it arrives as sign and spoor, not in the flesh. Happy with the odds? Send all → Tracker.");
 

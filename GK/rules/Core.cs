@@ -261,6 +261,19 @@ public class PartyMember : INotifyPropertyChanged
     /// topped up: the maximum is re-derived from the sheet every time it is drawn.</para></summary>
     public Dictionary<string, int> FeatureSpent { get; set; } = new();
 
+    /// <summary>What this soul owes, keyed by the feature that lends it — the Hexer's Debts to
+    /// their Patron, and nothing else in the book so far.
+    ///
+    /// <para>Deliberately NOT part of <see cref="FeatureSpent"/>, and the separation is the whole
+    /// design. <c>CharGen.RefreshFeatures</c> is the single path a boundary takes to give things
+    /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a long rest and a new session
+    /// cannot reach a Debt however they change. A Debt is owed until the Patron collects it, and
+    /// the app should never be the reason one quietly went away.</para>
+    ///
+    /// <para>A public property, so it rides in <c>session.json</c> without being told — the same
+    /// as <see cref="FeatureSpent"/>.</para></summary>
+    public Dictionary<string, int> TallyOwed { get; set; } = new();
+
     // The full character sheet, when this soul came out of the New Soul tab (generated,
     // wizard-built, or tweaked). Null for hand-entered rows; the Ledger window shows a
     // half-filled sheet in that case. Rides along in session.json.
@@ -2220,14 +2233,53 @@ public static class Rules
         return (s.Substring(0, stop).Trim(), s.Substring(stop + 2).Trim());
     }
 
+    /// <summary>What a party gets to spend, per soul seated on the Posse tab. Ch. IV's
+    /// <i>"a budget of 4 points per character"</i>, and the one number in this rule the repricing
+    /// below deliberately left alone — it is the line every Keeper has memorised.</summary>
+    public const int BudgetPerSoul = 4;
+
+    /// <summary>One rung of Ch. IV's encounter budget: what a foe of that standing costs a Keeper,
+    /// and the words the chapter uses to say which foe it means.</summary>
+    public record BudgetRung(string Name, string Gloss, int Cost);
+
+    /// <summary>The three rungs, once. <see cref="Cost"/> prices every creature off this, the
+    /// Encounter tab's header line reads it, the tour reads it, and the Reference deck's Long Odds
+    /// leaf renders its table from it — the same discipline <see cref="BudgetFights"/> put on the
+    /// scale in v1.41.0. The costs were typed in four places in this app and two more in the books,
+    /// which is exactly how the repricing below sat decided-and-unshipped for six days.
+    /// <para><b>Repriced 4 · 8 · 16 in v1.44.0, from measurement, not from taste.</b> The books
+    /// shipped 1 · 4 · 8 from the start. Run on this engine — a posse of four built by the real
+    /// generator, 200 seeded fights a cell, Grit spent and every Strike aimed — spending the budget
+    /// exactly wiped the posse 76–100% of the time at <i>every</i> level from 1 to 6. Swept rung by
+    /// rung, the largest fight such a posse still wins about three times in four while paying for it
+    /// prices at 4 · 8 · 16. The shape the chapter already had survives intact: a standout is twice
+    /// an even foe, an even foe twice a mook.</para>
+    /// <para>Two caveats that belong with the numbers. Only a posse of <b>four</b> was measured, and
+    /// action economy does not scale linearly, so nothing here is evidence about a posse of two or
+    /// of six. And a flat ladder still flatters the upper Tiers: the creature's hit rate climbs
+    /// 51% → 61% → 73% from Tier I to III while the posse's stays near 40%, so at 5th level and up
+    /// an even foe measures nearer 16 than 8. Ch. IV now says so in prose rather than in the table,
+    /// because Ch. IV calls this <i>"a quick measure"</i> and a second ladder is not quick.</para>
+    /// <para>The tables are in <c>AUDIT-encounter-budget.md</c>; the harness is
+    /// <c>_combatlab/Balance.cs</c>, <c>dotnet run -c Release -- prices</c>.</para></summary>
+    public static readonly BudgetRung[] BudgetRungs =
+    {
+        new("Mook",     "a Tier or two down",     4),
+        new("Even foe", "the posse's own Tier",   8),
+        new("Standout", "a Tier up",             16),
+    };
+
     public static (int cost, string role, bool spoor) Cost(int creatureTier, int partyLevel)
     {
         int pt = PartyTier(partyLevel);
-        if (creatureTier >= pt + 2) return (8, "BEYOND the party — sign & spoor only (safe-table rule)", true);
-        if (creatureTier >  pt)     return (8, "Standout", false);
+        int mook = BudgetRungs[0].Cost, even = BudgetRungs[1].Cost, standout = BudgetRungs[2].Cost;
+        // A thing past the safe-table line is never actually bought — the tab refuses to seat it —
+        // but it still has to cost something, and a standout is the dearest rung there is.
+        if (creatureTier >= pt + 2) return (standout, "BEYOND the party — sign & spoor only (safe-table rule)", true);
+        if (creatureTier >  pt)     return (standout, "Standout", false);
         // "Even foe" is two different nights and the app used to print it as one — see JuniorForTier.
-        if (creatureTier == pt)     return (4, JuniorForTier(partyLevel) ? "Even foe — posse is junior" : "Even foe", false);
-        return (1, "Mook", false);
+        if (creatureTier == pt)     return (even, JuniorForTier(partyLevel) ? "Even foe — posse is junior" : "Even foe", false);
+        return (mook, "Mook", false);
     }
 
     /// <summary>How a costed encounter stands against the budget — <b>the four fights Ch. IV names,
