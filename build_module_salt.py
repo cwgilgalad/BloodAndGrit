@@ -202,7 +202,11 @@ TURN = '''
   since. She knows. She has known for two weeks and she has not been able to make the sentence
   come out, and if the posse gets her alone and does not push, it comes out sideways: she will
   ask them whether they were at the supper, and what they thought of it, and whether they noticed
-  anything about the reading. <em>Lore (Occult)</em> is no use here. Sitting still is.</p>
+  anything about the reading. <em>Lore (Occult)</em> is no use here. Sitting still is. There are
+  two places she can be got alone and both are late: <a href="#a2-cellar">the cellar</a>, where
+  she is still herself for now, and the midnight walk into town if the posse would not ride out
+  to Pell&rsquo;s. If the module runs long enough to reach a first Wednesday she is at the
+  supper, and she watches the posse listen to it.</p>
 
   <p><strong>Going to the supper.</strong> If the module runs across a first Wednesday, put the
   posse in the hall. Serve them. Let three people be kind to them. Then read the names, in the
@@ -515,13 +519,23 @@ CAST = '''
 
   ''' + npc("Hannah Pell",
             "to be seen to before she stops being herself",
-            "she is the only person in the module who will tell the posse the whole truth unprompted",
+            "she is the only person in the module who will tell the posse the whole truth about the "
+            "fever unprompted &mdash; and the one thing she cannot get out is what she noticed at "
+            "the supper, which comes sideways if they sit with her and do not push "
+            "(<a href=\"#turn-routes\">Three Ways In</a>)",
             "It was not a fever and you know it was not. Say it, so I know somebody said it.") + '''
 
   ''' + npc("Elder Bram Tuttle, who keeps the store",
             "to be paid what he is owed and to be left out of it",
             "he has sold six weeks of salt to somebody and he knows exactly who, and he will say for money",
             "Salt is salt. A man buys what he buys. I keep a store, not a diary.") + '''
+
+  ''' + npc("Deacon Loomis Pratt, Coffin Wells Methodist",
+            "the roof fund closed out and the suppers to go on the way they always have",
+            "he has read the arrears aloud on the first Wednesday for eleven years and nobody has "
+            "ever asked him why, and the question lands on him harder than an accusation would",
+            "Six names this month. It was eleven when I started. That is a town getting better, "
+            "if you look at it right.") + '''
 
   ''' + npc("The Pell child, nine, unnamed on purpose",
             "nothing that can be put into words yet",
@@ -676,6 +690,7 @@ html = finish(
         ("Coffin Wells", "hook"),
         ("Vane, Josiah", "a1-vane"),
         ("Cruz, Marshal Adelia", "hook-marshal"),
+        ("Pratt, Deacon Loomis", "cast"),
         ("Pell, Hannah", "a2-cellar"),
         ("Pell, Tom", "a2-fight"),
         ("Mission San Clavo", "a3-mission"),
@@ -688,6 +703,10 @@ html = finish(
         ("Safe-table rule (why the app argues)", "dead"),
         ("Scaling the night", "cost-scaling"),
         ("The Fourth Night (clock)", "truth-clock"),
+        ("The first Wednesday supper", "turn"),
+        ("The reading of the arrears", "turn"),
+        ("The ledger and the burial register", "turn-routes"),
+        ("Standing up in the hall", "turn-ending"),
         ("Dawn, as an escape valve", "a3-dawn"),
         ("What the engine says", "cost"),
         ("The map", "ground"),

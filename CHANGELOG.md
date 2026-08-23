@@ -112,6 +112,30 @@ Desktop\Git repos.)
 
   Both new audits are registered in `verify_all.py`, so `--release` now runs nineteen checks.
 
+  **All three modules were then walked end to end against the new material, and the harness re-ran
+  them.** `GK/playtest` plays every act on the real rules — 3 adventures × 12 posses, base seed
+  `20260809` — and produced `PLAYTEST.md` byte-for-byte identical to the committed copy, which is
+  the answer wanted: none of the new pages moves a single number on any module's *What the Night
+  Costs*. It also states the thing the turns were written for, and states it in the engine's own
+  figures: **not one Tier III fight in any of the three modules was ever cleared by shooting it**,
+  across all 36 cold runs and all 36 tended ones. Coffin Wells finishes 0 of 12 standing, Saltlick
+  0 of 12, San Clavo 0 of 12. That was already the design — the Bestiary prints an answer for each
+  of those horrors and the module's job is to put it where a posse can find it under fire — and it
+  is now also the argument for each module ending on a hall, an offer and a hammer rather than on
+  a gunfight.
+
+  The read-through found four faults in the new pages, all fixed here. **Deacon Loomis Pratt runs
+  the most important scene in Module I and was in no cast list** — he speaks the epigraph, the
+  read-aloud and the closing beat, and a Keeper turning to *The Cast* for his want and his lever
+  found three other people and not him. **Hannah Pell's lever contradicted her own route**: the
+  cast page said she tells the posse the whole truth unprompted, the turn says the one sentence
+  she cannot get out is what she noticed at the supper. Both are true and the cast page now says
+  which is which. **Her route named no scene she could actually be got alone in** — it names two
+  now, and both are late, which is the point. And **not one of the three back-of-book indexes
+  reached the new page at all**: fourteen entries added across the three, so the module's own
+  navigation finds its own turn. One collision of dates in Module II (the thing "should have gone
+  south on the fourth night", which is the night it took Mears) is reworded.
+
 - **Keeper's Book v2.16 · Bestiary v2.14 · GritKeeper v1.44.0 — the budget is repriced off the
   harness, and a Hexer's Debts are finally counted (2026-08-22, user-requested).**
 

@@ -167,8 +167,8 @@ TURN = '''
 
   <p>Saltlick is a stop and not a destination, and the thing has run out of nothing here. It has
   a full station, a locked ice house and eleven quiet days. By its own arithmetic it should have
-  gone south on the fourth night. It is still here on the eleventh, and the reason is sitting in
-  the common room with her bag packed, watching the door to the barn.</p>
+  been three towns south a week ago. It is still here, and the reason is sitting in the common
+  room with her bag packed, watching the door to the barn.</p>
 
   <h2 id="turn-kearney">What Happened at Kearney</h2>
   <p>Ada Follett is going east to bury a brother. Her brother died at Kearney in the spring, three
@@ -519,7 +519,10 @@ CAST = '''
 
   ''' + npc("Mrs. Ada Follett, going east to bury a brother",
             "to get where she is going and not be spoken to kindly",
-            "she is the sharpest observer in the building and nobody has asked her anything",
+            "she is the sharpest observer in the building and nobody has asked her anything &mdash; "
+            "and she is the reason the thing is still here on the eleventh day "
+            "(<a href=\"#turn\">The Woman Going East</a>, which the Keeper should read before "
+            "running her)",
             "I have been watching that room for four hours, and I would not care to say what I have seen.") + '''
 
   ''' + npc("Wu Cheng-hsi, who cooks and keeps the accounts",
@@ -705,7 +708,10 @@ html = finish(
         ("Dell, Amos", "truth-taken"),
         ("Mears, Cal", "truth-taken"),
         ("Gant, Ollie", "a1-house"),
-        ("Follett, Mrs. Ada", "cast"),
+        ("Follett, Mrs. Ada", "turn"),
+        ("Follett, Peter, at Kearney", "turn-kearney"),
+        ("The offer, in Act Three", "turn-offer"),
+        ("Who told the others (the alibi)", "turn-tell"),
         ("Wu Cheng-hsi", "cast"),
         ("Orr, Deputy Sam", "cast"),
         ("Teague, Bill", "cast"),
