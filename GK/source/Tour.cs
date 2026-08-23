@@ -121,8 +121,10 @@ public partial class MainForm
         new("Encounter", () => encPick, "Weigh the fight before you run it",
             "Pick creatures here — each line shows its Tier, which is what the whole cost is "
             + "reckoned from — and the bar at the bottom says whether what you have built is fair, "
-            + "mean, or a massacre against your posse's level. The book's own budget: four points "
-            + "a soul, an even foe 4, a mook 1, a standout 8.\n\nHappy with the odds? Send all → "
+            + "mean, or a massacre against your posse's level. The book's own budget: "
+            + $"{Rules.BudgetPerSoul} points a soul, and the rungs it buys are "
+            + string.Join(", ", Rules.BudgetRungs.Select(g => $"{g.Name.ToLowerInvariant()} {g.Cost}"))
+            + ".\n\nHappy with the odds? Send all → "
             + "Tracker and run it."),
 
         new("Tracker", () => trkGrid, "The fight itself",

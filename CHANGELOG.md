@@ -8,12 +8,87 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Book v2.16 · Bestiary v2.14 · GritKeeper v1.44.0 — the budget is repriced off the
+  harness, and a Hexer's Debts are finally counted (2026-08-22, user-requested).**
+
+  **Ch. IV's encounter budget was settled six days ago and shipped nowhere.** On 2026-08-16 the
+  harness measured the chapter's own ladder against the engine: spending the budget exactly wiped a
+  posse of four **76–100% of the time at every level from 1 to 6**, with Grit spent and every Strike
+  aimed. Cole chose to say so in the chapter and to reprice the even foe, and a rung-by-rung sweep
+  then put the whole ladder at **4 · 8 · 16** against the printed 1 · 4 · 8. Then the session ended.
+  The books went on printing the old rungs in three places, the app went on pricing every even foe
+  at 4 in four more, and nothing in the repo could tell anybody a decision had been taken. It ships
+  now, in all seven: Ch. IV's list, the Keeper's Book Threat-by-Tier card, the Bestiary's statement
+  of the same rule from the creature's end, and `Rules.Cost` with the three screens that recite it.
+  The shape the chapter already had survives intact, a standout twice an even foe and an even foe
+  twice a mook, and the line every Keeper has memorised is untouched: four points a soul.
+
+  **And Ch. IV now says what the arithmetic will not.** One paragraph, because the chapter calls its
+  own budget a quick measure and a second ladder would not be quick. The points assume a posse that
+  uses what it has: cover, ground chosen before the shooting starts, Grit spent at the right moment,
+  and whatever the Bestiary prints under *Putting It Down*. The upper Tiers also run meaner than a
+  flat scale allows, since a Tier III thing lands better than seven swings in ten where a Tier I
+  lands about half, so from 5th level on a fight is worth pricing one rung dearer than the table
+  says. Only a posse of **four** was ever measured and action economy does not scale linearly; that
+  caveat sits in the code and in `AUDIT-encounter-budget.md`, where it belongs, rather than in a book
+  that would be overclaiming to print it.
+
+  **Seven copies are one copy now, and an auditor holds it.** `Rules.BudgetRungs` is the ladder,
+  once: `Rules.Cost` prices from it, the Encounter tab's header line reads it, the tour reads it, and
+  the Reference deck's Long Odds leaf renders its table from it. `audits/verify_rules.py` grew
+  `check_budget`, which reads the array out of `Core.cs` and holds it against Ch. IV's list, the
+  Keeper's Book quick-reference card, the Bestiary's paragraph, and `CLAUDE.md`'s own summary of the
+  rule, so no site can drift again in either direction. Proved against synthetic drift twice before
+  it was believed: the app moved to 9 and all three book sites were named, then the handoff doc
+  moved to 12 and was named on its own. **988 cross-checks, up from 980.**
+
+  **The other half — a count that goes up, which the app had no home for.** The Calling strip has
+  counted rationed features since v1.42.0: once per scene, once per session, and the boundary that
+  hands each back. The Hexer's **Pact-Sworn** bargain states something else in the same sentence —
+  *"Once per scene, turn a failed Sign or Will save into a success by taking a Debt; on your third
+  Debt the Patron calls it in — a demand, and +1 Mark."* The once-a-scene half was counted. The
+  Debts were not, and they are a different animal: they accumulate across scenes, across nights and
+  across a campaign, and no boundary should ever hand one back.
+
+  `CharGen.ReadTally` reads the threshold out of the feature's own prose, the same discipline
+  `ReadLimit` follows and for the same reason — a `tally` column typed into `chargen.json` beside the
+  description is a second copy of a fact, and this project has paid for second copies twice. A sweep
+  of all 116 features and all 56 paths finds **exactly one match**, which is the honest answer rather
+  than a licence to special-case the Hexer in the UI, and a smoke test now holds the data to that
+  count so a second one cannot appear on the strip unannounced. `PartyMember.TallyOwed` is
+  deliberately a separate store from `FeatureSpent`, because `RefreshFeatures` walks `FeatureSpent`
+  alone and so a new fight, a long rest and a new session cannot reach a Debt however they later
+  change. Six assertions, one per boundary, say so out loud. Past the third the count keeps climbing
+  rather than clamping: the Patron collecting is the Keeper's move, and an app that refused a fourth
+  Debt would be making it for them.
+
+  **Three faults that only rendering could find**, which is the fifth time this file has had to write
+  that sentence. The card's narrow line read *"2 of 3 — the third Debt comes due"* into 158 pixels
+  and lost the last two words, which are the only two that matter; the count moved up to the bold
+  line and the consequence sits under it. The ＋ and − buttons, laid out to constants, overlapped:
+  `MainForm.FitLabel` grows any button whose caption needs more room than it was given, so a
+  full-width ＋ comes back about 35 wide against the 26 it was asked for, and the second button
+  covered the card's own right border. They are placed off their measured widths now, right to left,
+  the same rule the dialogs have followed since v1.19.0. And both of a Pact-Sworn Hexer's Bargain
+  cards ellipsised to the same twenty-four characters, because a 3rd-level path is keyed by its
+  section, a colon and its option so the key stays unique across seventeen Callings that all print a
+  path at 3rd — two cards a Keeper cannot tell apart. `CharGen.ShortFeatureName` drops the section
+  for display only, the strip's head line having already named the Calling, so they read *The
+  Pact-Sworn* and *The Pact-Sworn — greater*. `FeatureSpent` and `TallyOwed` are still keyed by the
+  whole string, so nothing already saved is orphaned.
+
+  Smoke **14,243** (it drifts a few dozen a run), up from 14,207. Build 0/0, self-test 37/37,
+  `audit_ui.py` clean at 141 buttons, 127 refusal-checked handlers, 24 dialogs and 23 access keys.
+  The Keeper's Book measures **102 pages** at desktop and mobile against the paragraph it gained,
+  the Bestiary 199, both with zero true-scale clipping and zero horizontal scroll at natural zoom.
+
 - **Books v2.28 / v2.15 / v2.13 · Modules v1.2 / v1.2 / v1.3 · GritKeeper v1.43.1 — the prose
   reads clean, the modules print, and the covers were never wearing their own colours
   (2026-08-20, user-requested).**
 
   **Thirteen negative parallelisms, rewritten.** The one figure this project keeps having to cut
-  back — *X is not A, it is B* — had grown to thirteen across the three books: three in the
+  back — the denial of A followed by the assertion of B, in one breath — had grown to thirteen
+  across the three books: three in the
   Player's Book, six in the Keeper's Book, four in the Bestiary. Every one was rewritten rather
   than deleted, so the claim each sentence was making survives in the book's own register: the
   frontier now *has something already holding it* instead of being "not empty — occupied", a horse

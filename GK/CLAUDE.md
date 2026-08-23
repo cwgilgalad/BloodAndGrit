@@ -408,6 +408,61 @@ reads an apostrophe as the start of a char literal.** A comment about "a Marshal
 written between the parentheses of a `Btn(...)` call swallows everything after it, and the tooltip
 behind the comment vanishes from the audit. Keep prose comments above the call.
 
+## What a soul OWES is not a ration (v1.44.0)
+
+The Calling strip counts two different things and draws them differently on purpose.
+
+A **ration** is a thing you have and spend, and a boundary hands it back: `FeatureLimit`,
+`CharGen.ReadLimit`, `PartyMember.FeatureSpent`, returned by `CharGen.RefreshFeatures`. That is
+v1.42.0 and it covers thirty-one of the hundred and sixteen features.
+
+A **tally** climbs and nothing hands it back. `FeatureTally`, `CharGen.ReadTally`,
+`PartyMember.TallyOwed`, moved only by `TakeTally` and `ForgiveTally`. The book states exactly one:
+the Hexer's Pact-Sworn bargain, *"on your third Debt the Patron calls it in — a demand, and +1
+Mark."* A sweep of all 116 features and all 56 paths finds no second one, and a smoke test holds
+the data to that so a new Calling cannot put an uncounted card on the strip.
+
+Four decisions worth not re-deriving:
+
+- **The two stores are separate so that no boundary can reach a Debt.** `RefreshFeatures` walks
+  `FeatureSpent` alone. That is the design, not an oversight — a Debt is owed until the Patron
+  collects it, and the app must never be the reason one quietly went away. Six smoke assertions
+  walk every cadence and check the count still stands. **This is the recurring-bug class run
+  backwards:** the usual fault here is state added late that older reset paths never learned about,
+  and the guard is a test that fails if a reset path ever *does* learn about this one.
+- **The threshold is read out of the prose, never typed into `chargen.json`.** Same reason
+  `ReadLimit` is: a second copy of a fact is what the twenty repaired descriptions of 2026-08-19
+  were. The pattern is deliberately narrow — *"on your <ordinal> <Capitalised noun>"* — because a
+  looser one reads "on your first turn" as a debt, and a counter the app invented is worse than one
+  it lacks.
+- **The count is not clamped at the threshold.** Four Debts is a legitimate state; the Patron
+  collecting is the Keeper's move. The card says *"Debts — 4 owed"* past it rather than *"4 of 3"*,
+  which is the same number said in a way that reads.
+- **`CharGen.ShortFeatureName` is display only.** A 3rd-level path is keyed section-colon-option so
+  the key is unique across seventeen Callings; at 158px both of a Hexer's Bargain cards ellipsised
+  to the same twenty-four characters. The card drops the section, the head line above having
+  already named the Calling. `FeatureSpent` and `TallyOwed` keep the whole string, so trimming for
+  the eye cannot orphan a saved session.
+
+## Ch. IV's encounter ladder is one array (v1.44.0)
+
+`Rules.BudgetRungs` — mook 4, even foe 8, standout 16 — and `Rules.BudgetPerSoul` = 4. `Rules.Cost`
+prices from it, the Encounter tab's header line builds from it, `Tour.cs` reads it, and the
+Reference deck's Long Odds leaf renders its table from it. Before v1.44.0 those were four typed
+copies in the app and three more in the two books, which is precisely how a repricing Cole approved
+on 2026-08-16 was still unshipped in every one of them six days later.
+
+**The numbers came off the harness, not off taste.** Spending the budget exactly wiped a posse of
+four 76–100% of the time at every level from 1 to 6, gritted and aimed; swept rung by rung, the
+fight such a posse still wins about three times in four while paying for it prices at 4 · 8 · 16.
+`AUDIT-encounter-budget.md` holds the tables and `_combatlab/Balance.cs` regenerates them
+(`dotnet run -c Release -- prices`).
+
+**`audits/verify_rules.py::check_budget` is what stops it drifting again.** It reads the array out
+of `Core.cs` and holds it against Ch. IV's list, the Keeper's Book quick-reference card, and the
+Bestiary's paragraph. Two of those are the same rule printed twice in one book, which is the fault
+that shipped in `books-v1.2`. Prove any change to it against a synthetic drift before believing it.
+
 ## The Beats are enforced, and a refusal says why (v1.38.0)
 
 `Rules.CanSpendBeats(c, n)` and `Rules.WhyNoBeats(c, n)` are a pair on purpose: the answer and the
@@ -542,8 +597,8 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   unreachable from a press and is not a refusal. Both were principled rules rather than an exemption
   list, deliberately: `mapPanel.Model` looks identical to the compiler and *is* a real refusal a
   Keeper needs told, so an exemption list would have suppressed it too.
-  Currently 135 buttons, 121 refusal-checked handlers, 24 dialogs, 23 access keys — measured
-  2026-08-16, and it had drifted from a typed 134/20, which is this file failing the very rule the
+  Currently 141 buttons, 127 refusal-checked handlers, 24 dialogs, 23 access keys — measured
+  2026-08-22, and it had drifted from a typed 134/20, which is this file failing the very rule the
   app is held to (*counts that appear in prose must be derived*). Read the numbers off
   `audits/audit_ui.py` before quoting them. (It was 132 until v1.32.0 turned the Tracker's
   ＋ Turn glass button into a `CheckBox` toggle — a drop of one here means a `Btn` became something

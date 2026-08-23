@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.28 · Keeper's Book v2.15 · Bestiary v2.13 ·
-GritKeeper app v1.43.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.28 · Keeper's Book v2.16 · Bestiary v2.14 ·
+GritKeeper app v1.44.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -113,8 +113,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | Book | Version | Pages† | Images |
 |---|---|---|---|
 | The Player's Book | v2.28 | 203 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.15 | 101 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.13 | 199 | none (175 creatures) |
+| The Keeper's Book (GM guide) | v2.16 | 102 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.14 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.2 | 26 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.2 | 27 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.3 | 26 | one inline SVG map (two panels), downloadable |
@@ -309,7 +309,9 @@ still runs automatically, and only on `main` and pull requests.
 - **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
   seventeen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
   since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
-  player (980 cross-checks).
+  player. Since 2026-08-22 it also holds Ch. IV's encounter ladder against the Bestiary's
+  statement of it and against `Rules.BudgetRungs`, which is three sites that had no guard at all
+  and drifted for six days (987 cross-checks).
 - **No two modules have the same name** — `python audits/audit_names.py`. The only auditor here that reads
   more than one artifact, and it exists because of what that gap cost: every other check asks
   whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
@@ -418,7 +420,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.15) — structure
+## The Keeper's Book (v2.16) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -441,7 +443,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.13) — structure & conventions
+## The Bestiary (v2.14) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **175 creatures** by name (from every `<p class="cr-name">`,
@@ -517,11 +519,14 @@ its Tier in levels**):
 | IV | 20 | +13 | 70 | +15 / +8 | 2d8+6 | 20 |
 | V | 23 | +17 | 110 | +19 / +11 | 3d8+8 | 25 |
 
-**Encounter budget:** 4 points/PC; an even foe = 4, a mook = 1, a standout = 8.
+**Encounter budget:** 4 points/PC; an even foe = 8, a mook = 4, a standout = 16.
+(Repriced off the harness in v1.44.0, from the printed 1 · 4 · 8. `Rules.BudgetRungs` is the
+ladder and `audits/verify_rules.py::check_budget` holds both books, the app and **this line**
+to it — the one place this rule is written that the auditor does not read is nowhere.)
 
 ---
 
-## GritKeeper (v1.43.1) — the C# desktop app
+## GritKeeper (v1.44.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.15 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.15)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.16 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.16)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.15</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.16</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.15 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.16 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -564,14 +564,20 @@ CH4 = f"""<!-- IV -->
   <h2>Budgeting a Fight</h2>
   <p>For a quick measure, give the party a budget of <strong>4 points per character</strong>. Spend it on foes:</p>
   <ul>
-    <li><strong>A mook</strong> (Tier at or below party-level&minus;2): <strong>1 point</strong>.</li>
-    <li><strong>An even foe</strong> (Tier matching the rule above): <strong>4 points</strong>.</li>
-    <li><strong>A standout</strong> (one Tier above): <strong>8 points</strong>.</li>
+    <li><strong>A mook</strong> (Tier at or below party-level&minus;2): <strong>4 points</strong>.</li>
+    <li><strong>An even foe</strong> (Tier matching the rule above): <strong>8 points</strong>.</li>
+    <li><strong>A standout</strong> (one Tier above): <strong>16 points</strong>.</li>
   </ul>
   <p>Spend the budget for a <strong>standard</strong> fight the party should win bloodied. Spend half for an
   <strong>easy</strong> one; spend half again over for a <strong>hard</strong> one; double it for a
   <strong>deadly</strong> one someone may not walk away from &mdash; and tell the fiction so, with a sight, an omen,
   a dead man already on the ground, before the players commit.</p>
+  <p>Two things the points will not tell you. The budget assumes a posse that uses what it has: cover, ground
+  chosen before the shooting starts, Grit spent at the right moment, and whatever the Bestiary prints under
+  <em>Putting It Down</em>. A posse that walks into the open and trades fire will find the night harder than the
+  arithmetic promised. The upper Tiers also run meaner than a flat scale allows, since a Tier III thing lands
+  better than seven swings in ten where a Tier I lands about half; from 5th level on, price a fight one rung
+  dearer than the table says and let the posse be pleasantly surprised.</p>
 
   <h2 id="ix-safetable">The Safe-Table Rule</h2>
   <p>There is a line past which the budget stops being arithmetic. A thing <strong>two or more Tiers over the
@@ -1359,7 +1365,7 @@ APX = f"""<!-- APPENDIX -->
     III: 17 / +9 / 40.<br>
     IV: 20 / +13 / 70.<br>
     V: 23 / +17 / 110.<br>
-    Fair fight &asymp; party level = twice the Tier. Budget 4 points/PC; even foe 4, mook 1, standout 8.</p>
+    Fair fight &asymp; party level = twice the Tier. Budget 4 points/PC; even foe 8, mook 4, standout 16.</p>
 
     <h3>d12 &mdash; An Omen of the Dark</h3>
     <p>1 birds gone silent &middot; 2 a cold that lamps won't touch &middot; 3 milk soured, water iron &middot; 4 a

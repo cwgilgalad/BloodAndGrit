@@ -258,6 +258,46 @@ public readonly struct FeatureLimit
     }
 }
 
+/// <summary>A count that goes <b>up</b> and that no boundary gives back — the one shape in the
+/// Player's Book the Calling strip had no home for until v1.44.0.
+///
+/// <para>The Hexer's <b>Pact-Sworn</b> bargain is the whole of it: <i>"Once per scene, turn a
+/// failed Sign or Will save into a success by taking a Debt; on your third Debt the Patron calls
+/// it in — a demand, and +1 Mark."</i> The once-a-scene half is a ration and
+/// <see cref="FeatureLimit"/> has counted it since v1.42.0. The Debts are the other half, and they
+/// are a different animal: they accumulate across scenes, across nights, and across the whole
+/// campaign, and nothing in the app's boundary machinery should ever hand one back. A Debt is owed
+/// until the Patron collects it.</para>
+///
+/// <para>Read out of the feature's own prose, the same discipline <see cref="FeatureLimit"/>
+/// follows and for the same reason: a <c>tally</c> column typed into <c>chargen.json</c> beside
+/// the description is a second copy of a fact, and this project has paid for second copies twice.
+/// A sweep of all 116 features and all 56 paths finds exactly one match, which is the honest
+/// answer rather than a reason to special-case the Hexer in the UI.</para></summary>
+public readonly struct FeatureTally
+{
+    /// <summary>What the book calls the thing being counted — "Debt".</summary>
+    public string Noun { get; init; }
+    /// <summary>The count at which it comes due. Three, for the Pact-Sworn.</summary>
+    public int At { get; init; }
+    /// <summary>The book's own sentence, for the tooltip and for the warning when it lands.</summary>
+    public string Phrase { get; init; }
+
+    public bool Any => At > 0 && !string.IsNullOrEmpty(Noun);
+
+    // Only these five, because CharGen.ReadTally only ever produces these five — the book writes
+    // its one threshold as a word. A general -st/-nd/-rd/-th builder would be dead code by the
+    // build's own reckoning, and would answer "7th" for a number nothing can hand it.
+    public static string Ordinal(int n) => n switch
+    {
+        1 => "first", 2 => "second", 3 => "third", 4 => "fourth", 5 => "fifth",
+        _ => n.ToString(),
+    };
+
+    /// <summary>What the card says under the name — "the third Debt comes due".</summary>
+    public string Says => Any ? $"the {Ordinal(At)} {Noun} comes due" : "";
+}
+
 public static class CharGen
 {
     // ---- the progression spine (Player's Book Ch. XIV, "Attack Rank and the Saves") ----
@@ -1553,6 +1593,37 @@ public static class CharGen
         return default;
     }
 
+    // A tally is the opposite of a ration: it climbs, and no boundary returns it. The book states
+    // one in the shape "on your third Debt the Patron calls it in", so that is what is matched —
+    // the count, the thing counted, and the sentence it lives in. Deliberately narrow: a looser
+    // pattern would start reading "on your first turn" as a debt, and a counter the app invented
+    // is worse than a counter it lacks.
+    static readonly System.Text.RegularExpressions.Regex TallyThreshold = new(
+        @"\bon your (?<n>first|second|third|fourth|fifth) (?<noun>[A-Za-z][A-Za-z-]{2,20})\b",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    static int OrdinalOf(string w) => w.ToLowerInvariant() switch
+    {
+        "first" => 1, "second" => 2, "third" => 3, "fourth" => 4, "fifth" => 5, _ => 0,
+    };
+
+    /// <summary>The accumulating tally a feature's prose declares, or
+    /// <see cref="FeatureTally.Any"/> false when it declares none — which is all but one of them.
+    /// </summary>
+    public static FeatureTally ReadTally(string desc)
+    {
+        if (string.IsNullOrWhiteSpace(desc)) return default;
+        var m = TallyThreshold.Match(desc);
+        if (!m.Success) return default;
+        int at = OrdinalOf(m.Groups["n"].Value);
+        if (at <= 0) return default;
+        // The book capitalises the thing counted where it is a game noun ("a Debt"); a lowercase
+        // word after "on your third" is ordinary prose ("on your third try") and is not a tally.
+        string noun = m.Groups["noun"].Value;
+        if (!char.IsUpper(noun[0])) return default;
+        return new FeatureTally { Noun = noun, At = at, Phrase = SentenceAround(desc, m.Index) };
+    }
+
     /// <summary>Which key in <see cref="CgCalling.featureDescs"/> a level table's feature name means.
     ///
     /// <para>The two do not always match on the nose: a level row prints "Judgment 3d8" or
@@ -1658,6 +1729,24 @@ public static class CharGen
                 text, ReadLimit(text));
     }
 
+    /// <summary>What a card or a sheet should CALL a feature, which is not always the key it is
+    /// stored under. <see cref="Subpath"/> keys a 3rd-level path as the section, a colon, and the
+    /// option — so the key stays unique across seventeen Callings that all print a path at 3rd.
+    /// On a 232px card that ellipsised to the section and three letters of the option: character
+    /// for character the same on the 3rd-level card and on the 9th-level greater one sitting next
+    /// to it, so the Tracker strip showed a Hexer two cards they could not tell apart.
+    ///
+    /// <para>The strip already names the Calling in its head line, so the section is the half worth
+    /// dropping. Structural rather than an exemption list: the separator is there because
+    /// <see cref="Subpath"/> puts it there, and nothing off a level table carries one. Display only
+    /// — <c>FeatureSpent</c> and <c>TallyOwed</c> are still keyed by the whole string, so trimming
+    /// here cannot orphan a saved session.</para></summary>
+    public static string ShortFeatureName(string key)
+    {
+        int cut = key?.IndexOf(": ", StringComparison.Ordinal) ?? -1;
+        return cut > 0 ? key.Substring(cut + 2) : key;
+    }
+
     // Worldly and Faith paths deepen at 10th and say "Mastery (10th):"; the three Callings of the
     // Old Dark deepen a level earlier and say "Greater (9th):". Both are the same seam.
     static readonly System.Text.RegularExpressions.Regex MasteryMark =
@@ -1728,6 +1817,8 @@ public static class CharGen
     /// changed nothing.</summary>
     public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
     {
+        // FeatureSpent only, on purpose: PartyMember.TallyOwed is a separate store precisely so
+        // that no boundary can reach it. See the note there before wiring a reset through here.
         if (p == null || p.FeatureSpent.Count == 0) return 0;
         int gave = 0;
         foreach (var row in LedgerFor(p))
@@ -1736,6 +1827,48 @@ public static class CharGen
             if (p.FeatureSpent.Remove(row.Name)) gave++;
         }
         return gave;
+    }
+
+    // ------------------------------------------- what a soul owes, and who is owed it
+
+    /// <summary>Every feature of this soul's that keeps a running tally, with what stands against
+    /// it. Drawn on the Tracker's Calling strip beside the rationed cards, and read by the Ledger.
+    /// <para>Empty for all but a Hexer who has chosen the Pact-Sworn, which is correct: a card for
+    /// a debt nobody can owe teaches a Keeper to stop reading the strip.</para></summary>
+    public static List<(string Name, string Desc, FeatureTally Tally, int Owed)> TalliesFor(PartyMember p)
+    {
+        var outp = new List<(string, string, FeatureTally, int)>();
+        if (p == null) return outp;
+        foreach (var f in FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath))
+        {
+            var t = ReadTally(f.Desc);
+            if (!t.Any) continue;
+            p.TallyOwed.TryGetValue(f.Name, out int owed);
+            outp.Add((f.Name, f.Desc, t, Math.Max(0, owed)));
+        }
+        return outp;
+    }
+
+    /// <summary>Take one on. Answers with what now stands and whether that is the one that comes
+    /// due, so the caller can say the book's own consequence out loud rather than logging a
+    /// number and leaving the Keeper to notice.</summary>
+    public static (int Owed, bool Due) TakeTally(PartyMember p, string feature)
+    {
+        var row = TalliesFor(p).FirstOrDefault(r => r.Name == feature);
+        if (row.Name == null) return (0, false);
+        p.TallyOwed.TryGetValue(feature, out int owed);
+        owed++;
+        p.TallyOwed[feature] = owed;
+        return (owed, owed >= row.Tally.At);
+    }
+
+    /// <summary>Strike one off — the Patron collected, or the table read it differently, or it was
+    /// a mis-click. Never happens on its own: see PartyMember.TallyOwed.</summary>
+    public static bool ForgiveTally(PartyMember p, string feature)
+    {
+        if (p == null || !p.TallyOwed.TryGetValue(feature, out int owed) || owed <= 0) return false;
+        if (owed == 1) p.TallyOwed.Remove(feature); else p.TallyOwed[feature] = owed - 1;
+        return true;
     }
 
     static string FirstSentence(string t)

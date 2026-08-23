@@ -1552,10 +1552,31 @@ for (int i = 0; i < 100; i++)
 }
 
 // ---- Encounter cost ----
-T("even foe = 4",   Rules.Cost(2, 4).cost == 4 && Rules.Cost(2, 4).role == "Even foe");
-T("mook = 1",       Rules.Cost(1, 4).cost == 1);
-T("standout = 8",   Rules.Cost(3, 4).cost == 8 && !Rules.Cost(3, 4).spoor);
+// Typed on purpose. These are Ch. IV's own numbers as repriced in v1.44.0, and a test that read
+// them off Rules.BudgetRungs would pass whatever the ladder later drifted to.
+T("budget = 4 per soul", Rules.BudgetPerSoul == 4);
+T("even foe = 8",   Rules.Cost(2, 4).cost == 8 && Rules.Cost(2, 4).role == "Even foe");
+T("mook = 4",       Rules.Cost(1, 4).cost == 4);
+T("standout = 16",  Rules.Cost(3, 4).cost == 16 && !Rules.Cost(3, 4).spoor);
 T("spoor at +2",    Rules.Cost(4, 4).spoor);
+{
+    // The rungs are one array now, and everything that prices or prints a fight reads it. If Cost
+    // ever grows a literal again this fails before the Reference deck starts reciting two ladders.
+    var rungs = Rules.BudgetRungs;
+    T("rungs: three of them, mook first", rungs.Length == 3
+        && rungs[0].Name == "Mook" && rungs[1].Name == "Even foe" && rungs[2].Name == "Standout");
+    T("rungs: Cost prices every creature off the array",
+        Rules.Cost(1, 4).cost == rungs[0].Cost && Rules.Cost(2, 4).cost == rungs[1].Cost
+        && Rules.Cost(3, 4).cost == rungs[2].Cost);
+    // Ch. IV's shape, which the repricing kept: a standout is twice an even foe, an even foe twice
+    // a mook. The measured ladder happened to hold it, and a later retune that breaks the doubling
+    // is a different rule, which should have to come here and say so.
+    T("rungs: each is twice the one below",
+        rungs[1].Cost == rungs[0].Cost * 2 && rungs[2].Cost == rungs[1].Cost * 2);
+    // Past the safe-table line a thing is never seated, but it still has to cost something.
+    T("rungs: beyond the posse is priced at the dearest rung",
+        Rules.Cost(4, 4).cost == rungs[2].Cost && Rules.Cost(4, 4).spoor);
+}
 
 // ---- The budget verdict (what the Encounter tab's bar and line both read from) ----
 {
@@ -1664,7 +1685,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     doneJunior: ;
 
     T("junior: an even foe at an odd level says the posse is junior",
-        Rules.Cost(1, 1).role.Contains("junior") && Rules.Cost(1, 1).cost == 4);
+        Rules.Cost(1, 1).role.Contains("junior") && Rules.Cost(1, 1).cost == 8);
     T("junior: an even foe at an even level says only Even foe",
         Rules.Cost(1, 2).role == "Even foe");
     // A mook or a standout is priced off the same Tier ladder and gains nothing from the note.
@@ -3983,6 +4004,110 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var round = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
         System.Text.Json.JsonSerializer.Serialize(soul));
     T("what was spent survives a save", round.FeatureSpent.TryGetValue("Last Stand", out int st) && st == 1);
+}
+
+// ---- what a soul OWES: the running tally (v1.44.0) ----
+// A ration is given back by a boundary; a tally is not given back by anything. The Hexer's
+// Pact-Sworn is the only feature in the book with the second shape, and the whole risk here is the
+// app being generous with a debt the Patron has not forgiven.
+{
+    var pact = CharGen.FeaturesAt("Hexer", 9, "The Pact-Sworn")
+                      .First(f => f.Name.Contains("Pact-Sworn") && !f.Name.EndsWith("— greater"));
+    var t = CharGen.ReadTally(pact.Desc);
+    T("tally: the Pact-Sworn keeps one",        t.Any);
+    T("tally: it counts Debts",                 t.Noun == "Debt");
+    T("tally: and the third one comes due",     t.At == 3);
+    T("tally: the book's sentence is kept",     (t.Phrase ?? "").Contains("Patron calls it in"));
+    T("tally: the card says it in words",       t.Says == "the third Debt comes due");
+
+    // Ordinary prose is not a tally. "on your first turn" is the shape that would flood the strip
+    // with counters nobody asked for, and a counter the app invented is worse than one it lacks.
+    T("tally: a turn is not a debt",            !CharGen.ReadTally("On your first turn, move twice.").Any);
+    T("tally: nothing said, nothing counted",   !CharGen.ReadTally("Once per scene, shoot twice.").Any);
+    T("tally: empty prose is not a throw",      !CharGen.ReadTally(null).Any && !CharGen.ReadTally("").Any);
+
+    // The structural claim, held to the data: exactly ONE of the book's features declares a tally.
+    // If a new Calling or path ever states a second, this fails and somebody reads the strip before
+    // a card appears on it unannounced.
+    int declared = 0;
+    foreach (var cal in CharGen.D.callings)
+    {
+        foreach (var kv in cal.featureDescs ?? new())
+            if (CharGen.ReadTally(kv.Value).Any) declared++;
+        foreach (var o in cal.subpath?.options ?? new())
+            if (CharGen.ReadTally(o.boon).Any) declared++;
+    }
+    T("tally: exactly one in the whole book", declared == 1);
+
+    var hex = new PartyMember { Name = "Opal", Calling = "Hexer", Level = 9,
+                                Sheet = CharGen.Generate(9, false, "Hexer") };
+    hex.Sheet.Subpath = "The Pact-Sworn";
+
+    var rows = CharGen.TalliesFor(hex);
+    T("tally: the Hexer has one to keep", rows.Count == 1 && rows[0].Owed == 0);
+
+    var (owed1, due1) = CharGen.TakeTally(hex, rows[0].Name);
+    T("tally: the first is taken on",  owed1 == 1 && !due1);
+    var (owed2, due2) = CharGen.TakeTally(hex, rows[0].Name);
+    T("tally: the second stands too",  owed2 == 2 && !due2);
+    var (owed3, due3) = CharGen.TakeTally(hex, rows[0].Name);
+    T("tally: the third comes due",    owed3 == 3 && due3);
+    // Past the threshold it keeps counting rather than clamping: the Patron collecting is the
+    // Keeper's move, and an app that refused a fourth Debt would be making it for them.
+    var (owed4, due4) = CharGen.TakeTally(hex, rows[0].Name);
+    T("tally: and a fourth is allowed", owed4 == 4 && due4);
+
+    // THE check this whole store exists for. Every boundary the app has, in order, and the debt is
+    // still owed after all of them. RefreshFeatures walks FeatureSpent alone by design; if that
+    // ever changes, this is what says so.
+    foreach (var b in new[] { FeatureCadence.Turn, FeatureCadence.Round, FeatureCadence.Scene,
+                              FeatureCadence.Dawn, FeatureCadence.Trigger, FeatureCadence.Session })
+    {
+        CharGen.RefreshFeatures(hex, b);
+        T($"tally: {b} does not forgive a Debt", CharGen.TalliesFor(hex)[0].Owed == 4);
+    }
+
+    T("tally: the Keeper can strike one off",  CharGen.ForgiveTally(hex, rows[0].Name));
+    T("tally: and the count agrees",           CharGen.TalliesFor(hex)[0].Owed == 3);
+    while (CharGen.ForgiveTally(hex, rows[0].Name)) { }
+    T("tally: down to nothing owed",           CharGen.TalliesFor(hex)[0].Owed == 0);
+    T("tally: and no further",                 !CharGen.ForgiveTally(hex, rows[0].Name));
+    T("tally: a feature nobody has moves nothing", CharGen.TakeTally(hex, "The Conjurer").Owed == 0);
+
+    // A Hexer who has chosen a different bargain owes nothing, and one who has chosen none owes
+    // nothing either — the strip must not offer a debt to somebody who cannot take one.
+    var conjurer = new PartyMember { Name = "Ida", Calling = "Hexer", Level = 9,
+                                     Sheet = CharGen.Generate(9, false, "Hexer") };
+    conjurer.Sheet.Subpath = "The Conjurer";
+    T("tally: the Conjurer keeps none", CharGen.TalliesFor(conjurer).Count == 0);
+    var unchosen = new PartyMember { Name = "Kit", Calling = "Hexer", Level = 9,
+                                     Sheet = CharGen.Generate(9, false, "Hexer") };
+    unchosen.Sheet.Subpath = null;
+    T("tally: an unchosen bargain keeps none", CharGen.TalliesFor(unchosen).Count == 0);
+    T("tally: a Gunhand keeps none",    CharGen.TalliesFor(
+        new PartyMember { Name = "Ruth", Calling = "Gunhand", Level = 9 }).Count == 0);
+    T("tally: null is empty, not a throw", CharGen.TalliesFor(null).Count == 0);
+
+    // What the card CALLS a feature, versus the key it is stored under. Both Bargain cards used to
+    // ellipsise to the same 24 characters, which is two cards a Keeper cannot tell apart.
+    string longKey = rows[0].Name;
+    T("short name: the section is dropped",  CharGen.ShortFeatureName(longKey) == "The Pact-Sworn");
+    T("short name: the greater one differs",
+        CharGen.ShortFeatureName(longKey) != CharGen.ShortFeatureName(longKey + " — greater"));
+    T("short name: a plain feature is untouched",
+        CharGen.ShortFeatureName("Last Stand") == "Last Stand");
+    T("short name: null and empty survive",
+        CharGen.ShortFeatureName(null) == null && CharGen.ShortFeatureName("") == "");
+    // Display only: the key everything is stored under is never the short one.
+    T("short name: the store still uses the whole key",
+        hex.TallyOwed.Keys.All(k => k.Contains(": ")));
+
+    // And it rides in the save file, same as what was spent.
+    CharGen.TakeTally(hex, rows[0].Name);
+    var reloaded = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
+        System.Text.Json.JsonSerializer.Serialize(hex));
+    T("tally: what is owed survives a save",
+        reloaded.TallyOwed.TryGetValue(rows[0].Name, out int ow) && ow == 1);
 }
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");

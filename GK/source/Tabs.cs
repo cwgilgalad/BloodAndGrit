@@ -298,7 +298,8 @@ public partial class MainForm
         encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);
-        top.Controls.Add(Lbl("   Budget = 4 pts per soul in the posse (Posse tab).  Even foe 4 · Mook 1 · Standout 8."));
+        top.Controls.Add(Lbl($"   Budget = {Rules.BudgetPerSoul} pts per soul in the posse (Posse tab).  "
+            + string.Join(" · ", Rules.BudgetRungs.Select(g => $"{g.Name} {g.Cost}")) + "."));
         top.SetFlowBreak(top.Controls[top.Controls.Count - 1], true);
 
         top.Controls.Add(Lbl("Add a creature:"));
@@ -419,9 +420,10 @@ public partial class MainForm
     {
         if (encGrid == null) return;
         encGrid.Refresh();
-        int budget = 4 * Math.Max(1, party.Count);
+        int budget = Rules.BudgetPerSoul * Math.Max(1, party.Count);
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
-        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × 4)     {Rules.BudgetVerdict(spend, budget)}";
+        encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × {Rules.BudgetPerSoul})"
+                        + $"     {Rules.BudgetVerdict(spend, budget)}";
         encVerdict.ForeColor = BudgetColor(spend, budget);
         // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
         int lvl = (int)encLevel.Value;
@@ -1919,14 +1921,23 @@ public partial class MainForm
         { callingPanel.Controls.Remove(old); old.Dispose(); }
 
         var ledger = soul == null ? new() : CharGen.LedgerFor(soul);
+        var tallies = soul == null ? new() : CharGen.TalliesFor(soul);
         if (soul == null || string.IsNullOrEmpty(soul.Calling))
         { callingPanel.Visible = false; callingPanel.ResumeLayout(); return; }
 
+        // Three sentences rather than two, because a Hexer of the Pact-Sworn can ration nothing at
+        // 3rd level and still owe their Patron, and "Nothing here is rationed" over a Debt card
+        // reads as the app contradicting itself.
+        string what = (ledger.Count, tallies.Count) switch
+        {
+            (0, 0) => "Nothing here is rationed; read the Calling for the whole of it.",
+            (0, _) => "Nothing here is rationed, but there is a reckoning running:",
+            (_, 0) => "What is rationed, and what is left of it:",
+            _      => "What is rationed, what is left of it, and what is owed:",
+        };
         var head = new Label
         {
-            Text = ledger.Count == 0
-                ? $"{soul.Name} — {soul.Calling}, level {soul.Level}. Nothing here is rationed; read the Calling for the whole of it."
-                : $"{soul.Name} — {soul.Calling}, level {soul.Level}. What is rationed, and what is left of it:",
+            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}. {what}",
             AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
@@ -1938,10 +1949,15 @@ public partial class MainForm
         callingPanel.SetFlowBreak(read, true);
 
         foreach (var row in ledger) callingPanel.Controls.Add(FeatureCard(soul, row));
+        foreach (var row in tallies) callingPanel.Controls.Add(TallyCard(soul, row));
 
         callingPanel.Visible = true;
         callingPanel.ResumeLayout();
     }
+
+    // What a card calls a feature. Lives in CharGen, not here, because the colon it trims is put
+    // there by CharGen.Subpath and because Tabs.cs is not one of the files the smoke rig compiles.
+    static string CardName(string key) => CharGen.ShortFeatureName(key);
 
     /// <summary>One rationed feature: its name, what is left, and the button that spends it. The
     /// tooltip carries the book's whole rule, because the card is where a player looks and the
@@ -1959,7 +1975,8 @@ public partial class MainForm
 
         var name = new Label
         {
-            Left = 8, Top = 5, Width = CW - 74, Height = 17, Text = row.Name, UseMnemonic = false,
+            Left = 8, Top = 5, Width = CW - 74, Height = 17, Text = CardName(row.Name),
+            UseMnemonic = false,
             Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = spent ? Faint : Ink,
             AutoEllipsis = true
         };
@@ -1992,6 +2009,92 @@ public partial class MainForm
         card.Controls.Add(name); card.Controls.Add(left); card.Controls.Add(use);
         string tip = $"{row.Name} — {row.Limit.Says(soul.Sheet)}\n\n{Wrap(row.Desc ?? row.Limit.Phrase ?? "")}";
         Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(left, tip);
+        return card;
+    }
+
+    /// <summary>One running tally: what is owed, and the two buttons that move it. Sits beside the
+    /// rationed cards and is drawn to read differently from them on purpose — a ration is a thing
+    /// you have and spend, a tally is a thing you take on and cannot spend your way out of.
+    ///
+    /// <para>The card turns to Blood and states the book's consequence the moment the count lands,
+    /// because the whole failure this closes is a table forgetting that the third one was the one
+    /// that mattered.</para></summary>
+    Control TallyCard(PartyMember soul, (string Name, string Desc, FeatureTally Tally, int Owed) row)
+    {
+        const int CW = 232;
+        bool due = row.Owed >= row.Tally.At;
+        var card = new Panel { Width = CW, Height = 52, BackColor = Paper, Margin = new Padding(2, 0, 8, 6) };
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(due ? Blood : BarEdge, due ? 1.8f : 1f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        // The count rides on the bold line and the consequence sits under it, which is the opposite
+        // of the ration cards on purpose: on those the name is the question ("can I still Last
+        // Stand?"), here the number is. It also keeps both lines inside 158px — the first draft put
+        // "2 of 3 — the third Debt comes due" on the narrow line and it lost its last two words,
+        // which are the only two that matter.
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 74, Height = 17, UseMnemonic = false,
+            // "3 of 3" is worth saying; "4 of 3" is not, and the count is deliberately not clamped
+            // — the Patron collecting is the Keeper's move, not the app's.
+            Text = row.Owed > row.Tally.At
+                 ? $"{row.Tally.Noun}s — {row.Owed} owed"
+                 : $"{row.Tally.Noun}s — {row.Owed} of {row.Tally.At}",
+            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = due ? Blood : Ink,
+            AutoEllipsis = true
+        };
+        var count = new Label
+        {
+            Left = 8, Top = 23, Width = CW - 74, Height = 16,
+            Text = due ? "it has come due" : $"the {FeatureTally.Ordinal(row.Tally.At)} comes due",
+            Font = new Font("Segoe UI", 8.25f), ForeColor = due ? Blood : Faint,
+            AutoEllipsis = true
+        };
+
+        // Prose comments stay above the call, never between its parentheses: audit_ui.py reads an
+        // apostrophe there as the start of a char literal and swallows the tooltip behind it. Nor
+        // may a comment spell the button helper name followed by a bracket — the scanner reads
+        // that as a call of its own and reports it as one argument short. This one used to.
+        var take = Btn("＋", (s, e) =>
+        {
+            var (owed, nowDue) = CharGen.TakeTally(soul, row.Name);
+            Log($"{soul.Name} takes on a {row.Tally.Noun} — {owed} owed."
+                + (nowDue ? "  " + row.Tally.Phrase : ""));
+            Daybook.Note("feature", $"{soul.Name} owes {owed} {row.Tally.Noun}"
+                + (nowDue ? " — it has come due" : ""));
+            if (nowDue) Nope(row.Tally.Phrase);
+            RefreshCalling();
+        }, 26, "Take one on");
+        take.Top = 12; take.Height = 28;
+
+        var strike = Btn("−", (s, e) =>
+        {
+            if (CharGen.ForgiveTally(soul, row.Name))
+                Log($"{soul.Name} strikes off a {row.Tally.Noun} — "
+                    + $"{CharGen.TalliesFor(soul).First(r => r.Name == row.Name).Owed} owed.");
+            else Nope($"{soul.Name} owes no {row.Tally.Noun} to strike off.");
+            RefreshCalling();
+        }, 26, "Strike one off — the Patron collected, or the table read it differently");
+        strike.Top = 12; strike.Height = 28;
+
+        // Placed off their MEASURED widths, right to left, and never off the 26 asked for above.
+        // MainForm.FitLabel grows any button whose caption needs more room than it was given, so a
+        // full-width ＋ comes back about 35 wide and the thinner − about 27: laid out to constants
+        // the two overlapped and the second one covered the card's right border. Same rule as the
+        // dialogs — measure, do not lay out to a number that looked right once.
+        strike.Left = CW - 8 - strike.Width;
+        take.Left = strike.Left - 4 - take.Width;
+        name.Width = count.Width = Math.Max(60, take.Left - 12);
+
+        card.Controls.Add(name); card.Controls.Add(count);
+        card.Controls.Add(take); card.Controls.Add(strike);
+        string tip = $"{row.Name}\n\n{Wrap(row.Tally.Phrase ?? row.Desc ?? "")}"
+                   + "\n\nNothing gives these back. A new fight, a long rest and a new session all "
+                   + "leave them standing, because the debt is owed until it is collected.";
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(count, tip);
         return card;
     }
 
@@ -4676,11 +4779,12 @@ public partial class MainForm
             }));
 
         RH(r, "The Encounter Budget");
+        // Rendered from Rules.BudgetRungs for the same reason the scale below renders from
+        // Rules.BudgetFights: these four numbers were typed here, and when Ch. IV was repriced in
+        // v1.44.0 a typed copy is what would have gone on reciting the old ladder to a Keeper.
         RTbl(r, new[] { 34, 6 }, new[] { "What it costs", "Cost" },
-            new[] { "The budget, per player character", "4" },
-            new[] { "An even-Tier foe",                 "4" },
-            new[] { "A mook (a Tier or two down)",      "1" },
-            new[] { "A standout (a Tier up)",           "8" });
+            new[] { new[] { "The budget, per player character", Rules.BudgetPerSoul.ToString() } }
+                .Concat(Rules.BudgetRungs.Select(g => new[] { $"{g.Name} ({g.Gloss})", g.Cost.ToString() })));
         // Rendered from Rules.BudgetFights, which is also what the Encounter tab's verdict line
         // reads. The leaf and the tab printed different scales until v1.41.0 — the leaf gave the
         // Bestiary's one-liner and the tab called the exact budget "a fair, hard fight", which is
