@@ -54,7 +54,8 @@ index to it.
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|
-| v1.3 **← current** | `books-v1.3` | 2026-08-21 | Blood & Grit — Books v1.3 (Bestiary v2.13, 175 creatures) |
+| v1.4 **← current** | `books-v1.4` | 2026-08-22 | Blood & Grit — Books v1.4 (Keeper's Book v2.16, Bestiary v2.14 — the encounter budget repriced) |
+| v1.3 | `books-v1.3` | 2026-08-21 | Blood & Grit — Books v1.3 (Bestiary v2.13, 175 creatures) |
 | v1.2 | `books-v1.2` | 2026-08-20 | Blood & Grit — Books v1.2 (Player's Book v2.27) |
 | v1.1 | `books-v1.1` | 2026-08-16 | Blood & Grit — Books v1.1 (Player's Book v2.26) |
 | v1.0 | `books-v1.0` | 2026-08-10 | Blood & Grit - The Three Books (Player's v2.25, Keeper's v2.12, Bestiary v2.11) |
