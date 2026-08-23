@@ -10,7 +10,7 @@ from modules_common import (night_costs, shell, splice, finish, report, runhead,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.2"
+VERSION = "1.3"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -43,6 +43,7 @@ CONTENTS = '''
   ''' + contents([
       ("what", "What This Is"),
       ("truth", "The Truth of It"),
+      ("turn", "The Woman Going East"),
       ("hook", "The Hook, and Getting Them There"),
       ("ground", "The Ground"),
       ("act1", "Act One &mdash; The Wrong Note Among Friends"),
@@ -149,6 +150,92 @@ TRUTH = '''
               "an hour passes with nobody named. At four, it stops needing the face: Act Three "
               "opens whether the posse is ready or not, and it opens in whatever room they are "
               "standing in.") + '''
+</section>
+'''
+
+# ============================================================ the turn
+# The second truth. "The Truth of It" explains what is at Saltlick; this explains why it stayed.
+# The module works without this page and is a different module with it, so it is kept separate
+# and a Keeper is told plainly which one they are running before they start.
+TURN = '''
+<section class="page" id="turn">
+  ''' + runhead("Mrs. Follett") + '''
+  <h1 class="chapter">The Woman Going East</h1>
+  ''' + quote("He was nine weeks a better man than he was forty years. I have thought about that "
+              "every day since and I have not got to the bottom of it.",
+              "Mrs. Ada Follett, if anyone ever asks her twice") + '''
+
+  <p>Saltlick is a stop and not a destination, and the thing has run out of nothing here. It has
+  a full station, a locked ice house and eleven quiet days. By its own arithmetic it should have
+  been three towns south a week ago. It is still here, and the reason is sitting in the common
+  room with her bag packed, watching the door to the barn.</p>
+
+  <h2 id="turn-kearney">What Happened at Kearney</h2>
+  <p>Ada Follett is going east to bury a brother. Her brother died at Kearney in the spring, three
+  towns back along the same line, and he was buried there in April by people who knew him. She is
+  not going east to bury him. She is going east because that is the direction the coach goes.</p>
+
+  <p>Nine weeks before he died, something began wearing Peter Follett. She knew inside a
+  fortnight. She has never been able to say exactly how — the way a sister knows, and no more
+  than that. What she can say, and will not, is that those nine weeks were the best nine weeks of
+  her brother&rsquo;s life and of hers. He did not drink. He came in at a decent hour. He asked
+  her about her day and then he listened to the answer, which the man himself had never once
+  done in forty years.</p>
+
+  <p>She said nothing for seven weeks. She has had four months on coaches to work out what that
+  makes her, and she has not arrived anywhere.</p>
+
+  ''' + keeper(
+      " Ada has told it nothing. She has never spoken to it, warned it, or handed it a name. What "
+      "she has done is watch — for four hours in that common room, longer than anyone, sharper "
+      "than anyone — and keep her mouth shut. Cal Mears is dead in part because a woman who saw "
+      "it happening had reasons of her own for letting the night run on. Play her as the "
+      "module already plays her: the best witness in the building, unasked. Everything she says "
+      "is true. She simply never says it first.",
+      "The exact shape of it") + '''
+
+  <h2 id="turn-tell">The Tell Behind the Tell</h2>
+  <p>Six of the station&rsquo;s people will say both men are here tonight. Ada says it earliest
+  and says it flattest, and if a player thinks to ask the others where they got it, four of them
+  got it from her. She has been keeping the thing&rsquo;s alibi without ever being asked to,
+  because she would like to see how it ends.</p>
+
+  <p>If the posse asks her a direct question she answers it completely and without hedging, and
+  she looks relieved. Nobody has asked her anything in eleven days.</p>
+
+  <h2 id="turn-offer">The Offer</h2>
+  <p>When it is cornered in Act Three, it does not fight first. It makes an offer, and the offer
+  is the best scene in this module.</p>
+
+  ''' + readaloud(
+      "It stops with its back to the ice-house door and lets its shoulders down, and when it "
+      "speaks the voice is not Dell&rsquo;s and not Mears&rsquo;s. It is a voice from your own "
+      "life, one you have not heard in some years, saying your name the way only that person "
+      "said it. &ldquo;I could be him again,&rdquo; it says, kindly, without hurry. &ldquo;Better "
+      "than he was at the end. He would be at your table Sunday and he would be sober and he "
+      "would remember your birthday, and you would have him back, and it would cost you "
+      "nothing.&rdquo; It waits. &ldquo;The man I am wearing tonight was going to die of the "
+      "drink inside two years and nobody was going to write it down. This way somebody misses "
+      "him.&rdquo;") + '''
+
+  ''' + keeper(
+      " Every word of that is true and the Keeper must know it going in. It can do the thing it "
+      "is offering. It will keep the bargain for as long as it is fed and it has kept longer ones. "
+      "Do not play it as a trick, do not have it sneer, and do not put a tell in the voice. The "
+      "horror in this scene is that the offer is good, and that a table full of grown people has "
+      "to turn it down out loud, one at a time, in front of each other.",
+      "Do not make this easy") + '''
+
+  <p><strong>If a player takes it.</strong> Let them. They give it a name — someone who will not
+  be missed, which means the player has to think of one, which is the price and is meant to be
+  felt. They gain the person back, in the shape it wore, for as long as they keep feeding it.
+  Mark them one step and give them a standing thread. Do not roll for this and do not offer a
+  save. A soul who says yes to that has said yes.</p>
+
+  <p><strong>Ada will take it.</strong> She has been waiting four months to be asked. If the
+  posse has been decent to her she may hesitate, and if one of them has actually spoken to her
+  about her brother she may not take it at all, and that is the largest thing a kindness has ever
+  bought in this module. Play the hesitation honestly and let the dice stay in the cup.</p>
 </section>
 '''
 
@@ -432,7 +519,10 @@ CAST = '''
 
   ''' + npc("Mrs. Ada Follett, going east to bury a brother",
             "to get where she is going and not be spoken to kindly",
-            "she is the sharpest observer in the building and nobody has asked her anything",
+            "she is the sharpest observer in the building and nobody has asked her anything &mdash; "
+            "and she is the reason the thing is still here on the eleventh day "
+            "(<a href=\"#turn\">The Woman Going East</a>, which the Keeper should read before "
+            "running her)",
             "I have been watching that room for four hours, and I would not care to say what I have seen.") + '''
 
   ''' + npc("Wu Cheng-hsi, who cooks and keeps the accounts",
@@ -583,6 +673,23 @@ AFTER = '''
               "comfort in it and it is a real one.",
               "from a Keeper's ledger, quoted in the Keeper's Book") + '''
 
+  <h2 id="after-ada">Who has a ticket</h2>
+  <p>Ada Follett boards the eastbound at first light with her bag and her hat box, and she is
+  calm, and she thanks whoever hands her up. Whether anything sits down beside her is the
+  Keeper&rsquo;s to decide and the table&rsquo;s to notice.</p>
+
+  <p>If they turned it down and put it down, she goes east alone and she is not grateful, and the
+  last thing she says to the posse is that they have no idea what they took off the table. If one
+  of them sat with her and let her talk about Peter, she says something else, and it should be
+  short, and it should be the warmest line anybody says in this module.</p>
+
+  ''' + keeper(
+      " Ada is the module&rsquo;s argument and she should never be punished for it. A woman who "
+      "watched her brother be happy for nine weeks and then had to bury him is not a monster and "
+      "is not a fool. Play her all the way to the coach with her dignity intact, and let the "
+      "table sit with the fact that the most reasonable person in the building would have said "
+      "yes.") + '''
+
   <h2 id="after-next">What comes next</h2>
   <p><strong>Module III, <em>What the Water Answers</em></strong>, goes south and down, to Mission
   San Clavo and the shaft beneath it, for a posse at 5th level. Both earlier modules end within sight
@@ -590,7 +697,7 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)
@@ -601,7 +708,10 @@ html = finish(
         ("Dell, Amos", "truth-taken"),
         ("Mears, Cal", "truth-taken"),
         ("Gant, Ollie", "a1-house"),
-        ("Follett, Mrs. Ada", "cast"),
+        ("Follett, Mrs. Ada", "turn"),
+        ("Follett, Peter, at Kearney", "turn-kearney"),
+        ("The offer, in Act Three", "turn-offer"),
+        ("Who told the others (the alibi)", "turn-tell"),
         ("Wu Cheng-hsi", "cast"),
         ("Orr, Deputy Sam", "cast"),
         ("Teague, Bill", "cast"),

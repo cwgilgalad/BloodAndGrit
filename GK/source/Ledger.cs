@@ -472,7 +472,9 @@ public sealed class LedgerView : Panel
                 }
                 foreach (var f in sheet.Features) lines.Add(("• " + f + Tally(f), false));
                 if (sheet.Subpath != null) lines.Add(("• Path: " + sheet.Subpath + Tally(sheet.Subpath), false));
-                if (sheet.CallingChoice != null) lines.Add(("• " + sheet.CallingChoice, false));
+                var famLine = CharGen.FamiliarLine(sheet);
+                if (famLine != null) lines.Add(("• " + famLine, false));
+                else if (sheet.CallingChoice != null) lines.Add(("• " + sheet.CallingChoice, false));
                 if (sheet.PoolLine != null) lines.Add(("• " + sheet.PoolLine, false));
                 if (sheet.Features.Count > 0 || sheet.Edges.Count > 0) lines.Add((" ", false));
                 foreach (var e in sheet.Edges) lines.Add(("✦ " + e, true));

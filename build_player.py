@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.28 -->
+<!-- Blood & Grit — The Player's Book · Version 2.29 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.28)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.29)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.28</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.29</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.28 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.29 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -1226,7 +1226,8 @@ body{ background:#525659; }
   and at every odd level after. These are in addition to the Edges every character earns.</p>
   <h4>Trick Shot</h4>
   <p>Once per round, before rolling, you may declare a called shot — to disarm, to wound a limb, to shatter a lantern or
-  a rope. Take –4 to the attack; on a hit, the Keeper grants the effect in place of, or alongside, reduced damage. Under
+  a rope, to ring a skull with a barrel or a butt and leave the man <strong>Stunned</strong> a round. Take –4 to the
+  attack; on a hit, the Keeper grants the effect in place of, or alongside, reduced damage. Under
   the Iron Code (Chapter XI), a <em>critical</em> hit on a called shot grants the effect <em>and</em> full damage.</p>
   <h4>Lightning Hand</h4>
   <p>Your reflexes outrun thought. Drawing a holstered weapon costs no action (a free Interact), and you act before
@@ -1435,7 +1436,7 @@ body{ background:#525659; }
     <h4>A Powderman&rsquo;s Devices</h4>
     <ul class="dash">
       <li><strong>Concussion Charge.</strong> A muffled blast of nonlethal force that deafens; gentle on walls, hard on men.</li>
-      <li><strong>Flash Powder.</strong> A blinding crack in a 10-foot burst; Fortitude or be dazzled a round, blinded on a critical failure.</li>
+      <li><strong>Flash Powder.</strong> A blinding crack in a 10-foot burst; Fortitude or be dazzled a round, <strong>Blinded</strong> for the scene on a critical failure.</li>
       <li><strong>Grapnel &amp; Line.</strong> A launched hook and rope to scale a height, swing a gap, or drag an object — or a man — off his feet.</li>
       <li><strong>Repeating Fuse.</strong> Throw or place a charge as a single Beat rather than two, and add +2 to land it where you mean to.</li>
       <li><strong>Scattergun Charge.</strong> Packed shrapnel fires in a 20-foot cone instead of a burst, dealing piercing for fire.</li>
@@ -3887,6 +3888,7 @@ body{ background:#525659; }
       <tr><td>Clumsy</td><td>–2 on DEX-based Strikes, checks, and Defense</td></tr>
       <tr><td>Drained</td><td>–2 on Fortitude and CON checks, and lose Blood equal to your level, until recovered</td></tr>
       <tr><td>Dying</td><td>At 0 Blood; unconscious and Bleeding toward –CON and death</td></tr>
+      <tr><td>Enfeebled</td><td>–2 on STR-based Strikes, damage, and checks; carry half what you could</td></tr>
       <tr><td>Fatigued</td><td>–2 on checks and saves; cannot Aim or run; rest to shed it</td></tr>
       <tr id="ix-frightened"><td>Frightened</td><td>–1 (or worse) on everything; lessens by one step each turn as you master the fear</td></tr>
       <tr><td>Grabbed</td><td>Held fast; Off-Guard; –4 DEX; a check to break free</td></tr>
@@ -4417,7 +4419,7 @@ body{ background:#525659; }
     <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">124</span></li>
     <li><a href="#ix-holy">Sanctification</a><span class="pg">23</span></li>
     <li><a href="#ix-checks">Saves</a><span class="pg">13</span></li>
-    <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">62</span></li>
+    <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">63</span></li>
     <li><a href="#ix-words">Sawbones (the word) &mdash; <em>see</em> Words of the country</a><span class="pg">17</span></li>
     <li><a href="#ix-scores">Scores, generating the</a><span class="pg">20</span></li>
     <li><a href="#ix-o-scout">Scout, the (Origin)</a><span class="pg">28</span></li>

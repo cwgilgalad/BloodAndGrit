@@ -10,7 +10,7 @@ from modules_common import (night_costs, shell, splice, finish, report, runhead,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.2"
+VERSION = "1.3"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -43,6 +43,7 @@ CONTENTS = '''
   ''' + contents([
       ("what", "What This Is"),
       ("truth", "The Truth of It"),
+      ("turn", "What the Town Has Already Decided"),
       ("hook", "The Hook, and Getting Them There"),
       ("ground", "The Ground"),
       ("act1", "Act One &mdash; The Ordinary West"),
@@ -146,6 +147,96 @@ TRUTH = '''
     "for rules. Everything here is discoverable in play, and every route to it is keyed in the acts. "
     "The one thing that is not discoverable is the count of nights; that is yours, and it is "
     "meant to be felt as the town getting worse rather than as a number going up.</p>") + '''
+</section>
+'''
+
+# ============================================================ the turn
+# The module's second truth, and the one it is actually about. Vane's bargain is the plot; the
+# Wednesday reading is the horror, and it survives the plot being solved. Keyed here rather than
+# folded into "The Truth of It" because a Keeper who reads only that page should still be able to
+# run the module — this page changes what the ending means, and nothing about how the night runs.
+TURN = '''
+<section class="page" id="turn">
+  ''' + runhead("The Reading") + '''
+  <h1 class="chapter">What the Town Has Already Decided</h1>
+  ''' + quote("We have always read the arrears. My father read them. It is how a small place keeps "
+              "honest with itself.",
+              "Deacon Loomis Pratt, Coffin Wells Methodist, asked why") + '''
+
+  <p>Vane chose the first two. He rode out to the homesteads that owed him and were furthest from
+  anyone, and he did it in a sweat, and he was sick after. He has not chosen anybody since. He has
+  not had to.</p>
+
+  <p>On the first Wednesday of the month the town eats together in the Methodist hall, and at the
+  end of it, before the plates go round a second time, the ledger of accounts in arrears is read
+  aloud. Eleven years they have done this. It began as an ordinary cruelty and a useful one: a
+  man behind on his note hears his name in front of his neighbours and finds the money. Nobody
+  has ever proposed it, voted it, or written it down as a rule. It is simply what happens on the
+  first Wednesday.</p>
+
+  <p>The names read in arrears in March are the names buried in April. The names read in April
+  are the names buried in May. Nine people in six weeks, and every one of them a name the room
+  had heard said out loud.</p>
+
+  ''' + keeper(
+      " Nobody in Coffin Wells has made this connection and several of them are one quiet hour "
+      "from making it. That is the pressure on this page. The town is not keeping a secret — it "
+      "has assembled a machine out of a hundred ordinary preferences and cannot see the shape of "
+      "it, because no single part of it was ever a decision. Who the doctor rides to first. Whose "
+      "water gets shared in a dry month. Which child gets the seat at the school. Vane feeds "
+      "where the town has already stopped looking, and the town has been showing him where that "
+      "is, once a month, in a clear voice, over supper.",
+      "What this page is for") + '''
+
+  <h2 id="turn-routes">Three Ways In</h2>
+  <p>Every route is a document, because the discovery has to be something the players do rather
+  than something a Keeper tells them.</p>
+
+  <p><strong>The ledger and the register.</strong> Vane&rsquo;s arrears column and the church
+  burial register are two lists in two buildings, and either one alone is a page of names. Laid
+  side by side on a table they are the same list, in order, four to six weeks apart. This is the
+  moment the module is built around and it wants no roll at all. Let whoever thought to fetch the
+  second book be the one who sees it.</p>
+
+  <p><strong>Hannah Pell.</strong> She buried Tom on the Tuesday and she has been to every supper
+  since. She knows. She has known for two weeks and she has not been able to make the sentence
+  come out, and if the posse gets her alone and does not push, it comes out sideways: she will
+  ask them whether they were at the supper, and what they thought of it, and whether they noticed
+  anything about the reading. <em>Lore (Occult)</em> is no use here. Sitting still is. There are
+  two places she can be got alone and both are late: <a href="#a2-cellar">the cellar</a>, where
+  she is still herself for now, and the midnight walk into town if the posse would not ride out
+  to Pell&rsquo;s. If the module runs long enough to reach a first Wednesday she is at the
+  supper, and she watches the posse listen to it.</p>
+
+  <p><strong>Going to the supper.</strong> If the module runs across a first Wednesday, put the
+  posse in the hall. Serve them. Let three people be kind to them. Then read the names, in the
+  flat voice a deacon reads anything in, and move on to the announcements about the roof fund.
+  Do not linger, do not cut to anyone&rsquo;s face, and do not let the scene mean anything. It
+  will mean something later, which is worse.</p>
+
+  ''' + readaloud(
+      "Deacon Pratt sets down his coffee, stands, and opens the book without ceremony, the way a "
+      "man opens a book he opens every month. He reads six names and the sums beside them. "
+      "Nobody looks up. At the fourth name a woman two benches down stops chewing, and starts "
+      "again. When he is done he says there is pie, and there is.") + '''
+
+  <h2 id="turn-ending">What It Does to the Ending</h2>
+  <p>Staking the thing at the mission ends the feeding. It does not end the arrangement, because
+  the arrangement was never the thing&rsquo;s and was never Vane&rsquo;s either. Hang Vane and
+  the reading happens in November. Burn the ledger and Pratt writes another, because the arrears
+  still have to be read, because they have always been read.</p>
+
+  <p>A posse that works this out has one real move, and it is not a fight: get up in that hall
+  and say what the reading is. They will be heard politely. Roll nothing. Tell the player what
+  the room does, which is that it goes quiet, and that a man at the back says they are strangers
+  and do not know how it has always been done here, and that four people nod, and that two do
+  not.</p>
+
+  ''' + keeper(
+      " Those two are the whole reward. Name them at the table — pick two of the people the posse "
+      "has been kind to — and let the table see that something moved. A town does not turn in a "
+      "night. Two people out of forty is what a hard truth buys, and in this game that is a "
+      "victory worth the ride.") + '''
 </section>
 '''
 
@@ -428,13 +519,23 @@ CAST = '''
 
   ''' + npc("Hannah Pell",
             "to be seen to before she stops being herself",
-            "she is the only person in the module who will tell the posse the whole truth unprompted",
+            "she is the only person in the module who will tell the posse the whole truth about the "
+            "fever unprompted &mdash; and the one thing she cannot get out is what she noticed at "
+            "the supper, which comes sideways if they sit with her and do not push "
+            "(<a href=\"#turn-routes\">Three Ways In</a>)",
             "It was not a fever and you know it was not. Say it, so I know somebody said it.") + '''
 
   ''' + npc("Elder Bram Tuttle, who keeps the store",
             "to be paid what he is owed and to be left out of it",
             "he has sold six weeks of salt to somebody and he knows exactly who, and he will say for money",
             "Salt is salt. A man buys what he buys. I keep a store, not a diary.") + '''
+
+  ''' + npc("Deacon Loomis Pratt, Coffin Wells Methodist",
+            "the roof fund closed out and the suppers to go on the way they always have",
+            "he has read the arrears aloud on the first Wednesday for eleven years and nobody has "
+            "ever asked him why, and the question lands on him harder than an accusation would",
+            "Six names this month. It was eleven when I started. That is a town getting better, "
+            "if you look at it right.") + '''
 
   ''' + npc("The Pell child, nine, unnamed on purpose",
             "nothing that can be put into words yet",
@@ -549,6 +650,20 @@ AFTER = '''
   it as a thread: a town half-saved, a survivor who saw too much, and a debt the dark considers
   unpaid. It has a name for each of them now, which is worse than being hunted.</p>
 
+  <h2 id="after-wednesday">The first Wednesday of the month</h2>
+  <p>It comes whatever they did. The hall is warm, the coffee is bad, and there are eleven years
+  of Wednesdays behind this one. Deacon Pratt stands up with the book because that is what he does
+  with it, the room settles because the room always settles, and he reads the arrears.</p>
+
+  <p>Read two names at your table. Make one of them somebody the posse liked. Then say that there
+  is pie, and there is, and go round and ask each player what their soul does with their hands.</p>
+
+  ''' + keeper(
+      " End the session there. Attach no roll to it and let nobody tell them whether it worked. "
+      "Half a year on, if the campaign rides back through Coffin Wells, count the graves: if the "
+      "posse stood up in that hall there are two fewer than there would have been, no one in town "
+      "connects that with them, and no one ever will.") + '''
+
   <h2 id="after-hannah">Whatever happened in the cellar</h2>
   <p>It follows one of them. Pick the soul who was closest to the decision and let it turn up in a
   dream, once, three sessions from now, with no mechanical effect at all. This module is the first of
@@ -565,7 +680,7 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)
@@ -575,6 +690,7 @@ html = finish(
         ("Coffin Wells", "hook"),
         ("Vane, Josiah", "a1-vane"),
         ("Cruz, Marshal Adelia", "hook-marshal"),
+        ("Pratt, Deacon Loomis", "cast"),
         ("Pell, Hannah", "a2-cellar"),
         ("Pell, Tom", "a2-fight"),
         ("Mission San Clavo", "a3-mission"),
@@ -587,6 +703,10 @@ html = finish(
         ("Safe-table rule (why the app argues)", "dead"),
         ("Scaling the night", "cost-scaling"),
         ("The Fourth Night (clock)", "truth-clock"),
+        ("The first Wednesday supper", "turn"),
+        ("The reading of the arrears", "turn"),
+        ("The ledger and the burial register", "turn-routes"),
+        ("Standing up in the hall", "turn-ending"),
         ("Dawn, as an escape valve", "a3-dawn"),
         ("What the engine says", "cost"),
         ("The map", "ground"),

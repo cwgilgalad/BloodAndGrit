@@ -6,7 +6,7 @@ sees first: the README, this project's handoff doc, the changelog, the release n
 reads as machine-generated undercuts the work it is describing, so it gets measured the same way
 the books do.
 
-Two independent signals, because either one alone is easy to game:
+Three independent signals, because any one alone is easy to game:
 
   BURSTINESS — the standard deviation of sentence length divided by its mean. Human writing varies
   a lot: a four-word sentence next to a forty-word one. Generated prose regresses to a comfortable
@@ -18,12 +18,23 @@ Two independent signals, because either one alone is easy to game:
 
   TELLS — phrases and shapes that are disproportionately common in generated text. The one this
   project cares most about is NEGATIVE PARALLELISM ("not just X, but Y" / "it isn't X, it's Y"):
-  it is the single most recognisable LLM cadence and it is easy to write by accident.
+  it is the single most recognisable LLM cadence and it is easy to write by accident. The list was
+  brought up to the 2026 literature on 2026-08-22 — see the sources cited beside HARD below.
+
+  LEXICAL DIVERSITY — a moving-average type-token ratio, added 2026-08-22. The 2026 survey leads
+  on lower lexical diversity in generated text; this is that finding, measured. Read it against a
+  file's own history rather than against an absolute, and see mattr() for why.
+
+Every pattern in HARD is proved by --selfcheck, which runs each one against a sentence built to
+trip it. A guard that has never been seen to fire is a guard nobody should trust: two of the ones
+here were written wrong the first time and looked exactly like the ones written right.
 
 Usage:
     python audit_ai_tells.py                  # audit the tracked docs, exit 1 on any hard tell
     python audit_ai_tells.py FILE [FILE ...]  # audit specific files
     python audit_ai_tells.py --commits 60     # also audit the last N commit messages
+    python audit_ai_tells.py --books          # scan the three books as well
+    python audit_ai_tells.py --selfcheck      # prove every pattern still fires, and only on cue
 """
 import re
 import subprocess
@@ -83,7 +94,79 @@ HARD = [
     # history. Dropping the apostrophe to catch the first flagged four of the second.
     (r"\b(?:the\s+)?user's\s+(?:stated|request|wish|intent|preference|instruction|words|plan|goal)", "assistant register (\"user's …\")"),
     (r"\b(?:per|as (?:per|requested by)|according to) the user\b", "assistant register (\"per the user\")"),
-    (r"\bthe user (?:wants|asked me|requested|would like|prefers|has asked)\b", "assistant register (\"the user wants …\")"),
+    (r"\bthe user (?:wants|asked me|requested|would like|prefers|has asked)\b", "assistant register (\"the user wants \u2026\")"),
+
+    # ---- added 2026-08-22, from the current literature ------------------------------------------
+    # Everything above was written against the 2023-24 generation's habits, and those habits moved.
+    # Three sources, all free to read, which is why they were the ones chosen — a check nobody can
+    # open the reasoning behind is a check people stop trusting:
+    #   * Wikipedia, "Signs of AI writing" (living catalogue, read 2026-08-22)
+    #     https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+    #     The most operationally useful of the three. Every entry is a shape somebody had to
+    #     recognise by eye across thousands of suspect drafts before it could be written down.
+    #   * Geng, Dong & Poibeau, "Beyond Via: Analysis and Estimation of the Impact of Large
+    #     Language Models in Academic Papers", arXiv:2603.25638 (March 2026), open access.
+    #     Vocabulary shift measured across arXiv: words as ordinary as "beyond" and "via" moved
+    #     far enough to be detectable in aggregate. NOTHING from it is a hard tell here, and that
+    #     is a finding rather than an omission. A frequency argument needs a corpus; one document
+    #     cannot carry one; and a checker that fails on the word "beyond" is a checker nobody runs
+    #     twice.
+    #   * Terčon & Dobrovoljc, "Linguistic Characteristics of AI-Generated Text: A Survey",
+    #     arXiv:2510.05136, open access. Synthesises the feature-level work across models, genres
+    #     and languages. Its headline findings are a more formal and impersonal style marked by a
+    #     higher share of nouns, and lower lexical diversity — the second of which is measured as
+    #     a column below. It is also the source behind the framing-verb cluster reported from
+    #     mid-2025 on ("emphasizing", "highlighting", "showcasing"), which is the vocabulary the
+    #     participial pattern below runs on.
+    #
+    # The line this file already drew decided every one of these: a SHAPE fails, a WORD gets
+    # reported. Shapes survive paraphrase and register. Words are just words, and this project
+    # writes in a period-western register that collides with a good many of them.
+
+    # The participial restatement. A clause hung off a comma that says the main clause again in
+    # the register of a press release: "The initiative represented a shift, marking a pivotal
+    # moment in the evolution of the field." The strongest single addition of this pass, because
+    # it is a shape, it is close to absent from edited human prose, and no honest rewrite keeps it
+    # by accident. The verb list is confined to verbs that only ever restate. "showing", "leaving"
+    # and "making" do real work in ordinary sentences and are deliberately not here.
+    (r",\s*(?:ensuring|highlighting|emphasi[sz]ing|underscoring|showcasing|cementing|solidifying|"
+     r"underlining|reaffirming|reinforcing|exemplifying|epitomi[sz]ing)\b[^.?!]{0,140}[.?!]",
+     "participial restatement (\", \u2026underscoring its importance.\")"),
+
+    # Copula avoidance: reaching past "is" and "has" for something that sounds like more work is
+    # being done. "boasts" is the purest case in the set, since there is no sentence it improves.
+    (r"\b(?:serves?|stands?|functions?) as (?:a|an|the)\b", "copula avoidance (\"serves as a\")"),
+    (r"\bboasts\b", "copula avoidance (\"boasts\")"),
+    (r"\bplays? an? (?:key|vital|crucial|pivotal|central|significant|important) role\b",
+     "\"plays a key role\""),
+
+    # Attribution to a crowd that never gets named. It is what a model does when it has a claim
+    # and no source: the plural implies several authorities and cites none of them.
+    (r"\b(?:experts|observers|critics|analysts|researchers|scholars) (?:say|argue|note|noted|have "
+     r"noted|have cited|agree|believe|suggest)\b", "vague attribution (\"experts argue\")"),
+    (r"\b(?:industry reports|studies have shown|research (?:shows|suggests)|it is widely "
+     r"(?:believed|regarded|considered|held))\b", "vague attribution (\"studies have shown\")"),
+
+    # The "Challenges and Future Prospects" close: a paragraph that arrives whatever the subject
+    # is, concedes a difficulty in the abstract, and finishes hopeful.
+    (r"\bdespite (?:its|their|the)\b[^.?!]{0,70}?\bfaces?\b[^.?!]{0,30}?\bchallenges\b",
+     "\"despite its X, Y faces challenges\""),
+
+    # Chat-window filler: a model performing enthusiasm at a reader.
+    (r"\bhere'?s the (?:thing|kicker|catch|deal)\b", "chat filler (\"here's the thing\")"),
+    (r"\blet that sink in\b", "chat filler (\"let that sink in\")"),
+    (r"\bthe bottom line (?:is|here)\b", "chat filler (\"the bottom line is\")"),
+    (r"\bbuckle up\b", "chat filler (\"buckle up\")"),
+
+    # Paste artifacts: markup that exists only inside a chat client's own rendering. Any one of
+    # them means text went from a window into a file without being read. No judgement required and
+    # no false positive available, which makes these the cheapest checks in the file — and the only
+    # ones here that catch PROVENANCE rather than cadence.
+    (r"contentReference|oaicite|turn\d+(?:search|view|news|image)\d+", "paste artifact (ChatGPT)"),
+    (r"\[cite:\s*\d+\]|\[span_\d+\]\(start_span\)", "paste artifact (Gemini)"),
+    (r"<grok[-_]card|grok_render", "paste artifact (Grok)"),
+    (r"[\u3010\u3011]", "paste artifact (lenticular citation bracket)"),
+    (r"\bas an AI(?: language)? model\b", "assistant self-reference (\"as an AI model\")"),
 ]
 
 # ---- soft tells: counted and reported, never failed over ----------------------------------------
@@ -96,6 +179,13 @@ SOFT_WORDS = [
     "meticulous", "moreover", "furthermore", "additionally", "notably",
     "comprehensive", "streamline", "elevate", "empower", "unlock", "harness",
     "crucial", "essential", "vital", "significant", "innovative", "transformative",
+    # Added 2026-08-22 alongside the hard tells above: the promotional register the same three
+    # sources name, plus the mid-2025-on framing verbs in their non-participial uses. Soft for the
+    # usual reason. "rich", "marked" and "profound" all have honest work in a western, and a
+    # checker that fails on those is a checker that gets switched off.
+    "vibrant", "nestled", "breathtaking", "showcase", "showcasing", "align with", "fostering",
+    "intricate", "testament", "groundbreaking", "commitment to", "emphasizing", "highlighting",
+    "multifaceted", "nuanced", "profound", "resonate", "unwavering",
 ]
 
 SENT_SPLIT = re.compile(r"(?<=[.!?])[\s\n]+")
@@ -206,6 +296,33 @@ def sentences(prose):
     return out
 
 
+def mattr(prose, window=100):
+    """Moving-average type-token ratio: the mean of unique/total over every 100-word window.
+
+    Lower lexical diversity is one of the two findings the 2026 survey leads with, and it is the
+    one a script can measure without a part-of-speech tagger. Plain TTR was the obvious first
+    choice and is unusable here: it falls as a document lengthens, so CHANGELOG.md at 28,000 words
+    would score far below NOTICE at 379 for reasons that have nothing to do with who wrote either.
+    A fixed window removes the length dependence, which is the whole reason MATTR exists.
+
+    The band below is calibrated on THIS REPO, not lifted from a paper. The literature reports the
+    direction of the effect rather than a threshold, and a threshold copied out of a study run on
+    student essays would say nothing about a changelog. Measured 2026-08-22, and the figures are
+    strikingly flat across five documents of wildly different length and purpose: README 0.73 ·
+    CLAUDE.md 0.75 · GK/CLAUDE.md 0.74 · CHANGELOG 0.73 · NOTICE 0.75 · commit messages 0.74.
+    That flatness is what makes the column worth reading at all: one hand wrote all of them, so a
+    file that drifts more than about 0.05 below its own history is the signal. The absolute number
+    is close to meaningless on its own.
+    """
+    words = re.findall(r"[A-Za-z][A-Za-z'-]*", prose.lower())
+    if len(words) < window:
+        return len(set(words)) / len(words) if words else None
+    total = 0.0
+    for i in range(len(words) - window + 1):
+        total += len(set(words[i:i + window])) / window
+    return total / (len(words) - window + 1)
+
+
 def burstiness(lengths):
     if len(lengths) < 8:
         return None
@@ -278,10 +395,12 @@ def audit(name, raw):
              for s in SENT_SPLIT.split(prose) if len(s.split()) >= 4]
     openers = len(set(heads)) / max(1, len(heads))
 
+    ttr = mattr(prose)
+
     return {
         "sentences": len(lens), "burst": b, "hard": hard, "quoted": quoted, "soft": soft,
         "words": sum(lens), "shortest": min(lens) if lens else 0, "longest": max(lens) if lens else 0,
-        "emdash_per_1k": em_1k, "variety": variety, "openers": openers,
+        "emdash_per_1k": em_1k, "variety": variety, "openers": openers, "mattr": ttr,
     }
 
 
@@ -293,6 +412,79 @@ def band(b):
     if b >= 0.45:
         return "acceptable"
     return "FLAT — the tell"
+
+
+# One sentence per HARD pattern, written to trip it and nothing else. Keyed by the pattern's own
+# label so a renamed label breaks the link loudly instead of silently orphaning a case.
+SELFCHECK = {
+    "negative parallelism (not just X, but Y)": "This is not just a fix, but a rethink.",
+    "negative parallelism (it isn't X, it's Y)": "It is not a bug; it is a design choice.",
+    "negative parallelism (it's not about X, it's Y)": "It's not about speed, it's about care.",
+    "\"more than just\"": "The app is more than just a dice roller.",
+    "\"delve into\"": "Let us delve into the mechanics.",
+    "generic scene-setting opener": "In today's world, every table needs a Keeper.",
+    "\"it's worth noting\"": "It's worth noting that the Mark has six steps.",
+    "\"when it comes to\"": "When it comes to Dread, the DC is what matters.",
+    "\"that being said\"": "That being said, the rule still stands.",
+    "\"in conclusion\"": "In conclusion, the posse survives.",
+    "\"let's dive in\"": "Let's dive into the Bestiary.",
+    "\"navigating the landscape\"": "Navigating the complexities of the frontier is hard.",
+    "assistant register (\"user's \u2026\")": "This followed the user's stated plan.",
+    "assistant register (\"per the user\")": "Renamed per the user on Tuesday.",
+    "assistant register (\"the user wants \u2026\")": "The user wants a keyboard pass.",
+    "participial restatement (\", \u2026underscoring its importance.\")":
+        "The release shipped on time, underscoring its importance to the schedule.",
+    "copula avoidance (\"serves as a\")": "The Bestiary serves as a reference for Keepers.",
+    "copula avoidance (\"boasts\")": "The app boasts ten tabs.",
+    "\"plays a key role\"": "Nerve plays a crucial role in horror scenes.",
+    "vague attribution (\"experts argue\")": "Experts argue that pacing matters most.",
+    "vague attribution (\"studies have shown\")": "Studies have shown that players prefer it.",
+    "\"despite its X, Y faces challenges\"":
+        "Despite its strengths, the system faces challenges at high levels.",
+    "chat filler (\"here's the thing\")": "Here's the thing about Grit.",
+    "chat filler (\"let that sink in\")": "Six steps to damnation. Let that sink in.",
+    "chat filler (\"the bottom line is\")": "The bottom line is that the posse dies.",
+    "chat filler (\"buckle up\")": "Buckle up, because Tier V hits hard.",
+    "paste artifact (ChatGPT)": "See the note :contentReference[oaicite:3] for detail.",
+    "paste artifact (Gemini)": "The rule changed [cite: 12] last year.",
+    "paste artifact (Grok)": "Rendered by <grok-card id=7> in the reply.",
+    "paste artifact (lenticular citation bracket)": "The source \u30107\u3011says otherwise.",
+    "assistant self-reference (\"as an AI model\")": "As an AI language model, I cannot roll dice.",
+}
+
+
+def selfcheck():
+    """Every HARD pattern must fire on a sentence built for it, and no pattern may fire on a
+    control paragraph of this project's own prose. Both halves matter: the first proves the guard
+    works, the second proves it is narrow enough to leave honest writing alone."""
+    labels = [lab for _, lab in HARD]
+    bad = 0
+    missing = [lab for lab in labels if lab not in SELFCHECK]
+    orphan = [lab for lab in SELFCHECK if lab not in labels]
+    for lab in missing:
+        print(f"  NO CASE   {lab}")
+    for lab in orphan:
+        print(f"  ORPHANED  {lab}  (label renamed? case now tests nothing)")
+    bad += len(missing) + len(orphan)
+    for pat, lab in HARD:
+        case = SELFCHECK.get(lab)
+        if case is None:
+            continue
+        if not re.search(pat, case, flags=re.I):
+            print(f"  DEAD      {lab}\n            did not match: {case}")
+            bad += 1
+    control = (
+        "The posse rode out at first light. Nerve is Resolve plus level, and it is spent on "
+        "Dread Checks. Four points a soul, and a standout costs sixteen. The Keeper decides "
+        "what the ground is worth before the shooting starts, then rolls in the open."
+    )
+    for pat, lab in HARD:
+        if re.search(pat, control, flags=re.I):
+            print(f"  TRIGGERY  {lab} fires on ordinary prose")
+            bad += 1
+    print(f"\n{len(labels)} hard pattern(s), {len(SELFCHECK)} case(s): "
+          + ("all fire on their case and none on the control." if not bad else f"{bad} problem(s)."))
+    return 1 if bad else 0
 
 
 def main():
@@ -313,15 +505,19 @@ def main():
             args.append(a)
         i += 1
 
+    if "--selfcheck" in sys.argv:
+        return selfcheck()
+
     targets = args or (DEFAULT_DOCS + (BOOKS if books else []))
     findings = 0
 
     print("burstiness = sd/mean of sentence length. Books measured 0.65 / 0.94 / 0.49.")
     print("em/1kw = em dashes per thousand words (human baseline ~3.2, GPT-4.1 ~10.6, Freeburg 2026).")
-    print("var = share of punctuation that is ; : ? ! ( ).  opn = distinct sentence openers.\n")
+    print("var = share of punctuation that is ; : ? ! ( ).  opn = distinct sentence openers.")
+    print("div = lexical diversity, moving-average type-token ratio over 100-word windows.\n")
     print(f"{'file':<30}{'sents':>6}{'words':>7}{'burst':>7}  {'range':<10}"
-          f"{'em/1kw':>7}{'var':>6}{'opn':>6}  verdict")
-    print("-" * 96)
+          f"{'em/1kw':>7}{'var':>6}{'opn':>6}{'div':>6}  verdict")
+    print("-" * 102)
     reports = []
     for t in targets:
         p = ROOT / t
@@ -332,8 +528,10 @@ def main():
         reports.append((t, r))
         bs = f"{r['burst']:.2f}" if r["burst"] is not None else "  -"
         rng = f"{r['shortest']}-{r['longest']}"
+        dv = f"{r['mattr']:.2f}" if r["mattr"] is not None else "  -"
         print(f"{t:<30}{r['sentences']:>6}{r['words']:>7}{bs:>7}  {rng:<10}"
-              f"{r['emdash_per_1k']:>7.1f}{r['variety']:>6.2f}{r['openers']:>6.2f}  {band(r['burst'])}")
+              f"{r['emdash_per_1k']:>7.1f}{r['variety']:>6.2f}{r['openers']:>6.2f}{dv:>6}"
+              f"  {band(r['burst'])}")
 
     if ncommits:
         log = subprocess.run(["git", "log", f"-{ncommits}", "--format=%B%n---8<---"],
@@ -341,8 +539,10 @@ def main():
         r = audit(f"last {ncommits} commits", log.replace("---8<---", ""))
         reports.append((f"commit msgs ({ncommits})", r))
         bs = f"{r['burst']:.2f}" if r["burst"] is not None else "  -"
+        dv = f"{r['mattr']:.2f}" if r["mattr"] is not None else "  -"
         print(f"{'commit msgs':<22}{r['sentences']:>6}{r['words']:>7}{bs:>7}  "
-              f"{str(r['shortest']) + '-' + str(r['longest']):<10}{r['emdash_per_1k']:>6.1f}  {band(r['burst'])}")
+              f"{str(r['shortest']) + '-' + str(r['longest']):<10}{r['emdash_per_1k']:>6.1f}"
+              f"{r['variety']:>7.2f}{r['openers']:>6.2f}{dv:>6}  {band(r['burst'])}")
 
     # Findings in ALREADY-LANDED commit messages are reported and not counted. This is not a
     # softening. A commit message cannot be edited without rewriting history, and this project's

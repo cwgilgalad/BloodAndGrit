@@ -167,6 +167,15 @@ public class CharacterSheet
     public List<string> MiraclesKnown { get; set; } = new();          // Ch. VI, the Callings of Faith
     public string Subpath { get; set; }                                  // chosen at 3rd, or null
     public string CallingChoice { get; set; }                            // Marshal reputation / Shaman aspect / Witch familiar
+    // The Witch's familiar (Ch. VII). Until v1.45.0 the bound beast was one third of the shared
+    // CallingChoice string and nothing else — the books give it a standing +2, a touch-range
+    // delivery, shared senses and a Sickened when it dies, and the app carried none of that. The
+    // kind is still written into CallingChoice for every reader that already prints it; these
+    // three carry the mechanics. Absent from sheets saved before v1.45.0, which deserialize to
+    // null/false and read as a soul with no familiar, so no session.json migration is needed.
+    public string FamiliarKind { get; set; }                             // "a crow", or null for no familiar
+    public string FamiliarBoon { get; set; }                             // the standing +2 befitting its nature
+    public bool FamiliarLost { get; set; }                               // it died; the Witch is Sickened until re-bound
     public string PoolLine { get; set; }                                 // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
     public string PoolName { get; set; }                                 // the faith/sign currency's name, or null
     public int PoolMax { get; set; }                                     // its maximum at this level, or 0 for no pool
@@ -617,6 +626,7 @@ public static class CharGen
 
         // calling one-of choice (Marshal's Reputation, Shaman's Aspect, Witch's Familiar)
         if (cal.choice != null) s.CallingChoice = $"{cal.choice.label}: {Pick(cal.choice.options)}";
+        BindFamiliar(s, cal);
 
         // Signs (Ch. VII / XIII): only the Old Dark works them by nature; Hedge Magic adds one
         var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
@@ -824,6 +834,7 @@ public static class CharGen
             s.Subpath = cal.subpath.options.Any(o => o.name == spec.Subpath) ? spec.Subpath : Pick(cal.subpath.options).name;
         if (cal.choice != null)
             s.CallingChoice = $"{cal.choice.label}: {(cal.choice.options.Contains(spec.CallingChoice) ? spec.CallingChoice : Pick(cal.choice.options))}";
+        BindFamiliar(s, cal);
 
         var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
                             .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
@@ -1441,7 +1452,11 @@ public static class CharGen
             var opt = cal.subpath.options.First(o => o.name == s.Subpath);
             sb.AppendLine($"   {cal.subpath.section}: {opt.name} — {FirstSentence(opt.boon)}");
         }
-        if (s.CallingChoice != null) sb.AppendLine("   " + s.CallingChoice);
+        // The familiar's own line replaces the bare "Familiar: a crow" the choice would print,
+        // because the beast carries mechanics the other two choices do not.
+        var fam = FamiliarLine(s);
+        if (fam != null) sb.AppendLine("   " + fam);
+        else if (s.CallingChoice != null) sb.AppendLine("   " + s.CallingChoice);
         sb.AppendLine();
 
         sb.AppendLine("EDGES");
@@ -1876,5 +1891,53 @@ public static class CharGen
         if (string.IsNullOrEmpty(t)) return "";
         int i = t.IndexOf(". ");
         return i > 0 && i < 220 ? t.Substring(0, i + 1) : (t.Length > 220 ? t.Substring(0, 220) + "…" : t);
+    }
+
+    // ------------------------------------------------------------------ the Witch's familiar
+
+    /// <summary>
+    /// The standing boon each bound beast grants — "a +2 to one sense or skill befitting its
+    /// nature", which the book states as a principle and leaves to the table. The app has to
+    /// pick something, so it picks the obvious thing and says so on the sheet; a Keeper who
+    /// wants otherwise edits the line. Keyed on the beast alone, so the five options in
+    /// chargen.json's Witch choice are the five keys and a sixth would fall through to the
+    /// generic reading rather than crashing.
+    /// </summary>
+    public static string FamiliarBoonFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    {
+        var k when k.Contains("cat")   => "+2 Stealth — it goes where you cannot and comes back",
+        var k when k.Contains("crow")  => "+2 Notice — it sees the country from above and tells you",
+        var k when k.Contains("hare")  => "+2 Acrobatics — its quickness is in your feet",
+        var k when k.Contains("toad")  => "+2 Medicine — it knows what grows and what it is for",
+        var k when k.Contains("snake") => "+2 Insight — it reads warmth, and fear is warm",
+        _ => "+2 to one sense or skill befitting its nature",
+    };
+
+    /// <summary>
+    /// Bind the beast if this Calling has one. Reads the kind back out of CallingChoice rather
+    /// than re-rolling it, so the sheet's familiar and its bonus can never name two animals —
+    /// which is the whole failure mode of storing the same fact twice.
+    /// </summary>
+    static void BindFamiliar(CharacterSheet s, CgCalling cal)
+    {
+        if (cal.choice == null || !cal.choice.label.Equals("Familiar", StringComparison.OrdinalIgnoreCase))
+            return;
+        int i = (s.CallingChoice ?? "").IndexOf(':');
+        s.FamiliarKind = i >= 0 ? s.CallingChoice.Substring(i + 1).Trim() : null;
+        s.FamiliarBoon = FamiliarBoonFor(s.FamiliarKind);
+        s.FamiliarLost = false;
+    }
+
+    /// <summary>
+    /// What the sheet says about the beast, or null when there is none. One line, because it is
+    /// one line in the book: what it is, what it gives you, and whether it is still alive.
+    /// </summary>
+    public static string FamiliarLine(CharacterSheet s)
+    {
+        if (string.IsNullOrEmpty(s?.FamiliarKind)) return null;
+        return s.FamiliarLost
+            ? $"Familiar: {s.FamiliarKind} — DEAD. Sickened until you bind another over a long night's rite."
+            : $"Familiar: {s.FamiliarKind} — {s.FamiliarBoon}; scouts, spies, shares its senses, "
+              + "and can deliver a touch-range Sign.";
     }
 }

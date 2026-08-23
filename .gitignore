@@ -59,7 +59,16 @@ startup-error.txt
 #     deleted on 2026-08-10 along with autosync.ps1 and register_autosync_task.ps1: nothing in
 #     any repo runs on a timer now, and syncing happens in .githooks/post-merge when a branch
 #     lands on main. The old files are recoverable from history if anyone wants to read them.)
-.claude/
+#     Narrowed from a flat `.claude/` on 2026-08-22 to let one file through. `commands/ship.md`
+#     is the ordered walk for cutting a release, and every tool it drives — package.ps1, sign.ps1,
+#     make_bundles.py, release_index.py — is tracked here already. A runbook for building the
+#     deliverables is a file that builds them, and it is worth nothing to a later session if it
+#     lives only on this laptop. Four lines because that is the git idiom: a file cannot be
+#     re-included out of an ignored directory, so `commands/` is un-ignored before ship.md is.
+.claude/*
+!.claude/commands/
+.claude/commands/*
+!.claude/commands/ship.md
 #   * process records: an unbuilt design proposal and a log of editorial findings that were
 #     declined. Both are conversation, not product. The online-play proposal's substance — the
 #     four rungs and the two credential/RNG gotchas — is summarized in CLAUDE.md's roadmap so
@@ -89,3 +98,8 @@ _map_preview.html
 # never committed — they are whatever the machine that ran the app happened to leave behind.
 .package-aside/
 _base/
+
+# tools/extract_rules.py --out writes this: the six books as one JSON digest. Nothing in the repo
+# reads the file — the audits import digest() and hold it in memory — so a committed copy would be
+# a second, staler copy of books that are already tracked. Generated on demand, never versioned.
+rules-digest.json

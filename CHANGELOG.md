@@ -8,6 +8,134 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.29 · Keeper's Book v2.17 · all three Modules · GritKeeper v1.45.0 — the
+  modules turn, the Witch's beast gets its rules, and two new audits ask questions nothing asked
+  before (2026-08-22, user-requested).**
+
+  **Each module now has a second truth, and it is the one the night is about.** Cole asked for the
+  turn an A24 horror picture takes: the reveal that relocates the horror from the thing in the dark
+  to the arrangement the living had already made with it, and that gives the table the chance to
+  make the same arrangement themselves. One new keyed section per module, placed after *The Truth
+  of It* so a Keeper who reads only that page can still run the night, and a new closing beat in
+  each *What Comes After* so the module ends on the ordinary thing happening rather than on a fight.
+
+  *The Salt at Coffin Wells* — **What the Town Has Already Decided.** Vane chose the first two
+  homesteads and has chosen nobody since, because he does not have to. On the first Wednesday of
+  every month the town eats together in the Methodist hall and the ledger of accounts in arrears is
+  read aloud, as it has been for eleven years, and the names read in March are the names buried in
+  April. Nobody proposed it, voted it, or wrote it down. Three keyed routes in, all of them
+  documents; the discovery wants no roll at all, only that somebody thought to fetch the second
+  book. Staking the thing at the mission ends the feeding and leaves the arrangement standing, and
+  the module's real move is a player getting up in that hall and saying what the reading is. Forty
+  people, two of whom nod. The night ends on the supper, and there is pie.
+
+  *A Face Not His Own* — **The Woman Going East.** Mrs. Ada Follett was already the sharpest
+  observer in that common room and the one person nobody had asked anything; she is now the reason
+  the thing stayed past the night it should have moved on. Something wore her brother at Kearney for
+  nine weeks and those were the best nine weeks of his life and hers — sober, home on time, asking
+  about her day. She has handed it no names. She has watched, and said nothing, and Cal Mears is
+  dead partly because of it. In Act Three it does not fight first: it makes an offer, in a voice out
+  of a player's own history, and every word of the offer is true and it can keep it. A player may
+  accept, and the price is naming somebody who will not be missed, which means thinking of one.
+
+  *What the Water Answers* — **The Terms of the Loan.** The last eleven leaves of Salcedo's ledger
+  are in a second hand and are not instructions. The padres could not kill it, so they set the rate:
+  seven wells held open a fixed width, and the prayer is a measure rather than a blessing. The
+  column of figures every custodian copied forward without comment is a tally, one or two a year for
+  seventy-five years, and the drownings are in the county register where anyone may check them.
+  Esperanza Ríos did not forget to hand it on — her last entry is one steady line saying she would
+  rather leave the Basin the choice than leave it the schedule, and the module refuses to say
+  whether she reckoned right. The circuit's whole price is now stated out loud before anybody picks
+  up the hammer: eleven days, four times a year, undelegatable, unwritten, unthanked, for life.
+
+  **The Keeper's Book has the method written down — Ch. III, *The Household Method*.** Cole named
+  *The VVitch* as the feel to reach for, and that picture's method is teachable: put the horror
+  inside the house and make the house right. Four things to do rather than describe — let the piety
+  be real and admirable, make the offer good and true and aimed at what the character actually
+  wants, carry the reveal on documents read aloud in period diction, and refuse to release the room
+  at the end. All three modules now end that way on purpose, and the section says so and points at
+  them as the worked examples.
+
+  **The Witch's familiar is a mechanism in the app instead of a line of text (v1.45.0).** The books
+  give the bound beast a standing +2 to a sense or skill befitting its nature, scouting and spying,
+  shared senses, touch-range delivery of a Sign, and a Sickened that lasts until you bind another
+  over a long night's rite. GritKeeper held the animal's name inside `CallingChoice` — one string
+  shared with the Marshal's reputation and the Shaman's aspect — and nothing else. `FamiliarKind`,
+  `FamiliarBoon` and `FamiliarLost` now sit on the sheet, `FamiliarBoonFor` gives each of the five
+  beasts its own bonus, and the kind is read back out of the choice rather than re-rolled, so the
+  sheet can never name one animal and buff another. 63 new smoke assertions walk all ten levels.
+
+  **`audits/audit_consistency.py` (new) asks whether the game plays the same way in every place it
+  is written down.** `verify_rules.py` guards the player's side; this is the Keeper's, which is
+  where a single number appears in the most places and where nothing held them together. 80,831
+  cross-checks across ten questions — Threat by Tier and Sign & Spoor over book, app and this
+  project's own documentation; `creatures.json` re-extracted and diffed against the built Bestiary;
+  the generated Roll-by-Tier appendix; all 143 hand-written Grounds entries by name and by Tier;
+  every condition a creature inflicts defined in Appendix B; the printed benchmarks against the 175
+  creatures that are meant to match them; one shared vocabulary across all six books; every chapter
+  cross-reference; and app↔book feature parity in both directions.
+
+  It found two real faults on its first run and both are fixed here. **`Enfeebled` was inflicted by
+  the Witch's Evil Eye and by The Shadow That Lags and defined nowhere** — Appendix B carried Clumsy
+  for DEX and Drained for CON and had no STR entry at all, so the term had almost certainly walked
+  in from the parent system and been used on trust. And the familiar above, which the parity check
+  named independently on the same run.
+
+  **`audits/audit_diversity.py` (new) asks whether the game is as wide as it claims**, which is a
+  different question from whether it is correct. The line it draws is narrow on purpose: **it fails
+  only where no path in the game can reach a thing the rules print.** Everything else it measures is
+  printed and never counted — the Bestiary's Tier×chapter grid, the Dread spread and whether the DC
+  climbs, the thirteen distinct answers to *Putting It Down* and how lopsidedly they are used, and
+  what share of the Bestiary the Grounds tables can roll into. "Enough variety" is a designer's
+  call, and a checker that guesses at it fires on good design once and is ignored forever after.
+
+  Three dead options found, all three now reachable. **`Acrobatics` was on the printed skill list
+  and on no Calling's preference list**, so the app's builder could never make a character trained
+  in it; the Drifter, the Gambler and the Gunhand want it now. **`Blinded` and `Stunned` were
+  defined in Appendix B and appeared exactly once each in all six books** — their own glossary row —
+  while the app carried a toggle for both. Flash Powder's critical failure now Blinds for the scene
+  in the words the condition is defined in, and Trick Shot can ring a skull with a barrel or a butt.
+
+  The first cut of the Calling check was wrong and is worth recording: keyed on chassis, pool and
+  Sign access alone, it called Marshal and Mountain Man the same Calling, which is false to anyone
+  who has played either. The fingerprint now includes each Calling's 1st-level features. Seventeen
+  Callings, seventeen distinct. The four Faith Callings sharing one chassis are *reported* — a fact
+  worth knowing before anybody writes a fifth — and not failed on.
+
+  **`tools/extract_rules.py` (new) is the reason both audits are short.** Every check in `audits/`
+  that reads a book had been re-inventing the same three hundred lines of HTML walking, and each
+  copy had drifted into its own dialect. This is that job once: six built books in, chapters →
+  sections → paragraphs → tables out. `--out` writes the whole digest as JSON — the shape a Discord
+  bot, a search index or a VTT importer would want, which is the roadmap's online-play rung — and
+  the file is git-ignored, because nothing in the repo reads it and a committed copy would be a
+  staler second copy of books that are already tracked.
+
+  Both new audits are registered in `verify_all.py`, so `--release` now runs nineteen checks.
+
+  **All three modules were then walked end to end against the new material, and the harness re-ran
+  them.** `GK/playtest` plays every act on the real rules — 3 adventures × 12 posses, base seed
+  `20260809` — and produced `PLAYTEST.md` byte-for-byte identical to the committed copy, which is
+  the answer wanted: none of the new pages moves a single number on any module's *What the Night
+  Costs*. It also states the thing the turns were written for, and states it in the engine's own
+  figures: **not one Tier III fight in any of the three modules was ever cleared by shooting it**,
+  across all 36 cold runs and all 36 tended ones. Coffin Wells finishes 0 of 12 standing, Saltlick
+  0 of 12, San Clavo 0 of 12. That was already the design — the Bestiary prints an answer for each
+  of those horrors and the module's job is to put it where a posse can find it under fire — and it
+  is now also the argument for each module ending on a hall, an offer and a hammer rather than on
+  a gunfight.
+
+  The read-through found four faults in the new pages, all fixed here. **Deacon Loomis Pratt runs
+  the most important scene in Module I and was in no cast list** — he speaks the epigraph, the
+  read-aloud and the closing beat, and a Keeper turning to *The Cast* for his want and his lever
+  found three other people and not him. **Hannah Pell's lever contradicted her own route**: the
+  cast page said she tells the posse the whole truth unprompted, the turn says the one sentence
+  she cannot get out is what she noticed at the supper. Both are true and the cast page now says
+  which is which. **Her route named no scene she could actually be got alone in** — it names two
+  now, and both are late, which is the point. And **not one of the three back-of-book indexes
+  reached the new page at all**: fourteen entries added across the three, so the module's own
+  navigation finds its own turn. One collision of dates in Module II (the thing "should have gone
+  south on the fourth night", which is the night it took Mears) is reworded.
+
 - **Keeper's Book v2.16 · Bestiary v2.14 · GritKeeper v1.44.0 — the budget is repriced off the
   harness, and a Hexer's Debts are finally counted (2026-08-22, user-requested).**
 

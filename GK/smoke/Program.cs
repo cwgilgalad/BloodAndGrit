@@ -2878,6 +2878,46 @@ T("sign names are unique", cg.signs.Select(s => s.name).Distinct().Count() == cg
 T("the Craft is the Witch's alone", cg.callings
     .Where(c => c.signLists != null && c.signLists.Contains("craft"))
     .Select(c => c.name).SequenceEqual(new[] { "Witch" }));
+
+// ---- the Witch's familiar (v1.45.0) -----------------------------------------------------------
+// The books give the bound beast a standing +2, a touch-range delivery, shared senses and a
+// Sickened when it dies; until v1.45.0 the app held the kind inside the shared CallingChoice
+// string and none of the rest. These hold the three fields to the one fact they describe — the
+// failure mode being a sheet whose familiar and whose bonus name two different animals.
+{
+    var witch = cg.callings.First(c => c.name == "Witch");
+    T("the Witch is the only Calling with a Familiar choice", cg.callings
+        .Where(c => c.choice != null && c.choice.label == "Familiar")
+        .Select(c => c.name).SequenceEqual(new[] { "Witch" }));
+    T("every familiar option has a boon of its own", witch.choice.options
+        .Select(CharGen.FamiliarBoonFor).Distinct().Count() == witch.choice.options.Count);
+    T("an unknown beast still gets a readable boon",
+        CharGen.FamiliarBoonFor("a badger").Contains("befitting its nature")
+        && CharGen.FamiliarBoonFor(null).Length > 0);
+
+    for (int lv = 1; lv <= 10; lv++)
+    {
+        var s = CharGen.Generate(lv, false, "Witch");
+        T($"a Witch at {lv} is bound to a beast", !string.IsNullOrEmpty(s.FamiliarKind));
+        T($"the Witch at {lv} names one animal, not two",
+            s.CallingChoice.EndsWith(s.FamiliarKind, StringComparison.Ordinal)
+            && s.FamiliarBoon == CharGen.FamiliarBoonFor(s.FamiliarKind));
+        T($"the familiar at {lv} starts alive", !s.FamiliarLost);
+        T($"the sheet at {lv} says what the beast gives",
+            CharGen.FamiliarLine(s).Contains(s.FamiliarKind)
+            && CharGen.FamiliarLine(s).Contains("touch-range"));
+        s.FamiliarLost = true;
+        T($"a dead familiar at {lv} reads as Sickened until re-bound",
+            CharGen.FamiliarLine(s).Contains("Sickened", StringComparison.Ordinal));
+    }
+
+    // Everybody else keeps the plain choice line and gains no familiar.
+    foreach (var name in new[] { "Marshal", "Shaman", "Gunhand" })
+    {
+        var s = CharGen.Generate(3, false, name);
+        T($"{name} has no familiar", s.FamiliarKind == null && CharGen.FamiliarLine(s) == null);
+    }
+}
 T("sign-workers and signLists are the same four callings", cg.callings
     .All(c => (c.signsKnownAt != null) == (c.signLists != null && c.signLists.Count > 0)));
 T("Rank opens at 1st, 3rd, 5th, 7th, 9th", Enumerable.Range(1, 10)

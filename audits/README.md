@@ -16,13 +16,38 @@ session branches, which is how a red X came to mean "somebody is mid-sentence"
 about as often as it meant "something is broken". They are separate, reviewable
 files now, and which ones run is a decision somebody makes.
 
+## Running them together
+
+`verify_all.py` runs these as subprocesses and collects the exit codes. It is a
+runner, not a check: it re-implements nothing, and it is not in the table below
+for that reason. Adding a check means adding a file here and a row to its
+`CHECKS` table, after which `--list` shows it.
+
+```bash
+python audits/verify_all.py            # the read-only checks: nothing slow, nothing writes
+python audits/verify_all.py --quick    # the instant ones only
+python audits/verify_all.py --app      # ... and build, the smoke suite, the self-test
+python audits/verify_all.py --full     # ... and the ones that rebuild or take minutes
+python audits/verify_all.py --release  # everything, which is the gate /ship reads
+python audits/verify_all.py --list     # what would run, and in what order
+```
+
+It is a script rather than a slash command on purpose: this has to run at a
+prompt, in a git hook, in CI and for Claude alike, and an entry point that only
+works while one particular tool is driving is the first thing here to stop
+working the day that tool is not. Advisory checks — `audit_whitespace.py`, which
+measures gaps a Keeper has to judge — are reported and never counted, so they
+cannot turn the exit code red.
+
 ## What each one checks
 
 | File | Checks | Cost | Needs |
 |---|---|---|---|
 | `audit_names.py` | No two modules share a name. Hard-fails on a distinctive word shared between two titles **or a shared title grammar**; lists shared proper nouns for a human to judge; cross-checks `names.json`'s spent-word list against the shipped titles; holds `GK/playtest/Adventures.cs` and `PLAYTEST.md` to the titles the modules actually ship under, and every `module-*.html` named in the repo's docs to a file that exists. | instant | built modules, `Adventures.cs`, `PLAYTEST.md`, `README.md`, `CLAUDE.md` |
 | `verify_release.py` | One version everywhere (csproj ↔ CHANGELOG ↔ README ↔ CLAUDE.md), and every GritKeeper version in the CHANGELOG except the newest has a `gritkeeper-vX.Y.Z` tag. `--delivered` adds the local-only check that the packaged exe carries the source's version. | instant | git tags (a shallow clone sees none) |
-| `verify_rules.py` | 980 cross-checks of the printed Player's Book against `chargen.json` against the spine formula — the Calling tables, the arms table, and since 2026-08-19 the **feature prose, the 3rd-level paths and the picker blurbs** beside them. The guard the whole project rests on. | instant | `blood-and-grit.html` |
+| `verify_rules.py` | 988 cross-checks of the printed Player's Book against `chargen.json` against the spine formula — the Calling tables, the arms table, the **feature prose, the 3rd-level paths and the picker blurbs** beside them, and since 2026-08-22 **Ch. IV's encounter budget** in both Keeper-side books against `Rules.BudgetRungs`. The guard the whole project rests on. | instant | `blood-and-grit.html`, `keeper-handbook.html`, `bestiary.html` |
+| `audit_consistency.py` | 80,831 cross-checks of the **Keeper's** side, which `verify_rules.py` does not reach: Threat by Tier and Sign & Spoor across book/app/`CLAUDE.md`, `creatures.json` still current with the built Bestiary, the Roll-by-Tier appendix, all 143 Grounds entries, every condition a creature inflicts defined in Appendix B, the printed benchmarks against the 175 creatures that are supposed to match them, one shared vocabulary across all six books, every chapter cross-reference, and **app↔book feature parity** — anything one carries that the other does not. | instant | all six built books, `Core.cs`, `CharGen.cs`, `creatures.json` |
+| `audit_diversity.py` | Is every possibility the rules offer one some path can reach? Fails only on **dead surface** — a skill no Calling wants and no Origin grants, a condition nothing inflicts, a power list that stops short of rank 5, an ability no Origin raises. Everything else (the Bestiary's Tier grid, the Dread spread, how many ways a thing can be put down, what share of the Bestiary the Grounds tables reach) is measured and printed for a designer, and never touches the exit code. | instant | all six built books, `chargen.json`, `creatures.json` |
 | `audit_ui.py` | Every interactive control in the app is wired and tipped; every modal dialog answers Esc; nothing refuses in silence. | instant | `GK/source/*.cs` |
 | `audit_maps.py` | Cartographer and engineer in one. Anchors resolve, pin numbers match numbered scenes, the standalone `.svg` is byte-for-byte the drawing in the book; scale bar, north arrow, legend, nothing outside the frame, no two labels overlapping. | instant | built modules + `module_maps.py` |
 | `audit_ai_tells.py` | The repo's own prose reads as written. Burstiness, generated cadences (negative parallelism above all), em dashes per thousand words, punctuation variety, sentence-opener diversity. `--commits N` reads the last N commit messages too. | seconds | git history for `--commits` |
