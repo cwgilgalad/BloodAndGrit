@@ -30,6 +30,21 @@ the figure it passed on, and drift shows up in the figure long before it shows u
 If this is a **books or modules** ship and the app has not moved, `--release` is more than is
 needed; `python audits/verify_all.py --full` is the honest gate. Say which one you ran.
 
+**Two of these checks cannot pass on an uncommitted tree, so on a session branch that still has
+work in it the gate runs here and again after step 5.** `audit_built_matches_committed.py`
+compares every built `.html` against its committed copy, and `--delivered` compares the packaged
+exe's build commit against HEAD — both are red until the sources are committed and the exe is
+built from that commit. The order that works, found the hard way on 2026-08-23:
+
+1. **Commit every source change first** — builders, `.cs`, data, docs. Nothing left in the tree.
+2. **Then** `dotnet publish` → `sign` → `package` (step 5), so the exe stamps *that* commit.
+3. Commit the packaging output. `app_changed_since()` is scoped to `GK/source` and `GK/rules`, so
+   a commit that only touches `GritKeeper/` and the PDFs leaves the delivered check green.
+4. **Then** run `--release`. It is the gate on what is about to be tagged, not on a work tree.
+
+Packaging before committing stamps the exe with the *previous* commit and the gate says so by
+name — same version, older build. That is the check working, not a false alarm.
+
 ## 1. The version is bumped, and it is bumped in one place
 
 - **The app:** `<Version>` in `GK/source/BloodAndGritKeeper.csproj`, and nowhere else.
@@ -90,9 +105,15 @@ python tools/make_bundles.py books      # or: modules
 ```
 
 Built from a declared list, and it reads each book back to check it shows the version its own
-builder stamps. **If a PDF is in that list and the HTML has moved, the PDF is stale** — and PDFs
-are only ever generated when Cole asks for them (*"Save to PDF" — my standing preference*). Ask
-before running `make_pdf.py`; do not run it as a side effect of a book change.
+builder stamps. **That check reaches the HTML only.** The PDFs are in the same manifest and are
+bundled on trust, so a zip can ship a PDF that disagrees with its own HTML and nothing goes red.
+
+**If a PDF is in that list and the HTML has moved, the PDF is stale** — and PDFs are only ever
+generated when Cole asks for them (*"Save to PDF" — my standing preference*). Do not run
+`make_pdf.py` as a side effect of a book change. The one case where it is not a side effect is
+this one: **an explicit instruction to publish a release of everything that changed includes the
+PDFs, because they are tracked files inside the declared bundle.** Reprint them, say so, and
+check each page count against the book's rendered sheet count — `make_pdf.py` prints both.
 
 ## 6. Write the release notes
 
