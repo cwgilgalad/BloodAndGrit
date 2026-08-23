@@ -2147,7 +2147,9 @@ public partial class MainForm
             if (f.Desc != null) sb.AppendLine(Wrap("    " + f.Desc, 78));
             sb.AppendLine();
         }
-        if (!string.IsNullOrEmpty(soul.Sheet?.CallingChoice)) sb.AppendLine(soul.Sheet.CallingChoice);
+        var famLine = soul.Sheet == null ? null : CharGen.FamiliarLine(soul.Sheet);
+        if (famLine != null) sb.AppendLine(famLine);
+        else if (!string.IsNullOrEmpty(soul.Sheet?.CallingChoice)) sb.AppendLine(soul.Sheet.CallingChoice);
         return sb.ToString();
     }
 

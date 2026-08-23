@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.16 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.16)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.17 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.17)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.16</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.17</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.16 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.17 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -526,6 +526,46 @@ CH3 = f"""<!-- III -->
   <div class="keeper-note"><span class="kn-tag">A word of warning</span>Never hand a player the Mark as punishment for
   a bad roll. The Mark is for <em>choices</em>. A character cursed by a die is a victim; a character Marked by a
   decision they'd make again is a tragedy, and tragedy is the game.</div>
+
+  <h2 id="ix-household">The Household Method</h2>
+  <p>There is a way of running the Old Dark that this game is built for and that a Keeper has to be told about,
+  because every instinct a table brings from other games points away from it. The method is this: <strong>put the
+  horror inside the house, and make the house right.</strong></p>
+
+  <p>A posse that rides out to a haunted mine has an enemy, a location, and a plan. That is an adventure and there are
+  three of them in the modules and they are good. The other thing &mdash; the thing that empties a room and stays with
+  people for a week &mdash; needs no monster on the page at all for the first hour. It needs a family, or a
+  congregation, or a station full of decent strangers, all of them behaving exactly as their situation demands, and it
+  needs the awful arrangement they are already inside to be visible to the table before it is visible to them.</p>
+
+  <p>Four things make it work, and they are all things to do rather than things to describe:</p>
+  <ul>
+    <li><strong>Let the piety be real.</strong> The deacon who reads the arrears is not a hypocrite. The father who
+    prays over supper means it, and it is the praying that holds the family in the room long enough for the thing to
+    get at them. Play conviction straight and let it be admirable. A congregation the table respects is a
+    congregation the table will be horrified to watch arrive somewhere terrible.</li>
+    <li><strong>Make the offer good.</strong> When the dark asks, it should ask kindly, quietly, and in terms the
+    character actually wants, and it should be telling the truth. A temptation nobody at the table is tempted by is a
+    scene about nothing. Write down before the session what each soul would find hardest to refuse, and then have the
+    thing say it in a voice they trust.</li>
+    <li><strong>Use documents.</strong> A ledger, a deposition, a letter in a dead woman's hand, a mission register
+    with a column that turns out to be a tally. Prose that comes to the table as an object read aloud carries a
+    weight no Keeper narration matches, because the players do the work of understanding it. Write it in the period
+    and do not clean up the spelling.</li>
+    <li><strong>Do not release the room.</strong> No comic beat at the end, no reassuring rules answer, no cut away.
+    Hold the last image, whatever it is, and then say that there is pie, or that the coach leaves at six, and let the
+    session end on the ordinary thing happening.</li>
+  </ul>
+
+  <p>The Mark belongs to this method more than to any other. Every step on the road above is a step somebody took on
+  purpose for a reason that made sense at the time, surrounded by people who did not stop them, and several of whom
+  were relieved. Run it that way and the sixth step is not a monster arriving. It is an arrival, and the character
+  walks the last of it on their own feet, and the table watches.</p>
+
+  <div class="keeper-note"><span class="kn-tag">Where to see it done</span>All three modules end this way on purpose,
+  and each ends on the ordinary thing happening rather than on a fight: a supper where the names are read, a coach
+  boarding at first light, a column of drownings in the county paper next spring. Read those three endings together
+  before you run any of them.</div>
 </section>
 """
 

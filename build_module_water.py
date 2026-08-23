@@ -10,7 +10,7 @@ from modules_common import (night_costs, shell, splice, finish, report, runhead,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.3"
+VERSION = "1.4"
 SLUG = "what-the-water-answers"
 
 H = shell(
@@ -43,6 +43,7 @@ CONTENTS = '''
   ''' + contents([
       ("what", "What This Is"),
       ("truth", "The Truth of It"),
+      ("turn", "The Terms of the Loan"),
       ("hook", "The Hook, and Getting Them There"),
       ("ground", "The Ground"),
       ("act1", "Act One &mdash; What Comes Up With the Water"),
@@ -146,6 +147,109 @@ TRUTH = '''
     "<p>Show the clock. Put it on the table with three pips already inked and do not explain it "
     "until Act Two. A clock the players can see and cannot read is the best pressure this system "
     "has, and this module is the one that earns it.</p>") + '''
+</section>
+'''
+
+# ============================================================ the turn
+# What the nails are actually for. "The Truth of It" gives the Keeper a seal that has been left
+# unmaintained, which is a rescue plot; this page turns it into an obligation somebody has to
+# accept, which is the module this one wants to be. Everything on this page is in the ledger and
+# reachable in Act Two.
+TURN = '''
+<section class="page" id="turn">
+  ''' + runhead("The Terms") + '''
+  <h1 class="chapter">The Terms of the Loan</h1>
+  ''' + quote("It is not bound. We have not the means and I will not write that we have. "
+              "It is fed, at a rate the country can bear, by men who will not be thanked.",
+              "Fray Ignacio Salcedo, San Clavo, the twelfth of October 1809") + '''
+
+  <p>The ledger runs to sixty-one leaves and almost everyone who has ever held it has stopped at
+  the fortieth, where the instructions end. The instructions are practical and complete: seven
+  wells, in this order, a nail of worked silver at the waterline, this prayer, this schedule.
+  A person could walk the circuit for thirty years on the first forty leaves and many have.</p>
+
+  <p>The last eleven leaves are in a second hand, smaller and later, and they are not
+  instructions. They are Salcedo dictating at the end of his life to whoever was left, and what
+  he says is what the padres actually did in 1809.</p>
+
+  <h2 id="turn-what">What a Nail Is</h2>
+  <p>They could not kill it and Salcedo says so four separate times, in the flat way of a man who
+  expects to be doubted. What they could do was set the rate. Seven wells, each one a mouth held
+  open a fixed width, so that the thing under the mission draws steadily and slowly and never
+  wakes far enough to draw for itself. The nails hold the width. The prayer is a measure and not
+  a blessing; it says how much, and it has to be said again because the thing keeps asking for
+  more and the saying is how you tell it no.</p>
+
+  <p>Renewal is a portion carried down. Seventy-five years of one person at a time walking to
+  seven holes in the ground and handing something over on a schedule.</p>
+
+  ''' + keeper(
+      " Say the word ration at the table only once, and let it be a player who says it. The page "
+      "the posse is reading does not use it. Salcedo writes about weights and measures and the "
+      "capacity of vessels, in the voice of a man doing arithmetic he intends never to explain, "
+      "and the table works out what is being measured about four sentences before he says it "
+      "outright.",
+      "How to hand this over") + '''
+
+  <h2 id="turn-column">The Column Nobody Read</h2>
+  <p>Down the right margin of every renewal leaf is a short column of figures that the earlier
+  custodians copied forward without comment because the form had always had it. One or two a
+  year. Seventy-five years. Under it, in the second hand, four words: <em>los que da el
+  agua</em> &mdash; those the water takes.</p>
+
+  <p>Anyone who has spent a week in the Basin can check this. The drownings are real, they are
+  recorded at the county seat, and there are always one or two, and there have been for as long
+  as anybody keeps paper. It is the least remarkable statistic in the territory. That is the
+  point of it and it is why it worked for seventy-five years.</p>
+
+  ''' + statblock("The Drowned") + '''
+
+  <h2 id="turn-esperanza">Esperanza Did Not Forget</h2>
+  <p>The module opens with a woman who meant to hand it on and ran out of time, which is a sad
+  and ordinary thing and is what everyone in the Basin will tell the posse about Esperanza
+  R&iacute;os. The ledger says otherwise. Her hand appears once more after the last renewal
+  entry, on the inside of the back board, in April, and it is one line and it is steady:</p>
+
+  ''' + readaloud(
+      "<em>Thirty-one years I have carried it what it asked for and it has never once asked for "
+      "less. I am eighty-one and I am the last one who knows, and I find I would rather leave "
+      "the Basin the choice than leave it the schedule. May God forgive me if I have reckoned "
+      "wrong. I do not think I have.</em>") + '''
+
+  <p>She was not confused, not failing, and not afraid. She made a judgement about a
+  seventy-five-year arrangement she had inherited without consenting to and she declined to pass
+  the debt to a stranger. Four months later the third nail went and the Cardoza well came up
+  wrong. Both of those things are true at once and this module will not tell the table which one
+  of them she should have weighed heavier.</p>
+
+  ''' + keeper(
+      " There is still no villain here and Esperanza must not be made into one. If a player calls "
+      "her selfish, let another player be the one to answer, and stay out of it. The module has "
+      "no opinion. The single most valuable thing this page does is put a real moral argument on "
+      "the table and refuse to settle it.",
+      "Hold the line on this") + '''
+
+  <h2 id="turn-choice">What the Posse Is Actually Being Offered</h2>
+  <p>Four blanks, a hammer, seven wells, a schedule. Before anybody picks it up, say the whole
+  price out loud, plainly, once:</p>
+
+  <p>The circuit takes eleven days and comes round four times a year. It cannot be delegated,
+  because it is a portion carried by a person and the thing knows who has been coming. It cannot
+  be written down anywhere findable, because a thing widely known is a thing eventually dug up.
+  Whoever takes it will do it for the rest of their life, will not be thanked, will not be
+  believed if they ever try to explain it, and will one day be eighty-one and four miles from a
+  well with nobody standing ready to take the hammer. The Basin will go on drowning one or two a
+  year, and those one or two will be the price of everybody else, and the person holding the
+  hammer will know their names because they will be the one reading the county register.</p>
+
+  <p>Then hand it to whoever puts their hand out.</p>
+
+  ''' + keeper(
+      " Do not soften this and do not build a third option behind the Keeper&rsquo;s screen. A "
+      "player who takes the hammer after hearing all of it has done the bravest thing anybody "
+      "does in these three modules, and a player who refuses has done a defensible thing that "
+      "Esperanza R&iacute;os also did. Write down which, and the date, and let it sit in the "
+      "campaign like a stone in a boot.") + '''
 </section>
 '''
 
@@ -574,6 +678,16 @@ AFTER = '''
   ''' + quote("The work is not the nail. The work is the returning.",
               "Fray Ignacio Salcedo, San Clavo, 1809") + '''
 
+  <h2 id="after-register">The county register</h2>
+  <p>However it ended, one thing goes in the campaign notes and stays there. Somewhere in the
+  Basin, next spring, one or two people drown. It is in the paper at the county seat, two lines,
+  under the stock prices.</p>
+
+  <p>If somebody took the hammer, they read those two lines and they know what the names paid
+  for. If nobody did, they read them and they do not know, and neither does the table, and the
+  question of whether Esperanza R&iacute;os reckoned right stays open for as long as the campaign
+  runs. Both of those are good endings. Neither is a comfortable one.</p>
+
   <h2 id="after-three">The three nights together</h2>
   <p>A posse that has run all three has been told the same thing three ways: at Coffin Wells that
   some things cannot be shot, at Saltlick that some things must be prepared for, and here that some
@@ -582,7 +696,7 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)

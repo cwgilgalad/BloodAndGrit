@@ -1627,6 +1627,7 @@
     "Survival",
     "Notice",
     "Sleight",
+    "Acrobatics",
     "Athletics",
     "Lore (Frontier)",
     "Ride",
@@ -1822,6 +1823,7 @@
     "Deceive",
     "Insight",
     "Sleight",
+    "Acrobatics",
     "Notice",
     "Persuade",
     "Lore (Frontier)",
@@ -1977,7 +1979,7 @@
    "featureDescs": {
     "Deadly Aim": "You may take a –2 penalty on a firearm attack to add +4 to its damage. The penalty and bonus both increase at 5th level (–3 / +6) and 9th (–4 / +8).",
     "Gunhand's Edge": "You gain a pool of Edges — sharp little tricks. Choose one combat Edge from Chapter IX at 1st level and at every odd level after. These are in addition to the Edges every character earns.",
-    "Trick Shot": "Once per round, before rolling, you may declare a called shot — to disarm, to wound a limb, to shatter a lantern or a rope. Take –4 to the attack; on a hit, the Keeper grants the effect in place of, or alongside, reduced damage. Under the Iron Code (Chapter XI), a critical hit on a called shot grants the effect and full damage.",
+    "Trick Shot": "Once per round, before rolling, you may declare a called shot — to disarm, to wound a limb, to shatter a lantern or a rope, to ring a skull with a barrel or a butt and leave the man Stunned a round. Take –4 to the attack; on a hit, the Keeper grants the effect in place of, or alongside, reduced damage. Under the Iron Code (Chapter XI), a critical hit on a called shot grants the effect and full damage.",
     "Lightning Hand": "Your reflexes outrun thought. Drawing a holstered weapon costs no action (a free Interact), and you act before anyone you have not yet met in a fight unless they, too, have this knack. Once per fight you may take an extra Strike as a reaction the instant initiative is rolled.",
     "No Quarter": "When you drop a foe to 0 Blood or below with a firearm, you may immediately make one more attack against a different target within range, free of the Multiple Attack Penalty. There is no limit to how many times this may chain in a single round but your own luck."
    },
@@ -2010,6 +2012,7 @@
     "Intimidate",
     "Ride",
     "Athletics",
+    "Acrobatics",
     "Stealth"
    ],
    "edgePrefs": [
@@ -2560,7 +2563,7 @@
     "Grubstake": "You are never quite empty-handed. You always carry working prospecting and mining tools, and once per session you may produce one mundane but useful item you \"had all along\" — a spare pick, a coil of wire, a candle-stub, a creased claim-map of the very ground you stand on. You also know the outfitters; in any town of size you may secure a fair price and a line of credit no questions asked, so long as your luck holds.",
     "Dowse": "With a forked rod, a pan, or a pendulum and a minute's concentration, make a Survival check to sense the nearest water, ore, or worked metal within a quarter-mile, and its rough direction and depth. The same gift, pushed, finds darker things — buried bodies, salted graves, and the bad veins where the Old Dark runs close to the surface. The rod always tells the truth. It simply does not always tell you what you hoped to hear.",
     "Field Inventions": "You are forever modifying your kit by lamplight. Choose two Devices from the list below at 4th level, and one more at 6th and at 8th; you may rebuild your loadout each dawn. Unless noted, readying a Device spends one prepared charge.",
-    "A Powderman’s Devices": "Concussion Charge. A muffled blast of nonlethal force that deafens; gentle on walls, hard on men. Flash Powder. A blinding crack in a 10-foot burst; Fortitude or be dazzled a round, blinded on a critical failure. Grapnel & Line. A launched hook and rope to scale a height, swing a gap, or drag an object — or a man — off his feet. Repeating Fuse. Throw or place a charge as a single Beat rather than two, and add +2 to land it where you mean to. Scattergun Charge. Packed shrapnel fires in a 20-foot cone instead of a burst, dealing piercing for fire. Smoke Pot. A 15-foot bank of concealing smoke that drifts and lingers a minute or more. String of Cats. A rattling chain of bangers that apes a firefight — fine for a distraction, or a Demoralize against the green. Thunderboot Auger. A shaped breaching charge that opens a barred door, a safe, or a mine-wall in seconds.",
+    "A Powderman’s Devices": "Concussion Charge. A muffled blast of nonlethal force that deafens; gentle on walls, hard on men. Flash Powder. A blinding crack in a 10-foot burst; Fortitude or be dazzled a round, Blinded for the scene on a critical failure. Grapnel & Line. A launched hook and rope to scale a height, swing a gap, or drag an object — or a man — off his feet. Repeating Fuse. Throw or place a charge as a single Beat rather than two, and add +2 to land it where you mean to. Scattergun Charge. Packed shrapnel fires in a 20-foot cone instead of a burst, dealing piercing for fire. Smoke Pot. A 15-foot bank of concealing smoke that drifts and lingers a minute or more. String of Cats. A rattling chain of bangers that apes a firefight — fine for a distraction, or a Demoralize against the green. Thunderboot Auger. A shaped breaching charge that opens a barred door, a safe, or a mine-wall in seconds.",
     "Assayer's Eye": "You appraise the worth and the honesty of a thing at a glance: the value of goods and gems, the salted claim, the counterfeit coin, the true content of a vein. You instantly recognize silver and cold iron by their gleam and heft — knowledge worth more than money against the things that fear them.",
     "Demolitionist": "Your understanding of powder has passed from craft into art. Your bursts gain +5 feet of radius, and against structures, wagons, and the unliving your charges deal double dice. Once per scene you may daisy-chain several prepared charges into a single catastrophic blast, combining their dice and their burst — the kind of thing that reshapes a canyon wall, or the course of a battle.",
     "Sapper": "You dig, tunnel, and undermine at twice the speed of honest men. In a fight, spend two Beats and a point of Pay Dirt to throw up hard cover from the ground itself — a trench, a rubble-pile, a collapsed timber — or, with a charge set, to bring a wall, a bridge, or a mine-roof down on whatever stands beneath it.",

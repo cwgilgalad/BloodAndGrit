@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.28 · Keeper's Book v2.16 · Bestiary v2.14 ·
-GritKeeper app v1.44.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.29 · Keeper's Book v2.17 · Bestiary v2.14 ·
+GritKeeper app v1.45.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -112,12 +112,12 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.28 | 203 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.16 | 102 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.29 | 203 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.17 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.14 | 199 | none (175 creatures) |
-| Module I — The Salt at Coffin Wells | v1.2 | 26 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.2 | 27 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.3 | 26 | one inline SVG map (two panels), downloadable |
+| Module I — The Salt at Coffin Wells | v1.3 | 29 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.3 | 30 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.4 | 30 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -292,6 +292,14 @@ the C# UI, the release tags and the repo's own prose. `audits/README.md` says wh
 one checks and what it costs. Only the app job — build, ~12,000 assertions, self-test —
 still runs automatically, and only on `main` and pull requests.
 
+**One entry point runs them: `python audits/verify_all.py`.** It shells out to the files in
+`audits/` and collects their exit codes, so there is still exactly one copy of every check; what
+it adds is an order, a tier system (`--quick` / `--app` / `--full` / `--release`) and one summary
+line per check. `--release` is the gate `/ship` reads. Advisory checks never touch the exit code,
+because `audit_whitespace.py` measures gaps a Keeper has to judge and a number that needs
+judgement cannot be a pass/fail gate. Written 2026-08-22, after a release walk ran nine checks by
+hand in the right order out of memory.
+
 
 - **Page parity** — desktop and mobile must paginate to the same page count.
 - **No clipping at true scale** — desktop clip 0; on mobile, force `zoom:1 !important` on
@@ -311,7 +319,7 @@ still runs automatically, and only on `main` and pull requests.
   since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
   player. Since 2026-08-22 it also holds Ch. IV's encounter ladder against the Bestiary's
   statement of it and against `Rules.BudgetRungs`, which is three sites that had no guard at all
-  and drifted for six days (987 cross-checks).
+  and drifted for six days (988 cross-checks).
 - **No two modules have the same name** — `python audits/audit_names.py`. The only auditor here that reads
   more than one artifact, and it exists because of what that gap cost: every other check asks
   whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
@@ -332,12 +340,41 @@ still runs automatically, and only on `main` and pull requests.
   Run on request — see `audits/README.md`.
 - **Every map agrees with its module** — `python audits/audit_maps.py`. Anchors, pin numbers, the
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
+- **The game plays the same way everywhere it is written down** — `python audits/audit_consistency.py`
+  (2026-08-22). `verify_rules.py` guards the *player's* side; this guards the Keeper's, which is
+  where one number appears in the most places and where nothing held them together. 80,527
+  cross-checks: Threat by Tier and Sign & Spoor across the Bestiary, `Rules.TierRow`/`SpoorRow` and
+  this file's own copies; `creatures.json` re-extracted and diffed against the built Bestiary (the
+  app quoting last edition's stat block was previously catchable by nobody); the generated
+  Roll-by-Tier appendix; all 143 hand-written Grounds entries, name and Tier; every condition a
+  creature inflicts defined in Appendix B; the printed benchmarks against the population they
+  describe; one shared vocabulary across all six books, with a soft tier for legitimate glosses;
+  every chapter cross-reference; and **app↔book parity** — a feature one carries and the other does
+  not is a failure on both sides. It found two real faults on its first run: `Enfeebled` inflicted
+  by two creatures and defined nowhere, and the Witch's familiar printed with real mechanics and
+  tracked in the app by one shared text box. Both are fixed.
+- **Every option the rules print is one some path can reach** — `python audits/audit_diversity.py`
+  (2026-08-22). It asks whether the game is as *wide* as it claims, which is a different question
+  from whether it is correct, and it draws a narrow line on purpose: **it fails only on dead
+  surface** — a skill no Calling wants and no Origin grants, a condition nothing inflicts, a power
+  list that stops short of rank 5, an ability no Origin raises, a Calling with no Edge of its own.
+  Everything else it measures is *printed and never counted*: the Bestiary's Tier×chapter grid, the
+  Dread spread, the thirteen ways a thing can be put down and how lopsidedly they are used, and
+  what share of the Bestiary the Grounds tables can actually roll into. "Enough variety" is a
+  designer's call, and a checker that guesses at it fires on good design once and is ignored after.
+  Its first run found three dead options — `Acrobatics` wanted by no Calling, `Blinded` and
+  `Stunned` defined and inflicted by nothing — all three now reachable.
+- **The books as data** — `python tools/extract_rules.py` turns all six built books into chapters →
+  sections → paragraphs → tables. Both audits above read it instead of re-inventing the same three
+  hundred lines of HTML walking for a fourth time. `--out` writes the whole digest as JSON, which
+  is the shape a bot, a search index or a VTT importer would want; that file is git-ignored, since
+  nothing in the repo reads it and a committed copy would be a staler second copy of the books.
 - **The prose reads as written** — `python audits/audit_ai_tells.py --commits 40`. The books have had this
   standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
   the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
   sentence length; 0.55+ human-like, under 0.45 is the tell) and a scan for generated cadences,
-  **negative parallelism** above all. Currently README 0.84 · CLAUDE.md 0.81 · GK/CLAUDE.md 0.68 ·
-  CHANGELOG 0.81 · commit messages 0.64, zero hard tells. `GK/CLAUDE.md` joined the scanned set in
+  **negative parallelism** above all. Measured 2026-08-22: README 0.85 · CLAUDE.md 0.69 ·
+  GK/CLAUDE.md 0.63 · CHANGELOG 0.71 · commit messages 0.67, zero hard tells. `GK/CLAUDE.md` joined the scanned set in
   v1.29.2 — it was split out of this file on 2026-07-30 and would otherwise have exempted a quarter
   of the project's documentation from the standard the rest of it is held to.
   Three further measures joined the scan on 2026-08-09, from the 2026 stylometry work: **em dashes
@@ -372,7 +409,27 @@ appears in more than one place, wire it this way: one source, generated outward,
 
 ---
 
-## The Player's Book (v2.28) — structure
+## Shipping — the ordered walk is in `.claude/commands/ship.md`
+
+The eleven steps for cutting a release live in exactly one file, and this is not that file.
+[`.claude/commands/ship.md`](.claude/commands/ship.md) carries the sequence: gate, version,
+changelog, docs, merge, artifact, notes, tag, retire the superseded page, restore `Latest`,
+regenerate the index. What stays here is the rules and the reasons behind them. Why only the
+current release keeps its page, what the version cascade does, which landmine cost which release
+— each step over there names the section over here that holds its reason, rather than copying it.
+
+The split matters. Two copies of a runbook drift, and the one a session acts on is whichever it
+opened first, which is how the version cascade failed twice with a warning paragraph sitting
+directly above the code that ignored it.
+
+Step 0 is `python audits/verify_all.py --release`, so the checklist opens by handing the work to
+the machinery. Every step after it is held by something that runs: `verify_release.py` on the
+versions, `.githooks/pre-commit` on the doc claims, `verify_rules.py` on the rules themselves.
+Read `/ship` as the order to do them in.
+
+---
+
+## The Player's Book (v2.29) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -420,7 +477,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.16) — structure
+## The Keeper's Book (v2.17) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -526,7 +583,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.44.0) — the C# desktop app
+## GritKeeper (v1.45.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
@@ -673,7 +730,9 @@ change them all:
 - **The ship loop ends with the tag push.** `--follow-tags` in the hook carries tags that
   already exist, and a tag is normally created *after* the merge, so: merge, tag, then
   `git push --follow-tags origin main`. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three
-  repos** (BloodAndGrit, TideWatch, DebForge). They are still on disk, still byte-identical,
+  repos** (BloodAndGrit, TideWatch, DebForge), with one hole cut in that on 2026-08-22:
+  `.claude/commands/ship.md` is tracked here, because a release runbook is part of how the
+  deliverables get built. They are still on disk, still byte-identical,
   and still run; they are simply not published, because they describe this laptop rather than
   any of the software. "Identical in every repo" therefore holds of the files AND of what is
   tracked. Verify with `Get-FileHash` across the three before editing either one.
@@ -695,7 +754,7 @@ recoverable from history.
 | `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
 | `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones — the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
 | `DESIGN-online-play.md`, `editorial-denials.md` | **untracked** | Process, not product: an unbuilt proposal and a log of declined edits. The proposal's substance is summarized in the roadmap below, so nothing is lost. |
-| `.claude/` | **untracked** | This laptop's setup — a session command. It builds nothing. (`autosync.ps1` and `register_autosync_task.ps1` were here too until 2026-08-10, when nothing was left running on a timer and they were deleted outright.) |
+| `.claude/` | **untracked, except `commands/ship.md`** | `commands/session-start.md` describes this laptop and builds nothing. `commands/ship.md` is the ordered walk for cutting a release, and every tool it drives — `package.ps1`, `sign.ps1`, `make_bundles.py`, `release_index.py` — is tracked already, so it qualifies under this rule's own test. Carved out 2026-08-22; it takes four lines in `.gitignore`, because git will not re-include a file out of an ignored directory. (`autosync.ps1` and `register_autosync_task.ps1` were here too until 2026-08-10, when nothing was left running on a timer and they were deleted outright.) |
 | `add_index.py` | **untracked** | Dead: a one-shot against `player-src.html`, a file retired 2026-07-18, marked "do not re-run" since. |
 
 The repo is **PUBLIC and stays public** — that is deliberate; don't offer to change it.
