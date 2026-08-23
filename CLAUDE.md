@@ -342,7 +342,7 @@ hand in the right order out of memory.
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
 - **The game plays the same way everywhere it is written down** — `python audits/audit_consistency.py`
   (2026-08-22). `verify_rules.py` guards the *player's* side; this guards the Keeper's, which is
-  where one number appears in the most places and where nothing held them together. 80,527
+  where one number appears in the most places and where nothing held them together. 80,831
   cross-checks: Threat by Tier and Sign & Spoor across the Bestiary, `Rules.TierRow`/`SpoorRow` and
   this file's own copies; `creatures.json` re-extracted and diffed against the built Bestiary (the
   app quoting last edition's stat block was previously catchable by nobody); the generated

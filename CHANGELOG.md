@@ -67,7 +67,7 @@ Desktop\Git repos.)
 
   **`audits/audit_consistency.py` (new) asks whether the game plays the same way in every place it
   is written down.** `verify_rules.py` guards the player's side; this is the Keeper's, which is
-  where a single number appears in the most places and where nothing held them together. 80,527
+  where a single number appears in the most places and where nothing held them together. 80,831
   cross-checks across ten questions — Threat by Tier and Sign & Spoor over book, app and this
   project's own documentation; `creatures.json` re-extracted and diffed against the built Bestiary;
   the generated Roll-by-Tier appendix; all 143 hand-written Grounds entries by name and by Tier;
