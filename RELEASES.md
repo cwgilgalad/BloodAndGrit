@@ -16,7 +16,8 @@ index to it.
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|
-| v1.43.1 **← current** | `gritkeeper-v1.43.1` | 2026-08-21 | the status bar catches up with the books |
+| v1.44.0 **← current** | `gritkeeper-v1.44.0` | 2026-08-22 | the budget repriced off the harness, and a Hexer's Debts counted |
+| v1.43.1 | `gritkeeper-v1.43.1` | 2026-08-21 | the status bar catches up with the books |
 | v1.43.0 | `gritkeeper-v1.43.0` | 2026-08-21 | twenty-five more horrors, and two counts the app was reciting from memory |
 | v1.42.0 | `gritkeeper-v1.42.0` | 2026-08-20 | the Callings can be played from the Tracker |
 | v1.41.0 | `gritkeeper-v1.41.0` | 2026-08-17 | the four fights Ch. IV names |
