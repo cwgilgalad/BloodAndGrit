@@ -492,8 +492,8 @@ public partial class MainForm
         L("System",   "Windows 10 (version 1607) or Windows 11, 64-bit");
         L("Processor", "Any x64 processor");
         L("Memory",   "2 GB RAM");
-        L("Disk",     "400 MB free — the app is ~155 MB and unpacks its");
-        L("",         "own libraries to your TEMP folder on first run");
+        L("Disk",     "250 MB free — the app is one ~112 MB file, and");
+        L("",         "it unpacks nothing: it runs from where you put it");
         L("Display",  "1280 × 720. The window will not go below 1040 × 640");
         L("Input",    "Keyboard and mouse");
         L("Other",    "None. No .NET install, no internet, no account,");

@@ -23,7 +23,7 @@
     re-running brings the delivered folder back up to date.
 #>
 param(
-    [string] $Exe = "GK\source\bin\Release\net8.0-windows\win-x64\publish\GritKeeper.exe",
+    [string] $Exe = "GK\source\bin\Release\net10.0-windows\win-x64\publish\GritKeeper.exe",
     [switch] $Force,
     [switch] $Staged
 )

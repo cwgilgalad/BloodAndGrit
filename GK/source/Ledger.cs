@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace BloodAndGritKeeper;
 
 // ============================================================ THE LEDGER, ON GLASS
@@ -11,6 +13,13 @@ public sealed class LedgerView : Panel
     public List<string> Warnings = new();
 
     float zoom = 1f;
+    // .NET 10's WinForms analyzer (WFO1000) makes every public property on a control say what the
+    // designer serializer should do with it, and the build treats that as an error. Hidden is the
+    // true answer rather than the DefaultValue the analyzer also accepts: there is not one
+    // .Designer.cs or InitializeComponent in this tree — every control is built in code — and Zoom
+    // is runtime state a Keeper drives with ctrl+wheel, not a design-time setting anything would
+    // ever write out.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float Zoom
     {
         get => zoom;

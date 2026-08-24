@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <Nullable>disable</Nullable>
@@ -16,7 +16,7 @@
     <!-- The ONLY version in the project. MainForm.AppVersion reads it back off the assembly,
          and package.ps1 names the release tag from the built exe's FileVersion — so this number
          is what ships, whatever any other file says. Bump it with every release. -->
-    <Version>1.45.0</Version>
+    <Version>1.46.0</Version>
 
     <!-- The steer-skull-and-rifles emblem, as a real Windows icon: the exe's file icon
          in Explorer/desktop AND (embedded below) the in-app title-bar icon. Regenerate
@@ -67,11 +67,13 @@
          InvariantGlobalization stays: it drops the ICU culture load at startup and is safe
          here because every number the app writes (Pdf.cs / MapGen.cs coordinates) already goes
          through an explicit CultureInfo.InvariantCulture formatter, so comma-decimal locales
-         can't corrupt an export. TieredPGO stays at its .NET 8 default (on).
+         can't corrupt an export. TieredPGO stays at its .NET 10 default (on).
 
          Also measured and REJECTED: IncludeNativeLibrariesForSelfExtract=false. It publishes
          and signs cleanly but the app never opens a window (timed out at 90 s) — WinForms
-         self-contained single-file needs its native libraries extracted. -->
+         self-contained single-file needs its native libraries extracted.
+         (That last paragraph is net8.0 history — see the net10.0 note below, where it stops
+         being true.) -->
     <!-- RE-CHECKED v1.39.0 (2026-08-15) and the answer did not move. Measured again on this
          machine: no-R2R 155.7 MB, 11.1 s first run, 3.35 s warm; R2R 173.0 MB, 15.7 s first run,
          2.88 s warm. Those warm figures are the SELF-TEST, not a window launch, and that is the
@@ -80,7 +82,55 @@
          great deal of code a real launch never touches. The v1.10.0 numbers measured the thing a
          Keeper actually waits for and found 0.12 s saved against 9.4 s added on first run.
          Measure the launch, not the harness — a proxy that exercises more than the real path will
-         always flatter whatever makes bulk JIT cheaper. -->
+         always flatter whatever makes bulk JIT cheaper.
+
+         RE-MEASURED ON net10.0-windows, v1.46.0 (2026-08-23), because the TFM bump was the one
+         change that could plausibly overturn this: .NET 10 reworked single-file compression, and
+         the whole case against it was a first-launch cost that no longer exists. Back to the
+         v1.10.0 method — Start-Process to a real MainWindowHandle, a brand-new copy of the exe for
+         every first-launch figure so Defender's first-execution scan is inside the number, three
+         warm runs averaged:
+
+           config                      exe on disk   shipped zip   first launch   every launch after
+           no R2R, no compression         112.5 MB      45.9 MB        3.42 s           0.99 s   <- shipping this
+           R2R, no compression            126.5 MB      50.8 MB        4.48 s           1.07 s
+           compression, no R2R             50.0 MB      44.8 MB        3.32 s           1.23 s
+
+         Both stay off, and one of the two reasons has changed underneath the answer.
+
+         ReadyToRun is now worse on every axis at once — larger exe, larger download, slower first
+         launch AND slower warm launch. Under .NET 8 it at least bought steady-state speed. It no
+         longer buys anything, and this is the third measurement to reject it.
+
+         Compression is the interesting one and the note above is now WRONG about why. Its 13-second
+         first-launch penalty is gone: .NET 10 inflates the bundle so much faster that the compressed
+         build actually starts marginally sooner cold (3.32 s vs 3.42 s, inside the noise). What it
+         still costs is 0.24 s on EVERY launch after the first, and what it buys is 62.5 MB of disk
+         and 1.1 MB of download. The zip is what a stranger actually waits on and 1.1 MB of it is
+         nothing; the 0.24 s is paid by the Keeper every session for the life of the install. Same
+         verdict, different arithmetic — so do not read the .NET 8 paragraph above as the live
+         reason. Re-measure again at the next TFM bump; this is the second time the ground moved.
+
+         The whole net8.0 -> net10.0 move cost 43.2 MB of exe (155.7 -> 112.5) and 1.7 s of first
+         launch (5.1 -> 3.42) for free, before any setting was touched.
+
+         WHY it got faster, and it is not the JIT: the exe NO LONGER EXTRACTS ANYTHING. Under
+         net8.0 every new build wrote ~39 MB of native libraries into %TEMP%\.net\GritKeeper on
+         its first run and Defender then scanned what came out; that extraction is what the
+         first-launch figure was mostly measuring, and what made compression cost 13 seconds.
+         Watched the cache directory across a cold launch of this build (2026-08-23): not one new
+         folder appears. .NET 10 maps the native libraries out of the bundle in place.
+
+         Two consequences, both acted on:
+           - IncludeNativeLibrariesForSelfExtract is now a NO-OP. Published with it forced to
+             false and the exe came out byte-identical to the default publish (SHA-256
+             0574B1CA...5302 both ways), and that build opens its window in 1.31 s. So the
+             REJECTED note above no longer reproduces — there is nothing left to extract for the
+             setting to suppress. It stays set because the guard costs nothing and the failure it
+             once caught was a silent one; it is no longer load-bearing.
+           - The 400 MB disk requirement was sized for that %TEMP% spill. README.md,
+             GK/source/README.md and the in-app System Requirements box (Menus.cs) now say
+             250 MB and no longer promise an unpack that does not happen. -->
     <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
     <PublishReadyToRun>false</PublishReadyToRun>
     <InvariantGlobalization>true</InvariantGlobalization>

@@ -9,11 +9,11 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.29 · Keeper's Book v2.17 · Bestiary v2.14 ·
-GritKeeper app v1.45.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.46.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
-[`GK/CLAUDE.md`](GK/CLAUDE.md).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain `net8.0` class
+[`GK/CLAUDE.md`](GK/CLAUDE.md).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain `net10.0` class
 library — no WinForms — holding the eight headless files and the six `Data/*.json`; `GK/source` is
 the WinForms app on top of it, and `GK/smoke` tests the library. Everything else about the app —
 the source-tree layout, the ten tabs, every landmine, the release loop, and the reasoning behind
@@ -52,7 +52,7 @@ script block, and `pag_patch.py` detects it and no-ops.)*
 *(Keep this doc updated with every change — see CHANGELOG.md.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
-scripts) and **GritKeeper** (a C#/.NET 8 WinForms desktop app for running the game
+scripts) and **GritKeeper** (a C#/.NET 10 WinForms desktop app for running the game
 at the table). They're independent deliverables — different source trees, different build
 tools — documented in their own sections below.
 
@@ -583,9 +583,9 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.45.0) — the C# desktop app
+## GritKeeper (v1.46.0) — the C# desktop app
 
-A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
+A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
 tree is **`GK/`** (three projects since v1.28.0: `GK/rules` the headless library, `GK/source` the
 WinForms app, `GK/smoke` the logic tests); **`GritKeeper/` is the generated deliverable, never
@@ -601,7 +601,7 @@ Two things stay here, because both can ruin a release before you ever open the a
 
 - **NEVER pass `-o` to `dotnet publish`.** The publish settings are baked into the csproj, and
   `sign.ps1` / `package.ps1` both default to the RID-qualified path
-  `bin/Release/net8.0-windows/win-x64/publish/`. `-o` diverts the build elsewhere and they will
+  `bin/Release/net10.0-windows/win-x64/publish/`. `-o` diverts the build elsewhere and they will
   happily sign and ship the **previous version's exe**. This happened during the v1.18.0 release
   and was caught only on the version check.
 - **Never give a `SplitContainer` geometry at construction time.** Setting `SplitterDistance` or
@@ -629,7 +629,7 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   LAN-hosted responsive page served by the app itself or Discord-as-state-surface → a full VTT
   (recommended against; the Trail Maps SVG already drops into Owlbear/Foundry/Roll20 today). The
   The enabling refactor is **DONE (v1.28.0)**: `GK/rules/BloodAndGrit.Rules.csproj` is a real
-  `net8.0` class library, so the drift risk is gone and there is a Linux-runnable engine to build
+  `net10.0` class library, so the drift risk is gone and there is a Linux-runnable engine to build
   a bot or a server against. Every remaining rung is still unbuilt and undecided.
   Two gotchas recorded there: `Rules.Rng` is a process-wide static that `Reseed` swaps wholesale
   (fine for one table, a hazard for two), and webhook URLs / bot tokens are bearer credentials

@@ -1,11 +1,11 @@
 # GritKeeper — Blood & Grit
 
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
-**Blood & Grit** at the table. Built in C# (.NET 8 / Windows Forms), with the complete
+**Blood & Grit** at the table. Built in C# (.NET 10 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.29 · Keeper's Book v2.17 · Bestiary v2.14).
 
-**App version 1.45.0**
+**App version 1.46.0**
 
 ---
 
@@ -18,7 +18,7 @@ Bestiary and all the Keeper's rollable tables baked in, extracted directly from 
 | **System** | Windows 10 (version 1607) or Windows 11, **64-bit** |
 | **Processor** | Any x64 processor |
 | **Memory** | 2 GB RAM |
-| **Disk** | 400 MB free — the app is ~155 MB and unpacks its own libraries into your `%TEMP%` folder the first time each new build runs |
+| **Disk** | 250 MB free — the app is a single ~112 MB file and unpacks nothing; it runs from wherever you put it |
 | **Display** | 1280 × 720. The window will not shrink below 1040 × 640 |
 | **Input** | Keyboard and mouse |
 | **Other** | None. No .NET install, no internet connection, no account, no administrator rights, nothing to configure |
@@ -41,7 +41,7 @@ players over a network — one machine at the table, usually the Keeper's. (The 
 are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
 the game.)
 
-**Planned, not here yet: a Linux package.** The rules are already a plain `net8.0` library with
+**Planned, not here yet: a Linux package.** The rules are already a plain `net10.0` library with
 no Windows dependency (`GK/rules` — it is what the headless test suite runs against), so the
 engine half needs nothing. The window is Windows Forms, and that is the half a Linux build has
 to answer. Treat this as an intention, not a date: there is nothing to download yet.
@@ -80,7 +80,7 @@ machine unless you save it and send it. Launching with `GritKeeper.exe --verbose
 mirrors the record to `daybook.txt` beside the exe as it happens, which is what you want if the
 trouble takes the app down with it.
 
-**From source (optional, needs the .NET 8 SDK):**
+**From source (optional, needs the .NET 10 SDK):**
 ```
 cd source
 dotnet run
