@@ -295,7 +295,7 @@ public partial class MainForm
         top.Controls.Add(Lbl("Party level:"));
         encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Width = 55, Margin = new Padding(3, 6, 3, 3) };
         encLevel.Value = Math.Clamp(partyLevelHint, 1, 10);     // built on first visit — adopt the loaded value
-        encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; RefreshEncounter(); };
+        encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; CaptureUndo(); RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);
         top.Controls.Add(Lbl($"   Budget = {Rules.BudgetPerSoul} pts per soul in the posse (Posse tab).  "
@@ -4918,6 +4918,13 @@ public partial class MainForm
         // been holding the ledger since load, and keeps it fed from here on.
         notesBox.Text = notesText;
         notesBox.TextChanged += (s, e) => notesText = notesBox.Text;
+        // Capture when the Keeper leaves the box, not as they type. Snapshotting every
+        // keystroke would bury the stack fifty deep in one sentence, and the textbox's own
+        // native undo already serves a typist mid-word (see MainForm.Undo, which hands Ctrl+Z
+        // to a focused field). What this adds is the half that was missing: the notes are IN
+        // Snapshot(), so without a capture the baseline went stale and the next undo of
+        // anything at all quietly reverted the writing too.
+        notesBox.Leave += (s, e) => CaptureUndo();
         var nbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40 };
         nbar.Controls.Add(Btn("Stamp the date", (s, e) =>
         {

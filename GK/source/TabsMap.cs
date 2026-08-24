@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Text;
 
 namespace BloodAndGritKeeper;
@@ -25,7 +26,7 @@ public partial class MainForm
 
     // Tactical markers — session state, not part of the seeded map (a map redraw or a
     // new seed keeps everyone standing where the Keeper put them).
-    readonly List<MapMarker> mapMarkers = new();
+    readonly BindingList<MapMarker> mapMarkers = new();
     MapMarker dragMarker;
     bool dragMoved;
 

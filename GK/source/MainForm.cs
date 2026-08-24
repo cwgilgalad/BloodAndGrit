@@ -17,7 +17,18 @@ public partial class MainForm : Sheet
     readonly BindingList<CampaignClock> clocks = new();
     TextBox notesBox;
     ListBox rollLog;
-    int round = 1;
+    int roundValue = 1;
+    /// <summary>The round. A property rather than a field because it is part of Snapshot(), and
+    /// anything in the snapshot has to capture for undo by some route that does not depend on
+    /// five separate call sites each remembering — the round is moved by NextRound, by the
+    /// spinner, by New fight, by Clear the field and by a session load. It went uncaptured until
+    /// v1.47.0, so advancing a round left the baseline stale and the next Undo of anything at all
+    /// silently wound the fight back as well. suppressUndo covers the load path.</summary>
+    int round
+    {
+        get => roundValue;
+        set { if (roundValue == value) return; roundValue = value; CaptureUndo(); }
+    }
     TabControl tabsCtl;
 
     // ---- state that outlives its control ----
@@ -253,14 +264,26 @@ public partial class MainForm : Sheet
         Controls.Add(status);
 
         // Universal undo/redo: any add/remove/edit to the posse, tracker, encounter, or
-        // campaign threads captures a snapshot. Session notes keep the textbox's own
-        // native per-field undo instead — snapshotting every keystroke would flood the stack.
+        // campaign threads captures a snapshot.
+        //
+        // EVERY field of Snapshot() must reach a capture by some route, and the reason is not
+        // tidiness. Undo restores a whole snapshot, so a field that changes without capturing
+        // leaves undoBaseline behind the truth — and the NEXT captured action then pushes that
+        // stale baseline onto the stack. Press Undo and it reverts the uncaptured change as well
+        // as the one you meant, silently, with no way back. Notes, the round and the encounter
+        // level were all in the snapshot and captured by nothing until v1.47.0, so typing a note
+        // and then adding a creature meant Undo threw the note away with the creature.
+        // MainForm.AuditUndo() probes every field, and the self-test fails on any that is missed.
         party.ListChanged += (s, e) => CaptureUndo();
         tracker.ListChanged += (s, e) => CaptureUndo();
         signs.ListChanged += (s, e) => { CaptureUndo(); RefreshSigns(); };
         encounter.ListChanged += (s, e) => CaptureUndo();
         clocks.ListChanged += (s, e) => CaptureUndo();
         rides.ListChanged += (s, e) => CaptureUndo();
+        // The markers were a plain List until v1.47.0, which left their capture to fourteen call
+        // sites each remembering to make it — the same shape as the three bugs above, waiting.
+        // A drag still captures explicitly (it moves a marker rather than the list).
+        mapMarkers.ListChanged += (s, e) => CaptureUndo();
 
         TryAutoLoad();
         undoBaseline = JsonSerializer.Serialize(Snapshot());
@@ -2761,7 +2784,7 @@ public partial class MainForm : Sheet
             ShowRound();
             foreach (var r in s.Rides ?? new()) rides.Add(r);      // the corral survives a restart too
             mapMarkers.Clear();
-            mapMarkers.AddRange(s.MapMarkers ?? new());
+            foreach (var mk in s.MapMarkers ?? new()) mapMarkers.Add(mk);
             mapPanel?.Invalidate();
             RefreshClocks(); RefreshEncounter(); RefreshSigns();
             posseGrid?.Refresh(); trkGrid?.Refresh(); UpdateTurnLine();
@@ -2870,6 +2893,82 @@ public partial class MainForm : Sheet
         if (undoStatusBtn != null) undoStatusBtn.Enabled = undoStack.Count > 0;
         if (redoStatusBtn != null) redoStatusBtn.Enabled = redoStack.Count > 0;
     }
+
+    /// <summary>Undo coverage audit — run by the self-test, one probe per field of the session.
+    ///
+    /// <para>The engine is snapshot-based, so the whole of its correctness rests on ONE invariant:
+    /// once a user-visible change has settled, <c>undoBaseline</c> equals the current snapshot.
+    /// A field that breaks it is not merely un-undoable, which would be the harmless failure. The
+    /// next captured action pushes that STALE baseline onto the stack, so the Keeper's next Undo
+    /// silently reverts the uncaptured change as well as the one they meant to undo — Undo eats
+    /// work nobody asked it to touch, and there is no message and no way back.</para>
+    ///
+    /// <para>Each probe changes one field the way the app changes it and asks that one question.
+    /// A field is only reported when the mutation left the baseline behind.</para></summary>
+    internal List<string> AuditUndo()
+    {
+        var stale = new List<string>();
+        // Drain the deferred capture: CaptureUndo coalesces through BeginInvoke once there is a
+        // handle, so without a pump the probe would read a baseline that is merely late, not stale.
+        void Settle() { if (IsHandleCreated) Application.DoEvents(); }
+        void Probe(string field, Action change)
+        {
+            Settle();
+            undoBaseline = JsonSerializer.Serialize(Snapshot());   // start each probe in step
+            change();
+            Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != undoBaseline) stale.Add(field);
+        }
+
+        bool prev = suppressUndo;
+        suppressUndo = false;
+        try
+        {
+            Probe("Party", () => party.Add(new PartyMember { Name = "Undo Probe" }));
+            Probe("Clocks", () => clocks.Add(new CampaignClock { Name = "Undo Probe", Segments = 4 }));
+            Probe("Tracker", () => tracker.Add(new Combatant { Name = "Undo Probe", Init = 1 }));
+            Probe("Signs", () => signs.Add(new Combatant { Name = "Undo Probe", IsSign = true }));
+            Probe("Rides", () => rides.Add(new Ride { Name = "Undo Probe" }));
+            if (Db.Creatures.Count > 0)
+                Probe("EncounterCreatures", () => encounter.Add(new EncounterPick(Db.Creatures[0])));
+            Probe("MapMarkers", () => mapMarkers.Add(new MapMarker { Label = "Undo Probe", X = 1, Y = 1 }));
+            // Notes capture on Leave rather than per keystroke, so the probe leaves the box the
+            // way a Keeper does instead of only setting the text.
+            Probe("Notes", () =>
+            {
+                notesText += "undo probe";
+                if (notesBox != null) { notesBox.Text = notesText; NotesLeftForSelfTest(); }
+            });
+            Probe("Round", () => round++);
+            // Snapshot reads `encLevel?.Value ?? partyLevelHint`, so once the tab is realized the
+            // control IS the field. Driving the backing int instead would move nothing and pass.
+            Probe("PartyLevelHint", () =>
+            {
+                if (encLevel != null) encLevel.Value = encLevel.Value == 10 ? 1 : encLevel.Value + 1;
+                else partyLevelHint = partyLevelHint == 10 ? 1 : partyLevelHint + 1;
+            });
+
+            // And the other half of the ask: that a captured step actually goes back and forward
+            // again. Undo restores a whole GameSession, so a round trip that does not land on the
+            // same bytes means some field survives the restore — the failure that looks like undo
+            // "half working" at the table.
+            Settle();
+            string before = JsonSerializer.Serialize(Snapshot());
+            party.Add(new PartyMember { Name = "Redo Probe" });
+            Settle();
+            string changed = JsonSerializer.Serialize(Snapshot());
+            Undo(); Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != before) stale.Add("Undo does not restore the previous state");
+            Redo(); Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != changed) stale.Add("Redo does not restore the undone state");
+        }
+        finally { suppressUndo = prev; }
+        return stale;
+    }
+
+    /// The notes box captures on Leave, which a headless probe cannot raise by focusing anything.
+    /// Kept beside the audit rather than made public: it exists for AuditUndo and nothing else.
+    void NotesLeftForSelfTest() => CaptureUndo();
 
     void TryAutoLoad()
     {

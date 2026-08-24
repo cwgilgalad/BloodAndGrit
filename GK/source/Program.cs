@@ -163,6 +163,15 @@ static class Program
                         // a blank Map tab for the rest of the session, with the survey parented to
                         // a window that has gone. AuditTabTips has realized the tab by now.
                         Chk(mf.MapFullScreenRoundTrip(), "GUI: the Map comes home from full screen with everything on it");
+
+                        // Undo is snapshot-based, so a field nothing captures does not merely fail
+                        // to undo — it rides along on the NEXT undo and gets reverted with it. That
+                        // failure is silent at the table and takes the Keeper's work with it, so
+                        // every field of the session is probed rather than trusted.
+                        var stale = mf.AuditUndo();
+                        foreach (var s in stale) Line("       undo cannot see: " + s);
+                        Chk(stale.Count == 0,
+                            $"GUI: every field of the session is captured for undo ({stale.Count} invisible)");
                     }
                 }
 

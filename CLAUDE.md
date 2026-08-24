@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.29 · Keeper's Book v2.17 · Bestiary v2.14 ·
-GritKeeper app v1.46.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.47.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -97,7 +97,9 @@ tools — documented in their own sections below.
   correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
   changes go bad, abandon the branch — `main` stays clean.
 - **The GritKeeper app now builds natively on this Windows laptop** (verified
-  2026-07-18: .NET SDK 9 is installed; `dotnet build` / `dotnet publish` / the smoke suite
+  2026-07-18, and re-verified on the net10.0 move 2026-08-23: SDK 10.0.400 is installed and is
+  what builds the app now — SDK 9.0.317 is also present and no longer used by anything, and there
+  is no .NET 8 SDK on this machine at all; `dotnet build` / `dotnet publish` / the smoke suite
   all run locally, and the WinForms window can actually be launched here). The old
   "built and tested blind on Linux" caveat is history — but the SplitContainer landmine
   note in the app section still applies. If a crash does slip through, the app writes
@@ -583,7 +585,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.46.0) — the C# desktop app
+## GritKeeper (v1.47.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

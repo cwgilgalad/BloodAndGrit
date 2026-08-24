@@ -8,6 +8,54 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.47.0 — Undo was quietly eating work it was never asked to touch
+  (2026-08-23, user-reported).**
+
+  Cole said he did not think undo and redo were working properly. They were not, and the failure
+  was worse than the one that gets noticed: **Undo was reverting changes the Keeper had not asked
+  it to revert, silently, with nothing to say it had happened.**
+
+  **How it broke.** Undo is snapshot-based — it serializes the whole `GameSession`, keeps a
+  `undoBaseline` of the current state, and pushes that baseline onto the stack whenever something
+  changes. The whole design rests on one invariant: *once a change has settled, the baseline
+  equals the current snapshot*. Six collections kept it, because a `BindingList` raises
+  `ListChanged` and every one of those was wired to a capture. Three fields did not. **Session
+  notes, the round, and the encounter level were all part of the snapshot and captured by
+  nothing.** Change one of them and the baseline fell behind the truth. Then the next ordinary
+  action — add a creature, damage a soul, anything — pushed that *stale* baseline onto the stack.
+  Press Undo and it wound back the thing you meant **and the uncaptured change with it**.
+
+  Concretely, at the table: type a paragraph into the session notes, add a creature to the
+  encounter, press Undo to take the creature back — and the paragraph goes too. Advance the round,
+  make any edit, press Undo — the fight goes back a round as well. Nothing in the app said so, and
+  there was no way to get it back, because Redo would only replay the pair together.
+
+  **The notes case was a deliberate decision that was only half carried out.** The trigger block
+  carried a comment saying notes deliberately keep the textbox's own native undo, because
+  snapshotting every keystroke would flood a fifty-deep stack in one sentence. That reasoning is
+  right and it still stands. What it missed is that notes are *in* `Snapshot()`, so declining to
+  capture them did not exempt them from undo — it made them collateral. They now capture when the
+  Keeper **leaves** the box: one step per finished edit, the stack stays clean, and a typist
+  mid-word still gets the textbox's native undo, exactly as before.
+
+  **Two fields were made structurally safe rather than carefully remembered.** The round is now a
+  property that captures on assignment, because five different paths move it — `NextRound`, the
+  spinner, New fight, Clear the field, a session load — and a rule that depends on five call sites
+  each remembering is a rule that will be broken again. The map markers were a plain `List` whose
+  capture rested on **fourteen** call sites doing it by hand; they are a `BindingList` now, wired
+  like every other session collection. Both were one missed call away from the same bug, and
+  neither would have failed anything.
+
+  **`MainForm.AuditUndo()` is the guard, and it runs in the self-test.** It probes every field of
+  the session, changes it the way the app changes it, and asserts the baseline kept up — then
+  makes a change, undoes it, redoes it, and asserts the bytes come back both ways. That last check
+  is the one that covers the half of Cole's question about redo. It found all three faults on its
+  first run and now fails the build on a fourth, so a field added to `GameSession` without a
+  capture cannot ship. Self-test 37/37 → **38/38**.
+
+  Smoke suite 14,296 passing, none failing; `GK/playtest` still reproduces `PLAYTEST.md`
+  byte-identical.
+
 - **GritKeeper v1.46.0 — the app moves to .NET 10, and the move pays for itself
   (2026-08-23).**
 
