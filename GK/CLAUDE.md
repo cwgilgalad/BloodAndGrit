@@ -54,14 +54,45 @@ copy generated-only closes that seam for good.)
 
 ## Universal Undo/Redo (v1.6)
 
-Snapshot-based, over the same `GameSession` shape File → Save/Load already uses:
-`party`/`tracker`/`encounter`/`clocks` (the four `BindingList`s) each push a JSON
-snapshot onto an undo stack on any `ListChanged` (add/remove/edit), capped at 50 deep;
-`Undo`/`Redo` restore via `ApplySession`, which now suppresses re-capture during its own
-bulk rebuild so a restore is one step, not N. Reachable from **Edit ▸ Undo/Redo**
-(Ctrl+Z/Ctrl+Y) or matching buttons pinned in the status bar, so it's live no matter
-which tab is open. Session notes deliberately aren't captured — the textbox's own native
-undo covers it, since snapshotting every keystroke would flood the stack.
+Snapshot-based, over the same `GameSession` shape File → Save/Load already uses: the seven
+`BindingList`s each push a JSON snapshot onto an undo stack on any `ListChanged`
+(add/remove/edit), capped at 50 deep; `Undo`/`Redo` restore via `ApplySession`, which
+suppresses re-capture during its own bulk rebuild so a restore is one step, not N.
+Reachable from **Edit ▸ Undo/Redo** (Ctrl+Z/Ctrl+Y) or matching buttons pinned in the
+status bar, so it's live no matter which tab is open.
+
+**The one invariant, and the only bug class this has ever had.** Once a change has settled,
+`undoBaseline` equals the current snapshot. Anything that is *in* `Snapshot()` and captures
+by no route breaks it — and the way it fails is not "undo does nothing". The stale baseline
+sits there until the **next** captured action pushes it, so undoing that action silently
+reverts the uncaptured change as well. v1.47.0 found three fields like that (session notes,
+the round, the encounter level) and v1.48.0 found three more (`FeatureSpent`, `TallyOwed`,
+and the whole `Sheet` — all mutated through their own objects, which fire no
+`PropertyChanged`).
+
+Three rules came out of those two releases, and they are the whole of what keeps this true:
+
+- **Capture where the mutation happens, never at the call sites.** `round` is a property
+  with a capturing setter; `mapMarkers` is a `BindingList`; a soul's side-stores announce
+  themselves through `PartyMember.Touched`, called by `CharGen.SpendFeature`,
+  `UnspendFeature`, `RefreshFeatures`, `TakeTally` and `ForgiveTally`. Before that the
+  markers' capture rested on **fourteen** hand-written call sites. A rule that depends on
+  fourteen people remembering has a date on it.
+- **Announce AFTER the mutation.** Notifying first tells the app to look at a table that has
+  not changed yet, and with no window handle to defer through — the self-test rig, and any
+  early-startup path — the capture happens on the spot and the real change lands behind it,
+  unseen. `AuditUndo` caught exactly this in v1.48.0's own first attempt.
+- **Session notes DO capture — on `Leave`, not per keystroke.** The original reasoning (a
+  snapshot per keystroke would flood a fifty-deep stack in one sentence) was right and still
+  stands; what it missed is that notes are in `Snapshot()`, so declining to capture them did
+  not exempt them from undo, it made them collateral. One step per finished edit, and a
+  typist mid-word still gets the textbox's own native undo.
+
+**`MainForm.AuditUndo()` is the guard, and it runs in `--selftest`.** It walks every field of
+the session, changes it *through the path the app uses*, and checks the baseline kept up —
+then makes a change, undoes it, redoes it, and checks the bytes come back both ways. Probe
+through the real mutator or the probe proves only that the probe works: driving a raw list
+behind the UI is how the map markers once passed a check they should have failed.
 
 ## The ten tabs
 
@@ -280,14 +311,17 @@ carries between fights. `FightResidue` matches, so New fight cannot say "nothing
 
 ## The row grounds are separated by CAST, not by brightness (v1.38.0)
 
-Six grounds now say what a tracker row is, and the rule that keeps them apart is that **no two
+Seven grounds now say what a tracker row is, and the rule that keeps them apart is that **no two
 differ only in lightness**. `Writable()` lifts an editable cell toward paper, and a lift washes a
 pale colour toward white — which is exactly how the old palette failed: `PcRow` and a near-white
 `FoeRow` differed by about nine points of luminance, and `Writable` at 42% put a posse row's four
 editable columns nearer the foe colour than the posse colour was to it. Read them as R-vs-G: the
 posse's green sits G above R, a foe's clay sits R above G, and no lift crosses that. Down is a quiet
 grey, dying is the only loud ground in the app, dead is ash. **Anything added here has to obey the
-same rule**; a new ground that is merely a different brightness fails silently.
+same rule**; a new ground that is merely a different brightness fails silently. The seventh, `FamiliarRow`
+(v1.48.0), is the worked example: the posse's green and a foe's clay are argued out in R against
+G and both put **blue lowest**, so blue was the free direction and the bound beast took it — B
+above R by 26, where PcRow is B *below* R by 8 and FoeRow by 28.
 
 ## The Iron Code is run, not read out (v1.40.0)
 
@@ -443,6 +477,52 @@ Four decisions worth not re-deriving:
   to the same twenty-four characters. The card drops the section, the head line above having
   already named the Calling. `FeatureSpent` and `TallyOwed` keep the whole string, so trimming for
   the eye cannot orphan a saved session.
+
+## The Witch's familiar is a creature, not a sheet field (v1.48.0)
+
+v1.45.0 put the bound beast of Ch. VII on the character sheet — its kind, its standing +2, a flag
+for when it dies — and none of it did anything. This is the half the book actually legislates.
+Five decisions worth not re-deriving:
+
+- **A fact that is only printable stops being true.** The sheet said "+2 Notice" and every number
+  the app worked out ignored it, because the skill's name existed *only* inside a sentence written
+  for a reader. `CharGen.FamiliarSkillFor` holds the skill on its own, `FamiliarBoonFor` builds the
+  sentence from it, and `SkillBonus` adds it — so one change lands everywhere the app already
+  reckons a skill. A Witch's initiative is a Notice check, so a living crow moves her place in the
+  order. This is the same shape as `ReadLimit` reading a limit out of prose rather than a second
+  `uses` column: whenever one of a pair of facts is only printable, the other one goes quietly
+  wrong.
+- **The familiar is a FOURTH CAST, and deliberately not `IsPC`.** `Combatant.FamiliarOf` holds its
+  Witch's `PartyMember.Id`. It is not `PcId` with a flag beside it, because `IsSoul` keys the
+  posse-to-tracker Blood mirror off PcId — a familiar carrying its Witch's PcId would have her
+  Blood written onto it on every posse edit, and the beast having a Blood of its own is the entire
+  point. Everything that walks the posse asks for a soul and correctly finds nothing here.
+- **The book gives the beast no stat block and the app does not pretend otherwise.** Ch. VII says
+  what the familiar *does*; the Bestiary's 175 entries are horrors, not livestock. `Rules`
+  derives a default from figures the book *does* state — Blood a third of its Witch's, **half**
+  once she has taken the Familiar-Bound ("grows clever and hardy"), floored at four; Defense hers,
+  and two better with the Craft — and the card's tooltip says out loud that this is the app's
+  default rather than a rule from the book. Do not print a familiar stat table into the books to
+  "fix" this: that is a rules change and needs Cole's say-so.
+- **At 0 Blood the beast is dead, not down**, which is the reading the app already gives every
+  creature. The dying rule is written for characters, and a cat with a count running toward its CON
+  is a rule the book does not have. Noticed in `CheckFalling` (`FamiliarFell`), because that is
+  where every route that takes Blood off anything already arrives — and written to read the state
+  rather than the caller's word for it, since two of that method's seven callers pass
+  `wasDown: false` for reasons of their own and a version that trusted the flag would Sicken a
+  Witch twice over one dead crow.
+- **The rite is an act, not a boundary.** "Sickened until you can bind another over a long night's
+  rite" is `BindNewFamiliar`, on the Calling strip and the row menu. It is deliberately NOT hung on
+  Rest or on any dawn: every other boundary in this app hands something back because a clock turned
+  over, and a Sickened that lifted by itself overnight would quietly say the loss cost nothing.
+
+The greater boon's **spirit-carry** lives on the character sheet (`FamiliarCarried`), not in
+`FeatureSpent`, for exactly the reason the Pact-Sworn's Debts do not: `RefreshFeatures` walks
+`FeatureSpent` at every boundary, and a once-in-a-life thing kept there would come back the first
+time somebody pressed New fight. A smoke assertion runs a session boundary over it and checks it
+stays spent. The Craft's two levels come from `CharGen.SubpathLevels`, read off the level table —
+3rd and 9th for the three of the Old Dark, 10th for everybody else — so no familiar rule carries a
+literal 3 or 9.
 
 ## Ch. IV's encounter ladder is one array (v1.44.0)
 

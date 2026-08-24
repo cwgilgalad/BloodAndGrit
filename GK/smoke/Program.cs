@@ -2917,6 +2917,120 @@ T("the Craft is the Witch's alone", cg.callings
         var s = CharGen.Generate(3, false, name);
         T($"{name} has no familiar", s.FamiliarKind == null && CharGen.FamiliarLine(s) == null);
     }
+
+    // ---- v1.48.0: the boon is APPLIED, the beast has a body, and the Craft does something ----
+    // The whole of what v1.45.0 left undone. Each of these is a thing the sheet has printed since
+    // then and nothing in the app has ever done.
+
+    // The skill and the sentence come from one place, so the printed line cannot name a skill the
+    // bonus lands on somewhere else. This is the fault the split was made to close.
+    foreach (var kind in witch.choice.options)
+    {
+        string sk = CharGen.FamiliarSkillFor(kind);
+        T($"[{kind}] the boon names the skill it lifts", sk != null
+            && CharGen.FamiliarBoonFor(kind).Contains($"+{CharGen.FamiliarBoonSize} {sk}", StringComparison.Ordinal));
+    }
+    T("a beast nobody keyed lifts no named skill", CharGen.FamiliarSkillFor("a badger") == null);
+
+    // The +2 reaches a roll. A live beast lifts its own skill and nothing else; a dead one lifts
+    // nothing at all, which is the other half of what the book says the boon is worth.
+    {
+        var crow = new CharacterSheet
+        { Calling = "Witch", Level = 3, FamiliarKind = "a crow", Scores = new() { ["RES"] = 10 } };
+        int bare = CharGen.SkillBonus(new CharacterSheet { Level = 3, Scores = new() { ["RES"] = 10 } }, "Notice");
+        T("a live crow is worth +2 Notice on the roll",
+            CharGen.SkillBonus(crow, "Notice") == bare + CharGen.FamiliarBoonSize);
+        T("initiative IS that Notice check, so the crow moves her place in the order",
+            CharGen.InitiativeBonus(crow) == CharGen.SkillBonus(crow, "Notice"));
+        T("the crow lifts nothing but Notice",
+            CharGen.SkillBonus(crow, "Survival") == CharGen.SkillBonus(
+                new CharacterSheet { Level = 3, Scores = new() { ["RES"] = 10 } }, "Survival"));
+        crow.FamiliarLost = true;
+        T("a dead crow is worth nothing", CharGen.SkillBonus(crow, "Notice") == bare);
+        crow.FamiliarLost = false;
+        crow.SkillRanks["Notice"] = 1;
+        T("the boon rides on top of training, not instead of it",
+            CharGen.SkillBonus(crow, "Notice") == 0 + crow.Level + 2 + CharGen.FamiliarBoonSize);
+    }
+
+    // The Craft's two levels are read off the level table, never typed. The Witch's Craft opens at
+    // 3rd and deepens at 9th; hold the data to that, because these are the two numbers every
+    // familiar rule below turns on.
+    {
+        var (at, greater) = CharGen.SubpathLevels("Witch");
+        T("the Witch's Craft opens at 3rd and deepens at 9th", at == 3 && greater == 9);
+        T("the Worldly master at 10th instead", CharGen.SubpathLevels("Gambler").Greater == 10);
+        T("a Calling with no path reports no levels", CharGen.SubpathLevels("Nobody Here") == (0, 0));
+
+        var s = new CharacterSheet
+        { Calling = "Witch", FamiliarKind = "a cat", Subpath = "The Familiar-Bound", Level = 2 };
+        T("below 3rd the Familiar-Bound is not yet taken", !CharGen.FamiliarBound(s));
+        s.Level = 3;
+        T("at 3rd it is", CharGen.FamiliarBound(s) && !CharGen.FamiliarBoundGreater(s));
+        s.Level = 8;
+        T("at 8th the greater boon is still shut", !CharGen.FamiliarBoundGreater(s));
+        s.Level = 9;
+        T("at 9th it opens", CharGen.FamiliarBoundGreater(s));
+        s.Subpath = "The Greenwitch";
+        T("another Craft is not the Familiar-Bound", !CharGen.FamiliarBound(s));
+        T("neither is no familiar at all",
+            !CharGen.FamiliarBound(new CharacterSheet
+            { Calling = "Witch", Level = 9, Subpath = "The Familiar-Bound" }));
+    }
+
+    // The beast's own Blood — the app's default for a creature the book leaves to the table.
+    // What is held here is the SHAPE of it: always smaller than hers, always at least the floor,
+    // and always larger once she has taken the Craft that makes it hardy.
+    {
+        var plain = new CharacterSheet { Calling = "Witch", Level = 5, Blood = 30, Defense = 15, FamiliarKind = "a toad" };
+        var bound = new CharacterSheet { Calling = "Witch", Level = 9, Blood = 30, Defense = 15,
+                                         FamiliarKind = "a toad", Subpath = "The Familiar-Bound" };
+        T("the beast has less to lose than its Witch", Rules.FamiliarBloodFor(plain) < plain.Blood);
+        T("the Familiar-Bound beast is hardier", Rules.FamiliarBloodFor(bound) > Rules.FamiliarBloodFor(plain));
+        T("and cleverer to hit", Rules.FamiliarDefenseFor(bound) > Rules.FamiliarDefenseFor(plain));
+        T("a 1st-level beast is a creature, not a rounding error",
+            Rules.FamiliarBloodFor(new CharacterSheet { Calling = "Witch", Level = 1, Blood = 9, FamiliarKind = "a cat" })
+                >= Rules.FamiliarBloodFloor);
+        T("no sheet is still a beast and not a crash",
+            Rules.FamiliarBloodFor(null) >= Rules.FamiliarBloodFloor && Rules.FamiliarDefenseFor(null) > 0);
+        T("its Defense is hers when the Craft is not taken", Rules.FamiliarDefenseFor(plain) == plain.Defense);
+    }
+
+    // The greater boon reads on the sheet, and the once-in-a-life carry reads as spent once it is.
+    {
+        var s = CharGen.Generate(9, false, "Witch");
+        s.Subpath = "The Familiar-Bound";
+        T("the greater boon is on the sheet's familiar line",
+            CharGen.FamiliarLine(s).Contains("swap places", StringComparison.Ordinal));
+        T("and the carry reads as still to come",
+            CharGen.FamiliarLine(s).Contains("new dawn, once", StringComparison.Ordinal));
+        s.FamiliarCarried = true;
+        T("and as spent once it has been",
+            CharGen.FamiliarLine(s).Contains("that was the once", StringComparison.Ordinal));
+        // The one thing that must never happen: a boundary handing back a once-in-a-life thing.
+        var p9 = new PartyMember { Calling = "Witch", Level = 9, Sheet = s };
+        CharGen.RefreshFeatures(p9, FeatureCadence.Session);
+        T("no boundary gives the spirit-carry back", s.FamiliarCarried);
+    }
+
+    // A row on the field belongs to its Witch by id, follows her through a rename, and is never
+    // mistaken for a soul by anything that walks the posse.
+    {
+        var her = new PartyMember { Name = "Ruth" };
+        var beast = new Combatant { Name = CharGen.FamiliarFieldName("Ruth", "a crow"), FamiliarOf = her.Id };
+        T("the field names the beast for its Witch", beast.Name == "Ruth's crow");
+        T("an article is not part of the name", !CharGen.FamiliarFieldName("Ruth", "the black snake").Contains(" the "));
+        T("a familiar row knows whose it is", beast.IsFamiliar && beast.IsFamiliarOf(her));
+        her.Name = "Ruth Colley";
+        T("and follows her through a rename", beast.IsFamiliarOf(her));
+        T("a familiar is never mistaken for a soul", !beast.IsSoul(her) && !beast.IsPC);
+        T("a twin Witch does not own it", !beast.IsFamiliarOf(new PartyMember { Name = "Ruth Colley" }));
+        T("an ordinary row is nobody's familiar",
+            !new Combatant { Name = "a bandit" }.IsFamiliar);
+        var reloaded = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
+            System.Text.Json.JsonSerializer.Serialize(beast));
+        T("and the binding survives a saved session", reloaded.IsFamiliarOf(her));
+    }
 }
 T("sign-workers and signLists are the same four callings", cg.callings
     .All(c => (c.signsKnownAt != null) == (c.signLists != null && c.signLists.Count > 0)));

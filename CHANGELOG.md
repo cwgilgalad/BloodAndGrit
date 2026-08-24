@@ -8,6 +8,90 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.48.0 — the Witch's familiar is a creature now, not three lines of text
+  (2026-08-23).**
+
+  v1.45.0 gave the bound beast of Ch. VII a place on the character sheet: its kind, its standing
+  +2, and a flag for when it dies. It could not be sent anywhere, could not be hurt, could not die,
+  and the +2 was never added to anything. This is the other half, and it is the half the book
+  actually legislates.
+
+  **The +2 reaches a roll.** The sheet has printed "+2 Notice" since v1.45.0 and every number the
+  app worked out ignored it, because the only place that skill's name existed was in the middle of
+  a sentence written for a human reader. `CharGen.FamiliarSkillFor` now holds the skill on its own
+  and the printed line is built from it, so the two cannot part company; `CharGen.SkillBonus` adds
+  it. That one change lands everywhere the app already reckons a skill — **a Witch's initiative is
+  a Notice check, so a living crow now moves her place in the order**, and the Read-the-sign dialog
+  prefills a toad's Medicine and a cat's Stealth the same way. A dead beast is worth nothing, which
+  is the other half of what the book says the boon is.
+
+  **The beast takes the field.** `Combatant.FamiliarOf` binds a tracker row to its Witch by the
+  same stable id the posse mirror uses, so a rename cannot separate them. It is a **fourth cast**
+  on the field — not a soul, not a foe, not a trace — with a ground of its own, argued out on the
+  one axis the posse's green and a foe's clay both leave free. It is deliberately *not* `IsPC`:
+  everything that walks the posse asks for a soul and correctly finds nothing here, and above all
+  the Blood mirror cannot reach it, because the whole point is that the beast has a Blood of its
+  own.
+
+  **The book gives it no stat block, and the app does not pretend otherwise.** Ch. VII says what
+  the familiar *does*; the Bestiary's 175 entries are horrors, not livestock. So `Rules` derives a
+  default from numbers the book does state and says so in the tooltip: Blood is a third of its
+  Witch's, or **half** once she has taken the Familiar-Bound, which is the one thing the book says
+  about how much the beast can take — *"your familiar grows clever and hardy"*. Defense is hers,
+  and two better with the Craft. A floor of four keeps a 1st-level beast a creature rather than a
+  rounding error.
+
+  **Its death is a thing that happens now.** At 0 Blood the beast is dead — the same reading the
+  app already gives every creature, and the right one here, since the dying rule is written for
+  characters and a cat with a count running toward its CON is a rule the book does not have. So the
+  fall *is* the death, which is what makes Ch. VII's sentence runnable at last: the Witch takes
+  Sickened, the standing boon goes off every roll she makes, the Daybook records it, and the app
+  says the loss out loud. Noticed inside `CheckFalling`, where every route that takes Blood off
+  anything already arrives, and written to read the state rather than the caller's word for it —
+  two of the seven callers pass `wasDown: false` because they are about something else, and a
+  version that trusted that flag would Sicken a Witch twice over one dead crow.
+
+  **And the way back.** *"Sickened until you can bind another over a long night's rite"* was a
+  sentence the app could print and not do. It is now a deliberate act on the Calling strip and the
+  row menu — **not** hung on Rest or on any dawn, because every other boundary in this app hands
+  something back when a clock turns over, and a Sickened that lifted by itself overnight would
+  quietly say the loss cost nothing.
+
+  **The Familiar-Bound does something.** Its 3rd-level half makes the beast hardy and clever, above.
+  Its greater boon at 9th is all three of the things the book names: **swap places once per scene**
+  (which exchanges everything about *where* the two of them are that the app actually holds — the
+  cover each is behind, and whether either is mounted — and spends the feature card's own ration,
+  so the strip and the action can never disagree); **share wounds or Blood** in either direction;
+  and **the spirit-carry** — *"should you fall, it carries your spirit to a new dawn — once"* —
+  offered at the fall, before the offer of Grit, because Grit buys one more round on her feet and
+  this buys the night. The beast dies in her place and she wakes at dawn.
+
+  That last one is once in a life, so it is stored on the **character sheet** and not in
+  `FeatureSpent`, which every boundary hands back. Same separation, and the same reason, as the
+  Pact-Sworn's Debts: the app must never be the thing that quietly returns what the book gave a
+  soul one time. A smoke assertion runs a whole session boundary over it and checks it stays spent.
+
+  **The Craft's two levels are read off the level table, never typed.** `CharGen.SubpathLevels`
+  finds where a Calling's path opens and where it deepens — 3rd and 9th for the three of the Old
+  Dark, 10th for everybody else — so no familiar rule carries a literal 3 or 9 that a data change
+  could leave behind.
+
+  **A found bug, and it is the v1.47.0 class again.** Wiring this up turned up three more fields
+  that ride in the undo snapshot and announce nothing when they change: a soul's `FeatureSpent`,
+  their `TallyOwed`, and the whole of their `Sheet`. All three are mutated through their own
+  objects — a dictionary indexer, a field on the sheet — which fires no `PropertyChanged`, so
+  `party.ListChanged` never heard about them and the baseline went stale behind them. **Spending a
+  Marshal's Last Stand and then adding a creature meant Undo took the Last Stand back too.** Fixed
+  where the mutation happens rather than at every call site: `PartyMember.Touched` says so, and
+  `CharGen.SpendFeature`, `UnspendFeature`, `RefreshFeatures`, `TakeTally` and `ForgiveTally` all
+  call it. `AuditUndo` gained probes for all three, driven through the **real** mutators — and it
+  earned its keep immediately by failing this release's own first attempt, where `UnspendFeature`
+  announced the change *before* making it.
+
+  Self-test 38/38. Smoke suite 14,339 passing with none failing, up 42. Three new rows in
+  `audits/audit_consistency.py`'s app-book parity table, so a future session cannot quietly drop
+  either half of any of this.
+
 - **GritKeeper v1.47.0 — Undo was quietly eating work it was never asked to touch
   (2026-08-23, user-reported).**
 

@@ -1211,7 +1211,8 @@ public partial class MainForm
             // over it. Then dying, which is the one with a clock on it. Then plainly down, which is
             // where a creature stops and where a stabilised soul waits.
             e.CellStyle.BackColor = c.Dead ? DeadRow : c.Dying ? DyingRow : c.Down ? DownRow
-                                  : c.Acting ? ActingRow : c.IsPC ? PcRow : FoeRow;
+                                  : c.Acting ? ActingRow : c.IsPC ? PcRow
+                                  : c.IsFamiliar ? FamiliarRow : FoeRow;
             // A cell you can type in stands on lighter ground than one you cannot — applied after
             // the row colour so it lifts whatever that row happens to be wearing.
             if (!trkGrid.Columns[e.ColumnIndex].ReadOnly) e.CellStyle.BackColor = Writable(e.CellStyle.BackColor);
@@ -1358,6 +1359,27 @@ public partial class MainForm
             MI(menu, c.Beats > 0 ? $"Strike…  ({c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left)"
                                  : "Strike…  — no Beats left this turn", () => StrikeDialog(), !c.Down);
             if (c.IsPC) MI(menu, "Dread check…", () => DreadDialog());
+            // The bound beast, offered from EITHER end of the binding — her row sends it out, its
+            // row offers what the Craft lets the two of them do. One block rather than two, because
+            // at a table the question is always "the Witch and her crow" and never one alone.
+            var bound = c.IsFamiliar ? WitchOf(c) : c.IsPC ? SoulOf(c) : null;
+            var boundSheet = bound?.Sheet;
+            if (boundSheet != null && !string.IsNullOrEmpty(boundSheet.FamiliarKind))
+            {
+                MISep(menu);
+                var beast = FamiliarRowOf(bound);
+                if (boundSheet.FamiliarLost)
+                    MI(menu, "Bind another over a long night's rite…", () => BindNewFamiliar(bound));
+                else if (beast == null)
+                    MI(menu, $"Send {boundSheet.FamiliarKind} to the field",
+                       () => { if (AddFamiliarToTracker(bound)) RefreshTracker(); });
+                if (CharGen.FamiliarBoundGreater(boundSheet))
+                {
+                    bool both = beast != null && !beast.Down && tracker.Any(x => x.IsSoul(bound));
+                    MI(menu, "Change places with it — once per scene", () => FamiliarSwap(bound), both);
+                    MI(menu, "Share wounds or Blood with it…", () => FamiliarShareBlood(bound), both);
+                }
+            }
             MISep(menu);
             MI(menu, $"Damage {trkAmount.Value}", () => AdjustCombatant(-1));
             MI(menu, $"Heal {trkAmount.Value}", () => AdjustCombatant(+1), c.BloodMax == 0 || c.BloodCur < c.BloodMax);
@@ -1948,6 +1970,10 @@ public partial class MainForm
         callingPanel.Controls.Add(read);
         callingPanel.SetFlowBreak(read, true);
 
+        // The beast first, because it is the only card on the strip that is a THING rather than a
+        // count of one, and because whether it is alive is the question its Witch asks most.
+        if (soul.Sheet != null && !string.IsNullOrEmpty(soul.Sheet.FamiliarKind))
+            callingPanel.Controls.Add(FamiliarCard(soul));
         foreach (var row in ledger) callingPanel.Controls.Add(FeatureCard(soul, row));
         foreach (var row in tallies) callingPanel.Controls.Add(TallyCard(soul, row));
 
@@ -1958,6 +1984,72 @@ public partial class MainForm
     // What a card calls a feature. Lives in CharGen, not here, because the colon it trims is put
     // there by CharGen.Subpath and because Tabs.cs is not one of the files the smoke rig compiles.
     static string CardName(string key) => CharGen.ShortFeatureName(key);
+
+    /// <summary>The Witch's bound beast, on the strip where a player looks for what they can do.
+    ///
+    /// <para>Drawn differently from a ration card and from a tally card for the same reason those
+    /// two differ from each other: this one is not a count at all. It is a creature — it is
+    /// somewhere or it is not, it is alive or it is not, and both of those are things the table has
+    /// to be able to see without asking. The button is the whole of the beast's traffic with the
+    /// field: send it out to scout, call it back, and nothing else, because everything else it does
+    /// happens on its own row once it is out there.</para></summary>
+    Control FamiliarCard(PartyMember soul)
+    {
+        const int CW = 232;
+        var sheet = soul.Sheet;
+        var beast = FamiliarRowOf(soul);
+        bool dead = sheet.FamiliarLost;
+        var card = new Panel
+        {
+            Width = CW, Height = 52, BackColor = dead ? Paper : FamiliarRow,
+            Margin = new Padding(2, 0, 8, 6)
+        };
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(dead ? Blood : Verdigris, dead ? 1.8f : 1.4f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 74, Height = 17, UseMnemonic = false, AutoEllipsis = true,
+            Text = CharGen.FamiliarFieldName(null, sheet.FamiliarKind),
+            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = dead ? Blood : Ink
+        };
+        var state = new Label
+        {
+            Left = 8, Top = 23, Width = CW - 74, Height = 16, AutoEllipsis = true,
+            Text = dead ? "dead — Sickened until rebound"
+                 : beast == null ? sheet.FamiliarBoon
+                 : $"{beast.BloodCur} of {beast.BloodMax} Blood, on the field",
+            Font = new Font("Segoe UI", 8.25f), ForeColor = dead ? Blood : Faint
+        };
+
+        // Prose comments stay above the call — audits/audit_ui.py reads an apostrophe between the
+        // parentheses as the start of a char literal and swallows the tooltip behind it.
+        var go = Btn(dead ? "Bind" : beast == null ? "Send" : "Back", (s, e) =>
+        {
+            if (dead) { BindNewFamiliar(soul); return; }
+            if (beast == null) { if (AddFamiliarToTracker(soul)) RefreshTracker(); }
+            else { tracker.Remove(beast); Log($"{beast.Name} goes back to her — off the field."); RefreshTracker(); }
+            RefreshCalling();
+        }, 54, "What can be done with the beast from here — sent to the field, where it scouts and "
+             + "can be hurt and killed; called back off it; or, once it is dead, another bound in "
+             + "its place over a long night's rite. The card says which of the three this is.");
+        go.Left = CW - 62; go.Top = 10; go.Height = 30;
+
+        card.Controls.Add(name); card.Controls.Add(state); card.Controls.Add(go);
+        string tip = CharGen.FamiliarLine(sheet) + "\n\n"
+                   + (beast == null
+                      ? "Not on the field. Send it out and it takes a place in the order like anything else — "
+                        + "and can be hurt and killed, which is the moment Ch. VII is written about."
+                      : $"On the field at {beast.BloodCur} of {beast.BloodMax} Blood, Defense {beast.Defense}.")
+                   + "\n\nThe book gives the beast no stat block, so its Blood and Defense are the app's "
+                   + "default worked out of its Witch's own — a third of her Blood, or half once she has "
+                   + "taken the Familiar-Bound.";
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(state, tip);
+        return card;
+    }
 
     /// <summary>One rationed feature: its name, what is left, and the button that spends it. The
     /// tooltip carries the book's whole rule, because the card is where a player looks and the
@@ -2976,6 +3068,11 @@ public partial class MainForm
     void CheckFalling(Combatant c, bool wasDown, bool wasDead, int damage = 0, bool crit = false)
     {
         if (c == null || c.IsSign) return;
+        // The bound beast is not governed by any of what follows — no Grit, no Fortitude save, no
+        // count toward a CON it does not have — but its fall is the one moment Ch. VII actually
+        // legislates, so it is noticed here, where every route that takes Blood off anything
+        // already arrives. Same reason the terrible blow was moved here.
+        if (c.IsFamiliar) { FamiliarFell(c); return; }
         // Ch. XI's terrible blow, asked on EVERY route that takes Blood off a soul rather than only
         // in the Strike dialog. It lived at the Strike's call site for four releases, which meant a
         // dice-and-books Keeper — who types the damage the physical dice rolled — never once got
@@ -3004,6 +3101,11 @@ public partial class MainForm
         if (soul == null) return;
         Log($"{c.Name} falls — dying, and bleeding a Blood a round toward −{c.DeathAt}.");
 
+        // "Should you fall, it carries your spirit to a new dawn — once." Offered at the fall,
+        // because the fall is what the book calls a fall, and offered BEFORE the Grit: Grit buys
+        // one more round on her feet, and this buys the night.
+        if (OfferFamiliarCarry(soul, c)) return;
+
         if (soul.Grit <= 0)
         {
             Nope($"{soul.Name} is down at 0 Blood — Dying, and bleeding one Blood every round toward "
@@ -3024,6 +3126,179 @@ public partial class MainForm
         if (Rules.RefuseToFall(c, soul) is string why) { Nope(why); return; }
         Log($"{soul.Name} REFUSES TO FALL — 1 Grit spent ({soul.Grit} left), on their feet one more round.");
         Daybook.Note("turn", $"round {round}: {soul.Name} spent Grit to refuse the fall at −{c.Bleed}");
+        posseGrid?.Refresh(); RefreshTracker();
+    }
+
+    /// <summary>The long night's rite — the only thing Ch. VII offers a Witch whose beast is dead,
+    /// and until now the one part of the familiar the app could state and not do.
+    ///
+    /// <para>Deliberately NOT hung on Rest or on any dawn. Every other boundary in this app hands
+    /// something back because a clock turned over; this one is a night's work somebody chose to
+    /// do, and a Sickened that lifted by itself overnight would quietly say the loss cost nothing.
+    /// The beast that comes is the same kind unless the table says otherwise — the sheet's
+    /// Familiar line is editable on the New Soul tab, which is where a Witch who bound something
+    /// else writes it down.</para></summary>
+    void BindNewFamiliar(PartyMember soul)
+    {
+        var sheet = soul?.Sheet;
+        if (sheet == null || string.IsNullOrEmpty(sheet.FamiliarKind)) { Nope("That soul has no familiar to bind."); return; }
+        if (!sheet.FamiliarLost) { Nope($"{soul.Name}'s {sheet.FamiliarKind} is alive. There is nothing to bind."); return; }
+        if (!Confirm($"A long night's rite, and {soul.Name} is bound to another beast.\n\n"
+                   + "The Sickened lifts and the standing boon comes back. It is the same kind of "
+                   + "creature unless the table says otherwise — change the Familiar on her sheet if "
+                   + "something else answered.\n\n"
+                   + "This is a night's work, not a rest. Has she done it?"))
+            return;
+        sheet.FamiliarLost = false;
+        soul.Touched(nameof(PartyMember.Sheet));
+        Log($"{soul.Name} binds another over a long night's rite — {sheet.FamiliarKind}, and the boon "
+          + "with it. Clear the Sickened by hand when the table is done with it.");
+        Daybook.Note("feature", $"{soul.Name} bound a new familiar over a long night's rite");
+        posseGrid?.Refresh(); RefreshTracker(); RefreshCalling();
+    }
+
+    /// <summary>The last thing the Familiar-Bound is for: "should you fall, it carries your spirit
+    /// to a new dawn — <em>once</em>".
+    ///
+    /// <para>Once EVER, so the spending is written on the character sheet rather than into
+    /// <c>FeatureSpent</c>, which every scene boundary hands back. Same separation, and the same
+    /// reason, as the Pact-Sworn's Debts: the app must never be the thing that quietly returns
+    /// what the book gave a soul one time.</para>
+    ///
+    /// <para>Answers whether it happened, so the caller can stop: a Witch whose beast carried her
+    /// is not then also offered a point of Grit to stay on her feet, which she is not on.</para></summary>
+    bool OfferFamiliarCarry(PartyMember soul, Combatant hers)
+    {
+        var sheet = soul?.Sheet;
+        if (sheet == null || sheet.FamiliarCarried || sheet.FamiliarLost) return false;
+        if (!CharGen.FamiliarBoundGreater(sheet)) return false;
+        var beast = FamiliarRowOf(soul);
+        if (beast == null || beast.Down) return false;
+
+        if (!Confirm($"{soul.Name} is down at 0 Blood — and {beast.Name} is still standing.\n\n"
+                   + "LET IT CARRY HER SPIRIT TO A NEW DAWN? The beast dies in her place. She stops "
+                   + "bleeding where she lies and will not wake before morning.\n\n"
+                   + "This is the once. The Familiar-Bound grants it one time in a life, and nothing "
+                   + "in this app or in the book gives it back.\n\nYes spends it. No lets her fall."))
+            return false;
+
+        sheet.FamiliarCarried = true;
+        soul.Touched(nameof(PartyMember.Sheet));
+        hers.Stable = true; hers.Bleed = 0; hers.Upright = false;
+        beast.Wound(-beast.BloodCur, "carried");
+        Log($"{beast.Name} carries {soul.Name}'s spirit to a new dawn, and stays behind for it. She is "
+          + "stable where she lies and will not wake before morning. Once, and that was the once.");
+        Daybook.Note("death", $"round {round}: {beast.Name} died carrying {soul.Name}'s spirit to a new dawn");
+        // Through FamiliarFell, not a second copy of it: the Sickened, the lost boon, the Daybook
+        // line and the words to the Keeper are all one path, however the beast came to die.
+        FamiliarFell(beast);
+        return true;
+    }
+
+    /// <summary>What it means when the bound beast reaches 0 Blood, and what it means when it is
+    /// brought back off it.
+    ///
+    /// <para>At 0 Blood the beast is DEAD, not down — the same reading the app already gives every
+    /// creature ("a creature at 0 Blood is simply put down"), and the right one here: the dying
+    /// rule is written for characters, and a cat with a count running toward its CON is a rule the
+    /// book does not have. So the fall IS the death, which is what makes Ch. VII's sentence
+    /// runnable: "should it die, you are Sickened until you can bind another over a long night's
+    /// rite".</para>
+    ///
+    /// <para>Idempotent on purpose, and it reads the state rather than the caller's word for it.
+    /// CheckFalling is reached from seven places and two of them pass <c>wasDown: false</c> because
+    /// they are about something else entirely; a version of this that trusted that flag would
+    /// Sicken a Witch twice over one dead crow.</para></summary>
+    void FamiliarFell(Combatant c)
+    {
+        var witch = WitchOf(c);
+        var sheet = witch?.Sheet;
+        if (sheet == null) { RefreshTracker(); return; }
+
+        if (c.Down && !sheet.FamiliarLost)
+        {
+            sheet.FamiliarLost = true;
+            witch.Touched(nameof(PartyMember.Sheet));
+            ApplyConditionTo(tracker.FirstOrDefault(x => x.IsSoul(witch)), "Sickened 1");
+            Log($"{c.Name} is killed. {witch.Name} is Sickened until another is bound over a long "
+              + "night's rite — and the boon it granted goes with it.");
+            Daybook.Note("death", $"round {round}: {c.Name} killed — {witch.Name} Sickened, familiar lost");
+            Nope($"{c.Name} is dead.\n\n{witch.Name} is Sickened until she can bind another over a "
+               + "long night's rite, and the standing boon it granted is gone from every roll she "
+               + "makes until then (Ch. VII).\n\nYou will feel the loss far longer than the penalty "
+               + "lasts.");
+        }
+        else if (!c.Down && sheet.FamiliarLost)
+        {
+            // Healed off zero before the night was over. It was never dead, so the Sickened it
+            // caused was never earned — the Keeper's own condition string is not touched, because
+            // everything in that string is their word and the engine does not write there.
+            sheet.FamiliarLost = false;
+            witch.Touched(nameof(PartyMember.Sheet));
+            Log($"{c.Name} is breathing again — {witch.Name}'s boon comes back with it. "
+              + "Clear the Sickened by hand if the table is done with it.");
+        }
+        posseGrid?.Refresh(); RefreshTracker();
+    }
+
+    /// <summary>The key <c>FeatureSpent</c> stores the Familiar-Bound's greater boon under, found
+    /// rather than typed: <c>CharGen.Subpath</c> builds it out of the section name, which carries a
+    /// curly apostrophe, and a literal here would silently ration a feature nobody has.</summary>
+    static string FamiliarBoundKey(PartyMember soul)
+        => CharGen.LedgerFor(soul).FirstOrDefault(
+               r => r.Name.Contains("Familiar-Bound", StringComparison.Ordinal)
+                 && r.Name.EndsWith("— greater", StringComparison.Ordinal)).Name;
+
+    /// <summary>Swap places with the beast — the greater boon's once-per-scene move.
+    ///
+    /// <para>The app models no ground, so what it can honestly exchange is everything about WHERE
+    /// the two of them are that it does hold: what each is standing behind, and whether either is
+    /// mounted. The rest is the table's to narrate. The once-per-scene ration is the feature card's
+    /// own, spent through <c>CharGen.SpendFeature</c>, so the strip and this cannot disagree about
+    /// whether it is still there.</para></summary>
+    void FamiliarSwap(PartyMember witch)
+    {
+        var beast = FamiliarRowOf(witch);
+        var hers = tracker.FirstOrDefault(t => t.IsSoul(witch));
+        if (beast == null) { Nope($"{witch.Name}'s familiar is not on the field."); return; }
+        if (hers == null) { Nope($"{witch.Name} is not on the field."); return; }
+        if (beast.Down) { Nope($"{beast.Name} is dead. There is nothing to swap with."); return; }
+        string key = FamiliarBoundKey(witch);
+        if (key == null) { Nope("Only a Witch who has taken the Familiar-Bound to its greater boon can do this."); return; }
+        if (!CharGen.SpendFeature(witch, key)) { Nope(CharGen.WhyNotFeature(witch, key)); return; }
+
+        (hers.Cover, beast.Cover) = (beast.Cover, hers.Cover);
+        (hers.Gait, beast.Gait) = (beast.Gait, hers.Gait);
+        Log($"{witch.Name} and {beast.Name} change places — where one was, the other is. "
+          + "Once per scene.");
+        Daybook.Note("feature", $"round {round}: {witch.Name} swapped places with {beast.Name}");
+        RefreshTracker();
+    }
+
+    /// <summary>Share wounds or Blood — the other half of the greater boon. Moves Blood between the
+    /// two of them in whichever direction the Keeper needs, which is what "share" means at a table:
+    /// the beast takes a hit meant for her, or she gives back what it spent for her.</summary>
+    void FamiliarShareBlood(PartyMember witch)
+    {
+        var beast = FamiliarRowOf(witch);
+        var hers = tracker.FirstOrDefault(t => t.IsSoul(witch));
+        if (beast == null || hers == null) { Nope("Both the Witch and her familiar have to be on the field."); return; }
+        if (beast.Down) { Nope($"{beast.Name} is dead."); return; }
+        if (FamiliarBoundKey(witch) == null)
+        { Nope("Only a Witch who has taken the Familiar-Bound to its greater boon can do this."); return; }
+
+        string ans = AskLine($"How much Blood moves? A positive number takes it off {witch.Name} and "
+                           + $"puts it on {beast.Name}; a negative number sends it the other way.", "1");
+        if (!int.TryParse(ans?.Trim(), out int n) || n == 0) return;
+        var (from, to) = n > 0 ? (hers, beast) : (beast, hers);
+        int moved = Math.Min(Math.Abs(n), from.BloodCur);
+        if (moved <= 0) { Nope($"{from.Name} has no Blood left to give."); return; }
+        bool fromWasDown = from.Down, fromWasDead = from.Dead;
+        from.Wound(-moved, "shared");
+        to.Wound(moved, "shared");
+        if (to == hers) witch.BloodCur = hers.BloodCur;
+        Log($"{moved} Blood passes from {from.Name} to {to.Name} — shared, as the Familiar-Bound share.");
+        CheckFalling(from, fromWasDown, fromWasDead, moved);
         posseGrid?.Refresh(); RefreshTracker();
     }
 
