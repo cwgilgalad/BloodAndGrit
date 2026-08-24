@@ -139,7 +139,7 @@ def build_plan(args):
 
     if args.app or args.release:
         dotnet = shutil.which("dotnet") or r"C:\Program Files\dotnet\dotnet.exe"
-        exe = ROOT / "GK/source/bin/Release/net8.0-windows/win-x64/GritKeeper.exe"
+        exe = ROOT / "GK/source/bin/Release/net10.0-windows/win-x64/GritKeeper.exe"
         plan.append(("build", [dotnet, "build", "-c", "Release", "-warnaserror"],
                      ROOT / "GK/source", False, "0 warnings, 0 errors"))
         plan.append(("smoke", [dotnet, "run", "-c", "Release"],

@@ -13,7 +13,7 @@
     -TimestampServer  RFC3161 URL; omit to use the default, or "" to skip timestamping.
 #>
 param(
-    [string] $Exe = "GK\source\bin\Release\net8.0-windows\win-x64\publish\GritKeeper.exe",
+    [string] $Exe = "GK\source\bin\Release\net10.0-windows\win-x64\publish\GritKeeper.exe",
     [string] $Thumbprint = "",
     [string] $TimestampServer = "http://timestamp.digicert.com"
 )

@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <!-- The game itself: dice, the four degrees, chargen, the Iron Code, horror, maps, PDFs.
-         Plain net8.0 with NO WinForms reference, so it runs anywhere .NET runs — Linux
+         Plain net10.0 with NO WinForms reference, so it runs anywhere .NET runs — Linux
          included. That is not an aspiration; it is what GK/smoke has been proving on every
-         build for months by compiling exactly these six files against a net8.0 target.
+         build for months by compiling exactly these six files against a net10.0 target.
 
          This project exists so that fact is STRUCTURAL rather than a convention. Before it,
          smoke.csproj carried a hand-listed <Compile Include="..\source\Foo.cs" /> per file —
          a list that could silently fall out of date with what the app actually contained. Add
          a seventh headless file, forget to list it, and it simply went untested forever. A
          project reference cannot drift that way. -->
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 

@@ -5,7 +5,7 @@ Loaded whenever work touches anything under `GK/`. Split out of the root `CLAUDE
 sessions that never opened a `.cs` file. The root file keeps the two landmines that can ruin a
 release (`SplitContainer` geometry, `dotnet publish -o`) and points here for the rest.
 
-A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 8, Windows
+A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. **Renamed from
 "The Keeper's Table" to GritKeeper in v1.5.0** — exe `GritKeeper.exe`, product/title/About/README
 all updated; the **internal namespace stays `BloodAndGritKeeper`** (deliberately — embedded-resource
@@ -17,7 +17,7 @@ also renamed in v1.6.0.
 ## Source-tree layout (read before editing the app)
 
 The working/master tree is **`GK/`**, and since v1.28.0 it holds **three** projects:
-`GK/rules/` (the `net8.0` rules library — the eight headless `.cs` files and `Data/*.json`),
+`GK/rules/` (the `net10.0` rules library — the eight headless `.cs` files and `Data/*.json`),
 `GK/source/` (the WinForms app: the UI `.cs`, its `.csproj`, `app.ico`, `Assets/`), and
 `GK/smoke/` (the headless logic-test project). The app and the smoke rig both reference the
 library. **Edit `GK/rules` for rules and data, `GK/source` for UI; build/test in `GK/`.**
@@ -29,7 +29,7 @@ remembering to add a line to `smoke.csproj`. Anything touching `System.Windows.F
 `MapGen.SettingTerrains` and `Db.RollAdventure` live where they do — logic that sat in `Tabs.cs`
 was untestable, and that is exactly how the v1.24.2 `NewFight()` bug escaped.)
 
-**The build output is `GK/source/bin/Release/net8.0-windows/win-x64/` — RID-qualified, and the
+**The build output is `GK/source/bin/Release/net10.0-windows/win-x64/` — RID-qualified, and the
 assembly is named `GritKeeper`, not `BloodAndGritKeeper`.** The published single file lands in
 `…/win-x64/publish/GritKeeper.exe`, which is what `sign.ps1` and `package.ps1` default to. There
 is no `GK/publish/` and no `GK/source/publish/`; both were stale paths from older flows and were
@@ -180,7 +180,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
 
 | File | Role |
 |---|---|
-| `BloodAndGritKeeper.csproj` | Project file. `net8.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting`. Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`) so `dotnet publish` always yields a zero-dependency exe. |
+| `BloodAndGritKeeper.csproj` | Project file. `net10.0-windows`, `UseWindowsForms`, `EnableWindowsTargeting`. Also carries the **self-contained single-file publish settings** (RID win-x64, `SelfContained`, `PublishSingleFile`) so `dotnet publish` always yields a zero-dependency exe. |
 | **`Core.cs`** | Models (`PartyMember`, `Combatant`, `CampaignClock` — all `INotifyPropertyChanged` with clamped setters), the `Rules` static class (dice parser, four-degrees, Nerve-loss ladder, encounter cost), `TurnClock`, and `Db` (loads the JSON data). |
 | **`MainForm.cs`** | App shell, theme constants, the deferred-splitter `Split()` helper, the emblem/icon loaders + `Watermark()`, context keyboard shortcuts + `ProcessCmdKey` Reference paging, Posse tab, Dice tab, persistence (`Snapshot`/`ApplySession`/autosave/autoload), demo-posse seed, the undo/redo engine, and the tooltip walker (`WalkForTips`/`WantsTip`). |
 | **`Menus.cs`** | The menu bar (File/View/Help), session Save-as/Load dialogs, the five-minute lesson + shortcuts windows, About box, `ShowRequirements`. |
@@ -207,7 +207,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
 ## Build & run
 
 ```bash
-# Requires the official Microsoft .NET 8 SDK (Ubuntu's apt package lacks WindowsDesktop targets).
+# Requires the official Microsoft .NET 10 SDK (Ubuntu's apt package lacks WindowsDesktop targets).
 cd GK/source
 dotnet build -c Release
 
@@ -221,10 +221,10 @@ dotnet publish -c Release
 `-o` diverts the build somewhere else and they will happily sign and ship the PREVIOUS version's
 exe instead. This happened during the v1.18.0 release and was caught only on the version check.
 
-Deliverable = **just `bin/Release/net8.0-windows/win-x64/publish/GritKeeper.exe`** (~155 MB;
+Deliverable = **just `bin/Release/net10.0-windows/win-x64/publish/GritKeeper.exe`** (~112.5 MB;
 `EnableCompressionInSingleFile` and `PublishReadyToRun` are deliberately **off** for startup speed
-and Defender scan time, which is why it is not the ~69 MB a compressed publish would be — the zip
-comes out ~63 MB) — a **true single-file standalone**: the .NET runtime is bundled *and* the
+and Defender scan time, which is why it is not the ~50 MB a compressed publish would be — the zip
+comes out ~46 MB) — a **true single-file standalone**: the .NET runtime is bundled *and* the
 `Data/*.json` are **embedded in the exe**, so it runs on any Windows machine with no .NET install
 and no `Data/` folder beside it. `Db.ReadData` loads the JSON from the assembly, and falls back to
 `Data/` on disk for the smoke rig / dev build. The exe writes only `session.json` beside itself
@@ -243,9 +243,9 @@ machine actually the version we think it is". `.githooks/pre-push` runs it when 
 CI runs the half it can see, and fails once a version stops being the newest without a tag.
 
 **A Linux package is planned** (decided 2026-07-29). The engine half has been done since v1.28.0:
-`GK/rules` is a plain `net8.0` library with no Windows reference — exactly what the headless smoke
+`GK/rules` is a plain `net10.0` library with no Windows reference — exactly what the headless smoke
 rig builds against — so the rules, chargen, map generator and PDF writer all run on Linux today.
-What a Linux build has to answer is the **UI**: `GK/source` is `net8.0-windows` + WinForms and
+What a Linux build has to answer is the **UI**: `GK/source` is `net10.0-windows` + WinForms and
 cannot cross that line, so this means a second front-end against the same library, not a port.
 Anything added to the rules library should stay drawing-free and WinForms-free for that reason.
 **Until something ships, every mention of it says "planned" and gives no date**: the standing rule
@@ -648,7 +648,7 @@ counterpart here, the two were merged rather than stacked.)*
 
 ## The rules library, and why the JSON had to move with it
 
-`GK/rules/BloodAndGrit.Rules.csproj` is a plain `net8.0` class library — no WinForms — holding the
+`GK/rules/BloodAndGrit.Rules.csproj` is a plain `net10.0` class library — no WinForms — holding the
 eight headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
 `Look.cs`, `Daybook.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
 `<Compile Include>` per file, which could silently fall out of step with what the app contained —

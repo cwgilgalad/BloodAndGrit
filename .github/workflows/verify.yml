@@ -39,16 +39,16 @@ on:
 
 jobs:
   app:
-    # windows-latest, not ubuntu: the app is net8.0-windows WinForms, and the self-test
+    # windows-latest, not ubuntu: the app is net10.0-windows WinForms, and the self-test
     # constructs the real window graph. The rules library and the smoke rig are plain
-    # net8.0 and would build anywhere, but there is no value in splitting the job.
+    # net10.0 and would build anywhere, but there is no value in splitting the job.
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Build the app (0 warnings, 0 errors is the standard)
         run: dotnet build -c Release -warnaserror
@@ -65,7 +65,7 @@ jobs:
         # going red for the wrong reason. Its exit code still fails the job on a genuine
         # assertion failure.
         run: ./GritKeeper.exe --selftest
-        working-directory: GK/source/bin/Release/net8.0-windows/win-x64
+        working-directory: GK/source/bin/Release/net10.0-windows/win-x64
 
       - name: Publish the self-contained single file, and self-test THAT
         # The one failure mode a dev build cannot show: Db.ReadData resolves embedded
@@ -74,5 +74,5 @@ jobs:
         # proves it.
         run: |
           dotnet publish -c Release
-          ./bin/Release/net8.0-windows/win-x64/publish/GritKeeper.exe --selftest
+          ./bin/Release/net10.0-windows/win-x64/publish/GritKeeper.exe --selftest
         working-directory: GK/source

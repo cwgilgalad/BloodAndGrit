@@ -8,6 +8,67 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.46.0 — the app moves to .NET 10, and the move pays for itself
+  (2026-08-23).**
+
+  **.NET 8 leaves long-term support in November 2026, so the app had to move before it stopped
+  getting security fixes.** All four projects — the WinForms app, the rules library, the smoke rig
+  and the playtest harness — now target `net10.0`. That is the whole of the change a user would
+  find in a diff. Everything else below is what the move turned out to be worth, and one thing it
+  broke.
+
+  **It broke exactly one line of code.** .NET 10 ships a WinForms analyzer, WFO1000, that requires
+  every public property on a control to state what the designer serializer should do with it, and
+  this tree builds with `-warnaserror`, so `Ledger.Zoom` stopped the build. The analyzer accepts
+  either a `[DefaultValue]` or a `[DesignerSerializationVisibility]`, and `Hidden` is the true
+  answer here rather than the tidier-looking one: there is not a single `.Designer.cs` or
+  `InitializeComponent` anywhere in this codebase — every control is built in code — and `Zoom` is
+  runtime state a Keeper drives with ctrl+wheel, not a design-time setting anything would ever
+  write out. Nothing else in ~26,000 lines needed touching.
+
+  **The app is 43 MB smaller and starts 1.7 seconds faster, for nothing.** Re-measured with the
+  method this repo has used since v1.11.0 — `Start-Process` to a real `MainWindowHandle`, a
+  brand-new copy of the exe for every first-launch figure so Defender's first-execution scan is
+  inside the number, three warm runs averaged. The shipping exe went from 155.7 MB to 112.5 MB,
+  the download from ~63 MB to ~46 MB, and a cold first launch from 5.1 s to 3.42 s. No setting was
+  changed to get any of that.
+
+  **The reason it got faster is not the JIT — the exe no longer unpacks itself.** Under .NET 8
+  every new build wrote about 39 MB of native libraries into `%TEMP%\.net\GritKeeper` the first
+  time it ran, and Defender then scanned what came out; that extraction was most of what the
+  first-launch number had ever been measuring. Watched the cache folder across a cold launch of
+  this build: not one new directory appears. .NET 10 maps those libraries out of the bundle in
+  place. Two things follow, and both were checked rather than assumed.
+  `IncludeNativeLibrariesForSelfExtract` is now a **no-op** — forcing it to `false` produces a
+  byte-identical exe (same SHA-256) that opens its window in 1.31 s, so the rejected measurement
+  recorded against it in v1.11.0 no longer reproduces; there is nothing left to extract for the
+  setting to suppress. And the **400 MB disk requirement was sized for that spill**, so the README,
+  the source README and the in-app System Requirements box now say 250 MB and no longer promise an
+  unpack that does not happen.
+
+  **Both publish settings were re-measured from scratch, and one of the two recorded reasons is
+  now wrong.** A TFM bump is the one change that can overturn a startup measurement, and .NET 10
+  reworked single-file compression, so all three configurations were timed again rather than
+  inherited. ReadyToRun is now worse on *every* axis at once — bigger exe, bigger download, slower
+  cold launch **and** slower warm launch — where under .NET 8 it at least bought steady-state
+  speed; this is the third measurement to reject it. Compression is the interesting one: its
+  13-second first-launch penalty is simply gone, and the compressed build now starts marginally
+  *sooner* cold (3.32 s vs 3.42 s, inside the noise). What it still costs is 0.24 s on every launch
+  after the first, and what it buys is 1.1 MB of download. The zip is what a stranger waits on and
+  1.1 MB of it is nothing; the 0.24 s is paid by the Keeper every session for the life of the
+  install. Same verdict as v1.11.0, different arithmetic — and the csproj now says so in as many
+  words, so nobody reads the .NET 8 paragraph as the live reason.
+
+  **The rest is bookkeeping that had to be exact.** `sign.ps1`, `package.ps1`,
+  `audits/verify_all.py` and the GitHub Actions workflow all hard-code the RID-qualified build
+  path, and every one of them was pointed at `net10.0-windows`; the workflow's SDK pin moved to
+  `10.0.x`. The smoke rig's `RollForward` comment claimed the 9 runtime was fine for an 8-target,
+  which stopped being either true or the reason — the property stays, because a rig that will not
+  run on a machine one runtime ahead fails in a way nobody diagnoses quickly, but it is
+  belt-and-braces now and says so. Build 0 warnings / 0 errors, the smoke suite 14,298 passing and
+  none failing, the self-test clean, and `GK/playtest` reproduces `PLAYTEST.md` byte-identical to
+  the committed copy — the runtime changed underneath the dice and not one number moved.
+
 - **Player's Book v2.29 · Keeper's Book v2.17 · all three Modules · GritKeeper v1.45.0 — the
   modules turn, the Witch's beast gets its rules, and two new audits ask questions nothing asked
   before (2026-08-22, user-requested).**
