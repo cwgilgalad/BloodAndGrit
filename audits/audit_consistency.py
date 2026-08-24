@@ -413,6 +413,10 @@ PARITY = [
     ("the Pact-Sworn's Debts", r"on your third Debt", r"\bTallyOwed\b"),
     ("the Witch's familiar", r"A small beast is bound to you",
      r"\bpublic string FamiliarKind\b"),
+    ("the familiar on the field", r"scouts and\s+spies at your bidding",
+     r"\bpublic string FamiliarOf\b"),
+    ("the Familiar-Bound's spirit-carry", r"carries your spirit to a new dawn",
+     r"\bpublic bool FamiliarCarried\b"),
 ]
 
 

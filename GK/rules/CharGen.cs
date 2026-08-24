@@ -176,6 +176,14 @@ public class CharacterSheet
     public string FamiliarKind { get; set; }                             // "a crow", or null for no familiar
     public string FamiliarBoon { get; set; }                             // the standing +2 befitting its nature
     public bool FamiliarLost { get; set; }                               // it died; the Witch is Sickened until re-bound
+    /// <summary>The Familiar-Bound's greater boon has been spent: "should you fall, it carries your
+    /// spirit to a new dawn — <em>once</em>". Once ever, and nothing in the app gives it back — not
+    /// a new fight, not a long rest, not a new session. It is stored on the SHEET rather than in
+    /// <see cref="PartyMember.FeatureSpent"/> for exactly that reason: FeatureSpent is a ration and
+    /// <see cref="CharGen.RefreshFeatures"/> walks it at every boundary, so a once-in-a-life thing kept
+    /// there would quietly come back the first time somebody pressed New fight. Same separation,
+    /// and the same reason, as the Pact-Sworn's Debts.</summary>
+    public bool FamiliarCarried { get; set; }
     public string PoolLine { get; set; }                                 // e.g. "Favor 3 (PRE mod + half level, refreshed each dawn)"
     public string PoolName { get; set; }                                 // the faith/sign currency's name, or null
     public int PoolMax { get; set; }                                     // its maximum at this level, or 0 for no pool
@@ -338,8 +346,28 @@ public static class CharGen
         var def = D?.skills?.Find(k => string.Equals(k.name, skill, StringComparison.OrdinalIgnoreCase));
         int mod = def != null && s.Scores != null && s.Scores.TryGetValue(def.ability, out int score) ? Mod(score) : 0;
         int rank = s.SkillRanks != null && s.SkillRanks.TryGetValue(def?.name ?? skill, out int r) ? r : 0;
-        return rank <= 0 ? mod : mod + s.Level + rank * 2;
+        return (rank <= 0 ? mod : mod + s.Level + rank * 2) + FamiliarBoonOn(s, def?.name ?? skill);
     }
+
+    /// <summary>What the bound beast adds to this skill — the standing boon of Ch. VII, applied
+    /// here so that it is applied at all.
+    ///
+    /// <para>From v1.45.0 the sheet has printed "+2 Stealth" and every number the app worked out
+    /// has ignored it, because the only place that skill's name existed was in the middle of a
+    /// sentence written for a human reader. A bonus nobody adds is not a rule; it is a decoration.
+    /// Putting it inside <see cref="SkillBonus"/> means every roll the app already reckons picks it
+    /// up at once — a Witch's initiative is a Notice check, so a live crow now moves her place in
+    /// the order, and the Read-the-sign dialog prefills a toad's Medicine and a cat's Stealth the
+    /// same way.</para>
+    ///
+    /// <para>Nothing while the beast is dead, which is the other half of what the book says it is
+    /// worth. Applied whether or not the soul is trained: the book grants the boon for having the
+    /// beast near, not for having studied.</para></summary>
+    public static int FamiliarBoonOn(CharacterSheet s, string skill)
+        => s != null && !s.FamiliarLost && !string.IsNullOrEmpty(skill)
+           && FamiliarSkillFor(s.FamiliarKind) is string sk
+           && string.Equals(sk, skill, StringComparison.OrdinalIgnoreCase)
+         ? FamiliarBoonSize : 0;
 
     /// <summary>What a soul adds to initiative — their Notice bonus, because initiative IS a Notice
     /// check (Player's Book Ch. XI, and the app's own Reference deck says so on the Iron Code leaf).
@@ -1813,6 +1841,7 @@ public static class CharGen
         if (WhyNotFeature(p, feature) != null) return false;
         p.FeatureSpent.TryGetValue(feature, out int used);
         p.FeatureSpent[feature] = used + 1;
+        p.Touched(nameof(PartyMember.FeatureSpent));
         return true;
     }
 
@@ -1822,6 +1851,12 @@ public static class CharGen
     {
         if (p == null || !p.FeatureSpent.TryGetValue(feature, out int used) || used <= 0) return false;
         if (used == 1) p.FeatureSpent.Remove(feature); else p.FeatureSpent[feature] = used - 1;
+        // AFTER the mutation, never before it. Announcing first tells the app to look at a table
+        // that has not changed yet, and with no handle to defer through — the self-test rig, and
+        // any early-startup path — the capture happens on the spot and the real change lands behind
+        // it, unseen. Found by AuditUndo on its first run against this method, which is what that
+        // audit is for.
+        p.Touched(nameof(PartyMember.FeatureSpent));
         return true;
     }
 
@@ -1841,6 +1876,7 @@ public static class CharGen
             if (row.Limit.Cadence > upTo) continue;
             if (p.FeatureSpent.Remove(row.Name)) gave++;
         }
+        if (gave > 0) p.Touched(nameof(PartyMember.FeatureSpent));
         return gave;
     }
 
@@ -1874,6 +1910,7 @@ public static class CharGen
         p.TallyOwed.TryGetValue(feature, out int owed);
         owed++;
         p.TallyOwed[feature] = owed;
+        p.Touched(nameof(PartyMember.TallyOwed));
         return (owed, owed >= row.Tally.At);
     }
 
@@ -1883,6 +1920,7 @@ public static class CharGen
     {
         if (p == null || !p.TallyOwed.TryGetValue(feature, out int owed) || owed <= 0) return false;
         if (owed == 1) p.TallyOwed.Remove(feature); else p.TallyOwed[feature] = owed - 1;
+        p.Touched(nameof(PartyMember.TallyOwed));
         return true;
     }
 
@@ -1895,6 +1933,44 @@ public static class CharGen
 
     // ------------------------------------------------------------------ the Witch's familiar
 
+    /// <summary>How much the standing boon is worth, in the one place the book's number lives.
+    /// The sentence on the sheet is built from it and <see cref="FamiliarBoonOn"/> adds it, so the
+    /// printed line and the number a Keeper rolls against cannot part company.</summary>
+    public const int FamiliarBoonSize = 2;
+
+    /// <summary>Which skill each bound beast lifts, on its own, as a name a lookup can use.
+    ///
+    /// <para>Split out of <see cref="FamiliarBoonFor"/> because the boon could not otherwise be
+    /// applied: the skill's name existed only inside a sentence, and a sentence is not something
+    /// <see cref="SkillBonus"/> can read. Same fault, same shape, as every other pair of facts this
+    /// project has had to pull apart — the moment one of them is only printable, the other one
+    /// silently stops being true.</para>
+    ///
+    /// <para>Null for a beast nobody has keyed. The book states the boon as a principle — "a +2 to
+    /// one sense or skill befitting its nature" — and leaves the choice to the table, so a sixth
+    /// animal gets the generic line and no automatic bonus, rather than a guessed one.</para></summary>
+    public static string FamiliarSkillFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    {
+        var k when k.Contains("cat")   => "Stealth",
+        var k when k.Contains("crow")  => "Notice",
+        var k when k.Contains("hare")  => "Acrobatics",
+        var k when k.Contains("toad")  => "Medicine",
+        var k when k.Contains("snake") => "Insight",
+        _ => null,
+    };
+
+    /// <summary>Why that skill and not another — the half of the boon line that is prose, kept
+    /// beside the half that is a rule so a Keeper reading the sheet gets both.</summary>
+    static string FamiliarReasonFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    {
+        var k when k.Contains("cat")   => "it goes where you cannot and comes back",
+        var k when k.Contains("crow")  => "it sees the country from above and tells you",
+        var k when k.Contains("hare")  => "its quickness is in your feet",
+        var k when k.Contains("toad")  => "it knows what grows and what it is for",
+        var k when k.Contains("snake") => "it reads warmth, and fear is warm",
+        _ => null,
+    };
+
     /// <summary>
     /// The standing boon each bound beast grants — "a +2 to one sense or skill befitting its
     /// nature", which the book states as a principle and leaves to the table. The app has to
@@ -1903,15 +1979,58 @@ public static class CharGen
     /// chargen.json's Witch choice are the five keys and a sixth would fall through to the
     /// generic reading rather than crashing.
     /// </summary>
-    public static string FamiliarBoonFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    public static string FamiliarBoonFor(string kind)
+        => FamiliarSkillFor(kind) is string sk
+         ? $"+{FamiliarBoonSize} {sk} — {FamiliarReasonFor(kind)}"
+         : $"+{FamiliarBoonSize} to one sense or skill befitting its nature";
+
+    /// <summary>Which level a Calling's 3rd-level path opens at, and which level its greater half
+    /// opens at — read off the level table rather than typed here, because the table is where the
+    /// book states them and the two differ by Calling: the three of the Old Dark deepen at 9th and
+    /// everybody else masters at 10th. Zeroes for a Calling with no path at all.
+    ///
+    /// <para>Worth the four lines. The alternative is the literal 3 and the literal 9 written into
+    /// every rule that turns on the Craft, which is how a level table and the code that reads it
+    /// part company — and this project has already paid for that lesson under two other
+    /// names.</para></summary>
+    public static (int At, int Greater) SubpathLevels(string callingName)
     {
-        var k when k.Contains("cat")   => "+2 Stealth — it goes where you cannot and comes back",
-        var k when k.Contains("crow")  => "+2 Notice — it sees the country from above and tells you",
-        var k when k.Contains("hare")  => "+2 Acrobatics — its quickness is in your feet",
-        var k when k.Contains("toad")  => "+2 Medicine — it knows what grows and what it is for",
-        var k when k.Contains("snake") => "+2 Insight — it reads warmth, and fear is warm",
-        _ => "+2 to one sense or skill befitting its nature",
-    };
+        var cal = D?.callings?.FirstOrDefault(c => c.name == callingName);
+        if (cal?.subpath == null) return (0, 0);
+        var rows = cal.rows.OrderBy(r => r.level).ToList();
+        string greater = rows.SelectMany(r => r.features ?? new())
+            .FirstOrDefault(f => f.EndsWith(" Mastery", StringComparison.Ordinal)
+                              || f.EndsWith(" (Greater)", StringComparison.Ordinal));
+        if (greater == null) return (0, 0);
+        string stem = greater.Replace(" Mastery", "").Replace(" (Greater)", "");
+        return (rows.FirstOrDefault(r => (r.features ?? new()).Contains(stem))?.level ?? 0,
+                rows.FirstOrDefault(r => (r.features ?? new()).Contains(greater))?.level ?? 0);
+    }
+
+    /// <summary>Has this soul taken <b>the Familiar-Bound</b> — the Witch's Craft whose whole
+    /// subject is the beast? At its own level the familiar "grows clever and hardy", which is the
+    /// only thing the book says about how much the beast can take, and so the only thing the app
+    /// has to go on when it gives the beast a Blood of its own.</summary>
+    public static bool FamiliarBound(CharacterSheet s)
+        => s != null && !string.IsNullOrEmpty(s.FamiliarKind)
+           && (s.Subpath ?? "").Contains("Familiar-Bound", StringComparison.OrdinalIgnoreCase)
+           && s.Level >= SubpathLevels(s.Calling).At;
+
+    /// <summary>...and reached its greater boon — swap places once per scene, share wounds or
+    /// Blood, and the once-only spirit-carry to a new dawn.</summary>
+    public static bool FamiliarBoundGreater(CharacterSheet s)
+        => FamiliarBound(s) && s.Level >= SubpathLevels(s.Calling).Greater;
+
+    /// <summary>What to call the beast on the field. The sheet holds a kind and not a name — "a
+    /// crow" — so the field row borrows its Witch's, which is also how a table refers to it out
+    /// loud. A Keeper who has named the thing types over it.</summary>
+    public static string FamiliarFieldName(string witchName, string kind)
+    {
+        string k = (kind ?? "familiar").Trim();
+        foreach (var art in new[] { "a ", "an ", "the " })
+            if (k.StartsWith(art, StringComparison.OrdinalIgnoreCase)) { k = k.Substring(art.Length); break; }
+        return string.IsNullOrWhiteSpace(witchName) ? k : $"{witchName}'s {k}";
+    }
 
     /// <summary>
     /// Bind the beast if this Calling has one. Reads the kind back out of CallingChoice rather
@@ -1935,9 +2054,17 @@ public static class CharGen
     public static string FamiliarLine(CharacterSheet s)
     {
         if (string.IsNullOrEmpty(s?.FamiliarKind)) return null;
-        return s.FamiliarLost
-            ? $"Familiar: {s.FamiliarKind} — DEAD. Sickened until you bind another over a long night's rite."
-            : $"Familiar: {s.FamiliarKind} — {s.FamiliarBoon}; scouts, spies, shares its senses, "
-              + "and can deliver a touch-range Sign.";
+        if (s.FamiliarLost)
+            return $"Familiar: {s.FamiliarKind} — DEAD. Sickened until you bind another over a long night's rite.";
+        string line = $"Familiar: {s.FamiliarKind} — {s.FamiliarBoon}; scouts, spies, shares its senses, "
+                    + "and can deliver a touch-range Sign.";
+        if (FamiliarBoundGreater(s))
+            line += " Familiar-Bound: swap places with it once per scene and share wounds or Blood"
+                  + (s.FamiliarCarried ? "; it has already carried your spirit to a new dawn, and that was the once."
+                                       : "; should you fall it carries your spirit to a new dawn, once.");
+        else if (FamiliarBound(s))
+            line += " Familiar-Bound: clever and hardy, it delivers your Signs and you see and hear "
+                  + "through it at any distance.";
+        return line;
     }
 }

@@ -279,6 +279,24 @@ public class PartyMember : INotifyPropertyChanged
     // half-filled sheet in that case. Rides along in session.json.
     public CharacterSheet Sheet { get; set; }
 
+    /// <summary>Say that something about this soul has changed which is not one of the bound
+    /// properties above — a ration spent out of <see cref="FeatureSpent"/>, a reckoning taken onto
+    /// <see cref="TallyOwed"/>, anything at all on the <see cref="Sheet"/>.
+    ///
+    /// <para><b>This exists because of undo.</b> All three of those ride in the app's session
+    /// snapshot, and all three are mutated through their own objects — a dictionary indexer, a
+    /// field on the sheet — which fires no PropertyChanged, so <c>party.ListChanged</c> never
+    /// heard about them and the undo baseline went stale behind them. That is precisely the fault
+    /// v1.47.0 found in three other fields: not that undo failed, but that the NEXT captured action
+    /// pushed a baseline that no longer matched the table, so undoing one thing quietly reverted
+    /// something nobody had touched.</para>
+    ///
+    /// <para>Announced HERE, by the code that does the mutating, rather than left to every call
+    /// site to remember — which is the same reason the round became a property and the map markers
+    /// became a BindingList. A rule that depends on fourteen people remembering is a rule with a
+    /// date on it.</para></summary>
+    public void Touched(string what) => On(what);
+
     // Nerve = RES score + level. Only auto-recalcs when RES is set (>0); otherwise honors manual NerveMax.
     void RecalcNerve()
     {
@@ -293,7 +311,7 @@ public class PartyMember : INotifyPropertyChanged
 
 public class Combatant : INotifyPropertyChanged
 {
-    string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "";
+    string _name = "", _conditions = "", _ref = "", _pcId = "", _lastNote = "", _familiarOf = "";
     int _init, _bloodCur, _bloodMax, _defense, _beats = 3, _mapStep = 1, _lastDelta, _signFilled;
     int _bleed, _deathAt, _str;
     bool _isPC, _acting, _isSign, _hasActed, _stable, _upright, _aimed, _recoiling, _senseless;
@@ -367,6 +385,29 @@ public class Combatant : INotifyPropertyChanged
     // Links a PC row back to its PartyMember.Id (empty for foes and hand-entered rows), so the
     // Blood mirror survives a rename. Falls back to Name-match for legacy rows that lack it.
     public string PcId { get => _pcId; set { _pcId = value; On(); } }
+
+    /// <summary>The <see cref="PartyMember.Id"/> of the Witch this row is the bound beast of, or
+    /// empty for everything else on the field (Player's Book Ch. VII).
+    ///
+    /// <para>A field of its own rather than <see cref="PcId"/> with a flag beside it, and the
+    /// reason is <see cref="IsSoul"/>: the posse-to-tracker Blood mirror finds a soul's row by
+    /// PcId, so a familiar carrying its Witch's PcId would have her Blood written onto it every
+    /// time anybody edited her. The beast has a Blood of its own — that is the whole point of it
+    /// being here — and the two must never be the same number.</para>
+    ///
+    /// <para>The familiar is also NOT <see cref="IsPC"/>. It is a fourth cast on the field: not a
+    /// soul, not a foe, not a trace. Everything that walks the posse — the mirror, the Calling
+    /// strip, the Ledger button, "send the posse to the field" — asks for a soul and correctly
+    /// gets nothing here.</para></summary>
+    public string FamiliarOf { get => _familiarOf; set { _familiarOf = value ?? ""; On(); OnFamiliar(); } }
+
+    [JsonIgnore] public bool IsFamiliar => !string.IsNullOrEmpty(_familiarOf);
+
+    /// <summary>Is this row the bound beast of the given soul? By the stable id, the same way
+    /// <see cref="IsSoul"/> works, so a rename cannot separate a Witch from her familiar.</summary>
+    public bool IsFamiliarOf(PartyMember p) => p != null && !string.IsNullOrEmpty(_familiarOf) && _familiarOf == p.Id;
+
+    void OnFamiliar() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsFamiliar)));
     // The Iron Code turn state (Ch. XI): three Beats to spend, and which Strike this turn is next
     // (1 = clean, 2 = second at MAP, 3 = third). Reset when the combatant's turn comes round.
     public int Beats { get => _beats; set { _beats = Math.Clamp(value, 0, 9); On(); } }
@@ -1356,6 +1397,50 @@ public static class Rules
     /// with no sheet, which is every hand-entered row on the Posse tab.</summary>
     public static int DeathThresholdFor(CharacterSheet s)
         => s?.Scores != null && s.Scores.TryGetValue("CON", out int con) && con > 0 ? con : DefaultDeathAt;
+
+    // ---- the Witch's bound beast on the field (Player's Book Ch. VII) ----
+    //
+    // THE BOOK GIVES THE BEAST NO STAT BLOCK, and that is not an oversight to be corrected here.
+    // Ch. VII describes what the familiar DOES — scouts, spies, carries a touch-range Sign, grants
+    // a standing boon, and Sickens you when it dies — and the Bestiary's 175 entries are horrors,
+    // not livestock. So there is no number to copy and the app cannot pretend there is one.
+    //
+    // What it can honestly do is derive. The two figures below are the app's DEFAULT for a beast
+    // the book leaves to the table, worked out of numbers the book does state, and said plainly to
+    // the Keeper on the way onto the field rather than presented as a rule from Ch. VII:
+    //
+    //   * BLOOD is a fraction of the Witch's own, so it scales with her, respects her CON, and is
+    //     always plainly the frailer of the two. A third normally; a HALF once she has taken the
+    //     Familiar-Bound, which is the one thing the book says about how much the beast can take —
+    //     "your familiar grows clever and hardy". The floor of four is there so a 1st-level beast
+    //     is a creature and not a rounding error.
+    //   * DEFENSE is hers. It is small and quick where she is neither, and it is bound to her; one
+    //     number for the pair is the reading that needs the least invention. The Familiar-Bound's
+    //     "clever" is the +2.
+    //
+    // Deliberately NOT written into chargen.json or into the book: a printed table of familiar
+    // statistics is a rules change, and this is an app default. If the table wants other numbers,
+    // the Blood column on the Posse tab takes a typed one.
+
+    /// <summary>The share of her Blood a bound beast has, and the larger share once she has taken
+    /// the Familiar-Bound. Named rather than left as two literals in a division, because these two
+    /// are the whole of the invention and they should be findable.</summary>
+    public const int FamiliarBloodShare = 3, FamiliarBoundBloodShare = 2, FamiliarBloodFloor = 4;
+
+    /// <summary>What the bound beast has to lose. See the note above: an app default for a beast
+    /// the book leaves to the table, not a figure out of Ch. VII.</summary>
+    public static int FamiliarBloodFor(CharacterSheet s)
+    {
+        if (s == null) return FamiliarBloodFloor;
+        int share = CharGen.FamiliarBound(s) ? FamiliarBoundBloodShare : FamiliarBloodShare;
+        return Math.Max(FamiliarBloodFloor, Math.Max(0, s.Blood) / share);
+    }
+
+    /// <summary>How hard the bound beast is to hit — hers, and two better once it has grown
+    /// clever.</summary>
+    public static int FamiliarDefenseFor(CharacterSheet s)
+        => s == null ? 12
+         : Math.Max(1, s.Defense + (CharGen.FamiliarBound(s) ? CharGen.FamiliarBoonSize : 0));
 
     /// <summary>What one round costs the fallen. Everyone the rule governs loses a Blood, and the
     /// Grit that kept somebody standing runs out — "one more round" is one round.

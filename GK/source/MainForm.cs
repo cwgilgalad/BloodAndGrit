@@ -73,6 +73,13 @@ public partial class MainForm : Sheet
     // clay sits R above G, and no amount of lifting crosses that.
     public static readonly Color PcRow   = Color.FromArgb(216, 232, 208);   // G>R by 16 — the posse
     public static readonly Color FoeRow  = Color.FromArgb(247, 231, 219);   // R>G by 16 — a foe
+    /// <summary>The Witch's bound beast (Ch. VII) — on the posse's side and not one of them. Cast
+    /// apart from both on the axis the other two share: the posse's green and a foe's clay are
+    /// argued out in R against G and BOTH put blue lowest, so blue is the free direction and this
+    /// ground takes it — B above R by 26, where PcRow is B BELOW R by 8 and FoeRow by 28. Lifting
+    /// it toward paper for an editable cell cannot cross that, which is the rule the six other
+    /// grounds are held to.</summary>
+    public static readonly Color FamiliarRow = Color.FromArgb(212, 224, 238);
     /// <summary>At 0 Blood and NOT on a clock: a creature put down, or a soul whose bleeding has
     /// been stopped. A light warm grey rather than the pale red it used to be, because red now
     /// belongs to the one row that still needs something done about it. Nothing is happening here
@@ -2195,6 +2202,49 @@ public partial class MainForm : Sheet
         return true;
     }
 
+    /// <summary>Put a Witch's bound beast on the field as a row of its own.
+    ///
+    /// <para>Until v1.48.0 the familiar was three fields on a character sheet and nothing else,
+    /// which meant the one moment Ch. VII actually legislates — "should it die, you are Sickened
+    /// until you can bind another" — could not happen in the app at all. A thing that cannot be
+    /// hurt cannot die, and a thing that cannot die cannot be the reason for anything. It takes
+    /// initiative like everything else on the field, because it scouts and spies and delivers a
+    /// touch-range Sign, and all three of those happen on somebody's turn.</para></summary>
+    bool AddFamiliarToTracker(PartyMember p, bool quiet = false)
+    {
+        var sheet = p?.Sheet;
+        if (sheet == null || string.IsNullOrEmpty(sheet.FamiliarKind))
+        { if (!quiet) Nope("That soul has no bound beast."); return false; }
+        if (sheet.FamiliarLost)
+        { if (!quiet) Nope($"{p.Name}'s {sheet.FamiliarKind} is dead. Another is bound over a long night's rite."); return false; }
+        if (FamiliarRowOf(p) != null)
+        { if (!quiet) Log($"{p.Name}'s familiar is already on the field."); return false; }
+
+        int blood = Rules.FamiliarBloodFor(sheet);
+        AddToField(new Combatant
+        {
+            Name = CharGen.FamiliarFieldName(p.Name, sheet.FamiliarKind), FamiliarOf = p.Id,
+            BloodCur = blood, BloodMax = blood, Defense = Rules.FamiliarDefenseFor(sheet),
+            // It rolls the Witch's own Notice — it is her eyes, and the boon it grants her is
+            // already inside that number when the beast is a crow.
+            Init = ArrivalInit(sheet),
+            // DeathAt stays 0, as it does for every creature: the dying rule is the posse's, and a
+            // small beast at 0 Blood is not a patient with a count running. See FamiliarFell.
+        });
+        if (!quiet) Log($"{p.Name}'s {sheet.FamiliarKind} takes the field — {blood} Blood, Defense "
+                      + $"{Rules.FamiliarDefenseFor(sheet)}"
+                      + (CharGen.FamiliarBound(sheet) ? ", clever and hardy with the Familiar-Bound." : "."));
+        return true;
+    }
+
+    /// <summary>The bound beast's row for this soul, or null when it is not on the field.</summary>
+    Combatant FamiliarRowOf(PartyMember p) => p == null ? null : tracker.FirstOrDefault(t => t.IsFamiliarOf(p));
+
+    /// <summary>The Witch a familiar row belongs to, or null. The mirror image of
+    /// <see cref="SoulOf"/>, and separate from it on purpose: a familiar row is not a posse row and
+    /// nothing that walks the posse should find one.</summary>
+    PartyMember WitchOf(Combatant c) => c == null || !c.IsFamiliar ? null : party.FirstOrDefault(c.IsFamiliarOf);
+
     void MirrorToTracker(PartyMember p)
     {
         var c = tracker.FirstOrDefault(t => t.IsSoul(p));
@@ -2947,6 +2997,53 @@ public partial class MainForm : Sheet
                 if (encLevel != null) encLevel.Value = encLevel.Value == 10 ? 1 : encLevel.Value + 1;
                 else partyLevelHint = partyLevelHint == 10 ? 1 : partyLevelHint + 1;
             });
+
+            // A soul's three side-stores — the ration, the reckoning, and the whole character
+            // sheet — are in Snapshot() and are mutated through their own objects rather than
+            // through a bound property, so none of them fires party.ListChanged by itself. Each is
+            // probed through the REAL mutator, never by poking the dictionary: a probe that writes
+            // the field directly proves only that the probe works, which is how the map markers
+            // passed a check they should have failed.
+            var probe = new PartyMember { Name = "Undo Probe Soul", Calling = "Marshal", Level = 10 };
+            party.Add(probe);
+            Settle();
+            if (CharGen.LedgerFor(probe).FirstOrDefault().Name is string ration)
+            {
+                Probe("FeatureSpent", () => CharGen.SpendFeature(probe, ration));
+                Probe("FeatureSpent (given back)", () => CharGen.UnspendFeature(probe, ration));
+            }
+            var hexer = new PartyMember
+            { Name = "Undo Probe Hexer", Calling = "Hexer", Level = 10,
+              Sheet = new CharacterSheet { Calling = "Hexer", Level = 10, Subpath = "The Pact-Sworn" } };
+            party.Add(hexer);
+            Settle();
+            if (CharGen.TalliesFor(hexer).FirstOrDefault().Name is string debt)
+            {
+                Probe("TallyOwed", () => CharGen.TakeTally(hexer, debt));
+                Probe("TallyOwed (struck off)", () => CharGen.ForgiveTally(hexer, debt));
+            }
+            var witch = new PartyMember
+            { Name = "Undo Probe Witch", Calling = "Witch", Level = 10,
+              Sheet = new CharacterSheet
+              { Calling = "Witch", Level = 10, Blood = 30, Defense = 15,
+                FamiliarKind = "a crow", FamiliarBoon = CharGen.FamiliarBoonFor("a crow"),
+                Subpath = "The Familiar-Bound" } };
+            party.Add(witch);
+            Settle();
+            Probe("Sheet (the familiar dies)", () =>
+            {
+                witch.Sheet.FamiliarLost = true;
+                witch.Touched(nameof(PartyMember.Sheet));
+            });
+            Probe("Sheet (the spirit is carried)", () =>
+            {
+                witch.Sheet.FamiliarCarried = true;
+                witch.Touched(nameof(PartyMember.Sheet));
+            });
+            Probe("Familiar on the field", () => AddFamiliarToTracker(
+                new PartyMember { Name = "Undo Probe Witch II", Calling = "Witch",
+                                  Sheet = new CharacterSheet { Calling = "Witch", Level = 1, Blood = 12,
+                                                              FamiliarKind = "a cat" } }, quiet: true));
 
             // And the other half of the ask: that a captured step actually goes back and forward
             // again. Undo restores a whole GameSession, so a round trip that does not land on the
