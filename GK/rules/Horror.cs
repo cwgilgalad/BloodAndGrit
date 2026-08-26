@@ -12,10 +12,11 @@ public static class Horror
     public static int DreadTier(int dc) => dc <= 10 ? 1 : dc <= 13 ? 2 : dc <= 16 ? 3 : dc <= 20 ? 4 : 5;
 
     public record DreadOutcome(int Die, int Will, int DreadDc, int Degree, string DegreeName,
-        int NerveLost, bool Frightened, bool Steadied, bool Affliction, string Detail)
+        int NerveLost, bool Frightened, bool Steadied, bool Affliction, string Detail, bool Numb = false)
     {
         public string Line =>
-            Steadied ? $"Dread {DreadDc}: {DegreeName} — steeled, no Nerve lost, and steady against it this scene."
+            Numb ? $"Dread {DreadDc}: {DegreeName} — nothing moves. The Hunger has taken the fear with it."
+          : Steadied ? $"Dread {DreadDc}: {DegreeName} — steeled, no Nerve lost, and steady against it this scene."
           : NerveLost == 0 ? $"Dread {DreadDc}: {DegreeName} — held. No Nerve lost."
           : $"Dread {DreadDc}: {DegreeName} — {NerveLost} Nerve lost"
               + (Frightened ? ", and Frightened 1" : "")
@@ -25,9 +26,15 @@ public static class Horror
     /// <summary>A Dread Check (Ch. XII). Crit success steadies (no Nerve); success steels (none);
     /// failure loses the ladder's Nerve; critical failure loses it and adds Frightened 1. A Dread
     /// DC of 25 (tier 5) also carries a lasting Affliction on any failure.</summary>
-    public static DreadOutcome DreadCheck(int will, int dreadDc, int? forcedDie = null)
+    public static DreadOutcome DreadCheck(int will, int dreadDc, int? forcedDie = null,
+                                          CharacterSheet who = null)
     {
         int die = forcedDie ?? Rules.Rng.Next(1, 21);
+        // Ch. XII gives a Returned soul +2 here, and it is added to the WILL rather than subtracted
+        // from the DC so the four degrees are worked out against the number the book prints. An
+        // optional parameter for the same reason IronCode.Strike takes forceType: every existing
+        // caller means "a soul with nothing special about them", and that stays true unchanged.
+        will += CharGen.DreadBonus(who);
         var (idx, name, detail) = Rules.FourDegrees(die, will, dreadDc);
         int tier = DreadTier(dreadDc);
         int nerve = 0; bool frightened = false, steadied = false, affliction = false;
@@ -38,7 +45,12 @@ public static class Horror
             case 1: nerve = Rules.NerveLoss(tier).roll(); affliction = tier >= 5; break;   // failure
             default: nerve = Rules.NerveLoss(tier).roll(); frightened = true; affliction = tier >= 5; break; // crit fail
         }
-        return new DreadOutcome(die, will, dreadDc, idx, name, nerve, frightened, steadied, affliction, detail);
+        // At Hunger 3 the fear stops landing. The check is still ROLLED and still fails — the
+        // Frightened and the Affliction both stand, because those are things done TO a soul — and
+        // only the Nerve is spared, since Nerve is the one that measures being able to care.
+        bool numb = nerve > 0 && CharGen.NumbToDread(who);
+        if (numb) nerve = 0;
+        return new DreadOutcome(die, will, dreadDc, idx, name, nerve, frightened, steadied, affliction, detail, numb);
     }
 
     /// <summary>One row of the break table (Ch. XII): when a soul is driven to 0 Nerve, roll a d6;

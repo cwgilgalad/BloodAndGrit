@@ -20,6 +20,20 @@ public class CgOrigin
     public List<string> gear { get; set; } = new();
     public int startMark { get; set; }
     public string line { get; set; } public string boon { get; set; } public string burden { get; set; }
+    /// <summary>Only Came Back Wrong has these — the Shapes of Return of Ch. XII. Empty on the
+    /// other nine, which is why it is a property of the Origin rather than a table of its own.</summary>
+    public List<CgShape> shapes { get; set; } = new();
+}
+
+/// <summary>One Shape of Return (Player's Book Ch. XII, <em>The Returned</em>): what came back,
+/// what it wants, how it is fed, and the one thing it can do that the living cannot. A
+/// transcription, like the rest of this file.</summary>
+public class CgShape
+{
+    public string name { get; set; }
+    public string hunger { get; set; }
+    public string feeding { get; set; }
+    public string gift { get; set; }
 }
 
 public class CgEdge
@@ -133,6 +147,7 @@ public class CgData
     public List<CgMiracle> miracles { get; set; } = new();
     /// <summary>The shared five-Rank spine: level → highest Rank, for Signs and Miracles alike.</summary>
     public Dictionary<string, int> rankAtLevel { get; set; } = new();
+    public Dictionary<string, string> hungerLadder { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
     public List<CgArmor> armor { get; set; } = new();
     public Dictionary<string, double> gearPrices { get; set; } = new();
@@ -148,6 +163,14 @@ public class CharacterSheet
     public string Name { get; set; } public string Gender { get; set; }
     public string Calling { get; set; }
     public string Origin { get; set; } public string Compass { get; set; }
+    /// <summary>The Shape of Return, for a soul who Came Back Wrong. Null on everybody else, and
+    /// null on every sheet saved before v1.49.0 — so every consumer tests it rather than migrating
+    /// session.json, exactly as <c>Look</c> does.</summary>
+    public string Shape { get; set; }
+    /// <summary>The Hunger track, 0..6. Ch. XII gives it to one Origin alone, which is why it sits
+    /// on the sheet and not on <c>PartyMember</c> beside Mark and Taint: those two are asked of
+    /// every soul in the posse, and a Hunger column on the grid would be eighteen empty cells.</summary>
+    public int Hunger { get; set; }
     public int Level { get; set; }
     public string Method { get; set; }                                  // "The Honest Array" | "The Gamble (rolled)"
     public Dictionary<string, int> Scores { get; set; } = new();         // final scores, gifts applied
@@ -1229,6 +1252,17 @@ public static class CharGen
         s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (worn?.speed ?? 0);
         s.Mark = org.startMark + cal.startMark + (s.Edges.Contains("Touched") ? 1 : 0);
 
+        // A soul who came back wrong has a Shape, and starts quiet. Rolled here rather than left
+        // for the player to fill in later for the reason the Look is rolled here: a sheet that is
+        // valid only after somebody remembers to finish it is a sheet the generator did not make.
+        // Hunger begins at 0 — the book's own reading, that you pass for living until you have
+        // spent something.
+        if (IsReturned(s) && ShapesOfReturn.Count > 0)
+        {
+            s.Shape = ShapesOfReturn[Rules.Rng.Next(ShapesOfReturn.Count)].name;
+            s.Hunger = 0;
+        }
+
         if (cal.pool != null)
         {
             int baseMod = Mod(s.Scores[cal.pool.formula.Substring(0, 3)]);
@@ -1435,6 +1469,23 @@ public static class CharGen
         int expectMark = org.startMark + cal.startMark + (owned.Contains("Touched") ? 1 : 0);
         Check(s.Mark == expectMark, $"Mark {s.Mark} ≠ origin {org.startMark} + calling {cal.startMark} + Touched");
 
+        // The Returned. Validate's whole job is to re-derive independently, so it asks the two
+        // questions the generator could get wrong: that a Shape is one the book prints, and that
+        // nobody else is carrying a Hunger at all. A Hunger on a Gunhand is not a small error —
+        // it is a track with an ending, sitting on a soul no rule would ever move it for.
+        if (IsReturned(s))
+        {
+            Check(!string.IsNullOrEmpty(s.Shape), "a soul who came back wrong has no Shape of Return");
+            Check(s.Shape == null || ShapesOfReturn.Any(x => x.name == s.Shape),
+                $"Shape of Return '{s.Shape}' is not one Ch. XII prints");
+            Check(s.Hunger >= 0 && s.Hunger <= HungerLost, $"Hunger {s.Hunger} outside 0..{HungerLost}");
+        }
+        else
+        {
+            Check(string.IsNullOrEmpty(s.Shape), $"{org.name} carries a Shape of Return, which only {ReturnedOrigin} has");
+            Check(s.Hunger == 0, $"{org.name} carries Hunger {s.Hunger}, which only {ReturnedOrigin} has");
+        }
+
         // subpath at 3rd
         if (s.Level >= 3 && cal.subpath != null && cal.subpath.options.Count > 0)
             Check(cal.subpath.options.Any(o => o.name == s.Subpath), $"subpath \"{s.Subpath}\" not among the {cal.subpath.section}");
@@ -1477,6 +1528,12 @@ public static class CharGen
         sb.AppendLine();
         sb.AppendLine($"Blood {s.Blood} · Defense {s.Defense} · Saves Fort {M(s.Fort)}, Ref {M(s.Ref)}, Will {M(s.Will)} · Nerve {s.NerveMax} · Grit {s.Grit} · Speed {s.Speed} ft"
                       + (s.Mark > 0 ? $" · Mark {s.Mark}" : ""));
+        if (IsReturned(s))
+        {
+            var shape = ShapeOf(s);
+            sb.AppendLine($"Returned · {s.Shape ?? "no Shape chosen"} · Hunger {s.Hunger} of {HungerLost} — {HungerSays(s.Hunger)}");
+            sb.AppendLine($"   Mends {MendDice(s.Level)}d6, and only this way. Hungers for {shape?.hunger ?? "something it cannot name."}");
+        }
         int gunAtk = s.Attack + Mod(s.Scores["DEX"]), melAtk = s.Attack + Mod(s.Scores["STR"]);
         sb.AppendLine($"Attack {M(s.Attack)} (guns {M(gunAtk)} with DEX · melee {M(melAtk)} with STR)");
         if (s.WeaponsCarried.Count > 0) foreach (var w in s.WeaponsCarried) sb.AppendLine("   " + w);
@@ -1952,6 +2009,86 @@ public static class CharGen
         // the breathing)" — so the closing bracket rides in on the last word.
         return s.TrimEnd('.', ')', ' ');
     }
+
+    // ------------------------------------------- the Returned (Player's Book Ch. XII)
+
+    /// <summary>The one Origin that carries a Hunger. Named once so no other file spells it.</summary>
+    public const string ReturnedOrigin = "Came Back Wrong";
+
+    /// <summary>Hunger 6 is <b>Consumed</b>, and the character passes to the Keeper — deliberately
+    /// the same terminus as Mark 6, because the book has already taught a table what that means and
+    /// a second, different ending would be a second rule to learn.</summary>
+    public const int HungerLost = 6;
+
+    /// <summary>At this Hunger and above a soul stops losing Nerve to Dread Checks. The book prints
+    /// it as a gift and says in the same breath that it is not one.</summary>
+    public const int HungerNumb = 3;
+
+    public static bool IsReturned(CharacterSheet s)
+        => s != null && string.Equals(s.Origin, ReturnedOrigin, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>The four Shapes of Return, read off the Origin that owns them.</summary>
+    public static List<CgShape> ShapesOfReturn
+        => D?.origins?.FirstOrDefault(o => o.name == ReturnedOrigin)?.shapes ?? new();
+
+    public static CgShape ShapeOf(CharacterSheet s)
+        => !IsReturned(s) || string.IsNullOrEmpty(s.Shape) ? null
+         : ShapesOfReturn.FirstOrDefault(x => x.name == s.Shape);
+
+    /// <summary>What a rung of the Hunger track means, in the book's own words. Rung 0 is not in
+    /// the data because the book prints it as the absence of the others.</summary>
+    public static string HungerSays(int n)
+        => n <= 0 ? "Quiet. In a dim room, at a distance, you pass for living"
+         : D.hungerLadder.TryGetValue(Math.Min(n, HungerLost).ToString(), out var s) ? s : "";
+
+    /// <summary>How much a Returned soul mends for: <b>1d6 for every two levels, never less than
+    /// one</b> (Ch. XII). Expressed as a die count rather than a rolled number so the Tracker's
+    /// roll log can show the dice, the way every other roll in this app does.</summary>
+    public static int MendDice(int level) => Math.Max(1, level / 2);
+
+    /// <summary>Whether this soul may mend at all, and why not when they may not. Paired the way
+    /// <see cref="WhyNotFeature"/> is paired with <see cref="SpendFeature"/>: a refusal that does
+    /// not say why is reported as a broken button.
+    ///
+    /// <para>The only bar is the last one. A soul at Hunger 5 may still mend, and mending takes
+    /// them to 6 and out of the player's hands — that is not a bug to be clamped away, it is the
+    /// decision the whole Origin is built to put in front of somebody bleeding out. What the app
+    /// owes them is a plain warning first, not a locked door.</para></summary>
+    public static string WhyNotMend(CharacterSheet s)
+        => !IsReturned(s) ? "Only a soul who came back wrong mends this way."
+         : s.Hunger >= HungerLost ? "Consumed. There is nothing left to spend."
+         : null;
+
+    /// <summary>Take one Hunger. Returns the rung landed on, so the caller can say what it means
+    /// and stop at the one that ends the character.</summary>
+    public static int TakeHunger(CharacterSheet s, int n = 1)
+    {
+        if (!IsReturned(s)) return 0;
+        s.Hunger = Math.Clamp(s.Hunger + n, 0, HungerLost);
+        return s.Hunger;
+    }
+
+    /// <summary>Feeding brings the Hunger down by one, and never below nothing. It is deliberately
+    /// the ONLY way down: no rest returns it, no dawn, no new session. Every other boundary in this
+    /// app hands something back because a clock turned over, and a Hunger that eased overnight
+    /// would say the feeding never mattered — the same argument that keeps the Witch's rite an act
+    /// rather than a boundary, and the Hexer's Debts out of <c>RefreshFeatures</c>.</summary>
+    public static int Feed(CharacterSheet s, int n = 1)
+    {
+        if (!IsReturned(s)) return 0;
+        s.Hunger = Math.Clamp(s.Hunger - n, 0, HungerLost);
+        return s.Hunger;
+    }
+
+    /// <summary>What the grave gave: +2 on Dread Checks, because very little out here is new to
+    /// somebody who has been on the other side of it. Named rather than left as a literal at the
+    /// dialog, for the reason <see cref="InitiativeBonus"/> is named.</summary>
+    public static int DreadBonus(CharacterSheet s) => IsReturned(s) ? 2 : 0;
+
+    /// <summary>Whether this soul has stopped being able to be horrified. The book's own reading:
+    /// a thing that cannot be frightened has lost its last honest warning system, so this is
+    /// checked wherever Nerve would be taken and the loss is simply not applied.</summary>
+    public static bool NumbToDread(CharacterSheet s) => IsReturned(s) && s.Hunger >= HungerNumb;
 
     // ------------------------------------------- spending a feature, and getting it back
 

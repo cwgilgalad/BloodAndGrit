@@ -3199,6 +3199,71 @@ foreach (var og in CharGen.D.origins)
             (og.boon + og.burden).Contains(e.Phrase.Trim()));
     }
 }
+// ---- the Returned: Hunger, the Shapes, and what the grave gave (v1.49.0) ----
+{
+    T("Ch. XII's Hunger ladder is six rungs", CharGen.D.hungerLadder.Count == CharGen.HungerLost);
+    T("every Hunger rung says something", Enumerable.Range(0, CharGen.HungerLost + 1)
+        .All(i => !string.IsNullOrWhiteSpace(CharGen.HungerSays(i))));
+    T("four Shapes of Return, each whole", CharGen.ShapesOfReturn.Count == 4
+        && CharGen.ShapesOfReturn.All(x => !string.IsNullOrWhiteSpace(x.name)
+            && !string.IsNullOrWhiteSpace(x.hunger) && !string.IsNullOrWhiteSpace(x.feeding)
+            && !string.IsNullOrWhiteSpace(x.gift)));
+    // Mending is 1d6 per two levels and never less than one, so a 1st-level soul is not handed a
+    // heal of zero dice — the failure mode a bare level/2 has at exactly the level most souls are.
+    T("mend never rolls zero dice", Enumerable.Range(1, 10).All(l => CharGen.MendDice(l) >= 1));
+    T("mend is 1d6 per two levels", CharGen.MendDice(2) == 1 && CharGen.MendDice(10) == 5);
+
+    var ret = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    T("a generated Returned soul has a Shape the book prints",
+        CharGen.ShapesOfReturn.Any(x => x.name == ret.Shape));
+    T("a Returned soul begins quiet", ret.Hunger == 0);
+    T("a Returned soul validates", CharGen.Validate(ret).Count == 0);
+
+    // The whole engine in four lines: mending is the only way this soul heals, and it is the only
+    // thing that moves them toward the ending. Nothing else in the app may hand the Hunger back.
+    CharGen.TakeHunger(ret);
+    T("mending takes a Hunger", ret.Hunger == 1);
+    CharGen.Feed(ret);
+    T("feeding gives one back", ret.Hunger == 0);
+    CharGen.TakeHunger(ret, 99);
+    T("Hunger stops at Consumed", ret.Hunger == CharGen.HungerLost);
+    T("Consumed refuses to mend and says why", CharGen.WhyNotMend(ret) != null);
+    CharGen.Feed(ret, 99);
+    T("feeding cannot go below quiet", ret.Hunger == 0);
+
+    // A boundary must never hand a Hunger back — the same guard the Hexer's Debts and the Witch's
+    // rite carry, and for the same reason: a track that eases overnight says the cost was nothing.
+    var boundary = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    CharGen.TakeHunger(boundary, 2);
+    var pm = new PartyMember { Name = boundary.Name, Calling = boundary.Calling, Level = 3, Sheet = boundary };
+    CharGen.RefreshFeatures(pm, FeatureCadence.Session);
+    T("no boundary hands a Hunger back", boundary.Hunger == 2);
+
+    // What the grave gave has to REACH A ROLL, or it is a decoration on a sheet — the v1.48.0
+    // lesson, run on a second subsystem.
+    var living = CharGen.Generate(3, false, null, "The Scout");
+    T("the Returned get +2 on Dread and the living get nothing",
+        CharGen.DreadBonus(ret) == 2 && CharGen.DreadBonus(living) == 0);
+    var numb = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    CharGen.TakeHunger(numb, CharGen.HungerNumb);
+    T("at Hunger 3 the fear stops landing", CharGen.NumbToDread(numb) && !CharGen.NumbToDread(living));
+    // Forced die 1 against DC 25 is a critical failure at any Will: Nerve is spared and the
+    // Frightened and the Affliction are NOT, because those are done TO a soul.
+    var dr = Horror.DreadCheck(0, 25, forcedDie: 1, who: numb);
+    T("a numb soul loses no Nerve but is still Frightened and still scarred",
+        dr.NerveLost == 0 && dr.Numb && dr.Frightened && dr.Affliction);
+    var feels = Horror.DreadCheck(0, 25, forcedDie: 1, who: living);
+    T("a living soul still pays the Nerve", feels.NerveLost > 0 && !feels.Numb);
+
+    // Nobody else may carry either fact, and Validate is what says so.
+    var trespass = CharGen.Generate(3, false, null, "The Laborer");
+    trespass.Hunger = 2;
+    T("Validate refuses a Hunger on a living soul", CharGen.Validate(trespass).Count > 0);
+    var noshape = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    noshape.Shape = "The Unwritten";
+    T("Validate refuses a Shape the book does not print", CharGen.Validate(noshape).Count > 0);
+}
+
 // The Veteran is the reason the reader splits on sentences at all: its boon states TWO rationed
 // things in one breath, and a reader handed the whole paragraph answers with the first only.
 T("The Veteran's boon yields both of its rations",

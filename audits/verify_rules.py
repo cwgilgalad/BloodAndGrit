@@ -455,6 +455,26 @@ def check_budget(problems):
                             f"say {want}")
     checks += 1
 
+    # --- and the APP'S OWN READMEs, which is the site this check did not read and which therefore
+    #     drifted. The v1.44.0 repricing reached Core.cs, both books and CLAUDE.md; GK/CLAUDE.md and
+    #     three READMEs went on printing the old 1 / 4 / 8 for three days, and the comment beside
+    #     the CLAUDE.md check above claimed the rule was written nowhere this auditor could not see.
+    #     A guard that names its own completeness has to be able to back it.
+    for path in ("GK/source/README.md", "GritKeeper/README.md", "GK/CLAUDE.md"):
+        text = _flat(path)
+        if not text:
+            continue                      # GritKeeper/ is generated; a clean tree may not have it
+        m = re.search(r"mook (\d+)[,·\s]+even foe (\d+)[,·\s]+standout (\d+)", text, re.I)
+        if not m:
+            problems.append(f"{path}: states no encounter ladder (or reworded) — it named one "
+                            "before, so a silent disappearance is the same drift by another route")
+        else:
+            got = tuple(int(g) for g in m.groups())
+            want = (app["Mook"], app["Even foe"], app["Standout"])
+            if got != want:
+                problems.append(f"{path}: the encounter ladder reads {got}, the app says {want}")
+        checks += 1
+
     return checks
 
 

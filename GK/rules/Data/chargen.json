@@ -217,7 +217,33 @@
    "startMark": 1,
    "line": "You died — and then you did not stay dead. You remember the dark on the other side.",
    "boon": "Once per session, when you would drop to 0 Blood, stay standing at 1 until the end of the round; you need neither food nor sleep.",
-   "burden": "The Old Dark notices you first, and the living sense something wrong (−1 on first impressions with the breathing). You begin at Mark 1."
+   "burden": "The Old Dark notices you first, and the living sense something wrong (−1 on first impressions with the breathing). You begin at Mark 1.",
+   "shapes": [
+    {
+     "name": "The Risen",
+     "hunger": "Warmth, company, a reason to be upright.",
+     "feeding": "A night of being treated as a person by somebody who knows what you are.",
+     "gift": "You are hard to put down: your death threshold is twice your CON, and the blow that drops you leaves you on your feet until the end of the round it lands."
+    },
+    {
+     "name": "The Sanguine",
+     "hunger": "Blood, given or taken.",
+     "feeding": "You drink, and somebody is less afterward.",
+     "gift": "What you take, you keep: when you feed, recover Blood as though you had mended, and pay no Hunger for it."
+    },
+    {
+     "name": "The Hollow",
+     "hunger": "The memory you lost, and failing that, anyone else's.",
+     "feeding": "You take a true memory from somebody willing to give it, and they do not get it back.",
+     "gift": "You are not entirely here: once per scene, pass through a closed thing or let a blow pass through you."
+    },
+    {
+     "name": "The Tolled",
+     "hunger": "Whatever the lender is asking this month.",
+     "feeding": "You do the errand, and you do not get to know why.",
+     "gift": "The lender answers: once per session ask for one thing within its reach and receive it, and take a Hunger for the asking."
+    }
+   ]
   }
  ],
  "edges": [
@@ -5041,6 +5067,14 @@
    "Ha-o-zinne",
    "Mary Sits-Alone"
   ]
+ },
+ "hungerLadder": {
+  "1": "The want has a shape now, and you know its name",
+  "2": "Cold to the touch; you stop bothering to pretend at meals",
+  "3": "Your Shape's tell shows plainly, and will not be explained away twice",
+  "4": "Dogs will not abide you; the living find reasons to sit elsewhere",
+  "5": "You are mostly want. Will save to refuse what is put in front of you",
+  "6": "You are Consumed; the character passes into the Keeper's hands"
  },
  "rankAtLevel": {
   "1": 1,

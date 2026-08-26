@@ -8,6 +8,28 @@ Desktop\Git repos.)
 
 ---
 
+- **The Player's Book v2.30 — the Returned (2026-08-25).**
+
+  Ch. XII gains **The Returned**, the rules for playing a character who died and did not stay dead.
+  A **Hunger** track of six steps, carried by one Origin alone. You mend by spending it, and that is
+  the only way you heal: not rest, not medicine, not a Miracle worked over you by somebody who loves
+  you. Feeding is the only way back down, and it is a scene rather than an action.
+
+  Four **Shapes of Return** say what came back and what it wants — the Risen, put together by a hand
+  that should have known better; the Sanguine, who no longer makes what runs in the living; the
+  Hollow, missing a piece it cannot name; and the Tolled, whose lender is holding the note. Each has
+  its own feeding and one thing it can do that the living cannot.
+
+  What the grave gave, and what it takes, are stated together on purpose. +2 on Dread Checks, no
+  need of food or sleep or air, nothing for poison to work on — and at Hunger 3 the fear stops
+  landing altogether, which the chapter prints as a gift and then says plainly is not one. Against
+  that: grace will not settle on you, the Old Dark knows its own, and the living can tell.
+
+  A boxed word before anybody plays one. Three of the four Shapes feed on people who did not
+  volunteer, so the chapter says outright that a Keeper may rule any Shape's feeding bloodless or
+  off-screen, and the rules lose nothing by it. Ch. IV's Origin entry now points here. 203 → 206
+  pages, parity and clip clean on both widths.
+
 - **GritKeeper v1.49.0 — the keyboard reaches the whole app, and an Origin finally does
   something (2026-08-25).**
 
@@ -54,6 +76,28 @@ Desktop\Git repos.)
   ration went missing. Found by running the reader over all ten Origins and reading the output,
   which is the only way that fault ever shows: every assertion about the first half passes
   perfectly. 62 new assertions, 14,402 in the suite.
+
+  **And Came Back Wrong became a subsystem.** It was one paragraph and a `startMark` of 1 — an
+  undead character in name, with nothing about being dead that reached a rule. It now carries a
+  **Shape of Return** (Risen, Sanguine, Hollow, Tolled) and a **Hunger** track of six steps that
+  nobody else at the table has. Mending is the only healing this soul gets, it costs a Hunger, and
+  Hunger 6 is Consumed. The card on the Tracker strip is the whole loop: Mend, and Feed. Mending at
+  the last rung is warned about and permitted, because a player bleeding out choosing to spend their
+  last step is the decision the Origin exists to create.
+
+  The +2 on Dread Checks and the numbness at Hunger 3 **reach the roll** — `Horror.DreadCheck` takes
+  the sheet and both call sites pass it — which is the v1.48.0 familiar lesson applied to a second
+  subsystem: a fact that is only printable stops being true. Numbness spares the Nerve and nothing
+  else; a numb soul still fails, is still Frightened, still takes the Affliction. `Validate` refuses
+  a Shape the book does not print and refuses a Hunger on anybody else. 21 more assertions, 14,422
+  in the suite.
+
+  **Also fixed, found while taking stock:** the encounter ladder repriced in v1.44.0 was still
+  printed as the old mook 1 / even 4 / standout 8 in `GK/CLAUDE.md` and all three app READMEs.
+  `verify_rules.py::check_budget` held `Core.cs` against both books and this repo's handoff doc and
+  never read the app's own README — while the comment beside it claimed there was nowhere else the
+  rule was written. It reads them now (991 cross-checks), proved against a synthetic drift.
+
 
 - **GritKeeper v1.48.0 — the Witch's familiar is a creature now, not three lines of text
   (2026-08-23).**

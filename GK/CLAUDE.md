@@ -115,7 +115,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
   lore/stats/witness quotes/keeper notes are word-for-word faithful to the book. Search, tier and
   chapter filters, one click to Encounter or Tracker, double-click to pop a creature into its own
   resizable window with A−/A＋ zoom — one window per creature, reused if open, cascading placement.
-- **Encounter** — the book's budget math (4 pts/PC; Even 4 / Mook 1 / Standout 8) costed live
+- **Encounter** — the book's budget math (4 pts/PC; mook 4 · even foe 8 · standout 16, from `Rules.BudgetRungs`) costed live
   against party level, verdict bar, safe-table rule flagged. Type-ahead picker (× N) on the tab,
   and an empty-state hint explaining what the tab is for.
 - **Tracker** — initiative, rounds, damage/heal (two-way synced with Posse), conditions,
@@ -523,6 +523,64 @@ time somebody pressed New fight. A smoke assertion runs a session boundary over 
 stays spent. The Craft's two levels come from `CharGen.SubpathLevels`, read off the level table —
 3rd and 9th for the three of the Old Dark, 10th for everybody else — so no familiar rule carries a
 literal 3 or 9.
+
+## The Returned — Hunger is the payoff AND the doom (v1.49.0)
+
+Came Back Wrong was one paragraph in Ch. IV and a `startMark` of 1. It is now a subsystem, and it
+exists to answer a design question Cole put plainly: **what makes a player want the damned option
+over a Padre?**
+
+The honest reading of the books before this: nothing did. The Faith Callings pay for Miracles out
+of a pool that refills free at dawn; the Old Dark pays for Signs in **Nerve** — the same track that
+measures sanity, restored 1d6 a safe night and needing *a week of true peace* for all of it — and a
+Rank 5 Sign costs a **Mark**, permanent, on a six-step track whose end is the player losing the
+character. The dark pays strictly more for comparable effects, and its compensation (Taint
+immunity, Dread easing at Mark 4) only lands once it is two thirds of the way to the ending.
+**Costs front-loaded, payoff back-loaded past the point of no return.**
+
+Hunger is the shape that fixes it, and the fix is that **one track is both halves**. Mending is the
+only healing a Returned soul has — not rest, not medicine, not a Miracle worked over them — and it
+costs a step. So the resource that keeps you standing is the resource that takes you away, and the
+player makes that trade knowingly, every fight, for real power. That is a bargain somebody *wants*.
+Cole's call on 2026-08-25 was to leave the Faith economy untouched and fix the curve by making the
+dark better; nothing in Ch. VI or the 40 Miracles moved.
+
+Six decisions worth not re-deriving:
+
+- **Hunger lives on `CharacterSheet`, not on `PartyMember` beside Mark and Taint.** Those two are
+  asked of every soul in the posse and have grid columns; one Origin in ten carries a Hunger, and a
+  column would be eighteen empty cells. Same argument as `FamiliarKind`.
+- **Nothing hands a Hunger back.** Not Rest, not a dawn, not New session — `RefreshFeatures` never
+  touches it, and a smoke assertion runs a session boundary over it and checks. Feeding is the only
+  way down and it is a **scene the Keeper adjudicates**, never an action on a turn. Identical
+  reasoning to the Witch's rite (v1.48.0) and the Pact-Sworn's Debts (v1.44.0): a track that eases
+  overnight says the cost was nothing.
+- **Mending at the last rung is warned about and PERMITTED.** `WhyNotMend` refuses only at
+  Consumed; Hunger 5 gets a `Confirm`, not a locked door. A player bleeding out who spends their
+  last step to stay upright one more round is the whole reason this Origin exists, and the app's
+  job is to make sure nobody arrives there uninformed.
+- **The +2 on Dread and the numbness at Hunger 3 REACH A ROLL.** `Horror.DreadCheck` takes an
+  optional `CharacterSheet` and both call sites pass it. This is the v1.48.0 familiar lesson run on
+  a second subsystem: a fact that is only printable stops being true. The bonus is added to the
+  **Will**, not subtracted from the DC, so the four degrees are worked out against the number the
+  book prints.
+- **Numbness spares the Nerve and nothing else.** A numb soul still fails, is still Frightened, and
+  still takes the DC-25 Affliction — those are things done *to* a soul. Only the Nerve is spared,
+  because Nerve is the one that measures still being able to care. The book prints it as a gift and
+  says in the same breath that it is not one, and `DreadOutcome.Numb` is what lets the log say so.
+- **`soul.Touched(nameof(soul.Sheet))` after every Hunger mutation, announced AFTER the change.**
+  Hunger rides inside the Sheet, which is in `Snapshot()` and fires no `PropertyChanged` — exactly
+  the three fields v1.48.0 found. Without it, Undo silently reverts a mend along with whatever is
+  captured next.
+
+The four **Shapes of Return** (Risen, Sanguine, Hollow, Tolled) are transcribed into
+`chargen.json` as `shapes` on the one Origin that has them, and `Validate` refuses a Shape the book
+does not print, refuses a Returned soul with no Shape, and refuses a Hunger on anybody else — that
+last one because a track with an ending sitting on a Gunhand is not a small error.
+
+**The book carries a safety box and it is not optional.** Three of the four Shapes feed on people
+who did not volunteer, so Ch. XII says plainly that a Keeper may rule any Shape's feeding bloodless
+or off-screen and the rules lose nothing by it. Same standing line as the Ch. IV safety note.
 
 ## Ch. IV's encounter ladder is one array (v1.44.0)
 

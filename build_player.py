@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.29 -->
+<!-- Blood & Grit — The Player's Book · Version 2.30 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.29)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.30)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -318,7 +318,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.29</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.30</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -337,7 +337,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.29 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.30 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -821,9 +821,12 @@ body{ background:#525659; }
   per session may steady the line — you and each ally who can hear you shrug off fear for a round. <strong>Boon:</strong> drill is in your bones — once per scene reroll a failed Reflex save to take cover or hit the dirt, and you reload and clear a jam a half-beat faster than any green hand. <strong>Burden:</strong> some of it never left; the first time each session the sudden roar of gunfire or the touch of the uncanny finds you, make a Dread Check or be Shaken a round as the old war rises behind your eyes.</p>
 
   <h3 id="ix-o-wrong">Came Back Wrong</h3>
-  <p>You died — of fever, of lead, of cold, of something with no name — and then you did not stay dead. You remember the dark
+  <p>You died &mdash; of fever, of lead, of cold, of something with no name &mdash; and then you did not stay dead. You remember the dark
   on the other side. It remembers you. (Begin play at Mark 1; see Chapter XII.) <strong>Gift:</strong> +1 CON and +1 RES. You no
-  longer need to breathe to live and feel cold and pain dimly — but you start one step along the Mark, and the uncanny notices its own. <strong>Boon:</strong> what came back with you does not die easy — once per session, when you would drop to 0 Blood you instead stay standing at 1 until the end of the round, and you need neither food nor sleep to go on, though you may rest if you wish. <strong>Burden:</strong> the dead do not forget you — the Old Dark notices you before any other, and the living sense without knowing why that something about you is wrong (&minus;1 on first-impression checks with the breathing).</p>
+  longer need to breathe to live and feel cold and pain dimly, but you start one step along the Mark, and the uncanny notices its own. <strong>Boon:</strong> what came back with you does not die easy &mdash; once per session, when you would drop to 0 Blood you instead stay standing at 1 until the end of the round, and you need neither food nor sleep to go on, though you may rest if you wish. <strong>Burden:</strong> the dead do not forget you; the Old Dark notices you before any other, and the living sense without knowing why that something about you is wrong (&minus;1 on first-impression checks with the breathing).</p>
+  <p class="note">This Origin runs deeper than one paragraph. Choose a <strong>Shape of Return</strong>
+  and read <a href="#ix-returned">The Returned</a> in Chapter XII: you carry a <strong>Hunger</strong>
+  track that no other soul has, you mend by spending it, and it is the only way you heal at all.</p>
 
   <div class="quote">
     "My grandmother told me the land does not belong to us. We belong to it, and it has been lending
@@ -3475,6 +3478,97 @@ body{ background:#525659; }
       <tr><td class="c">6</td><td>You are <strong>Lost</strong> — the dark finishes its work; the character becomes the Keeper's</td></tr>
     </tbody>
   </table>
+
+  <h2 id="ix-returned">The Returned</h2>
+  <p>Most who die stay dead. This is for the ones who did not, and for what it costs to be one of them
+  at a fire where everybody else still breathes. A soul who <a href="#ix-o-wrong">Came Back Wrong</a>
+  is not a horror out of the Bestiary. You answer to your own name, you ride in the order, and your
+  friends know you. What sets you apart is that the ordinary mercies have stopped reaching you. Sleep
+  mends nothing. A Sawbones lays hands on you and finds no pulse to work against. Whiskey goes down
+  cold. You mend by <em>wanting</em>, and the wanting is the whole of the problem.</p>
+
+  <h3 id="ix-hunger">Hunger</h3>
+  <p>A track of six steps that is yours alone. Nobody else at the table carries one. It is not the
+  Mark and it does not move with the Mark, though a soul unlucky enough to walk both at once will
+  find they rhyme.</p>
+  <table>
+    <thead><tr><th class="c">Hunger</th><th>What It Means</th></tr></thead>
+    <tbody>
+      <tr><td class="c">0</td><td>Quiet. In a dim room, at a distance, you pass for living</td></tr>
+      <tr><td class="c">1</td><td>The want has a shape now, and you know its name</td></tr>
+      <tr><td class="c">2</td><td>Cold to the touch; you stop bothering to pretend at meals</td></tr>
+      <tr><td class="c">3</td><td>Your Shape's tell shows plainly, and will not be explained away twice</td></tr>
+      <tr><td class="c">4</td><td>Dogs will not abide you; the living find reasons to sit elsewhere</td></tr>
+      <tr><td class="c">5</td><td>You are mostly want. Will save to refuse what is put in front of you</td></tr>
+      <tr><td class="c">6</td><td>You are <strong>Consumed</strong>; the character passes into the Keeper's hands</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Mending.</strong> Spend a Beat and take <strong>one Hunger</strong> to knit what has been
+  opened: recover <strong>1d6 Blood for every two levels you have</strong>, and never less than 1d6.
+  This is the only way you heal. Not rest, not medicine, not a Miracle worked over you by somebody who
+  loves you. The arithmetic is worth saying plainly, because it is the whole of what this Origin is:
+  the thing that keeps you standing is the same thing that is taking you away.</p>
+
+  <p><strong>Feeding.</strong> Feeding takes your Hunger <strong>down by one</strong>. What feeds you
+  is decided by your Shape, below, and it is never an action you take on your turn. It is a scene. It
+  costs somebody something, it happens where the table can see it, and the Keeper is the one who says
+  whether what you did was enough. A Hunger bought back cheaply teaches everyone that the track does
+  not mean anything.</p>
+
+  <h3 id="ix-returned-worth">What the grave gave you</h3>
+  <ul class="dash">
+    <li><strong>You have already seen it.</strong> +2 on Dread Checks. Very little out here is new to
+    somebody who has been on the other side of it.</li>
+    <li><strong>The body's business is finished.</strong> Food, water, sleep and air are habits now, not
+    needs. Poison and disease find nothing in you to work on.</li>
+    <li><strong>At Hunger 3 and above you stop losing Nerve to Dread Checks altogether.</strong> Read
+    that twice before you decide it is a gift. Nerve is the measure of a soul still able to be
+    horrified, and a thing that cannot be horrified has lost its last honest warning system.</li>
+  </ul>
+
+  <h3 id="ix-returned-cost">What it takes</h3>
+  <ul class="dash">
+    <li><strong>Grace does not settle on you.</strong> Any Miracle that harms the Marked or the uncanny
+    harms you the same, and a blessing meant to mend simply will not take. Your Preacher will work this
+    out, and the evening they work it out is worth playing.</li>
+    <li><strong>The Old Dark knows its own.</strong> It notices you before it notices anybody standing
+    next to you, which is a thing a posse can use exactly once.</li>
+    <li><strong>The living can tell.</strong> Not what, only that. &minus;1 on first impressions with
+    the breathing, and it gets no better as the Hunger climbs.</li>
+  </ul>
+
+  <h3 id="ix-shapes">The Shapes of Return</h3>
+  <p>Choose one when you make the character. It says what came back, what it wants, and the one thing
+  it can do that the living cannot.</p>
+  <ul class="dash">
+    <li><strong>The Risen.</strong> Put back together by a hand that should have known better, or
+    simply refused by ground that would not take you. <em>You hunger for</em> warmth, company, a reason
+    to be upright. <em>Feeding:</em> a night of being treated as a person by somebody who knows what you
+    are. <em>Gift:</em> you are hard to put down. Your death threshold is twice your CON, and the blow
+    that drops you leaves you on your feet until the end of the round it lands.</li>
+    <li><strong>The Sanguine.</strong> What runs in the living is the thing you no longer make. <em>You
+    hunger for</em> blood, given or taken. <em>Feeding:</em> you drink, and somebody is less afterward.
+    <em>Gift:</em> what you take, you keep. When you feed, recover Blood as though you had mended, and
+    pay no Hunger for it.</li>
+    <li><strong>The Hollow.</strong> You came back with a piece missing and you cannot name which piece.
+    <em>You hunger for</em> the memory, and failing that, anyone else's. <em>Feeding:</em> you take a
+    true memory from somebody willing to give it, and they do not get it back. <em>Gift:</em> you are
+    not entirely here. Once a scene, pass through a closed thing or let a blow pass through you.</li>
+    <li><strong>The Tolled.</strong> Something paid to have you back and it is holding the note.
+    <em>You hunger for</em> whatever the lender is asking this month. <em>Feeding:</em> you do the
+    errand, and you do not get to know why. <em>Gift:</em> the lender answers. Once a session ask for
+    one thing within its reach and receive it, and take a Hunger for the asking.</li>
+  </ul>
+
+  <div class="box">
+    <h3 id="ix-returned-safety">A Word Before Anybody Plays One</h3>
+    <p>This Origin seats a predator at the table, and three of the four Shapes feed on people who did not
+    volunteer. Settle at the start what that looks like in your game, the same way you settled everything
+    else. A Keeper may rule any Shape's feeding bloodless, or off-screen, or both, and the rules lose
+    nothing by it. The horror in Blood &amp; Grit has always been the price a soul agrees to pay. It has
+    never been the details of the meal.</p>
+  </div>
 
   <h2 id="ix-recover-nerve">Recovering Nerve</h2>
   <p>Nerve is dear, and the ways to restore it are few:</p>
