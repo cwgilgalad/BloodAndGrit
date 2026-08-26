@@ -1950,16 +1950,24 @@ public partial class MainForm
         // Three sentences rather than two, because a Hexer of the Pact-Sworn can ration nothing at
         // 3rd level and still owe their Patron, and "Nothing here is rationed" over a Debt card
         // reads as the app contradicting itself.
-        string what = (ledger.Count, tallies.Count) switch
-        {
-            (0, 0) => "Nothing here is rationed; read the Calling for the whole of it.",
-            (0, _) => "Nothing here is rationed, but there is a reckoning running:",
-            (_, 0) => "What is rationed, and what is left of it:",
-            _      => "What is rationed, what is left of it, and what is owed:",
-        };
+        // Three sentences became four in v1.49.0, for the reason the third was added: an Origin's
+        // standing +2 is not rationed either, so "Nothing here is rationed" printed over a card
+        // full of them reads as the app contradicting itself — the same fault a Debt card caused.
+        bool standing = CharGen.OriginEdges(soul.Sheet?.Origin).Count > 0;
+        string what =
+              ledger.Count > 0 && tallies.Count > 0 ? "What is rationed, what is left of it, and what is owed:"
+            : ledger.Count > 0                      ? "What is rationed, and what is left of it:"
+            : tallies.Count > 0                     ? "Nothing here is rationed, but there is a reckoning running:"
+            : standing                              ? "Nothing here is rationed — what the Origin is worth stands always:"
+            :                                         "Nothing here is rationed; read the Calling for the whole of it.";
+        // The Origin belongs in the head line as much as the Calling does. Ch. III picks it first,
+        // it is half of what a player answers "who are you" with, and until v1.49.0 the Tracker
+        // never said it once.
+        string origin = soul.Sheet?.Origin;
         var head = new Label
         {
-            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}. {what}",
+            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}"
+                 + (string.IsNullOrEmpty(origin) ? "" : $", {origin}") + $". {what}",
             AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
@@ -1974,6 +1982,10 @@ public partial class MainForm
         // count of one, and because whether it is alive is the question its Witch asks most.
         if (soul.Sheet != null && !string.IsNullOrEmpty(soul.Sheet.FamiliarKind))
             callingPanel.Controls.Add(FamiliarCard(soul));
+        // Then what the Origin is standing worth. Before the rations, because it is the half a
+        // table forgets: a ration announces itself by running out, and a +2 nobody remembers
+        // simply never gets added.
+        if (OriginCard(soul) is Control oc) callingPanel.Controls.Add(oc);
         foreach (var row in ledger) callingPanel.Controls.Add(FeatureCard(soul, row));
         foreach (var row in tallies) callingPanel.Controls.Add(TallyCard(soul, row));
 
@@ -1984,6 +1996,62 @@ public partial class MainForm
     // What a card calls a feature. Lives in CharGen, not here, because the colon it trims is put
     // there by CharGen.Subpath and because Tabs.cs is not one of the files the smoke rig compiles.
     static string CardName(string key) => CharGen.ShortFeatureName(key);
+
+    /// <summary>What the soul's ORIGIN is standing worth, on the strip where a player looks.
+    ///
+    /// <para>The third kind of card, and it carries no count and no button on purpose. A ration
+    /// card is pressed and a tally card climbs; this one is only ever <b>read</b>, because whether
+    /// a Scout's −1 applies is a fact about where the posse is standing and the app models no
+    /// ground. Putting an Apply button on it would be the app asking the Keeper to confirm
+    /// something it cannot check, which is the same fault as asking them to type in a number it
+    /// already knows — the Iron Code's rule run the other way.</para>
+    ///
+    /// <para>Boons and burdens are inked apart because the burden is the half that decides whether
+    /// an Origin was a <em>choice</em>. A player remembers the +2 unprompted; nobody has ever
+    /// volunteered their own −1 in the middle of a fight, which is exactly why it is worth the
+    /// pixels.</para></summary>
+    Control OriginCard(PartyMember soul)
+    {
+        var edges = CharGen.OriginEdges(soul.Sheet?.Origin);
+        if (edges.Count == 0) return null;
+
+        const int CW = 232;
+        var card = new Panel { Width = CW, BackColor = Paper, Margin = new Padding(2, 0, 8, 6) };
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 16, Height = 16, UseMnemonic = false, AutoEllipsis = true,
+            Text = soul.Sheet.Origin, Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = Ink
+        };
+        card.Controls.Add(name);
+
+        int y = 23;
+        foreach (var e in edges)
+        {
+            var chip = new Label
+            {
+                Left = 8, Top = y, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
+                Text = e.Says, Font = new Font("Segoe UI", 8.25f),
+                ForeColor = e.IsBoon ? Verdigris : Blood,
+            };
+            Tip.SetToolTip(chip, e.Phrase);
+            card.Controls.Add(chip);
+            y += 15;
+        }
+        card.Height = y + 6;
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(Rule, 1.4f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        string tip = $"What {soul.Sheet.Origin} is worth wherever it applies — Ch. IV's boon and "
+                   + "burden, which the app offers and never applies for you, because whether you "
+                   + "are indoors, among the wealthy or talking to a lawman is not something it "
+                   + "can see.\n\n"
+                   + string.Join("\n\n", edges.Select(x => x.Says + " — " + x.Phrase));
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip);
+        return card;
+    }
 
     /// <summary>The Witch's bound beast, on the strip where a player looks for what they can do.
     ///

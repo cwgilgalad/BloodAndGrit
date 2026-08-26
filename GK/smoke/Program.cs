@@ -3176,6 +3176,53 @@ for (int i = 0; i < 25; i++)
     var cw = CharGen.Generate(1, false, null, "Came Back Wrong");
     T("Came Back Wrong carries Mark 1+", cw.Mark >= 1);
 }
+
+// ---- what an Origin is worth at the table (v1.49.0) ----
+// Ch. IV gives all ten a boon and a burden and the app counted none of them. Both readers work
+// off the book's own sentences, so what they must never do is INVENT: a reading that finds a
+// ration where the book states none puts a counter on the strip that no rule backs.
+foreach (var og in CharGen.D.origins)
+{
+    foreach (var f in CharGen.OriginFeatures(og.name))
+    {
+        T($"{og.name}: rationed boon '{CharGen.ShortFeatureName(f.Name)}' states its cadence",
+            f.Limit.Any && f.Limit.Cadence != FeatureCadence.None);
+        T($"{og.name}: its ration is keyed apart from any Calling feature", f.Name.StartsWith("Origin: "));
+        T($"{og.name}: the card's sentence is the book's own",
+            !string.IsNullOrWhiteSpace(f.Desc) && (og.boon + og.burden).Contains(f.Desc.Trim()));
+    }
+    foreach (var e in CharGen.OriginEdges(og.name))
+    {
+        T($"{og.name}: standing {e.Says} is signed and non-zero", e.Size != 0);
+        T($"{og.name}: standing {e.Says} names what it applies to", !string.IsNullOrWhiteSpace(e.Applies));
+        T($"{og.name}: standing {e.Says} carries the book's sentence",
+            (og.boon + og.burden).Contains(e.Phrase.Trim()));
+    }
+}
+// The Veteran is the reason the reader splits on sentences at all: its boon states TWO rationed
+// things in one breath, and a reader handed the whole paragraph answers with the first only.
+T("The Veteran's boon yields both of its rations",
+    CharGen.OriginFeatures("The Veteran").Count(f => f.Name.StartsWith("Origin: The Veteran")) >= 2);
+// The Scout is the matching case on the other reader: a boon and a burden touching the same skill
+// in opposite directions, which is precisely why these are offered and never auto-applied.
+{
+    var sc = CharGen.OriginEdges("The Scout");
+    T("The Scout carries both a + and a − on Notice",
+        sc.Any(e => e.Size > 0 && e.Applies.Contains("Notice")) &&
+        sc.Any(e => e.Size < 0 && e.Applies.Contains("Notice")));
+}
+// Nothing may be read off an Origin that has no such sentence: the Freed states no ration at all,
+// and a counter appearing on that card would be the app inventing a rule.
+T("An Origin that rations nothing gets no ration card", CharGen.OriginFeatures("The Freed").Count == 0);
+if (Environment.GetEnvironmentVariable("GK_ORIGIN_PROBE") == "1")
+    foreach (var og in CharGen.D.origins)
+    {
+        Console.WriteLine($"\n{og.name}");
+        foreach (var f in CharGen.OriginFeatures(og.name))
+            Console.WriteLine($"    ration  {CharGen.ShortFeatureName(f.Name),-22} {f.Limit.Says(null)}");
+        foreach (var e in CharGen.OriginEdges(og.name))
+            Console.WriteLine($"    {(e.IsBoon ? "boon  " : "burden")}  {e.Says}");
+    }
 var dc10 = CharGen.Generate(10, false, "Dark Cultist");
 T("Dark Cultist L10: patron named at 3rd among the six", CharGen.D.callings.First(c => c.name == "Dark Cultist").subpath.options.Any(o => o.name == dc10.Subpath));
 T("Nerve = RES + level (+Stone Nerve)", dc10.NerveMax == dc10.Scores["RES"] + 10 + (dc10.Edges.Contains("Stone Nerve") ? 20 : 0));

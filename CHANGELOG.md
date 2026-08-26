@@ -8,6 +8,53 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.49.0 — the keyboard reaches the whole app, and an Origin finally does
+  something (2026-08-25).**
+
+  Two faults of the same shape. A rule the app held every part of, and no way to act on it.
+
+  **The shortcuts now fire wherever focus is sitting.** They lived on the form's `KeyDown`, which
+  runs only if no control wanted the key first — and on the Tracker the control with focus is
+  almost always the grid, which is exactly the tab where **Ctrl+Space** hands on the turn. The
+  Reference deck's arrows were moved to `ProcessCmdKey` in v1.38.0 for precisely this reason and
+  the combat loop never followed, so the key a Keeper presses most was the one least sure to land.
+  All nine are now read there.
+
+  **Ctrl+<n> stopped pointing past the end of the tab strip.** `ApplyModeTabs` re-lays the strip
+  per run mode, and the jump indexed it blindly: a player's view shows three tabs, so Ctrl+4
+  through Ctrl+0 were seven shortcuts that silently did nothing, in the mode least likely to have
+  anyone nearby who knew why. The range is checked and a miss says so, per the standing rule that
+  a refusal is never silent.
+
+  **And the shortcut list is one table.** It was written twice — the chords in a lambda in
+  `MainForm.cs`, the help window's copy hand-typed in `Menus.cs` — which is how a help page comes
+  to promise a key that does nothing. `MainForm.keyMap` is now the one list; `ProcessCmdKey` runs
+  it and **Help ▸ Keyboard shortcuts** prints it. Same shape as the seven typed copies of the
+  encounter ladder that `Rules.BudgetRungs` replaced. `audits/audit_ui.py` gained a fourth UX rule
+  holding it there: no chord claimed twice in one scope, every binding carrying a sentence to
+  print, and nothing the table owns hand-typed into the help window. Proved against a synthetic
+  drift first, the way the other three were.
+
+  **Ch. IV's Origins reach the Tracker.** Every soul has an Origin, all ten carry a boon and a
+  burden, and the app printed both on the sheet and counted neither — so the Tracker never once
+  said what a soul's Origin was worth. Five of the ten ration an activation in so many words
+  (*"Once per session, when you would drop to 0 Blood…"*), which is the same sentence shape the
+  Callings use, so `CharGen.OriginFeatures` reads them with the same `ReadLimit` and they arrive
+  on the strip as cards that spend, refuse and come back on the right boundary with no new
+  machinery at all. The other half — the standing ± — is `CharGen.OriginEdges`, drawn as a card
+  that is only ever read: whether a Scout's −1 applies is a fact about where the posse is
+  standing, and the app models no ground, so these are **offered and never applied behind the
+  Keeper's back**, exactly as a creature's attack rider is.
+
+  Neither reader takes a number from anywhere but the book's own sentence — a `uses` column beside
+  the prose in `chargen.json` would be the second copy of a fact this project has paid for twice.
+  **The semicolon is what made it work.** Ch. IV writes a second rationed clause in lower case
+  after a semicolon — *"…for a round; once per scene reroll a failed Reflex save"* — so a split
+  demanding a capital found one sentence where the book states two, and the Veteran's second
+  ration went missing. Found by running the reader over all ten Origins and reading the output,
+  which is the only way that fault ever shows: every assertion about the first half passes
+  perfectly. 62 new assertions, 14,402 in the suite.
+
 - **GritKeeper v1.48.0 — the Witch's familiar is a creature now, not three lines of text
   (2026-08-23).**
 

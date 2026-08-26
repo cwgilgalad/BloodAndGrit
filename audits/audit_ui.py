@@ -447,6 +447,44 @@ def main():
                 findings.append(f"Menus.cs  {owner}: Alt+{key.upper()} is claimed by "
                                 f"{len(hits)} items — {which}")
 
+    # ---- the keyboard is one table, and the help window may not re-type it ----
+    # A shortcut a Keeper cannot rely on is worse than one that does not exist, and there are two
+    # ways to get one. It can COLLIDE — two bindings claiming the same chord in the same scope, of
+    # which exactly one will ever fire and it is whichever the loop meets first. Or it can DRIFT —
+    # the help window promising a key the handler does not bind, which is what happened here: the
+    # chords lived in a lambda in MainForm.cs and again, hand-typed, in ShowShortcuts. Same shape
+    # as the seven typed copies of the encounter ladder Rules.BudgetRungs replaced.
+    keycount, bindings = 0, []
+    for m in re.finditer(r'\bK\(\s*(Keys\.[^,]+?),\s*(null|"[^"]*")\s*,\s*"([^"]*)"',
+                         sources.get("MainForm.cs", "")):
+        chord = re.sub(r"\s+", "", m.group(1))
+        scope = None if m.group(2) == "null" else m.group(2).strip('"')
+        line = sources["MainForm.cs"].count("\n", 0, m.start()) + 1
+        bindings.append((chord, scope, m.group(3), line))
+    keycount = len(bindings)
+
+    seen = {}
+    for chord, scope, says, line in bindings:
+        if not says.strip():
+            findings.append(f"MainForm.cs:{line}  the binding for {chord} says nothing — "
+                            "the shortcuts window has no sentence to print for it")
+        # An app-wide chord is live on every tab, so it collides with a tab-scoped one too.
+        for other in {scope, None} if scope else {s for _, s, _, _ in bindings}:
+            if (chord, other) in seen:
+                findings.append(f"MainForm.cs:{line}  {chord} is claimed twice in the same scope "
+                                f"({other or 'anywhere'}) — line {seen[(chord, other)]} wins and "
+                                "this one never fires")
+        seen[(chord, scope)] = line
+
+    # The drift guard: a chord the table owns may not also be hand-typed into the help window.
+    owned = {chord for chord, _, _, _ in bindings}
+    for m in re.finditer(r'M\(\s*"\s*(Ctrl\+[A-Z0-9]\w*)', sources.get("Menus.cs", "")):
+        typed = "Keys.Control|Keys." + m.group(1)[5:]
+        if typed in owned:
+            line = sources["Menus.cs"].count("\n", 0, m.start()) + 1
+            findings.append(f"Menus.cs:{line}  the shortcuts window hand-types {m.group(1)}, which "
+                            "MainForm's key table already owns — render it instead, or the two drift")
+
     if not quiet:
         print("buttons per file")
         for name in sorted(counts):
@@ -455,6 +493,7 @@ def main():
         print(f"\nhandlers checked for a silent refusal:   {quietcount}")
         print(f"modal dialogs checked for an Esc route: {dlgcount}")
         print(f"menu access keys checked for collisions:  {mnemcount}")
+        print(f"keyboard bindings checked for collisions: {keycount}")
         print()
 
     if findings:
@@ -463,7 +502,8 @@ def main():
             print("  " + f)
         return 1
     print("every button has a handler, a tooltip and a hittable target; every destructive button\n"
-          "is recoverable; every modal dialog answers Esc; no two menu items share an access key.")
+          "is recoverable; every modal dialog answers Esc; no two menu items share an access key;\n"
+          "and every keyboard shortcut is bound once and printed from the same table.")
     return 0
 
 
