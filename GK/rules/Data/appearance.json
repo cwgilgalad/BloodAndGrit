@@ -1,473 +1,1665 @@
 {
-  "_source": "GritKeeper's own, not transcribed from the books — the Player's Book asks the Four Questions and leaves what a soul LOOKS like to the table, which is right for a book and no help at all to a Keeper who needs a face for the woman who just walked into the saloon. Two rules govern this file. First: a people is described, never costed. Nothing here touches a number, gates an Origin or a Calling, or changes a die — it is ink, and the books' standing line holds, that the peoples of the West appear as people and professionals and the game's invented dark is never pinned to a living one. Second: the draws are CONDITIONED, not shuffled. Hair, eyes and complexion come out of the people's own lists and the garments come out of one style's own wardrobe, because six independent lists produce a Norwegian with a queue in a charro jacket and that reads as a machine talking.",
-
-  "peoples": [
-    { "name": "Anglo-American, eastern-born", "weight": 10,
-      "complexions": ["fair, and burned red by a country it was not made for", "freckled across the nose and forearms", "sallow, town-raised", "weathered to saddle-leather"],
-      "hair": ["mouse-brown", "sandy", "dark brown", "the colour of strong tea", "gone iron at the temples"],
-      "eyes": ["grey", "pale blue", "hazel", "brown"] },
-
-    { "name": "Southern-born American", "weight": 8,
-      "complexions": ["fair under the collar and burnt above it", "olive-fair, tanned deep", "florid, and quick to it", "weathered and lined early"],
-      "hair": ["dark brown, worn long", "black", "chestnut", "wheat-fair, gone dull with dust"],
-      "eyes": ["grey-green", "brown", "blue", "hazel"] },
-
-    { "name": "Backcountry, out of the Alleghenies", "weight": 4,
-      "complexions": ["pale as milk and never quite taking the sun", "freckled to the wrists", "wind-chapped", "sun-dark on the hands alone"],
-      "hair": ["red, and unrepentant about it", "black with a blue cast", "straw-fair", "dark and coarse"],
-      "eyes": ["pale grey", "green", "blue", "brown"] },
-
-    { "name": "Irish", "weight": 6,
-      "complexions": ["fair, and burning rather than tanning", "freckled heavily", "high colour in both cheeks", "pale and thin-skinned"],
-      "hair": ["black", "dark auburn", "red", "brown with a red cast in the sun"],
-      "eyes": ["blue", "grey", "green", "hazel"] },
-
-    { "name": "German", "weight": 6,
-      "complexions": ["ruddy", "fair and heavy-boned", "tanned across the forearms and nowhere else", "pale, and shaving twice a day for it"],
-      "hair": ["fair going grey", "light brown", "flaxen", "dark blond"],
-      "eyes": ["blue", "grey-blue", "brown", "grey"] },
-
-    { "name": "Scandinavian", "weight": 4,
-      "complexions": ["very fair, and peeling all summer", "pink across the cheekbones", "pale, freckled at the shoulders", "wind-burnt"],
-      "hair": ["white-blond", "flaxen", "reddish-fair", "light brown"],
-      "eyes": ["pale blue", "grey", "blue-green", "grey-blue"] },
-
-    { "name": "Mexican — Tejano, Californio, Sonoran", "weight": 9,
-      "complexions": ["warm brown", "olive, and darkening in the season", "copper-brown", "light olive, town-kept"],
-      "hair": ["black, heavy and straight", "black with a wave in it", "dark brown", "black going silver at the front"],
-      "eyes": ["dark brown, near black", "brown", "hazel-green", "grey-green, which the family argues about"] },
-
-    { "name": "African-American, southern-born", "weight": 6,
-      "complexions": ["deep brown", "dark, with a red undertone", "brown, and darker at the hands and neck", "light brown, freckled across the nose"],
-      "hair": ["black and close-cropped", "black, worn thick", "black with grey coming in at the temple", "dark brown"],
-      "eyes": ["dark brown", "brown", "amber-brown", "hazel"] },
-
-    { "name": "African-American, freeborn northern", "weight": 3,
-      "complexions": ["warm brown", "light brown", "deep brown, and unweathered — an indoor trade until lately", "brown, sun-darkened on the arms"],
-      "hair": ["black, cut short and kept", "black, oiled and parted", "dark brown", "black, greying"],
-      "eyes": ["brown", "dark brown", "hazel", "grey-brown"] },
-
-    { "name": "Cherokee, and the Nations", "weight": 3,
-      "complexions": ["brown", "light brown", "copper", "warm brown, freckled across the cheeks"],
-      "hair": ["black, straight and heavy", "dark brown", "black, greying early", "black with a wave"],
-      "eyes": ["dark brown", "brown", "grey-brown", "hazel"] },
-
-    { "name": "Lakota, and the northern plains", "weight": 3,
-      "complexions": ["brown, weather-cut", "copper-brown", "deep brown", "brown, wind-lined at the eyes"],
-      "hair": ["black, long and heavy", "black, going grey in streaks", "very dark brown", "black, and thick"],
-      "eyes": ["dark brown", "brown", "near black", "brown, flecked lighter"] },
-
-    { "name": "Comanche, and the southern plains", "weight": 2,
-      "complexions": ["dark brown, sun-cut", "copper", "brown", "deep brown and scarred at the knuckles"],
-      "hair": ["black, worn long", "black, greased and parted", "black, cropped short in mourning", "very dark brown"],
-      "eyes": ["dark brown", "near black", "brown", "brown, and steady"] },
-
-    { "name": "Apache, out of the Chiricahua country", "weight": 2,
-      "complexions": ["dark brown", "brown, and dust-grey with it", "copper-dark", "deep brown, weather-cut"],
-      "hair": ["black, long and bound back", "black, cut at the shoulder", "black with grey at the crown", "black, dust-dulled"],
-      "eyes": ["dark brown", "near black", "brown", "brown, hooded"] },
-
-    { "name": "Diné, out of the canyon country", "weight": 2,
-      "complexions": ["warm brown", "copper-brown", "brown, and darker across the hands", "deep brown"],
-      "hair": ["black, long and bound in a knot", "black, heavy", "black going grey", "very dark brown"],
-      "eyes": ["dark brown", "brown", "near black", "warm brown"] },
-
-    { "name": "Pueblo — Hopi, Zuni, Taos", "weight": 2,
-      "complexions": ["brown", "warm copper", "light brown", "brown, and finely lined at the eyes"],
-      "hair": ["black, cut straight at the brow", "black, bound at the nape", "black, greying", "very dark brown"],
-      "eyes": ["dark brown", "brown", "near black", "brown, and unhurried"] },
-
-    { "name": "Nez Perce, and the plateau country", "weight": 1,
-      "complexions": ["brown", "light copper-brown", "brown, wind-worked", "warm brown"],
-      "hair": ["black, long", "dark brown", "black, greying at the front", "black, heavy and straight"],
-      "eyes": ["dark brown", "brown", "hazel-brown", "near black"] },
-
-    { "name": "Chinese, out of Guangdong", "weight": 5, "namesFrom": "fullNames",
-      "complexions": ["light brown", "pale gold", "brown, sun-darkened from the grade work", "fair, and indoor-kept"],
-      "hair": ["black, straight and heavy", "black, greying at the temple", "very dark brown", "black, and fine"],
-      "eyes": ["dark brown", "near black", "brown", "warm brown"] },
-
-    { "name": "Métis and French-Canadian", "weight": 3,
-      "complexions": ["brown", "olive-fair, tanned dark", "light brown, freckled", "weather-brown"],
-      "hair": ["black, curling at the collar", "dark brown", "chestnut", "black, worn in a braid"],
-      "eyes": ["brown", "grey-green", "hazel", "dark brown"] },
-
-    { "name": "Scots and Scots-Irish", "weight": 4,
-      "complexions": ["fair and ruddy", "freckled", "pale, and burning in an hour", "wind-chapped red"],
-      "hair": ["dark red", "black", "sandy", "brown going grey early"],
-      "eyes": ["grey", "blue", "green", "hazel"] },
-
-    { "name": "English", "weight": 3,
-      "complexions": ["fair", "pink-fair and shaving-sore", "pale, town-kept", "tanned unevenly"],
-      "hair": ["light brown", "dark brown", "fair", "greying, and neatly kept about it"],
-      "eyes": ["blue", "grey", "brown", "hazel"] },
-
-    { "name": "Cornish and Welsh, out of the mines", "weight": 3,
-      "complexions": ["pale from underground, and never losing it", "fair with coal-dust still in the pores", "ruddy", "sallow"],
-      "hair": ["black", "dark brown", "iron grey, and early", "dark with a curl"],
-      "eyes": ["dark blue", "brown", "grey", "black-brown"] },
-
-    { "name": "Jewish, out of Bavaria and Bohemia", "weight": 3,
-      "complexions": ["olive-fair", "pale, indoor-kept", "warm olive", "fair and freckled at the nose"],
-      "hair": ["dark brown, curling", "black", "auburn", "brown going grey"],
-      "eyes": ["dark brown", "hazel", "grey-green", "brown"] },
-
-    { "name": "Italian", "weight": 2,
-      "complexions": ["olive", "warm brown", "olive, and darker in the season", "fair-olive"],
-      "hair": ["black, thick and curling", "dark brown", "black, greying at the front", "chestnut"],
-      "eyes": ["dark brown", "brown", "hazel-green", "near black"] },
-
-    { "name": "Basque, come for the sheep", "weight": 2,
-      "complexions": ["olive, weather-cut", "fair-olive, burnt at the neck", "brown", "ruddy-olive"],
-      "hair": ["black, heavy", "dark brown", "black with grey through it", "dark and straight"],
-      "eyes": ["dark brown", "grey", "brown", "hazel"] },
-
-    { "name": "Bohemian and Polish", "weight": 2,
-      "complexions": ["fair, and ruddy with it", "pale, broad-featured", "tanned across the forearms", "high-coloured"],
-      "hair": ["light brown", "fair", "dark blond", "brown, going grey in patches"],
-      "eyes": ["grey", "blue", "hazel", "brown"] },
-
-    { "name": "Hawaiian, off a whaler or a cattle boat", "weight": 1,
-      "complexions": ["warm brown", "deep brown", "golden-brown", "brown, and darker at the shoulders"],
-      "hair": ["black, thick and waving", "black, long", "very dark brown", "black, sun-rusted at the ends"],
-      "eyes": ["dark brown", "brown", "near black", "warm brown"] },
-
-    { "name": "Portuguese, out of the Azores", "weight": 1,
-      "complexions": ["olive", "brown, sea-weathered", "fair-olive, freckled", "warm brown"],
-      "hair": ["black, curling", "dark brown", "black, greying", "chestnut-dark"],
-      "eyes": ["dark brown", "hazel", "brown", "grey-green"] },
-
-    { "name": "Russian, and the Volga Germans", "weight": 1,
-      "complexions": ["fair and weather-reddened", "pale, heavy-boned", "ruddy", "wind-burnt and peeling"],
-      "hair": ["fair", "light brown", "reddish-brown", "white-blond, and startling"],
-      "eyes": ["pale blue", "grey", "brown", "grey-green"] }
-  ],
-
-  "heights": [
-    "short, and used to being underestimated for it",
-    "short and wide through the shoulder",
-    "middling height",
-    "a little above middling",
-    "tall",
-    "tall enough to duck a doorway without thinking about it",
-    "very tall, and stooped from years of it",
-    "small-framed and quick"
-  ],
-
-  "frames": [
-    "rawboned and all angles",
-    "lean, with nothing spare on them",
-    "wiry",
-    "broad through the chest and going soft at the middle",
-    "heavy-built and slow to move, and quicker than that looks",
-    "thin to the point of gaunt",
-    "solid — the build of somebody who lifts things for a living",
-    "long-limbed and loose-jointed",
-    "compact and hard",
-    "run down thin by a hard year"
-  ],
-
-  "bearings": [
-    "stands square and takes up the room they are given",
-    "keeps their back to a wall without appearing to plan it",
-    "moves slow, and never wastes a step",
-    "restless — always half-turned toward the door",
-    "carries themselves like a soldier, and has not been one in years",
-    "stoops, whether from work or from wanting to be smaller",
-    "quick and light, and startles easily",
-    "still. Very still, until they are not",
-    "walks with a limp they will not explain",
-    "hands never entirely idle — a coin, a knife, a bit of rope",
-    "watches the middle distance rather than whoever is talking",
-    "has the easy, ruined grace of somebody who was once well brought up"
-  ],
-
-  "faces": [
-    "a long face and a heavy jaw",
-    "sharp-boned, all cheek and chin",
-    "broad and open, the sort strangers tell things to",
-    "round, and younger-looking than the years on it",
-    "hollowed out at the cheeks",
-    "flat-featured and hard to read",
-    "a strong nose, broken once and set poorly",
-    "deep lines from the eyes back — a squinter's face",
-    "a wide mouth that goes to a smile before permission is given",
-    "a mouth that has forgotten how",
-    "heavy brows, close together",
-    "a face that would be handsome if it were ever at rest",
-    "weathered past guessing at an age",
-    "smooth and unlined, which the years say is a lie"
-  ],
-
-  "marks": [
-    "a powder burn along one cheek",
-    "a rope scar around the throat, kept covered",
-    "two fingers gone off the left hand",
-    "a brand on the forearm, old and deliberate",
-    "a knife scar from ear to jaw",
-    "a bullet-drawn crease across the scalp where the hair will not grow",
-    "hands scarred white across the knuckles",
-    "a limp, and a knee that predicts weather",
-    "one eye gone milky",
-    "a tattooed anchor, from a life before this one",
-    "smallpox scarring across the cheeks",
-    "a bad burn up the inside of one arm",
-    "a missing earlobe",
-    "teeth gone at the side, and a habit of talking behind a hand",
-    "a wrist that never set right and turns the wrong way",
-    "freckles, and a great many of them",
-    "a birthmark across the temple like a thumbprint",
-    "sun-cracked lips that never entirely heal"
-  ],
-
-  "voices": [
-    "a low voice that makes people lean in",
-    "a carrying voice, built for open ground",
-    "soft-spoken, and it is not gentleness",
-    "hoarse — something happened to that throat",
-    "a drawl slow enough to lose your place in",
-    "clipped, quick, all business",
-    "an accent worn thin by twenty years away from wherever it started",
-    "laughs before the joke, at nothing anyone else heard",
-    "says very little, and means all of it",
-    "sings under their breath while working, and does not know they do it"
-  ],
-
-  "hairStyles": [
-    "cropped close to the skull",
-    "cut short and kept combed",
-    "long enough to tie back off the collar",
-    "worn loose to the shoulder",
-    "parted hard on one side and oiled flat",
-    "hacked off short, by their own hand and in poor light",
-    "pinned up under the hat and coming down by evening",
-    "in a single heavy braid",
-    "in two braids, wrapped",
-    "curling out from under the hatband whatever is done about it",
-    "receding, and pretending otherwise",
-    "gone entirely on top, and kept shaved for honesty"
-  ],
-
-  "facialHair": [
-    "a full beard, untrimmed",
-    "a beard kept short and squared off",
-    "a dragoon moustache waxed at the points",
-    "a heavy walrus moustache",
-    "side whiskers and a shaved chin",
-    "three days of stubble, always exactly three days",
-    "clean-shaven, and it costs them something to stay that way",
-    "a chin beard and nothing else",
-    "a moustache too big for the face under it",
-    "clean-shaven"
-  ],
-
-  "wear": [
-    "worn to the weave and mended honestly",
-    "new-bought and stiff, and self-conscious about it",
-    "good cloth going to ruin for want of a needle",
-    "dusted grey from crown to boot",
-    "soaked through and steaming by the stove",
-    "patched in a colour that does not match and never will",
-    "kept scrupulously clean, whatever it costs in water",
-    "somebody else's, and a size out",
-    "sun-bleached until the original colour is a guess",
-    "still carrying the smell of woodsmoke",
-    "spattered dark at the cuff, and not with mud",
-    "expensive once, a long time ago"
-  ],
-
-  "details": [
-    "a watch on a chain, wound every morning whether or not it runs",
-    "a wedding ring worn on a cord, not a finger",
-    "a bible in the coat pocket with the back half torn out for cigarette papers",
-    "a tintype kept face-down",
-    "a bag of salt on a thong around the neck",
-    "an iron nail through the hatband",
-    "somebody else's initials on the belt buckle",
-    "a rosary wrapped twice around the wrist",
-    "a bundle of letters, tied, and never answered",
-    "a coin with a hole shot through it",
-    "a lock of hair in a paper twist",
-    "a dog that will not be left behind",
-    "a tally cut into the rifle stock, and no explanation offered",
-    "spectacles mended at the bridge with wire",
-    "a tooth on a string, and it is not an animal's",
-    "a pouch of tobacco they never smoke and always offer",
-    "a small mirror, carried for reasons they will not give",
-    "boots too good for the rest of the outfit"
-  ],
-
-  "styles": [
-    { "name": "trail-worn working dress", "note": "what most of the country wears most of the time",
-      "hats": ["a sweat-lined slouch hat", "a flat-brimmed felt gone shapeless", "a wide-brimmed hat with the crown creased by hand", "a battered drover's hat"],
-      "coats": ["a canvas duster the colour of the road", "a wool sack coat out at the elbow", "a fleece-lined vest and nothing over it", "a blanket coat with horn buttons"],
-      "shirts": ["a collarless pullover shirt, once red", "a bib-front shirt gone grey", "a hickory-striped work shirt", "a flannel shirt buttoned to the throat in any weather"],
-      "legs": ["duck trousers worn through at the seat", "wool trousers tucked into the boots", "brown jean pants and a wide belt", "canvas trousers with a rawhide patch at the knee"],
-      "boots": ["stovepipe boots down at the heel", "lace boots caked to the ankle", "mule-ear boots with the pulls torn off", "boots resoled twice and due a third"],
-      "extras": ["a bandanna that has been through a wash and lost", "leather cuffs at the wrists", "a pair of gauntlets tucked in the belt", "a slicker rolled behind the cantle", "shotgun chaps, scarred at the knee"] },
-
-    { "name": "town Sunday best", "note": "the one good outfit, kept in paper",
-      "hats": ["a black derby brushed against the nap", "a good felt hat kept for church", "a low-crowned planter's hat", "a stiff-brimmed straw, in season"],
-      "coats": ["a black frock coat, shiny at the elbows", "a sack suit in dark wool", "a cutaway coat a size too generous", "a broadcloth coat carried over the arm"],
-      "shirts": ["a white shirt with a celluloid collar", "a boiled shirt and a black string tie", "a linen shirt with paper cuffs", "a starched front and a modest stickpin"],
-      "legs": ["matching trousers, pressed under a mattress", "striped trousers from another suit entirely", "dark wool trousers and braces", "trousers with the cuffs turned once"],
-      "boots": ["low shoes polished with lampblack", "congress gaiters", "town boots that pinch and are worn anyway", "boots blacked over the dust rather than under it"],
-      "extras": ["a watch chain across the vest", "gloves carried and never put on", "a folded handkerchief that has never been used", "a small posy pinned at the lapel", "a cane, entirely decorative"] },
-
-    { "name": "green-table finery", "note": "the gambler's uniform — soft hands and hard eyes",
-      "hats": ["a pearl-grey derby set forward", "a low black planter's hat", "a soft felt hat with a silk band", "a beaver top hat, on purpose"],
-      "coats": ["a claw-hammer coat in black broadcloth", "a checked sack coat that says money loudly", "a velvet-collared frock coat", "a long coat lined in something red"],
-      "shirts": ["a ruffled shirt front", "a boiled shirt with a diamond stud, real or not", "a silk shirt under a brocade vest", "a shirt too white for anyone who works"],
-      "legs": ["striped trousers, sharply pressed", "dark trousers with a satin stripe", "checked trousers and a great deal of confidence", "fawn trousers that will not survive the trail"],
-      "boots": ["patent shoes with a spat over them", "polished ankle boots", "soft calfskin boots made to order", "boots that have never seen a stirrup"],
-      "extras": ["a brocade vest in a colour nobody else would try", "rings on three fingers", "a derringer in the vest pocket, badly hidden", "a gold toothpick used in company", "a deck of cards worn smooth at the corners"] },
-
-    { "name": "circuit black", "note": "the riding preacher's rig — black, dusty, and unarguable",
-      "hats": ["a broad black hat, greened with age", "a low-crowned black felt", "a black slouch hat with the brim pinned up on one side", "a plain black hat, brushed daily"],
-      "coats": ["a black frock coat down to the knee", "a black duster over the whole business", "a shabby black sack coat", "a preaching coat with the pockets worn through"],
-      "shirts": ["a white shirt buttoned to the collar", "a collarless white shirt and a stud", "a grey shirt and a black stock", "a clerical collar, kept white by main force"],
-      "legs": ["black trousers rubbed grey at the seat", "dark trousers tucked into riding boots", "black trousers and a wide plain belt", "trousers gone at the knee from praying on stone"],
-      "boots": ["riding boots, black and cracked", "plain lace boots", "boots repaired with saddle leather", "boots worn to the shape of one stirrup"],
-      "extras": ["a bible carried in the hand, not the pocket", "a plain wooden cross on a cord", "saddlebags of tracts nobody asked for", "a wedding ring on a chain", "reading spectacles hooked in the coat"] },
-
-    { "name": "mission plain", "note": "cassock, dust, and a hard chair somewhere",
-      "hats": ["a flat-brimmed black hat", "a straw hat entirely without vanity", "a black biretta carried more than worn", "a wide felt hat gone brown"],
-      "coats": ["a black cassock, hemmed short for riding", "a plain grey habit under a duster", "a threadbare soutane", "a serape thrown over the black"],
-      "shirts": ["a plain shirt under the cassock", "a coarse undershirt of the mission's own weaving", "a white collar and nothing showy beneath it", "a shirt patched at both shoulders"],
-      "legs": ["plain dark trousers under the skirts", "trousers of undyed wool", "riding trousers, taken in at the waist", "canvas trousers, mission-made"],
-      "boots": ["sandals, and bare feet in summer", "plain boots with the heels worn level", "huaraches, and a second pair in the pack", "boots given by a parishioner and a size wrong"],
-      "extras": ["a rosary at the belt", "a small crucifix, worn smooth by thumbs", "a phial of holy water on a thong", "a breviary falling to pieces", "a bell for the mission that is not built yet"] },
-
-    { "name": "cavalry surplus", "note": "the army's clothes, out of the army's hands",
-      "hats": ["a campaign hat with the cords cut off", "a forage cap gone shapeless", "a black felt hat with a company letter still on it", "a slouch hat pinned with an old crossed-sabres badge"],
-      "coats": ["a cavalry blouse with the insignia unpicked", "a caped greatcoat, sky-blue and filthy", "a shell jacket over civilian clothes", "an officer's coat, and no officer to go with it"],
-      "shirts": ["a grey issue shirt", "a blue flannel shirt out of a quartermaster's store", "a civilian shirt under army wool", "a shirt with regimental buttons on it"],
-      "legs": ["sky-blue kersey trousers with the stripe still on", "reinforced riding trousers", "issue trousers dyed brown, badly", "trousers with the seat patched in canvas"],
-      "boots": ["cavalry boots to the knee", "issue brogans and canvas leggings", "boots with the spurs still on them", "boots turned down at the top"],
-      "extras": ["a McClellan saddle and a bedroll", "a cartridge belt of a pattern nobody issues now", "a battered canteen with a name scratched out", "a bugle, dented, and not for show", "a horse that still answers a trumpet"] },
-
-    { "name": "vaquero", "note": "the oldest working rig on this ground, and the best",
-      "hats": ["a stiff-brimmed sombrero with a stamped band", "a low-crowned felt with a horsehair barbiquejo", "a fine felt sombrero kept for town", "a straw sombrero worked to fit"],
-      "coats": ["a short charro jacket with braid at the seams", "a serape over one shoulder", "a canvas jacket cut short for the saddle", "a leather chaqueta, oiled black"],
-      "shirts": ["a white cotton shirt, loose", "a shirt with a bright sash at the waist", "a striped cotton shirt worn open at the throat", "a plain shirt under a buttoned vest"],
-      "legs": ["botas and calzoneras with silver buttons up the seam", "wool trousers under chaparreras", "trousers tucked into tall boots", "leather leggings over cotton"],
-      "boots": ["high-heeled boots made for a stirrup and nothing else", "boots with big rowelled spurs", "botines with a stacked heel", "boots worked with a star at the pull"],
-      "extras": ["a reata coiled at the horn, sixty feet of rawhide", "spurs that ring when they walk", "a braided horsehair quirt", "a silver-mounted bit worth more than the horse", "a red sash wound three times"] },
-
-    { "name": "drover's rig", "note": "three months to Kansas and the clothes to prove it",
-      "hats": ["a high-crowned hat with the brim rolled tight", "a hat with a horsehair string under the chin", "a sun-faded felt, sweat-ringed to the crown", "a hat sat on more than once"],
-      "coats": ["a canvas brush jacket, scarred", "a wool vest and shirtsleeves", "a slicker gone tacky with age", "a sheepskin vest with the wool coming out"],
-      "shirts": ["a bib-front shirt with a wide collar", "a flannel shirt buttoned wrong and left that way", "a striped work shirt out at both elbows", "a shirt with the sleeves cut off at the shoulder"],
-      "legs": ["jean pants over long johns", "wool trousers under batwing chaps", "canvas trousers stiff with tallow", "trousers held with a length of rope"],
-      "boots": ["pointed boots with underslung heels", "boots with a hole worn through the sole and cardboard in it", "high-heeled boots and jingling spurs", "boots pulled on over two pairs of socks"],
-      "extras": ["a bandanna high on the throat against the dust", "leather cuffs stamped with a brand", "a pair of woolly angora chaps", "a lariat gone stiff", "a tally book and a stub of pencil"] },
-
-    { "name": "miner's kit", "note": "the deep-shaft trades, and the dust that comes up with them",
-      "hats": ["a hard resined hat with a candle-holder still clipped on", "a shapeless felt gone black", "a knitted cap under a battered hat", "a hat with the brim burned short on one side"],
-      "coats": ["a canvas jacket stiff with clay", "a wool coat that has never been the same since the wet", "a leather apron over the lot", "a mackinaw with the plaid worn out of it"],
-      "shirts": ["a red flannel shirt, and everybody's is", "a grey undershirt and no shirt over it", "a flannel shirt with the buttons replaced by wire", "a shirt permanently the colour of the ore"],
-      "legs": ["heavy duck trousers, clay to the knee", "wool trousers stuffed into rubber boots", "trousers with leather sewn over both knees", "overalls with one strap gone"],
-      "boots": ["hobnailed boots that strike sparks", "rubber boots to the thigh", "heavy lace boots, wet through since March", "boots with the toes cut out for the swelling"],
-      "extras": ["a carbide lamp and a can of spare", "a coil of fuse over one shoulder", "a poke of dust in an inside pocket", "a canary in a small cage, taken seriously", "black under every fingernail and never coming out"] },
-
-    { "name": "buffalo-hide winter", "note": "for country that means it",
-      "hats": ["a fur cap with the flaps down", "a wool hat under a hide hood", "a beaver cap gone bald in patches", "a hat tied down over the ears with a scarf"],
-      "coats": ["a buffalo coat to the ankle, and stiff as a door", "a hide capote with the belt of the same", "a blanket coat, Hudson's Bay stripes still showing", "a bearskin that smells of the bear"],
-      "shirts": ["two flannel shirts, one over the other", "a wool shirt and a knitted guernsey", "a hide shirt worked soft", "a shirt nobody has seen in four months"],
-      "legs": ["hide trousers with the hair turned in", "wool trousers under leather leggings", "two pairs of trousers and no apology", "trousers bound at the ankle with thong"],
-      "boots": ["moccasins over three pairs of socks", "hide boots stuffed with dry grass", "felt-lined overshoes", "boots that have been wet since the first frost"],
-      "extras": ["snowshoes lashed across the pack", "a fur muff nobody dares mention", "a tin of bear grease for the face", "smoked-glass goggles against the glare", "an axe with a shortened handle"] },
-
-    { "name": "homespun and flour-sack", "note": "what the homestead makes for itself",
-      "hats": ["a straw hat with the brim coming apart", "a sunbonnet that has outlived two owners", "a felt hat handed down twice", "a cap sewn from an old coat"],
-      "coats": ["a jacket cut down from a man's and taken in", "a shawl pinned at the throat", "a knitted wrap over everything", "a coat with mismatched buttons, every one of them saved"],
-      "shirts": ["a shirt of flour-sacking with the brand still faintly legible", "a calico shirt washed pale", "a homespun shirt, honest and scratchy", "a shirt with a collar turned twice"],
-      "legs": ["a plain skirt over heavy boots", "trousers cut down from a father's", "a work skirt with the hem let out and let out again", "canvas trousers made at the kitchen table"],
-      "boots": ["boots too big, and stuffed with rag", "shoes mended with wire", "brogans, and bare feet in summer", "boots that were somebody's Sunday pair once"],
-      "extras": ["an apron with a pocket for eggs and one for a pistol", "hands cracked open across the knuckles", "a seed packet kept for the picture on it", "a child's ribbon tied to the wrist", "a wedding ring worn thin"] },
-
-    { "name": "mourning black", "note": "and it is not for show",
-      "hats": ["a black hat with a crape band", "a black bonnet and a veil put back", "a hat dyed black at home and streaking", "a black hat kept from a funeral, and worn since"],
-      "coats": ["a black coat, plain and well kept", "a black shawl worn indoors and out", "a dyed coat with the old colour showing at the seams", "a long black duster over everything"],
-      "shirts": ["a black shirt and no ornament", "a white shirt and a black armband", "a high-collared black bodice", "a grey shirt, which is as far as they will bend"],
-      "legs": ["black skirts, heavy and plain", "black trousers and black braces", "a black riding skirt, split", "dark trousers with a mourning band at the knee"],
-      "boots": ["black boots polished every night without fail", "plain black lace boots", "boots blacked over the scuffs", "riding boots, black, and quiet on a floor"],
-      "extras": ["a mourning brooch with hair worked into it", "a black-edged letter carried folded", "a locket that does not open for anyone", "gloves, black, never removed", "a name said aloud at odd moments"] },
-
-    { "name": "eastern tailoring gone west", "note": "cut in Boston, ruined in six weeks",
-      "hats": ["a bowler entirely wrong for the sun", "a silk hat carried in a box and never worn", "a good soft felt bought in a hurry at Kansas City", "a straw boater, absurd and defended"],
-      "coats": ["a fine wool overcoat with a velvet collar", "a tailored sack suit, ruined at the cuffs", "a Norfolk jacket ordered from a catalogue", "a caped travelling coat"],
-      "shirts": ["a shirt with a detachable collar and no spares left", "a fine linen shirt gone grey", "a shirt with cufflinks that draw comment", "a shirt whose maker's name is sewn inside"],
-      "legs": ["good trousers, torn at the knee and stitched by an amateur", "riding breeches nobody out here has ever seen before", "tailored trousers with the cuffs frayed", "trousers that fitted before the journey"],
-      "boots": ["fine shoes not made for this ground", "riding boots bought new and still stiff", "shoes with a hole worn straight through", "boots ordered by mail and a size out"],
-      "extras": ["a leather case of instruments or papers", "spectacles, and a spare pair", "a fountain pen carried like a weapon", "a letter of introduction to somebody who has moved on", "a folding camp stool, mocked and useful"] },
-
-    { "name": "range dress, cut for the saddle", "note": "a working woman's outfit and no concession to town",
-      "hats": ["a wide felt hat with a chin string", "a hat with the brim pinned back on one side", "a man's hat, and better for it", "a straw hat tied down with a scarf"],
-      "coats": ["a fitted canvas jacket", "a wool jacket cut short at the hip", "a duster taken in at the waist", "a fleece vest over a work shirt"],
-      "shirts": ["a work shirt with the sleeves rolled to the elbow", "a calico blouse under a leather vest", "a plain shirt buttoned high", "a striped shirt with the collar cut away"],
-      "legs": ["a divided riding skirt of heavy duck", "trousers, and let anyone say anything", "a split skirt over boots", "wool trousers with the hems taken up"],
-      "boots": ["riding boots with a modest heel", "lace boots to mid-calf", "boots with brass eyelets and long laces", "boots resoled by their own hand"],
-      "extras": ["gauntlets stitched at the cuff", "a rope, and the calluses that go with it", "hair pinned up and coming down", "a pistol worn where it can be reached in the saddle", "sun-lines that stop where the hat sits"] },
-
-    { "name": "plains dress — hide, quill and trade cloth", "note": "worked by hand, and none of it bought",
-      "hats": ["nothing on the head at all", "a trade hat with a feather worked into the band", "a hide cap with the fur turned in", "a cloth wound at the brow against the sun"],
-      "coats": ["a hide shirt worked soft and fringed at the sleeve", "a trade blanket worn as a robe", "a capote cut from a striped blanket", "a hide robe painted along the hem"],
-      "shirts": ["a calico trade shirt in a startling colour", "a hide shirt quilled across the shoulders", "a shirt of trade cloth with shell buttons", "a plain hide shirt, unornamented on purpose"],
-      "legs": ["hide leggings with a fringe down the seam", "wool trade leggings, red", "leggings worked in beadwork at the ankle", "a hide skirt, softened and belted"],
-      "boots": ["moccasins beaded across the vamp", "high moccasin boots to the knee", "plain moccasins, resoled with rawhide", "moccasins cut for this ground and no other"],
-      "extras": ["a bone breastplate", "a knife in a beaded sheath at the belt", "a bundle wrapped in hide that nobody is invited to ask about", "a war shirt kept folded and not worn", "brass wire wound at both wrists"] },
-
-    { "name": "sawbones' town coat", "note": "and the smell of carbolic under it",
-      "hats": ["a plain dark hat, unremarkable by choice", "a derby set straight", "a broad hat for the buggy in weather", "a hat kept on a peg and grabbed at a run"],
-      "coats": ["a dark frock coat with the cuffs turned back for work", "a linen duster over the good coat", "a black coat with a permanent stain at the right cuff", "a coat with the pockets stretched by bottles"],
-      "shirts": ["a white shirt with the sleeves habitually rolled", "a shirt with a spot of something at the front", "a boiled shirt, and a spare in the bag", "a shirt bleached hard every week"],
-      "legs": ["dark trousers, serviceable", "trousers with a scrubbed patch at the knee", "wool trousers and a plain belt", "trousers that have been boiled more than once"],
-      "boots": ["low boots, easily cleaned", "lace shoes with the laces knotted where they broke", "riding boots for the country calls", "boots kept by the door, always"],
-      "extras": ["a gladstone bag that goes everywhere", "spectacles pushed up on the forehead", "a pocket case of instruments in a roll", "carbolic on the hands and in the clothes", "a flask that is medicinal, mostly"] },
-
-    { "name": "freighter's canvas", "note": "the wagon roads, the long hauls, the wet",
-      "hats": ["a hat with the brim let down all round", "a wool cap under an oilskin hood", "a broad hat greased against the rain", "a hat with a rag sewn to the back for the neck"],
-      "coats": ["an oilskin down to the boot tops", "a canvas coat lined with blanket", "a mackinaw the colour of every road it has been on", "a sheepskin coat, wool side in"],
-      "shirts": ["a heavy wool shirt, and never off", "a flannel shirt with a leather patch at the shoulder", "a striped shirt under a knitted jersey", "a shirt that could stand up unaided"],
-      "legs": ["canvas trousers waxed at the knee", "wool trousers stuffed in high boots", "trousers with a strip of hide sewn down the inseam", "trousers held by a wide belt and a great deal of hope"],
-      "boots": ["high boots for wading a wheel out", "hobnails and a heavy sole", "boots greased weekly and still leaking", "boots with the tops turned down"],
-      "extras": ["a blacksnake whip, coiled", "a tar bucket swinging under the bed", "hands like something carved", "a spare kingbolt in the coat pocket", "a picket rope over the shoulder"] },
-
-    { "name": "showman's plush", "note": "the medicine wagon, the tent, the pitch",
-      "hats": ["a tall hat in a colour nature avoided", "a broad plainsman's hat, deliberately theatrical", "a fez, and no explanation", "a hat with a band of something claimed to be rattlesnake"],
-      "coats": ["a plush frock coat in bottle green", "a fringed buckskin jacket, spotless, never worn outdoors", "a scarlet-lined cloak", "a military coat from no army in the world"],
-      "shirts": ["a ruffled shirt with a great deal of front", "a shirt in a red that carries to the back row", "a silk shirt with a spangled vest", "a shirt with lace at the cuff"],
-      "legs": ["striped trousers in two colours too many", "buckskin trousers with a foot of fringe", "tight trousers tucked into shining boots", "trousers with a stripe of braid down each leg"],
-      "boots": ["knee boots polished to a mirror", "boots with silver conchos up the outside", "patent boots that hurt", "boots with the heels built up an inch"],
-      "extras": ["a cane with a heavy head", "a case of bottles that all contain the same thing", "a waxed moustache and a way with a crowd", "a banjo, and a limited repertoire", "a printed handbill of themselves"] },
-
-    { "name": "rag, charm and mismatch", "note": "the ones the country has already touched",
-      "hats": ["a hat with things sewn into the band", "no hat, in any weather", "a bonnet worn indoors and never removed", "a hat somebody else was buried in"],
-      "coats": ["a coat made of three coats", "a shawl pinned with a horseshoe nail", "a duster stitched over with signs in thread", "a fur wrap of no identifiable animal"],
-      "shirts": ["a shirt inside out, deliberately", "a shirt with the collar cut off and burned", "a shirt of unbleached cloth and no buttons", "a shirt with a red thread run through every seam"],
-      "legs": ["skirts over trousers, in that order", "trousers tied at the ankle against what climbs", "a skirt with the hem weighted with salt", "trousers of two different cloths"],
-      "boots": ["odd boots, and both of them left", "boots with the nails removed and iron replaced", "bare feet, and the soles like leather", "boots stuffed with herbs"],
-      "extras": ["charms at wrist, throat and ankle, one of them ticking", "salt in every pocket", "a mirror carried face-in", "fingernails stained something dark", "eyes that stay a moment too long on empty ground"] }
-  ],
-
-  "callingStyles": {
-    "Bounty Hunter": ["trail-worn working dress", "mourning black", "cavalry surplus", "drover's rig"],
-    "Drifter": ["trail-worn working dress", "homespun and flour-sack", "drover's rig", "rag, charm and mismatch"],
-    "Gambler": ["green-table finery", "town Sunday best", "eastern tailoring gone west", "showman's plush"],
-    "Gunhand": ["trail-worn working dress", "green-table finery", "drover's rig", "cavalry surplus", "range dress, cut for the saddle"],
-    "Marshal": ["town Sunday best", "trail-worn working dress", "cavalry surplus", "mourning black"],
-    "Mountain Man": ["buffalo-hide winter", "plains dress — hide, quill and trade cloth", "trail-worn working dress", "freighter's canvas"],
-    "Prospector": ["miner's kit", "trail-worn working dress", "homespun and flour-sack", "freighter's canvas"],
-    "Sawbones": ["sawbones' town coat", "town Sunday best", "eastern tailoring gone west", "mourning black"],
-    "Medicine Man": ["plains dress — hide, quill and trade cloth", "trail-worn working dress", "rag, charm and mismatch", "buffalo-hide winter"],
-    "Padre": ["mission plain", "circuit black", "town Sunday best", "trail-worn working dress"],
-    "Preacher": ["circuit black", "mission plain", "town Sunday best", "homespun and flour-sack"],
-    "Shaman": ["plains dress — hide, quill and trade cloth", "rag, charm and mismatch", "buffalo-hide winter", "trail-worn working dress"],
-    "Witch Hunter": ["mourning black", "circuit black", "trail-worn working dress", "eastern tailoring gone west"],
-    "Dark Cultist": ["town Sunday best", "mourning black", "eastern tailoring gone west", "rag, charm and mismatch"],
-    "False Prophet": ["showman's plush", "circuit black", "green-table finery", "town Sunday best"],
-    "Hexer": ["rag, charm and mismatch", "homespun and flour-sack", "trail-worn working dress", "mourning black"],
-    "Witch": ["rag, charm and mismatch", "homespun and flour-sack", "mourning black", "range dress, cut for the saddle"]
+ "_source": "GritKeeper's own, not transcribed from the books — the Player's Book asks the Four Questions and leaves what a soul LOOKS like to the table, which is right for a book and no help at all to a Keeper who needs a face for the woman who just walked into the saloon. Two rules govern this file. First: a people is described, never costed. Nothing here touches a number, gates an Origin or a Calling, or changes a die — it is ink, and the books' standing line holds, that the peoples of the West appear as people and professionals and the game's invented dark is never pinned to a living one. Second: the draws are CONDITIONED, not shuffled. Hair, eyes and complexion come out of the people's own lists and the garments come out of one style's own wardrobe, because six independent lists produce a Norwegian with a queue in a charro jacket and that reads as a machine talking.",
+ "peoples": [
+  {
+   "name": "Anglo-American, eastern-born",
+   "weight": 10,
+   "complexions": [
+    "fair, and burned red by a country it was not made for",
+    "freckled across the nose and forearms",
+    "sallow, town-raised",
+    "weathered to saddle-leather"
+   ],
+   "hair": [
+    "mouse-brown",
+    "sandy",
+    "dark brown",
+    "the colour of strong tea",
+    "gone iron at the temples"
+   ],
+   "eyes": [
+    "grey",
+    "pale blue",
+    "hazel",
+    "brown"
+   ]
+  },
+  {
+   "name": "Southern-born American",
+   "weight": 8,
+   "complexions": [
+    "fair under the collar and burnt above it",
+    "olive-fair, tanned deep",
+    "florid, and quick to it",
+    "weathered and lined early"
+   ],
+   "hair": [
+    "dark brown, worn long",
+    "black",
+    "chestnut",
+    "wheat-fair, gone dull with dust"
+   ],
+   "eyes": [
+    "grey-green",
+    "brown",
+    "blue",
+    "hazel"
+   ]
+  },
+  {
+   "name": "Backcountry, out of the Alleghenies",
+   "weight": 4,
+   "complexions": [
+    "pale as milk and never quite taking the sun",
+    "freckled to the wrists",
+    "wind-chapped",
+    "sun-dark on the hands alone"
+   ],
+   "hair": [
+    "red, and unrepentant about it",
+    "black with a blue cast",
+    "straw-fair",
+    "dark and coarse"
+   ],
+   "eyes": [
+    "pale grey",
+    "green",
+    "blue",
+    "brown"
+   ]
+  },
+  {
+   "name": "Irish",
+   "weight": 6,
+   "complexions": [
+    "fair, and burning rather than tanning",
+    "freckled heavily",
+    "high colour in both cheeks",
+    "pale and thin-skinned"
+   ],
+   "hair": [
+    "black",
+    "dark auburn",
+    "red",
+    "brown with a red cast in the sun"
+   ],
+   "eyes": [
+    "blue",
+    "grey",
+    "green",
+    "hazel"
+   ]
+  },
+  {
+   "name": "German",
+   "weight": 6,
+   "complexions": [
+    "ruddy",
+    "fair and heavy-boned",
+    "tanned across the forearms and nowhere else",
+    "pale, and shaving twice a day for it"
+   ],
+   "hair": [
+    "fair going grey",
+    "light brown",
+    "flaxen",
+    "dark blond"
+   ],
+   "eyes": [
+    "blue",
+    "grey-blue",
+    "brown",
+    "grey"
+   ]
+  },
+  {
+   "name": "Scandinavian",
+   "weight": 4,
+   "complexions": [
+    "very fair, and peeling all summer",
+    "pink across the cheekbones",
+    "pale, freckled at the shoulders",
+    "wind-burnt"
+   ],
+   "hair": [
+    "white-blond",
+    "flaxen",
+    "reddish-fair",
+    "light brown"
+   ],
+   "eyes": [
+    "pale blue",
+    "grey",
+    "blue-green",
+    "grey-blue"
+   ]
+  },
+  {
+   "name": "Mexican — Tejano, Californio, Sonoran",
+   "weight": 9,
+   "complexions": [
+    "warm brown",
+    "olive, and darkening in the season",
+    "copper-brown",
+    "light olive, town-kept"
+   ],
+   "hair": [
+    "black, heavy and straight",
+    "black with a wave in it",
+    "dark brown",
+    "black going silver at the front"
+   ],
+   "eyes": [
+    "dark brown, near black",
+    "brown",
+    "hazel-green",
+    "grey-green, which the family argues about"
+   ]
+  },
+  {
+   "name": "African-American, southern-born",
+   "weight": 6,
+   "complexions": [
+    "deep brown",
+    "dark, with a red undertone",
+    "brown, and darker at the hands and neck",
+    "light brown, freckled across the nose"
+   ],
+   "hair": [
+    "black and close-cropped",
+    "black, worn thick",
+    "black with grey coming in at the temple",
+    "dark brown"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "amber-brown",
+    "hazel"
+   ]
+  },
+  {
+   "name": "African-American, freeborn northern",
+   "weight": 3,
+   "complexions": [
+    "warm brown",
+    "light brown",
+    "deep brown, and unweathered — an indoor trade until lately",
+    "brown, sun-darkened on the arms"
+   ],
+   "hair": [
+    "black, cut short and kept",
+    "black, oiled and parted",
+    "dark brown",
+    "black, greying"
+   ],
+   "eyes": [
+    "brown",
+    "dark brown",
+    "hazel",
+    "grey-brown"
+   ]
+  },
+  {
+   "name": "Cherokee, and the Nations",
+   "weight": 3,
+   "complexions": [
+    "brown",
+    "light brown",
+    "copper",
+    "warm brown, freckled across the cheeks"
+   ],
+   "hair": [
+    "black, straight and heavy",
+    "dark brown",
+    "black, greying early",
+    "black with a wave"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "grey-brown",
+    "hazel"
+   ]
+  },
+  {
+   "name": "Lakota, and the northern plains",
+   "weight": 3,
+   "complexions": [
+    "brown, weather-cut",
+    "copper-brown",
+    "deep brown",
+    "brown, wind-lined at the eyes"
+   ],
+   "hair": [
+    "black, long and heavy",
+    "black, going grey in streaks",
+    "very dark brown",
+    "black, and thick"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "near black",
+    "brown, flecked lighter"
+   ]
+  },
+  {
+   "name": "Comanche, and the southern plains",
+   "weight": 2,
+   "complexions": [
+    "dark brown, sun-cut",
+    "copper",
+    "brown",
+    "deep brown and scarred at the knuckles"
+   ],
+   "hair": [
+    "black, worn long",
+    "black, greased and parted",
+    "black, cropped short in mourning",
+    "very dark brown"
+   ],
+   "eyes": [
+    "dark brown",
+    "near black",
+    "brown",
+    "brown, and steady"
+   ]
+  },
+  {
+   "name": "Apache, out of the Chiricahua country",
+   "weight": 2,
+   "complexions": [
+    "dark brown",
+    "brown, and dust-grey with it",
+    "copper-dark",
+    "deep brown, weather-cut"
+   ],
+   "hair": [
+    "black, long and bound back",
+    "black, cut at the shoulder",
+    "black with grey at the crown",
+    "black, dust-dulled"
+   ],
+   "eyes": [
+    "dark brown",
+    "near black",
+    "brown",
+    "brown, hooded"
+   ]
+  },
+  {
+   "name": "Diné, out of the canyon country",
+   "weight": 2,
+   "complexions": [
+    "warm brown",
+    "copper-brown",
+    "brown, and darker across the hands",
+    "deep brown"
+   ],
+   "hair": [
+    "black, long and bound in a knot",
+    "black, heavy",
+    "black going grey",
+    "very dark brown"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "near black",
+    "warm brown"
+   ]
+  },
+  {
+   "name": "Pueblo — Hopi, Zuni, Taos",
+   "weight": 2,
+   "complexions": [
+    "brown",
+    "warm copper",
+    "light brown",
+    "brown, and finely lined at the eyes"
+   ],
+   "hair": [
+    "black, cut straight at the brow",
+    "black, bound at the nape",
+    "black, greying",
+    "very dark brown"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "near black",
+    "brown, and unhurried"
+   ]
+  },
+  {
+   "name": "Nez Perce, and the plateau country",
+   "weight": 1,
+   "complexions": [
+    "brown",
+    "light copper-brown",
+    "brown, wind-worked",
+    "warm brown"
+   ],
+   "hair": [
+    "black, long",
+    "dark brown",
+    "black, greying at the front",
+    "black, heavy and straight"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "hazel-brown",
+    "near black"
+   ]
+  },
+  {
+   "name": "Chinese, out of Guangdong",
+   "weight": 5,
+   "namesFrom": "fullNames",
+   "complexions": [
+    "light brown",
+    "pale gold",
+    "brown, sun-darkened from the grade work",
+    "fair, and indoor-kept"
+   ],
+   "hair": [
+    "black, straight and heavy",
+    "black, greying at the temple",
+    "very dark brown",
+    "black, and fine"
+   ],
+   "eyes": [
+    "dark brown",
+    "near black",
+    "brown",
+    "warm brown"
+   ]
+  },
+  {
+   "name": "Métis and French-Canadian",
+   "weight": 3,
+   "complexions": [
+    "brown",
+    "olive-fair, tanned dark",
+    "light brown, freckled",
+    "weather-brown"
+   ],
+   "hair": [
+    "black, curling at the collar",
+    "dark brown",
+    "chestnut",
+    "black, worn in a braid"
+   ],
+   "eyes": [
+    "brown",
+    "grey-green",
+    "hazel",
+    "dark brown"
+   ]
+  },
+  {
+   "name": "Scots and Scots-Irish",
+   "weight": 4,
+   "complexions": [
+    "fair and ruddy",
+    "freckled",
+    "pale, and burning in an hour",
+    "wind-chapped red"
+   ],
+   "hair": [
+    "dark red",
+    "black",
+    "sandy",
+    "brown going grey early"
+   ],
+   "eyes": [
+    "grey",
+    "blue",
+    "green",
+    "hazel"
+   ]
+  },
+  {
+   "name": "English",
+   "weight": 3,
+   "complexions": [
+    "fair",
+    "pink-fair and shaving-sore",
+    "pale, town-kept",
+    "tanned unevenly"
+   ],
+   "hair": [
+    "light brown",
+    "dark brown",
+    "fair",
+    "greying, and neatly kept about it"
+   ],
+   "eyes": [
+    "blue",
+    "grey",
+    "brown",
+    "hazel"
+   ]
+  },
+  {
+   "name": "Cornish and Welsh, out of the mines",
+   "weight": 3,
+   "complexions": [
+    "pale from underground, and never losing it",
+    "fair with coal-dust still in the pores",
+    "ruddy",
+    "sallow"
+   ],
+   "hair": [
+    "black",
+    "dark brown",
+    "iron grey, and early",
+    "dark with a curl"
+   ],
+   "eyes": [
+    "dark blue",
+    "brown",
+    "grey",
+    "black-brown"
+   ]
+  },
+  {
+   "name": "Jewish, out of Bavaria and Bohemia",
+   "weight": 3,
+   "complexions": [
+    "olive-fair",
+    "pale, indoor-kept",
+    "warm olive",
+    "fair and freckled at the nose"
+   ],
+   "hair": [
+    "dark brown, curling",
+    "black",
+    "auburn",
+    "brown going grey"
+   ],
+   "eyes": [
+    "dark brown",
+    "hazel",
+    "grey-green",
+    "brown"
+   ]
+  },
+  {
+   "name": "Italian",
+   "weight": 2,
+   "complexions": [
+    "olive",
+    "warm brown",
+    "olive, and darker in the season",
+    "fair-olive"
+   ],
+   "hair": [
+    "black, thick and curling",
+    "dark brown",
+    "black, greying at the front",
+    "chestnut"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "hazel-green",
+    "near black"
+   ]
+  },
+  {
+   "name": "Basque, come for the sheep",
+   "weight": 2,
+   "complexions": [
+    "olive, weather-cut",
+    "fair-olive, burnt at the neck",
+    "brown",
+    "ruddy-olive"
+   ],
+   "hair": [
+    "black, heavy",
+    "dark brown",
+    "black with grey through it",
+    "dark and straight"
+   ],
+   "eyes": [
+    "dark brown",
+    "grey",
+    "brown",
+    "hazel"
+   ]
+  },
+  {
+   "name": "Bohemian and Polish",
+   "weight": 2,
+   "complexions": [
+    "fair, and ruddy with it",
+    "pale, broad-featured",
+    "tanned across the forearms",
+    "high-coloured"
+   ],
+   "hair": [
+    "light brown",
+    "fair",
+    "dark blond",
+    "brown, going grey in patches"
+   ],
+   "eyes": [
+    "grey",
+    "blue",
+    "hazel",
+    "brown"
+   ]
+  },
+  {
+   "name": "Hawaiian, off a whaler or a cattle boat",
+   "weight": 1,
+   "complexions": [
+    "warm brown",
+    "deep brown",
+    "golden-brown",
+    "brown, and darker at the shoulders"
+   ],
+   "hair": [
+    "black, thick and waving",
+    "black, long",
+    "very dark brown",
+    "black, sun-rusted at the ends"
+   ],
+   "eyes": [
+    "dark brown",
+    "brown",
+    "near black",
+    "warm brown"
+   ]
+  },
+  {
+   "name": "Portuguese, out of the Azores",
+   "weight": 1,
+   "complexions": [
+    "olive",
+    "brown, sea-weathered",
+    "fair-olive, freckled",
+    "warm brown"
+   ],
+   "hair": [
+    "black, curling",
+    "dark brown",
+    "black, greying",
+    "chestnut-dark"
+   ],
+   "eyes": [
+    "dark brown",
+    "hazel",
+    "brown",
+    "grey-green"
+   ]
+  },
+  {
+   "name": "Russian, and the Volga Germans",
+   "weight": 1,
+   "complexions": [
+    "fair and weather-reddened",
+    "pale, heavy-boned",
+    "ruddy",
+    "wind-burnt and peeling"
+   ],
+   "hair": [
+    "fair",
+    "light brown",
+    "reddish-brown",
+    "white-blond, and startling"
+   ],
+   "eyes": [
+    "pale blue",
+    "grey",
+    "brown",
+    "grey-green"
+   ]
   }
+ ],
+ "heights": [
+  "short, and used to being underestimated for it",
+  "short and wide through the shoulder",
+  "middling height",
+  "a little above middling",
+  "tall",
+  "tall enough to duck a doorway without thinking about it",
+  "very tall, and stooped from years of it",
+  "small-framed and quick"
+ ],
+ "frames": [
+  "rawboned and all angles",
+  "lean, with nothing spare on them",
+  "wiry",
+  "broad through the chest and going soft at the middle",
+  "heavy-built and slow to move, and quicker than that looks",
+  "thin to the point of gaunt",
+  "solid — the build of somebody who lifts things for a living",
+  "long-limbed and loose-jointed",
+  "compact and hard",
+  "run down thin by a hard year"
+ ],
+ "bearings": [
+  "stands square and takes up the room they are given",
+  "keeps their back to a wall without appearing to plan it",
+  "moves slow, and never wastes a step",
+  "restless — always half-turned toward the door",
+  "carries themselves like a soldier, and has not been one in years",
+  "stoops, whether from work or from wanting to be smaller",
+  "quick and light, and startles easily",
+  "still. Very still, until they are not",
+  "walks with a limp they will not explain",
+  "hands never entirely idle — a coin, a knife, a bit of rope",
+  "watches the middle distance rather than whoever is talking",
+  "has the easy, ruined grace of somebody who was once well brought up"
+ ],
+ "faces": [
+  "a long face and a heavy jaw",
+  "sharp-boned, all cheek and chin",
+  "broad and open, the sort strangers tell things to",
+  "round, and younger-looking than the years on it",
+  "hollowed out at the cheeks",
+  "flat-featured and hard to read",
+  "a strong nose, broken once and set poorly",
+  "deep lines from the eyes back — a squinter's face",
+  "a wide mouth that goes to a smile before permission is given",
+  "a mouth that has forgotten how",
+  "heavy brows, close together",
+  "a face that would be handsome if it were ever at rest",
+  "weathered past guessing at an age",
+  "smooth and unlined, which the years say is a lie"
+ ],
+ "marks": [
+  "a powder burn along one cheek",
+  "a rope scar around the throat, kept covered",
+  "two fingers gone off the left hand",
+  "a brand on the forearm, old and deliberate",
+  "a knife scar from ear to jaw",
+  "a bullet-drawn crease across the scalp where the hair will not grow",
+  "hands scarred white across the knuckles",
+  "a limp, and a knee that predicts weather",
+  "one eye gone milky",
+  "a tattooed anchor, from a life before this one",
+  "smallpox scarring across the cheeks",
+  "a bad burn up the inside of one arm",
+  "a missing earlobe",
+  "teeth gone at the side, and a habit of talking behind a hand",
+  "a wrist that never set right and turns the wrong way",
+  "freckles, and a great many of them",
+  "a birthmark across the temple like a thumbprint",
+  "sun-cracked lips that never entirely heal"
+ ],
+ "voices": [
+  "a low voice that makes people lean in",
+  "a carrying voice, built for open ground",
+  "soft-spoken, and it is not gentleness",
+  "hoarse — something happened to that throat",
+  "a drawl slow enough to lose your place in",
+  "clipped, quick, all business",
+  "an accent worn thin by twenty years away from wherever it started",
+  "laughs before the joke, at nothing anyone else heard",
+  "says very little, and means all of it",
+  "sings under their breath while working, and does not know they do it"
+ ],
+ "hairStyles": [
+  "cropped close to the skull",
+  "cut short and kept combed",
+  "long enough to tie back off the collar",
+  "worn loose to the shoulder",
+  "parted hard on one side and oiled flat",
+  "hacked off short, by their own hand and in poor light",
+  "pinned up under the hat and coming down by evening",
+  "in a single heavy braid",
+  "in two braids, wrapped",
+  "curling out from under the hatband whatever is done about it",
+  "receding, and pretending otherwise",
+  "gone entirely on top, and kept shaved for honesty"
+ ],
+ "facialHair": [
+  "a full beard, untrimmed",
+  "a beard kept short and squared off",
+  "a dragoon moustache waxed at the points",
+  "a heavy walrus moustache",
+  "side whiskers and a shaved chin",
+  "three days of stubble, always exactly three days",
+  "clean-shaven, and it costs them something to stay that way",
+  "a chin beard and nothing else",
+  "a moustache too big for the face under it",
+  "clean-shaven"
+ ],
+ "wear": [
+  "worn to the weave and mended honestly",
+  "new-bought and stiff, and self-conscious about it",
+  "good cloth going to ruin for want of a needle",
+  "dusted grey from crown to boot",
+  "soaked through and steaming by the stove",
+  "patched in a colour that does not match and never will",
+  "kept scrupulously clean, whatever it costs in water",
+  "somebody else's, and a size out",
+  "sun-bleached until the original colour is a guess",
+  "still carrying the smell of woodsmoke",
+  "spattered dark at the cuff, and not with mud",
+  "expensive once, a long time ago"
+ ],
+ "details": [
+  "a watch on a chain, wound every morning whether or not it runs",
+  "a wedding ring worn on a cord, not a finger",
+  "a bible in the coat pocket with the back half torn out for cigarette papers",
+  "a tintype kept face-down",
+  "a bag of salt on a thong around the neck",
+  "an iron nail through the hatband",
+  "somebody else's initials on the belt buckle",
+  "a rosary wrapped twice around the wrist",
+  "a bundle of letters, tied, and never answered",
+  "a coin with a hole shot through it",
+  "a lock of hair in a paper twist",
+  "a dog that will not be left behind",
+  "a tally cut into the rifle stock, and no explanation offered",
+  "spectacles mended at the bridge with wire",
+  "a tooth on a string, and it is not an animal's",
+  "a pouch of tobacco they never smoke and always offer",
+  "a small mirror, carried for reasons they will not give",
+  "boots too good for the rest of the outfit"
+ ],
+ "styles": [
+  {
+   "name": "trail-worn working dress",
+   "note": "what most of the country wears most of the time",
+   "hats": [
+    "a sweat-lined slouch hat",
+    "a flat-brimmed felt gone shapeless",
+    "a wide-brimmed hat with the crown creased by hand",
+    "a battered drover's hat"
+   ],
+   "coats": [
+    "a canvas duster the colour of the road",
+    "a wool sack coat out at the elbow",
+    "a fleece-lined vest and nothing over it",
+    "a blanket coat with horn buttons"
+   ],
+   "shirts": [
+    "a collarless pullover shirt, once red",
+    "a bib-front shirt gone grey",
+    "a hickory-striped work shirt",
+    "a flannel shirt buttoned to the throat in any weather"
+   ],
+   "legs": [
+    "duck trousers worn through at the seat",
+    "wool trousers tucked into the boots",
+    "brown jean pants and a wide belt",
+    "canvas trousers with a rawhide patch at the knee"
+   ],
+   "boots": [
+    "stovepipe boots down at the heel",
+    "lace boots caked to the ankle",
+    "mule-ear boots with the pulls torn off",
+    "boots resoled twice and due a third"
+   ],
+   "extras": [
+    "a bandanna that has been through a wash and lost",
+    "leather cuffs at the wrists",
+    "a pair of gauntlets tucked in the belt",
+    "a slicker rolled behind the cantle",
+    "shotgun chaps, scarred at the knee"
+   ]
+  },
+  {
+   "name": "town Sunday best",
+   "note": "the one good outfit, kept in paper",
+   "hats": [
+    "a black derby brushed against the nap",
+    "a good felt hat kept for church",
+    "a low-crowned planter's hat",
+    "a stiff-brimmed straw, in season"
+   ],
+   "coats": [
+    "a black frock coat, shiny at the elbows",
+    "a sack suit in dark wool",
+    "a cutaway coat a size too generous",
+    "a broadcloth coat carried over the arm"
+   ],
+   "shirts": [
+    "a white shirt with a celluloid collar",
+    "a boiled shirt and a black string tie",
+    "a linen shirt with paper cuffs",
+    "a starched front and a modest stickpin"
+   ],
+   "legs": [
+    "matching trousers, pressed under a mattress",
+    "striped trousers from another suit entirely",
+    "dark wool trousers and braces",
+    "trousers with the cuffs turned once"
+   ],
+   "boots": [
+    "low shoes polished with lampblack",
+    "congress gaiters",
+    "town boots that pinch and are worn anyway",
+    "boots blacked over the dust rather than under it"
+   ],
+   "extras": [
+    "a watch chain across the vest",
+    "gloves carried and never put on",
+    "a folded handkerchief that has never been used",
+    "a small posy pinned at the lapel",
+    "a cane, entirely decorative"
+   ]
+  },
+  {
+   "name": "green-table finery",
+   "note": "the gambler's uniform — soft hands and hard eyes",
+   "hats": [
+    "a pearl-grey derby set forward",
+    "a low black planter's hat",
+    "a soft felt hat with a silk band",
+    "a beaver top hat, on purpose"
+   ],
+   "coats": [
+    "a claw-hammer coat in black broadcloth",
+    "a checked sack coat that says money loudly",
+    "a velvet-collared frock coat",
+    "a long coat lined in something red"
+   ],
+   "shirts": [
+    "a ruffled shirt front",
+    "a boiled shirt with a diamond stud, real or not",
+    "a silk shirt under a brocade vest",
+    "a shirt too white for anyone who works"
+   ],
+   "legs": [
+    "striped trousers, sharply pressed",
+    "dark trousers with a satin stripe",
+    "checked trousers and a great deal of confidence",
+    "fawn trousers that will not survive the trail"
+   ],
+   "boots": [
+    "patent shoes with a spat over them",
+    "polished ankle boots",
+    "soft calfskin boots made to order",
+    "boots that have never seen a stirrup"
+   ],
+   "extras": [
+    "a brocade vest in a colour nobody else would try",
+    "rings on three fingers",
+    "a derringer in the vest pocket, badly hidden",
+    "a gold toothpick used in company",
+    "a deck of cards worn smooth at the corners"
+   ]
+  },
+  {
+   "name": "circuit black",
+   "note": "the riding preacher's rig — black, dusty, and unarguable",
+   "hats": [
+    "a broad black hat, greened with age",
+    "a low-crowned black felt",
+    "a black slouch hat with the brim pinned up on one side",
+    "a plain black hat, brushed daily"
+   ],
+   "coats": [
+    "a black frock coat down to the knee",
+    "a black duster over the whole business",
+    "a shabby black sack coat",
+    "a preaching coat with the pockets worn through"
+   ],
+   "shirts": [
+    "a white shirt buttoned to the collar",
+    "a collarless white shirt and a stud",
+    "a grey shirt and a black stock",
+    "a clerical collar, kept white by main force"
+   ],
+   "legs": [
+    "black trousers rubbed grey at the seat",
+    "dark trousers tucked into riding boots",
+    "black trousers and a wide plain belt",
+    "trousers gone at the knee from praying on stone"
+   ],
+   "boots": [
+    "riding boots, black and cracked",
+    "plain lace boots",
+    "boots repaired with saddle leather",
+    "boots worn to the shape of one stirrup"
+   ],
+   "extras": [
+    "a bible carried in the hand, not the pocket",
+    "a plain wooden cross on a cord",
+    "saddlebags of tracts nobody asked for",
+    "a wedding ring on a chain",
+    "reading spectacles hooked in the coat"
+   ]
+  },
+  {
+   "name": "mission plain",
+   "note": "cassock, dust, and a hard chair somewhere",
+   "hats": [
+    "a flat-brimmed black hat",
+    "a straw hat entirely without vanity",
+    "a black biretta carried more than worn",
+    "a wide felt hat gone brown"
+   ],
+   "coats": [
+    "a black cassock, hemmed short for riding",
+    "a plain grey habit under a duster",
+    "a threadbare soutane",
+    "a serape thrown over the black"
+   ],
+   "shirts": [
+    "a plain shirt under the cassock",
+    "a coarse undershirt of the mission's own weaving",
+    "a white collar and nothing showy beneath it",
+    "a shirt patched at both shoulders"
+   ],
+   "legs": [
+    "plain dark trousers under the skirts",
+    "trousers of undyed wool",
+    "riding trousers, taken in at the waist",
+    "canvas trousers, mission-made"
+   ],
+   "boots": [
+    "sandals, and bare feet in summer",
+    "plain boots with the heels worn level",
+    "huaraches, and a second pair in the pack",
+    "boots given by a parishioner and a size wrong"
+   ],
+   "extras": [
+    "a rosary at the belt",
+    "a small crucifix, worn smooth by thumbs",
+    "a phial of holy water on a thong",
+    "a breviary falling to pieces",
+    "a bell for the mission that is not built yet"
+   ]
+  },
+  {
+   "name": "cavalry surplus",
+   "note": "the army's clothes, out of the army's hands",
+   "hats": [
+    "a campaign hat with the cords cut off",
+    "a forage cap gone shapeless",
+    "a black felt hat with a company letter still on it",
+    "a slouch hat pinned with an old crossed-sabres badge"
+   ],
+   "coats": [
+    "a cavalry blouse with the insignia unpicked",
+    "a caped greatcoat, sky-blue and filthy",
+    "a shell jacket over civilian clothes",
+    "an officer's coat, and no officer to go with it"
+   ],
+   "shirts": [
+    "a grey issue shirt",
+    "a blue flannel shirt out of a quartermaster's store",
+    "a civilian shirt under army wool",
+    "a shirt with regimental buttons on it"
+   ],
+   "legs": [
+    "sky-blue kersey trousers with the stripe still on",
+    "reinforced riding trousers",
+    "issue trousers dyed brown, badly",
+    "trousers with the seat patched in canvas"
+   ],
+   "boots": [
+    "cavalry boots to the knee",
+    "issue brogans and canvas leggings",
+    "boots with the spurs still on them",
+    "boots turned down at the top"
+   ],
+   "extras": [
+    "a McClellan saddle and a bedroll",
+    "a cartridge belt of a pattern nobody issues now",
+    "a battered canteen with a name scratched out",
+    "a bugle, dented, and not for show",
+    "a horse that still answers a trumpet"
+   ]
+  },
+  {
+   "name": "vaquero",
+   "note": "the oldest working rig on this ground, and the best",
+   "hats": [
+    "a stiff-brimmed sombrero with a stamped band",
+    "a low-crowned felt with a horsehair barbiquejo",
+    "a fine felt sombrero kept for town",
+    "a straw sombrero worked to fit"
+   ],
+   "coats": [
+    "a short charro jacket with braid at the seams",
+    "a serape over one shoulder",
+    "a canvas jacket cut short for the saddle",
+    "a leather chaqueta, oiled black"
+   ],
+   "shirts": [
+    "a white cotton shirt, loose",
+    "a shirt with a bright sash at the waist",
+    "a striped cotton shirt worn open at the throat",
+    "a plain shirt under a buttoned vest"
+   ],
+   "legs": [
+    "botas and calzoneras with silver buttons up the seam",
+    "wool trousers under chaparreras",
+    "trousers tucked into tall boots",
+    "leather leggings over cotton"
+   ],
+   "boots": [
+    "high-heeled boots made for a stirrup and nothing else",
+    "boots with big rowelled spurs",
+    "botines with a stacked heel",
+    "boots worked with a star at the pull"
+   ],
+   "extras": [
+    "a reata coiled at the horn, sixty feet of rawhide",
+    "spurs that ring when they walk",
+    "a braided horsehair quirt",
+    "a silver-mounted bit worth more than the horse",
+    "a red sash wound three times"
+   ]
+  },
+  {
+   "name": "drover's rig",
+   "note": "three months to Kansas and the clothes to prove it",
+   "hats": [
+    "a high-crowned hat with the brim rolled tight",
+    "a hat with a horsehair string under the chin",
+    "a sun-faded felt, sweat-ringed to the crown",
+    "a hat sat on more than once"
+   ],
+   "coats": [
+    "a canvas brush jacket, scarred",
+    "a wool vest and shirtsleeves",
+    "a slicker gone tacky with age",
+    "a sheepskin vest with the wool coming out"
+   ],
+   "shirts": [
+    "a bib-front shirt with a wide collar",
+    "a flannel shirt buttoned wrong and left that way",
+    "a striped work shirt out at both elbows",
+    "a shirt with the sleeves cut off at the shoulder"
+   ],
+   "legs": [
+    "jean pants over long johns",
+    "wool trousers under batwing chaps",
+    "canvas trousers stiff with tallow",
+    "trousers held with a length of rope"
+   ],
+   "boots": [
+    "pointed boots with underslung heels",
+    "boots with a hole worn through the sole and cardboard in it",
+    "high-heeled boots and jingling spurs",
+    "boots pulled on over two pairs of socks"
+   ],
+   "extras": [
+    "a bandanna high on the throat against the dust",
+    "leather cuffs stamped with a brand",
+    "a pair of woolly angora chaps",
+    "a lariat gone stiff",
+    "a tally book and a stub of pencil"
+   ]
+  },
+  {
+   "name": "miner's kit",
+   "note": "the deep-shaft trades, and the dust that comes up with them",
+   "hats": [
+    "a hard resined hat with a candle-holder still clipped on",
+    "a shapeless felt gone black",
+    "a knitted cap under a battered hat",
+    "a hat with the brim burned short on one side"
+   ],
+   "coats": [
+    "a canvas jacket stiff with clay",
+    "a wool coat that has never been the same since the wet",
+    "a leather apron over the lot",
+    "a mackinaw with the plaid worn out of it"
+   ],
+   "shirts": [
+    "a red flannel shirt, and everybody's is",
+    "a grey undershirt and no shirt over it",
+    "a flannel shirt with the buttons replaced by wire",
+    "a shirt permanently the colour of the ore"
+   ],
+   "legs": [
+    "heavy duck trousers, clay to the knee",
+    "wool trousers stuffed into rubber boots",
+    "trousers with leather sewn over both knees",
+    "overalls with one strap gone"
+   ],
+   "boots": [
+    "hobnailed boots that strike sparks",
+    "rubber boots to the thigh",
+    "heavy lace boots, wet through since March",
+    "boots with the toes cut out for the swelling"
+   ],
+   "extras": [
+    "a carbide lamp and a can of spare",
+    "a coil of fuse over one shoulder",
+    "a poke of dust in an inside pocket",
+    "a canary in a small cage, taken seriously",
+    "black under every fingernail and never coming out"
+   ]
+  },
+  {
+   "name": "buffalo-hide winter",
+   "note": "for country that means it",
+   "hats": [
+    "a fur cap with the flaps down",
+    "a wool hat under a hide hood",
+    "a beaver cap gone bald in patches",
+    "a hat tied down over the ears with a scarf"
+   ],
+   "coats": [
+    "a buffalo coat to the ankle, and stiff as a door",
+    "a hide capote with the belt of the same",
+    "a blanket coat, Hudson's Bay stripes still showing",
+    "a bearskin that smells of the bear"
+   ],
+   "shirts": [
+    "two flannel shirts, one over the other",
+    "a wool shirt and a knitted guernsey",
+    "a hide shirt worked soft",
+    "a shirt nobody has seen in four months"
+   ],
+   "legs": [
+    "hide trousers with the hair turned in",
+    "wool trousers under leather leggings",
+    "two pairs of trousers and no apology",
+    "trousers bound at the ankle with thong"
+   ],
+   "boots": [
+    "moccasins over three pairs of socks",
+    "hide boots stuffed with dry grass",
+    "felt-lined overshoes",
+    "boots that have been wet since the first frost"
+   ],
+   "extras": [
+    "snowshoes lashed across the pack",
+    "a fur muff nobody dares mention",
+    "a tin of bear grease for the face",
+    "smoked-glass goggles against the glare",
+    "an axe with a shortened handle"
+   ]
+  },
+  {
+   "name": "homespun and flour-sack",
+   "note": "what the homestead makes for itself",
+   "hats": [
+    "a straw hat with the brim coming apart",
+    "a sunbonnet that has outlived two owners",
+    "a felt hat handed down twice",
+    "a cap sewn from an old coat"
+   ],
+   "coats": [
+    "a jacket cut down from a man's and taken in",
+    "a shawl pinned at the throat",
+    "a knitted wrap over everything",
+    "a coat with mismatched buttons, every one of them saved"
+   ],
+   "shirts": [
+    "a shirt of flour-sacking with the brand still faintly legible",
+    "a calico shirt washed pale",
+    "a homespun shirt, honest and scratchy",
+    "a shirt with a collar turned twice"
+   ],
+   "legs": [
+    "a plain skirt over heavy boots",
+    "trousers cut down from a father's",
+    "a work skirt with the hem let out and let out again",
+    "canvas trousers made at the kitchen table"
+   ],
+   "boots": [
+    "boots too big, and stuffed with rag",
+    "shoes mended with wire",
+    "brogans, and bare feet in summer",
+    "boots that were somebody's Sunday pair once"
+   ],
+   "extras": [
+    "an apron with a pocket for eggs and one for a pistol",
+    "hands cracked open across the knuckles",
+    "a seed packet kept for the picture on it",
+    "a child's ribbon tied to the wrist",
+    "a wedding ring worn thin"
+   ]
+  },
+  {
+   "name": "mourning black",
+   "note": "and it is not for show",
+   "hats": [
+    "a black hat with a crape band",
+    "a black bonnet and a veil put back",
+    "a hat dyed black at home and streaking",
+    "a black hat kept from a funeral, and worn since"
+   ],
+   "coats": [
+    "a black coat, plain and well kept",
+    "a black shawl worn indoors and out",
+    "a dyed coat with the old colour showing at the seams",
+    "a long black duster over everything"
+   ],
+   "shirts": [
+    "a black shirt and no ornament",
+    "a white shirt and a black armband",
+    "a high-collared black bodice",
+    "a grey shirt, which is as far as they will bend"
+   ],
+   "legs": [
+    "black skirts, heavy and plain",
+    "black trousers and black braces",
+    "a black riding skirt, split",
+    "dark trousers with a mourning band at the knee"
+   ],
+   "boots": [
+    "black boots polished every night without fail",
+    "plain black lace boots",
+    "boots blacked over the scuffs",
+    "riding boots, black, and quiet on a floor"
+   ],
+   "extras": [
+    "a mourning brooch with hair worked into it",
+    "a black-edged letter carried folded",
+    "a locket that does not open for anyone",
+    "gloves, black, never removed",
+    "a name said aloud at odd moments"
+   ]
+  },
+  {
+   "name": "eastern tailoring gone west",
+   "note": "cut in Boston, ruined in six weeks",
+   "hats": [
+    "a bowler entirely wrong for the sun",
+    "a silk hat carried in a box and never worn",
+    "a good soft felt bought in a hurry at Kansas City",
+    "a straw boater, absurd and defended"
+   ],
+   "coats": [
+    "a fine wool overcoat with a velvet collar",
+    "a tailored sack suit, ruined at the cuffs",
+    "a Norfolk jacket ordered from a catalogue",
+    "a caped travelling coat"
+   ],
+   "shirts": [
+    "a shirt with a detachable collar and no spares left",
+    "a fine linen shirt gone grey",
+    "a shirt with cufflinks that draw comment",
+    "a shirt whose maker's name is sewn inside"
+   ],
+   "legs": [
+    "good trousers, torn at the knee and stitched by an amateur",
+    "riding breeches nobody out here has ever seen before",
+    "tailored trousers with the cuffs frayed",
+    "trousers that fitted before the journey"
+   ],
+   "boots": [
+    "fine shoes not made for this ground",
+    "riding boots bought new and still stiff",
+    "shoes with a hole worn straight through",
+    "boots ordered by mail and a size out"
+   ],
+   "extras": [
+    "a leather case of instruments or papers",
+    "spectacles, and a spare pair",
+    "a fountain pen carried like a weapon",
+    "a letter of introduction to somebody who has moved on",
+    "a folding camp stool, mocked and useful"
+   ]
+  },
+  {
+   "name": "range dress, cut for the saddle",
+   "note": "a working woman's outfit and no concession to town",
+   "hats": [
+    "a wide felt hat with a chin string",
+    "a hat with the brim pinned back on one side",
+    "a man's hat, and better for it",
+    "a straw hat tied down with a scarf"
+   ],
+   "coats": [
+    "a fitted canvas jacket",
+    "a wool jacket cut short at the hip",
+    "a duster taken in at the waist",
+    "a fleece vest over a work shirt"
+   ],
+   "shirts": [
+    "a work shirt with the sleeves rolled to the elbow",
+    "a calico blouse under a leather vest",
+    "a plain shirt buttoned high",
+    "a striped shirt with the collar cut away"
+   ],
+   "legs": [
+    "a divided riding skirt of heavy duck",
+    "trousers, and let anyone say anything",
+    "a split skirt over boots",
+    "wool trousers with the hems taken up"
+   ],
+   "boots": [
+    "riding boots with a modest heel",
+    "lace boots to mid-calf",
+    "boots with brass eyelets and long laces",
+    "boots resoled by their own hand"
+   ],
+   "extras": [
+    "gauntlets stitched at the cuff",
+    "a rope, and the calluses that go with it",
+    "hair pinned up and coming down",
+    "a pistol worn where it can be reached in the saddle",
+    "sun-lines that stop where the hat sits"
+   ]
+  },
+  {
+   "name": "plains dress — hide, quill and trade cloth",
+   "note": "worked by hand, and none of it bought",
+   "hats": [
+    "nothing on the head at all",
+    "a trade hat with a feather worked into the band",
+    "a hide cap with the fur turned in",
+    "a cloth wound at the brow against the sun"
+   ],
+   "coats": [
+    "a hide shirt worked soft and fringed at the sleeve",
+    "a trade blanket worn as a robe",
+    "a capote cut from a striped blanket",
+    "a hide robe painted along the hem"
+   ],
+   "shirts": [
+    "a calico trade shirt in a startling colour",
+    "a hide shirt quilled across the shoulders",
+    "a shirt of trade cloth with shell buttons",
+    "a plain hide shirt, unornamented on purpose"
+   ],
+   "legs": [
+    "hide leggings with a fringe down the seam",
+    "wool trade leggings, red",
+    "leggings worked in beadwork at the ankle",
+    "a hide skirt, softened and belted"
+   ],
+   "boots": [
+    "moccasins beaded across the vamp",
+    "high moccasin boots to the knee",
+    "plain moccasins, resoled with rawhide",
+    "moccasins cut for this ground and no other"
+   ],
+   "extras": [
+    "a bone breastplate",
+    "a knife in a beaded sheath at the belt",
+    "a bundle wrapped in hide that nobody is invited to ask about",
+    "a war shirt kept folded and not worn",
+    "brass wire wound at both wrists"
+   ]
+  },
+  {
+   "name": "sawbones' town coat",
+   "note": "and the smell of carbolic under it",
+   "hats": [
+    "a plain dark hat, unremarkable by choice",
+    "a derby set straight",
+    "a broad hat for the buggy in weather",
+    "a hat kept on a peg and grabbed at a run"
+   ],
+   "coats": [
+    "a dark frock coat with the cuffs turned back for work",
+    "a linen duster over the good coat",
+    "a black coat with a permanent stain at the right cuff",
+    "a coat with the pockets stretched by bottles"
+   ],
+   "shirts": [
+    "a white shirt with the sleeves habitually rolled",
+    "a shirt with a spot of something at the front",
+    "a boiled shirt, and a spare in the bag",
+    "a shirt bleached hard every week"
+   ],
+   "legs": [
+    "dark trousers, serviceable",
+    "trousers with a scrubbed patch at the knee",
+    "wool trousers and a plain belt",
+    "trousers that have been boiled more than once"
+   ],
+   "boots": [
+    "low boots, easily cleaned",
+    "lace shoes with the laces knotted where they broke",
+    "riding boots for the country calls",
+    "boots kept by the door, always"
+   ],
+   "extras": [
+    "a gladstone bag that goes everywhere",
+    "spectacles pushed up on the forehead",
+    "a pocket case of instruments in a roll",
+    "carbolic on the hands and in the clothes",
+    "a flask that is medicinal, mostly"
+   ]
+  },
+  {
+   "name": "freighter's canvas",
+   "note": "the wagon roads, the long hauls, the wet",
+   "hats": [
+    "a hat with the brim let down all round",
+    "a wool cap under an oilskin hood",
+    "a broad hat greased against the rain",
+    "a hat with a rag sewn to the back for the neck"
+   ],
+   "coats": [
+    "an oilskin down to the boot tops",
+    "a canvas coat lined with blanket",
+    "a mackinaw the colour of every road it has been on",
+    "a sheepskin coat, wool side in"
+   ],
+   "shirts": [
+    "a heavy wool shirt, and never off",
+    "a flannel shirt with a leather patch at the shoulder",
+    "a striped shirt under a knitted jersey",
+    "a shirt that could stand up unaided"
+   ],
+   "legs": [
+    "canvas trousers waxed at the knee",
+    "wool trousers stuffed in high boots",
+    "trousers with a strip of hide sewn down the inseam",
+    "trousers held by a wide belt and a great deal of hope"
+   ],
+   "boots": [
+    "high boots for wading a wheel out",
+    "hobnails and a heavy sole",
+    "boots greased weekly and still leaking",
+    "boots with the tops turned down"
+   ],
+   "extras": [
+    "a blacksnake whip, coiled",
+    "a tar bucket swinging under the bed",
+    "hands like something carved",
+    "a spare kingbolt in the coat pocket",
+    "a picket rope over the shoulder"
+   ]
+  },
+  {
+   "name": "showman's plush",
+   "note": "the medicine wagon, the tent, the pitch",
+   "hats": [
+    "a tall hat in a colour nature avoided",
+    "a broad plainsman's hat, deliberately theatrical",
+    "a fez, and no explanation",
+    "a hat with a band of something claimed to be rattlesnake"
+   ],
+   "coats": [
+    "a plush frock coat in bottle green",
+    "a fringed buckskin jacket, spotless, never worn outdoors",
+    "a scarlet-lined cloak",
+    "a military coat from no army in the world"
+   ],
+   "shirts": [
+    "a ruffled shirt with a great deal of front",
+    "a shirt in a red that carries to the back row",
+    "a silk shirt with a spangled vest",
+    "a shirt with lace at the cuff"
+   ],
+   "legs": [
+    "striped trousers in two colours too many",
+    "buckskin trousers with a foot of fringe",
+    "tight trousers tucked into shining boots",
+    "trousers with a stripe of braid down each leg"
+   ],
+   "boots": [
+    "knee boots polished to a mirror",
+    "boots with silver conchos up the outside",
+    "patent boots that hurt",
+    "boots with the heels built up an inch"
+   ],
+   "extras": [
+    "a cane with a heavy head",
+    "a case of bottles that all contain the same thing",
+    "a waxed moustache and a way with a crowd",
+    "a banjo, and a limited repertoire",
+    "a printed handbill of themselves"
+   ]
+  },
+  {
+   "name": "rag, charm and mismatch",
+   "note": "the ones the country has already touched",
+   "hats": [
+    "a hat with things sewn into the band",
+    "no hat, in any weather",
+    "a bonnet worn indoors and never removed",
+    "a hat somebody else was buried in"
+   ],
+   "coats": [
+    "a coat made of three coats",
+    "a shawl pinned with a horseshoe nail",
+    "a duster stitched over with signs in thread",
+    "a fur wrap of no identifiable animal"
+   ],
+   "shirts": [
+    "a shirt inside out, deliberately",
+    "a shirt with the collar cut off and burned",
+    "a shirt of unbleached cloth and no buttons",
+    "a shirt with a red thread run through every seam"
+   ],
+   "legs": [
+    "skirts over trousers, in that order",
+    "trousers tied at the ankle against what climbs",
+    "a skirt with the hem weighted with salt",
+    "trousers of two different cloths"
+   ],
+   "boots": [
+    "odd boots, and both of them left",
+    "boots with the nails removed and iron replaced",
+    "bare feet, and the soles like leather",
+    "boots stuffed with herbs"
+   ],
+   "extras": [
+    "charms at wrist, throat and ankle, one of them ticking",
+    "salt in every pocket",
+    "a mirror carried face-in",
+    "fingernails stained something dark",
+    "eyes that stay a moment too long on empty ground"
+   ]
+  }
+ ],
+ "callingStyles": {
+  "Bounty Hunter": [
+   "trail-worn working dress",
+   "mourning black",
+   "cavalry surplus",
+   "drover's rig"
+  ],
+  "Dark Cultist": [
+   "town Sunday best",
+   "mourning black",
+   "eastern tailoring gone west",
+   "rag, charm and mismatch"
+  ],
+  "Drifter": [
+   "trail-worn working dress",
+   "homespun and flour-sack",
+   "drover's rig",
+   "rag, charm and mismatch"
+  ],
+  "Engineer": [
+   "miner's kit",
+   "eastern tailoring gone west",
+   "freighter's canvas",
+   "trail-worn working dress"
+  ],
+  "False Prophet": [
+   "showman's plush",
+   "circuit black",
+   "green-table finery",
+   "town Sunday best"
+  ],
+  "Gambler": [
+   "green-table finery",
+   "town Sunday best",
+   "eastern tailoring gone west",
+   "showman's plush"
+  ],
+  "Gunhand": [
+   "trail-worn working dress",
+   "green-table finery",
+   "drover's rig",
+   "cavalry surplus",
+   "range dress, cut for the saddle"
+  ],
+  "Hexer": [
+   "rag, charm and mismatch",
+   "homespun and flour-sack",
+   "trail-worn working dress",
+   "mourning black"
+  ],
+  "Marshal": [
+   "town Sunday best",
+   "trail-worn working dress",
+   "cavalry surplus",
+   "mourning black"
+  ],
+  "Medicine Man": [
+   "plains dress — hide, quill and trade cloth",
+   "trail-worn working dress",
+   "rag, charm and mismatch",
+   "buffalo-hide winter"
+  ],
+  "Mountain Man": [
+   "buffalo-hide winter",
+   "plains dress — hide, quill and trade cloth",
+   "trail-worn working dress",
+   "freighter's canvas"
+  ],
+  "Padre": [
+   "mission plain",
+   "circuit black",
+   "town Sunday best",
+   "trail-worn working dress"
+  ],
+  "Preacher": [
+   "circuit black",
+   "mission plain",
+   "town Sunday best",
+   "homespun and flour-sack"
+  ],
+  "Prospector": [
+   "miner's kit",
+   "trail-worn working dress",
+   "homespun and flour-sack",
+   "freighter's canvas"
+  ],
+  "Sawbones": [
+   "sawbones' town coat",
+   "town Sunday best",
+   "eastern tailoring gone west",
+   "mourning black"
+  ],
+  "Shaman": [
+   "plains dress — hide, quill and trade cloth",
+   "rag, charm and mismatch",
+   "buffalo-hide winter",
+   "trail-worn working dress"
+  ],
+  "Sister": [
+   "mission plain",
+   "mourning black",
+   "homespun and flour-sack",
+   "trail-worn working dress"
+  ],
+  "Witch": [
+   "rag, charm and mismatch",
+   "homespun and flour-sack",
+   "mourning black",
+   "range dress, cut for the saddle"
+  ],
+  "Witch Hunter": [
+   "mourning black",
+   "circuit black",
+   "trail-worn working dress",
+   "eastern tailoring gone west"
+  ]
+ }
 }

@@ -178,7 +178,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
   **clipped to the inner neatline at generation** (`ClipPolyline`) — they are deliberately
   generated overshooting, and the SVG viewBox used to hide what the preview and PDF showed.
 - **New Soul** — a strictly-by-the-book character maker: Ch. III's eight steps at any level 1–10,
-  both ability methods, all 17 Callings and 16 Origins with their cross-constraints honored.
+  both ability methods, all 19 Callings and 16 Origins with their cross-constraints honored.
   Rules data lives in **`Data/chargen.json`**, transcribed from the Player's Book.
   `CharGen.Generate` builds, `CharGen.Validate` independently re-derives every number.
   **The per-level `atk` and save columns are a transcription of a formula, not free values** —
@@ -356,7 +356,7 @@ Ch. XI was audited against the engine and nine gaps closed. Six decisions worth 
   book beat inventing a data column it does not have.
 
 **The arms table is now audited, and it is the reason all of this was unbuildable.**
-`audits/verify_rules.py` guarded the seventeen Calling tables and read the arms table not at all, so
+`audits/verify_rules.py` guarded the Calling tables and read the arms table not at all, so
 the transcription had lost **Range, Cap. and Reload** for every gun, folded the cap-and-ball's *slow*
 into its traits string, and left out Fists / Boots and the book's whole second table. 791
 cross-checks now, up from 697. **Any new book table transcribed into `chargen.json` gets an auditor
@@ -473,7 +473,7 @@ Four decisions worth not re-deriving:
   collecting is the Keeper's move. The card says *"Debts — 4 owed"* past it rather than *"4 of 3"*,
   which is the same number said in a way that reads.
 - **`CharGen.ShortFeatureName` is display only.** A 3rd-level path is keyed section-colon-option so
-  the key is unique across seventeen Callings; at 158px both of a Hexer's Bargain cards ellipsised
+  the key is unique across every Calling; at 158px both of a Hexer's Bargain cards ellipsised
   to the same twenty-four characters. The card drops the section, the head line above having
   already named the Calling. `FeatureSpent` and `TallyOwed` keep the whole string, so trimming for
   the eye cannot orphan a saved session.
@@ -715,7 +715,7 @@ and are worth copying: `StyleRollLog` mints one bold variant and disposes it on 
   Note: this machine has only the .NET 9 runtime for plain console apps, so `smoke.csproj` carries
   `<RollForward>LatestMajor</RollForward>` (test rig only).
 - **`--selftest`** constructs all three run modes, walks all ten realized tabs and every wizard step
-  **for all seventeen Callings**, and fails on any interactive control carrying no tooltip. It also
+  **for every Calling**, and fails on any interactive control carrying no tooltip. It also
   builds the Reference deck on purpose (tabs are realized lazily, so nothing else touches it) and
   checks each title has a renderer.
 - **Static wiring audit**: `python audit_ui.py` — every `Btn(...)` supplies a handler and a tooltip,

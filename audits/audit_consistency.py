@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """audit_consistency.py — does the game play the same way in every place it is written down?
 
-`verify_rules.py` already guards the PLAYER's side: the seventeen Calling tables, the arms table,
+`verify_rules.py` already guards the PLAYER's side: the Calling tables, the arms table,
 the feature prose, the 3rd-level paths, and Ch. IV's encounter budget. That leaves the Keeper's
 side, which is where the same number appears in the most places and where nothing has ever held
 them together. Two tables in particular are printed in the Bestiary, restated in `CLAUDE.md`, and

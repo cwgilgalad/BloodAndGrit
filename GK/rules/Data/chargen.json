@@ -505,9 +505,24 @@
    "desc": "After a Bushwhack lands, immediately Step and Stride free; your quarry must spend an action to break away."
   },
   {
+   "name": "Devoted Unto Death",
+   "calling": "Dark Cultist",
+   "desc": "Immune to fear of the power you serve; once per scene shrug off a wound's effect for a round."
+  },
+  {
    "name": "Long Gone",
    "calling": "Drifter",
    "desc": "Once per scene, when no enemy is looking your way, slip from sight even while observed and take a free Stride into cover."
+  },
+  {
+   "name": "Charge Already Set",
+   "calling": "Engineer",
+   "desc": "Once per fight, declare that you prepared this ground before the shooting started. One explosive of yours is already placed where you now say it is, and goes off on your Beat."
+  },
+  {
+   "name": "Golden Tongue",
+   "calling": "False Prophet",
+   "desc": "Work a single Deceive against an entire crowd at once."
   },
   {
    "name": "Double or Nothing",
@@ -520,15 +535,35 @@
    "desc": "When you drop a foe with a Strike, your next Strike this round ignores the Multiple Attack Penalty."
   },
   {
+   "name": "Hard Bargain",
+   "calling": "Hexer",
+   "desc": "Once per scene, work a Sign for one less Nerve than it asks; the unpaid cost comes due later."
+  },
+  {
    "name": "The Long Arm",
    "calling": "Marshal",
    "desc": "When you Demoralize a foe or invoke the law against it, allies in earshot gain +1 on their next Strike against it."
+  },
+  {
+   "name": "Mending Hands",
+   "calling": "Medicine Man",
+   "desc": "Your remedies lift one lingering affliction along with the Blood they restore."
   },
   {
    "name": "One Shot, One Kill",
    "calling": "Mountain Man",
    "reqFeature": "Dead Aim",
    "desc": "Once per scene, a steadied shot against an unaware foe deals maximum Dead Aim dice and ignores hide or armor DR."
+  },
+  {
+   "name": "Shepherd's Word",
+   "calling": "Padre",
+   "desc": "Spend a Beat to grant an ally in earshot an immediate save, with your bonus, against a fear already gripping them."
+  },
+  {
+   "name": "Hellfire Sermon",
+   "calling": "Preacher",
+   "desc": "Your invocations against the unclean reach every foe who can hear your voice."
   },
   {
    "name": "Hang Fire",
@@ -553,49 +588,24 @@
    "desc": "Field care in the thick of a fight provokes no reaction and restores an extra die of Blood."
   },
   {
-   "name": "Mending Hands",
-   "calling": "Medicine Man",
-   "desc": "Your remedies lift one lingering affliction along with the Blood they restore."
-  },
-  {
-   "name": "Shepherd's Word",
-   "calling": "Padre",
-   "desc": "Spend a Beat to grant an ally in earshot an immediate save, with your bonus, against a fear already gripping them."
-  },
-  {
-   "name": "Hellfire Sermon",
-   "calling": "Preacher",
-   "desc": "Your invocations against the unclean reach every foe who can hear your voice."
-  },
-  {
    "name": "Spirit-Spoken",
    "calling": "Shaman",
    "desc": "Once per scene, put one yes-or-no question to the spirits about this land, its dead, or what passed here, and be answered true."
   },
   {
-   "name": "Bane-Sharpened",
-   "calling": "Witch Hunter",
-   "desc": "When you exploit your quarry's known weakness, deal an extra die of damage; name the kind of any uncanny thing on sight."
-  },
-  {
-   "name": "Devoted Unto Death",
-   "calling": "Dark Cultist",
-   "desc": "Immune to fear of the power you serve; once per scene shrug off a wound's effect for a round."
-  },
-  {
-   "name": "Golden Tongue",
-   "calling": "False Prophet",
-   "desc": "Work a single Deceive against an entire crowd at once."
-  },
-  {
-   "name": "Hard Bargain",
-   "calling": "Hexer",
-   "desc": "Once per scene, work a Sign for one less Nerve than it asks; the unpaid cost comes due later."
+   "name": "Between Them and It",
+   "calling": "Sister",
+   "desc": "When a foe would Strike an ally adjacent to you, you may take the Strike yourself instead. You are Off-Guard until your next turn, and the ally may not refuse."
   },
   {
    "name": "Bitter Brew",
    "calling": "Witch",
    "desc": "Keep one extra charm or poison prepared; your brews hold potency a full day longer."
+  },
+  {
+   "name": "Bane-Sharpened",
+   "calling": "Witch Hunter",
+   "desc": "When you exploit your quarry's known weakness, deal an extra die of damage; name the kind of any uncanny thing on sight."
   }
  ],
  "signs": [
@@ -882,13 +892,6 @@
  ],
  "miracles": [
   {
-   "name": "The Steadying Word",
-   "list": "blessing",
-   "rank": 1,
-   "cost": "1 Beat · 1 Faith",
-   "desc": "Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it. The steadiness holds until that save is rolled."
-  },
-  {
    "name": "A Light Unfailing",
    "list": "blessing",
    "rank": 1,
@@ -896,11 +899,11 @@
    "desc": "A steady light rises at your word, warm where Cold Lamp is cold, and lasts an hour. The uncanny will not willingly step into it, and the Marked find it hard to meet."
   },
   {
-   "name": "The Blessing of the Road",
+   "name": "The Steadying Word",
    "list": "blessing",
-   "rank": 2,
-   "cost": "Ten minutes · 2 Faith",
-   "desc": "Bless a journey before it is begun. For the next day the party ignores the first hazard of the trail and travels at +2 on Survival to find the way, the water, and the safe camp."
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it. The steadiness holds until that save is rolled."
   },
   {
    "name": "Hands Clasped",
@@ -910,11 +913,11 @@
    "desc": "Take an ally's hand, or bid them take another's. For the scene the two of you share your saves against fear — whichever of you rolls better, both use — and neither may be made to flee while the other stands."
   },
   {
-   "name": "The Warding Psalm",
+   "name": "The Blessing of the Road",
    "list": "blessing",
-   "rank": 3,
-   "cost": "Reaction · 3 Faith",
-   "desc": "As an uncanny blow lands on you or a soul beside you, speak the psalm and turn it: the attack is halved, and its wielder gives ground a step. You may do this once per round, and not on ordinary lead."
+   "rank": 2,
+   "cost": "Ten minutes · 2 Faith",
+   "desc": "Bless a journey before it is begun. For the next day the party ignores the first hazard of the trail and travels at +2 on Survival to find the way, the water, and the safe camp."
   },
   {
    "name": "The Unclean Named",
@@ -924,11 +927,11 @@
    "desc": "Point and name a thing for what it truly is. It saves or its nature stands revealed to all who can hear you, and it suffers a −2 against you and yours until the scene ends. Some things have not been named aloud in a long age, and do not care for it."
   },
   {
-   "name": "The Vigil",
+   "name": "The Warding Psalm",
    "list": "blessing",
-   "rank": 4,
-   "cost": "One minute · 3 Faith",
-   "desc": "Keep the watch and pray it through. Until dawn, no one in the camp may be surprised or driven by fear, and every soul but you sleeps easy under it. You take no rest, and you will feel the want of it come morning."
+   "rank": 3,
+   "cost": "Reaction · 3 Faith",
+   "desc": "As an uncanny blow lands on you or a soul beside you, speak the psalm and turn it: the attack is halved, and its wielder gives ground a step. You may do this once per round, and not on ordinary lead."
   },
   {
    "name": "Rebuke the Dark",
@@ -938,11 +941,11 @@
    "desc": "Raise your voice against the unclean things in sight. Each lesser uncanny saves or flees you for a round per two levels, and a greater one that fails is Frightened and gives ground. The oldest of them only smile — but the small ones run."
   },
   {
-   "name": "The Miracle Plain",
+   "name": "The Vigil",
    "list": "blessing",
-   "rank": 5,
-   "cost": "1 Beat · 0 Faith",
-   "desc": "Once, and never lightly: ask for the thing that cannot be asked for, and now and again receive it. Undo one calamity of the moment just past — a death, a fire caught, a fall — as the Keeper allows. It empties your whole pool to nothing and cannot be tried again until you have rested and given thanks. Most prayers are not answered. This is about the ones that are."
+   "rank": 4,
+   "cost": "One minute · 3 Faith",
+   "desc": "Keep the watch and pray it through. Until dawn, no one in the camp may be surprised or driven by fear, and every soul but you sleeps easy under it. You take no rest, and you will feel the want of it come morning."
   },
   {
    "name": "The Covenant",
@@ -950,6 +953,55 @@
    "rank": 5,
    "cost": "1 Beat · 5 Faith",
    "desc": "Spread your arms and stand for them. For the scene, no ally who can hear you may be brought below 1 Blood by uncanny harm — struck to the edge of death, and no further, while your voice holds. Ordinary lead still kills as it pleases. The dark does not get to."
+  },
+  {
+   "name": "The Miracle Plain",
+   "list": "blessing",
+   "rank": 5,
+   "cost": "1 Beat · 0 Faith",
+   "desc": "Once, and never lightly: ask for the thing that cannot be asked for, and now and again receive it. Undo one calamity of the moment just past — a death, a fire caught, a fall — as the Keeper allows. It empties your whole pool to nothing and cannot be tried again until you have rested and given thanks. Most prayers are not answered. This is about the ones that are."
+  },
+  {
+   "name": "Salt the Threshold",
+   "list": "consecration",
+   "rank": 1,
+   "cost": "One minute · 1 Faith · Will save",
+   "desc": "Lay a line of blessed salt across a door, a window, a circle of camp. Uncanny things save or cannot cross it until dawn or until the line is broken by a living hand — theirs cannot break it."
+  },
+  {
+   "name": "The Litany of Weakness",
+   "list": "consecration",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Recite what you know of a thing's banes — the silver, the fire, the true name, the running water. Your next Judgment against it deals +1d8, the knowledge sharpening the blow."
+  },
+  {
+   "name": "Silver the Round",
+   "list": "consecration",
+   "rank": 2,
+   "cost": "1 Beat · 2 Faith",
+   "desc": "Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger. The blessing holds until those three shots are fired, or until dawn, whichever comes first."
+  },
+  {
+   "name": "The Branding",
+   "list": "consecration",
+   "rank": 3,
+   "cost": "One minute · 3 Faith · Will save",
+   "desc": "Mark your quarry with the sign of the hunt. For a day you always know its direction and rough distance, it cannot hide from you by any uncanny means, and it knows, wherever it runs, that it has been marked."
+  },
+  {
+   "name": "Consecrate the Killing Ground",
+   "list": "consecration",
+   "rank": 4,
+   "cost": "Ten minutes · 4 Faith",
+   "desc": "Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at −2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all."
+  },
+  {
+   "name": "The Reckoning Fire",
+   "list": "consecration",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith · Reflex save",
+   "desc": "Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck."
   },
   {
    "name": "Asperges Me",
@@ -992,6 +1044,48 @@
    "rank": 5,
    "cost": "One minute · 5 Faith · Will save",
    "desc": "The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words."
+  },
+  {
+   "name": "Set the Bone",
+   "list": "mending",
+   "rank": 1,
+   "cost": "One minute · 1 Faith",
+   "desc": "Splint, wrap, and set what is broken. Ease the penalty of one Lasting Injury for a day, buying a wounded soul the working hours the country would sooner deny them."
+  },
+  {
+   "name": "The Poultice",
+   "list": "mending",
+   "rank": 1,
+   "cost": "1 Beat · 1 Faith",
+   "desc": "Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse."
+  },
+  {
+   "name": "The Fever Broken",
+   "list": "mending",
+   "rank": 2,
+   "cost": "One minute · 2 Faith",
+   "desc": "Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done."
+  },
+  {
+   "name": "The Sleep of Healing",
+   "list": "mending",
+   "rank": 3,
+   "cost": "One minute · 3 Faith",
+   "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn."
+  },
+  {
+   "name": "The Life Shared",
+   "list": "mending",
+   "rank": 4,
+   "cost": "1 Beat · 4 Faith",
+   "desc": "Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one."
+  },
+  {
+   "name": "The Long Mercy",
+   "list": "mending",
+   "rank": 5,
+   "cost": "1 Beat · 5 Faith",
+   "desc": "Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today."
   },
   {
    "name": "Call to the Mourner's Bench",
@@ -1078,88 +1172,46 @@
    "desc": "Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked."
   },
   {
-   "name": "The Poultice",
-   "list": "mending",
+   "name": "Hand Held",
+   "list": "vigil",
    "rank": 1,
    "cost": "1 Beat · 1 Faith",
-   "desc": "Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse."
+   "desc": "Take hold of a soul who has just failed a Dread Check and give them something to hold back. They reroll it at once, and keep the second result even if it is worse. Most take the second result gladly. The ones who do not are why you keep hold a moment longer than they want."
   },
   {
-   "name": "Set the Bone",
-   "list": "mending",
+   "name": "The Watch Kept",
+   "list": "vigil",
    "rank": 1,
-   "cost": "One minute · 1 Faith",
-   "desc": "Splint, wrap, and set what is broken. Ease the penalty of one Lasting Injury for a day, buying a wounded soul the working hours the country would sooner deny them."
+   "cost": "Ten minutes · 1 Faith",
+   "desc": "Walk the bounds of a camp, a room, a cellar stair, naming what you mean to keep out. Until you sleep or leave, every soul inside takes +2 on Dread Checks, and nothing uncanny crosses the line you walked without you knowing the moment it does. It does not stop anything. It only means you are never the last to find out."
   },
   {
-   "name": "The Fever Broken",
-   "list": "mending",
-   "rank": 2,
-   "cost": "One minute · 2 Faith",
-   "desc": "Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done."
-  },
-  {
-   "name": "The Sleep of Healing",
-   "list": "mending",
-   "rank": 3,
-   "cost": "One minute · 3 Faith",
-   "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn."
-  },
-  {
-   "name": "The Life Shared",
-   "list": "mending",
-   "rank": 4,
-   "cost": "1 Beat · 4 Faith",
-   "desc": "Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one."
-  },
-  {
-   "name": "The Long Mercy",
-   "list": "mending",
-   "rank": 5,
-   "cost": "1 Beat · 5 Faith",
-   "desc": "Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today."
-  },
-  {
-   "name": "Salt the Threshold",
-   "list": "consecration",
-   "rank": 1,
-   "cost": "One minute · 1 Faith · Will save",
-   "desc": "Lay a line of blessed salt across a door, a window, a circle of camp. Uncanny things save or cannot cross it until dawn or until the line is broken by a living hand — theirs cannot break it."
-  },
-  {
-   "name": "The Litany of Weakness",
-   "list": "consecration",
-   "rank": 1,
-   "cost": "1 Beat · 1 Faith",
-   "desc": "Recite what you know of a thing's banes — the silver, the fire, the true name, the running water. Your next Judgment against it deals +1d8, the knowledge sharpening the blow."
-  },
-  {
-   "name": "Silver the Round",
-   "list": "consecration",
+   "name": "The Lamp Unquenched",
+   "list": "vigil",
    "rank": 2,
    "cost": "1 Beat · 2 Faith",
-   "desc": "Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger. The blessing holds until those three shots are fired, or until dawn, whichever comes first."
+   "desc": "A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it."
   },
   {
-   "name": "The Branding",
-   "list": "consecration",
+   "name": "Nothing Comes In",
+   "list": "vigil",
    "rank": 3,
    "cost": "One minute · 3 Faith · Will save",
-   "desc": "Mark your quarry with the sign of the hunt. For a day you always know its direction and rough distance, it cannot hide from you by any uncanny means, and it knows, wherever it runs, that it has been marked."
+   "desc": "Stand in a doorway, a gate, a stair-head, and refuse it. For a scene, anything uncanny that would cross must first make a Will save against your Miracle DC; on a failure it cannot cross at all this round and must spend its turn trying again. It can still reach through. It can still call. It cannot simply walk in, and a great many of them have never had to learn what to do about that."
   },
   {
-   "name": "Consecrate the Killing Ground",
-   "list": "consecration",
+   "name": "The Body Kept Whole",
+   "list": "vigil",
    "rank": 4,
    "cost": "Ten minutes · 4 Faith",
-   "desc": "Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at −2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all."
+   "desc": "Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for."
   },
   {
-   "name": "The Reckoning Fire",
-   "list": "consecration",
+   "name": "She Will Not Be Moved",
+   "list": "vigil",
    "rank": 5,
-   "cost": "1 Beat · 5 Faith · Reflex save",
-   "desc": "Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck."
+   "cost": "1 Beat · 5 Faith",
+   "desc": "For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose."
   }
  ],
  "weapons": [
@@ -1783,6 +1835,204 @@
    "startMark": 0,
    "bonusCombatEdgeAtOdd": false,
    "attackRank": "Steady"
+  },
+  {
+   "name": "Engineer",
+   "blurb": "Everyone else out here is trying to survive the country. You are trying to make it hold still long enough to build something on.",
+   "group": "Worldly",
+   "hitDie": 8,
+   "trainedSkills": 6,
+   "strongSaves": "Reflex, Will",
+   "rows": [
+    {
+     "level": 1,
+     "atk": 0,
+     "fort": 0,
+     "ref": 2,
+     "will": 2,
+     "features": [
+      "The Contraption",
+      "Powder & Fuse"
+     ]
+    },
+    {
+     "level": 2,
+     "atk": 1,
+     "fort": 0,
+     "ref": 3,
+     "will": 3,
+     "features": [
+      "Jury-Rig"
+     ]
+    },
+    {
+     "level": 3,
+     "atk": 2,
+     "fort": 1,
+     "ref": 3,
+     "will": 3,
+     "features": [
+      "Edge",
+      "Discipline"
+     ]
+    },
+    {
+     "level": 4,
+     "atk": 3,
+     "fort": 1,
+     "ref": 4,
+     "will": 4,
+     "features": [
+      "Cut the Charge"
+     ]
+    },
+    {
+     "level": 5,
+     "atk": 4,
+     "fort": 1,
+     "ref": 4,
+     "will": 4,
+     "features": [
+      "The Contraption (second)",
+      "Field Expedient"
+     ]
+    },
+    {
+     "level": 6,
+     "atk": 5,
+     "fort": 2,
+     "ref": 5,
+     "will": 5,
+     "features": []
+    },
+    {
+     "level": 7,
+     "atk": 6,
+     "fort": 2,
+     "ref": 5,
+     "will": 5,
+     "features": [
+      "Edge",
+      "Overbuilt"
+     ]
+    },
+    {
+     "level": 8,
+     "atk": 7,
+     "fort": 2,
+     "ref": 6,
+     "will": 6,
+     "features": [
+      "The Contraption (third)"
+     ]
+    },
+    {
+     "level": 9,
+     "atk": 8,
+     "fort": 3,
+     "ref": 6,
+     "will": 6,
+     "features": [
+      "Edge"
+     ]
+    },
+    {
+     "level": 10,
+     "atk": 9,
+     "fort": 3,
+     "ref": 7,
+     "will": 7,
+     "features": [
+      "The Machine Age",
+      "The Contraption (fourth)",
+      "Discipline Mastery"
+     ]
+    }
+   ],
+   "featureDescs": {
+    "The Contraption": "You have built one thing that exists nowhere else. Say what it is and what single useful thing it does: a repeating crossbow fed by a clock spring, a lamp that burns underwater, a listening horn for a wall, a rig of mirrors and wire. Working it costs 1 Ingenuity and a Beat. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.",
+    "Powder & Fuse": "Blasting is a trade and you served it. You cut, time and place a charge without the Keeper calling for a check, you know to the yard how far back is far enough, and any prepared explosive you set yourself deals an extra die of its damage.",
+    "Jury-Rig": "Once per scene, put something back into service with wire, a strap, and language nobody should hear. A broken tool, a jammed action, a snapped trace, a door off its hinge: it works for the rest of the scene, and afterward it is broken again and rather worse.",
+    "Cut the Charge": "You know what a blast wants to do and where it will go. You take half damage from any explosion, and so does any ally you had a moment to shout at. The shout is required. More of this trade is shouting than the recruiting posters admit.",
+    "Field Expedient": "Given ten minutes, a few hands and whatever the ground offers, you throw up a work: a barricade, a footbridge, a sluice, a firing step, a hoist. It is ugly, it holds for the scene, and it changes what the ground is worth.",
+    "Overbuilt": "You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules something genuinely beyond their design was asked of them.",
+    "The Machine Age": "At 10th level the things you make outlast the making of them. Choose one of your contraptions: it costs no Ingenuity to work, it does not break, and it can be handed to somebody else and will work for them. You have crossed the line between a trick and a tool, and the century coming will be built out of what is on your side of it."
+   },
+   "signsKnownAt": null,
+   "subpath": {
+    "section": "Disciplines of the Engineer",
+    "options": [
+     {
+      "name": "The Powderman",
+      "boon": "Charges answer to you. Any explosive you prepare may be shaped: choose which side of it is dangerous, and allies outside that arc take nothing at all. Mastery (10th): once per scene, bring down a structure, a span or a shaft exactly as you intend, in the direction you intend."
+     },
+     {
+      "name": "The Machinist",
+      "boon": "Given a day and a workshop you permanently improve one weapon or tool: an extra shot before reloading, one step less Kickback, a jam that clears itself. Only one item at a time carries your work. Mastery (10th): once per scene, one of your contraptions acts on its own for a round, taking a Beat's action you name."
+     },
+     {
+      "name": "The Bridgewright",
+      "boon": "Spans, shafts and crossings. You and anyone following you ignore difficult ground and broken country, and a gap that stops a party stops you for ten minutes. Mastery (10th): once per session, build in a day what should have taken a crew a week, and it stands."
+     }
+    ]
+   },
+   "coin": {
+    "dice": 3,
+    "mult": 10,
+    "kit": [
+     "A toolroll, and a contraption of your own making"
+    ],
+    "note": ""
+   },
+   "skillPrefs": [
+    "Repair",
+    "Notice",
+    "Athletics",
+    "Lore (Frontier)",
+    "Sleight",
+    "Survival"
+   ],
+   "edgePrefs": [
+    "Mind",
+    "Body",
+    "Gun"
+   ],
+   "buyPlan": {
+    "guns": [
+     "Cap-and-Ball Revolver"
+    ],
+    "melee": "Hatchet",
+    "sundries": [
+     "Stick of dynamite ($2)",
+     "Stick of dynamite ($2)",
+     "Shovel & tools ($2)",
+     "Lantern & oil ($1)",
+     "Week's rations ($3)",
+     "Bedroll & tarp ($2)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
+    ]
+   },
+   "keyAbilities": [
+    "WIT",
+    "DEX",
+    "CON",
+    "RES",
+    "STR",
+    "PRE"
+   ],
+   "pool": {
+    "name": "Ingenuity",
+    "formula": "WIT+half",
+    "min": 1
+   },
+   "choice": null,
+   "startMark": 0,
+   "bonusCombatEdgeAtOdd": false,
+   "attackRank": "Steady",
+   "miracleLists": null,
+   "miraclesKnownAt": null
   },
   {
    "name": "Gambler",
@@ -3767,6 +4017,211 @@
    "miracleLists": [
     "blessing",
     "spirits"
+   ],
+   "miraclesKnownAt": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 4,
+    "7": 5,
+    "8": 5,
+    "9": 6,
+    "10": 6
+   }
+  },
+  {
+   "name": "Sister",
+   "blurb": "Not every soul who serves does it from a pulpit. Your order sent you where the diocese would not go: the fever camp, the mining town with no doctor, the mission school at the end of a road nobody maintains.",
+   "group": "Faith",
+   "hitDie": 8,
+   "trainedSkills": 4,
+   "strongSaves": "Fortitude, Will",
+   "rows": [
+    {
+     "level": 1,
+     "atk": 0,
+     "fort": 2,
+     "ref": 0,
+     "will": 2,
+     "features": [
+      "The Vigil",
+      "Nurse"
+     ]
+    },
+    {
+     "level": 2,
+     "atk": 1,
+     "fort": 3,
+     "ref": 0,
+     "will": 3,
+     "features": [
+      "Hold the Lamp"
+     ]
+    },
+    {
+     "level": 3,
+     "atk": 2,
+     "fort": 3,
+     "ref": 1,
+     "will": 3,
+     "features": [
+      "Edge",
+      "Order"
+     ]
+    },
+    {
+     "level": 4,
+     "atk": 3,
+     "fort": 4,
+     "ref": 1,
+     "will": 4,
+     "features": [
+      "Not One Step"
+     ]
+    },
+    {
+     "level": 5,
+     "atk": 4,
+     "fort": 4,
+     "ref": 1,
+     "will": 4,
+     "features": [
+      "The Cool Cloth"
+     ]
+    },
+    {
+     "level": 6,
+     "atk": 5,
+     "fort": 5,
+     "ref": 2,
+     "will": 5,
+     "features": []
+    },
+    {
+     "level": 7,
+     "atk": 6,
+     "fort": 5,
+     "ref": 2,
+     "will": 5,
+     "features": [
+      "Edge",
+      "The Long Watch"
+     ]
+    },
+    {
+     "level": 8,
+     "atk": 7,
+     "fort": 6,
+     "ref": 2,
+     "will": 6,
+     "features": []
+    },
+    {
+     "level": 9,
+     "atk": 8,
+     "fort": 6,
+     "ref": 3,
+     "will": 6,
+     "features": [
+      "Edge"
+     ]
+    },
+    {
+     "level": 10,
+     "atk": 9,
+     "fort": 7,
+     "ref": 3,
+     "will": 7,
+     "features": [
+      "The Least of These",
+      "Order Mastery"
+     ]
+    }
+   ],
+   "featureDescs": {
+    "The Vigil": "You were not called to preach and never wanted to be. What you took were vows of work: to go where the sick are, to stay when others leave, and to keep watch over what should not be left alone. You work Miracles from the blessing and vigil lists, spending Mercy, and your Miracle DC is 10 + half your level + your RES modifier. Your order taught you that a thing watched is a thing that cannot get on with what it was doing.",
+    "Nurse": "Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a full rest recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.",
+    "Hold the Lamp": "Set your lamp down and stand over it. For as long as you hold the spot and strike at nothing, every soul who can see the light takes +2 on Dread Checks, and any Nerve they do lose is reduced by 1. Step away and it is a lamp again.",
+    "Not One Step": "You cannot be made to run. You are immune to the Frightened condition and to any effect that would compel you to flee, leave, or turn away, and a soul you have physical hold of shares that while you keep hold. This has killed Sisters. It has also saved most of the people they were standing in front of.",
+    "The Cool Cloth": "Once per scene, spend 1 Mercy and take one lasting hurt off a soul you can touch: a condition, an affliction in its early stage, or the whole of one Dread Check's Nerve loss suffered this scene. You cannot do it twice for the same soul in a scene, and it does not work on yourself.",
+    "The Long Watch": "You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a full rest's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.",
+    "The Least of These": "At 10th level you have spent so long standing between other people and the dark that the dark has learned your face. Once per session, when a soul within your reach would die or be taken, dragged off, possessed, unmade or called away, you may refuse it. They are not. The cost is yours: you drop to 1 Blood, lose all remaining Mercy, and cannot do it again until the next session. Whatever wanted them now knows exactly who you are."
+   },
+   "signsKnownAt": null,
+   "subpath": {
+    "section": "Orders of the Sister",
+    "options": [
+     {
+      "name": "The Hospitaller",
+      "boon": "The fever ward and the cholera camp are your ground. Disease and contagion have no hold on you, and a soul under your care through a full rest recovers as though it had rested twice. Mastery (10th): once per scene, a soul who dies within your reach does not, and has until the end of the next round to be saved properly."
+     },
+     {
+      "name": "The Teacher",
+      "boon": "You ran a mission school and learned what a frightened child needs to hear. Any soul you have spoken with for a full scene gains +2 on its next Will save, and you may teach a skill you are trained in to anyone willing, given a week. Mastery (10th): once per scene, every ally who can hear you uses your Will save in place of their own."
+     },
+     {
+      "name": "The Missioner",
+      "boon": "Your order sent you to the far stations and forgot to send anyone after you. Hard country, hard weather and hard travel cost you and any company you lead nothing, and you are never lost on a road anyone has walked before. Mastery (10th): once per session, name a place you have heard of; you know the way, and the way is shorter than it should be."
+     }
+    ]
+   },
+   "coin": {
+    "dice": 2,
+    "mult": 10,
+    "kit": [
+     "A nursing kit and a plain wooden cross"
+    ],
+    "note": ""
+   },
+   "skillPrefs": [
+    "Medicine",
+    "Insight",
+    "Persuade",
+    "Notice",
+    "Survival",
+    "Lore (Occult)"
+   ],
+   "edgePrefs": [
+    "Mind",
+    "Body",
+    "Frontier"
+   ],
+   "buyPlan": {
+    "guns": [],
+    "melee": "Knife / Bowie",
+    "sundries": [
+     "Lantern & oil ($1)",
+     "Holy book ($3)",
+     "Week's rations ($3)",
+     "Bedroll & tarp ($2)",
+     "Graveyard salt, lb. ($1)"
+    ],
+    "armor": [
+     "Heavy Duster / Coat"
+    ]
+   },
+   "keyAbilities": [
+    "RES",
+    "WIT",
+    "CON",
+    "PRE",
+    "STR",
+    "DEX"
+   ],
+   "pool": {
+    "name": "Mercy",
+    "formula": "RES+half",
+    "min": 1
+   },
+   "choice": null,
+   "startMark": 0,
+   "bonusCombatEdgeAtOdd": false,
+   "attackRank": "Steady",
+   "miracleLists": [
+    "blessing",
+    "vigil"
    ],
    "miraclesKnownAt": {
     "1": 2,

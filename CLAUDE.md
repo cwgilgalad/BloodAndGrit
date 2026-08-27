@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.31 · Keeper's Book v2.17 · Bestiary v2.14 ·
+**Current versions: Player's Book v2.32 · Keeper's Book v2.17 · Bestiary v2.14 ·
 GritKeeper app v1.50.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -38,7 +38,7 @@ reference screen held eleven leaves for two releases while it held thirteen — 
 `RefLeafTitles.Length` and every mention interpolates it. Apply the same shape to any other number
 the prose quotes, in the books as much as in the app.
 
-**Sign & spoor, the safe-table rule, and the seventeen Callings' tables are the standing examples
+**Sign & spoor, the safe-table rule, and the nineteen Callings' tables are the standing examples
 of one-source-generated-outward** — the discipline is written up under *One source of truth* below,
 and each mechanism is documented in `GK/CLAUDE.md`.
 
@@ -114,7 +114,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.31 | 208 | one inline SVG map (Appendix E) + cover emblem |
+| The Player's Book | v2.32 | 217 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.17 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.14 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.3 | 29 | one inline SVG map, downloadable |
@@ -317,7 +317,7 @@ hand in the right order out of memory.
 - **JS valid** — extract the `<script>` and run `node --check`.
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
-  seventeen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
+  nineteen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
   since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
   player. Since 2026-08-22 it also holds Ch. IV's encounter ladder against the Bestiary's
   statement of it and against `Rules.BudgetRungs`, which is three sites that had no guard at all
@@ -431,7 +431,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.31) — structure
+## The Player's Book (v2.32) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*

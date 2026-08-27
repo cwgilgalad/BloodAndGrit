@@ -4,7 +4,7 @@
 The rest of the chain is already self-checking: the GritKeeper app reads every number from
 `GK/rules/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
 the data and the app can never quietly disagree (the smoke suite fails first). The one seam left
-to a human hand is the *printed book* — the Player's Book prints seventeen Calling tables that I
+to a human hand is the *printed book* — the Player's Book prints nineteen Calling tables that I
 transcribe into chargen.json. This checks that transcription automatically: it parses the built
 `blood-and-grit.html`, reads each Calling's statline rank and its ten rows of attack and saves,
 and asserts the book agrees with the data AND both agree with the one spine formula (Ch. XIV):
@@ -561,8 +561,8 @@ def main():
     data, book = load_data(), load_book()
     problems = []
 
-    if len(book) != 17:
-        problems.append(f"parsed {len(book)} attack tables from the book, expected 17")
+    if len(book) != 19:
+        problems.append(f"parsed {len(book)} attack tables from the book, expected 19")
 
     for name, d in data.items():
         b = book.get(name)
