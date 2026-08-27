@@ -422,8 +422,12 @@ public partial class MainForm
         encGrid.Refresh();
         int budget = Rules.BudgetPerSoul * Math.Max(1, party.Count);
         int spend = encounter.Sum(p => Rules.Cost(p.Creature.tier, (int)encLevel.Value).cost);
+        // Past Tier III the budget is measured to be a lie, and a number the app knows is a lie is
+        // the same fault as a Beat action it prints and cannot spend. Said, never enforced.
+        string arith = Rules.ArithmeticNote(encounter.Count == 0 ? 0 : encounter.Max(p => p.Creature.tier));
         encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × {Rules.BudgetPerSoul})"
-                        + $"     {Rules.BudgetVerdict(spend, budget)}";
+                        + $"     {Rules.BudgetVerdict(spend, budget)}"
+                        + (arith == null ? "" : "\r\n" + arith);
         encVerdict.ForeColor = BudgetColor(spend, budget);
         // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
         int lvl = (int)encLevel.Value;

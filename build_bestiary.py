@@ -48,13 +48,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.14 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.14)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.15 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.15)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.14</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.15</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.14 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.15 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
@@ -1995,6 +1995,12 @@ BUILD = f"""<!-- BUILD -->
   <p><strong>The encounter budget:</strong> 4 points per player character. An even-Tier foe costs 8; a mook (a Tier
   or two down, dies to a solid hit) costs 4; a standout (a Tier up, or a Lieutenant from Chapter I) costs 16. Spend the
   budget and the fight is fair; overspend and you had better mean it.</p>
+  <p id="ix-arith-stops"><strong>And the budget is honest to Tier III.</strong> Measured on the engine, it holds from
+  1st level to 6th and then stops, because a posse's damage barely grows while a thing's Blood goes from twelve to a
+  hundred and ten. From <strong>Tier IV</strong> up, a creature is not an encounter with a bigger number on it. It is a
+  problem with an answer, and the answer is printed under its own <em>Putting It Down</em>. Price the shooting as the
+  minutes it buys the posse, never as the way the thing dies. The Keeper's Book Ch. IV says the same at greater
+  length, under <em>Where the arithmetic stops</em>.</p>
 
   <h2>The House Rules of the Dead</h2>
   <ul>

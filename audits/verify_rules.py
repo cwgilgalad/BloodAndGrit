@@ -638,6 +638,53 @@ def check_perks(problems):
     checks += 1
     return checks
 
+# --------------------------------------------------- where the budget stops being arithmetic
+# B4 measured that the encounter budget holds to Tier III and not past it, and the answer was to
+# say so rather than retune anything: a Tier IV creature is a problem with an answer, not a fight
+# with a bigger number. That statement now lives in FOUR places -- Keeper's Book Ch. IV, the
+# Bestiary beside Threat by Tier, the Player's Book Ch. XI, and Rules.ArithmeticStopsAt, which the
+# Encounter tab prints. Four copies of one rule is exactly the shape this project has been burned
+# by, so all four are held together here.
+
+CS_STOPS = re.compile(r"public const int ArithmeticStopsAt = (\d+);")
+
+
+def check_arithmetic_stops(problems):
+    src = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
+    m = CS_STOPS.search(src)
+    if not m:
+        problems.append("Core.cs: no ArithmeticStopsAt constant")
+        return 0
+    app = int(m.group(1))
+    checks = 1
+
+    # The books state it in Roman, because that is how a Tier is written in every one of them.
+    roman = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}.get(app)
+    if roman is None:
+        problems.append(f"Core.cs: ArithmeticStopsAt is {app}, which is no Tier the books print")
+        return checks
+
+    # The Player's Book states the rule and must NOT name the Tier: "Tier" is Keeper vocabulary and
+    # appears nowhere in that book, by design. Only the two Keeper-side books are held to the
+    # number. This distinction was found by the check's own first run, which demanded a Tier in a
+    # book that has never printed one.
+    for book, where, names_tier in (
+            ("keeper-handbook.html", "Where the arithmetic stops", True),
+            ("bestiary.html", "the budget is honest to Tier", True),
+            ("blood-and-grit.html", "Some Things You Do Not Shoot", False)):
+        checks += 1
+        text = _flat(book)
+        if where not in text:
+            problems.append(f"{book}: does not carry {where!r} — the Tier {roman} rule is unsaid here")
+            continue
+        if names_tier and f"Tier <strong>{roman}</strong>" not in text and f"Tier {roman}" not in text:
+            problems.append(f"{book}: states the rule but never names Tier {roman}, "
+                            f"which Core.cs's ArithmeticStopsAt is set to")
+        if not names_tier and re.search(r"\bTier\s+[IVX]+", text):
+            problems.append(f"{book}: prints a Tier, which is Keeper vocabulary this book "
+                            f"has always kept out of the players' hands")
+    return checks
+
 
 def main():
     data, book = load_data(), load_book()
@@ -677,6 +724,7 @@ def main():
     checks += check_budget(problems)
     checks += check_origins(problems)
     checks += check_perks(problems)
+    checks += check_arithmetic_stops(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:

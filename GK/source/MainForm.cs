@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.34", KeeperBookVer = "2.18", BestiaryVer = "2.14";
+    internal const string PlayerBookVer = "2.35", KeeperBookVer = "2.19", BestiaryVer = "2.15";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.

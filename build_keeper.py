@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.18 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.18)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.19 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.19)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.18</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.19</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.18 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.19 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -618,6 +618,26 @@ CH4 = f"""<!-- IV -->
   arithmetic promised. The upper Tiers also run meaner than a flat scale allows, since a Tier III thing lands
   better than seven swings in ten where a Tier I lands about half; from 5th level on, price a fight one rung
   dearer than the table says and let the posse be pleasantly surprised.</p>
+
+  <div class="box gold">
+    <h4 id="ix-arith-stops">Where the arithmetic stops</h4>
+    <p>Everything above was measured, fight by fight, on the engine that runs this game, and it holds from 1st level
+    to 6th. From <strong>Tier IV</strong> upward it stops holding, and it is worth saying why rather than quietly
+    padding the numbers.</p>
+    <p>A posse's damage barely grows. Their aim improves, their Blood deepens, their nerve holds longer, but the gun
+    is the same gun it was at 1st level and most Callings add nothing to a hit as they rise. A thing's Blood does
+    grow: twelve at Tier I, forty at Tier III, a hundred and ten at Tier V. By Tier IV a posse that means to shoot
+    something to death needs seven rounds to manage it and has about three before it has killed all of them. No
+    amount of good play closes that.</p>
+    <p>So from Tier IV up, <strong>stop pricing them as fights.</strong> A Tier IV thing is a problem with an answer,
+    and the Bestiary prints the answer under <em>Putting It Down</em> for every one of them: fire, silver, running
+    water, a true name, the grave it came out of, the man who called it. The posse's work is to find that answer and
+    reach it alive. The shooting is what buys them the minutes to do it, and it is not supposed to be enough on its
+    own.</p>
+    <p>Run one the way you run a thing two Tiers over. Sign first, then a scene, then the night it comes. Give the
+    posse something to do that is not aiming, and when they find the answer let it end in one stroke, because that is
+    the shape of every story this game is made of. If they never find it, they run, and that is a good night too.</p>
+  </div>
 
   <h2 id="ix-safetable">The Safe-Table Rule</h2>
   <p>There is a line past which the budget stops being arithmetic. A thing <strong>two or more Tiers over the

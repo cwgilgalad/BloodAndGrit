@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.34 · Keeper's Book v2.18 · Bestiary v2.14 ·
+**Current versions: Player's Book v2.35 · Keeper's Book v2.19 · Bestiary v2.15 ·
 GritKeeper app v1.51.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -114,9 +114,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.34 | 221 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.18 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.14 | 199 | none (175 creatures) |
+| The Player's Book | v2.35 | 221 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.19 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.15 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.4 | 29 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.4 | 30 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.5 | 30 | one inline SVG map (two panels), downloadable |
@@ -431,7 +431,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.34) — structure
+## The Player's Book (v2.35) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -479,7 +479,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.18) — structure
+## The Keeper's Book (v2.19) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -502,7 +502,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.14) — structure & conventions
+## The Bestiary (v2.15) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **175 creatures** by name (from every `<p class="cr-name">`,

@@ -8,6 +8,39 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's v2.35 · Keeper's v2.19 · Bestiary v2.15 — where the arithmetic stops (2026-08-27).**
+
+  B4 measured that the encounter budget holds from 1st level to 6th and then stops, and that no
+  tactic inside a fight closes the gap. The answer is to say so, in all three books, rather than
+  retune a number that would put the app and the books in disagreement.
+
+  **The reason is one column.** A posse's damage per round is flat across ten levels: 19 at 1st, 21
+  at 10th. The gun is the same gun, and thirteen of the nineteen Callings add nothing to a Strike as
+  they rise. A thing's Blood is not flat: 12 at Tier I, 40 at Tier III, 110 at Tier V. By Tier IV a
+  posse that means to shoot something to death needs about seven rounds and has about three. The
+  defensive half of the game is balanced — posse Blood and creature damage grow together and cancel,
+  and rounds-to-be-wiped stays near three at every level — and the damage half is not.
+
+  **So from Tier IV up the books stop pricing them as fights.** The Keeper's Book Ch. IV gains
+  *Where the arithmetic stops*, beside the Safe-Table Rule it is a cousin of. The Bestiary says the
+  same beside *Threat by Tier*. And the Player's Book gains **Some Things You Do Not Shoot** in Ch.
+  XI, which says it in the players' own vocabulary: a thing far enough above you has more Blood than
+  your posse can spend a night putting holes in, every one of them has an answer, and the shooting
+  buys the minutes to reach it. That is what the Bestiary's *Putting It Down* has always been for.
+
+  `Rules.ArithmeticStopsAt` carries the Tier and the Encounter tab prints the note beside its budget
+  verdict, because a number the app has measured to be a lie is the same fault as a Beat action it
+  prints and cannot spend. `verify_rules.py::check_arithmetic_stops` holds all four sites together.
+
+  Its first run earned its keep twice. It demanded the Tier number in the Player's Book, which has
+  **never printed the word Tier** — that is Keeper vocabulary and the book keeps it out of the
+  players' hands on purpose — so the check now holds the two Keeper-side books to the number and the
+  Player's Book to the statement, and fails if the players' book ever starts talking in Tiers. And
+  the sweep for the control characters that fault left behind found a **BEL character sitting in
+  this changelog since some older session**, where a Windows path's `\a` had been eaten: the entry
+  had been reading *"GritKeeper<BEL>pp\GritKeeper.exe"* in a paragraph about the exe a Keeper
+  double-clicks. 222 → 223 pages.
+
 - **Modules I & II v1.4 · Module III v1.5 — *What the Night Costs* re-run on an armed posse
   (2026-08-27).**
 
@@ -1704,7 +1737,7 @@ Desktop\Git repos.)
   means it can still be carried on a stick with its campaign. What changed is where a plain
   double-click keeps things.
 
-  Consequences worth having: **`GritKeeperpp\GritKeeper.exe` is now a safe thing to play
+  Consequences worth having: **`GritKeeper\app\GritKeeper.exe` is now a safe thing to play
   from** — which is what was wanted, since `package.ps1` refreshes it on every release — and the
   set-aside added earlier today becomes belt-and-braces rather than the only thing between a
   Keeper and a lost table.
