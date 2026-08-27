@@ -2867,6 +2867,23 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
 
 T("19 callings", cg.callings.Count == 19);
 T("16 origins", cg.origins.Count == 16);
+
+// ---- the Perks (v1.50.0) ----------------------------------------------------------------------
+// One per Calling, printed above its level table and typed here so the picker can sell a Calling
+// the way the page does. verify_rules.py holds the two word for word; these hold the shape the app
+// relies on — that every Calling has one, that no two share a name, and that a Perk is always-on,
+// which is what keeps it off the Tracker's rationed strip.
+T("every Calling carries a Perk", cg.callings.All(c => c.perk != null
+    && !string.IsNullOrWhiteSpace(c.perk.name) && !string.IsNullOrWhiteSpace(c.perk.desc)));
+// Null-safe on purpose: a Calling with no Perk at all must report as ONE failure above, not take
+// the remaining three down with a NullReferenceException and hide whatever else is wrong.
+T("Perk names are unique across the nineteen",
+    cg.callings.Select(c => c.perk?.name).Distinct().Count() == cg.callings.Count);
+T("no Perk repeats the name of one of its Calling's own features", cg.callings.All(c =>
+    c.perk?.name == null || !c.rows.SelectMany(r => r.features).Contains(c.perk.name)));
+T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
+    c.perk?.desc == null
+    || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
 T("40 signs across three lists", cg.signs.Count == 40

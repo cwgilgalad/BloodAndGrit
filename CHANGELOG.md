@@ -8,6 +8,45 @@ Desktop\Git repos.)
 
 ---
 
+- **The Player's Book v2.33 — a Perk for every Calling (2026-08-27).**
+
+  Nineteen new lines, one above each Calling's level table: the single thing that Calling alone
+  does, true from 1st level, costing nothing and never rolled for. They answer the question a player
+  asks in the first ten minutes, which the book had been answering with a column of saves.
+
+  The brief was **signature rather than power**. A Perk should be the shortest honest reason to pick
+  a Calling, and it should weigh almost nothing on the combat side, so that the balance pass still
+  ahead does not open with nineteen new variables in it. Several are worth a great deal at the right
+  moment and nothing at all for weeks. Two or three are frankly liabilities, which is rather the
+  point of them. The Hexer is the clearest case: *Your Debts Are Public* means lamps gutter, milk
+  turns, the dog will not come into the room, and the whole town knows what he is inside a week
+  without one of them being able to prove a word of it. That is the Hexer stated in four sentences,
+  and a player who wants it wants it on purpose.
+
+  Elsewhere: the Marshal writes the record and the record is believed, in every town that recognizes
+  any law at all. Every description of the Drifter is wrong in at least one particular that matters.
+  The Sawbones holds anyone whose wounds he has dressed one point short of dead for as long as he is
+  conscious, which turns a death into a race and leaves the race the only question. Doors open for
+  the Sister that open for nobody else in the posse. The Prospector can file on any unclaimed ground
+  and make it stick in a territorial court, which has started more shooting out here than gold ever
+  did.
+
+  **Written around what each Calling already had.** Five of the first drafts were re-skins of
+  features their Calling already owned, found by reading the feature list beside the draft rather
+  than by any check failing: *Hard Country* already feeds the Mountain Man and four others,
+  *Assayer's Eye* already appraises at a glance, *Cardsharp* already spots a crooked game,
+  *Spirit-Sight* already lets the Shaman address a spirit of place, and *Reputation* already lets
+  the Marshal requisition. Each was rewritten onto ground its Calling did not already hold.
+
+  On the app side a Perk is a new `CgPerk` on `CgCalling`, printed in all three places the app sells
+  a Calling: the hover tip, the wizard's detail panel, and the Calling card window. It sits outside
+  the level table on purpose, so `FeaturesAt` never returns one and the Tracker's rationed strip
+  never draws a card for something nobody can spend. A smoke assertion holds that property by
+  running all nineteen through `ReadLimit` and `ReadTally` and requiring both to come back empty.
+
+  `verify_rules.py` gained `check_perks`, the third surface held to the book word for word after the
+  feature prose and Ch. IV's Origins. 1160 → 1180 cross-checks. 217 → 221 pages.
+
 - **The Player's Book v2.32 — the Sister and the Engineer (2026-08-27).**
 
   Two new Callings, taking the roster from seventeen to nineteen.

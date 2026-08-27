@@ -2420,6 +2420,14 @@ public partial class MainForm
         sb.AppendLine($"{soul.Name} — {soul.Calling}, level {soul.Level}");
         var cal = CharGen.D.callings.FirstOrDefault(c => c.name == soul.Calling);
         if (cal?.blurb != null) sb.AppendLine().AppendLine(Wrap(cal.blurb));
+        // The Perk is not in the level table and so never comes back from FeaturesAt; it would
+        // be the one thing on the page the card left out.
+        if (cal?.perk != null)
+        {
+            sb.AppendLine();
+            sb.AppendLine("PERK — " + cal.perk.name);
+            sb.AppendLine(Wrap("    " + cal.perk.desc, 78));
+        }
         sb.AppendLine();
         var spent = CharGen.LedgerFor(soul).ToDictionary(r => r.Name, r => (r.Left, r.Of));
         foreach (var f in CharGen.FeaturesAt(soul.Calling, soul.Level, soul.Sheet?.Subpath))

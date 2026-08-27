@@ -556,6 +556,88 @@ def check_origins(problems):
                                 f"the printed {half} carries {got}")
     return checks
 
+# ------------------------------------------------------------------- the nineteen Perks
+# A Perk is the one thing a Calling alone does, printed as a band above its level table and typed
+# into chargen.json so the app can sell the Calling in the picker the same way the page does. It is
+# the third surface to be written twice (after the features and the Origins), so it gets the same
+# treatment: the book is the source, and the two are held word for word. Unlike an Origin's boon,
+# there is no reason for the data to carry a terser form -- one sentence is one sentence -- so this
+# check is exact.
+
+PERK_RE = re.compile(
+    r'<h2 id="ix-c-[^"]*">(?P<cal>[^<]+)</h2>.*?'
+    r'<p class="perk"><span class="lbl">Perk</span>'
+    r'<span class="nm">(?P<name>.*?)\.</span>(?P<desc>.*?)</p>', re.S)
+
+PREGEN_RE = re.compile(
+    r'<h4>[^<]*(?:—|&mdash;)\s*([A-Za-z ]+?)\s*(?:·|&middot;)'
+    r'.*?<strong>Perk:</strong>\s*([^<.]+)\.', re.S)
+
+
+def check_perks(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    book = {_tidy(m.group("cal")): (_tidy(TAG_RE.sub("", m.group("name"))),
+                                    _prose(m.group("desc")))
+            for m in PERK_RE.finditer(page)}
+    d_by_name = {c["name"]: c for c in d["callings"]}
+
+    checks = 0
+    for c in d["callings"]:
+        checks += 1
+        perk = c.get("perk")
+        printed = book.get(c["name"])
+        if not perk or not perk.get("name") or not perk.get("desc"):
+            problems.append(f"{c['name']}: chargen.json carries no Perk")
+            continue
+        if printed is None:
+            problems.append(f"{c['name']}: the book prints no Perk band above its table")
+            continue
+        name, desc = printed
+        if name != _tidy(perk["name"]):
+            problems.append(f"{c['name']}: the book calls the Perk {name!r}, "
+                            f"the data calls it {_tidy(perk['name'])!r}")
+        said = _tidy(perk["desc"])
+        if desc != said:
+            at = next((i for i in range(min(len(desc), len(said))) if desc[i] != said[i]),
+                      min(len(desc), len(said)))
+            what = ("the app stops early" if desc.startswith(said) else
+                    "the app runs past the book" if said.startswith(desc) else
+                    "the wording differs")
+            problems.append(f"{c['name']} / Perk: {what} at character {at} "
+                            f"(book {len(desc)} chars, data {len(said)}); "
+                            f"book: ...{desc[at:at + 70]!r}")
+
+    for name in sorted(set(book) - {c["name"] for c in d["callings"]}):
+        problems.append(f"{name}: a Perk is printed for a Calling chargen.json does not have")
+
+    # Appendix D's six ready-made souls name their Perk on the same line as their features, which
+    # is a second hand-typed copy of it and so a second place for it to drift.
+    posse = page[page.index('id="posse"'):]
+    named = PREGEN_RE.findall(posse)
+    if len(named) != 6:
+        problems.append(f"Appendix D: {len(named)} ready-made souls name a Perk, expected 6")
+    for cal, perk in named:
+        checks += 1
+        cal = _tidy(cal)
+        want = _tidy(((d_by_name.get(cal) or {}).get("perk") or {}).get("name") or "")
+        if not want:
+            problems.append(f"Appendix D: a soul is built as a {cal!r}, which is no Calling")
+        elif _tidy(perk) != want:
+            problems.append(f"Appendix D / {cal}: the pregen names the Perk {_tidy(perk)!r}, "
+                            f"the Calling's is {want!r}")
+
+    # two Callings sharing a Perk name means one of them was copied and not rewritten
+    seen = {}
+    for c in d["callings"]:
+        n = _tidy((c.get("perk") or {}).get("name") or "")
+        if n and n in seen:
+            problems.append(f"{c['name']} and {seen[n]} both call their Perk {n!r}")
+        seen[n] = c["name"]
+    checks += 1
+    return checks
+
 
 def main():
     data, book = load_data(), load_book()
@@ -594,14 +676,15 @@ def main():
     checks += check_subpaths(problems)
     checks += check_budget(problems)
     checks += check_origins(problems)
+    checks += check_perks(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their 3rd-level paths, the arms table, Ch. IV's Origins and its encounter "
-          f"budget across both books ({checks} cross-checks, 0 drift).")
+          f"prose, their Perks, their 3rd-level paths, the arms table, Ch. IV's Origins and its "
+          f"encounter budget across both books ({checks} cross-checks, 0 drift).")
     return 0
 
 

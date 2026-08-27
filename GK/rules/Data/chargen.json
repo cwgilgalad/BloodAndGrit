@@ -1451,6 +1451,10 @@
   {
    "name": "Bounty Hunter",
    "blurb": "Some come to the frontier to take what others carried; the Bounty Hunter comes for the men who took it.",
+   "perk": {
+    "name": "Paper on Him",
+    "desc": "Give you a night in any town with a jail, a telegraph office, or a saloon, and you will come back knowing who wants a man, what for, how much, and whether the paper is still good. You will also come back knowing who wants you, which is worth finding out early."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -1649,6 +1653,10 @@
   {
    "name": "Drifter",
    "blurb": "The Drifter belongs to no town and answers to no brand. Scout, tracker, horse-thief, bounty-man, or simply a soul who cannot stop moving — the Drifter survives by seeing first, striking once, and being elsewhere by dawn.",
+   "perk": {
+    "name": "No Name Sticks",
+    "desc": "You have used a dozen names and answered to all of them. What you did in one town follows you to the next only if a living soul carries it there on purpose, and every description of you is wrong in at least one particular that matters."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -1839,6 +1847,10 @@
   {
    "name": "Engineer",
    "blurb": "Everyone else out here is trying to survive the country. You are trying to make it hold still long enough to build something on.",
+   "perk": {
+    "name": "Every Machine Answers",
+    "desc": "A quarter hour with any built thing and you can say what it does, what is wrong with it, and what putting it right would take: a lock, a pump, a press, a rifle action, a stamp mill, a clock. Whether you can fix it today depends on what is in the wagon. Whether you understand it depends on nothing at all."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -2037,6 +2049,10 @@
   {
    "name": "Gambler",
    "blurb": "Every town past the railhead has a green-felt table and a soul who lives by it. The Gambler reads people the way the Prospector reads rock — the tell, the bluff, the breaking nerve — and has made a working peace with chance that most folk only pray for.",
+   "perk": {
+    "name": "Never a Stranger at the Table",
+    "desc": "Any game running in any town has a chair for you and credit enough to sit down with. By the time it breaks up you know what the table knows: who is flush, who is lying, who is leaving in the morning, and who owes money to the wrong man."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -2234,6 +2250,10 @@
   {
    "name": "Gunhand",
    "blurb": "Some folk are simply faster than the rest, and have made their peace with what that means.",
+   "perk": {
+    "name": "Let Him Draw First",
+    "desc": "Against a foe who has already drawn on you, you act first. No roll, no argument. There are men out here who have built an entire career on standing very still and waiting to be threatened."
+   },
    "group": "Worldly",
    "hitDie": 10,
    "trainedSkills": 2,
@@ -2418,6 +2438,10 @@
   {
    "name": "Marshal",
    "blurb": "Lawman, cavalry sergeant, wagon-boss, or self-appointed keeper of a town that never asked — the Marshal leads.",
+   "perk": {
+    "name": "Your Word Is the Record",
+    "desc": "What you write down becomes the official account of it. A wire sent over your name is believed at the other end, a man you name as wanted is wanted, and a killing you rule justified stays ruled, in every town that recognizes any law at all. Being wrong on paper is a slower kind of trouble than being wrong in the street, and it takes longer to catch you."
+   },
    "group": "Worldly",
    "hitDie": 10,
    "trainedSkills": 4,
@@ -2610,6 +2634,10 @@
   {
    "name": "Mountain Man",
    "blurb": "Some men went up into the high country to trap beaver and never entirely came back down. The Mountain Man lives where the maps give out — the peaks, the deep timber, the snowbound passes — trapping, hunting, and reading a wilderness that kills the unready in an afternoon.",
+   "perk": {
+    "name": "Half a Wild Thing",
+    "desc": "Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it does not bolt. Men cross the street, and the ones who do not cross the street are generally the sort you would rather had."
+   },
    "group": "Worldly",
    "hitDie": 10,
    "trainedSkills": 6,
@@ -2807,6 +2835,10 @@
   {
    "name": "Prospector",
    "blurb": "The Prospector came west for the one honest promise the country ever made: that what lies in the ground belongs to whoever is fool enough to dig it out.",
+   "perk": {
+    "name": "Filed and Recorded",
+    "desc": "Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it is worth anything is a separate question. Being yours has started more shooting out here than gold ever did."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -3013,6 +3045,10 @@
   {
    "name": "Sawbones",
    "blurb": "Sawbones is what the West called a doctor, after the saw in the bag, and the trade was as rough as the name.",
+   "perk": {
+    "name": "Not On My Table",
+    "desc": "A soul whose wounds you have dressed since the last full rest will not bleed out while you are conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -3205,6 +3241,10 @@
   {
    "name": "Medicine Man",
    "blurb": "In a country that deals exclusively in wounds, the rarest soul of all is the one who closes them.",
+   "perk": {
+    "name": "One Look and You Know",
+    "desc": "Look at any living thing and name what is wrong with it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. Curing it is a longer conversation, and it starts here."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -3411,6 +3451,10 @@
   {
    "name": "Padre",
    "blurb": "Where the Preacher improvises, the Padre inherits. Behind one tired man at a crumbling mission stands eighteen centuries of liturgy, an unbroken chain of ordination, and a Church that has been writing down what it learned about the dark since long before the dark followed the settlers west.",
+   "perk": {
+    "name": "The Church Owes You a Bed",
+    "desc": "Every mission, chapel, rectory, and lay house that keeps the faith will take you in and yours with you: a roof, a meal, a horse if they can spare one, and the name of who to ask for in the next town. The Church has a long memory and longer ledgers, and one day somebody will present yours."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -3616,6 +3660,10 @@
   {
    "name": "Preacher",
    "blurb": "Whether ordained, defrocked, or self-anointed, the Preacher carries the Word into a country that has plainly been abandoned by whatever wrote it — and keeps preaching anyway.",
+   "perk": {
+    "name": "A Crowd Where You Stand",
+    "desc": "Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They will listen. What they do about it afterward is between them and God, and it has gone both ways in living memory."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -3822,6 +3870,10 @@
   {
    "name": "Shaman",
    "blurb": "The Shaman of this book is a spirit-talker: one who has learned that the country is not empty but crowded — with the spirits of beasts and weather, river and rock, and the long-departed dead — and who keeps a working peace with them through respect, offering, and the long apprenticeship of listening.",
+   "perk": {
+    "name": "You Dream It First",
+    "desc": "Every night you sleep on open ground, the Keeper owes you one true thing: an image, a warning, a name, a direction. It is never clear enough to act on cleanly and it has never once been wrong."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -4034,6 +4086,10 @@
   {
    "name": "Sister",
    "blurb": "Not every soul who serves does it from a pulpit. Your order sent you where the diocese would not go: the fever camp, the mining town with no doctor, the mission school at the end of a road nobody maintains.",
+   "perk": {
+    "name": "Nobody Turns Away a Sister",
+    "desc": "The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you will let you in first."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -4239,6 +4295,10 @@
   {
    "name": "Witch Hunter",
    "blurb": "Where the Marshal hunts men, the Witch Hunter hunts the things that wear them. Inquisitor, monster-killer, burned-out zealot — they are the grim specialists who ride toward the thing the town is fleeing, with silver in the cylinder and a litany of weaknesses by heart.",
+   "perk": {
+    "name": "The Guilty Flinch",
+    "desc": "You never have to accuse anybody. Stand where the room can see you, say plainly what you are, and watch: somebody always looks at the door. You are right often enough to keep doing it and wrong often enough that it ought to trouble you more than it does."
+   },
    "group": "Faith",
    "hitDie": 10,
    "trainedSkills": 4,
@@ -4458,6 +4518,10 @@
   {
    "name": "Dark Cultist",
    "blurb": "Where the Hexer uses the dark and the False Prophet cheats it, the Dark Cultist loves it. They have looked upon one of the old things beneath the country, understood exactly what it is, and chosen it — gladly, fully, with both hands.",
+   "perk": {
+    "name": "There Is Always a Brother",
+    "desc": "In any settlement of any size at least one soul keeps the faith, and the signs the two of you share will turn them up by the second night. They will help you. What they want in exchange is a separate conversation, and it is never nothing."
+   },
    "group": "Old Dark",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -4682,6 +4746,10 @@
   {
    "name": "False Prophet",
    "blurb": "A False Prophet did not sign for power as a Hexer does, nor inherit it as a Witch does. They stumbled instead on a meaner trick: the dark will pay, and pay handsomely, for worship — and it does not greatly care where the worship is aimed.",
+   "perk": {
+    "name": "Whatever You Say You Are",
+    "desc": "You arrive with papers, a history, and two or three people willing to swear to it: a bishop's letter, a discharge, a widow who remembers you fondly from somewhere she cannot quite place. It holds until somebody with a real reason to check actually checks, and most people go their whole lives without a real reason."
+   },
    "group": "Old Dark",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -4890,6 +4958,10 @@
   {
    "name": "Hexer",
    "blurb": "Some did not wait for the dark to come to them. The Hexer — conjure-doctor, hedge-sorcerer, pact-sworn — has reached into the old country beneath the country and pulled something back.",
+   "perk": {
+    "name": "Your Debts Are Public",
+    "desc": "What you pay for the dark shows on the world around you. Lamps gutter. Milk turns. The dog will not come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this."
+   },
    "group": "Old Dark",
    "hitDie": 6,
    "trainedSkills": 4,
@@ -5098,6 +5170,10 @@
   {
    "name": "Witch",
    "blurb": "Where the Hexer signs for borrowed power, the Witch was born to hers, or had it handed down a crooked family line, or learned it slow from an old woman at the edge of a town that no longer exists.",
+   "perk": {
+    "name": "They Come to You at Night",
+    "desc": "Whatever the town says about you in daylight, somebody knocks after dark: a girl in trouble, a man with a debt, a mother with a child that will not wake. You always have something worth trading, and there is always somebody in that town who cannot afford to watch you hang."
+   },
    "group": "Old Dark",
    "hitDie": 6,
    "trainedSkills": 4,

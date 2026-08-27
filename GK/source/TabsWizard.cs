@@ -357,6 +357,7 @@ public partial class MainForm
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.Items[i]);
                 if (c == null) return null;
                 return $"{c.name} — a Calling of the {c.group}.\n{c.blurb}\n\n"
+                     + (c.perk != null ? $"Perk — {c.perk.name}: {c.perk.desc}\n\n" : "")
                      + $"Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
                      + $"trains {c.trainedSkills} skills plus your WIT modifier; leans on {string.Join(", ", c.keyAbilities.Take(2))}."
                      + (c.signsKnownAt != null ? " Works the Signs of Ch. XIII." : "")
@@ -378,6 +379,7 @@ public partial class MainForm
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.SelectedItem);
                 if (c == null) { detail.Text = ""; return; }
                 detail.Text = $"{c.name} — a Calling of the {c.group}\n\n{c.blurb}\n\n" +
+                    (c.perk != null ? $"PERK — {c.perk.name}\n{c.perk.desc}\n\n" : "") +
                     $"Hit Die: d{c.hitDie}\nStrong saves: {c.strongSaves}\nTrained skills: {c.trainedSkills} + WIT modifier\n" +
                     $"Key abilities (in order): {string.Join(", ", c.keyAbilities)}\n" +
                     (c.signsKnownAt != null ? "Works the Signs.\n" : "") +

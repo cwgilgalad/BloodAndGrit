@@ -98,6 +98,10 @@ public class CgRow
 public class CgCoin { public int dice { get; set; } public int mult { get; set; } public List<string> kit { get; set; } = new(); public string note { get; set; } }
 public class CgPool { public string name { get; set; } public string formula { get; set; } public int min { get; set; } }
 public class CgChoice { public string label { get; set; } public List<string> options { get; set; } = new(); }
+/// <summary>The one thing a Calling alone does, true from 1st level and never rolled for. Printed
+/// as a band above the Calling's table in the Player's Book, transcribed here so the picker can
+/// sell a Calling the way the page does; guarded word for word by audits/verify_rules.py.</summary>
+public class CgPerk { public string name { get; set; } public string desc { get; set; } }
 public class CgSubOption { public string name { get; set; } public string boon { get; set; } }
 public class CgSubpath { public string section { get; set; } public List<CgSubOption> options { get; set; } = new(); }
 
@@ -108,6 +112,8 @@ public class CgCalling
     /// Calling <em>is</em> and not only what it rolls. Transcribed from the book, guarded by
     /// audits/verify_rules.py.</summary>
     public string blurb { get; set; }
+    /// <summary>Its Perk — see <see cref="CgPerk"/>. Every Calling has one.</summary>
+    public CgPerk perk { get; set; }
     public int hitDie { get; set; } public int trainedSkills { get; set; }
     public string strongSaves { get; set; }
     public List<CgRow> rows { get; set; } = new();
