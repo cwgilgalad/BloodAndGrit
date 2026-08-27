@@ -2139,13 +2139,15 @@ public static class Rules
             shape = WorkShape.Trait;
         else if (feet > 0 || Has(effect, @"\bEach\s+(?:lesser|creature|soul|of them)|Every\s+creature|every\s+ally|every\s+uncanny|\bAllies\s+who|the\s+party\b|in\s+the\s+camp\b"))
             shape = WorkShape.Area;
-        else if (Has(effect, @"another'?s?\s+Sign|End\s+another|their\s+Sign\s+DC|unmakes\s+the\s+lower"))
+        else if (Has(effect, @"another'?s?\s+Sign|End\s+another|their\s+Sign\s+DC|unmakes\s+the\s+lower"
+                           + @"|their\s+working\s+DC|the\s+worker'?s\s+DC|comes\s+apart"
+                           + @"|answer\s+a\s+Sign|may\s+not\s+answer"))
             shape = WorkShape.Counter;
         else if (Has(effect, @"your\s+familiar|year\s+of\s+your\s+own\s+life|\byou\s+work\b|as\s+though\s+you\s+were|wear\s+it\s+for"))
             shape = WorkShape.Self;
         else if (Has(effect, @"across\s+a\s+doorway|on\s+a\s+wall|Lay\s+your\s+palm|Ask\s+the\s+dark|Put\s+a\s+question|Bless\s+a\s+journey|out\s+of\s+the\s+dark|wherever\s+they\s+are|the\s+ground\s+splits|that\s+country|\ba\s+house\b|(?:its|that)\s+roof|a\s+place\s+is|into\s+a\s+(?:cord|draught)|Call\s+up\b|the\s+weather\b|upon\s+a\s+place|a\s+grave\b|patch\s+of\s+ground|Sanctify|spirits\s+of\s+(?:a|that)\s+(?:place|ground)|ammunition|Undo\s+one|\bthe\s+bounds\s+of\b|\ba\s+doorway\b|\ba\s+threshold\b|\ba\s+corpse\b|\ba\s+flame\s+you\b"))
             shape = WorkShape.Place;
-        else if (Has(effect, @"\bally\b|\ballies\b|companion|another\s+soul|\ba\s+soul\b|one\s+soul\s+who|(?:wounded|hurt|mortally\s+hurt)\s+soul|their\s+Frightened|a\s+dying\b|the\s+dying\b|Take\s+an\s+ally"))
+        else if (Has(effect, @"\bally\b|\ballies\b|companion|another\s+soul|\ba\s+soul\b|one\s+soul\s+who|(?:wounded|hurt|mortally\s+hurt)\s+soul|their\s+Frightened|a\s+dying\b|the\s+dying\b|Take\s+an\s+ally|in\s+the\s+hands\s+of|give\s+it\s+back"))
             shape = WorkShape.Ally;
         else if (pc.HasSave || Has(effect, @"One\s+living\s+creature|\ba\s+creature\b|Name\s+a\s+creature|one\s+creature|Point\s+and\s+name|the\s+creature\b|\ba\s+thing\b"))
             shape = WorkShape.OneCreature;

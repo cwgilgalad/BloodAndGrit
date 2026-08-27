@@ -685,6 +685,68 @@ def check_arithmetic_stops(problems):
                             f"has always kept out of the players' hands")
     return checks
 
+# ------------------------------------------------------- the ninety-four Signs and Miracles
+# The largest surface in the book with no guard on it at all, found on 2026-08-27 while adding
+# eight workings: the Callings' features, their Perks, their paths, the arms table, Ch. IV's
+# Origins and the encounter ladder were all held to the data, and the two chapters the game is
+# named for were not. Every working is printed in the Player's Book and typed into chargen.json,
+# and nothing compared them.
+#
+# It bit on its first run, on the entries this very session had written: eight workings were
+# reworded in the data after the book entries were generated from them, and the book went on
+# printing the earlier draft.
+#
+# Held: the Rank, the cost line, and the prose, word for word. There is no reason for the data to
+# carry a terser form the way an Origin's boon does -- the book and the app print the same sentence
+# to the same reader -- so this check is exact.
+
+WORKING_RE = re.compile(
+    r'<h3 id="ix-(?P<kind>[sm])-[^"]*">(?P<name>[^<]+)</h3>\s*'
+    r'<p><em>Rank (?P<rank>\d+) · (?P<cost>[^<]*?)\.</em>(?P<desc>.*?)</p>', re.S)
+
+
+def check_workings(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    book = {}
+    for m in WORKING_RE.finditer(page):
+        book[_tidy(m.group("name"))] = (m.group("kind"), int(m.group("rank")),
+                                        _tidy(m.group("cost")), _prose(m.group("desc")))
+
+    checks = 0
+    for kind, key in (("s", "signs"), ("m", "miracles")):
+        for w in d[key]:
+            checks += 1
+            printed = book.get(_tidy(w["name"]))
+            if printed is None:
+                problems.append(f"{w['name']} ({key[:-1]}): in chargen.json, not printed in the book")
+                continue
+            bk, brank, bcost, bdesc = printed
+            if bk != kind:
+                problems.append(f"{w['name']}: printed as a {'Sign' if bk == 's' else 'Miracle'}, "
+                                f"the data files it under {key}")
+            if brank != w["rank"]:
+                problems.append(f"{w['name']}: the book prints Rank {brank}, the data says {w['rank']}")
+            if bcost != _tidy(w["cost"]):
+                problems.append(f"{w['name']}: the book's cost line reads {bcost!r}, "
+                                f"the data says {_tidy(w['cost'])!r}")
+            said = _tidy(w["desc"])
+            if bdesc != said:
+                at = next((i for i in range(min(len(bdesc), len(said))) if bdesc[i] != said[i]),
+                          min(len(bdesc), len(said)))
+                what = ("the app stops early" if bdesc.startswith(said) else
+                        "the app runs past the book" if said.startswith(bdesc) else
+                        "the wording differs")
+                problems.append(f"{w['name']}: {what} at character {at} "
+                                f"(book {len(bdesc)} chars, data {len(said)}); "
+                                f"book: ...{bdesc[at:at + 70]!r}")
+
+    named = {_tidy(w["name"]) for w in d["signs"] + d["miracles"]}
+    for name in sorted(set(book) - named):
+        problems.append(f"{name}: printed as a working the app has never heard of")
+    return checks
+
 
 def main():
     data, book = load_data(), load_book()
@@ -725,14 +787,16 @@ def main():
     checks += check_origins(problems)
     checks += check_perks(problems)
     checks += check_arithmetic_stops(problems)
+    checks += check_workings(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their Perks, their 3rd-level paths, the arms table, Ch. IV's Origins and its "
-          f"encounter budget across both books ({checks} cross-checks, 0 drift).")
+          f"prose, their Perks, their 3rd-level paths, every Sign and Miracle, the arms table, "
+          f"Ch. IV's Origins and its encounter budget across both books "
+          f"({checks} cross-checks, 0 drift).")
     return 0
 
 

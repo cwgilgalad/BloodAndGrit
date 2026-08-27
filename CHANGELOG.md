@@ -8,6 +8,64 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.36 · GritKeeper v1.51.0 — answering a working, and eight that reach a fight
+  (2026-08-27).**
+
+  The first instalment of B5. Signs and Miracles were surveyed against each other and against a
+  round, and the result was not what the question assumed: **9 of 40 Signs reached a fight and 11 of
+  46 Miracles did**, which is within a point of each other. The two sides were already balanced. What
+  was lopsided sat *inside* the lists, and one of them was stark. **The Craft, the Witch's own list
+  and closed to every other Calling, reached a fight in none of its twelve.** She has a d6 Hit Die
+  and the Slight attack rank, so a fight was a thing she sat through. Rank 5 Signs were likewise
+  empty of anything a round cares about, so the top of the Old Dark's ladder did nothing at the
+  moment it cost the most to reach.
+
+  **Answering a working.** Both kinds of power now have a way to stop another before it lands, and
+  they are the same roll: spend a Reaction and the price, then roll d20 + half your level + your
+  working ability against the other worker's DC. Beat it and the working comes apart, its price
+  spent, and nothing happens. The difference between them is the difference between the two kinds
+  of power. **Foul the Working** (Sign, Rank 2) answers *anything* worked — a Sign, a Miracle, the
+  thing a creature does with its mouth — because the dark does not care whose hands are on the wire;
+  the price of reaching for a line already pulled taut is that on a natural 1 it lands on you
+  instead. **Not While I Stand** (Miracle, Rank 2) answers only the dark and never another Miracle,
+  because what is asked for in good faith is not yours to refuse; in exchange nothing turns on you,
+  and you may do it as often as you can pay. Ch. XI carries the shared rule in a box, and seven
+  smoke assertions hold the pair together, because either one alone is an unanswerable advantage.
+
+  **Six more that reach a fight**, placed where the survey said the holes were. The Craft gets **The
+  Nail and the Name** (Rank 2) and **The Turning** (Rank 4), and both are the Craft's own identity
+  rather than battle magic bolted on: its power has always been preparation, so its combat entries
+  are prepared work paying off — the name you learned, the nail you kept, the look you have been
+  saving. The Common Signs get **The Debt Called In** at Rank 5, which is the Old Dark's honest
+  answer to something too big to shoot: 6d6, no save, and a point of Mark for reaching that far into
+  a ledger that was never yours. The blessing list, which all six Callings of Faith draw on, gets
+  **Anoint the Iron** (Rank 3) — Faith's contribution to the damage problem is to make somebody
+  else's gun matter — and **The Hour Is Not Yours** (Rank 5). The spirits list, empty of combat in
+  all six, gets **Set the Pack On**. The vigil and the liturgy were deliberately left alone: the
+  Sister's list was written to have almost nothing in it that wins a fight, and the Padre fights
+  through his features.
+
+  **`verify_rules.py` gained `check_workings`, and it bit on its first run.** Ninety-four Signs and
+  Miracles are printed in the book and typed into `chargen.json`, and until now **nothing compared
+  them** — the Callings' features, their Perks, their paths, the arms table, Ch. IV's Origins and the
+  encounter ladder all had guards, and the two chapters this game is named for did not. Its first run
+  found seven of this session's own entries stale, where the data was reworded after the book was
+  generated from it. 1190 → 1284 cross-checks.
+
+  Two more faults found by reading rather than by failing. **`WorkShape.Counter` has existed since
+  the shape reader was written**, and neither of the two workings actually written to be counters
+  reached it: the Sign read as `OneCreature` and the Miracle as `Unclear`, which is the only one the
+  suite would have caught. And **Anoint the Iron read as `Self`**, when it says outright that the
+  weapon does not have to be yours and belongs in the hands of whoever out here is best with it. The
+  classifier was taught both, and the change was verified by diffing all ninety-four shapes before
+  and against after: exactly three moved.
+
+  Also: Ch. X now names **boiled leather a blade answer** and says so plainly. Measured, it carries
+  the same shot DR the duster does and takes a point of Defense for the privilege, so against lead it
+  is strictly the worse coat at two and a half times the price. The same paragraph states what all
+  three armours do as the Tiers climb, which is decay: a duster turns aside about a fifth of what a
+  lesser thing hits you for and about a twentieth of what a great one does. 223 → 227 pages.
+
 - **Player's v2.35 · Keeper's v2.19 · Bestiary v2.15 — where the arithmetic stops (2026-08-27).**
 
   B4 measured that the encounter budget holds from 1st level to 6th and then stops, and that no
