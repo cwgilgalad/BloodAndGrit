@@ -8,6 +8,25 @@ Desktop\Git repos.)
 
 ---
 
+- **Modules I & II v1.4 · Module III v1.5 — *What the Night Costs* re-run on an armed posse
+  (2026-08-27).**
+
+  Every figure on all three *What the Night Costs* pages was measured with the Mountain Man
+  punching. He is one of the four souls the harness runs, his Hawken never reached his weapon list,
+  and the fallback is *Fists / Boots, 1d3* — so the tables three shipped books print as the cost of
+  a night were the cost of a night three-and-a-half-handed. Fixed in v1.51.0; re-run here.
+
+  The posse's hit rate went **down** in every fight, which is the interesting part. A Buffalo Rifle
+  is Kickback: fired unbraced it takes −2 and leaves the shooter Off-Guard, where a fist is Agile
+  and takes neither. The *cold* pass these tables report is the floor, and the floor does not brace.
+  Outcomes still improved, because 1d12 with Fatal d12 lands harder than 1d3 when it lands. That is
+  the Mountain Man's whole design arguing with itself in public, and it reads correctly: his rifle
+  punishes haste and his own Dead Aim is paid for with the Aim action.
+
+  Also corrected: the Nerve line printed **the first run's** ceiling beside an average of all
+  twelve, so it read as a fixed posse maximum and moved whenever anything upstream consumed a
+  different number of dice. It is the average of the twelve now.
+
 - **Player's Book v2.34 · Keeper's Book v2.18 · GritKeeper v1.51.0 — the Aim finding printed, and
   the posse turns out to have been unarmed (2026-08-27).**
 

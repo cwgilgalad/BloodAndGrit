@@ -367,9 +367,14 @@ void Report(AdventureResult a, StringBuilder md)
     md.AppendLine($"- **Finished the night on their feet: {a.Finished} of {a.Runs.Count} runs.** "
                 + $"Broke off and rode out: {a.BrokeOff}. Put down to the last soul: {a.Wiped}.");
     md.AppendLine($"- Souls down at the end, on average: **{a.AvgDown:0.0} of 4**.");
+    // The average, not the first run's. Every run rolls a fresh posse, so their Nerve maxima
+    // differ, and printing one of them beside an average of all twelve read as a posse's fixed
+    // ceiling. It also moved whenever anything upstream consumed a different number of dice --
+    // which is exactly what happened on 2026-08-27, when arming the Mountain Man shifted every
+    // posse generated after the first fight and this denominator jumped for no stated reason.
     md.AppendLine($"- Nerve left across the whole posse, on average: **{a.AvgNerve:0.0} of "
-                + $"{a.Runs.First().NerveMax}**. Runs in which at least one soul broke (Nerve to 0): "
-                + $"**{a.BrokeAny}** of {a.Runs.Count}.");
+                + $"{a.Runs.Average(r => r.NerveMax):0.0}**. Runs in which at least one soul broke "
+                + $"(Nerve to 0): **{a.BrokeAny}** of {a.Runs.Count}.");
     md.AppendLine();
 
     md.AppendLine($"- **The same twelve nights, with the Sawbones working between acts** "

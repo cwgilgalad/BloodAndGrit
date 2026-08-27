@@ -117,9 +117,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.34 | 221 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.18 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.14 | 199 | none (175 creatures) |
-| Module I — The Salt at Coffin Wells | v1.3 | 29 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.3 | 30 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.4 | 30 | one inline SVG map (two panels), downloadable |
+| Module I — The Salt at Coffin Wells | v1.4 | 29 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.4 | 30 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.5 | 30 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
