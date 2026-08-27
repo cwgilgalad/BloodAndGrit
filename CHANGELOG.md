@@ -8,6 +8,118 @@ Desktop\Git repos.)
 
 ---
 
+- **The Player's Book v2.33 — a Perk for every Calling (2026-08-27).**
+
+  Nineteen new lines, one above each Calling's level table: the single thing that Calling alone
+  does, true from 1st level, costing nothing and never rolled for. They answer the question a player
+  asks in the first ten minutes, which the book had been answering with a column of saves.
+
+  The brief was **signature rather than power**. A Perk should be the shortest honest reason to pick
+  a Calling, and it should weigh almost nothing on the combat side, so that the balance pass still
+  ahead does not open with nineteen new variables in it. Several are worth a great deal at the right
+  moment and nothing at all for weeks. Two or three are frankly liabilities, which is rather the
+  point of them. The Hexer is the clearest case: *Your Debts Are Public* means lamps gutter, milk
+  turns, the dog will not come into the room, and the whole town knows what he is inside a week
+  without one of them being able to prove a word of it. That is the Hexer stated in four sentences,
+  and a player who wants it wants it on purpose.
+
+  Elsewhere: the Marshal writes the record and the record is believed, in every town that recognizes
+  any law at all. Every description of the Drifter is wrong in at least one particular that matters.
+  The Sawbones holds anyone whose wounds he has dressed one point short of dead for as long as he is
+  conscious, which turns a death into a race and leaves the race the only question. Doors open for
+  the Sister that open for nobody else in the posse. The Prospector can file on any unclaimed ground
+  and make it stick in a territorial court, which has started more shooting out here than gold ever
+  did.
+
+  **Written around what each Calling already had.** Five of the first drafts were re-skins of
+  features their Calling already owned, found by reading the feature list beside the draft rather
+  than by any check failing: *Hard Country* already feeds the Mountain Man and four others,
+  *Assayer's Eye* already appraises at a glance, *Cardsharp* already spots a crooked game,
+  *Spirit-Sight* already lets the Shaman address a spirit of place, and *Reputation* already lets
+  the Marshal requisition. Each was rewritten onto ground its Calling did not already hold.
+
+  On the app side a Perk is a new `CgPerk` on `CgCalling`, printed in all three places the app sells
+  a Calling: the hover tip, the wizard's detail panel, and the Calling card window. It sits outside
+  the level table on purpose, so `FeaturesAt` never returns one and the Tracker's rationed strip
+  never draws a card for something nobody can spend. A smoke assertion holds that property by
+  running all nineteen through `ReadLimit` and `ReadTally` and requiring both to come back empty.
+
+  `verify_rules.py` gained `check_perks`, the third surface held to the book word for word after the
+  feature prose and Ch. IV's Origins. 1160 → 1180 cross-checks. 217 → 221 pages.
+
+- **The Player's Book v2.32 — the Sister and the Engineer (2026-08-27).**
+
+  Two new Callings, taking the roster from seventeen to nineteen.
+
+  **The Sister** (Faith, d8, pool **Mercy**) is the one who stays in the room. Her order sent her to
+  the fever camp and the mission school at the end of a road nobody maintains, and what she has is
+  neither the Padre's authority nor the Preacher's conviction but a habit of not leaving. She was
+  deliberately not built as a third healer: the Sawbones and the Medicine Man already own Blood and
+  body between them, so the Sister holds **Nerve** instead, a role no Calling filled. *Hold the
+  Lamp* gives everyone who can see her light +2 on Dread Checks and takes a point off what they
+  lose. *Not One Step* makes her immune to Frightened and to anything that would move her, and
+  extends that to whoever she has hold of. *The Least of These*, at 10th, lets her refuse a death
+  once a session, at the price of her own Blood, her whole pool, and the certain knowledge of
+  whatever wanted that soul that she is the one who took it.
+
+  She brings a seventh Miracle list, **the Vigil**: warding, watching work with almost nothing in it
+  that wins a fight. *The Watch Kept* walks a boundary. *Nothing Comes In* holds a doorway against
+  anything that has never had to learn what to do about a closed door. *The Body Kept Whole* sits
+  the night with a corpse so that nothing can raise, call, wear, or speak through it.
+
+  **The Engineer** (Worldly, d8, pool **Ingenuity**) builds one thing that exists nowhere else. Say
+  what it is and what single useful thing it does; working it costs a point and a Beat; on a natural
+  1 it breaks, and mending it takes an hour and your hands, and it is never quite the same
+  afterward. A second device comes at 5th, a third at 8th, a fourth at 10th, and *The Machine Age*
+  finally makes one of them permanent and lendable — the line between a trick and a tool. Around
+  that sit *Powder & Fuse*, *Jury-Rig*, *Cut the Charge*, and *Field Expedient*, which is ten
+  minutes and whatever the ground offers.
+
+  **What the checks caught.** The shape classifier that tells the Strike dialog who a working
+  targets could not read two of the six new Miracles at all, and read two more wrongly: a warded
+  camp came back as *the worker* and a held doorway as *one creature*. Neither wrong reading fails
+  any assertion — the suite only tests for Unclear — so they were found by printing all eighty-six
+  workings against their shapes and reading the list. The classifier now knows what a threshold, a
+  boundary and a body are, which is vocabulary the ranks 6–8 work will need anyway.
+
+  `verify_rules.py` then held both new Callings to the house conventions, which is how they came to
+  follow them: path features and scaling rows belong in the level table and the subpath box, never
+  in `featureDescs`, and a Calling's blurb is **derived** from its opening paragraph rather than
+  typed. 1056 → 1160 cross-checks. 208 → 217 pages.
+
+- **The Player's Book v2.31 · GritKeeper v1.50.0 — six more Origins, and a guard on all of them (2026-08-26).**
+
+  Ch. IV grows from ten Origins to sixteen. **The Banker**, who called the notes and now finds the
+  paper has followed him west. **The Drover**, up the long trails out of Texas, loud from twelve
+  years of shouting over a thousand head. **The Madam**, who ran a business and heard every secret
+  that came through the door with the men. **The Newspaperman**, with a drawer of the stories no
+  editor would run. **The Railroad Hand**, who worked the line and reads a timetable the way a
+  preacher reads a psalm. And **The Undertaker**, whom no corpse ever frightened until the day one
+  sat up.
+
+  Each was built so the app can mine it the way it mines the other ten: a rationed half the tracker
+  counts down, and standing modifiers it draws as chips. The six burdens deliberately do not rhyme
+  with each other. The first draft gave all six a social penalty, which is a way of writing one
+  Origin six times, so they were pulled apart: the Drover is loud (&minus;2 Stealth), the
+  Newspaperman's face asks before his mouth does (&minus;1 Deceive), and the Undertaker is Off-Guard
+  the first time each session a corpse turns out to be something else.
+
+  **`verify_rules.py` now checks the Origins, which nothing has ever done.** The Callings had a
+  guard, the arms table had a guard, the encounter ladder had a guard, and Ch. IV's Origins had
+  none. The app parses those, which makes the gap worse than it sounds: a modifier that reads one
+  way in the book and another in the data hands a player a different character. The new check holds the names, the printed Gift, every trained skill and every signed modifier against
+  `chargen.json`. 991 → 1056 cross-checks.
+
+  It found two faults on its first run. The game has no skill called **Sense Motive**. The skill is
+  Insight, and the Pathfinder word had survived in three places, including a +2 the Gambler Origin
+  grants on a skill no character sheet has. And the Gambler's +2 was printed under **Gift** while
+  the data filed it under **Boon**, so the app's chip and the book's page attributed the same rule
+  to different halves of the entry. Both fixed.
+
+  **Every Contents and Index row is now clickable across all six books.** The page number sits
+  outside the anchor, so a reader tapping the number — on a phone, a good half of what the eye aims
+  at — hit nothing at all. The row now delegates the click to its own link. 206 → 208 pages.
+
 - **The Player's Book v2.30 — the Returned (2026-08-25).**
 
   Ch. XII gains **The Returned**, the rules for playing a character who died and did not stay dead.

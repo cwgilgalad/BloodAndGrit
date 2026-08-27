@@ -64,6 +64,9 @@ UNSHIPPED = {
               "build was ever published under this number",
     "1.32.0": "merged 2026-08-01 but never published, signed or packaged — the miss that this "
               "script exists to prevent. Its work reached the Keeper inside v1.33.0 the next day",
+    "1.49.0": "merged 2026-08-25 and superseded the next morning, when the Fifteen Levels program "
+              "opened against it before anything was packaged; the keyboard pass and the Returned "
+              "ship inside v1.50.0",
 }
 
 

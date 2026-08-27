@@ -4,7 +4,7 @@
 The rest of the chain is already self-checking: the GritKeeper app reads every number from
 `GK/rules/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
 the data and the app can never quietly disagree (the smoke suite fails first). The one seam left
-to a human hand is the *printed book* — the Player's Book prints seventeen Calling tables that I
+to a human hand is the *printed book* — the Player's Book prints nineteen Calling tables that I
 transcribe into chargen.json. This checks that transcription automatically: it parses the built
 `blood-and-grit.html`, reads each Calling's statline rank and its ten rows of attack and saves,
 and asserts the book agrees with the data AND both agree with the one spine formula (Ch. XIV):
@@ -478,12 +478,173 @@ def check_budget(problems):
     return checks
 
 
+# ---------------------------------------------------------------- the Origins
+# Ch. IV's Origins are prose in chargen.json AND prose in the book, transcribed by hand between
+# the two, and until 2026-08-26 nothing held them together at all -- the Callings had a guard, the
+# arms table had a guard, and the ten Origins had none. That mattered more than it looked: the app
+# does not merely display an Origin, it MINES it. CharGen.OriginFeatures pulls the rationed halves
+# ("once per scene ...") out of the boon and burden text into tracked rows, and CharGen.OriginEdges
+# pulls the standing modifiers into chips. So a +2 that reads one way in the book and another in
+# the data is not a typo, it is the app handing a player a different character than the book
+# describes.
+#
+# Three things are checked, and deliberately not a fourth. The names must match as a set; the
+# printed Gift must be exactly the data's gifts; every trained skill the data grants must be named
+# in the book's paragraph; and every signed modifier in the data's boon and burden must appear in
+# the book's. What is NOT checked is that the two prose texts are identical, because they are not
+# meant to be -- the data carries a terser form of the same rule, and demanding they match word for
+# word would either fail on ten Origins that are correct today or force the book to write like a
+# data file.
+ORIGIN_RE = re.compile(r'<h3 id="ix-o-([a-z]+)">([^<]+)</h3>\s*<p>(.*?)</p>', re.S)
+GIFT_RE = re.compile(r'([+−-])(\d+)\s+(STR|DEX|CON|WIT|RES|PRE)')
+MOD_RE = re.compile(r'([+−-])(\d+)')
+
+
+def _mods(text):
+    """Signed modifiers as a sorted list, so two prose passages can be compared on their numbers."""
+    return sorted(int(("-" if sign in "−-" else "") + n) for sign, n in MOD_RE.findall(text))
+
+
+def check_origins(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    origins = {o["name"]: o for o in d["origins"]}
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    book = {}
+    for slug, name, body in ORIGIN_RE.findall(page):
+        book[html.unescape(name).strip()] = html.unescape(body)
+
+    missing = set(origins) - set(book)
+    extra = set(book) - set(origins)
+    for n in sorted(missing):
+        problems.append(f"Origin {n!r}: in chargen.json, no <h3> in the book")
+    for n in sorted(extra):
+        problems.append(f"Origin {n!r}: printed in the book, absent from chargen.json")
+
+    checks = 0
+    for name, o in origins.items():
+        body = book.get(name)
+        if body is None:
+            continue
+
+        # the three spans the entry is written in
+        gift = body.split("Boon:")[0].split("Gift:")[-1]
+        boon = body.split("Boon:")[-1].split("Burden:")[0] if "Boon:" in body else ""
+        burden = body.split("Burden:")[-1] if "Burden:" in body else ""
+
+        printed = {ab: int(n) * (-1 if sign in "−-" else 1)
+                   for sign, n, ab in GIFT_RE.findall(gift)}
+        checks += 1
+        if printed != o["gifts"]:
+            problems.append(f"Origin {name}: printed Gift {printed} != data gifts {o['gifts']}")
+
+        for skill in o.get("trained", []) + o.get("trainedChoice", []):
+            checks += 1
+            # "Lore (Frontier)" is printed as "Lore (Frontier or Occult, your choice)", so the
+            # words are what must be present, not the exact parenthesised form.
+            if not all(w in body for w in re.findall(r"[A-Za-z]+", skill)):
+                problems.append(f"Origin {name}: data trains {skill!r}, the book never names it")
+
+        for half, text in (("boon", boon), ("burden", burden)):
+            want = _mods(o.get(half, ""))
+            checks += 1
+            if not want:
+                continue
+            got = _mods(text)
+            if any(w not in got for w in want):
+                problems.append(f"Origin {name}: data {half} carries {want}, "
+                                f"the printed {half} carries {got}")
+    return checks
+
+# ------------------------------------------------------------------- the nineteen Perks
+# A Perk is the one thing a Calling alone does, printed as a band above its level table and typed
+# into chargen.json so the app can sell the Calling in the picker the same way the page does. It is
+# the third surface to be written twice (after the features and the Origins), so it gets the same
+# treatment: the book is the source, and the two are held word for word. Unlike an Origin's boon,
+# there is no reason for the data to carry a terser form -- one sentence is one sentence -- so this
+# check is exact.
+
+PERK_RE = re.compile(
+    r'<h2 id="ix-c-[^"]*">(?P<cal>[^<]+)</h2>.*?'
+    r'<p class="perk"><span class="lbl">Perk</span>'
+    r'<span class="nm">(?P<name>.*?)\.</span>(?P<desc>.*?)</p>', re.S)
+
+PREGEN_RE = re.compile(
+    r'<h4>[^<]*(?:—|&mdash;)\s*([A-Za-z ]+?)\s*(?:·|&middot;)'
+    r'.*?<strong>Perk:</strong>\s*([^<.]+)\.', re.S)
+
+
+def check_perks(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    book = {_tidy(m.group("cal")): (_tidy(TAG_RE.sub("", m.group("name"))),
+                                    _prose(m.group("desc")))
+            for m in PERK_RE.finditer(page)}
+    d_by_name = {c["name"]: c for c in d["callings"]}
+
+    checks = 0
+    for c in d["callings"]:
+        checks += 1
+        perk = c.get("perk")
+        printed = book.get(c["name"])
+        if not perk or not perk.get("name") or not perk.get("desc"):
+            problems.append(f"{c['name']}: chargen.json carries no Perk")
+            continue
+        if printed is None:
+            problems.append(f"{c['name']}: the book prints no Perk band above its table")
+            continue
+        name, desc = printed
+        if name != _tidy(perk["name"]):
+            problems.append(f"{c['name']}: the book calls the Perk {name!r}, "
+                            f"the data calls it {_tidy(perk['name'])!r}")
+        said = _tidy(perk["desc"])
+        if desc != said:
+            at = next((i for i in range(min(len(desc), len(said))) if desc[i] != said[i]),
+                      min(len(desc), len(said)))
+            what = ("the app stops early" if desc.startswith(said) else
+                    "the app runs past the book" if said.startswith(desc) else
+                    "the wording differs")
+            problems.append(f"{c['name']} / Perk: {what} at character {at} "
+                            f"(book {len(desc)} chars, data {len(said)}); "
+                            f"book: ...{desc[at:at + 70]!r}")
+
+    for name in sorted(set(book) - {c["name"] for c in d["callings"]}):
+        problems.append(f"{name}: a Perk is printed for a Calling chargen.json does not have")
+
+    # Appendix D's six ready-made souls name their Perk on the same line as their features, which
+    # is a second hand-typed copy of it and so a second place for it to drift.
+    posse = page[page.index('id="posse"'):]
+    named = PREGEN_RE.findall(posse)
+    if len(named) != 6:
+        problems.append(f"Appendix D: {len(named)} ready-made souls name a Perk, expected 6")
+    for cal, perk in named:
+        checks += 1
+        cal = _tidy(cal)
+        want = _tidy(((d_by_name.get(cal) or {}).get("perk") or {}).get("name") or "")
+        if not want:
+            problems.append(f"Appendix D: a soul is built as a {cal!r}, which is no Calling")
+        elif _tidy(perk) != want:
+            problems.append(f"Appendix D / {cal}: the pregen names the Perk {_tidy(perk)!r}, "
+                            f"the Calling's is {want!r}")
+
+    # two Callings sharing a Perk name means one of them was copied and not rewritten
+    seen = {}
+    for c in d["callings"]:
+        n = _tidy((c.get("perk") or {}).get("name") or "")
+        if n and n in seen:
+            problems.append(f"{c['name']} and {seen[n]} both call their Perk {n!r}")
+        seen[n] = c["name"]
+    checks += 1
+    return checks
+
+
 def main():
     data, book = load_data(), load_book()
     problems = []
 
-    if len(book) != 17:
-        problems.append(f"parsed {len(book)} attack tables from the book, expected 17")
+    if len(book) != 19:
+        problems.append(f"parsed {len(book)} attack tables from the book, expected 19")
 
     for name, d in data.items():
         b = book.get(name)
@@ -514,14 +675,16 @@ def main():
     checks += check_features(problems)
     checks += check_subpaths(problems)
     checks += check_budget(problems)
+    checks += check_origins(problems)
+    checks += check_perks(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their 3rd-level paths, the arms table, and Ch. IV's encounter budget "
-          f"across both books ({checks} cross-checks, 0 drift).")
+          f"prose, their Perks, their 3rd-level paths, the arms table, Ch. IV's Origins and its "
+          f"encounter budget across both books ({checks} cross-checks, 0 drift).")
     return 0
 
 

@@ -84,6 +84,7 @@ editorial-denials.md
 #     three of them plus a tree of build artifacts.
 HANDOFF-*.md
 AUDIT-*.md
+PROGRAM-*.md
 _combatlab/
 #   * a dead one-shot: add_index.py baked the v2.9 Index into a source file that no longer exists
 #     (player-src.html, retired 2026-07-18) and has been marked "do not re-run" ever since.

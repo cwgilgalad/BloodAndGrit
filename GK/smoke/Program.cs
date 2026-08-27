@@ -584,7 +584,7 @@ foreach (var (table, floor) in new[]
             .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
             .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
 
-        T("durations: all eighty workings still read", workings.Count == 80);
+        T("durations: all eighty-six workings still read", workings.Count == 86);
         // A duration is "findable" when the printed line names one, or when the thing resolves on
         // the spot. What must not exist any more is a working where neither is true.
         var mute = workings.Where(w =>
@@ -1364,7 +1364,7 @@ foreach (var (table, floor) in new[]
     var all   = signs.Concat(mirs).ToList();
     Rules.Working W(string n) => all.First(x => x.Name == n);
 
-    T("working: every Sign and Miracle is read", all.Count == 80);
+    T("working: every Sign and Miracle is read", all.Count == 86);
 
     // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
     // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
@@ -1382,7 +1382,7 @@ foreach (var (table, floor) in new[]
 
     // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
     // the two chapters give it up entirely.
-    T("working: every one of the eighty resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
+    T("working: every one of the eighty-six resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
 
     // The shapes the old dialog could not express at all.
     T("working: Witch-Sight is worked on the worker", W("Witch-Sight").Shape == Rules.WorkShape.Self);
@@ -2865,8 +2865,25 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
             CharGen.AttackFor(rk, L) >= CharGen.AttackFor(rk, L - 1))));
 }
 
-T("17 callings", cg.callings.Count == 17);
-T("10 origins", cg.origins.Count == 10);
+T("19 callings", cg.callings.Count == 19);
+T("16 origins", cg.origins.Count == 16);
+
+// ---- the Perks (v1.50.0) ----------------------------------------------------------------------
+// One per Calling, printed above its level table and typed here so the picker can sell a Calling
+// the way the page does. verify_rules.py holds the two word for word; these hold the shape the app
+// relies on — that every Calling has one, that no two share a name, and that a Perk is always-on,
+// which is what keeps it off the Tracker's rationed strip.
+T("every Calling carries a Perk", cg.callings.All(c => c.perk != null
+    && !string.IsNullOrWhiteSpace(c.perk.name) && !string.IsNullOrWhiteSpace(c.perk.desc)));
+// Null-safe on purpose: a Calling with no Perk at all must report as ONE failure above, not take
+// the remaining three down with a NullReferenceException and hide whatever else is wrong.
+T("Perk names are unique across the nineteen",
+    cg.callings.Select(c => c.perk?.name).Distinct().Count() == cg.callings.Count);
+T("no Perk repeats the name of one of its Calling's own features", cg.callings.All(c =>
+    c.perk?.name == null || !c.rows.SelectMany(r => r.features).Contains(c.perk.name)));
+T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
+    c.perk?.desc == null
+    || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
 T("40 signs across three lists", cg.signs.Count == 40
@@ -3052,20 +3069,22 @@ T("no caster is starved of legal signs at any level", cg.callings
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
-T("40 miracles across six lists", cg.miracles.Count == 40 && cg.miracles.All(m =>
-    m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"));
+T("46 miracles across seven lists", cg.miracles.Count == 46 && cg.miracles.All(m =>
+    m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
+           or "vigil"));
 T("every miracle carries a Rank of 1-5", cg.miracles.All(m => m.rank >= 1 && m.rank <= 5));
 T("every Rank is represented on every miracle list", new[] {
-    "blessing", "liturgy", "revival", "spirits", "mending", "consecration" }
+    "blessing", "liturgy", "revival", "spirits", "mending", "consecration", "vigil" }
     .All(l => Enumerable.Range(1, 5).All(rk => cg.miracles.Any(m => m.list == l && m.rank == rk))));
 T("miracle names are unique", cg.miracles.Select(m => m.name).Distinct().Count() == cg.miracles.Count);
 T("Signs and Miracles ride the one Rank spine", Enumerable.Range(1, 10)
     .All(l => CharGen.MiracleRankAt(l) == CharGen.SignRankAt(l)));
-// Exactly the five Callings of Faith work Miracles, and none of them works a Sign.
-T("the five faith callings work Miracles", cg.callings
+// Exactly the six Callings of Faith work Miracles, and none of them works a Sign.
+T("the six faith callings work Miracles", cg.callings
     .Where(c => c.miracleLists != null && c.miracleLists.Count > 0)
     .Select(c => c.name).OrderBy(n => n)
-    .SequenceEqual(new[] { "Medicine Man", "Padre", "Preacher", "Shaman", "Witch Hunter" }));
+    .SequenceEqual(new[] { "Medicine Man", "Padre", "Preacher", "Shaman", "Sister",
+                           "Witch Hunter" }));
 T("miracle-workers and Sign-workers never overlap", cg.callings
     .All(c => !(c.miracleLists?.Count > 0 && c.signLists?.Count > 0)));
 T("every faith calling holds the Common Blessings plus one own list", cg.callings
@@ -4101,7 +4120,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
               says || !lim.Any || lim.Cadence == FeatureCadence.Dawn);
         }
     T("every stated limit is read", stated == read);
-    T("the book still states as many limits as it did", stated == 33);
+    T("the book still states as many limits as it did", stated == 36);
 
     // --- the shapes the book actually uses ---
     CgCalling Cal(string n) => callings.First(c => c.name == n);
