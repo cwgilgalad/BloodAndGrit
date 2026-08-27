@@ -80,6 +80,34 @@
  ],
  "origins": [
   {
+   "name": "The Banker",
+   "gifts": {
+    "WIT": 2
+   },
+   "trained": [
+    "Insight"
+   ],
+   "trainedChoice": [],
+   "line": "A keeper of ledgers and a caller of notes, come west where the paper is thin and the interest is thick.",
+   "boon": "Money answers to you: you gain +2 on checks to appraise goods or find the trap in a contract. Once per session you may call in a favor of paper, a note or a lien or a letter of introduction, and have it honored by anyone who trades in credit.",
+   "burden": "The West remembers a foreclosure longer than a kindness; you take −2 on social checks with homesteaders, drovers, and the working poor, and there is a ledger somewhere with your name where a family's used to be."
+  },
+  {
+   "name": "The Drover",
+   "gifts": {
+    "DEX": 1,
+    "CON": 1
+   },
+   "trained": [],
+   "trainedChoice": [
+    "Ride",
+    "Animal Handling"
+   ],
+   "line": "You brought cattle up the long trails out of Texas and slept in the saddle more nights than in a bed.",
+   "boon": "Stock answers you and the saddle never tires you: you gain +2 on checks to handle any animal, whether to calm it, drive it, or catch it. Once per scene you may ask a mount for more than it has and get it, at a cost the beast pays later.",
+   "burden": "Twelve years of shouting over a thousand head left you loud; you take −2 on Stealth, and you carry a voice that fills a room whether you mean it to or not."
+  },
+  {
    "name": "The Drummer",
    "gifts": {
     "PRE": 2
@@ -131,7 +159,7 @@
    "trainedChoice": [],
    "notFaith": true,
    "line": "A living made, and lost, at the green-felt tables of a hundred towns.",
-   "boon": "Permanent +2 on Sense Motive at any table; once per session reroll a single d20 and keep the better result.",
+   "boon": "A permanent +2 on Insight at any table; once per session reroll a single d20 and keep the better result.",
    "burden": "When coin, cards, or a sure thing appear, the Keeper may call for a Will save to walk away — and old debts ride into town behind you."
   },
   {
@@ -163,6 +191,35 @@
    "burden": "−1 on checks of fine dexterity — sleight, lockwork, fuses, the surgeon's delicate art."
   },
   {
+   "name": "The Madam",
+   "gifts": {
+    "PRE": 1,
+    "CON": 1
+   },
+   "trained": [],
+   "trainedChoice": [
+    "Persuade",
+    "Deceive"
+   ],
+   "line": "You ran a house: the books, the peace, the safety of the women in it, and every secret that came through the door.",
+   "boon": "Nothing said in your parlor left it without your leave, and the habit stayed: once per session you may name one person of consequence in town and know a private truth about them. You gain +2 on checks to read what a person truly wants, and to hold a room without raising your voice.",
+   "burden": "Respectable folk will take your money and not your hand; you take −2 on social checks with the church-going and the office-holding, and a few of them work quietly to see you moved along."
+  },
+  {
+   "name": "The Newspaperman",
+   "gifts": {
+    "WIT": 1,
+    "RES": 1
+   },
+   "trained": [
+    "Lore (Occult)"
+   ],
+   "trainedChoice": [],
+   "line": "You set type, chased stories, and kept a drawer of the ones no editor would run.",
+   "boon": "The clippings nobody believed are still yours: once per session you may declare your morgue file holds something on a person, a place, or a horror at hand, and learn one true thing about it. You gain +2 on checks to research a matter, or to get a stranger talking on the record.",
+   "burden": "You cannot leave a thing unasked, and your face asks before your mouth does; you take −1 on Deceive, and the Keeper may call for a Will save to keep a dangerous question behind your teeth."
+  },
+  {
    "name": "The Outlaw",
    "gifts": {
     "DEX": 1,
@@ -173,6 +230,20 @@
    "line": "There is paper on you in at least one territory.",
    "boon": "Once per session declare you have been somewhere before and know one useful, unsavory fact about it; +2 with criminals and fences, and +2 to make a quick exit when the law takes an interest.",
    "burden": "Lawmen and bounty men take note of you; a warrant, a posse, or an old grudge may trail you into town."
+  },
+  {
+   "name": "The Railroad Hand",
+   "gifts": {
+    "CON": 1,
+    "WIT": 1
+   },
+   "trained": [
+    "Lore (Frontier)"
+   ],
+   "trainedChoice": [],
+   "line": "Grade, spike, wire, or timetable, you worked the line, and the country is a map of it to you.",
+   "boon": "The line still knows you: you ride freight or coach free wherever the rails run, and once per session a name from your working days opens a door, a boxcar, or a telegraph key. You gain +2 on any check to say where a rail or road or river runs.",
+   "burden": "The company's name rides with you; you take −2 on social checks with those the road took land or water or kin from, and there are men still on the payroll who would rather you had stayed on it."
   },
   {
    "name": "The Scout",
@@ -187,6 +258,20 @@
    "line": "You read the land like scripture — guide, hunter, wagon-pilot.",
    "boon": "Ignore difficult ground afoot and never be lost beneath an open sky; +2 on Notice against ambush, tracks, and lying-in-wait out of doors — never surprised under open sky.",
    "burden": "Indoors and in close crowds you take −1 on Notice."
+  },
+  {
+   "name": "The Undertaker",
+   "gifts": {
+    "STR": 1,
+    "RES": 1
+   },
+   "trained": [
+    "Medicine"
+   ],
+   "trainedChoice": [],
+   "line": "You washed and boxed the dead of three towns, and not one of them frightened you until the day one sat up.",
+   "boon": "The dead are work to you and not horror: once per scene, when a corpse or a grave or a charnel sight would cost you Nerve, it costs you none. You gain +2 on Medicine to read what killed a body and how long it has lain there.",
+   "burden": "You have handled too many bodies to fear one, and that is exactly the trouble: the first time each session a corpse proves to be something other than a corpse, you are Off-Guard for a round while you finish deciding that it is."
   },
   {
    "name": "The Veteran",
@@ -1812,7 +1897,7 @@
    ],
    "featureDescs": {
     "Fortune's Favor": "Chance leans your way, and you have learned to lean back. Keep a pool of Favor equal to your PRE modifier + half your level (minimum 1), refreshed each dawn; you also recover 1 point whenever you stake something real on a genuine risk and let the dice fly. Spend a point to reroll any one d20 you just rolled and keep the better result, to add 1d6 to a check, or to force a foe to reroll a hit or a save made against you. Favor spent is gone whether the gamble pays or not — that is rather the point of it.",
-    "Cardsharp": "You are trained in games of chance and the arts that bend them — palming, marking, dealing seconds, and reading a face for the truth it is trying to hide. Gain +2 on Deceive, sleight of hand, and Sense Motive at any table, and you know at a glance whether a game is honest. In a crowd, your hands move quicker than a witness's eye.",
+    "Cardsharp": "You are trained in games of chance and the arts that bend them — palming, marking, dealing seconds, and reading a face for the truth it is trying to hide. Gain +2 on Deceive, sleight of hand, and Insight at any table, and you know at a glance whether a game is honest. In a crowd, your hands move quicker than a witness's eye.",
     "Hedge Your Bets": "You rarely lose it all at once. When you fail a check, you may spend a point of Favor to treat it as a success instead — but the Keeper names the price: a complication, a debt, a watching eye, a worse spot down the road. You win the hand. The game goes on.",
     "Cold Deck": "Once per scene, free of any cost, force a single reroll — your own, or that of a foe whose luck has run too good. And when you spend Favor to reroll, you may instead simply take the dealt card: treat the die as though it had come up an 11, no better and no worse, for the moments when steady is worth more than lucky.",
     "Ace in the Hole": "You are never quite as cornered as you look. Once per scene, produce something you \"had ready all along\" — a hideout derringer, a palmed knife, a marked card, a bribed dealer, a second key. And when you are reduced to 0 Blood, you may spend 3 Favor to come up at 1 instead and take an immediate action. The Gambler's oldest trick is not being dead when everyone else has folded.",

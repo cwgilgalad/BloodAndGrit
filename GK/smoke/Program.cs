@@ -2866,7 +2866,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
 }
 
 T("17 callings", cg.callings.Count == 17);
-T("10 origins", cg.origins.Count == 10);
+T("16 origins", cg.origins.Count == 16);
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
 T("40 signs across three lists", cg.signs.Count == 40

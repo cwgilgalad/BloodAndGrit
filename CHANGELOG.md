@@ -8,6 +8,39 @@ Desktop\Git repos.)
 
 ---
 
+- **The Player's Book v2.31 · GritKeeper v1.50.0 — six more Origins, and a guard on all of them (2026-08-26).**
+
+  Ch. IV grows from ten Origins to sixteen. **The Banker**, who called the notes and now finds the
+  paper has followed him west. **The Drover**, up the long trails out of Texas, loud from twelve
+  years of shouting over a thousand head. **The Madam**, who ran a business and heard every secret
+  that came through the door with the men. **The Newspaperman**, with a drawer of the stories no
+  editor would run. **The Railroad Hand**, who worked the line and reads a timetable the way a
+  preacher reads a psalm. And **The Undertaker**, whom no corpse ever frightened until the day one
+  sat up.
+
+  Each was built so the app can mine it the way it mines the other ten: a rationed half the tracker
+  counts down, and standing modifiers it draws as chips. The six burdens deliberately do not rhyme
+  with each other. The first draft gave all six a social penalty, which is a way of writing one
+  Origin six times, so they were pulled apart: the Drover is loud (&minus;2 Stealth), the
+  Newspaperman's face asks before his mouth does (&minus;1 Deceive), and the Undertaker is Off-Guard
+  the first time each session a corpse turns out to be something else.
+
+  **`verify_rules.py` now checks the Origins, which nothing has ever done.** The Callings had a
+  guard, the arms table had a guard, the encounter ladder had a guard, and Ch. IV's Origins had
+  none. The app parses those, which makes the gap worse than it sounds: a modifier that reads one
+  way in the book and another in the data hands a player a different character. The new check holds the names, the printed Gift, every trained skill and every signed modifier against
+  `chargen.json`. 991 → 1056 cross-checks.
+
+  It found two faults on its first run. The game has no skill called **Sense Motive**. The skill is
+  Insight, and the Pathfinder word had survived in three places, including a +2 the Gambler Origin
+  grants on a skill no character sheet has. And the Gambler's +2 was printed under **Gift** while
+  the data filed it under **Boon**, so the app's chip and the book's page attributed the same rule
+  to different halves of the entry. Both fixed.
+
+  **Every Contents and Index row is now clickable across all six books.** The page number sits
+  outside the anchor, so a reader tapping the number — on a phone, a good half of what the eye aims
+  at — hit nothing at all. The row now delegates the click to its own link. 206 → 208 pages.
+
 - **The Player's Book v2.30 — the Returned (2026-08-25).**
 
   Ch. XII gains **The Returned**, the rules for playing a character who died and did not stay dead.

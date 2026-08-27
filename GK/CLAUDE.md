@@ -178,7 +178,7 @@ what each tab *is*, plus the decisions worth not re-deriving.
   **clipped to the inner neatline at generation** (`ClipPolyline`) — they are deliberately
   generated overshooting, and the SVG viewBox used to hide what the preview and PDF showed.
 - **New Soul** — a strictly-by-the-book character maker: Ch. III's eight steps at any level 1–10,
-  both ability methods, all 17 Callings and 10 Origins with their cross-constraints honored.
+  both ability methods, all 17 Callings and 16 Origins with their cross-constraints honored.
   Rules data lives in **`Data/chargen.json`**, transcribed from the Player's Book.
   `CharGen.Generate` builds, `CharGen.Validate` independently re-derives every number.
   **The per-level `atk` and save columns are a transcription of a formula, not free values** —

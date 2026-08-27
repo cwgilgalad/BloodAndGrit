@@ -478,6 +478,85 @@ def check_budget(problems):
     return checks
 
 
+# ---------------------------------------------------------------- the Origins
+# Ch. IV's Origins are prose in chargen.json AND prose in the book, transcribed by hand between
+# the two, and until 2026-08-26 nothing held them together at all -- the Callings had a guard, the
+# arms table had a guard, and the ten Origins had none. That mattered more than it looked: the app
+# does not merely display an Origin, it MINES it. CharGen.OriginFeatures pulls the rationed halves
+# ("once per scene ...") out of the boon and burden text into tracked rows, and CharGen.OriginEdges
+# pulls the standing modifiers into chips. So a +2 that reads one way in the book and another in
+# the data is not a typo, it is the app handing a player a different character than the book
+# describes.
+#
+# Three things are checked, and deliberately not a fourth. The names must match as a set; the
+# printed Gift must be exactly the data's gifts; every trained skill the data grants must be named
+# in the book's paragraph; and every signed modifier in the data's boon and burden must appear in
+# the book's. What is NOT checked is that the two prose texts are identical, because they are not
+# meant to be -- the data carries a terser form of the same rule, and demanding they match word for
+# word would either fail on ten Origins that are correct today or force the book to write like a
+# data file.
+ORIGIN_RE = re.compile(r'<h3 id="ix-o-([a-z]+)">([^<]+)</h3>\s*<p>(.*?)</p>', re.S)
+GIFT_RE = re.compile(r'([+−-])(\d+)\s+(STR|DEX|CON|WIT|RES|PRE)')
+MOD_RE = re.compile(r'([+−-])(\d+)')
+
+
+def _mods(text):
+    """Signed modifiers as a sorted list, so two prose passages can be compared on their numbers."""
+    return sorted(int(("-" if sign in "−-" else "") + n) for sign, n in MOD_RE.findall(text))
+
+
+def check_origins(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    origins = {o["name"]: o for o in d["origins"]}
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    book = {}
+    for slug, name, body in ORIGIN_RE.findall(page):
+        book[html.unescape(name).strip()] = html.unescape(body)
+
+    missing = set(origins) - set(book)
+    extra = set(book) - set(origins)
+    for n in sorted(missing):
+        problems.append(f"Origin {n!r}: in chargen.json, no <h3> in the book")
+    for n in sorted(extra):
+        problems.append(f"Origin {n!r}: printed in the book, absent from chargen.json")
+
+    checks = 0
+    for name, o in origins.items():
+        body = book.get(name)
+        if body is None:
+            continue
+
+        # the three spans the entry is written in
+        gift = body.split("Boon:")[0].split("Gift:")[-1]
+        boon = body.split("Boon:")[-1].split("Burden:")[0] if "Boon:" in body else ""
+        burden = body.split("Burden:")[-1] if "Burden:" in body else ""
+
+        printed = {ab: int(n) * (-1 if sign in "−-" else 1)
+                   for sign, n, ab in GIFT_RE.findall(gift)}
+        checks += 1
+        if printed != o["gifts"]:
+            problems.append(f"Origin {name}: printed Gift {printed} != data gifts {o['gifts']}")
+
+        for skill in o.get("trained", []) + o.get("trainedChoice", []):
+            checks += 1
+            # "Lore (Frontier)" is printed as "Lore (Frontier or Occult, your choice)", so the
+            # words are what must be present, not the exact parenthesised form.
+            if not all(w in body for w in re.findall(r"[A-Za-z]+", skill)):
+                problems.append(f"Origin {name}: data trains {skill!r}, the book never names it")
+
+        for half, text in (("boon", boon), ("burden", burden)):
+            want = _mods(o.get(half, ""))
+            checks += 1
+            if not want:
+                continue
+            got = _mods(text)
+            if any(w not in got for w in want):
+                problems.append(f"Origin {name}: data {half} carries {want}, "
+                                f"the printed {half} carries {got}")
+    return checks
+
+
 def main():
     data, book = load_data(), load_book()
     problems = []
@@ -514,14 +593,15 @@ def main():
     checks += check_features(problems)
     checks += check_subpaths(problems)
     checks += check_budget(problems)
+    checks += check_origins(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their 3rd-level paths, the arms table, and Ch. IV's encounter budget "
-          f"across both books ({checks} cross-checks, 0 drift).")
+          f"prose, their 3rd-level paths, the arms table, Ch. IV's Origins and its encounter "
+          f"budget across both books ({checks} cross-checks, 0 drift).")
     return 0
 
 
