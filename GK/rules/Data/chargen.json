@@ -1391,6 +1391,20 @@
    "kind": "melee"
   }
  ],
+ "grantedWeapons": [
+  {
+   "match": "Hawken rifle",
+   "weapon": "Buffalo Rifle"
+  },
+  {
+   "match": "A good knife",
+   "weapon": "Knife / Bowie"
+  },
+  {
+   "match": "Service carbine",
+   "weapon": "Carbine (lever)"
+  }
+ ],
  "armor": [
   {
    "name": "Heavy Duster / Coat",
@@ -2745,6 +2759,7 @@
      "will": 7,
      "features": [
       "King of the High Country",
+      "Dead Aim 3d6",
       "Range Mastery"
      ]
     }

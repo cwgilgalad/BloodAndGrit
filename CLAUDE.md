@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.33 · Keeper's Book v2.17 · Bestiary v2.14 ·
-GritKeeper app v1.50.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.34 · Keeper's Book v2.18 · Bestiary v2.14 ·
+GritKeeper app v1.51.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -114,8 +114,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.33 | 221 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.17 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.34 | 221 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.18 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.14 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.3 | 29 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.3 | 30 | one inline SVG map, downloadable |
@@ -431,7 +431,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.33) — structure
+## The Player's Book (v2.34) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -479,7 +479,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.17) — structure
+## The Keeper's Book (v2.18) — structure
 
 Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -585,7 +585,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.50.0) — the C# desktop app
+## GritKeeper (v1.51.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.33 -->
+<!-- Blood & Grit — The Player's Book · Version 2.34 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.33)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.34)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -329,7 +329,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.33</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.34</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -348,7 +348,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.33 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.34 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -372,16 +372,16 @@ body{ background:#525659; }
     <li><a href="#edges">IX. Edges</a><span class="pg">136</span></li>
     <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">142</span></li>
     <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">164</span></li>
-    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">172</span></li>
-    <li><a href="#signs">XIII. Signs &amp; Old Rites</a><span class="pg">182</span></li>
-    <li><a href="#advancement">XIV. Advancement</a><span class="pg">197</span></li>
-    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">200</span></li>
-    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">202</span></li>
-    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">204</span></li>
-    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">206</span></li>
-    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">211</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">214</span></li>
-    <li><a href="#index">Index</a><span class="pg">216</span></li>
+    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">173</span></li>
+    <li><a href="#signs">XIII. Signs &amp; Old Rites</a><span class="pg">183</span></li>
+    <li><a href="#advancement">XIV. Advancement</a><span class="pg">198</span></li>
+    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">201</span></li>
+    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">203</span></li>
+    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">205</span></li>
+    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">207</span></li>
+    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">212</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">215</span></li>
+    <li><a href="#index">Index</a><span class="pg">217</span></li>
   </ul>
 </section>
 
@@ -1477,7 +1477,7 @@ body{ background:#525659; }
       <tr><td>7</td><td class="c">+7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Mountain Sense</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>Unbroken</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>King of the High Country, Range Mastery</td></tr>
+      <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>King of the High Country, Dead Aim 3d6, Range Mastery</td></tr>
     </tbody>
   </table>
   <h4>Hawken Rifle</h4>
@@ -3526,6 +3526,20 @@ body{ background:#525659; }
   Off-Guard until your next turn, unless your STR is 12 or better. Spending a Beat to <strong>brace</strong> (the same
   action as Aim) plants your feet and lifts both penalties. A long gun fired from a galloping horse is a prayer, not a plan.</p>
 
+  <div class="box gold">
+    <h4 id="ix-aim-two">Two shots, or three?</h4>
+    <p>A Beat spent aiming is a Beat not spent shooting, and every table argues about it sooner or later. The argument
+    has an answer, and it is not close. Every fight in this book has been played out on the engine the Keeper's app
+    runs on, at every level, hundreds of times a case. A soul who spends the first Beat aiming and then takes
+    <strong>two</strong> Strikes lands close to <strong>45%</strong> of them. A soul who skips the Aim and takes
+    <strong>three</strong> at the rising Multiple Attack Penalty lands close to <strong>30%</strong>. That is about
+    three hits for every two, and the aimed posse came out ahead at every level measured, on hits and on whether they
+    lived.</p>
+    <p>Pour it on anyway when the shot has to happen now: a thing one stride from somebody, a last round before it
+    reaches cover, a target you only need to graze. The rest of the time, breathe first. The patient shootist is not
+    a style of play in this game. It is the arithmetic.</p>
+  </div>
+
   <h2 id="ix-reloading">Reloading</h2>
   <p>An empty gun is an expensive club. How long it takes to feed it depends on the iron:</p>
   <ul class="dash">
@@ -4496,10 +4510,11 @@ body{ background:#525659; }
   <ul class="ix">
     <li class="ix-hd">A</li>
     <li><a href="#ix-abilities">Abilities, the six</a><span class="pg">19</span></li>
-    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">198</span></li>
-    <li><a href="#advancement">Advancement</a><span class="pg">197</span></li>
-    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">174</span></li>
+    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">199</span></li>
+    <li><a href="#advancement">Advancement</a><span class="pg">198</span></li>
+    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">175</span></li>
     <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">132</span></li>
+    <li><a href="#ix-aim-two">Aim, two Strikes against three</a><span class="pg">167</span></li>
     <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">167</span></li>
     <li><a href="#ix-alienist">Alienist (Sawbones)</a><span class="pg">71</span></li>
     <li><a href="#ix-m-altarcall">Altar Call, the (Miracle)</a><span class="pg">103</span></li>
@@ -4508,14 +4523,14 @@ body{ background:#525659; }
     <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">148</span></li>
     <li><a href="#ix-armor">Armor</a><span class="pg">146</span></li>
     <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">160</span></li>
-    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">193</span></li>
+    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">194</span></li>
     <li><a href="#ix-m-asperges">Asperges Me (Miracle)</a><span class="pg">101</span></li>
     <li class="ix-hd">B</li>
-    <li><a href="#signs">Backlash</a><span class="pg">182</span></li>
+    <li><a href="#signs">Backlash</a><span class="pg">183</span></li>
     <li><a href="#ix-o-banker">Banker, the (Origin)</a><span class="pg">25</span></li>
-    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">188</span></li>
+    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">189</span></li>
     <li><a href="#ix-beats">Beats, the three</a><span class="pg">164</span></li>
-    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">191</span></li>
     <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">146</span></li>
     <li><a href="#ix-wounds">Bleeding</a><span class="pg">168</span></li>
     <li><a href="#ix-m-road">Blessing of the Road, the (Miracle)</a><span class="pg">99</span></li>
@@ -4524,17 +4539,17 @@ body{ background:#525659; }
     <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">162</span></li>
     <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">138</span></li>
     <li><a href="#ix-m-beastgift">Borrow the Beast's Gift (Miracle)</a><span class="pg">104</span></li>
-    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">186</span></li>
-    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">189</span></li>
+    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">187</span></li>
+    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">190</span></li>
     <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">41</span></li>
     <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">107</span></li>
-    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">173</span></li>
-    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">192</span></li>
+    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">174</span></li>
+    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">193</span></li>
     <li class="ix-hd">C</li>
     <li><a href="#ix-m-greatspirit">Call the Great Spirit (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-m-mourner">Call to the Mourner's Bench (Miracle)</a><span class="pg">102</span></li>
-    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">194</span></li>
-    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">195</span></li>
+    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">191</span></li>
     <li><a href="#faith">Callings of Faith</a><span class="pg">73</span></li>
     <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">110</span></li>
     <li><a href="#callings">Callings, worldly</a><span class="pg">40</span></li>
@@ -4542,20 +4557,20 @@ body{ background:#525659; }
     <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">153</span></li>
     <li><a href="#ix-m-campmeeting">Camp Meeting, the (Miracle)</a><span class="pg">103</span></li>
     <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">161</span></li>
-    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">192</span></li>
+    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">193</span></li>
     <li><a href="#character">Character creation</a><span class="pg">17</span></li>
-    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">169</span></li>
+    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">170</span></li>
     <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">158</span></li>
     <li><a href="#ix-checks">Checks, saves &amp; opposed rolls</a><span class="pg">13</span></li>
     <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">160</span></li>
     <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">152</span></li>
-    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">189</span></li>
-    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">186</span></li>
     <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">138</span></li>
     <li><a href="#ix-m-list-blessing">Common Blessings, the (Miracles)</a><span class="pg">99</span></li>
-    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">184</span></li>
+    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">185</span></li>
     <li><a href="#ix-compass">Compass, the (alignment)</a><span class="pg">22</span></li>
-    <li><a href="#conditions">Conditions, table of</a><span class="pg">202</span></li>
+    <li><a href="#conditions">Conditions, table of</a><span class="pg">203</span></li>
     <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">161</span></li>
     <li><a href="#ix-m-killground">Consecrate the Killing Ground (Miracle)</a><span class="pg">107</span></li>
     <li><a href="#ix-m-list-consecration">Consecrations, the (Miracle list)</a><span class="pg">106</span></li>
@@ -4563,27 +4578,27 @@ body{ background:#525659; }
     <li><a href="#ix-m-covenant">Covenant, the (Miracle)</a><span class="pg">101</span></li>
     <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">166</span></li>
     <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">159</span></li>
-    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">191</span></li>
-    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">189</span></li>
+    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">192</span></li>
+    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">190</span></li>
     <li><a href="#ix-degrees">Critical success &amp; failure</a><span class="pg">12</span></li>
-    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">192</span></li>
+    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">193</span></li>
     <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">136</span></li>
     <li class="ix-hd">D</li>
-    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">168</span></li>
+    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">169</span></li>
     <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">111</span></li>
     <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">136</span></li>
     <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">158</span></li>
     <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">138</span></li>
-    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">186</span></li>
+    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">187</span></li>
     <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">168</span></li>
-    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">188</span></li>
+    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">189</span></li>
     <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">119</span></li>
     <li><a href="#ix-reckoning">Defense</a><span class="pg">20</span></li>
     <li><a href="#ix-degrees">Degrees of success</a><span class="pg">12</span></li>
     <li><a href="#ix-demoralize">Demoralize</a><span class="pg">132</span></li>
     <li><a href="#ix-difficulty">Difficulty Classes</a><span class="pg">12</span></li>
     <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">165</span></li>
-    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">173</span></li>
+    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">174</span></li>
     <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">44</span></li>
     <li><a href="#ix-o-drover">Drover, the (Origin)</a><span class="pg">25</span></li>
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">26</span></li>
@@ -4591,8 +4606,8 @@ body{ background:#525659; }
     <li><a href="#edges">Edges</a><span class="pg">136</span></li>
     <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">139</span></li>
     <li><a href="#ix-c-engineer">Engineer (Calling)</a><span class="pg">46</span></li>
-    <li><a href="#play">Example of play</a><span class="pg">200</span></li>
-    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">197</span></li>
+    <li><a href="#play">Example of play</a><span class="pg">201</span></li>
+    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">198</span></li>
     <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">102</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">26</span></li>
@@ -4600,7 +4615,7 @@ body{ background:#525659; }
     <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">125</span></li>
     <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">137</span></li>
     <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">144</span></li>
-    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">191</span></li>
     <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">163</span></li>
     <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">106</span></li>
     <li><a href="#ix-firearms">Firearms</a><span class="pg">144</span></li>
@@ -4609,7 +4624,7 @@ body{ background:#525659; }
     <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">165</span></li>
     <li><a href="#ix-questions">Four Questions, the</a><span class="pg">21</span></li>
     <li><a href="#ix-o-freed">Freed, the (Origin)</a><span class="pg">27</span></li>
-    <li><a href="#ix-frightened">Frightened</a><span class="pg">202</span></li>
+    <li><a href="#ix-frightened">Frightened</a><span class="pg">203</span></li>
     <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">138</span></li>
     <li class="ix-hd">G</li>
     <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">138</span></li>
@@ -4619,9 +4634,9 @@ body{ background:#525659; }
     <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">133</span></li>
     <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">159</span></li>
     <li><a href="#goods">Goods &amp; provisions</a><span class="pg">142</span></li>
-    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">189</span></li>
-    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">191</span></li>
-    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">170</span></li>
+    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">192</span></li>
+    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">171</span></li>
     <li><a href="#ix-grit">Grit</a><span class="pg">14</span></li>
     <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">137</span></li>
     <li><a href="#ix-c-gunhand">Gunhand (Calling)</a><span class="pg">54</span></li>
@@ -4632,14 +4647,14 @@ body{ background:#525659; }
     <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">158</span></li>
     <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">137</span></li>
     <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">148</span></li>
-    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">193</span></li>
+    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">194</span></li>
     <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">139</span></li>
     <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">120</span></li>
-    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">186</span></li>
     <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">23</span></li>
     <li><a href="#ix-o-homesteader">Homesteader, the (Origin)</a><span class="pg">27</span></li>
     <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">150</span></li>
-    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">189</span></li>
+    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">190</span></li>
     <li class="ix-hd">I</li>
     <li><a href="#ix-beats">Initiative</a><span class="pg">164</span></li>
     <li><a href="#ix-m-interdict">Interdict, the (Miracle)</a><span class="pg">102</span></li>
@@ -4649,36 +4664,36 @@ body{ background:#525659; }
     <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">138</span></li>
     <li class="ix-hd">K</li>
     <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">167</span></li>
-    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">191</span></li>
+    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">192</span></li>
     <li class="ix-hd">L</li>
     <li><a href="#ix-o-laborer">Laborer, the (Origin)</a><span class="pg">28</span></li>
     <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">109</span></li>
-    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">170</span></li>
-    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">194</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">214</span></li>
-    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">188</span></li>
-    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">198</span></li>
+    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">171</span></li>
+    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">195</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">215</span></li>
+    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">189</span></li>
+    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">199</span></li>
     <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">106</span></li>
     <li><a href="#ix-m-light">Light Unfailing, a (Miracle)</a><span class="pg">99</span></li>
-    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">186</span></li>
     <li><a href="#ix-m-litany">Litany of the Saints, the (Miracle)</a><span class="pg">101</span></li>
     <li><a href="#ix-m-weakness">Litany of Weakness, the (Miracle)</a><span class="pg">107</span></li>
     <li><a href="#ix-m-list-liturgy">Liturgy, the (Miracle list)</a><span class="pg">101</span></li>
     <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">156</span></li>
     <li><a href="#ix-m-longmercy">Long Mercy, the (Miracle)</a><span class="pg">106</span></li>
-    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">188</span></li>
-    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">186</span></li>
-    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">174</span></li>
+    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">189</span></li>
+    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">187</span></li>
+    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">175</span></li>
     <li class="ix-hd">M</li>
     <li><a href="#ix-o-madam">Madam, the (Origin)</a><span class="pg">28</span></li>
-    <li><a href="#ix-mark">Mark, the</a><span class="pg">174</span></li>
+    <li><a href="#ix-mark">Mark, the</a><span class="pg">175</span></li>
     <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">57</span></li>
     <li><a href="#ix-time">Measures of time, the</a><span class="pg">15</span></li>
     <li><a href="#ix-c-medicine">Medicine Man (Calling)</a><span class="pg">74</span></li>
     <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">105</span></li>
     <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">162</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">34</span></li>
-    <li><a href="#ix-milestones">Milestones</a><span class="pg">199</span></li>
+    <li><a href="#ix-milestones">Milestones</a><span class="pg">200</span></li>
     <li><a href="#ix-m-dc">Miracle DC</a><span class="pg">98</span></li>
     <li><a href="#ix-m-lists">Miracle lists, the six</a><span class="pg">98</span></li>
     <li><a href="#ix-m-miracle">Miracle Plain, the (Miracle)</a><span class="pg">100</span></li>
@@ -4687,23 +4702,23 @@ body{ background:#525659; }
     <li><a href="#ix-modifiers">Modifiers</a><span class="pg">20</span></li>
     <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">150</span></li>
     <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">60</span></li>
-    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">168</span></li>
+    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">169</span></li>
     <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">148</span></li>
     <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">165</span></li>
     <li class="ix-hd">N</li>
-    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">186</span></li>
-    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">173</span></li>
-    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">178</span></li>
+    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">187</span></li>
+    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">174</span></li>
+    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">179</span></li>
     <li><a href="#ix-o-news">Newspaperman, the (Origin)</a><span class="pg">29</span></li>
-    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">192</span></li>
-    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">171</span></li>
+    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">193</span></li>
+    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">172</span></li>
     <li><a href="#ix-m-nothingcomesin">Nothing Comes In (Miracle)</a><span class="pg">109</span></li>
     <li class="ix-hd">O</li>
     <li><a href="#ix-offguard">Off-Guard</a><span class="pg">167</span></li>
     <li><a href="#ix-m-offering">Offering, the (Miracle)</a><span class="pg">104</span></li>
-    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">194</span></li>
-    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">193</span></li>
-    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">190</span></li>
+    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">195</span></li>
+    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">194</span></li>
+    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">191</span></li>
     <li><a href="#ix-checks">Opposed rolls</a><span class="pg">13</span></li>
     <li><a href="#origins">Origins</a><span class="pg">25</span></li>
     <li><a href="#ix-o-outlaw">Outlaw, the (Origin)</a><span class="pg">29</span></li>
@@ -4716,42 +4731,42 @@ body{ background:#525659; }
     <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">160</span></li>
     <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">103</span></li>
     <li><a href="#ix-perks">Perks of the Callings</a><span class="pg">40</span></li>
-    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">191</span></li>
-    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">206</span></li>
+    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">192</span></li>
+    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">207</span></li>
     <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">138</span></li>
     <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">137</span></li>
     <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">81</span></li>
-    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">183</span></li>
+    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">184</span></li>
     <li><a href="#ix-core-roll">Proficiency</a><span class="pg">11</span></li>
     <li><a href="#ix-c-prospector">Prospector (Calling)</a><span class="pg">64</span></li>
     <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">154</span></li>
     <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">147</span></li>
     <li class="ix-hd">Q</li>
     <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">137</span></li>
-    <li><a href="#quickref">Quick Reference</a><span class="pg">204</span></li>
+    <li><a href="#quickref">Quick Reference</a><span class="pg">205</span></li>
     <li class="ix-hd">R</li>
     <li><a href="#ix-o-rail">Railroad Hand, the (Origin)</a><span class="pg">29</span></li>
     <li><a href="#ix-m-rank">Rank of a Miracle</a><span class="pg">98</span></li>
-    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">182</span></li>
+    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">183</span></li>
     <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">143</span></li>
     <li><a href="#ix-reactions">Reactions</a><span class="pg">165</span></li>
-    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">194</span></li>
+    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">195</span></li>
     <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">100</span></li>
     <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">108</span></li>
-    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">187</span></li>
-    <li><a href="#ix-reloading">Reloading</a><span class="pg">167</span></li>
+    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">188</span></li>
+    <li><a href="#ix-reloading">Reloading</a><span class="pg">168</span></li>
     <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">102</span></li>
-    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">188</span></li>
+    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">189</span></li>
     <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">164</span></li>
     <li class="ix-hd">S</li>
-    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">168</span></li>
+    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">169</span></li>
     <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">137</span></li>
-    <li><a href="#ix-safety">Safety at the table</a><span class="pg">179</span></li>
-    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">194</span></li>
+    <li><a href="#ix-safety">Safety at the table</a><span class="pg">180</span></li>
+    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">195</span></li>
     <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">161</span></li>
     <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">159</span></li>
-    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">184</span></li>
+    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">185</span></li>
     <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">159</span></li>
     <li><a href="#ix-m-saltline">Salt the Threshold (Miracle)</a><span class="pg">107</span></li>
     <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">139</span></li>
@@ -4765,30 +4780,30 @@ body{ background:#525659; }
     <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">85</span></li>
     <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">109</span></li>
-    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">183</span></li>
-    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">183</span></li>
+    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">184</span></li>
+    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">184</span></li>
     <li><a href="#ix-m-crossing">Sign of the Cross, the (Miracle)</a><span class="pg">101</span></li>
-    <li><a href="#signs">Signs</a><span class="pg">182</span></li>
-    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">194</span></li>
+    <li><a href="#signs">Signs</a><span class="pg">183</span></li>
+    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">195</span></li>
     <li><a href="#ix-m-silverround">Silver the Round (Miracle)</a><span class="pg">107</span></li>
     <li><a href="#ix-c-sister">Sister (Calling)</a><span class="pg">89</span></li>
     <li><a href="#skills">Skills</a><span class="pg">131</span></li>
     <li><a href="#ix-using-skills">Skills, using</a><span class="pg">132</span></li>
     <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">106</span></li>
-    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">191</span></li>
+    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">192</span></li>
     <li><a href="#ix-reckoning">Speed</a><span class="pg">20</span></li>
     <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">133</span></li>
     <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">104</span></li>
     <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">137</span></li>
     <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">99</span></li>
-    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">186</span></li>
     <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">138</span></li>
     <li class="ix-hd">T</li>
-    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">179</span></li>
-    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">181</span></li>
+    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">180</span></li>
+    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">182</span></li>
     <li><a href="#ix-take-time">Take 10 / Take 20</a><span class="pg">13</span></li>
-    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">186</span></li>
     <li><a href="#ix-m-tedeum">Te Deum (Miracle)</a><span class="pg">102</span></li>
     <li><a href="#ix-m-testify">Testify (Miracle)</a><span class="pg">103</span></li>
     <li><a href="#ix-truths">Three Truths, the</a><span class="pg">9</span></li>
@@ -4802,12 +4817,12 @@ body{ background:#525659; }
     <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">104</span></li>
     <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">137</span></li>
     <li class="ix-hd">U</li>
-    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">187</span></li>
+    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">188</span></li>
     <li><a href="#ix-m-named">Unclean Named, the (Miracle)</a><span class="pg">100</span></li>
     <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">157</span></li>
     <li><a href="#ix-o-undertaker">Undertaker, the (Origin)</a><span class="pg">30</span></li>
-    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">187</span></li>
-    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">195</span></li>
+    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">188</span></li>
+    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">196</span></li>
     <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">138</span></li>
     <li><a href="#ix-untrained">Untrained skills</a><span class="pg">133</span></li>
     <li class="ix-hd">V</li>
@@ -4817,19 +4832,19 @@ body{ background:#525659; }
     <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">100</span></li>
     <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">154</span></li>
     <li class="ix-hd">W</li>
-    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">187</span></li>
+    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">188</span></li>
     <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">139</span></li>
     <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">100</span></li>
-    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">194</span></li>
+    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">195</span></li>
     <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">108</span></li>
     <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">152</span></li>
     <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">144</span></li>
-    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">193</span></li>
+    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">194</span></li>
     <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">160</span></li>
     <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">123</span></li>
     <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">93</span></li>
     <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">158</span></li>
-    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">184</span></li>
+    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">185</span></li>
     <li><a href="#ix-m-smallword">Word to the Small Spirits, a (Miracle)</a><span class="pg">104</span></li>
     <li><a href="#ix-words">Words of the country (glossary)</a><span class="pg">18</span></li>
     <li><a href="#miracles">Work of Faith, The</a><span class="pg">97</span></li>

@@ -8,6 +8,63 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.34 · Keeper's Book v2.18 · GritKeeper v1.51.0 — the Aim finding printed, and
+  the posse turns out to have been unarmed (2026-08-27).**
+
+  Combat measured across all of it, which is what the Fifteen Levels program needs settled before it
+  extends anything to 15th. Three faults came out of the measuring, and one of them has been
+  quietly wrong in every number this project has ever published about a fight.
+
+  **The Aim earns its Beat, and now the books say so.** Measured on the current engine at every
+  level: a soul who spends the first Beat aiming and then takes two Strikes lands close to 45% of
+  them, where a soul who skips it and takes three at the rising Multiple Attack Penalty lands close
+  to 30%. About three hits for every two, and the aimed posse won more fights at every level
+  measured. Ch. XI now prints the figures in a box beside *Aiming and Bracing*, and the Keeper's
+  Book's *Aim vs. volume* bullet, which had said only that both are westerns, says which one wins.
+  The finding itself dates from 2026-08-16 and had never left `AUDIT-encounter-budget.md`.
+
+  **Every Mountain Man ever generated has been fighting with his fists.** A Calling's kit and an
+  Origin's gear can grant a weapon rather than sell one, and three lines do: the Mountain Man's
+  Hawken and his good knife, and the Veteran's service carbine. The outfit step read those lines
+  only to suppress the gun purchase, then dropped the granted weapon into `Gear` and never into
+  `WeaponsCarried`. So the sheet said Hawken rifle, 1d12, and the weapon list was **empty** — in the
+  Strike dialog, in the playtest harness, and in every balance sweep this project has run, including
+  the one that repriced the encounter budget in v1.44.0. The Veteran's carbine spreads it wider: any
+  Calling rolled with that Origin bought no gun and carried none, and one of them is the printed
+  pregen Addison Quill. `grantedWeapons` in `chargen.json` now joins the book's prose name to the
+  arms table's, the outfit step arms the soul, and four smoke assertions hold it — including one
+  that generates every Calling at three levels and requires each to be carrying something.
+
+  Nothing asserted that a generated soul was armed, so nothing said a word. It was found by
+  printing the lab's own posse and reading it, which is the third time this program has found a
+  fault that way and the reason the habit is now written into the tracker.
+
+  **Six Callings add dice to a Strike, and the engine never added them.** Bushwhack, Sudden Strike,
+  Dead Aim, Precise Strike, Brimstone and Judgment all grow with level and were printed on the sheet
+  and applied by hand or forgotten. `CharGen.StrikeRiders` reads them the way everything here is
+  read: the dice off the level table, so a soul gets the step they have reached, and the condition
+  off the feature's own prose, handed back verbatim. They are **offered, never applied** — whether a
+  quarry is one "whom an ally threatens" is a fact about the field — which is the same rule the
+  Origin's standing edges and a creature's attack rider already follow. Reading the output caught
+  two more things: the Witch Hunter's condition sentence is *"Once per quarry, declare Judgment"* and
+  the first draft handed back the payload sentence instead, hiding the only limit on it; and **the
+  Mountain Man's level table stopped at Dead Aim 2d6** while the third step sat inside the *King of
+  the High Country* write-up, so the table under-stated him and so did anything reading it. Both
+  books now name it at 10th, the way Bushwhack 4d6 and Judgment 3d8 are named.
+
+  **What the measuring found, with the posse armed.** The encounter budget holds from 1st to 6th —
+  the standard fight is a win at 74–99% with a soul or two down and Blood near half, which is Ch.
+  IV's own sentence. Above that it does not, and the cause is one number. Posse damage per round is
+  **flat**: 19 at 1st level, 21 at 10th. Creature Blood over the same span goes 12 to 110. Rounds to
+  clear the standard fight therefore climb 1.2 → 3.3 → 10.6 while rounds to be wiped stay near
+  three, because posse Blood and creature damage grow together and cancel. Thirteen of the nineteen
+  Callings add nothing at all to a Strike as they level: their damage per hit at 15th is the die they
+  rolled at 1st. That is the whole of it, and it is the question Ch. IV and the Bestiary have to
+  answer before the ladder reaches Tier VIII.
+
+  221 → 222 pages. `_combatlab` gained four modes for this — `curves`, `fixes`, `riders`,
+  `throughput` — and the write-up is in `AUDIT-combat-balance.md`.
+
 - **The Player's Book v2.33 — a Perk for every Calling (2026-08-27).**
 
   Nineteen new lines, one above each Calling's level table: the single thing that Calling alone

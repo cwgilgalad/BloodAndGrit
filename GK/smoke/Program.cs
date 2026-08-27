@@ -2884,6 +2884,59 @@ T("no Perk repeats the name of one of its Calling's own features", cg.callings.A
 T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
     c.perk?.desc == null
     || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
+
+// ---- a granted weapon is a weapon you can fire (v1.51.0) --------------------------------------
+// A Calling's kit and an Origin's gear can GRANT a gun instead of selling one, and three lines do.
+// The outfit step read those lines only to suppress the purchase, so the soul ended up with the
+// rifle in Gear and NOTHING in WeaponsCarried: every Mountain Man ever generated, and anyone rolled
+// with the Veteran's service carbine — the printed pregen Addison Quill among them. The Strike
+// dialog offered them no weapon, and every balance sweep this project has run had the Mountain Man
+// punching with his fists. Found by reading _combatlab's output, which is the only way it shows:
+// nothing asserted that a generated soul was armed.
+T("every granted weapon names one the arms table has", cg.grantedWeapons.All(g =>
+    cg.weapons.Any(w => w.name == g.weapon)));
+{
+    // Any kit or gear line stating a damage die is granting a weapon and must be mapped.
+    var die = new System.Text.RegularExpressions.Regex(@"\b\d*d\d+\b");
+    var granting = cg.callings.SelectMany(c => c.coin.kit)
+                     .Concat(cg.origins.SelectMany(o => o.gear ?? new List<string>()))
+                     .Where(x => die.IsMatch(x)).ToList();
+    T("every granted line maps to a weapon", granting.Count > 0 && granting.All(line =>
+        cg.grantedWeapons.Any(g => line.Contains(g.match, StringComparison.OrdinalIgnoreCase))));
+
+    bool allArmed = true; string bare = null;
+    foreach (var c in cg.callings)
+        foreach (int lvl in new[] { 1, 5, 10 })
+            for (int t = 0; t < 12; t++)
+            {
+                Rules.Reseed(770000 + lvl * 100 + t);
+                var sh = CharGen.Generate(lvl, rolled: false, fixedCalling: c.name);
+                if ((sh.WeaponsCarried?.Count ?? 0) == 0) { allArmed = false; bare ??= $"{c.name} L{lvl}"; }
+            }
+    T("every Calling generates a soul carrying at least one weapon" + (bare == null ? "" : $" (bare: {bare})"),
+      allArmed);
+
+    Rules.Reseed(770001);
+    var mm = CharGen.Generate(1, rolled: false, fixedCalling: "Mountain Man");
+    T("the Mountain Man's Hawken reaches his weapon list",
+      mm.WeaponsCarried.Any(w => w.StartsWith("Buffalo Rifle", StringComparison.Ordinal)));
+}
+
+// ---- what a Calling adds to a Strike (v1.51.0) ------------------------------------------------
+// Six Callings scale their damage with a die step named in the level table. Read off the table, so
+// the step a soul has reached is the step they get; offered rather than applied, because the
+// condition is a fact about the field.
+T("six Callings carry a scaling damage rider at 10th", cg.callings
+    .Count(c => CharGen.StrikeRiders(c.name, 10).Count > 0) == 6);
+T("a rider's dice grow with the level reached", CharGen.StrikeRiders("Bounty Hunter", 1)[0].Dice == "1d6"
+    && CharGen.StrikeRiders("Bounty Hunter", 5)[0].Dice == "2d6"
+    && CharGen.StrikeRiders("Bounty Hunter", 10)[0].Dice == "4d6");
+T("a rider carries the book's own condition, not its payload",
+    CharGen.StrikeRiders("Witch Hunter", 10)[0].When.StartsWith("Once per quarry", StringComparison.Ordinal));
+T("no rider is reported before its Calling has reached it",
+    CharGen.StrikeRiders("Preacher", 4).Count == 1 && CharGen.StrikeRiders("Preacher", 3).Count == 0);
+T("every rider resolves to prose the book prints", cg.callings.All(c =>
+    CharGen.StrikeRiders(c.name, 15).All(r => !string.IsNullOrWhiteSpace(r.Desc))));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
 T("40 signs across three lists", cg.signs.Count == 40
