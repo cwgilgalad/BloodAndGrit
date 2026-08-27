@@ -1950,16 +1950,24 @@ public partial class MainForm
         // Three sentences rather than two, because a Hexer of the Pact-Sworn can ration nothing at
         // 3rd level and still owe their Patron, and "Nothing here is rationed" over a Debt card
         // reads as the app contradicting itself.
-        string what = (ledger.Count, tallies.Count) switch
-        {
-            (0, 0) => "Nothing here is rationed; read the Calling for the whole of it.",
-            (0, _) => "Nothing here is rationed, but there is a reckoning running:",
-            (_, 0) => "What is rationed, and what is left of it:",
-            _      => "What is rationed, what is left of it, and what is owed:",
-        };
+        // Three sentences became four in v1.49.0, for the reason the third was added: an Origin's
+        // standing +2 is not rationed either, so "Nothing here is rationed" printed over a card
+        // full of them reads as the app contradicting itself — the same fault a Debt card caused.
+        bool standing = CharGen.OriginEdges(soul.Sheet?.Origin).Count > 0;
+        string what =
+              ledger.Count > 0 && tallies.Count > 0 ? "What is rationed, what is left of it, and what is owed:"
+            : ledger.Count > 0                      ? "What is rationed, and what is left of it:"
+            : tallies.Count > 0                     ? "Nothing here is rationed, but there is a reckoning running:"
+            : standing                              ? "Nothing here is rationed — what the Origin is worth stands always:"
+            :                                         "Nothing here is rationed; read the Calling for the whole of it.";
+        // The Origin belongs in the head line as much as the Calling does. Ch. III picks it first,
+        // it is half of what a player answers "who are you" with, and until v1.49.0 the Tracker
+        // never said it once.
+        string origin = soul.Sheet?.Origin;
         var head = new Label
         {
-            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}. {what}",
+            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}"
+                 + (string.IsNullOrEmpty(origin) ? "" : $", {origin}") + $". {what}",
             AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
@@ -1974,6 +1982,11 @@ public partial class MainForm
         // count of one, and because whether it is alive is the question its Witch asks most.
         if (soul.Sheet != null && !string.IsNullOrEmpty(soul.Sheet.FamiliarKind))
             callingPanel.Controls.Add(FamiliarCard(soul));
+        // Then what the Origin is standing worth. Before the rations, because it is the half a
+        // table forgets: a ration announces itself by running out, and a +2 nobody remembers
+        // simply never gets added.
+        if (ReturnedCard(soul) is Control rc) callingPanel.Controls.Add(rc);
+        if (OriginCard(soul) is Control oc) callingPanel.Controls.Add(oc);
         foreach (var row in ledger) callingPanel.Controls.Add(FeatureCard(soul, row));
         foreach (var row in tallies) callingPanel.Controls.Add(TallyCard(soul, row));
 
@@ -1984,6 +1997,185 @@ public partial class MainForm
     // What a card calls a feature. Lives in CharGen, not here, because the colon it trims is put
     // there by CharGen.Subpath and because Tabs.cs is not one of the files the smoke rig compiles.
     static string CardName(string key) => CharGen.ShortFeatureName(key);
+
+    /// <summary>The Hunger of a soul who came back wrong (Player's Book Ch. XII, <em>The
+    /// Returned</em>).
+    ///
+    /// <para>Drawn like the familiar's card rather than like a ration, because it is the same kind
+    /// of thing: not a count of uses but a <b>state</b>, and one the whole table needs to be able
+    /// to see without asking. The two buttons are the entire loop this Origin runs on. <b>Mend</b>
+    /// is the only way this soul heals and it costs a step toward the end of them; <b>Feed</b> is
+    /// the only way back and it is a scene the Keeper adjudicates, never an action on a turn.</para>
+    ///
+    /// <para>Mending at Hunger 5 is offered, warned about, and permitted. The app does not lock the
+    /// door: that decision, taken by a player who is bleeding out and knows exactly what it costs,
+    /// is the whole reason the Origin exists.</para></summary>
+    Control ReturnedCard(PartyMember soul)
+    {
+        var sheet = soul.Sheet;
+        if (!CharGen.IsReturned(sheet)) return null;
+
+        const int CW = 232;
+        int hunger = sheet.Hunger;
+        bool consumed = hunger >= CharGen.HungerLost;
+        var card = new Panel
+        {
+            Width = CW, Height = 66, BackColor = consumed ? Paper : FamiliarRow,
+            Margin = new Padding(2, 0, 8, 6)
+        };
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(consumed || hunger >= CharGen.HungerNumb ? Blood : Verdigris,
+                                    consumed ? 1.8f : 1.4f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 16, Height = 16, UseMnemonic = false, AutoEllipsis = true,
+            Text = sheet.Shape ?? "Returned", Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+            ForeColor = consumed ? Blood : Ink
+        };
+        var state = new Label
+        {
+            Left = 8, Top = 22, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
+            Text = consumed ? "Consumed — the Keeper's now"
+                            : $"Hunger {hunger} of {CharGen.HungerLost} · mends {CharGen.MendDice(soul.Level)}d6",
+            Font = new Font("Segoe UI", 8.25f), ForeColor = consumed ? Blood : Faint
+        };
+        card.Controls.Add(name); card.Controls.Add(state);
+
+        var mend = Btn("Mend", (s, e) => MendReturned(soul), 74,
+            "Take one Hunger and knit what has been opened. This is the ONLY way this soul heals — "
+          + "no rest, no medicine, no Miracle worked over them. The Hunger it costs never comes back "
+          + "on its own; only feeding lowers it.");
+        mend.Left = 8; mend.Top = 38; mend.Height = 24;
+        var feed = Btn("Feed", (s, e) => FeedReturned(soul), 74,
+            "A scene, not an action: somebody is less afterward, the table sees it, and the Keeper "
+          + "says whether it was enough. Lowers the Hunger by one, which is the only thing that does.");
+        feed.Left = 88; feed.Top = 38; feed.Height = 24;
+        card.Controls.Add(mend); card.Controls.Add(feed);
+
+        var shape = CharGen.ShapeOf(sheet);
+        string tip = $"{CharGen.HungerSays(hunger)}.\n\n"
+                   + (shape == null ? "" : $"Hungers for {shape.hunger}\nFed by: {shape.feeding}\n{shape.gift}\n\n")
+                   + (CharGen.NumbToDread(sheet)
+                      ? "At Hunger 3 and above the fear stops landing — this soul loses no Nerve to a "
+                      + "Dread Check. The book prints that as a gift and says in the same breath that "
+                      + "it is not one.\n\n"
+                      : "+2 on Dread Checks: very little out here is new to somebody who has been on "
+                      + "the other side of it.\n\n")
+                   + $"At Hunger {CharGen.HungerLost} the character passes into the Keeper's hands.";
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(state, tip);
+        return card;
+    }
+
+    /// <summary>Mend: take a Hunger, close the wounds. The only healing this soul has.
+    ///
+    /// <para>The warning at the last rung is a <c>Confirm</c> and not a refusal, on purpose. A
+    /// Keeper may absolutely let a player spend their last step to stay upright one more round —
+    /// that is the decision the Origin is built around — and the app's job is to make sure nobody
+    /// arrives there without having been told.</para></summary>
+    void MendReturned(PartyMember soul)
+    {
+        var sheet = soul?.Sheet;
+        if (CharGen.WhyNotMend(sheet) is string no) { Nope(no); return; }
+        if (sheet.Hunger + 1 >= CharGen.HungerLost
+            && !Confirm($"{soul.Name} is at Hunger {sheet.Hunger} of {CharGen.HungerLost}. Mending "
+                      + "takes the last step, and the character passes into the Keeper's hands.\n\n"
+                      + "Mend anyway?")) return;
+
+        var (total, breakdown, _) = Rules.RollExprFull($"{CharGen.MendDice(soul.Level)}d6");
+        int before = soul.BloodCur;
+        soul.BloodCur = Math.Clamp(soul.BloodCur + total, 0, soul.BloodMax);
+        int rung = CharGen.TakeHunger(sheet);
+        // The Sheet rides in the undo snapshot and fires no PropertyChanged of its own, so the
+        // mutation has to announce itself or Undo quietly reverts it along with whatever is
+        // captured next — the fault v1.47.0 and v1.48.0 both paid for. Announced AFTER the change,
+        // for the same reason.
+        soul.Touched(nameof(soul.Sheet));
+        Log($"{soul.Name} mends: {breakdown} → {soul.BloodCur - before} Blood "
+          + $"({soul.BloodCur}/{soul.BloodMax}), and takes a Hunger → {rung} of {CharGen.HungerLost}"
+          + (rung >= CharGen.HungerLost ? " — CONSUMED." : $" — {CharGen.HungerSays(rung)}."));
+        MirrorToTracker(soul);
+        RefreshCalling();
+    }
+
+    /// <summary>Feed: the one thing that lowers a Hunger, and the only one there will ever be.
+    ///
+    /// <para>Confirmed rather than instant because it is a scene and not a button — the prompt is
+    /// where a Keeper stops and asks what it cost, which is the whole of what keeps the track
+    /// meaning anything.</para></summary>
+    void FeedReturned(PartyMember soul)
+    {
+        var sheet = soul?.Sheet;
+        if (!CharGen.IsReturned(sheet)) { Nope($"{soul?.Name} did not come back wrong."); return; }
+        if (sheet.Hunger == 0) { Nope($"{soul.Name} is quiet already — there is no Hunger to feed."); return; }
+        var shape = CharGen.ShapeOf(sheet);
+        if (!Confirm($"{soul.Name} feeds.\n\n{shape?.feeding ?? "Somebody is less afterward."}\n\n"
+                   + "This is a scene, not an action — has it been played, and did it cost somebody "
+                   + "something?")) return;
+        int rung = CharGen.Feed(sheet);
+        soul.Touched(nameof(soul.Sheet));
+        Log($"{soul.Name} feeds → Hunger {rung} of {CharGen.HungerLost} — {CharGen.HungerSays(rung)}.");
+        RefreshCalling();
+    }
+
+    /// <summary>What the soul's ORIGIN is standing worth, on the strip where a player looks.
+    ///
+    /// <para>The third kind of card, and it carries no count and no button on purpose. A ration
+    /// card is pressed and a tally card climbs; this one is only ever <b>read</b>, because whether
+    /// a Scout's −1 applies is a fact about where the posse is standing and the app models no
+    /// ground. Putting an Apply button on it would be the app asking the Keeper to confirm
+    /// something it cannot check, which is the same fault as asking them to type in a number it
+    /// already knows — the Iron Code's rule run the other way.</para>
+    ///
+    /// <para>Boons and burdens are inked apart because the burden is the half that decides whether
+    /// an Origin was a <em>choice</em>. A player remembers the +2 unprompted; nobody has ever
+    /// volunteered their own −1 in the middle of a fight, which is exactly why it is worth the
+    /// pixels.</para></summary>
+    Control OriginCard(PartyMember soul)
+    {
+        var edges = CharGen.OriginEdges(soul.Sheet?.Origin);
+        if (edges.Count == 0) return null;
+
+        const int CW = 232;
+        var card = new Panel { Width = CW, BackColor = Paper, Margin = new Padding(2, 0, 8, 6) };
+        var name = new Label
+        {
+            Left = 8, Top = 5, Width = CW - 16, Height = 16, UseMnemonic = false, AutoEllipsis = true,
+            Text = soul.Sheet.Origin, Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = Ink
+        };
+        card.Controls.Add(name);
+
+        int y = 23;
+        foreach (var e in edges)
+        {
+            var chip = new Label
+            {
+                Left = 8, Top = y, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
+                Text = e.Says, Font = new Font("Segoe UI", 8.25f),
+                ForeColor = e.IsBoon ? Verdigris : Blood,
+            };
+            Tip.SetToolTip(chip, e.Phrase);
+            card.Controls.Add(chip);
+            y += 15;
+        }
+        card.Height = y + 6;
+        card.Paint += (s, e) =>
+        {
+            using var pen = new Pen(Rule, 1.4f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+        };
+
+        string tip = $"What {soul.Sheet.Origin} is worth wherever it applies — Ch. IV's boon and "
+                   + "burden, which the app offers and never applies for you, because whether you "
+                   + "are indoors, among the wealthy or talking to a lawman is not something it "
+                   + "can see.\n\n"
+                   + string.Join("\n\n", edges.Select(x => x.Says + " — " + x.Phrase));
+        Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip);
+        return card;
+    }
 
     /// <summary>The Witch's bound beast, on the strip where a player looks for what they can do.
     ///
@@ -3451,7 +3643,7 @@ public partial class MainForm
     void ResolveDread(PartyMember soul, int dc, int? forcedDie)
     {
         if (soul == null) return;
-        var o = Horror.DreadCheck(soul.Will, dc, forcedDie);
+        var o = Horror.DreadCheck(soul.Will, dc, forcedDie, soul.Sheet);
         Log($"{soul.Name}: {o.Line}");
         ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
         if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
@@ -3757,7 +3949,8 @@ public partial class MainForm
             if (o.DreadDc > 0)
             {
                 var d = Horror.DreadCheck(reader.Will, o.DreadDc,
-                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}) — what did the d20 come up?"));
+                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}) — what did the d20 come up?"),
+                    reader.Sheet);
                 Log($"{reader.Name}: {d.Line}");
                 if (d.NerveLost > 0) reader.NerveCur = Math.Max(0, reader.NerveCur - d.NerveLost);
                 if (d.Frightened) ApplyConditionTo(tracker.FirstOrDefault(t => t.IsSoul(reader)), "Frightened 1");

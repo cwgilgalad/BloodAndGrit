@@ -20,6 +20,20 @@ public class CgOrigin
     public List<string> gear { get; set; } = new();
     public int startMark { get; set; }
     public string line { get; set; } public string boon { get; set; } public string burden { get; set; }
+    /// <summary>Only Came Back Wrong has these — the Shapes of Return of Ch. XII. Empty on the
+    /// other nine, which is why it is a property of the Origin rather than a table of its own.</summary>
+    public List<CgShape> shapes { get; set; } = new();
+}
+
+/// <summary>One Shape of Return (Player's Book Ch. XII, <em>The Returned</em>): what came back,
+/// what it wants, how it is fed, and the one thing it can do that the living cannot. A
+/// transcription, like the rest of this file.</summary>
+public class CgShape
+{
+    public string name { get; set; }
+    public string hunger { get; set; }
+    public string feeding { get; set; }
+    public string gift { get; set; }
 }
 
 public class CgEdge
@@ -133,6 +147,7 @@ public class CgData
     public List<CgMiracle> miracles { get; set; } = new();
     /// <summary>The shared five-Rank spine: level → highest Rank, for Signs and Miracles alike.</summary>
     public Dictionary<string, int> rankAtLevel { get; set; } = new();
+    public Dictionary<string, string> hungerLadder { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
     public List<CgArmor> armor { get; set; } = new();
     public Dictionary<string, double> gearPrices { get; set; } = new();
@@ -148,6 +163,14 @@ public class CharacterSheet
     public string Name { get; set; } public string Gender { get; set; }
     public string Calling { get; set; }
     public string Origin { get; set; } public string Compass { get; set; }
+    /// <summary>The Shape of Return, for a soul who Came Back Wrong. Null on everybody else, and
+    /// null on every sheet saved before v1.49.0 — so every consumer tests it rather than migrating
+    /// session.json, exactly as <c>Look</c> does.</summary>
+    public string Shape { get; set; }
+    /// <summary>The Hunger track, 0..6. Ch. XII gives it to one Origin alone, which is why it sits
+    /// on the sheet and not on <c>PartyMember</c> beside Mark and Taint: those two are asked of
+    /// every soul in the posse, and a Hunger column on the grid would be eighteen empty cells.</summary>
+    public int Hunger { get; set; }
     public int Level { get; set; }
     public string Method { get; set; }                                  // "The Honest Array" | "The Gamble (rolled)"
     public Dictionary<string, int> Scores { get; set; } = new();         // final scores, gifts applied
@@ -313,6 +336,39 @@ public readonly struct FeatureTally
 
     /// <summary>What the card says under the name — "the third Debt comes due".</summary>
     public string Says => Any ? $"the {Ordinal(At)} {Noun} comes due" : "";
+}
+
+/// <summary>A standing ± an Origin carries, and the condition the book hangs it on.
+///
+/// <para>The third shape on the strip, and the one that is neither a ration nor a tally. A
+/// <see cref="FeatureLimit"/> is a thing you spend and a boundary returns; a
+/// <see cref="FeatureTally"/> is a thing that climbs and nothing returns. This is neither: it is
+/// always true and it is never automatic, because whether it applies is a fact about the world
+/// — indoors, among the wealthy, talking to a lawman — that the app does not model and must not
+/// guess at. It is <b>offered</b>, exactly as a creature's attack rider is (see the Iron Code's
+/// rule that the engine may only write what needs nobody's judgement).</para>
+///
+/// <para>The value in it is not the arithmetic, which any Keeper can do. It is that the app knows
+/// which of these this particular soul has, and says so at the moment the roll is being made
+/// instead of leaving it on a sheet nobody rereads after first level.</para></summary>
+public sealed class OriginEdge
+{
+    /// <summary>The Origin that grants it — the card's head line.</summary>
+    public string Origin { get; init; }
+    /// <summary>Signed, as the book prints it: +2, −1.</summary>
+    public int Size { get; init; }
+    /// <summary>The short of what it applies to — "Notice against ambush", "Fortitude saves
+    /// against fatigue". One clause, because a chip is read at a glance or not at all.</summary>
+    public string Applies { get; init; }
+    /// <summary>The book's whole sentence, for the tooltip. A Keeper deserves the rule, not a
+    /// code — the same standing choice <see cref="FeatureLimit.Phrase"/> makes.</summary>
+    public string Phrase { get; init; }
+    /// <summary>Whether it came out of the boon or the burden. Drawn differently: a burden a
+    /// player can forget to apply is the half that decides whether an Origin is a CHOICE or a
+    /// free +2.</summary>
+    public bool IsBoon { get; init; }
+
+    public string Says => $"{(Size >= 0 ? "+" : "−")}{Math.Abs(Size)} {Applies}";
 }
 
 public static class CharGen
@@ -1196,6 +1252,17 @@ public static class CharGen
         s.Speed = 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (worn?.speed ?? 0);
         s.Mark = org.startMark + cal.startMark + (s.Edges.Contains("Touched") ? 1 : 0);
 
+        // A soul who came back wrong has a Shape, and starts quiet. Rolled here rather than left
+        // for the player to fill in later for the reason the Look is rolled here: a sheet that is
+        // valid only after somebody remembers to finish it is a sheet the generator did not make.
+        // Hunger begins at 0 — the book's own reading, that you pass for living until you have
+        // spent something.
+        if (IsReturned(s) && ShapesOfReturn.Count > 0)
+        {
+            s.Shape = ShapesOfReturn[Rules.Rng.Next(ShapesOfReturn.Count)].name;
+            s.Hunger = 0;
+        }
+
         if (cal.pool != null)
         {
             int baseMod = Mod(s.Scores[cal.pool.formula.Substring(0, 3)]);
@@ -1402,6 +1469,23 @@ public static class CharGen
         int expectMark = org.startMark + cal.startMark + (owned.Contains("Touched") ? 1 : 0);
         Check(s.Mark == expectMark, $"Mark {s.Mark} ≠ origin {org.startMark} + calling {cal.startMark} + Touched");
 
+        // The Returned. Validate's whole job is to re-derive independently, so it asks the two
+        // questions the generator could get wrong: that a Shape is one the book prints, and that
+        // nobody else is carrying a Hunger at all. A Hunger on a Gunhand is not a small error —
+        // it is a track with an ending, sitting on a soul no rule would ever move it for.
+        if (IsReturned(s))
+        {
+            Check(!string.IsNullOrEmpty(s.Shape), "a soul who came back wrong has no Shape of Return");
+            Check(s.Shape == null || ShapesOfReturn.Any(x => x.name == s.Shape),
+                $"Shape of Return '{s.Shape}' is not one Ch. XII prints");
+            Check(s.Hunger >= 0 && s.Hunger <= HungerLost, $"Hunger {s.Hunger} outside 0..{HungerLost}");
+        }
+        else
+        {
+            Check(string.IsNullOrEmpty(s.Shape), $"{org.name} carries a Shape of Return, which only {ReturnedOrigin} has");
+            Check(s.Hunger == 0, $"{org.name} carries Hunger {s.Hunger}, which only {ReturnedOrigin} has");
+        }
+
         // subpath at 3rd
         if (s.Level >= 3 && cal.subpath != null && cal.subpath.options.Count > 0)
             Check(cal.subpath.options.Any(o => o.name == s.Subpath), $"subpath \"{s.Subpath}\" not among the {cal.subpath.section}");
@@ -1444,6 +1528,12 @@ public static class CharGen
         sb.AppendLine();
         sb.AppendLine($"Blood {s.Blood} · Defense {s.Defense} · Saves Fort {M(s.Fort)}, Ref {M(s.Ref)}, Will {M(s.Will)} · Nerve {s.NerveMax} · Grit {s.Grit} · Speed {s.Speed} ft"
                       + (s.Mark > 0 ? $" · Mark {s.Mark}" : ""));
+        if (IsReturned(s))
+        {
+            var shape = ShapeOf(s);
+            sb.AppendLine($"Returned · {s.Shape ?? "no Shape chosen"} · Hunger {s.Hunger} of {HungerLost} — {HungerSays(s.Hunger)}");
+            sb.AppendLine($"   Mends {MendDice(s.Level)}d6, and only this way. Hungers for {shape?.hunger ?? "something it cannot name."}");
+        }
         int gunAtk = s.Attack + Mod(s.Scores["DEX"]), melAtk = s.Attack + Mod(s.Scores["STR"]);
         sb.AppendLine($"Attack {M(s.Attack)} (guns {M(gunAtk)} with DEX · melee {M(melAtk)} with STR)");
         if (s.WeaponsCarried.Count > 0) foreach (var w in s.WeaponsCarried) sb.AppendLine("   " + w);
@@ -1795,6 +1885,211 @@ public static class CharGen
     static readonly System.Text.RegularExpressions.Regex MasteryMark =
         new(@"(?:Mastery \(10th\)|Greater \(9th\))\s*:", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
+    // ------------------------------------------- what the ORIGIN is worth at the table
+
+    /// <summary>Cut a description into sentences, so each one can be read for a limit of its own.
+    ///
+    /// <para>An Origin states more than one rationed thing in a single paragraph — the Veteran's
+    /// boon holds <em>"Once per session steady the line"</em> and <em>"once per scene reroll a
+    /// failed Reflex save"</em> in one breath — and <see cref="ReadLimit"/> answers with the first
+    /// match it finds. Handing it the whole paragraph would therefore have quietly dropped the
+    /// second half of four Origins.</para>
+    ///
+    /// <para><b>The semicolon counts as a full stop here, and that is the whole trick.</b> Ch. IV
+    /// writes its second clause in lower case after a semicolon — <em>"…for a round; once per scene
+    /// reroll a failed Reflex save"</em> — so a split that demanded a capital letter found one
+    /// sentence where the book states two, and the Veteran's second ration went missing. Caught by
+    /// running the reader over all ten Origins and reading what came out, which is the only way
+    /// this kind of fault ever shows: every assertion about the first half passes perfectly.</para>
+    ///
+    /// <para>No decimal is at risk — this book writes <c>1d6</c> and <c>−2</c>, never <c>1.5</c> —
+    /// so the split needs no lookahead beyond the whitespace.</para></summary>
+    static IEnumerable<string> Sentences(string text)
+        => string.IsNullOrWhiteSpace(text)
+         ? System.Linq.Enumerable.Empty<string>()
+         : System.Text.RegularExpressions.Regex.Split(text.Trim(), @"(?<=[.;])\s+")
+                 .Where(s => !string.IsNullOrWhiteSpace(s));
+
+    /// <summary>What a soul's ORIGIN puts on the Tracker's strip.
+    ///
+    /// <para>Ch. IV gives every Origin a <b>boon</b> and a <b>burden</b>, and until v1.49.0 the app
+    /// printed both on the sheet and counted neither. Five of the ten ration an activation in so
+    /// many words — <em>"Once per session, when you would drop to 0 Blood…"</em> — which is the same
+    /// sentence shape the Callings use and so is read by the same <see cref="ReadLimit"/>. This is
+    /// deliberately NOT a <c>uses</c> column added to <c>chargen.json</c>: that file is a
+    /// transcription, and a second copy of a fact beside the prose is what the twenty repaired
+    /// descriptions of 2026-08-19 were.</para>
+    ///
+    /// <para>Keyed <c>"Origin: &lt;name&gt;"</c> so the key cannot collide with a Calling feature in
+    /// <see cref="PartyMember.FeatureSpent"/>, and so <see cref="ShortFeatureName"/> — which trims
+    /// at the colon for exactly this reason — shows a card that says <em>Came Back Wrong</em>
+    /// rather than the word <em>Origin</em>. Where one half states two rationed things, the second
+    /// takes a numeral, because a card a player cannot tell from its neighbour is the fault
+    /// v1.44.0 fixed for the Hexer's two Bargain cards.</para></summary>
+    public static List<(string Name, string Desc, FeatureLimit Limit)> OriginFeatures(string originName)
+    {
+        var list = new List<(string, string, FeatureLimit)>();
+        var o = D?.origins?.FirstOrDefault(x => x.name == originName);
+        if (o == null) return list;
+
+        int n = 0;
+        foreach (var half in new[] { o.boon, o.burden })
+            foreach (var sentence in Sentences(half))
+            {
+                var lim = ReadLimit(sentence);
+                if (!lim.Any) continue;
+                n++;
+                list.Add(($"Origin: {o.name}" + (n > 1 ? $" ({n})" : ""), sentence, lim));
+            }
+        return list;
+    }
+
+    /// <summary>The standing ± an Origin carries, and what it is conditional on.
+    ///
+    /// <para>The other half of Ch. IV, and the half no counter can hold: the Scout is <em>"+2 on
+    /// Notice against ambush… −1 on Notice indoors"</em>, and the app does not know whether the
+    /// posse is indoors. So these are never applied behind the Keeper's back — they are
+    /// <b>offered</b>, the way a creature's attack rider is and for the same reason. What the app
+    /// contributes is that it knows WHICH ones this soul has and what the book says they are worth,
+    /// so a Keeper stops having to remember that the Fallen Gentry is worse at going hungry.</para>
+    ///
+    /// <para>The sign, the size and the skill or save all come off the book's own sentence. A
+    /// modifier typed into the data beside the prose would be the same second copy
+    /// <see cref="OriginFeatures"/> refuses, and this project has paid for second copies
+    /// twice.</para></summary>
+    public static List<OriginEdge> OriginEdges(string originName)
+    {
+        var list = new List<OriginEdge>();
+        var o = D?.origins?.FirstOrDefault(x => x.name == originName);
+        if (o == null) return list;
+
+        foreach (var (half, isBoon) in new[] { (o.boon, true), (o.burden, false) })
+            foreach (var sentence in Sentences(half))
+                foreach (System.Text.RegularExpressions.Match m in StandingMod.Matches(sentence))
+                {
+                    int size = int.Parse(m.Groups["n"].Value);
+                    if (m.Groups["sign"].Value is "−" or "-") size = -size;
+                    list.Add(new OriginEdge
+                    {
+                        Origin = o.name,
+                        Size = size,
+                        Applies = Tidy(m.Groups["what"].Value),
+                        Phrase = sentence.Trim(),
+                        IsBoon = isBoon,
+                    });
+                }
+        return list;
+    }
+
+    // "+2 on Fortitude saves against fatigue", "−1 on checks of fine dexterity", "+2 to slip a
+    // bond". The book writes every one of them as sign, digit, then "on"/"to"/"with"/"against" and
+    // the thing — so the shape is the book's, not one invented here.
+    //
+    // The PREPOSITION is inside the capture on purpose. Left out, the chip for "+2 with criminals
+    // and fences" renders as "+2 criminals", which reads like a typo rather than a rule; the
+    // book's own word costs four characters and makes the chip a sentence.
+    static readonly System.Text.RegularExpressions.Regex StandingMod =
+        new(@"(?<sign>[+−-])(?<n>\d+)\s+(?<what>(?:on|to|with|against)\s+[^,.;:]+)",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    static string Tidy(string s)
+    {
+        s = s.Trim();
+        // The book runs a clause on with "and" more often than it punctuates it, and a chip that
+        // reads "on Notice against ambush, tracks, and lying-in-wait out of doors and never
+        // surprised" is a chip nobody reads. One clause is the whole of what a chip is for.
+        // An em dash opens a gloss on the clause just made — "against plain hardships — hunger,
+        // exposure, hard labor" — and the gloss is the tooltip's job, not the chip's.
+        foreach (var stop in new[] { " and ", " — " })
+        {
+            int at = s.IndexOf(stop, StringComparison.OrdinalIgnoreCase);
+            if (at > 0) s = s.Substring(0, at);
+        }
+        // Four of these are printed inside a parenthetical aside — "(−1 on first impressions with
+        // the breathing)" — so the closing bracket rides in on the last word.
+        return s.TrimEnd('.', ')', ' ');
+    }
+
+    // ------------------------------------------- the Returned (Player's Book Ch. XII)
+
+    /// <summary>The one Origin that carries a Hunger. Named once so no other file spells it.</summary>
+    public const string ReturnedOrigin = "Came Back Wrong";
+
+    /// <summary>Hunger 6 is <b>Consumed</b>, and the character passes to the Keeper — deliberately
+    /// the same terminus as Mark 6, because the book has already taught a table what that means and
+    /// a second, different ending would be a second rule to learn.</summary>
+    public const int HungerLost = 6;
+
+    /// <summary>At this Hunger and above a soul stops losing Nerve to Dread Checks. The book prints
+    /// it as a gift and says in the same breath that it is not one.</summary>
+    public const int HungerNumb = 3;
+
+    public static bool IsReturned(CharacterSheet s)
+        => s != null && string.Equals(s.Origin, ReturnedOrigin, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>The four Shapes of Return, read off the Origin that owns them.</summary>
+    public static List<CgShape> ShapesOfReturn
+        => D?.origins?.FirstOrDefault(o => o.name == ReturnedOrigin)?.shapes ?? new();
+
+    public static CgShape ShapeOf(CharacterSheet s)
+        => !IsReturned(s) || string.IsNullOrEmpty(s.Shape) ? null
+         : ShapesOfReturn.FirstOrDefault(x => x.name == s.Shape);
+
+    /// <summary>What a rung of the Hunger track means, in the book's own words. Rung 0 is not in
+    /// the data because the book prints it as the absence of the others.</summary>
+    public static string HungerSays(int n)
+        => n <= 0 ? "Quiet. In a dim room, at a distance, you pass for living"
+         : D.hungerLadder.TryGetValue(Math.Min(n, HungerLost).ToString(), out var s) ? s : "";
+
+    /// <summary>How much a Returned soul mends for: <b>1d6 for every two levels, never less than
+    /// one</b> (Ch. XII). Expressed as a die count rather than a rolled number so the Tracker's
+    /// roll log can show the dice, the way every other roll in this app does.</summary>
+    public static int MendDice(int level) => Math.Max(1, level / 2);
+
+    /// <summary>Whether this soul may mend at all, and why not when they may not. Paired the way
+    /// <see cref="WhyNotFeature"/> is paired with <see cref="SpendFeature"/>: a refusal that does
+    /// not say why is reported as a broken button.
+    ///
+    /// <para>The only bar is the last one. A soul at Hunger 5 may still mend, and mending takes
+    /// them to 6 and out of the player's hands — that is not a bug to be clamped away, it is the
+    /// decision the whole Origin is built to put in front of somebody bleeding out. What the app
+    /// owes them is a plain warning first, not a locked door.</para></summary>
+    public static string WhyNotMend(CharacterSheet s)
+        => !IsReturned(s) ? "Only a soul who came back wrong mends this way."
+         : s.Hunger >= HungerLost ? "Consumed. There is nothing left to spend."
+         : null;
+
+    /// <summary>Take one Hunger. Returns the rung landed on, so the caller can say what it means
+    /// and stop at the one that ends the character.</summary>
+    public static int TakeHunger(CharacterSheet s, int n = 1)
+    {
+        if (!IsReturned(s)) return 0;
+        s.Hunger = Math.Clamp(s.Hunger + n, 0, HungerLost);
+        return s.Hunger;
+    }
+
+    /// <summary>Feeding brings the Hunger down by one, and never below nothing. It is deliberately
+    /// the ONLY way down: no rest returns it, no dawn, no new session. Every other boundary in this
+    /// app hands something back because a clock turned over, and a Hunger that eased overnight
+    /// would say the feeding never mattered — the same argument that keeps the Witch's rite an act
+    /// rather than a boundary, and the Hexer's Debts out of <c>RefreshFeatures</c>.</summary>
+    public static int Feed(CharacterSheet s, int n = 1)
+    {
+        if (!IsReturned(s)) return 0;
+        s.Hunger = Math.Clamp(s.Hunger - n, 0, HungerLost);
+        return s.Hunger;
+    }
+
+    /// <summary>What the grave gave: +2 on Dread Checks, because very little out here is new to
+    /// somebody who has been on the other side of it. Named rather than left as a literal at the
+    /// dialog, for the reason <see cref="InitiativeBonus"/> is named.</summary>
+    public static int DreadBonus(CharacterSheet s) => IsReturned(s) ? 2 : 0;
+
+    /// <summary>Whether this soul has stopped being able to be horrified. The book's own reading:
+    /// a thing that cannot be frightened has lost its last honest warning system, so this is
+    /// checked wherever Nerve would be taken and the loss is simply not applied.</summary>
+    public static bool NumbToDread(CharacterSheet s) => IsReturned(s) && s.Hunger >= HungerNumb;
+
     // ------------------------------------------- spending a feature, and getting it back
 
     /// <summary>Every limited feature this soul has, with how many uses are left on each. The
@@ -1803,7 +2098,11 @@ public static class CharGen
     {
         var outp = new List<(string, string, FeatureLimit, int, int)>();
         if (p == null) return outp;
-        foreach (var f in FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath))
+        // The Origin's rations come first, because Ch. III picks an Origin before a Calling and
+        // because they are the ones a table forgets — a Calling's features get read every level,
+        // an Origin's boon gets read once at character creation and never again.
+        foreach (var f in OriginFeatures(p.Sheet?.Origin).Concat(
+                          FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath)))
         {
             if (!f.Limit.Any) continue;
             int of = f.Limit.UsesFor(p.Sheet);

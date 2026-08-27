@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.29", KeeperBookVer = "2.17", BestiaryVer = "2.14";
+    internal const string PlayerBookVer = "2.30", KeeperBookVer = "2.17", BestiaryVer = "2.14";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -206,42 +206,17 @@ public partial class MainForm : Sheet
         MainMenuStrip = menu;
         Controls.Add(menu);                       // added after the fill control so it docks above it
 
-        // Ctrl+number jumps to a tab (keyboard-first, like the market tools), and each
-        // busy tab gets table-speed shortcuts for its most-hammered buttons. Deliberately
-        // NOT keyed: destructive clears (a confirm click should stay a deliberate act) and
-        // browse-y generator buttons (Tab+Space already serves them).
+        BuildKeyMap();
+
+        // Esc ends the tour from the app side too, so it can be dismissed whichever of the two
+        // windows has focus. A walkthrough you can only close from itself is a trap. This is the
+        // one binding left on KeyDown, because it is not a command — it is a way out, it takes no
+        // modifier, and a bare Esc captured in ProcessCmdKey would be taken from every dialog and
+        // every text box in the app before they ever saw it.
         KeyDown += (s, e) =>
         {
-            // Esc ends the tour from the app side too, so it can be dismissed whichever of the
-            // two windows has focus. A walkthrough you can only close from itself is a trap.
             if (e.KeyCode == Keys.Escape && tourWindow != null && !tourWindow.IsDisposed)
-            { tourWindow.Close(); e.Handled = true; return; }
-            if (e.Control && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9)
-            { tabs.SelectedIndex = e.KeyCode - Keys.D1; e.Handled = true; return; }
-            if (e.Control && e.KeyCode == Keys.D0 && tabs.TabPages.Count >= 10)
-            { tabs.SelectedIndex = 9; e.Handled = true; return; }
-            if (!e.Control || e.Alt || e.Shift) return;
-            void Did() { e.Handled = true; e.SuppressKeyPress = true; }
-            string page = tabs.SelectedTab?.Text;
-            if (page == "Posse" && posseGrid?.IsCurrentCellInEditMode != true)
-            {
-                if (e.KeyCode == Keys.D) { AdjustPC(-1); Did(); }
-                else if (e.KeyCode == Keys.H) { AdjustPC(+1); Did(); }
-            }
-            else if (page == "Tracker" && trkGrid?.IsCurrentCellInEditMode != true)
-            {
-                if (e.KeyCode == Keys.D) { AdjustCombatant(-1); Did(); }
-                else if (e.KeyCode == Keys.H) { AdjustCombatant(+1); Did(); }
-                else if (e.KeyCode == Keys.I) { RollInitiative(); Did(); }
-                else if (e.KeyCode == Keys.R) { NextRound(); Did(); }
-                // The loop key: hand on the turn, and let the round follow. Space because it is the
-                // one a hand already resting on the keyboard can find without looking down.
-                else if (e.KeyCode == Keys.Space) { NextTurn(); Did(); }
-            }
-            else if (page == "Bestiary" && e.KeyCode == Keys.F)
-            { beastSearch.Focus(); beastSearch.SelectAll(); Did(); }
-            else if (page == "Map" && e.KeyCode == Keys.G)
-            { MapDraw(true); Did(); }
+            { tourWindow.Close(); e.Handled = true; }
         };
 
         var status = new StatusStrip { BackColor = Paper, ShowItemToolTips = true };
@@ -448,6 +423,66 @@ public partial class MainForm : Sheet
     // Left/Right turn the Reference deck no matter which control holds focus — arrow
     // keys are normally eaten as focus-navigation before KeyDown ever sees them. The
     // Reference tab has no text inputs, so stealing them there costs nothing.
+    /// <summary>One keyboard binding: the chord, the tab it belongs to, the sentence the Help
+    /// window prints for it, and the thing it does.
+    ///
+    /// <para><see cref="Tab"/> is null for a binding that works anywhere. Otherwise it is a tab's
+    /// title, and the binding only fires while that tab is the one on show — which is what lets
+    /// Ctrl+D mean <em>damage this soul</em> on the Posse and <em>damage this row</em> on the
+    /// Tracker without either one having to know about the other.</para></summary>
+    internal sealed record KeyBinding(Keys Chord, string Tab, string Says, Action Do);
+
+    readonly List<KeyBinding> keyMap = new();
+
+    /// <summary>Every shortcut in the app, in one list.
+    ///
+    /// <para>It is a list rather than a switch because two things read it: <see
+    /// cref="ProcessCmdKey"/> runs it, and <c>ShowShortcuts</c> prints it. Those were separate
+    /// before — the handler in a lambda here, the help text hand-typed in <c>Menus.cs</c> — which
+    /// is the same two-copies-of-a-fact shape as the <c>uses</c> column <see
+    /// cref="CharGen.ReadLimit"/> refuses to have and the seven typed copies of the encounter
+    /// ladder that <see cref="Rules.BudgetRungs"/> replaced. A shortcut list that is written twice
+    /// is a shortcut list that will eventually tell a Keeper about a key that does nothing.</para>
+    ///
+    /// <para>Deliberately NOT keyed, and this is a design line rather than an oversight:
+    /// destructive clears, because a confirm click should stay a deliberate act, and the browse-y
+    /// generator buttons, which Tab and Space already reach.</para></summary>
+    void BuildKeyMap()
+    {
+        void K(Keys chord, string tab, string says, Action act) => keyMap.Add(new(chord, tab, says, act));
+
+        K(Keys.Control | Keys.D, "Posse", "Damage the selected soul by the Amount", () => AdjustPC(-1));
+        K(Keys.Control | Keys.H, "Posse", "Heal the selected soul by the Amount", () => AdjustPC(+1));
+
+        K(Keys.Control | Keys.D, "Tracker", "Damage the selected combatant by the Amt", () => AdjustCombatant(-1));
+        K(Keys.Control | Keys.H, "Tracker", "Heal the selected combatant by the Amt", () => AdjustCombatant(+1));
+        K(Keys.Control | Keys.I, "Tracker", "Roll initiative for the field", RollInitiative);
+        K(Keys.Control | Keys.R, "Tracker", "Next round", NextRound);
+        // The loop key: hand on the turn, and let the round follow. Space because it is the one a
+        // hand already resting on the keyboard can find without looking down.
+        K(Keys.Control | Keys.Space, "Tracker", "Hand the turn on — the round follows by itself", NextTurn);
+
+        K(Keys.Control | Keys.F, "Bestiary", "Jump to the search box",
+            () => { beastSearch.Focus(); beastSearch.SelectAll(); });
+        K(Keys.Control | Keys.G, "Map", "Draw a fresh map on a new seed", () => MapDraw(true));
+    }
+
+    /// <summary>What the Help window prints, taken off the same list the keys are read from.</summary>
+    internal IEnumerable<KeyBinding> Shortcuts => keyMap;
+
+    /// <summary>Is a grid mid-edit? A Keeper typing a number into a Blood cell is spending
+    /// keystrokes on the cell, not on the app, and a command fired out from under them is the
+    /// worst kind of shortcut.</summary>
+    bool Editing => posseGrid?.IsCurrentCellInEditMode == true || trkGrid?.IsCurrentCellInEditMode == true;
+
+    /// <summary>Every shortcut in the app arrives here, and that is the whole point.
+    ///
+    /// <para>These lived on the form's <c>KeyDown</c> until v1.49.0, which meant they fired only
+    /// when nothing else wanted the key first. <c>ProcessCmdKey</c> is checked before any control
+    /// sees the keystroke, so a shortcut works no matter where focus is sitting — and focus on the
+    /// Tracker is almost always the grid, which is the control most likely to swallow one. The
+    /// Reference deck's arrows were moved here for exactly this reason in v1.38.0; the combat loop
+    /// simply never followed, so the key a Keeper presses most was the one least sure to land.</para></summary>
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (tabsCtl?.SelectedTab == referencePage && (keyData == Keys.Left || keyData == Keys.Right))
@@ -455,7 +490,56 @@ public partial class MainForm : Sheet
             RefShow(refPage + (keyData == Keys.Right ? 1 : -1));
             return true;
         }
+        if (JumpToTab(keyData)) return true;
+        if (!Editing)
+        {
+            string page = tabsCtl?.SelectedTab?.Text;
+            foreach (var b in keyMap)
+                if (b.Chord == keyData && (b.Tab == null || b.Tab == page)) { b.Do(); return true; }
+        }
         return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    /// <summary>Ctrl+1…Ctrl+0 jump to a tab, counted off the tabs actually ON SHOW.
+    ///
+    /// <para>It used to index <c>allTabs</c>' order blindly, and the run mode re-lays that list —
+    /// <see cref="ApplyModeTabs"/> clears the strip and re-adds only what the mode shows, so a
+    /// player's three-tab view had Ctrl+4 through Ctrl+0 pointing past the end. Seven shortcuts
+    /// that quietly did nothing, in the mode least likely to have anyone nearby who knew why.
+    /// Now the range is checked and a miss SAYS so, per the standing rule that a refusal is never
+    /// silent.</para></summary>
+    bool JumpToTab(Keys keyData)
+    {
+        if ((keyData & Keys.Modifiers) != Keys.Control) return false;
+        var k = keyData & Keys.KeyCode;
+        int want = k == Keys.D0 ? 9 : k >= Keys.D1 && k <= Keys.D9 ? k - Keys.D1 : -1;
+        if (want < 0) return false;
+        int shown = tabsCtl?.TabPages.Count ?? 0;
+        if (want >= shown)
+        {
+            Nope($"No {Ordinal(want + 1)} tab in this view — it shows {shown}.");
+            return true;
+        }
+        tabsCtl.SelectedIndex = want;
+        return true;
+    }
+
+    /// <summary>A chord as a Keeper reads it — "Ctrl+Space", not "Control, Space". Built here
+    /// rather than taken from <c>KeysConverter</c>, which localises and would print the help
+    /// window in one language and the menu strip's own shortcut column in another.</summary>
+    internal static string Chord(Keys chord)
+    {
+        var k = chord & Keys.KeyCode;
+        string name = k switch
+        {
+            >= Keys.D0 and <= Keys.D9 => ((int)(k - Keys.D0)).ToString(),
+            Keys.Space => "Space",
+            _ => k.ToString(),
+        };
+        return ((chord & Keys.Control) != 0 ? "Ctrl+" : "")
+             + ((chord & Keys.Alt) != 0 ? "Alt+" : "")
+             + ((chord & Keys.Shift) != 0 ? "Shift+" : "")
+             + name;
     }
 
     // ---------------------------------------------------------- lazy tabs

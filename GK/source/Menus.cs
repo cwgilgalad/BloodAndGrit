@@ -371,36 +371,47 @@ public partial class MainForm
         void H(string s) { rtf.SelectionFont = Face("Segoe UI", 12f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void M(string s) { rtf.SelectionFont = Face("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
 
+        // The app's own chords are RENDERED from MainForm.keyMap, never re-typed. They were typed
+        // here until v1.49.0, one copy in the handler and one in this window, which is how a help
+        // page comes to promise a key that does nothing. What stays hand-written below is the set
+        // this window is the only home for: the menu's own accelerators, and the conventions the
+        // grids and pickers get from Windows rather than from us.
+        int shownTabs = tabsCtl?.TabPages.Count ?? 0;
         H("Anywhere");
-        M("  Ctrl+1 … Ctrl+0   Jump to a tab (in bar order; Ctrl+0 is the tenth)");
+        M($"  Ctrl+1 … Ctrl+{(shownTabs >= 10 ? "0" : shownTabs.ToString())}   "
+          + $"Jump to a tab (in bar order{(shownTabs >= 10 ? "; Ctrl+0 is the tenth" : "")})");
         M("  Ctrl+S            Save the session now");
         M("  Ctrl+Shift+S      Save the session to a file…");
         M("  Ctrl+O            Load a session from a file…");
+        M("  Ctrl+Z / Ctrl+Y   Undo / Redo");
         M("  F1                The five-minute lesson");
         M("");
-        H("Posse");
-        M("  Ctrl+D / Ctrl+H   Damage / Heal the selected soul (by the Amount)");
-        M("  Delete            Remove the selected soul");
-        M("  F2 (or type)      Edit the selected cell");
-        M("  Double-click      Open the soul's Ledger (on the Notes cell: the whole note)");
-        M("");
-        H("Tracker");
-        M("  Ctrl+I            Roll initiative for the field");
-        M("  Ctrl+R            Next round");
-        M("  Ctrl+D / Ctrl+H   Damage / Heal the selected combatant (by the Amt)");
-        M("  Delete            Remove the selected combatant");
-        M("  Double-click      Open the combatant's card (stat block, or a soul's Ledger)");
-        M("");
-        H("Bestiary & pickers");
-        M("  Ctrl+F            Jump to the search box");
-        M("  Enter / dbl-click Pop the creature out into its own window");
-        M("  Enter             Add the typed creature (Encounter/Tracker pickers)");
-        M("");
+        foreach (var group in Shortcuts.GroupBy(b => b.Tab ?? "Anywhere"))
+        {
+            H(group.Key);
+            foreach (var b in group) M($"  {Chord(b.Chord),-17} {b.Says}");
+            // What the grids and pickers answer to on their own. Not ours to bind, and a Keeper
+            // still has to be told, so they sit beside the chords rather than in place of them.
+            switch (group.Key)
+            {
+                case "Posse":
+                    M("  Delete            Remove the selected soul");
+                    M("  F2 (or type)      Edit the selected cell");
+                    M("  Double-click      Open the soul's Ledger (on the Notes cell: the whole note)");
+                    break;
+                case "Tracker":
+                    M("  Delete            Remove the selected combatant");
+                    M("  Double-click      Open the combatant's card (stat block, or a soul's Ledger)");
+                    break;
+                case "Bestiary":
+                    M("  Enter / dbl-click Pop the creature out into its own window");
+                    M("  Enter             Add the typed creature (Encounter/Tracker pickers)");
+                    break;
+            }
+            M("");
+        }
         H("Dice");
         M("  Enter             Roll the expression in the box");
-        M("");
-        H("Map");
-        M("  Ctrl+G            Draw a fresh map on a new seed");
         M("");
         H("Reference");
         M("  Left / Right      Turn the deck (or click ◀ ▶)");

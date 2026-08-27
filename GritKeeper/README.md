@@ -3,9 +3,9 @@
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
 **Blood & Grit** at the table. Built in C# (.NET 10 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
-(Player's Book v2.29 · Keeper's Book v2.17 · Bestiary v2.14).
+(Player's Book v2.30 · Keeper's Book v2.17 · Bestiary v2.14).
 
-**App version 1.48.0**
+**App version 1.49.0**
 
 ---
 
@@ -138,7 +138,7 @@ once).
 
 **Encounter** — plan a fight *before* you run it, with the budget calculator from the
 Keeper's Book: 4 points per soul in the posse, each creature auto-costed against the
-party's level (Even foe 4 / Mook 1 / Standout 8) and a running verdict from "under
+party's level (mook 4, even foe 8, standout 16) and a running verdict from "under
 budget" to "you had better mean it." Add creatures right on the tab with the type-ahead
 picker (× N), or send them over from the Bestiary. Creatures two or more Tiers over the
 posse are flagged with the **safe-table rule**. Happy with the odds? **Send all →

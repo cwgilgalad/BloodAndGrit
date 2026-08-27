@@ -8,6 +8,97 @@ Desktop\Git repos.)
 
 ---
 
+- **The Player's Book v2.30 — the Returned (2026-08-25).**
+
+  Ch. XII gains **The Returned**, the rules for playing a character who died and did not stay dead.
+  A **Hunger** track of six steps, carried by one Origin alone. You mend by spending it, and that is
+  the only way you heal: not rest, not medicine, not a Miracle worked over you by somebody who loves
+  you. Feeding is the only way back down, and it is a scene rather than an action.
+
+  Four **Shapes of Return** say what came back and what it wants — the Risen, put together by a hand
+  that should have known better; the Sanguine, who no longer makes what runs in the living; the
+  Hollow, missing a piece it cannot name; and the Tolled, whose lender is holding the note. Each has
+  its own feeding and one thing it can do that the living cannot.
+
+  What the grave gave, and what it takes, are stated together on purpose. +2 on Dread Checks, no
+  need of food or sleep or air, nothing for poison to work on — and at Hunger 3 the fear stops
+  landing altogether, which the chapter prints as a gift and then says plainly is not one. Against
+  that: grace will not settle on you, the Old Dark knows its own, and the living can tell.
+
+  A boxed word before anybody plays one. Three of the four Shapes feed on people who did not
+  volunteer, so the chapter says outright that a Keeper may rule any Shape's feeding bloodless or
+  off-screen, and the rules lose nothing by it. Ch. IV's Origin entry now points here. 203 → 206
+  pages, parity and clip clean on both widths.
+
+- **GritKeeper v1.49.0 — the keyboard reaches the whole app, and an Origin finally does
+  something (2026-08-25).**
+
+  Two faults of the same shape. A rule the app held every part of, and no way to act on it.
+
+  **The shortcuts now fire wherever focus is sitting.** They lived on the form's `KeyDown`, which
+  runs only if no control wanted the key first — and on the Tracker the control with focus is
+  almost always the grid, which is exactly the tab where **Ctrl+Space** hands on the turn. The
+  Reference deck's arrows were moved to `ProcessCmdKey` in v1.38.0 for precisely this reason and
+  the combat loop never followed, so the key a Keeper presses most was the one least sure to land.
+  All nine are now read there.
+
+  **Ctrl+<n> stopped pointing past the end of the tab strip.** `ApplyModeTabs` re-lays the strip
+  per run mode, and the jump indexed it blindly: a player's view shows three tabs, so Ctrl+4
+  through Ctrl+0 were seven shortcuts that silently did nothing, in the mode least likely to have
+  anyone nearby who knew why. The range is checked and a miss says so, per the standing rule that
+  a refusal is never silent.
+
+  **And the shortcut list is one table.** It was written twice — the chords in a lambda in
+  `MainForm.cs`, the help window's copy hand-typed in `Menus.cs` — which is how a help page comes
+  to promise a key that does nothing. `MainForm.keyMap` is now the one list; `ProcessCmdKey` runs
+  it and **Help ▸ Keyboard shortcuts** prints it. Same shape as the seven typed copies of the
+  encounter ladder that `Rules.BudgetRungs` replaced. `audits/audit_ui.py` gained a fourth UX rule
+  holding it there: no chord claimed twice in one scope, every binding carrying a sentence to
+  print, and nothing the table owns hand-typed into the help window. Proved against a synthetic
+  drift first, the way the other three were.
+
+  **Ch. IV's Origins reach the Tracker.** Every soul has an Origin, all ten carry a boon and a
+  burden, and the app printed both on the sheet and counted neither — so the Tracker never once
+  said what a soul's Origin was worth. Five of the ten ration an activation in so many words
+  (*"Once per session, when you would drop to 0 Blood…"*), which is the same sentence shape the
+  Callings use, so `CharGen.OriginFeatures` reads them with the same `ReadLimit` and they arrive
+  on the strip as cards that spend, refuse and come back on the right boundary with no new
+  machinery at all. The other half — the standing ± — is `CharGen.OriginEdges`, drawn as a card
+  that is only ever read: whether a Scout's −1 applies is a fact about where the posse is
+  standing, and the app models no ground, so these are **offered and never applied behind the
+  Keeper's back**, exactly as a creature's attack rider is.
+
+  Neither reader takes a number from anywhere but the book's own sentence — a `uses` column beside
+  the prose in `chargen.json` would be the second copy of a fact this project has paid for twice.
+  **The semicolon is what made it work.** Ch. IV writes a second rationed clause in lower case
+  after a semicolon — *"…for a round; once per scene reroll a failed Reflex save"* — so a split
+  demanding a capital found one sentence where the book states two, and the Veteran's second
+  ration went missing. Found by running the reader over all ten Origins and reading the output,
+  which is the only way that fault ever shows: every assertion about the first half passes
+  perfectly. 62 new assertions, 14,402 in the suite.
+
+  **And Came Back Wrong became a subsystem.** It was one paragraph and a `startMark` of 1 — an
+  undead character in name, with nothing about being dead that reached a rule. It now carries a
+  **Shape of Return** (Risen, Sanguine, Hollow, Tolled) and a **Hunger** track of six steps that
+  nobody else at the table has. Mending is the only healing this soul gets, it costs a Hunger, and
+  Hunger 6 is Consumed. The card on the Tracker strip is the whole loop: Mend, and Feed. Mending at
+  the last rung is warned about and permitted, because a player bleeding out choosing to spend their
+  last step is the decision the Origin exists to create.
+
+  The +2 on Dread Checks and the numbness at Hunger 3 **reach the roll** — `Horror.DreadCheck` takes
+  the sheet and both call sites pass it — which is the v1.48.0 familiar lesson applied to a second
+  subsystem: a fact that is only printable stops being true. Numbness spares the Nerve and nothing
+  else; a numb soul still fails, is still Frightened, still takes the Affliction. `Validate` refuses
+  a Shape the book does not print and refuses a Hunger on anybody else. 21 more assertions, 14,422
+  in the suite.
+
+  **Also fixed, found while taking stock:** the encounter ladder repriced in v1.44.0 was still
+  printed as the old mook 1 / even 4 / standout 8 in `GK/CLAUDE.md` and all three app READMEs.
+  `verify_rules.py::check_budget` held `Core.cs` against both books and this repo's handoff doc and
+  never read the app's own README — while the comment beside it claimed there was nowhere else the
+  rule was written. It reads them now (991 cross-checks), proved against a synthetic drift.
+
+
 - **GritKeeper v1.48.0 — the Witch's familiar is a creature now, not three lines of text
   (2026-08-23).**
 
