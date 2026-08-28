@@ -108,14 +108,21 @@ Built from a declared list, and it reads each book back to check it shows the ve
 builder stamps. **That check reaches the HTML only.** The PDFs are in the same manifest and are
 bundled on trust, so a zip can ship a PDF that disagrees with its own HTML and nothing goes red.
 
-**If a PDF is in that list and the HTML has moved, the PDF is stale** — and PDFs are only ever
-generated when Cole asks for them (*"Save to PDF" — my standing preference*). Do not run
-`make_pdf.py` as a side effect of a book change. The one case where it is not a side effect is
-this one: **an explicit instruction to publish a release of everything that changed includes the
-PDFs, because they ship as Release assets in their own right and README's six "Read" links point
-straight at them.** Reprint them, say so, and check each page count against the book's rendered
-sheet count — `make_pdf.py` prints both. (They stopped being tracked files on 2026-08-27; they are
-still on disk, still in the bundle manifest, and now also uploaded loose beside the zips.)
+**So reprint them here, every ship, without being asked** (Cole, 2026-08-27: *"keep up on that
+please"*). This is the one place the PDF pipeline runs on its own initiative; an ordinary book edit
+still leaves it alone.
+
+```bash
+python make_pdf.py
+```
+
+It prints each PDF's page count beside the rendered sheet count and fails on a mismatch. Say the
+figures in the report.
+
+The reason this step is not optional: the PDFs stopped being tracked files on 2026-08-27, and
+README's six "Read" links point at `/releases/latest/download/<name>.pdf`. The Release asset is the
+only way a stranger reads a book, so shipping a stale PDF ships a stale front page. Build the
+bundles **after** this, or the zips carry the old prints.
 
 ## 6. Write the release notes
 
@@ -187,4 +194,4 @@ deliberately not shipped, say which and why — a silent omission reads as "ever
 
 - **There is one Release page and it carries all nine assets.** Attach the unchanged zips and PDFs
   too. Every version stays reachable by tag, and `RELEASES.md` is the index.
-- **PDFs are generated only when Cole asks.** Never as a side effect of a book change.
+- **PDFs are reprinted every ship, at step 5, without being asked** (2026-08-27). Between ships, leave them alone. They are the only way anybody outside this laptop reads a book.

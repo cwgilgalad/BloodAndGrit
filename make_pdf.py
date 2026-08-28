@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Print the six built documents to true 8.5x11 US-Letter PDFs. ONLY on explicit request.
+"""Print the six built documents to true 8.5x11 US-Letter PDFs.
+
+Run this at step 5 of every ship, without being asked (Cole, 2026-08-27), and leave it alone
+between ships. The PDFs stopped being tracked on 2026-08-27 and are how README serves the
+books, so a stale print is a stale front page rather than a stale extra.
 
 Per the standing spec in CLAUDE.md: headless Chromium (system Edge) print-to-PDF
 with prefer_css_page_size + print_background and zero margins; the books define

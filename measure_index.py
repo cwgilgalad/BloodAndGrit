@@ -4,12 +4,19 @@ the static index/TOC page numbers in build_player.py's embedded SRC from the
 rendered truth.
 
 Usage: python measure_index.py            (measure + verify + patch + rebuild + recheck)
+       python measure_index.py --check    (measure + report; writes nothing, exit 1 on drift)
+
+`--check` exists because this file is the only thing that knows whether the printed Contents and
+Index page numbers are true, and until 2026-08-27 nothing ran it on a schedule. The Player's Book
+shipped with its Contents five pages out at the back after B5 added eleven pages and this was not
+re-run. verify_all's full and release tiers call the check now.
 """
 import hashlib, re, subprocess, sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 PY = sys.executable
+CHECK = "--check" in sys.argv          # read-only: report drift, write nothing, exit 1
 
 JS = """() => {
   const pages=[...document.querySelectorAll('.book.pages .page')];
@@ -73,6 +80,7 @@ print(f"detailed TOC: {len(desk['toc2'])} lines, all anchors resolved")
 # does see it, the one who has printed the file or turned JavaScript off, is the reader a fallback
 # exists for. Scoped to the <ul class="toc"> block so the index below it keeps its own pass.
 src = open("build_player.py", encoding="utf-8").read()
+before = src                            # --check compares against this and never writes
 toc2map = {e["a"]: e["pg"] for e in desk["toc2"]}
 tu = src.index('<ul class="toc">'); te = src.index("</ul>", tu)
 moved = []
@@ -108,6 +116,18 @@ src = src[:iu] + block2 + src[ie:]
 tocpg = next(e["pg"] for e in desk["toc2"] if e["a"] == "#index")
 src = re.sub(r'(<a href="#index">Index</a><span class="pg">)\d+(</span>)',
              rf"\g<1>{tocpg}\g<2>", src, count=1)
+if CHECK:
+    if src != before:
+        print("\nDRIFT: build_player.py's static page numbers disagree with the rendered book.")
+        for href, was, now in moved:
+            print(f"  contents {href}: printed {was}, actually {now}")
+        if not moved:
+            print("  the Contents is right; one or more Index entries are not.")
+        print("\nFix: python measure_index.py   (then commit build_player.py and the rebuilt HTML)")
+        sys.exit(1)
+    print("check: every Contents and Index page number matches the rendered book.")
+    sys.exit(0)
+
 open("build_player.py", "w", encoding="utf-8", newline="").write(src)
 
 # ---- rebuild, idempotency, recheck ----

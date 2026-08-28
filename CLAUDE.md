@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.37 · Keeper's Book v2.19 · Bestiary v2.15 ·
+**Current versions: Player's Book v2.38 · Keeper's Book v2.19 · Bestiary v2.15 ·
 GritKeeper app v1.51.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -75,9 +75,17 @@ tools — documented in their own sections below.
   + build scripts. The big self-contained HTML and the PDFs are generated artifacts, never
   the thing to hand-edit. Ranking, cheapest → most expensive to version:
   **lean source + external assets  ›  self-contained HTML  ›  PDF.**
-- **PDFs: only when I ask for them, in every environment (settled 2026-08-03).** Don't run
-  the PDF pipeline as a side effect of a book change — wait for "save to PDF" or words to
-  that effect. The lean sources and the self-contained HTML are the deliverable; the PDFs are
+- **PDFs: reprinted as part of every ship, and left alone in between (settled 2026-08-27).**
+  Cole's words were *"keep up on that please"*, said the moment the six PDFs on the Release
+  turned out to be four book versions behind. Do not run the pipeline as a side effect of an
+  ordinary book edit — nothing outside this laptop reads a PDF until a release is cut, so
+  reprinting on every intermediate commit is waste. **Do run it in step 5 of every ship, without
+  being asked**, and check each page count against the rendered sheet count.
+  **What changed, and why this is not the old flip-flop repeating:** until 2026-08-27 the PDFs
+  were tracked and README linked each book at `blob/main/*.pdf`, so a stale PDF was an extra that
+  disagreed with an HTML file anybody could open. Untracking them made the Release asset the only
+  way a stranger reads a book, because README's six "Read" links now point at
+  `/releases/latest/download/*.pdf`. A stale PDF is a stale front page. The lean sources and the self-contained HTML are the deliverable; the PDFs are
   an extra, never a replacement. The recipe is under *"Save to PDF" — my standing preference*
   below, which has always said this. **This bullet used to say the opposite** — that the CLI
   should regenerate them automatically (a note from 2026-07-22) — so the doc gave a fresh
@@ -114,7 +122,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.37 | 232 | one inline SVG map (Appendix E) + cover emblem |
+| The Player's Book | v2.38 | 232 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.19 | 105 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.15 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.4 | 29 | one inline SVG map, downloadable |
@@ -190,7 +198,7 @@ Each book's cheapest editable form is **bolded**.
 | **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audits/audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). Run on request — see `audits/README.md`. |
 | **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
 | **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python audits/verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. Run on request (default mode); `.githooks/pre-push` still runs it `--delivered`, warn-only, main only. Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
-| `make_pdf.py` | Prints all three to true 8.5×11 US-Letter PDFs. **Only run on explicit request.** |
+| `make_pdf.py` | Prints all six to true 8.5×11 US-Letter PDFs, verifying each page count against the rendered sheet count. **Run it in step 5 of every ship** (2026-08-27); leave it alone between ships. |
 | `README.md` | Short workflow notes. |
 
 The per-book source files are interdependent (they need the shell + helper modules), so
@@ -431,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.37) — structure
+## The Player's Book (v2.38) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*

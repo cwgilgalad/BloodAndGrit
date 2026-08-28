@@ -8,6 +8,33 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.38 — the Contents was five pages out, and nothing was looking (2026-08-27).**
+
+  Found while cutting the release, by the gate rather than by a reader. `audit_built_matches_committed`
+  went red on five books, the rebuild behind it turned out to be right, and re-running
+  `measure_index.py` moved fifteen Contents lines. Chapter VI was printed on page 73 and sits on 76.
+  VIII said 137 and sits on 142. XIV said 202 and sits on 207. The drift grew toward the back of the
+  book, which is the signature of pages being added somewhere in front.
+
+  That is what happened: B5 added about eleven pages the session before, the book was rebuilt, and
+  `measure_index.py` was not re-run afterwards. It is the only thing that re-derives those numbers
+  from the rendered page, and running it is a step a person has to remember.
+
+  **So it stopped being a step a person has to remember.** `measure_index.py --check` renders,
+  computes what every Contents and Index number should be, writes nothing, and exits 1 naming each
+  line that disagrees. It is wired into verify_all's `full` and `release` tiers as `statics`, and
+  sabotage-tested by printing Skills on page 131: the check named `#skills: printed 131, actually
+  137` and failed. It stays out of CI for the same reason the other measure tools do, because
+  pagination is environment-dependent and a cloud runner paginates differently from the laptop the
+  books are proofed on.
+
+  Worth naming the shape of this one. The Index had 331 rows checked by `check_index_order` as of
+  the session before, and the page counts in `CLAUDE.md` were measured. The Contents sat between
+  the two, generated like the Index and printed like a page count, and belonged to neither guard.
+  The five books that also came back stale were inheriting the new `.fight` CSS from the shared
+  shell and had never been rebuilt after it landed; that half is inert, since `class="fight"`
+  appears nowhere outside the Player's Book.
+
 - **Repo and Releases cleaned out (2026-08-27).**
 
   Cole asked for the stale and the never-used to go, for anything the other repos manage without to

@@ -141,6 +141,19 @@
     margin-right:.5em;
   }
   .perk .nm{font-weight:700;}
+  /* The fight ledger: what a Calling is for in a round, and what it pays to be that. Quieter than
+     the Perk band on purpose -- the Perk sells the Calling, this one tells the truth about it. */
+  .fight{
+    display:flex; gap:0; flex-wrap:wrap; margin:.6em 0 1.1em; break-inside:avoid;
+    border-left:3px solid var(--blood-d); background:rgba(0,0,0,.02);
+  }
+  .fight > div{flex:1 1 260px; padding:.45em 14px; font-size:15px;}
+  .fight .k{
+    font-variant:small-caps; letter-spacing:.09em; font-weight:700; color:var(--blood-d);
+    margin-right:.45em;
+  }
+  .fight .pays .k{color:var(--ink-soft);}
+  @media (max-width:520px){ .fight > div{flex:1 1 100%;} }
   .pageno{text-align:center; color:var(--blood-d); font-size:13px; margin-top:24px; letter-spacing:.3em;}
 
   /* contents */
