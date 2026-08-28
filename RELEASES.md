@@ -1,6 +1,11 @@
 # Release history
 
-The Releases page carries **only the current release** — one download, the one that matters.
+GitHub carries **one Release page**, and it holds the current build of every part of the
+game at once: the app, the three books, the three modules, and the six PDFs as their own
+downloads. Consolidated 2026-08-27 from three per-component pages, which had a trap in
+them — README points at `/releases/latest`, so shipping a book quietly aimed the app's
+download button at a zip of PDFs until somebody remembered to move the Latest flag back.
+
 Everything that ever shipped is listed here, and every version below is still reachable by its
 git tag:
 
@@ -16,7 +21,7 @@ index to it.
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|
-| v1.50.0 **← current** | `gritkeeper-v1.50.0` | 2026-08-27 | the keyboard, the Origins, and eight new ways to build a soul |
+| v1.50.0 **← current** | `gritkeeper-v1.50.0` | 2026-08-27 | Blood & Grit — GritKeeper v1.50.0 · Books v1.6 · Modules v1.5 |
 | v1.48.0 | `gritkeeper-v1.48.0` | 2026-08-24 | the Witch's familiar is a creature now |
 | v1.47.0 | `gritkeeper-v1.47.0` | 2026-08-24 | Undo stops taking things you didn't ask it to |
 | v1.46.0 | `gritkeeper-v1.46.0` | 2026-08-24 | onto .NET 10 |

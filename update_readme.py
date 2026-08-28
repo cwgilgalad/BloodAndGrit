@@ -2,7 +2,9 @@
 """Keep every version claim in the repo current, from the source of truth.
 
 The prose is hand-written and version-agnostic on purpose; the book links point at
-`blob/main/*.pdf` and the app link at `/releases/latest`, so they never go stale. What *does*
+`/releases/latest/download/*.pdf` and the app link at `/releases/latest`, so they never go
+stale. (The book links were `blob/main/*.pdf` until 2026-08-27, when the PDFs were untracked and
+attached to the Release instead.) What *does*
 drift is every place that names a number. This script reads the versions straight from the
 build scripts and the app csproj — the files that authoritatively carry them — and rewrites
 the claims, so a human never has to remember to edit any of them.

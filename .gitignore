@@ -96,6 +96,19 @@ add_index.py
 #     get an import error rather than a map. It fails this file's own test twice over. Still on
 #     disk, still works, recoverable from history.
 tools/mapdiff.mjs
+#   * the six PDFs. Untracked 2026-08-27. They are printed output, they were already shipping
+#     inside the Release zips, and git stores no delta between two prints of the same book, so
+#     sixty-eight blobs of them had grown to 206 MB of history against about 4 MB of actual text.
+#     They are attached to the Release individually now, which is a better read than a file in a
+#     repo was: the six "Read" links in README.md point at /releases/latest/download/, so they
+#     stay correct forever and cost a cloner nothing. Still printed by make_pdf.py, still bundled
+#     by tools/make_bundles.py, still on this disk.
+Blood-and-Grit-Players-Book.pdf
+Blood-and-Grit-Keepers-Book.pdf
+Blood-and-Grit-Bestiary.pdf
+Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf
+Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf
+Blood-and-Grit-Module-III-What-the-Water-Answers.pdf
 
 # --- python / editor debris ---
 __pycache__/

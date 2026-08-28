@@ -37,10 +37,9 @@ blood-and-grit.html   linguist-generated=true
 keeper-handbook.html  linguist-generated=true
 bestiary.html         linguist-generated=true
 
-# The PDFs are printed from the built HTML by make_pdf.py — same story, and diffing them is noise.
-Blood-and-Grit-Players-Book.pdf  linguist-generated=true
-Blood-and-Grit-Keepers-Book.pdf  linguist-generated=true
-Blood-and-Grit-Bestiary.pdf      linguist-generated=true
+# The PDFs used to be marked linguist-generated here for the same reason. They were untracked on
+# 2026-08-27 and ship as Release assets instead, so git no longer carries a file for these rules to
+# apply to. See .gitignore for why.
 
 # The delivered app tree is a robocopy mirror of GK/source + GK/rules, regenerated every package.
 GritKeeper/**  linguist-generated=true

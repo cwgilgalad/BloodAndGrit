@@ -112,8 +112,10 @@ bundled on trust, so a zip can ship a PDF that disagrees with its own HTML and n
 generated when Cole asks for them (*"Save to PDF" — my standing preference*). Do not run
 `make_pdf.py` as a side effect of a book change. The one case where it is not a side effect is
 this one: **an explicit instruction to publish a release of everything that changed includes the
-PDFs, because they are tracked files inside the declared bundle.** Reprint them, say so, and
-check each page count against the book's rendered sheet count — `make_pdf.py` prints both.
+PDFs, because they ship as Release assets in their own right and README's six "Read" links point
+straight at them.** Reprint them, say so, and check each page count against the book's rendered
+sheet count — `make_pdf.py` prints both. (They stopped being tracked files on 2026-08-27; they are
+still on disk, still in the bundle manifest, and now also uploaded loose beside the zips.)
 
 ## 6. Write the release notes
 
@@ -121,17 +123,25 @@ check each page count against the book's rendered sheet count — `make_pdf.py` 
 Release, leave it on disk. Written for somebody who does not read this repo — what changed and why
 it matters at a table, not a diff summary.
 
-## 7. Tag, push the tag, cut the Release
+## 7. Tag, push the tag, cut the one Release
 
 ```bash
 git tag <tag>
 git push origin <tag>
-gh release create <tag> <Zip> --title "..." --notes-file RELEASE_NOTES_<tag>.md
+gh release create <tag>   GritKeeper.zip BloodAndGrit-Books.zip BloodAndGrit-Modules.zip   Blood-and-Grit-Players-Book.pdf Blood-and-Grit-Keepers-Book.pdf Blood-and-Grit-Bestiary.pdf   Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf   Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf   Blood-and-Grit-Module-III-What-the-Water-Answers.pdf   --title "Blood & Grit — GritKeeper vX.Y.Z · Books vA.B · Modules vC.D"   --notes-file RELEASE_NOTES_<tag>.md
 ```
 
-Tags: `gritkeeper-vX.Y.Z` · `books-vX.Y` · `modules-vX.Y`. Zips: `GritKeeper.zip` ·
-`BloodAndGrit-Books.zip` · `BloodAndGrit-Modules.zip`. The zips exist because GitHub serves raw
-`.html` as plain text, so without one a stranger cannot actually get a book in a click.
+Tag the component that actually moved: `gritkeeper-vX.Y.Z` · `books-vX.Y` · `modules-vX.Y`.
+
+**Attach all nine assets every time, including the parts that did not change.** GitHub carries one
+Release page and it is the only page, so anything left off it is a thing a stranger cannot
+download. Re-upload the unchanged zips and PDFs from disk; they are cheap and the alternative is a
+page that serves half a game.
+
+The zips exist because GitHub serves raw `.html` as plain text, so without one a stranger cannot
+get a book in a click. The six PDFs are attached loose as well as inside the zips, because
+`README.md` links each book at `/releases/latest/download/<name>.pdf` — a link that reads in the
+browser and never goes stale.
 
 **A tag with no Release, or a Release with no zip, is not a shipped version.** v1.32.0 was merged
 and changelogged as shipped and never published, and every check in the repo stayed green.
@@ -145,17 +155,16 @@ gh release delete <old-tag> --yes --cleanup-tag=false
 The **tag stays**, so `git checkout <old-tag>` still gets that tree exactly as it shipped. Only the
 page goes. `--cleanup-tag=false` is not optional.
 
-## 9. Put `Latest` back on GritKeeper
+## 9. Nothing to do about `Latest`
 
-Only after a **books or modules** release:
+There used to be a step here, and consolidating the pages on 2026-08-27 is what removed it.
 
-```bash
-gh release edit gritkeeper-vX.Y.Z --latest
-```
-
-GitHub hands `Latest` to whatever was published most recently, and `README.md`'s download button
-points at `/releases/latest` — so a books release silently redirects everyone who came for the app
-to a zip of PDFs. This failed once, on 2026-08-09, and no check would have caught it.
+Three per-component pages meant GitHub handed `Latest` to whichever shipped most recently, while
+`README.md`'s download button pointed at `/releases/latest` — so a books release silently sent
+everyone who came for the app to a zip of PDFs, and `gh release edit gritkeeper-vX.Y.Z --latest`
+had to be remembered afterwards. It was forgotten once, on 2026-08-09, and no check would have
+caught it. With one page there is no flag to move: the newest release is the only release, and it
+carries everything.
 
 ## 10. Regenerate the index — **after** the pages exist, never by hand
 
@@ -176,6 +185,6 @@ deliberately not shipped, say which and why — a silent omission reads as "ever
 
 ## The two live rules this runbook will not let you forget
 
-- **Only the current release keeps its page.** Every version stays reachable by tag, and
-  `RELEASES.md` is the index.
+- **There is one Release page and it carries all nine assets.** Attach the unchanged zips and PDFs
+  too. Every version stays reachable by tag, and `RELEASES.md` is the index.
 - **PDFs are generated only when Cole asks.** Never as a side effect of a book change.

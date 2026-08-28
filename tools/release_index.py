@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Write RELEASES.md — the archive of every version that ever shipped.
 
-GitHub's Releases page carries only the current release now: thirty-four pages of history, each
-with a zip nobody downloads, is noise in front of the one download that matters, and the zips alone
-were 1.9 GB. The history is not thrown away — it moves here, where it belongs, and every version
-stays reachable by its git tag.
+GitHub's Releases page carries one page now: thirty-four pages of history, each with a zip nobody
+downloads, is noise in front of the one download that matters, and the zips alone were 1.9 GB. The
+history is not thrown away: it moves here, where it belongs, and every version stays reachable by
+its git tag. Narrowed again on 2026-08-27 from three per-component pages to a single page carrying
+all of them, so `/releases/latest` is right for every audience without anybody moving a flag.
 
 Derived from the GitHub API rather than typed, which is this repo's rule about counts in prose
 applied to a list of versions: nobody can forget to add a row.
@@ -111,7 +112,12 @@ def main():
     lines = [
         "# Release history",
         "",
-        "The Releases page carries **only the current release** — one download, the one that matters.",
+        "GitHub carries **one Release page**, and it holds the current build of every part of the",
+        "game at once: the app, the three books, the three modules, and the six PDFs as their own",
+        "downloads. Consolidated 2026-08-27 from three per-component pages, which had a trap in",
+        "them — README points at `/releases/latest`, so shipping a book quietly aimed the app's",
+        "download button at a zip of PDFs until somebody remembered to move the Latest flag back.",
+        "",
         "Everything that ever shipped is listed here, and every version below is still reachable by its",
         "git tag:",
         "",

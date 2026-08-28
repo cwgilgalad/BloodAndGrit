@@ -8,6 +8,53 @@ Desktop\Git repos.)
 
 ---
 
+- **Repo and Releases cleaned out (2026-08-27).**
+
+  Cole asked for the stale and the never-used to go, for anything the other repos manage without to
+  be questioned, and for the old release notes to collapse into one current page. Three separate
+  questions, and the answers came out at very different sizes.
+
+  **Almost nothing tracked was stale, and that is a finding rather than an excuse.** Every root
+  script is imported by a builder or an audit, every one of the eleven audits is wired into
+  `verify_all.py`, and the two earlier sweeps (2026-07-29 and 2026-08-22) had already run under a
+  written rule. One file failed that rule: `tools/mapdiff.mjs`, which renders the SVGs under
+  `_combatlab/_maps` and reports which moved. `_combatlab` is git-ignored five lines further up
+  `.gitignore`, nothing in the repo invokes it, and it wants three npm packages installed globally
+  that a fresh clone will not have. Untracked, still on disk, reason written into `.gitignore` and
+  the tracking table.
+
+  **The six PDFs were the real weight.** Sixty-eight blobs of them, 206 MB of history behind a 99 MB
+  clone, against roughly 4 MB of actual text, and every book release added about 16 MB more. Git
+  stores no useful delta between two prints of the same book, so the cost was pure repetition. They
+  were already shipping inside the Release zips, so the repo was carrying a second copy of a
+  download that existed. Untracked, and attached to the Release individually instead.
+
+  That last part was load-bearing and nearly went wrong. Six links in `README.md` pointed each book
+  at `blob/main/<name>.pdf`, which is the whole reason the files were tracked: GitHub serves raw
+  `.html` as plain text, so the PDF was a stranger's only one-click read. Untracking without moving
+  those links would have left the front page with six dead ends. They point at
+  `/releases/latest/download/<name>.pdf` now, which renders in the browser, needs no clone, and
+  stays correct through every future ship. All six were checked for a 200 before the links moved.
+
+  **Three Release pages became one, and a footgun went with them.** GitHub hands `Latest` to
+  whatever was published most recently while `README.md` aims its download button at
+  `/releases/latest`, so shipping a books release quietly pointed everyone who came for the app at a
+  zip of PDFs until somebody remembered `gh release edit gritkeeper-vX.Y.Z --latest`. That was
+  forgotten once, on 2026-08-09, and no check in the repo would have caught it. One page carrying
+  all nine assets removes the flag entirely. `ship.md` step 9 is now a paragraph explaining that
+  there is nothing to do there and why there used to be.
+
+  **Sixty megabytes of ignored scratch went off the disk**: seventeen superseded
+  `RELEASE_NOTES_*.md`, three stale zips, `__pycache__`, `.package-aside`, and `add_index.py`, the
+  one-shot marked *do not re-run* since 2026-07-29. Every one was checked against `CHANGELOG.md` and
+  `RELEASES.md` first, because a git-ignored file that gets deleted is gone rather than recoverable.
+
+  **Nothing was cut for being unique to this repo.** `LICENSE` and `NOTICE` belong to a public repo
+  whatever the private ones do, and the two hooks the others lack are the two worth having:
+  `commit-msg` holds a commit message to the prose standard at the one moment it can still be
+  edited, and `pre-push` says when the packaged app is behind the source being pushed. Both exist
+  because of a specific failure that reached `main`.
+
 - **Player's Book v2.37 · GritKeeper v1.51.0 — what each Calling is for, and what it costs
   (2026-08-27).**
 

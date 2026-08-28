@@ -679,17 +679,21 @@ change them all:
   tag with no page. It held for ten days. On 2026-08-19 thirty-four release pages carrying 1.9 GB of
   zips nobody downloads were deleted, the history moved to `RELEASES.md`, and this bullet was not
   corrected — so the doc and the repo disagreed until somebody read both.)*
-- **After cutting a books or modules Release, put the `Latest` flag back on GritKeeper**
-  (`gh release edit gritkeeper-vX.Y.Z --latest`). GitHub gives `Latest` to whatever was published
-  most recently, and `README.md` points its download button and this doc point at
-  `/releases/latest` — so a books release silently redirects everyone who came for the app to a zip
-  of PDFs. Caught within a minute of doing it on 2026-08-09; it would not have failed any check.
+- **One Release page carries the whole game, as of 2026-08-27.** It holds nine assets: the three
+  zips and the six PDFs loose beside them. A ship tags whatever component moved, creates the new
+  page with **all nine attached including the parts that did not change**, and deletes the page it
+  supersedes. *(This replaced three per-component pages and the step that went with them: GitHub
+  gives `Latest` to whatever was published most recently, and `README.md` aims its download button
+  at `/releases/latest`, so a books release used to redirect everyone who came for the app to a zip
+  of PDFs until `gh release edit gritkeeper-vX.Y.Z --latest` was run afterwards. It was forgotten
+  on 2026-08-09 and no check would have caught it. With one page there is no flag to move.)*
 - **`books-` and `modules-` are bundle versions, not book versions.** Each book keeps its own
   number and moves on its own schedule, so there is no single figure to put on the tag; the Release
   notes table is the authority on what is inside, and `CHANGELOG.md` is the authority on when it
   changed. Do not try to make the bundle number track any one book's.
 - **Every version claim stays current by itself.** The prose is version-agnostic and the links
-  point at `blob/main/*.pdf` and `/releases/latest`; every part that names a number is written by
+  point at `/releases/latest/download/*.pdf` and `/releases/latest`; every part that names a
+  number is written by
   **`update_readme.py`** from the build-script version strings and the app csproj. It works two
   ways: `README.md`'s *current editions* line and *latest change* note live in an `AUTO:editions`
   block regenerated wholesale, and **every other claim is patched in place inside an anchored span**
@@ -751,7 +755,8 @@ recoverable from history.
 
 | Group | Verdict | Why |
 |---|---|---|
-| The 3 PDFs + 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
+| The 6 PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's six "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. |
+| The 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
 | `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
 | `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
 | `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones — the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
