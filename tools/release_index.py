@@ -31,11 +31,29 @@ FAMILIES = [
     (re.compile(r"^gritkeeper-v"), "GritKeeper — the Keeper's app"),
     (re.compile(r"^books-v"), "The three books"),
     (re.compile(r"^modules-v"), "The three modules"),
+    # Per-book tags from before the bundle model (books-v1.0, 2026-08-10). Each book was tagged on
+    # its own then, so these are real shipped versions and belong in the index; they are listed
+    # under one heading rather than three because none of them has had a Release page since.
+    (re.compile(r"^players?-v"), "Before the bundles: the Player's Book"),
+    (re.compile(r"^keepers?-v"), "Before the bundles: the Keeper's Book"),
+    (re.compile(r"^bestiary-v"), "Before the bundles: the Bestiary"),
+    (re.compile(r"^keepers-table-v"), "Keeper's Table, the app's first name"),
     (re.compile(r"^tidewatch-win-v"), "Tidewatch — the Windows app"),
     (re.compile(r"^tidewatch-html-v"), "Tidewatch — the HTML app"),
     (re.compile(r"^labs-v"), "The labs"),
 ]
 OTHER = "Everything else"
+
+# Families that stopped shipping. Their newest tag is the last one, which is a different claim from
+# being the current version of anything, so these tables get no "current" marker. The three books
+# were tagged one at a time until books-v1.0 on 2026-08-10, and the app was called Keeper's Table
+# until 2026-07-18.
+RETIRED = {
+    "Before the bundles: the Player's Book",
+    "Before the bundles: the Keeper's Book",
+    "Before the bundles: the Bestiary",
+    "Keeper's Table, the app's first name",
+}
 
 
 def family(tag):
@@ -62,6 +80,27 @@ def previously(path):
     if not p.exists():
         return {}
     return {m.group(1): (m.group(2), m.group(3)) for m in ROW_RE.finditer(p.read_text(encoding="utf-8"))}
+
+
+def git_tags():
+    """{tag: YYYY-MM-DD} for every tag in the checkout, dated by the commit it points at.
+
+    The third and weakest source. Added 2026-08-27, with the one-page consolidation: before it,
+    both sources were release pages, so a tag that never had a page of its own could not appear
+    here at all -- and under one page per ship, most tags never will. Thirty-nine of ninety were
+    already missing when this was written, which is how it was noticed.
+    """
+    out = subprocess.run(
+        ["git", "tag", "--format=%(refname:short)\t%(creatordate:short)"],
+        capture_output=True, text=True, encoding="utf-8")
+    if out.returncode != 0:
+        return {}
+    got = {}
+    for line in out.stdout.splitlines():
+        if "\t" in line:
+            tag, when = line.split("\t", 1)
+            got[tag.strip()] = when.strip()
+    return got
 
 
 def title_of(rel):
@@ -97,8 +136,14 @@ def main():
 
     # What GitHub still holds, plus what only the last file remembers. A release page that has been
     # retired keeps its row: the tag is still there, and `git checkout <tag>` still works.
-    rows = {tag: {"tag_name": tag, "published_at": when, "name": None, "_kept": what}
-            for tag, (when, what) in previously(a.out).items()}
+    # Weakest first, so a better source overwrites it: the bare tag, then the row the file already
+    # carried, then whatever GitHub still serves.
+    rows = {}
+    if not a.repo:                      # only this checkout's own tags mean anything here
+        rows = {tag: {"tag_name": tag, "published_at": when, "name": None, "_kept": "\u2014"}
+                for tag, when in git_tags().items()}
+    for tag, (when, what) in previously(a.out).items():
+        rows[tag] = {"tag_name": tag, "published_at": when, "name": None, "_kept": what}
     for r in rels:
         rows[r["tag_name"]] = r
     if not rows:
@@ -134,13 +179,17 @@ def main():
     order = [n for _, n in FAMILIES if n in groups] + ([OTHER] if OTHER in groups else [])
     for name in order:
         rs = sorted(groups[name], key=lambda r: verkey(r["tag_name"]), reverse=True)
-        lines += [f"## {name}", "", "| Version | Tag | Shipped | What it was |", "|---|---|---|---|"]
+        lines += [f"## {name}", ""]
+        if name in RETIRED:
+            lines += ["*Retired. These shipped before the current tagging scheme and are kept here "
+                      "because the tags still resolve.*", ""]
+        lines += ["| Version | Tag | Shipped | What it was |", "|---|---|---|---|"]
         top = max(rs, key=lambda r: verkey(r["tag_name"]))["tag_name"]
         for r in rs:
             ver = re.search(r"v[\d.]+", r["tag_name"])
             # Each family has its OWN current version: the books do not stop being current because
             # the app shipped after them. One marker per table, not one for the whole page.
-            star = " **← current**" if r["tag_name"] == top else ""
+            star = " **← current**" if (r["tag_name"] == top and name not in RETIRED) else ""
             lines.append(
                 f"| {ver.group(0) if ver else r['tag_name']}{star} | `{r['tag_name']}` | "
                 f"{(r['published_at'] or '')[:10]} | {r.get('_kept') or title_of(r)} |"
