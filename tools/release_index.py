@@ -91,15 +91,21 @@ def git_tags():
     already missing when this was written, which is how it was noticed.
     """
     out = subprocess.run(
-        ["git", "tag", "--format=%(refname:short)\t%(creatordate:short)"],
+        ["git", "tag",
+         "--format=%(refname:short)\t%(creatordate:short)\t%(contents:subject)"],
         capture_output=True, text=True, encoding="utf-8")
     if out.returncode != 0:
         return {}
     got = {}
     for line in out.stdout.splitlines():
-        if "\t" in line:
-            tag, when = line.split("\t", 1)
-            got[tag.strip()] = when.strip()
+        parts = line.split("\t")
+        if len(parts) >= 2:
+            # An ANNOTATED tag carries a message and a lightweight one does not, so the
+            # subject is the one description a tag can give about itself. Under one Release
+            # page per ship a component tag often has no page to read a headline off, and
+            # this is what keeps its row from being a bare dash. Tag with -m and it speaks.
+            subj = parts[2].strip() if len(parts) > 2 else ""
+            got[parts[0].strip()] = (parts[1].strip(), subj or "\u2014")
     return got
 
 
@@ -140,8 +146,8 @@ def main():
     # carried, then whatever GitHub still serves.
     rows = {}
     if not a.repo:                      # only this checkout's own tags mean anything here
-        rows = {tag: {"tag_name": tag, "published_at": when, "name": None, "_kept": "\u2014"}
-                for tag, when in git_tags().items()}
+        rows = {tag: {"tag_name": tag, "published_at": when, "name": None, "_kept": subj}
+                for tag, (when, subj) in git_tags().items()}
     for tag, (when, what) in previously(a.out).items():
         rows[tag] = {"tag_name": tag, "published_at": when, "name": None, "_kept": what}
     for r in rels:
