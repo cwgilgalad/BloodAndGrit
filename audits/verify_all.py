@@ -74,20 +74,6 @@ CHECKS = [
      "every built file in the tree matches its committed copy"),
     ("whitespace", ["audit_whitespace.py"],            SLOW,    False, True,
      "per-page bottom gaps, for a human to judge"),
-    # Added 2026-08-27. The Player's Book shipped with its Contents five pages out at the back:
-    # B5 added eleven pages, the book was rebuilt, and measure_index.py -- the only thing that
-    # re-derives those numbers from the rendered page -- was not re-run. It lives at the repo root
-    # rather than in audits/ because its normal mode patches build_player.py; --check is the
-    # read-only half. Never in CI: pagination is environment-dependent and a cloud runner measures
-    # a different page count than the laptop the books are proofed on.
-    ("statics",   ["../measure_index.py", "--check"],  SLOW,    False, False,
-     "the Player's printed Contents and Index page numbers are the true ones"),
-    # Added an hour after `statics`, because `statics` was scoped to the book the fault was found
-    # in and the same fault was sitting in the other two. The Keeper's Book carries 15 static
-    # Contents numbers and the Bestiary 12, hand-authored the same way, and nothing had ever looked
-    # at them: the Bestiary's were up to 61 pages out. `statics` went green over both of them.
-    ("contents",  ["../measure_contents.py", "--check"], SLOW,   False, False,
-     "every book's hand-authored Contents number is the page it actually lands on"),
 ]
 
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",

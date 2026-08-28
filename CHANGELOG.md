@@ -8,67 +8,42 @@ Desktop\Git repos.)
 
 ---
 
-- **Keeper's Book v2.20 · Bestiary v2.16 — the Bestiary's Contents was sixty-one pages out
-  (2026-08-27).**
+- **Player's Book v2.38 · Keeper's Book v2.20 · Bestiary v2.16 — a fault that was not one, and
+  the correction (2026-08-27).**
 
-  The Player's Book fix an hour earlier was scoped to the book the fault was found in, and the
-  check written to hold it was scoped the same way. Both were too narrow. Two kinds of page number
-  live in these books: `nav_tools.py` builds the detail Contents and the Index as flat lists the
-  paginator resolves live at render time, and those, in its own words, *never need patching and
-  cannot go stale*. The hand-authored `<ul class="toc">` at the front of a book is static text
-  sitting in the builder, and something has to re-derive it whenever pagination moves. For the
-  Player's Book that something is `measure_index.py`. **For the Keeper's Book and the Bestiary
-  there was nothing at all.**
+  **The correction first, because it is the part worth reading.** Two entries were written here
+  earlier today saying the printed Contents in all three books had drifted, the Bestiary's by
+  sixty-one pages. **That was wrong. The books were correct the whole time**, and the claim was
+  retracted the same evening after a proper measurement: 681 rendered page numbers across the
+  pre-fix Player's Book and Bestiary, checked against the page each anchor actually lands on, **zero
+  wrong**.
 
-  The Bestiary has grown from about 128 pages to 199 since those numbers were typed, and its
-  Contents had followed none of it. *How to Read an Entry* said 4 and sits on 5. *Beasts* said 23
-  and sits on 31. *The Old Dark* said 84 and sits on 118. *Hard Country* said 121 and sits on 165.
-  **Building a Horror said 128 and sits on 193**, so a Keeper following the Contents to it landed
-  sixty-one pages short, in the middle of the creature entries. The Keeper's Book was out by up to
-  twenty-one the same way: *The Keeper's Screen* said 78 and sits on 99.
+  What had actually been measured was the static placeholder text sitting in the `build_*.py`
+  sources. `nav_tools.py` turns each hand-authored `<ul class="toc">` into a flat `<ul class="toc2">`
+  that the client-side paginator resolves **live at render time**, and its docstring says so
+  directly: *page numbers therefore never need patching and cannot go stale*. Those placeholders are
+  never displayed to anybody. The PDFs are printed from the rendered page, so they carry the live
+  numbers too. Verified after the fact against the PDF served from the Release: the Bestiary's
+  Contents sends a reader to *Appendix: Building Your Own Dead* on page 193, which is where it is,
+  and did so before the change as well as after.
 
-  Twenty-seven wrong numbers across the two books, and every check in the repo was green over them.
-  `measure_book.py` renders both and asserts that every anchor RESOLVES, which is a different
-  question from whether the number printed beside it is the page it resolves to, and that gap is
-  exactly the size of this fault.
+  **How the false positive was built.** A tool was written to compare the builders' static text
+  against the rendered position, and it did that correctly. The error was in what the answer was
+  taken to mean: a disagreement there is a disagreement between a placeholder and the truth, which
+  is untidiness in a source file, not a fault in a book. The docstring that says exactly this was
+  read and quoted in the entry that contradicted it, which is the specific failure worth naming —
+  **a measurement was trusted over the documentation it disagreed with, without asking why they
+  disagreed.**
 
-  `measure_contents.py` reads all three books from one place: render, ask the browser which page
-  each anchor actually lands on, compare against the static text. `--check` writes nothing and
-  exits 1 naming every line; `--fix` patches the builders and rebuilds. It runs in verify_all's
-  full and release tiers as `contents`.
+  The two checks written to hold the imagined fault (`statics` and `contents` in `verify_all.py`)
+  are out of the release gate again. A gate that can fail a release over text no reader sees is a
+  gate that teaches people to bypass it. `measure_contents.py` stays on disk as what it honestly is,
+  a tidiness tool for the source placeholders, and says so at the top.
 
-  **The lesson is about the shape of the first fix rather than about page numbers.** Finding a
-  fault in one book and writing a guard for that book leaves the guard exactly as wide as the
-  accident that revealed it. The Player's Book was the one that failed loudly, because
-  `audit_built_matches_committed` happened to go red on the day it was rebuilt. The Bestiary was
-  four times as wrong and had never made a sound.
-
-- **Player's Book v2.38 — the Contents was five pages out, and nothing was looking (2026-08-27).**
-
-  Found while cutting the release, by the gate rather than by a reader. `audit_built_matches_committed`
-  went red on five books, the rebuild behind it turned out to be right, and re-running
-  `measure_index.py` moved fifteen Contents lines. Chapter VI was printed on page 73 and sits on 76.
-  VIII said 137 and sits on 142. XIV said 202 and sits on 207. The drift grew toward the back of the
-  book, which is the signature of pages being added somewhere in front.
-
-  That is what happened: B5 added about eleven pages the session before, the book was rebuilt, and
-  `measure_index.py` was not re-run afterwards. It is the only thing that re-derives those numbers
-  from the rendered page, and running it is a step a person has to remember.
-
-  **So it stopped being a step a person has to remember.** `measure_index.py --check` renders,
-  computes what every Contents and Index number should be, writes nothing, and exits 1 naming each
-  line that disagrees. It is wired into verify_all's `full` and `release` tiers as `statics`, and
-  sabotage-tested by printing Skills on page 131: the check named `#skills: printed 131, actually
-  137` and failed. It stays out of CI for the same reason the other measure tools do, because
-  pagination is environment-dependent and a cloud runner paginates differently from the laptop the
-  books are proofed on.
-
-  Worth naming the shape of this one. The Index had 331 rows checked by `check_index_order` as of
-  the session before, and the page counts in `CLAUDE.md` were measured. The Contents sat between
-  the two, generated like the Index and printed like a page count, and belonged to neither guard.
-  The five books that also came back stale were inheriting the new `.fight` CSS from the shared
-  shell and had never been rebuilt after it landed; that half is inert, since `class="fight"`
-  appears nowhere outside the Player's Book.
+  **What the version bump actually carries**, since these three numbers are tagged and shipped: the
+  builders' placeholder page numbers were brought in line with the render, and the version strings
+  moved. No rule, no creature, no prose and no rendered page number changed. It is a housekeeping
+  release, and the earlier entries claiming otherwise are withdrawn.
 
 - **Repo and Releases cleaned out (2026-08-27).**
 

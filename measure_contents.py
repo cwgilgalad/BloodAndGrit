@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
-r"""Check (and optionally fix) the hand-authored Contents page numbers in any built book.
+r"""Keep the placeholder Contents page numbers in the `build_*.py` sources tidy.
 
-Usage: python measure_contents.py --check          every book that has statics
-       python measure_contents.py --fix            patch the builders, then rebuild
+READ THIS BEFORE TRUSTING ITS OUTPUT. The numbers this tool compares are NOT what a reader
+sees. `nav_tools.py` turns each hand-authored `<ul class="toc">` into a flat `<ul class="toc2">`
+that the client-side paginator resolves live at render time, and its docstring is explicit:
+*page numbers therefore never need patching and cannot go stale*. The PDFs are printed from the
+rendered page, so they carry the live numbers too.
 
-WHY THIS EXISTS, 2026-08-27. Two kinds of page number live in these books and only one of them
-is safe. `nav_tools.py` builds the `.toc2` detail list and the `.ix` index as FLAT lists the
-client-side paginator resolves live at render time, so those "never need patching and cannot go
-stale" -- its own words. The hand-authored `<ul class="toc">` at the front of a book is different:
-its numbers are static text sitting in the builder, and something has to re-derive them whenever
-pagination moves.
+So a "drift" reported here is a disagreement between a placeholder and the truth. It is
+untidiness in a source file. It is not a fault in a book, and it must not gate a release.
 
-For the Player's Book that something is `measure_index.py`, and on 2026-08-27 it turned out not to
-have been run after B5 added eleven pages: the Contents was five pages out at the back. The guard
-added for it covers the Player's Book alone, which was the whole of the fault as understood at the
-time.
+This file was written on 2026-08-27 believing the opposite, and the CHANGELOG entry for
+v2.38/v2.20/v2.16 carries the retraction. Measured properly afterwards: 681 rendered page
+numbers across the Player's Book and the Bestiary, before any of that day's changes, zero
+wrong. If you want to check what a reader actually sees, compare the RENDERED `.pg` text
+against the page the anchor lands on -- both come from the browser, and neither comes from
+these sources.
 
-It was not the whole of it. The Keeper's Book carries 15 static numbers and the Bestiary 12, both
-hand-authored the same way, and neither had ever been checked by anything. `measure_book.py`
-renders them and asserts that every anchor RESOLVES, which is a different question from whether the
-number printed beside it is the page it resolves to.
-
-So this reads all three from one place. `--check` writes nothing and exits 1 on drift; verify_all
-runs it in the full and release tiers.
+Usage: python measure_contents.py --check     report placeholder drift, write nothing
+       python measure_contents.py --fix       patch the builders, then rebuild
 """
 import re
 import subprocess
@@ -96,9 +92,10 @@ def main():
 
             block = TOC_LI.sub(one, src[tu:te])
             for href, was, now in moved:
-                print(f"  {built}: {href} printed {was}, actually {now}")
+                print(f"  {builder}: placeholder for {href} reads {was}; "
+                      f"the render puts it on {now}")
             if not moved:
-                print(f"  {built}: every Contents line is on the right page")
+                print(f"  {builder}: placeholders already agree with the render")
                 continue
             drift.append((built, len(moved)))
             if fix:
@@ -113,10 +110,14 @@ def main():
         print("re-run --check to confirm it converged")
         return
     if drift:
-        print("\nDRIFT: " + ", ".join(f"{b} ({n} line{'s' if n > 1 else ''})" for b, n in drift))
-        print("Fix: python measure_contents.py --fix   (then commit the builders and the rebuilt HTML)")
+        print("\nPLACEHOLDERS OUT OF DATE: "
+              + ", ".join(f"{b} ({n})" for b, n in drift))
+        print("Cosmetic. The rendered books are unaffected, because the paginator resolves\n"
+              "every page number live. Do not gate a release on this.")
+        print("Tidy up with: python measure_contents.py --fix")
         sys.exit(1)
-    print("\ncheck: every hand-authored Contents number in every book is the true one.")
+    print("\ncheck: every source placeholder agrees with the render. This says nothing about\n"
+          "the books themselves, which resolve their page numbers live and were never at risk.")
 
 
 if __name__ == "__main__":

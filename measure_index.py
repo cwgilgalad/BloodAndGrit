@@ -6,10 +6,11 @@ rendered truth.
 Usage: python measure_index.py            (measure + verify + patch + rebuild + recheck)
        python measure_index.py --check    (measure + report; writes nothing, exit 1 on drift)
 
-`--check` exists because this file is the only thing that knows whether the printed Contents and
-Index page numbers are true, and until 2026-08-27 nothing ran it on a schedule. The Player's Book
-shipped with its Contents five pages out at the back after B5 added eleven pages and this was not
-re-run. verify_all's full and release tiers call the check now.
+`--check` reports whether the SOURCE placeholders match the render. It does not report whether the
+book is right: the paginator resolves every `.pg` live at render time, so what this file patches is
+never displayed. Added 2026-08-27 under the mistaken belief that a mismatch here was a fault in the
+printed book; see the CHANGELOG entry for v2.38 for the retraction. Deliberately not in the release
+gate.
 """
 import hashlib, re, subprocess, sys
 from pathlib import Path
