@@ -747,6 +747,108 @@ def check_workings(problems):
         problems.append(f"{name}: printed as a working the app has never heard of")
     return checks
 
+# ------------------------------------------------------------------ the fight ledger
+# Added 2026-08-27 with the ledger itself. Each Calling prints what it does in a round and what
+# it pays to do it, in a two-part band under the Perk. Both halves come from chargen.json so the
+# app can show the same sentences, which means both halves can drift.
+
+FIGHT_RE = re.compile(
+    r'<p class="perk"><span class="lbl">Perk</span><span class="nm">(?P<perk>[^<]+)</span>.*?</p>\s*'
+    r'<div class="fight">\s*'
+    r'<div class="brings"><span class="k">In a fight</span>(?P<brings>.*?)</div>\s*'
+    r'<div class="pays"><span class="k">You pay</span>(?P<pays>.*?)</div>', re.S)
+
+
+def check_fight_ledger(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+
+    # keyed by the Perk name, which is what the band above it prints and is unique per Calling
+    book = {_tidy(TAG_RE.sub("", m.group("perk"))).rstrip("."):
+            (_prose(m.group("brings")), _prose(m.group("pays")))
+            for m in FIGHT_RE.finditer(page)}
+
+    checks = 0
+    for c in d["callings"]:
+        checks += 1
+        fight = c.get("fight")
+        if not fight or not fight.get("brings") or not fight.get("costs"):
+            problems.append(f"{c['name']}: chargen.json carries no fight ledger")
+            continue
+        printed = book.get(_tidy(c["perk"]["name"]))
+        if printed is None:
+            problems.append(f"{c['name']}: the book prints no fight ledger under its Perk")
+            continue
+        for half, said in (("In a fight", fight["brings"]), ("You pay", fight["costs"])):
+            got = printed[0 if half == "In a fight" else 1]
+            want = _tidy(said)
+            if got != want:
+                at = next((i for i in range(min(len(got), len(want))) if got[i] != want[i]),
+                          min(len(got), len(want)))
+                what = ("the app stops early" if got.startswith(want) else
+                        "the app runs past the book" if want.startswith(got) else
+                        "the wording differs")
+                problems.append(f"{c['name']} / {half}: {what} at character {at} "
+                                f"(book {len(got)} chars, data {len(want)}); "
+                                f"book: ...{got[at:at + 70]!r}")
+
+    if len(book) != len(d["callings"]):
+        problems.append(f"the book prints {len(book)} fight ledgers, "
+                        f"chargen.json has {len(d['callings'])} Callings")
+
+    # The ledger exists to be honest, so an all-praise entry is a fault the same way a missing one
+    # is: a "You pay" half that names no actual cost has quietly become a second Perk.
+    for c in d["callings"]:
+        f = c.get("fight") or {}
+        if f.get("costs") and len(f["costs"]) < 40:
+            problems.append(f"{c['name']}: the 'You pay' half is too short to be an honest price")
+    return checks
+
+# ------------------------------------------------------------------ the Index, alphabetised
+# 331 rows under 23 letter headings, and until 2026-08-27 nothing checked either that a row sat
+# under its own letter or that the rows inside a letter were in order. Both had drifted.
+
+IX_ITEM = re.compile(r'    <li(?P<hd> class="ix-hd")?>(?P<inner>.*?)</li>\n', re.S)
+
+
+def _ix_text(inner):
+    # the page number lives in a <span> inside the row; leaving it attached turns "Edges" into
+    # "edges137" and manufactures inversions that are not there.
+    t = re.sub(r'<span class="pg">.*?</span>', '', inner, flags=re.S)
+    return re.sub(r'&[a-z]+;', '', re.sub(r'<[^>]+>', '', t)).strip()
+
+
+def _ix_key(t):
+    return re.sub(r'^(the|a|an)\s+', '', t.lower().strip()).lstrip('"“')
+
+
+def check_index_order(problems):
+    page = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    m = re.search(r'<ul class="ix">\n(.*?)  </ul>', page, re.S)
+    if not m:
+        problems.append("the Player's Book has no Index block")
+        return 0
+
+    letter, prev, checks = None, None, 0
+    for it in IX_ITEM.finditer(m.group(1)):
+        t = _ix_text(it.group("inner"))
+        if it.group("hd"):
+            letter, prev = t, None
+            continue
+        checks += 1
+        k = _ix_key(t)
+        if not k:
+            continue
+        if letter and k[0].upper() != letter.upper():
+            problems.append(f"Index: {t!r} is printed under {letter}, "
+                            f"and belongs under {k[0].upper()}")
+        if prev is not None and prev > k:
+            problems.append(f"Index, under {letter}: {prev!r} is printed before {k!r}")
+        prev = k
+    if checks < 300:
+        problems.append(f"Index: only {checks} rows parsed, which is too few to be the whole of it")
+    return checks
+
 
 def main():
     data, book = load_data(), load_book()
@@ -788,14 +890,17 @@ def main():
     checks += check_perks(problems)
     checks += check_arithmetic_stops(problems)
     checks += check_workings(problems)
+    checks += check_fight_ledger(problems)
+    checks += check_index_order(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
             print("  " + p)
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
-          f"prose, their Perks, their 3rd-level paths, every Sign and Miracle, the arms table, "
-          f"Ch. IV's Origins and its encounter budget across both books "
+          f"prose, their Perks, their fight ledgers, their 3rd-level paths, every Sign and "
+          f"Miracle, the arms table, "
+          f"Ch. IV's Origins, the Index's own alphabet, and its encounter budget across both books "
           f"({checks} cross-checks, 0 drift).")
     return 0
 

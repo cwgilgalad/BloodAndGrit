@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.36 · Keeper's Book v2.19 · Bestiary v2.15 ·
+**Current versions: Player's Book v2.37 · Keeper's Book v2.19 · Bestiary v2.15 ·
 GritKeeper app v1.51.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 

@@ -107,6 +107,10 @@ public class CgChoice { public string label { get; set; } public List<string> op
 /// as a band above the Calling's table in the Player's Book, transcribed here so the picker can
 /// sell a Calling the way the page does; guarded word for word by audits/verify_rules.py.</summary>
 public class CgPerk { public string name { get; set; } public string desc { get; set; } }
+/// <summary>What a Calling does in a round, and what it pays to be the thing that does it.
+/// Printed in the Player's Book under the Perk band; the two halves are held to that book by
+/// verify_rules.check_fight_ledger.</summary>
+public class CgFight { public string brings { get; set; } public string costs { get; set; } }
 public class CgSubOption { public string name { get; set; } public string boon { get; set; } }
 public class CgSubpath { public string section { get; set; } public List<CgSubOption> options { get; set; } = new(); }
 
@@ -119,6 +123,7 @@ public class CgCalling
     public string blurb { get; set; }
     /// <summary>Its Perk — see <see cref="CgPerk"/>. Every Calling has one.</summary>
     public CgPerk perk { get; set; }
+    public CgFight fight { get; set; }
     public int hitDie { get; set; } public int trainedSkills { get; set; }
     public string strongSaves { get; set; }
     public List<CgRow> rows { get; set; } = new();

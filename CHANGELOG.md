@@ -8,6 +8,72 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.37 · GritKeeper v1.51.0 — what each Calling is for, and what it costs
+  (2026-08-27).**
+
+  The rest of B5. Cole asked to balance the classes and to emphasise the perks and penalties of
+  each, and the balancing half had to be a measurement, because nineteen Calling entries only look
+  unbalanced when they are read side by side in the same units. `_combatlab/Roster.cs` puts them
+  there: expected damage in one round of aimed play, Blood, Defense, and how much of the damage
+  comes from a Calling feature rather than from the gun, at 1st, 5th and 10th level.
+
+  The first read of that table was wrong, and reading the prose behind it is what caught it. It
+  showed a 12x spread and thirteen Callings apparently bringing nothing, which would have argued
+  for handing out damage riders wholesale. What it was actually measuring was *personal Strike
+  damage*, which is one of four ways a round gets spent. The Marshal's **Command** hands an ally a
+  whole action out of turn and is very likely worth more damage than any rider in the book; the
+  Prospector's **Powderman** climbs 2d6 to 5d6 and **Demolitionist** doubles those dice against the
+  unliving, which is most of what this game fights. Neither shows up in a column headed *your own
+  Strike*. Balancing on that column alone would have flattened the Marshal into a worse Gunhand.
+
+  So every feature was sorted into the four columns a round can be spent in: damage you deal,
+  actions you hand somebody else, what you take away from the enemy, and what you put back. The
+  question asked of each Calling became *does it have a scaling answer in any column*. Eighteen
+  do.
+
+  **The Engineer did not.** It is the newest Calling in the book and it never had a combat pass, and
+  the cause was that its signature feature was undefined prose: *say what it is and what single
+  useful thing it does*. At a table, under pressure, an undefined thing does nothing. The Prospector
+  already carries the fix, a printed menu called *A Powderman's Devices*, so the Engineer gets **A
+  Contraption's Frames**, eight of them, built the same way: the Repeater, the Bulwark, the Winch,
+  the Governor, the Alarum, the Listening Horn, the Diving Lamp and the Heliograph. Three reach a
+  round and one seizes a mechanism for a turn. The clause that makes the Engineer itself rather
+  than a lesser Prospector is that **anybody it has shown a frame to may work the frame instead**,
+  which puts the Engineer's column squarely on what it hands other people. *Powder & Fuse* was also
+  promising an extra die on any explosive the Engineer set and never giving it anything to set; it
+  now prepares two charges of its own.
+
+  **The fight ledger.** Every Calling now prints a second band under its Perk, in two halves: *In a
+  fight* and *You pay*. The Perk sells the Calling; the ledger is the half that has to stay honest,
+  so the unflattering entries say so outright. The Marshal's reads *you will not top a damage table
+  and you should stop reading them*. The Witch's says she will not shoot her way out of anything.
+  The Hexer's calls its own body the worst in the book. A player who picks the Sister expecting to
+  out-shoot the Gunhand has been mis-sold, and ought to find that out before they roll rather than
+  after. Both halves live in `chargen.json`, print in the book, show on the posse card, and, where
+  it actually matters, sit in the wizard tip at the moment the Calling is chosen.
+
+  **Signs against Miracles: balanced, deliberately not equal.** Cole's standing note on this is that
+  balancing the two must not cost the incentive to take a Sign-worker, and `_combatlab/Sides.cs`
+  now measures whether it has. Rank for rank the Signs lead on damage at 2, 3 and 5 and are level
+  at 1 and 4; the hardest Sign in the book averages 27 against the hardest Miracle's 21. All
+  forty-four Signs carry a Backlash clause and forty of them bite, no Miracle carries one at all,
+  and two of the four Sign Callings begin play already Marked where not one of the six Faith
+  Callings ever does. The bargain is intact: the damned hit harder and pay in something they do not
+  get back. Six smoke assertions now hold that shape rather than the figures, so a later pass is
+  free to move numbers and is not free to erase the trade.
+
+  **The Index had been wrong since the session before, and nothing had ever looked.** 331 rows under
+  23 letter headings, and two of the nine rows added on 2026-08-26 were printed under **P** when
+  they belonged under **S**, with one further pair inverted for longer than that. The cause is
+  structural rather than careless: the Index is headings with rows between them, and every
+  insertion this program has ever written walked the *rows* and never looked at the *headings*, so
+  a row could sort correctly against both its neighbours and still print under the wrong letter.
+  All 331 are re-filed, and `check_index_order` now holds every row to its own letter and to its
+  order inside it. 1304 → **1635 cross-checks**.
+
+  Also `check_fight_ledger`, which holds all thirty-eight ledger halves to the data and fails an
+  entry whose *You pay* half is too short to be an honest price.
+
 - **Player's Book v2.36 · GritKeeper v1.51.0 — answering a working, and eight that reach a fight
   (2026-08-27).**
 
