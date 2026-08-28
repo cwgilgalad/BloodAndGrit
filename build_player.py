@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.36 -->
+<!-- Blood & Grit — The Player's Book · Version 2.37 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.36)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.37)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -164,6 +164,19 @@ SRC = r"""<!DOCTYPE html>
     margin-right:.5em;
   }
   .perk .nm{font-weight:700;}
+  /* The fight ledger: what a Calling is for in a round, and what it pays to be that. Quieter than
+     the Perk band on purpose -- the Perk sells the Calling, this one tells the truth about it. */
+  .fight{
+    display:flex; gap:0; flex-wrap:wrap; margin:.6em 0 1.1em; break-inside:avoid;
+    border-left:3px solid var(--blood-d); background:rgba(0,0,0,.02);
+  }
+  .fight > div{flex:1 1 260px; padding:.45em 14px; font-size:15px;}
+  .fight .k{
+    font-variant:small-caps; letter-spacing:.09em; font-weight:700; color:var(--blood-d);
+    margin-right:.45em;
+  }
+  .fight .pays .k{color:var(--ink-soft);}
+  @media (max-width:520px){ .fight > div{flex:1 1 100%;} }
   .pageno{text-align:center; color:var(--blood-d); font-size:13px; margin-top:24px; letter-spacing:.3em;}
 
   /* contents */
@@ -329,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.36</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.37</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -348,7 +361,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.36 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.37 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -1069,6 +1082,14 @@ body{ background:#525659; }
   never rolled for. Some are worth a great deal at the right moment and nothing at all for weeks; a few are as much
   reputation as ability, and one or two are frankly a liability, which is rather the point of them. Read the nineteen
   Perks together and you have the shortest honest answer to what each Calling is for.</p>
+  <p id="ix-ledger">Under the Perk sits a second band, in two halves: <strong>In a fight</strong> and
+  <strong>You pay</strong>. The Perk is what a Calling is worth at the table over a long campaign. The ledger is
+  narrower and more brutal: what that Calling actually does in a round of shooting, and what it gives up to be
+  the thing that does it. Both halves are true. The Marshal will not out-damage anybody in this book and the
+  ledger says so plainly, because the Marshal spends its Calling on everyone else's turn and a player who
+  wanted to top a tally should be told before they roll, not after. Read the nineteen ledgers together and the
+  shape of a posse falls out of them: somebody has to end things, somebody has to keep the ending from
+  happening to you, and the good tables work out early which of them they are short of.</p>
   <p>This book groups the Callings by the well they draw from, across three chapters. The <strong>worldly Callings</strong>
   in this chapter — Gunhand, Drifter, Sawbones (the frontier's word for a doctor), Marshal, Prospector, Mountain Man,
   Bounty Hunter, Engineer, and Gambler — live by
@@ -1094,6 +1115,10 @@ body{ background:#525659; }
   seldom heroes, but one who has lived past his third warrant has learned the only lessons that keep a man breathing — pick
   the moment, take your mark unready, and always, always know the way out with him in tow.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Paper on Him.</span> Give you a night in any town with a jail, a telegraph office, or a saloon, and you will come back knowing who wants a man, what for, how much, and whether the paper is still good. You will also come back knowing who wants you, which is worth finding out early.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The hardest single hit in the book, when you set it up. Bushwhack turns a foe who has not seen you yet into four extra dice by 10th level.</div>
+    <div class="pays"><span class="k">You pay</span>A d8, and dice that only come when you have the drop. A fight you walk into face-first is a fight you have with a gun and nothing else.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1163,6 +1188,10 @@ body{ background:#525659; }
   who cannot stop moving — the Drifter survives by seeing first, striking once, and being elsewhere by dawn. They are the
   party's eyes on the trail and its knife in the dark.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">No Name Sticks.</span> You have used a dozen names and answered to all of them. What you did in one town follows you to the next only if a living soul carries it there on purpose, and every description of you is wrong in at least one particular that matters.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Position. Sudden Strike pays whenever somebody else has the foe&rsquo;s attention, and Evasion means the blast that catches the posse often does not catch you.</div>
+    <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and no answer at all to a thing that has already seen you and is walking straight at you.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1215,6 +1244,10 @@ body{ background:#525659; }
   thing work twice. You are not a scholar. You are a tradesman with theory, which is worse for everybody who has to
   argue with you.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Every Machine Answers.</span> A quarter hour with any built thing and you can say what it does, what is wrong with it, and what putting it right would take: a lock, a pump, a press, a rifle action, a stamp mill, a clock. Whether you can fix it today depends on what is in the wagon. Whether you understand it depends on nothing at all.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Whatever the posse is short of. A frame is a gun, a wall, a hook or a wrench, and every one of them works in somebody else&rsquo;s hands as well as it works in yours.</div>
+    <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and a Beat and a point of Ingenuity each time. Your best round is the one that makes three other people&rsquo;s rounds better, which is a hard thing to feel proud of while it is happening.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1235,9 +1268,22 @@ body{ background:#525659; }
   after a full rest and a chance to sit with your tools. It is the measure of how much of your attention your devices
   are still owed.</p>
   <h4>The Contraption</h4>
-  <p>You have built one thing that exists nowhere else. Say what it is and what single useful thing it does: a repeating crossbow fed by a clock spring, a lamp that burns underwater, a listening horn for a wall, a rig of mirrors and wire. Working it costs 1 Ingenuity and a Beat. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.</p>
+  <p>You have built one thing that exists nowhere else. Choose a frame from the list below; you build another at 5th, 8th and 10th level, and you may rebuild any of them over a night with your tools. Working a frame costs 1 Ingenuity and a Beat, and here is the part that matters: anybody you have shown it to may work it instead of you. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.</p>
+  <div class="box">
+    <h4>A Contraption&rsquo;s Frames</h4>
+    <ul class="dash">
+      <li><strong>The Repeater.</strong> A gun fed by a clock spring and a drum. It Strikes at your attack for 1d10 and never wants reloading. Wind it for a Beat and it fires once on its own at the end of each of your turns until the spring runs down, which takes three rounds.</li>
+      <li><strong>The Bulwark.</strong> A folding plate on a tripod that sets in a Beat and gives hard cover to two souls behind it. It weighs what you would expect. Dragging it forward costs somebody a Beat, and somebody always volunteers once the shooting starts.</li>
+      <li><strong>The Winch.</strong> A hooked line on a geared drum. Spend a Beat to take hold of one creature within 30 feet: Fortitude (DC 10 + half your level + WIT) or be dragged 10 feet toward you and left Prone. Things with claws in the ground resist it. Things in the air do not.</li>
+      <li><strong>The Governor.</strong> A brass regulator that clamps onto any working mechanism and persuades it to stop: a lock, a pump, a rifle action, a jaw that opens on a hinge. It seizes for a round. Against a made thing that fights, a round is a great deal.</li>
+      <li><strong>The Alarum.</strong> Wire, a bell and a spring, set across the approaches. Nothing crosses your camp unannounced, and you sleep like a man who has been paid.</li>
+      <li><strong>The Listening Horn.</strong> A wall stops being a wall. Set the bell against it and hear what is said on the other side, at a distance the speaker would never credit.</li>
+      <li><strong>The Diving Lamp.</strong> Burns wet, burns under, burns in the bad air at the bottom of a shaft, and does not go out because something in the dark would prefer it did.</li>
+      <li><strong>The Heliograph.</strong> Mirrors and a shutter on a folding stand. In daylight you can hold a conversation with somebody a mile off, and so can anybody who knows the code, which is the part worth thinking about.</li>
+    </ul>
+  </div>
   <h4>Powder &amp; Fuse</h4>
-  <p>Blasting is a trade and you served it. You cut, time and place a charge without the Keeper calling for a check, you know to the yard how far back is far enough, and any prepared explosive you set yourself deals an extra die of its damage.</p>
+  <p>Blasting is a trade and you served it. You cut, time and place a charge without the Keeper calling for a check, and you know to the yard how far back is far enough. Each dawn you prepare two charges of your own, and any prepared explosive you set yourself deals an extra die of its damage.</p>
   <h4>Jury-Rig</h4>
   <p>Once per scene, put something back into service with wire, a strap, and language nobody should hear. A broken tool, a jammed action, a snapped trace, a door off its hinge: it works for the rest of the scene, and afterward it is broken again and rather worse.</p>
   <h4>Cut the Charge</h4>
@@ -1272,6 +1318,10 @@ body{ background:#525659; }
   only pray for. They are charming, watchful, and very hard to rattle, for anyone who has seen a year's wages turn on a
   single card has learned that the trick was never the card. The trick is knowing the odds — and knowing when to break them. Where the <strong>Gambler background</strong> of Chapter IV grants but a single knack of the green table, this Calling is the whole craft — a life given wholly over to chance, and to the bending of it.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Never a Stranger at the Table.</span> Any game running in any town has a chair for you and credit enough to sit down with. By the time it breaks up you know what the table knows: who is flush, who is lying, who is leaving in the morning, and who owes money to the wrong man.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The dice themselves. Favor reaches into any roll at the table, yours or a foe&rsquo;s, and there is no round it cannot touch.</div>
+    <div class="pays"><span class="k">You pay</span>The thinnest Blood of any Worldly Calling, and a pool that empties whether the gamble paid or not. That is rather the point of it.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1348,6 +1398,10 @@ body{ background:#525659; }
   first. They are not brave so much as quick, and they know the difference even if no one else does. The Gunhand is built
   for the gun rules of Chapter XI; learn the Iron Code well.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Let Him Draw First.</span> Against a foe who has already drawn on you, you act first. No roll, no argument. There are men out here who have built an entire career on standing very still and waiting to be threatened.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Iron, and the choice of how to spend it. Deadly Aim trades accuracy for damage at a rate that improves as you climb, and No Quarter turns a killing shot into another shot.</div>
+    <div class="pays"><span class="k">You pay</span>Nothing but the gun. No working, no blessing, no trick that reaches a thing lead cannot, and the day you meet one you are the man reloading.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1408,6 +1462,10 @@ body{ background:#525659; }
   gift is not the fast draw but the steady one, the voice that keeps frightened people pointed the right way when everything
   in them wants to run. A Marshal rarely dies alone.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Your Word Is the Record.</span> What you write down becomes the official account of it. A wire sent over your name is believed at the other end, a man you name as wanted is wanted, and a killing you rule justified stays ruled, in every town that recognizes any law at all. Being wrong on paper is a slower kind of trouble than being wrong in the street, and it takes longer to catch you.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Other people&rsquo;s turns. Command hands an ally a whole action out of turn, which is worth more damage than you will ever deal yourself.</div>
+    <div class="pays"><span class="k">You pay</span>You will not top a damage table and you should stop reading them. Your Calling is spent on the posse, and it shows up in the ledger as somebody else&rsquo;s good round.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1465,6 +1523,10 @@ body{ background:#525659; }
   and he has seen things in the deep snow that he does not, as a rule, talk about. When something out of the dark comes down
   out of the hills, he is often the only soul who already knows its name.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Half a Wild Thing.</span> Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it does not bolt. Men cross the street, and the ones who do not cross the street are generally the sort you would rather had.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Reach. The Hawken and Dead Aim between them put more on one distant shot than anything else a Worldly soul carries.</div>
+    <div class="pays"><span class="k">You pay</span>A slow gun and slower ground. Everything you are good at wants range, patience and open country, and a room takes all three away at once.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1545,6 +1607,10 @@ body{ background:#525659; }
     <span class="src">&mdash; J. Halloran, testimony given at the Widow&rsquo;s Comfort inquest</span></div>
 
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Filed and Recorded.</span> Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it is worth anything is a separate question. Being yours has started more shooting out here than gold ever did.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Everything at once. Charges climb from 2d6 to 5d6, Demolitionist doubles the dice against the unliving, and a burst does not much care how many of them there are.</div>
+    <div class="pays"><span class="k">You pay</span>A count. Charges are prepared at dawn and they run out, and the fight that goes long finds you standing there holding a pick.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1639,6 +1705,10 @@ body{ background:#525659; }
   lamplight and decides who is worth the laudanum. They know the body too well to romanticize it, and the mind too well to
   trust it. In a country this lethal, they are worth their weight in silver.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Not On My Table.</span> A soul whose wounds you have dressed since the last full rest will not bleed out while you are conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.</div>
+    <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and a blade&rsquo;s reach. Your damage wants you close to a thing you would much rather be operating on afterward.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1727,6 +1797,10 @@ body{ background:#525659; }
   Where other Callings of Faith answer the dark with fire or rite, this one answers it with the simple, stubborn insistence
   that the people in its care are going to <em>live</em>. No Calling keeps a party breathing like this one.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">One Look and You Know.</span> Look at any living thing and name what is wrong with it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. Curing it is a longer conversation, and it starts here.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Blood back, and the sickness out with it. More ways to put a soul right than any other Calling in the book.</div>
+    <div class="pays"><span class="k">You pay</span>Almost nothing that ends a fight. You keep the posse alive long enough for somebody else to end it, and you will watch them get the credit.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1805,6 +1879,10 @@ body{ background:#525659; }
   dark since long before the dark followed the settlers west. The Padre's power is the power of the Rite, performed exactly,
   whether or not the celebrant's own faith is steady. The words work. That is rather the point of them.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">The Church Owes You a Bed.</span> Every mission, chapel, rectory, and lay house that keeps the faith will take you in and yours with you: a roof, a meal, a horse if they can spare one, and the name of who to ask for in the next town. The Church has a long memory and longer ledgers, and one day somebody will present yours.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The rite. Exorcism, holy water and the Church Militant reach what lead cannot, and the blessing list arms whoever among you is best with a gun.</div>
+    <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and a pool that answers slowly. Against a man with a rifle you are a man with a book.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1881,6 +1959,10 @@ body{ background:#525659; }
   abandoned by whatever wrote it — and keeps preaching anyway. Their faith is a weapon and a wall. Whether any god hears them
   is a question the Preacher has stopped asking aloud.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">A Crowd Where You Stand.</span> Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They will listen. What they do about it afterward is between them and God, and it has gone both ways in living memory.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Brimstone, which is Faith&rsquo;s own damage and wants no gun at all, and a Sermon that moves a room before the shooting starts.</div>
+    <div class="pays"><span class="k">You pay</span>Conviction, spent. Brimstone is its own action rather than a rider on a shot, so the round you preach is a round you do not fire.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -1950,6 +2032,10 @@ body{ background:#525659; }
   <p class="note">See the box opposite (Chapter VI's note, and Chapter IV): this Shaman is a fictional, syncretic frontier
   archetype, not a portrait of any living nation's sacred role. Play the relationship and the respect; leave real ceremony off the sheet.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">You Dream It First.</span> Every night you sleep on open ground, the Keeper owes you one true thing: an image, a warning, a name, a direction. It is never clear enough to act on cleanly and it has never once been wrong.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The spirits, and the pack with them. Become the Mask changes what you are for the length of a fight.</div>
+    <div class="pays"><span class="k">You pay</span>The thinnest hand in a stand-up fight of any Calling of Faith. What you are best at happens before the shooting and after it.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2026,6 +2112,10 @@ body{ background:#525659; }
   the Preacher has conviction. What you have is a habit of staying in the room, and the country has learned that this is
   the harder of the three to get rid of.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Nobody Turns Away a Sister.</span> The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you will let you in first.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The Least of These, Hold the Lamp, and a doorway nobody gets through. You are what stands between the posse and the dark while they do the killing.</div>
+    <div class="pays"><span class="k">You pay</span>The vigil was not written to win a fight and it does not. Three workings reach a round and none of them is damage.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2088,6 +2178,10 @@ body{ background:#525659; }
   litany of weaknesses by heart. In a country where the uncanny is plainly real, they are a mercy. The trouble is that a
   man who has spent twenty years finding the Mark on the guilty eventually begins to see it on the innocent, too.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">The Guilty Flinch.</span> You never have to accuse anybody. Stand where the room can see you, say plainly what you are, and watch: somebody always looks at the door. You are right often enough to keep doing it and wrong often enough that it ought to trouble you more than it does.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The best of both halves: a Practiced attack, a d10, Judgment&rsquo;s three dice on the quarry, and Sanctified Iron for what the quarry turns out to be.</div>
+    <div class="pays"><span class="k">You pay</span>One quarry. Judgment names a single thing, and the second thing in the room gets a plain Strike from a man who has already spent his Zeal.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2346,6 +2440,10 @@ body{ background:#525659; }
   dread but in joy. The Hexer flinches at the Mark. The Dark Cultist counts each step of it as a sacrament, and asks the dark for one more.</p>
   <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">There Is Always a Brother.</span> In any settlement of any size at least one soul keeps the faith, and the signs the two of you share will turn them up by the second night. They will help you. What they want in exchange is a separate conversation, and it is never nothing.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>Nine workings that reach a fight by 10th level, and a Vessel that will not stay down when it ought to.</div>
+    <div class="pays"><span class="k">You pay</span>A Slight attack, Backlash on every Sign, and a Mark you start the game already carrying. What you spend to be useful is written on you where the town can read it.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2427,6 +2525,10 @@ body{ background:#525659; }
   bill, when at last it falls due, is mailed to the flock.</p>
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Steady</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Whatever You Say You Are.</span> You arrive with papers, a history, and two or three people willing to swear to it: a bishop's letter, a discharge, a widow who remembers you fondly from somewhere she cannot quite place. It holds until somebody with a real reason to check actually checks, and most people go their whole lives without a real reason.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The same nine workings, and a mouth that can stop a fight before it becomes one.</div>
+    <div class="pays"><span class="k">You pay</span>Steady attack, a d8, Backlash, and a Tribute that somebody else pays. Your power is borrowed from people who trust you.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2507,6 +2609,10 @@ body{ background:#525659; }
   Mark faster than the rest of the living. This is not a Calling for a soul that wishes to stay one.</p>
   <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Your Debts Are Public.</span> What you pay for the dark shows on the world around you. Lamps gutter. Milk turns. The dog will not come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The whole Old Dark ladder, earliest and deepest of anyone. Blood Price buys a working when the Nerve is gone.</div>
+    <div class="pays"><span class="k">You pay</span>The worst body in the book. A d6, a Slight attack, Backlash on everything, a Mark from the first day, and a price paid in your own Blood when the pool runs dry.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -2569,6 +2675,10 @@ body{ background:#525659; }
   will turn on her the day a child takes sick.</p>
   <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">They Come to You at Night.</span> Whatever the town says about you in daylight, somebody knocks after dark: a girl in trouble, a man with a debt, a mother with a child that will not wake. You always have something worth trading, and there is always somebody in that town who cannot afford to watch you hang.</p>
+  <div class="fight">
+    <div class="brings"><span class="k">In a fight</span>The Craft, which no other Calling may learn, a familiar out on the field with you, and the Evil Eye.</div>
+    <div class="pays"><span class="k">You pay</span>A d6 and the weakest Strike in the book. You will not shoot your way out of anything. The Craft is the whole of your answer and it is prepared work, so a fight you did not see coming is a fight you begin behind.</div>
+  </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
@@ -4677,6 +4787,7 @@ body{ background:#525659; }
     <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">194</span></li>
     <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">164</span></li>
     <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">106</span></li>
+    <li><a href="#ix-ledger">Fight ledger, the (Callings)</a><span class="pg">0</span></li>
     <li><a href="#ix-firearms">Firearms</a><span class="pg">145</span></li>
     <li><a href="#firstpeoples">First Peoples, the</a><span class="pg">32</span></li>
     <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">138</span></li>
@@ -4794,8 +4905,6 @@ body{ background:#525659; }
     <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">162</span></li>
     <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">104</span></li>
     <li><a href="#ix-perks">Perks of the Callings</a><span class="pg">40</span></li>
-    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">105</span></li>
-    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">171</span></li>
     <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">196</span></li>
     <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">211</span></li>
     <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">106</span></li>
@@ -4843,6 +4952,7 @@ body{ background:#525659; }
     <li><a href="#ix-o-scout">Scout, the (Origin)</a><span class="pg">30</span></li>
     <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">157</span></li>
     <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">106</span></li>
+    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">85</span></li>
     <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">110</span></li>
     <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">187</span></li>
@@ -4855,11 +4965,12 @@ body{ background:#525659; }
     <li><a href="#skills">Skills</a><span class="pg">132</span></li>
     <li><a href="#ix-using-skills">Skills, using</a><span class="pg">133</span></li>
     <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">106</span></li>
+    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">171</span></li>
     <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">195</span></li>
     <li><a href="#ix-reckoning">Speed</a><span class="pg">20</span></li>
-    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">134</span></li>
     <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">104</span></li>
+    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">134</span></li>
     <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">138</span></li>
     <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">98</span></li>
     <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">189</span></li>

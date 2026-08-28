@@ -358,6 +358,9 @@ public partial class MainForm
                 if (c == null) return null;
                 return $"{c.name} — a Calling of the {c.group}.\n{c.blurb}\n\n"
                      + (c.perk != null ? $"Perk — {c.perk.name}: {c.perk.desc}\n\n" : "")
+                     // The wizard is where the choice is actually made, so the honest half of the
+                     // entry belongs here rather than only on the sheet it prints afterward.
+                     + (c.fight != null ? $"In a fight — {c.fight.brings}\nYou pay — {c.fight.costs}\n\n" : "")
                      + $"Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
                      + $"trains {c.trainedSkills} skills plus your WIT modifier; leans on {string.Join(", ", c.keyAbilities.Take(2))}."
                      + (c.signsKnownAt != null ? " Works the Signs of Ch. XIII." : "")

@@ -1380,6 +1380,42 @@ foreach (var (table, floor) in new[]
     // forty cost the worker something, and those are the ones the app should warn about.
     T("working: forty of the forty-four actually bite", signs.Count(w => w.BacklashBites) == 40);
 
+    // ---- the other half of the bargain, and the half a player actually chooses on ----
+    // Backlash and the Mark are what a Sign COSTS. What it BUYS has to stay worth it, or the
+    // choice between damnation and grace becomes a matter of taste. Measured 2026-08-27: rank
+    // for rank the Signs lead on damage at 2, 3 and 5 and are level at 1 and 4, and the hardest
+    // Sign in the book beats the hardest Miracle 27.0 to 21.0 on the average.
+    //
+    // These hold the SHAPE of that bargain rather than the exact figures, so that rebalancing is
+    // free to move numbers and is not free to erase the trade.
+    double Avg(string dice)
+    {
+        double t = 0;
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(dice ?? "", @"(?<n>\d*)d(?<s>\d+)"))
+            t += (m.Groups["n"].Value == "" ? 1 : int.Parse(m.Groups["n"].Value))
+                 * (int.Parse(m.Groups["s"].Value) + 1) / 2.0;
+        return t;
+    }
+    double topSign = signs.Where(w => w.Damage.Length > 0).Select(w => Avg(w.Damage))
+                          .DefaultIfEmpty(0).Max();
+    double topMir = mirs.Where(w => w.Damage.Length > 0).Select(w => Avg(w.Damage))
+                         .DefaultIfEmpty(0).Max();
+    T($"bargain: the hardest Sign outhits the hardest Miracle ({topSign:0.0} to {topMir:0.0})",
+        topSign > topMir);
+    T("bargain: the Old Dark reaches a rank the faithful cannot buy safely",
+        signs.Count(w => w.Damage.Length > 0) >= mirs.Count(w => w.Damage.Length > 0));
+
+    // Two of the four Sign Callings begin play already Marked; not one of the six Faith Callings
+    // ever does. That is the permanent half of the price, and it is what the Backlash clause
+    // cannot express on its own.
+    var signers = CharGen.D.callings.Where(c => c.signLists != null).ToList();
+    var faithful = CharGen.D.callings.Where(c => c.miracleLists != null).ToList();
+    T("bargain: some who work Signs begin the game Marked", signers.Any(c => c.startMark > 0));
+    T("bargain: nobody who works Miracles ever does", faithful.All(c => c.startMark == 0));
+    T("bargain: the two lists stay closed to each other",
+        signers.All(c => c.miracleLists == null) && faithful.All(c => c.signLists == null));
+
     // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
     // the two chapters give it up entirely.
     T("working: every one of the ninety-four resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
@@ -2884,6 +2920,52 @@ T("no Perk repeats the name of one of its Calling's own features", cg.callings.A
 T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
     c.perk?.desc == null
     || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
+
+// ---- the fight ledger (B5) ---------------------------------------------------------------
+// Every Calling states what it does in a round and what it pays to be that. The Perk sells the
+// Calling; the ledger is the half that has to stay honest, so what is asserted here is mostly
+// that the unflattering half is really there and really unflattering.
+T("every Calling carries a fight ledger", cg.callings.All(c => c.fight != null
+    && !string.IsNullOrWhiteSpace(c.fight.brings) && !string.IsNullOrWhiteSpace(c.fight.costs)));
+T("both halves of every ledger are a real sentence, not a label", cg.callings.All(c =>
+    c.fight?.brings == null || c.fight.costs == null
+    || (c.fight.brings.Length > 60 && c.fight.costs.Length > 40
+        && c.fight.brings.TrimEnd().EndsWith('.') && c.fight.costs.TrimEnd().EndsWith('.'))));
+T("no ledger repeats its own Perk back at the reader", cg.callings.All(c =>
+    c.fight?.brings == null || c.perk?.desc == null || c.fight.brings != c.perk.desc));
+// The measurement that produced these lines is in _combatlab/Roster.cs. Two of its findings are
+// load-bearing and are pinned here so a later rewrite cannot quietly flatter them away: the
+// Marshal is the Calling that does not top a damage table, and the Witch is the one that cannot
+// shoot its way out. Both entries say so in the book.
+T("the Marshal's ledger admits it will not top a damage table",
+    (cg.callings.First(c => c.name == "Marshal").fight?.costs ?? "")
+        .Contains("damage table", StringComparison.OrdinalIgnoreCase));
+T("the Witch's ledger admits she cannot shoot her way out",
+    (cg.callings.First(c => c.name == "Witch").fight?.costs ?? "")
+        .Contains("shoot", StringComparison.OrdinalIgnoreCase));
+
+// ---- the Engineer got a combat answer, and it is GRANT (B5) -------------------------------
+// It was the only Calling in the book with no scaling answer in any column a round can be spent
+// in and no workings to fall back on, because its signature feature was undefined prose. The
+// frames fix that, and the clause that makes the Engineer itself rather than a lesser Prospector
+// is that anybody it has shown a frame to may work the frame instead.
+{
+    var eng = cg.callings.First(c => c.name == "Engineer");
+    var frames = eng.featureDescs.TryGetValue("A Contraption's Frames", out var f) ? f : "";
+    T("the Engineer has a printed menu of frames", frames.Length > 400);
+    T("eight of them, as the Powderman has eight Devices",
+        new[] { "The Repeater", "The Bulwark", "The Winch", "The Governor",
+                "The Alarum", "The Listening Horn", "The Diving Lamp", "The Heliograph" }
+            .All(n => frames.Contains(n, StringComparison.Ordinal)));
+    T("at least three of the frames reach a round",
+        frames.Contains("1d10") && frames.Contains("hard cover") && frames.Contains("Prone"));
+    T("a frame works in somebody else's hands — the Engineer's whole column",
+        (eng.featureDescs.TryGetValue("The Contraption", out var con) ? con : "")
+            .Contains("may work it instead of you", StringComparison.Ordinal));
+    T("Powder & Fuse now gives the Engineer something to set",
+        (eng.featureDescs.TryGetValue("Powder & Fuse", out var pf) ? pf : "")
+            .Contains("prepare two charges", StringComparison.Ordinal));
+}
 
 // ---- a granted weapon is a weapon you can fire (v1.51.0) --------------------------------------
 // A Calling's kit and an Origin's gear can GRANT a gun instead of selling one, and three lines do.

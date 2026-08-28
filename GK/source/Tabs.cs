@@ -2432,6 +2432,16 @@ public partial class MainForm
             sb.AppendLine("PERK — " + cal.perk.name);
             sb.AppendLine(Wrap("    " + cal.perk.desc, 78));
         }
+        // ...and the ledger under it, for the same reason: it is the half of the entry that says
+        // what this soul is actually for once the shooting starts.
+        if (cal?.fight != null)
+        {
+            sb.AppendLine();
+            sb.AppendLine("IN A FIGHT");
+            sb.AppendLine(Wrap("    " + cal.fight.brings, 78));
+            sb.AppendLine("YOU PAY");
+            sb.AppendLine(Wrap("    " + cal.fight.costs, 78));
+        }
         sb.AppendLine();
         var spent = CharGen.LedgerFor(soul).ToDictionary(r => r.Name, r => (r.Left, r.Of));
         foreach (var f in CharGen.FeaturesAt(soul.Calling, soul.Level, soul.Sheet?.Subpath))

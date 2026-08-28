@@ -1525,6 +1525,10 @@
     "name": "Paper on Him",
     "desc": "Give you a night in any town with a jail, a telegraph office, or a saloon, and you will come back knowing who wants a man, what for, how much, and whether the paper is still good. You will also come back knowing who wants you, which is worth finding out early."
    },
+   "fight": {
+    "brings": "The hardest single hit in the book, when you set it up. Bushwhack turns a foe who has not seen you yet into four extra dice by 10th level.",
+    "costs": "A d8, and dice that only come when you have the drop. A fight you walk into face-first is a fight you have with a gun and nothing else."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -1727,6 +1731,10 @@
     "name": "No Name Sticks",
     "desc": "You have used a dozen names and answered to all of them. What you did in one town follows you to the next only if a living soul carries it there on purpose, and every description of you is wrong in at least one particular that matters."
    },
+   "fight": {
+    "brings": "Position. Sudden Strike pays whenever somebody else has the foe's attention, and Evasion means the blast that catches the posse often does not catch you.",
+    "costs": "Steady attack, a d8, and no answer at all to a thing that has already seen you and is walking straight at you."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -1921,6 +1929,10 @@
     "name": "Every Machine Answers",
     "desc": "A quarter hour with any built thing and you can say what it does, what is wrong with it, and what putting it right would take: a lock, a pump, a press, a rifle action, a stamp mill, a clock. Whether you can fix it today depends on what is in the wagon. Whether you understand it depends on nothing at all."
    },
+   "fight": {
+    "brings": "Whatever the posse is short of. A frame is a gun, a wall, a hook or a wrench, and every one of them works in somebody else's hands as well as it works in yours.",
+    "costs": "Steady attack, a d8, and a Beat and a point of Ingenuity each time. Your best round is the one that makes three other people's rounds better, which is a hard thing to feel proud of while it is happening."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -2032,8 +2044,9 @@
     }
    ],
    "featureDescs": {
-    "The Contraption": "You have built one thing that exists nowhere else. Say what it is and what single useful thing it does: a repeating crossbow fed by a clock spring, a lamp that burns underwater, a listening horn for a wall, a rig of mirrors and wire. Working it costs 1 Ingenuity and a Beat. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.",
-    "Powder & Fuse": "Blasting is a trade and you served it. You cut, time and place a charge without the Keeper calling for a check, you know to the yard how far back is far enough, and any prepared explosive you set yourself deals an extra die of its damage.",
+    "The Contraption": "You have built one thing that exists nowhere else. Choose a frame from the list below; you build another at 5th, 8th and 10th level, and you may rebuild any of them over a night with your tools. Working a frame costs 1 Ingenuity and a Beat, and here is the part that matters: anybody you have shown it to may work it instead of you. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.",
+    "A Contraption's Frames": "The Repeater. A gun fed by a clock spring and a drum. It Strikes at your attack for 1d10 and never wants reloading. Wind it for a Beat and it fires once on its own at the end of each of your turns until the spring runs down, which takes three rounds. The Bulwark. A folding plate on a tripod that sets in a Beat and gives hard cover to two souls behind it. It weighs what you would expect. Dragging it forward costs somebody a Beat, and somebody always volunteers once the shooting starts. The Winch. A hooked line on a geared drum. Spend a Beat to take hold of one creature within 30 feet: Fortitude (DC 10 + half your level + WIT) or be dragged 10 feet toward you and left Prone. Things with claws in the ground resist it. Things in the air do not. The Governor. A brass regulator that clamps onto any working mechanism and persuades it to stop: a lock, a pump, a rifle action, a jaw that opens on a hinge. It seizes for a round. Against a made thing that fights, a round is a great deal. The Alarum. Wire, a bell and a spring, set across the approaches. Nothing crosses your camp unannounced, and you sleep like a man who has been paid. The Listening Horn. A wall stops being a wall. Set the bell against it and hear what is said on the other side, at a distance the speaker would never credit. The Diving Lamp. Burns wet, burns under, burns in the bad air at the bottom of a shaft, and does not go out because something in the dark would prefer it did. The Heliograph. Mirrors and a shutter on a folding stand. In daylight you can hold a conversation with somebody a mile off, and so can anybody who knows the code, which is the part worth thinking about.",
+    "Powder & Fuse": "Blasting is a trade and you served it. You cut, time and place a charge without the Keeper calling for a check, and you know to the yard how far back is far enough. Each dawn you prepare two charges of your own, and any prepared explosive you set yourself deals an extra die of its damage.",
     "Jury-Rig": "Once per scene, put something back into service with wire, a strap, and language nobody should hear. A broken tool, a jammed action, a snapped trace, a door off its hinge: it works for the rest of the scene, and afterward it is broken again and rather worse.",
     "Cut the Charge": "You know what a blast wants to do and where it will go. You take half damage from any explosion, and so does any ally you had a moment to shout at. The shout is required. More of this trade is shouting than the recruiting posters admit.",
     "Field Expedient": "Given ten minutes, a few hands and whatever the ground offers, you throw up a work: a barricade, a footbridge, a sluice, a firing step, a hoist. It is ugly, it holds for the scene, and it changes what the ground is worth.",
@@ -2122,6 +2135,10 @@
    "perk": {
     "name": "Never a Stranger at the Table",
     "desc": "Any game running in any town has a chair for you and credit enough to sit down with. By the time it breaks up you know what the table knows: who is flush, who is lying, who is leaving in the morning, and who owes money to the wrong man."
+   },
+   "fight": {
+    "brings": "The dice themselves. Favor reaches into any roll at the table, yours or a foe's, and there is no round it cannot touch.",
+    "costs": "The thinnest Blood of any Worldly Calling, and a pool that empties whether the gamble paid or not. That is rather the point of it."
    },
    "group": "Worldly",
    "hitDie": 8,
@@ -2324,6 +2341,10 @@
     "name": "Let Him Draw First",
     "desc": "Against a foe who has already drawn on you, you act first. No roll, no argument. There are men out here who have built an entire career on standing very still and waiting to be threatened."
    },
+   "fight": {
+    "brings": "Iron, and the choice of how to spend it. Deadly Aim trades accuracy for damage at a rate that improves as you climb, and No Quarter turns a killing shot into another shot.",
+    "costs": "Nothing but the gun. No working, no blessing, no trick that reaches a thing lead cannot, and the day you meet one you are the man reloading."
+   },
    "group": "Worldly",
    "hitDie": 10,
    "trainedSkills": 2,
@@ -2511,6 +2532,10 @@
    "perk": {
     "name": "Your Word Is the Record",
     "desc": "What you write down becomes the official account of it. A wire sent over your name is believed at the other end, a man you name as wanted is wanted, and a killing you rule justified stays ruled, in every town that recognizes any law at all. Being wrong on paper is a slower kind of trouble than being wrong in the street, and it takes longer to catch you."
+   },
+   "fight": {
+    "brings": "Other people's turns. Command hands an ally a whole action out of turn, which is worth more damage than you will ever deal yourself.",
+    "costs": "You will not top a damage table and you should stop reading them. Your Calling is spent on the posse, and it shows up in the ledger as somebody else's good round."
    },
    "group": "Worldly",
    "hitDie": 10,
@@ -2707,6 +2732,10 @@
    "perk": {
     "name": "Half a Wild Thing",
     "desc": "Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it does not bolt. Men cross the street, and the ones who do not cross the street are generally the sort you would rather had."
+   },
+   "fight": {
+    "brings": "Reach. The Hawken and Dead Aim between them put more on one distant shot than anything else a Worldly soul carries.",
+    "costs": "A slow gun and slower ground. Everything you are good at wants range, patience and open country, and a room takes all three away at once."
    },
    "group": "Worldly",
    "hitDie": 10,
@@ -2909,6 +2938,10 @@
    "perk": {
     "name": "Filed and Recorded",
     "desc": "Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it is worth anything is a separate question. Being yours has started more shooting out here than gold ever did."
+   },
+   "fight": {
+    "brings": "Everything at once. Charges climb from 2d6 to 5d6, Demolitionist doubles the dice against the unliving, and a burst does not much care how many of them there are.",
+    "costs": "A count. Charges are prepared at dawn and they run out, and the fight that goes long finds you standing there holding a pick."
    },
    "group": "Worldly",
    "hitDie": 8,
@@ -3120,6 +3153,10 @@
     "name": "Not On My Table",
     "desc": "A soul whose wounds you have dressed since the last full rest will not bleed out while you are conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
    },
+   "fight": {
+    "brings": "The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.",
+    "costs": "Steady attack, a d8, and a blade's reach. Your damage wants you close to a thing you would much rather be operating on afterward."
+   },
    "group": "Worldly",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -3315,6 +3352,10 @@
    "perk": {
     "name": "One Look and You Know",
     "desc": "Look at any living thing and name what is wrong with it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. Curing it is a longer conversation, and it starts here."
+   },
+   "fight": {
+    "brings": "Blood back, and the sickness out with it. More ways to put a soul right than any other Calling in the book.",
+    "costs": "Almost nothing that ends a fight. You keep the posse alive long enough for somebody else to end it, and you will watch them get the credit."
    },
    "group": "Faith",
    "hitDie": 8,
@@ -3526,6 +3567,10 @@
     "name": "The Church Owes You a Bed",
     "desc": "Every mission, chapel, rectory, and lay house that keeps the faith will take you in and yours with you: a roof, a meal, a horse if they can spare one, and the name of who to ask for in the next town. The Church has a long memory and longer ledgers, and one day somebody will present yours."
    },
+   "fight": {
+    "brings": "The rite. Exorcism, holy water and the Church Militant reach what lead cannot, and the blessing list arms whoever among you is best with a gun.",
+    "costs": "Steady attack, a d8, and a pool that answers slowly. Against a man with a rifle you are a man with a book."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -3734,6 +3779,10 @@
    "perk": {
     "name": "A Crowd Where You Stand",
     "desc": "Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They will listen. What they do about it afterward is between them and God, and it has gone both ways in living memory."
+   },
+   "fight": {
+    "brings": "Brimstone, which is Faith's own damage and wants no gun at all, and a Sermon that moves a room before the shooting starts.",
+    "costs": "Conviction, spent. Brimstone is its own action rather than a rider on a shot, so the round you preach is a round you do not fire."
    },
    "group": "Faith",
    "hitDie": 8,
@@ -3944,6 +3993,10 @@
    "perk": {
     "name": "You Dream It First",
     "desc": "Every night you sleep on open ground, the Keeper owes you one true thing: an image, a warning, a name, a direction. It is never clear enough to act on cleanly and it has never once been wrong."
+   },
+   "fight": {
+    "brings": "The spirits, and the pack with them. Become the Mask changes what you are for the length of a fight.",
+    "costs": "The thinnest hand in a stand-up fight of any Calling of Faith. What you are best at happens before the shooting and after it."
    },
    "group": "Faith",
    "hitDie": 8,
@@ -4161,6 +4214,10 @@
     "name": "Nobody Turns Away a Sister",
     "desc": "The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you will let you in first."
    },
+   "fight": {
+    "brings": "The Least of These, Hold the Lamp, and a doorway nobody gets through. You are what stands between the posse and the dark while they do the killing.",
+    "costs": "The vigil was not written to win a fight and it does not. Three workings reach a round and none of them is damage."
+   },
    "group": "Faith",
    "hitDie": 8,
    "trainedSkills": 4,
@@ -4369,6 +4426,10 @@
    "perk": {
     "name": "The Guilty Flinch",
     "desc": "You never have to accuse anybody. Stand where the room can see you, say plainly what you are, and watch: somebody always looks at the door. You are right often enough to keep doing it and wrong often enough that it ought to trouble you more than it does."
+   },
+   "fight": {
+    "brings": "The best of both halves: a Practiced attack, a d10, Judgment's three dice on the quarry, and Sanctified Iron for what the quarry turns out to be.",
+    "costs": "One quarry. Judgment names a single thing, and the second thing in the room gets a plain Strike from a man who has already spent his Zeal."
    },
    "group": "Faith",
    "hitDie": 10,
@@ -4592,6 +4653,10 @@
    "perk": {
     "name": "There Is Always a Brother",
     "desc": "In any settlement of any size at least one soul keeps the faith, and the signs the two of you share will turn them up by the second night. They will help you. What they want in exchange is a separate conversation, and it is never nothing."
+   },
+   "fight": {
+    "brings": "Nine workings that reach a fight by 10th level, and a Vessel that will not stay down when it ought to.",
+    "costs": "A Slight attack, Backlash on every Sign, and a Mark you start the game already carrying. What you spend to be useful is written on you where the town can read it."
    },
    "group": "Old Dark",
    "hitDie": 8,
@@ -4821,6 +4886,10 @@
     "name": "Whatever You Say You Are",
     "desc": "You arrive with papers, a history, and two or three people willing to swear to it: a bishop's letter, a discharge, a widow who remembers you fondly from somewhere she cannot quite place. It holds until somebody with a real reason to check actually checks, and most people go their whole lives without a real reason."
    },
+   "fight": {
+    "brings": "The same nine workings, and a mouth that can stop a fight before it becomes one.",
+    "costs": "Steady attack, a d8, Backlash, and a Tribute that somebody else pays. Your power is borrowed from people who trust you."
+   },
    "group": "Old Dark",
    "hitDie": 8,
    "trainedSkills": 6,
@@ -5033,6 +5102,10 @@
     "name": "Your Debts Are Public",
     "desc": "What you pay for the dark shows on the world around you. Lamps gutter. Milk turns. The dog will not come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this."
    },
+   "fight": {
+    "brings": "The whole Old Dark ladder, earliest and deepest of anyone. Blood Price buys a working when the Nerve is gone.",
+    "costs": "The worst body in the book. A d6, a Slight attack, Backlash on everything, a Mark from the first day, and a price paid in your own Blood when the pool runs dry."
+   },
    "group": "Old Dark",
    "hitDie": 6,
    "trainedSkills": 4,
@@ -5244,6 +5317,10 @@
    "perk": {
     "name": "They Come to You at Night",
     "desc": "Whatever the town says about you in daylight, somebody knocks after dark: a girl in trouble, a man with a debt, a mother with a child that will not wake. You always have something worth trading, and there is always somebody in that town who cannot afford to watch you hang."
+   },
+   "fight": {
+    "brings": "The Craft, which no other Calling may learn, a familiar out on the field with you, and the Evil Eye.",
+    "costs": "A d6 and the weakest Strike in the book. You will not shoot your way out of anything. The Craft is the whole of your answer and it is prepared work, so a fight you did not see coming is a fight you begin behind."
    },
    "group": "Old Dark",
    "hitDie": 6,
