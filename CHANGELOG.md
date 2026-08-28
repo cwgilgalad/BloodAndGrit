@@ -8,6 +8,41 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Book v2.20 · Bestiary v2.16 — the Bestiary's Contents was sixty-one pages out
+  (2026-08-27).**
+
+  The Player's Book fix an hour earlier was scoped to the book the fault was found in, and the
+  check written to hold it was scoped the same way. Both were too narrow. Two kinds of page number
+  live in these books: `nav_tools.py` builds the detail Contents and the Index as flat lists the
+  paginator resolves live at render time, and those, in its own words, *never need patching and
+  cannot go stale*. The hand-authored `<ul class="toc">` at the front of a book is static text
+  sitting in the builder, and something has to re-derive it whenever pagination moves. For the
+  Player's Book that something is `measure_index.py`. **For the Keeper's Book and the Bestiary
+  there was nothing at all.**
+
+  The Bestiary has grown from about 128 pages to 199 since those numbers were typed, and its
+  Contents had followed none of it. *How to Read an Entry* said 4 and sits on 5. *Beasts* said 23
+  and sits on 31. *The Old Dark* said 84 and sits on 118. *Hard Country* said 121 and sits on 165.
+  **Building a Horror said 128 and sits on 193**, so a Keeper following the Contents to it landed
+  sixty-one pages short, in the middle of the creature entries. The Keeper's Book was out by up to
+  twenty-one the same way: *The Keeper's Screen* said 78 and sits on 99.
+
+  Twenty-seven wrong numbers across the two books, and every check in the repo was green over them.
+  `measure_book.py` renders both and asserts that every anchor RESOLVES, which is a different
+  question from whether the number printed beside it is the page it resolves to, and that gap is
+  exactly the size of this fault.
+
+  `measure_contents.py` reads all three books from one place: render, ask the browser which page
+  each anchor actually lands on, compare against the static text. `--check` writes nothing and
+  exits 1 naming every line; `--fix` patches the builders and rebuilds. It runs in verify_all's
+  full and release tiers as `contents`.
+
+  **The lesson is about the shape of the first fix rather than about page numbers.** Finding a
+  fault in one book and writing a guard for that book leaves the guard exactly as wide as the
+  accident that revealed it. The Player's Book was the one that failed loudly, because
+  `audit_built_matches_committed` happened to go red on the day it was rebuilt. The Bestiary was
+  four times as wrong and had never made a sound.
+
 - **Player's Book v2.38 — the Contents was five pages out, and nothing was looking (2026-08-27).**
 
   Found while cutting the release, by the gate rather than by a reader. `audit_built_matches_committed`

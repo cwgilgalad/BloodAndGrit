@@ -48,13 +48,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.15 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.15)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.16 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.16)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.15</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.16</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.15 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.16 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
@@ -163,18 +163,18 @@ CONTENTS = f"""<!-- ===================== BESTIARY CONTENTS ====================
   entry gives the numbers to run a thing and the one hard truth a party must learn to put it down. Reskin freely;
   the country has more shapes than any one book can name.</p>
   <ul class="toc">
-    <li><a href="#howto">I. How to Read the Dead</a><span class="pg">4</span></li>
-    <li><a href="#dead">II. The Restless Dead</a><span class="pg">7</span></li>
-    <li><a href="#beasts">III. Cursed Beasts &amp; Wild Things</a><span class="pg">23</span></li>
-    <li><a href="#men">IV. Men, and the Shapes of Men</a><span class="pg">41</span></li>
-    <li><a href="#spirits">V. Spirits &amp; Hauntings</a><span class="pg">59</span></li>
-    <li><a href="#wild">VI. The Wild &amp; the Weather</a><span class="pg">72</span></li>
-    <li><a href="#olddark">VII. The Old Dark</a><span class="pg">84</span></li>
-    <li><a href="#living">VIII. Beasts of the Living World</a><span class="pg">103</span></li>
-    <li><a href="#hard">IX. Hard Men &amp; Hard Country</a><span class="pg">121</span></li>
-    <li><a href="#index">Appendix: The Roll, by Tier</a><span class="pg">121</span></li>
-    <li><a href="#grounds">Appendix: The Grounds <span class="sub">(encounters by terrain)</span></a><span class="pg">123</span></li>
-    <li><a href="#build">Appendix: Building Your Own Dead</a><span class="pg">128</span></li>
+    <li><a href="#howto">I. How to Read the Dead</a><span class="pg">5</span></li>
+    <li><a href="#dead">II. The Restless Dead</a><span class="pg">8</span></li>
+    <li><a href="#beasts">III. Cursed Beasts &amp; Wild Things</a><span class="pg">31</span></li>
+    <li><a href="#men">IV. Men, and the Shapes of Men</a><span class="pg">53</span></li>
+    <li><a href="#spirits">V. Spirits &amp; Hauntings</a><span class="pg">76</span></li>
+    <li><a href="#wild">VI. The Wild &amp; the Weather</a><span class="pg">106</span></li>
+    <li><a href="#olddark">VII. The Old Dark</a><span class="pg">118</span></li>
+    <li><a href="#living">VIII. Beasts of the Living World</a><span class="pg">136</span></li>
+    <li><a href="#hard">IX. Hard Men &amp; Hard Country</a><span class="pg">165</span></li>
+    <li><a href="#index">Appendix: The Roll, by Tier</a><span class="pg">182</span></li>
+    <li><a href="#grounds">Appendix: The Grounds <span class="sub">(encounters by terrain)</span></a><span class="pg">185</span></li>
+    <li><a href="#build">Appendix: Building Your Own Dead</a><span class="pg">193</span></li>
   </ul>
 </section>
 """

@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.19 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.19)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.20 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.20)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.19</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.20</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.19 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.20 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -120,21 +120,21 @@ CONTENTS = f"""<!-- ===================== KEEPER CONTENTS ===================== 
   reckoning behind the rules of fear, the things that wait in the dark, and the craft of setting them
   loose without breaking faith with the souls at your table. If you mean to play and not to run, close it.</p>
   <ul class="toc">
-    <li><a href="#chair">I. The Keeper's Chair</a><span class="pg">4</span></li>
-    <li><a href="#running">II. Running the Game</a><span class="pg">9</span></li>
-    <li><a href="#fear">III. Fear, Nerve &amp; the Mark</a><span class="pg">15</span></li>
-    <li><a href="#odds">IV. The Long Odds &mdash; Building the Fight</a><span class="pg">22</span></li>
-    <li><a href="#bestiary">V. A Bestiary of the Frontier</a><span class="pg">31</span></li>
-    <li><a href="#hazards">VI. Cursed Ground, Hazards &amp; Bad Medicine</a><span class="pg">33</span></li>
-    <li><a href="#rewards">VII. Rewards &amp; Reckonings</a><span class="pg">39</span></li>
-    <li><a href="#cast">VIII. The Cast</a><span class="pg">44</span></li>
-    <li><a href="#firstreckoning">IX. A First Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">48</span></li>
-    <li><a href="#secondreckoning">X. A Second Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">52</span></li>
-    <li><a href="#keepersyear">XI. The Keeper's Year <span class="sub">(running a campaign)</span></a><span class="pg">57</span></li>
-    <li><a href="#pocket">XII. The Country in Your Pocket <span class="sub">(rollable tables)</span></a><span class="pg">62</span></li>
-    <li><a href="#basin">XIII. Perdition Basin <span class="sub">(a country ready to ride)</span></a><span class="pg">71</span></li>
-    <li><a href="#city">XIV. The Lamplit City <span class="sub">(running the game in town)</span></a><span class="pg">78</span></li>
-    <li><a href="#screen">Appendix: The Keeper's Screen</a><span class="pg">78</span></li>
+    <li><a href="#chair">I. The Keeper's Chair</a><span class="pg">7</span></li>
+    <li><a href="#running">II. Running the Game</a><span class="pg">12</span></li>
+    <li><a href="#fear">III. Fear, Nerve &amp; the Mark</a><span class="pg">17</span></li>
+    <li><a href="#odds">IV. The Long Odds &mdash; Building the Fight</a><span class="pg">26</span></li>
+    <li><a href="#bestiary">V. A Bestiary of the Frontier</a><span class="pg">37</span></li>
+    <li><a href="#hazards">VI. Cursed Ground, Hazards &amp; Bad Medicine</a><span class="pg">40</span></li>
+    <li><a href="#rewards">VII. Rewards &amp; Reckonings</a><span class="pg">46</span></li>
+    <li><a href="#cast">VIII. The Cast</a><span class="pg">54</span></li>
+    <li><a href="#firstreckoning">IX. A First Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">60</span></li>
+    <li><a href="#secondreckoning">X. A Second Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">64</span></li>
+    <li><a href="#keepersyear">XI. The Keeper's Year <span class="sub">(running a campaign)</span></a><span class="pg">69</span></li>
+    <li><a href="#pocket">XII. The Country in Your Pocket <span class="sub">(rollable tables)</span></a><span class="pg">73</span></li>
+    <li><a href="#basin">XIII. Perdition Basin <span class="sub">(a country ready to ride)</span></a><span class="pg">82</span></li>
+    <li><a href="#city">XIV. The Lamplit City <span class="sub">(running the game in town)</span></a><span class="pg">90</span></li>
+    <li><a href="#screen">Appendix: The Keeper's Screen</a><span class="pg">99</span></li>
   </ul>
 </section>
 """

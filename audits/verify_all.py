@@ -82,6 +82,12 @@ CHECKS = [
     # a different page count than the laptop the books are proofed on.
     ("statics",   ["../measure_index.py", "--check"],  SLOW,    False, False,
      "the Player's printed Contents and Index page numbers are the true ones"),
+    # Added an hour after `statics`, because `statics` was scoped to the book the fault was found
+    # in and the same fault was sitting in the other two. The Keeper's Book carries 15 static
+    # Contents numbers and the Bestiary 12, hand-authored the same way, and nothing had ever looked
+    # at them: the Bestiary's were up to 61 pages out. `statics` went green over both of them.
+    ("contents",  ["../measure_contents.py", "--check"], SLOW,   False, False,
+     "every book's hand-authored Contents number is the page it actually lands on"),
 ]
 
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
