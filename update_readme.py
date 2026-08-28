@@ -69,6 +69,17 @@ CLAIMS = [
     # The two-line "Current versions:" paragraph at the top, ending at its closing bold marker.
     ("CLAUDE.md", r"\*\*Current versions:.*?\*\*"),
     ("CLAUDE.md", r"## GritKeeper \(v[^)]*\)"),
+    # The book table under "## The project", one row per book, and the three chapter headings
+    # that name a version. Added 2026-08-27: the header paragraph above had been a CLAIM since
+    # 2026-08-08 and these four had not, so a v2.37 bump left CLAUDE.md disagreeing with itself
+    # on its own first screen. The page-count column is left alone -- it comes from rendering,
+    # not from a build script, so there is nothing here to read it off.
+    ("CLAUDE.md", r"\| The Player's Book \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"\| The Keeper's Book \(GM guide\) \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"\| The Bestiary \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"## The Player's Book \(v[^)]*\)"),
+    ("CLAUDE.md", r"## The Keeper's Book \(v[^)]*\)"),
+    ("CLAUDE.md", r"## The Bestiary \(v[^)]*\)"),
     # The app's own README and the copy that ships inside the zip. Both carry the books they were
     # extracted from and the app's own number.
     ("GK/source/README.md", r"\(Player's Book v[^)]*\)"),
@@ -93,6 +104,13 @@ TOKENS = [
     (rf"(GritKeeper app v){NUM}", "GritKeeper"),
     (rf"(## GritKeeper \(v){NUM}", "GritKeeper"),
     (rf"(\*\*App version ){NUM}", "GritKeeper"),
+    # the book table's rows and the three structure headings
+    (rf"(\| The Player's Book \| v){NUM}", "Player's Book"),
+    (rf"(\| The Keeper's Book \(GM guide\) \| v){NUM}", "Keeper's Book"),
+    (rf"(\| The Bestiary \| v){NUM}", "Bestiary"),
+    (rf"(## The Player's Book \(v){NUM}", "Player's Book"),
+    (rf"(## The Keeper's Book \(v){NUM}", "Keeper's Book"),
+    (rf"(## The Bestiary \(v){NUM}", "Bestiary"),
 ]
 
 
