@@ -89,6 +89,13 @@ _combatlab/
 #   * a dead one-shot: add_index.py baked the v2.9 Index into a source file that no longer exists
 #     (player-src.html, retired 2026-07-18) and has been marked "do not re-run" ever since.
 add_index.py
+#   * a dev tool for a lab that is itself ignored: tools/mapdiff.mjs renders the SVGs under
+#     _combatlab/_maps and reports which ones moved. Untracked 2026-08-27. Nothing in the repo
+#     runs it, it defaults to a directory five lines above this one, and it needs three npm
+#     packages installed globally that a fresh clone will not have, so a cloner who ran it would
+#     get an import error rather than a map. It fails this file's own test twice over. Still on
+#     disk, still works, recoverable from history.
+tools/mapdiff.mjs
 
 # --- python / editor debris ---
 __pycache__/
