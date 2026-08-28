@@ -8,6 +8,173 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.36 · GritKeeper v1.51.0 — answering a working, and eight that reach a fight
+  (2026-08-27).**
+
+  The first instalment of B5. Signs and Miracles were surveyed against each other and against a
+  round, and the result was not what the question assumed: **9 of 40 Signs reached a fight and 11 of
+  46 Miracles did**, which is within a point of each other. The two sides were already balanced. What
+  was lopsided sat *inside* the lists, and one of them was stark. **The Craft, the Witch's own list
+  and closed to every other Calling, reached a fight in none of its twelve.** She has a d6 Hit Die
+  and the Slight attack rank, so a fight was a thing she sat through. Rank 5 Signs were likewise
+  empty of anything a round cares about, so the top of the Old Dark's ladder did nothing at the
+  moment it cost the most to reach.
+
+  **Answering a working.** Both kinds of power now have a way to stop another before it lands, and
+  they are the same roll: spend a Reaction and the price, then roll d20 + half your level + your
+  working ability against the other worker's DC. Beat it and the working comes apart, its price
+  spent, and nothing happens. The difference between them is the difference between the two kinds
+  of power. **Foul the Working** (Sign, Rank 2) answers *anything* worked — a Sign, a Miracle, the
+  thing a creature does with its mouth — because the dark does not care whose hands are on the wire;
+  the price of reaching for a line already pulled taut is that on a natural 1 it lands on you
+  instead. **Not While I Stand** (Miracle, Rank 2) answers only the dark and never another Miracle,
+  because what is asked for in good faith is not yours to refuse; in exchange nothing turns on you,
+  and you may do it as often as you can pay. Ch. XI carries the shared rule in a box, and seven
+  smoke assertions hold the pair together, because either one alone is an unanswerable advantage.
+
+  **Six more that reach a fight**, placed where the survey said the holes were. The Craft gets **The
+  Nail and the Name** (Rank 2) and **The Turning** (Rank 4), and both are the Craft's own identity
+  rather than battle magic bolted on: its power has always been preparation, so its combat entries
+  are prepared work paying off — the name you learned, the nail you kept, the look you have been
+  saving. The Common Signs get **The Debt Called In** at Rank 5, which is the Old Dark's honest
+  answer to something too big to shoot: 6d6, no save, and a point of Mark for reaching that far into
+  a ledger that was never yours. The blessing list, which all six Callings of Faith draw on, gets
+  **Anoint the Iron** (Rank 3) — Faith's contribution to the damage problem is to make somebody
+  else's gun matter — and **The Hour Is Not Yours** (Rank 5). The spirits list, empty of combat in
+  all six, gets **Set the Pack On**. The vigil and the liturgy were deliberately left alone: the
+  Sister's list was written to have almost nothing in it that wins a fight, and the Padre fights
+  through his features.
+
+  **`verify_rules.py` gained `check_workings`, and it bit on its first run.** Ninety-four Signs and
+  Miracles are printed in the book and typed into `chargen.json`, and until now **nothing compared
+  them** — the Callings' features, their Perks, their paths, the arms table, Ch. IV's Origins and the
+  encounter ladder all had guards, and the two chapters this game is named for did not. Its first run
+  found seven of this session's own entries stale, where the data was reworded after the book was
+  generated from it. 1190 → 1284 cross-checks.
+
+  Two more faults found by reading rather than by failing. **`WorkShape.Counter` has existed since
+  the shape reader was written**, and neither of the two workings actually written to be counters
+  reached it: the Sign read as `OneCreature` and the Miracle as `Unclear`, which is the only one the
+  suite would have caught. And **Anoint the Iron read as `Self`**, when it says outright that the
+  weapon does not have to be yours and belongs in the hands of whoever out here is best with it. The
+  classifier was taught both, and the change was verified by diffing all ninety-four shapes before
+  and against after: exactly three moved.
+
+  Also: Ch. X now names **boiled leather a blade answer** and says so plainly. Measured, it carries
+  the same shot DR the duster does and takes a point of Defense for the privilege, so against lead it
+  is strictly the worse coat at two and a half times the price. The same paragraph states what all
+  three armours do as the Tiers climb, which is decay: a duster turns aside about a fifth of what a
+  lesser thing hits you for and about a twentieth of what a great one does. 223 → 227 pages.
+
+- **Player's v2.35 · Keeper's v2.19 · Bestiary v2.15 — where the arithmetic stops (2026-08-27).**
+
+  B4 measured that the encounter budget holds from 1st level to 6th and then stops, and that no
+  tactic inside a fight closes the gap. The answer is to say so, in all three books, rather than
+  retune a number that would put the app and the books in disagreement.
+
+  **The reason is one column.** A posse's damage per round is flat across ten levels: 19 at 1st, 21
+  at 10th. The gun is the same gun, and thirteen of the nineteen Callings add nothing to a Strike as
+  they rise. A thing's Blood is not flat: 12 at Tier I, 40 at Tier III, 110 at Tier V. By Tier IV a
+  posse that means to shoot something to death needs about seven rounds and has about three. The
+  defensive half of the game is balanced — posse Blood and creature damage grow together and cancel,
+  and rounds-to-be-wiped stays near three at every level — and the damage half is not.
+
+  **So from Tier IV up the books stop pricing them as fights.** The Keeper's Book Ch. IV gains
+  *Where the arithmetic stops*, beside the Safe-Table Rule it is a cousin of. The Bestiary says the
+  same beside *Threat by Tier*. And the Player's Book gains **Some Things You Do Not Shoot** in Ch.
+  XI, which says it in the players' own vocabulary: a thing far enough above you has more Blood than
+  your posse can spend a night putting holes in, every one of them has an answer, and the shooting
+  buys the minutes to reach it. That is what the Bestiary's *Putting It Down* has always been for.
+
+  `Rules.ArithmeticStopsAt` carries the Tier and the Encounter tab prints the note beside its budget
+  verdict, because a number the app has measured to be a lie is the same fault as a Beat action it
+  prints and cannot spend. `verify_rules.py::check_arithmetic_stops` holds all four sites together.
+
+  Its first run earned its keep twice. It demanded the Tier number in the Player's Book, which has
+  **never printed the word Tier** — that is Keeper vocabulary and the book keeps it out of the
+  players' hands on purpose — so the check now holds the two Keeper-side books to the number and the
+  Player's Book to the statement, and fails if the players' book ever starts talking in Tiers. And
+  the sweep for the control characters that fault left behind found a **BEL character sitting in
+  this changelog since some older session**, where a Windows path's `\a` had been eaten: the entry
+  had been reading *"GritKeeper<BEL>pp\GritKeeper.exe"* in a paragraph about the exe a Keeper
+  double-clicks. 222 → 223 pages.
+
+- **Modules I & II v1.4 · Module III v1.5 — *What the Night Costs* re-run on an armed posse
+  (2026-08-27).**
+
+  Every figure on all three *What the Night Costs* pages was measured with the Mountain Man
+  punching. He is one of the four souls the harness runs, his Hawken never reached his weapon list,
+  and the fallback is *Fists / Boots, 1d3* — so the tables three shipped books print as the cost of
+  a night were the cost of a night three-and-a-half-handed. Fixed in v1.51.0; re-run here.
+
+  The posse's hit rate went **down** in every fight, which is the interesting part. A Buffalo Rifle
+  is Kickback: fired unbraced it takes −2 and leaves the shooter Off-Guard, where a fist is Agile
+  and takes neither. The *cold* pass these tables report is the floor, and the floor does not brace.
+  Outcomes still improved, because 1d12 with Fatal d12 lands harder than 1d3 when it lands. That is
+  the Mountain Man's whole design arguing with itself in public, and it reads correctly: his rifle
+  punishes haste and his own Dead Aim is paid for with the Aim action.
+
+  Also corrected: the Nerve line printed **the first run's** ceiling beside an average of all
+  twelve, so it read as a fixed posse maximum and moved whenever anything upstream consumed a
+  different number of dice. It is the average of the twelve now.
+
+- **Player's Book v2.34 · Keeper's Book v2.18 · GritKeeper v1.51.0 — the Aim finding printed, and
+  the posse turns out to have been unarmed (2026-08-27).**
+
+  Combat measured across all of it, which is what the Fifteen Levels program needs settled before it
+  extends anything to 15th. Three faults came out of the measuring, and one of them has been
+  quietly wrong in every number this project has ever published about a fight.
+
+  **The Aim earns its Beat, and now the books say so.** Measured on the current engine at every
+  level: a soul who spends the first Beat aiming and then takes two Strikes lands close to 45% of
+  them, where a soul who skips it and takes three at the rising Multiple Attack Penalty lands close
+  to 30%. About three hits for every two, and the aimed posse won more fights at every level
+  measured. Ch. XI now prints the figures in a box beside *Aiming and Bracing*, and the Keeper's
+  Book's *Aim vs. volume* bullet, which had said only that both are westerns, says which one wins.
+  The finding itself dates from 2026-08-16 and had never left `AUDIT-encounter-budget.md`.
+
+  **Every Mountain Man ever generated has been fighting with his fists.** A Calling's kit and an
+  Origin's gear can grant a weapon rather than sell one, and three lines do: the Mountain Man's
+  Hawken and his good knife, and the Veteran's service carbine. The outfit step read those lines
+  only to suppress the gun purchase, then dropped the granted weapon into `Gear` and never into
+  `WeaponsCarried`. So the sheet said Hawken rifle, 1d12, and the weapon list was **empty** — in the
+  Strike dialog, in the playtest harness, and in every balance sweep this project has run, including
+  the one that repriced the encounter budget in v1.44.0. The Veteran's carbine spreads it wider: any
+  Calling rolled with that Origin bought no gun and carried none, and one of them is the printed
+  pregen Addison Quill. `grantedWeapons` in `chargen.json` now joins the book's prose name to the
+  arms table's, the outfit step arms the soul, and four smoke assertions hold it — including one
+  that generates every Calling at three levels and requires each to be carrying something.
+
+  Nothing asserted that a generated soul was armed, so nothing said a word. It was found by
+  printing the lab's own posse and reading it, which is the third time this program has found a
+  fault that way and the reason the habit is now written into the tracker.
+
+  **Six Callings add dice to a Strike, and the engine never added them.** Bushwhack, Sudden Strike,
+  Dead Aim, Precise Strike, Brimstone and Judgment all grow with level and were printed on the sheet
+  and applied by hand or forgotten. `CharGen.StrikeRiders` reads them the way everything here is
+  read: the dice off the level table, so a soul gets the step they have reached, and the condition
+  off the feature's own prose, handed back verbatim. They are **offered, never applied** — whether a
+  quarry is one "whom an ally threatens" is a fact about the field — which is the same rule the
+  Origin's standing edges and a creature's attack rider already follow. Reading the output caught
+  two more things: the Witch Hunter's condition sentence is *"Once per quarry, declare Judgment"* and
+  the first draft handed back the payload sentence instead, hiding the only limit on it; and **the
+  Mountain Man's level table stopped at Dead Aim 2d6** while the third step sat inside the *King of
+  the High Country* write-up, so the table under-stated him and so did anything reading it. Both
+  books now name it at 10th, the way Bushwhack 4d6 and Judgment 3d8 are named.
+
+  **What the measuring found, with the posse armed.** The encounter budget holds from 1st to 6th —
+  the standard fight is a win at 74–99% with a soul or two down and Blood near half, which is Ch.
+  IV's own sentence. Above that it does not, and the cause is one number. Posse damage per round is
+  **flat**: 19 at 1st level, 21 at 10th. Creature Blood over the same span goes 12 to 110. Rounds to
+  clear the standard fight therefore climb 1.2 → 3.3 → 10.6 while rounds to be wiped stay near
+  three, because posse Blood and creature damage grow together and cancel. Thirteen of the nineteen
+  Callings add nothing at all to a Strike as they level: their damage per hit at 15th is the die they
+  rolled at 1st. That is the whole of it, and it is the question Ch. IV and the Bestiary have to
+  answer before the ladder reaches Tier VIII.
+
+  221 → 222 pages. `_combatlab` gained four modes for this — `curves`, `fixes`, `riders`,
+  `throughput` — and the write-up is in `AUDIT-combat-balance.md`.
+
 - **The Player's Book v2.33 — a Perk for every Calling (2026-08-27).**
 
   Nineteen new lines, one above each Calling's level table: the single thing that Calling alone
@@ -1628,7 +1795,7 @@ Desktop\Git repos.)
   means it can still be carried on a stick with its campaign. What changed is where a plain
   double-click keeps things.
 
-  Consequences worth having: **`GritKeeperpp\GritKeeper.exe` is now a safe thing to play
+  Consequences worth having: **`GritKeeper\app\GritKeeper.exe` is now a safe thing to play
   from** — which is what was wanted, since `package.ps1` refreshes it on every release — and the
   set-aside added earlier today becomes belt-and-braces rather than the only thing between a
   Keeper and a lost table.

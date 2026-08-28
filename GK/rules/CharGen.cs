@@ -97,6 +97,11 @@ public class CgRow
 
 public class CgCoin { public int dice { get; set; } public int mult { get; set; } public List<string> kit { get; set; } = new(); public string note { get; set; } }
 public class CgPool { public string name { get; set; } public string formula { get; set; } public int min { get; set; } }
+/// <summary>A weapon a Calling's kit or an Origin's gear GRANTS rather than sells, joining the
+/// book's prose name ("a Hawken", "service carbine") to the arms table's own. See
+/// CharGen's outfit step: without this the granted gun reached Gear and never WeaponsCarried,
+/// so the soul carried a rifle nothing could fire.</summary>
+public class CgGranted { public string match { get; set; } public string weapon { get; set; } }
 public class CgChoice { public string label { get; set; } public List<string> options { get; set; } = new(); }
 /// <summary>The one thing a Calling alone does, true from 1st level and never rolled for. Printed
 /// as a band above the Calling's table in the Player's Book, transcribed here so the picker can
@@ -144,6 +149,8 @@ public class CgCalling
 
 public class CgData
 {
+    /// <summary>Kit and gear lines that grant a weapon outright — see <see cref="CgGranted"/>.</summary>
+    public List<CgGranted> grantedWeapons { get; set; } = new();
     public List<int> honestArray { get; set; } = new();
     public List<CgSkill> skills { get; set; } = new();
     public List<CgOrigin> origins { get; set; } = new();
@@ -740,6 +747,20 @@ public static class CharGen
         double left = s.CoinRolled;
         s.Gear.AddRange(cal.coin.kit);
         s.Gear.AddRange(org.gear);
+        // A granted gun stops the purchase below AND arms the soul. Until 2026-08-27 it only did
+        // the first: every Mountain Man ever generated carried a Hawken in his gear and had an
+        // EMPTY weapon list, and so did anyone rolled with the Veteran's service carbine — the
+        // printed pregen Addison Quill among them. The Strike dialog offered them nothing, and
+        // every balance sweep this project has run had the Mountain Man punching with his fists.
+        foreach (var line in cal.coin.kit.Concat(org.gear))
+        {
+            var g = D.grantedWeapons?.FirstOrDefault(x => line.Contains(x.match, StringComparison.OrdinalIgnoreCase));
+            if (g == null) continue;
+            var gw = D.weapons.FirstOrDefault(x => x.name == g.weapon);
+            if (gw == null) continue;
+            if (s.WeaponsCarried.Any(x => x.StartsWith(gw.name, StringComparison.Ordinal))) continue;
+            s.WeaponsCarried.Add($"{gw.name} {gw.dmg} ({gw.traits})");
+        }
         bool hasGun = cal.coin.kit.Concat(org.gear).Any(x => x.Contains("rifle") || x.Contains("carbine") || x.Contains("Rifle"));
         foreach (var gunName in cal.buyPlan.GetProperty("guns").EnumerateArray())
         {
@@ -1745,6 +1766,121 @@ public static class CharGen
     {
         "first" => 1, "second" => 2, "third" => 3, "fourth" => 4, "fifth" => 5, _ => 0,
     };
+
+    // ---------------------------------------------------------------- the damage a Calling adds
+    // Six Callings carry a feature that adds dice to a Strike and grows with level: the Bounty
+    // Hunter's Bushwhack, the Drifter's Sudden Strike, the Mountain Man's Dead Aim, the Sawbones'
+    // Precise Strike, the Preacher's Brimstone and the Witch Hunter's Judgment. Every one of them
+    // is printed on the sheet, and until now not one of them reached a Strike: the app rolled the
+    // weapon's dice and the Keeper added the rest in their head, or forgot to.
+    //
+    // That is the fault this project has now fixed three times — the familiar's +2 in v1.48.0, the
+    // Returned's Dread bonus in v1.49.0 — and it is worth stating plainly: a fact that is only
+    // printable stops being true. At 10th level these dice are worth more than the gun. A posse
+    // measured without them is a posse fighting at half strength, which is exactly what
+    // _combatlab's sweeps were doing.
+    //
+    // Read the way everything here is read: off the book's own words. The level table names the
+    // step ("Bushwhack 4d6", "Sudden Strike +3d6"), so the dice come from the row a soul has
+    // actually reached; the condition comes from the feature's own prose and is handed back
+    // VERBATIM, because "a quarry who is unaware of you, who has not yet acted in the fight, or
+    // whom an ally threatens" is a fact about the field and no app can know it.
+    //
+    // These are therefore OFFERED, never applied — the same rule the Origin's standing edges and a
+    // creature's attack rider follow. The app's job is to put the dice in front of the Keeper with
+    // the book's sentence attached; the Keeper's job is to say whether tonight's shot earns them.
+
+    /// <summary>Extra damage a Calling's own feature adds to a Strike, with the book's condition
+    /// on it. Offered, never applied: <see cref="When"/> is a fact about the field.</summary>
+    public record StrikeRider(string Name, string Dice, double Average, string When, string Desc)
+    {
+        /// <summary>The dice as a Keeper would say them aloud beside the weapon's.</summary>
+        public string Says => $"{Name} — +{Dice}";
+    }
+
+    // A step in the level table, named with its dice: "Bushwhack 4d6", "Sudden Strike +3d6",
+    // "Judgment 3d8", "Precise Strike 1d6". The plus is optional because the book writes it both
+    // ways, and the heading it resolves back to is the name with the dice taken off.
+    static readonly System.Text.RegularExpressions.Regex DiceStep = new(
+        @"^(?<head>.*?)\s*\+?(?<dice>\d+d\d+)$",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>The mean of a die expression — "3d6" is 10.5. Used for reporting and for the
+    /// balance lab; nothing in play rolls off this.</summary>
+    public static double DiceAverage(string dice)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(dice ?? "", @"(\d+)d(\d+)");
+        if (!m.Success) return 0;
+        return int.Parse(m.Groups[1].Value) * (int.Parse(m.Groups[2].Value) + 1) / 2.0;
+    }
+
+    // What makes a sentence the CONDITION rather than the payload. The first draft of this matched
+    // on "extra damage" and "listed", which are payload words, and it handed back the wrong half of
+    // the Witch Hunter: "On a hit, deal the listed extra holy-and-silver damage" instead of "Once
+    // per quarry, declare Judgment before a Strike". A Keeper reading the offer would have missed
+    // the only limit on it. Condition words first, payload second, and the whole paragraph is on
+    // the record either way.
+    static readonly string[] ConditionMarks =
+        { "once per", "when you", "whenever", "against any", "against a", "declare", "as an attack",
+          "spend a beat", "you may add" };
+
+    /// <summary>The sentence of a feature's prose that states the condition on its extra damage.
+    /// A convenience over <see cref="StrikeRider.Desc"/>, which always carries the whole of it —
+    /// so a miss here shortens the offer and never falsifies it.</summary>
+    static string ConditionOf(string desc)
+    {
+        if (string.IsNullOrWhiteSpace(desc)) return null;
+        var sentences = System.Text.RegularExpressions.Regex
+            .Split(desc, @"(?<=[.!?])\s+")
+            .Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
+        if (sentences.Count == 0) return null;
+
+        foreach (var one in sentences)
+            if (ConditionMarks.Any(w => one.Contains(w, StringComparison.OrdinalIgnoreCase)))
+                return one;
+        // Nothing conditional said: the payload sentence is the honest answer, and failing that
+        // the opening one.
+        return sentences.FirstOrDefault(x =>
+                   x.Contains("extra damage", StringComparison.OrdinalIgnoreCase))
+            ?? sentences[0];
+    }
+
+    /// <summary>Every extra-damage feature this soul has reached, at the step they have reached
+    /// it — one entry per feature, never one per step. Empty for thirteen of the nineteen
+    /// Callings, which is correct: most of them kill things with the gun they are holding.
+    /// <para>The dice are read off the level table and the condition off the feature's own prose,
+    /// so neither can drift from the printed book without <c>verify_rules.py</c> saying so.</para>
+    /// </summary>
+    public static List<StrikeRider> StrikeRiders(string callingName, int level)
+    {
+        var outp = new List<StrikeRider>();
+        var cal = D?.callings?.FirstOrDefault(c => c.name == callingName);
+        if (cal == null) return outp;
+
+        // head -> the highest step reached, so a 10th-level Bounty Hunter gets 4d6 and not 1d6.
+        var best = new Dictionary<string, (int lvl, string dice)>(StringComparer.OrdinalIgnoreCase);
+        foreach (var row in cal.rows.Where(r => r.level <= level).OrderBy(r => r.level))
+            foreach (var f in row.features)
+            {
+                var m = DiceStep.Match(f.Trim());
+                if (!m.Success) continue;
+                string head = m.Groups["head"].Value.Trim();
+                if (head.Length == 0) continue;
+                best[head] = (row.level, m.Groups["dice"].Value);
+            }
+
+        foreach (var (head, step) in best.OrderBy(kv => kv.Key))
+        {
+            string desc = FeatureText(cal, head) ?? FeatureText(cal, head + " " + step.dice);
+            outp.Add(new StrikeRider(head, step.dice, DiceAverage(step.dice),
+                                     ConditionOf(desc), desc));
+        }
+        return outp;
+    }
+
+    /// <summary>The same list for a built sheet.</summary>
+    public static List<StrikeRider> StrikeRiders(CharacterSheet s)
+        => s == null ? new List<StrikeRider>() : StrikeRiders(s.Calling, s.Level);
 
     /// <summary>The accumulating tally a feature's prose declares, or
     /// <see cref="FeatureTally.Any"/> false when it declares none — which is all but one of them.

@@ -584,7 +584,7 @@ foreach (var (table, floor) in new[]
             .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
             .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
 
-        T("durations: all eighty-six workings still read", workings.Count == 86);
+        T("durations: all ninety-four workings still read", workings.Count == 94);
         // A duration is "findable" when the printed line names one, or when the thing resolves on
         // the spot. What must not exist any more is a working where neither is true.
         var mute = workings.Where(w =>
@@ -1364,11 +1364,11 @@ foreach (var (table, floor) in new[]
     var all   = signs.Concat(mirs).ToList();
     Rules.Working W(string n) => all.First(x => x.Name == n);
 
-    T("working: every Sign and Miracle is read", all.Count == 86);
+    T("working: every Sign and Miracle is read", all.Count == 94);
 
     // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
     // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
-    T("working: all forty Signs carry a Backlash", signs.All(w => w.HasBacklash));
+    T("working: all forty-four Signs carry a Backlash", signs.All(w => w.HasBacklash));
     T("working: no Miracle does — faith does not bite back", mirs.All(w => !w.HasBacklash));
     T("working: a Backlash is lifted clear of the effect text",
         !W("Witch-Sight").Effect.Contains("Backlash", StringComparison.OrdinalIgnoreCase)
@@ -1376,13 +1376,13 @@ foreach (var (table, floor) in new[]
     T("working: a Backlash printed as 'None' still keeps its words",
         W("Salt & Iron").HasBacklash && W("Salt & Iron").Backlash.Contains("kindest"));
     T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
-    // Four of the forty print "Backlash: None" and then say something about why. The other
-    // thirty-six cost the worker something, and those are the ones the app should warn about.
-    T("working: thirty-six of the forty actually bite", signs.Count(w => w.BacklashBites) == 36);
+    // Four of the forty-four print "Backlash: None" and then say something about why. The other
+    // forty cost the worker something, and those are the ones the app should warn about.
+    T("working: forty of the forty-four actually bite", signs.Count(w => w.BacklashBites) == 40);
 
     // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
     // the two chapters give it up entirely.
-    T("working: every one of the eighty-six resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
+    T("working: every one of the ninety-four resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
 
     // The shapes the old dialog could not express at all.
     T("working: Witch-Sight is worked on the worker", W("Witch-Sight").Shape == Rules.WorkShape.Self);
@@ -2884,9 +2884,62 @@ T("no Perk repeats the name of one of its Calling's own features", cg.callings.A
 T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
     c.perk?.desc == null
     || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
+
+// ---- a granted weapon is a weapon you can fire (v1.51.0) --------------------------------------
+// A Calling's kit and an Origin's gear can GRANT a gun instead of selling one, and three lines do.
+// The outfit step read those lines only to suppress the purchase, so the soul ended up with the
+// rifle in Gear and NOTHING in WeaponsCarried: every Mountain Man ever generated, and anyone rolled
+// with the Veteran's service carbine — the printed pregen Addison Quill among them. The Strike
+// dialog offered them no weapon, and every balance sweep this project has run had the Mountain Man
+// punching with his fists. Found by reading _combatlab's output, which is the only way it shows:
+// nothing asserted that a generated soul was armed.
+T("every granted weapon names one the arms table has", cg.grantedWeapons.All(g =>
+    cg.weapons.Any(w => w.name == g.weapon)));
+{
+    // Any kit or gear line stating a damage die is granting a weapon and must be mapped.
+    var die = new System.Text.RegularExpressions.Regex(@"\b\d*d\d+\b");
+    var granting = cg.callings.SelectMany(c => c.coin.kit)
+                     .Concat(cg.origins.SelectMany(o => o.gear ?? new List<string>()))
+                     .Where(x => die.IsMatch(x)).ToList();
+    T("every granted line maps to a weapon", granting.Count > 0 && granting.All(line =>
+        cg.grantedWeapons.Any(g => line.Contains(g.match, StringComparison.OrdinalIgnoreCase))));
+
+    bool allArmed = true; string bare = null;
+    foreach (var c in cg.callings)
+        foreach (int lvl in new[] { 1, 5, 10 })
+            for (int t = 0; t < 12; t++)
+            {
+                Rules.Reseed(770000 + lvl * 100 + t);
+                var sh = CharGen.Generate(lvl, rolled: false, fixedCalling: c.name);
+                if ((sh.WeaponsCarried?.Count ?? 0) == 0) { allArmed = false; bare ??= $"{c.name} L{lvl}"; }
+            }
+    T("every Calling generates a soul carrying at least one weapon" + (bare == null ? "" : $" (bare: {bare})"),
+      allArmed);
+
+    Rules.Reseed(770001);
+    var mm = CharGen.Generate(1, rolled: false, fixedCalling: "Mountain Man");
+    T("the Mountain Man's Hawken reaches his weapon list",
+      mm.WeaponsCarried.Any(w => w.StartsWith("Buffalo Rifle", StringComparison.Ordinal)));
+}
+
+// ---- what a Calling adds to a Strike (v1.51.0) ------------------------------------------------
+// Six Callings scale their damage with a die step named in the level table. Read off the table, so
+// the step a soul has reached is the step they get; offered rather than applied, because the
+// condition is a fact about the field.
+T("six Callings carry a scaling damage rider at 10th", cg.callings
+    .Count(c => CharGen.StrikeRiders(c.name, 10).Count > 0) == 6);
+T("a rider's dice grow with the level reached", CharGen.StrikeRiders("Bounty Hunter", 1)[0].Dice == "1d6"
+    && CharGen.StrikeRiders("Bounty Hunter", 5)[0].Dice == "2d6"
+    && CharGen.StrikeRiders("Bounty Hunter", 10)[0].Dice == "4d6");
+T("a rider carries the book's own condition, not its payload",
+    CharGen.StrikeRiders("Witch Hunter", 10)[0].When.StartsWith("Once per quarry", StringComparison.Ordinal));
+T("no rider is reported before its Calling has reached it",
+    CharGen.StrikeRiders("Preacher", 4).Count == 1 && CharGen.StrikeRiders("Preacher", 3).Count == 0);
+T("every rider resolves to prose the book prints", cg.callings.All(c =>
+    CharGen.StrikeRiders(c.name, 15).All(r => !string.IsNullOrWhiteSpace(r.Desc))));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
-T("40 signs across three lists", cg.signs.Count == 40
+T("44 signs across three lists", cg.signs.Count == 44
     && cg.signs.All(s => s.list is "common" or "bargain" or "craft"));
 T("every sign carries a Rank of 1-5", cg.signs.All(s => s.rank >= 1 && s.rank <= 5));
 T("every Rank is represented on every list", new[] { "common", "bargain", "craft" }
@@ -3069,9 +3122,35 @@ T("no caster is starved of legal signs at any level", cg.callings
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
-T("46 miracles across seven lists", cg.miracles.Count == 46 && cg.miracles.All(m =>
+T("50 miracles across seven lists", cg.miracles.Count == 50 && cg.miracles.All(m =>
     m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
            or "vigil"));
+
+// ---- answering a working: the counter pair (v1.51.0) -----------------------------------------
+// Two workings answer another before it lands, one on each side, and they only make sense as a
+// pair: a Sign that fouls anything and a Miracle that refuses only the dark. If one of them ever
+// goes missing the other becomes an unanswerable advantage, which is the exact thing the pair
+// exists to prevent.
+{
+    var foul = cg.signs.FirstOrDefault(x => x.name == "Foul the Working");
+    var stand = cg.miracles.FirstOrDefault(x => x.name == "Not While I Stand");
+    T("the counter exists on both sides", foul != null && stand != null);
+    T("both counters are Reactions", foul != null && stand != null
+        && foul.cost.StartsWith("Reaction", StringComparison.Ordinal)
+        && stand.cost.StartsWith("Reaction", StringComparison.Ordinal));
+    T("both counters are reachable at the same Rank", foul?.rank == stand?.rank);
+    T("the Sign counter is on the common list, the Miracle's on the blessing list",
+        foul?.list == "common" && stand?.list == "blessing");
+    // The asymmetry is the whole design and it is stated in the prose, so it is held there.
+    T("the Sign counter answers anything worked",
+        foul != null && foul.desc.Contains("a Sign or a Miracle", StringComparison.Ordinal));
+    T("the Miracle counter refuses only the dark",
+        stand != null && stand.desc.Contains("may not answer a Miracle", StringComparison.Ordinal));
+    T("the Sign counter carries a Backlash clause and the Miracle names none",
+        foul != null && stand != null
+        && foul.desc.Contains("Backlash:", StringComparison.Ordinal)
+        && !stand.desc.Contains("Backlash", StringComparison.Ordinal));
+}
 T("every miracle carries a Rank of 1-5", cg.miracles.All(m => m.rank >= 1 && m.rank <= 5));
 T("every Rank is represented on every miracle list", new[] {
     "blessing", "liturgy", "revival", "spirits", "mending", "consecration", "vigil" }
