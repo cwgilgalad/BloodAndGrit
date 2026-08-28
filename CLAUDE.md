@@ -114,8 +114,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.36 | 221 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.19 | 104 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.37 | 232 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.19 | 105 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.15 | 199 | none (175 creatures) |
 | Module I — The Salt at Coffin Wells | v1.4 | 29 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.4 | 30 | one inline SVG map, downloadable |
@@ -431,7 +431,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.36) — structure
+## The Player's Book (v2.37) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
