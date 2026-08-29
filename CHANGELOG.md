@@ -8,6 +8,38 @@ Desktop\Git repos.)
 
 ---
 
+- **The PDFs are out of the history, and the clone is 4.7 MB (2026-08-28).**
+
+  Untracking them the day before stopped the repo growing and left the past where it was: 68 blobs,
+  206 MB raw, about 95% of a 98.8 MB pack, in front of a project whose actual text is a few MB. Git
+  stores no useful delta between two prints of the same book, so every release had been adding
+  another whole copy of each.
+
+  `git filter-branch --index-filter` over all refs, `--tag-name-filter cat` so the 92 tags follow
+  the commits they point at. **`--prune-empty` deliberately left off**: a commit that touched only
+  PDFs would otherwise be deleted outright, and the commit messages on this project carry the
+  reasoning behind the work. Better an empty commit with its record intact than a tidier graph.
+
+  Checked before anything was pushed. The tip tree is byte-identical to the pre-rewrite tip, `git
+  diff` between them is empty. No `.pdf` path is added anywhere in the rewritten history. `books-v1.0`
+  still checks out a whole tree. 319 commits and 92 tags, both unchanged. `fsck` clean.
+  `verify_all --quick` 8/8.
+
+  Then checked again from the outside, which is the part that counts: a fresh clone off GitHub is
+  **4.7 MB**, carries all 319 commits and all 92 tags, and passes `verify_rules.py` at 1635
+  cross-checks with zero drift. The Release page survived the tag rewrite with all nine assets, and
+  the six `Read` links in `README.md` still answer 200.
+
+  A full mirror was taken first and its contents spot-checked rather than assumed: the Player's Book
+  PDF comes back out of it at 3,862,333 bytes at `9589d9b` and 3,673,129 at `books-v1.0`. It is at
+  `Desktop\Git\_BloodAndGrit-prepurge-backup.git` and can be deleted once the new history has been
+  lived with for a while.
+
+  **This is the only time this project's history has been rewritten**, and the two places that state
+  the never-rewrite rule now say so rather than claiming an absolute that stopped being true.
+  Rewriting to purge a blob is not a precedent for rewriting to fix a commit message, which is the
+  case the rule was written for.
+
 - **Player's Book v2.38 · Keeper's Book v2.20 · Bestiary v2.16 — a fault that was not one, and
   the correction (2026-08-27).**
 

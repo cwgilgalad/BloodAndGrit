@@ -4,8 +4,10 @@
 #
 # audit_ai_tells.py has scanned the last 40 commit messages from the start, and CI runs it,
 # so a bad one turned the build red. But a commit message cannot be edited without rewriting
-# history, and this project's standing rule is that history on main is never rewritten — so
-# that finding could never be cleared. A gate that cannot be satisfied is a gate people learn
+# history, and this project's standing rule is that history on main is not rewritten — so
+# that finding could never be cleared. (Rewritten exactly once, on 2026-08-28, to purge the PDF
+# blobs; every message survived verbatim, and a blob purge is not a precedent for editing one.)
+# A gate that cannot be satisfied is a gate people learn
 # to route around. It happened on 2026-08-01: a message closing on "X is not a backup, it is
 # a second thing to be wrong" — the exact figure the audit exists to catch — landed on main
 # and there was nothing to be done about it afterwards.

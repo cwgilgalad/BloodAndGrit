@@ -546,8 +546,12 @@ def main():
 
     # Findings in ALREADY-LANDED commit messages are reported and not counted. This is not a
     # softening. A commit message cannot be edited without rewriting history, and this project's
-    # own standing rule is that history on main is never rewritten — so a hard failure there is
+    # own standing rule is that history on main is not rewritten — so a hard failure there is
     # one that can never be cleared, which is exactly the defect the quoted-book-text case had.
+    # (Rewritten exactly once, on 2026-08-28, to purge 68 PDF blobs that were 95% of the clone.
+    # Every commit message came through it verbatim, so the reasoning here is untouched: the rule
+    # is that messages are not rewritten to fix themselves, and one deliberate blob purge under
+    # backup is not a licence to start.)
     # The gate for commit messages is .githooks/commit-msg, which runs this same scan over the
     # message BEFORE it is written, while it can still be changed. Files stay fatal: files can
     # be edited. (Found the hard way: a commit message written on 2026-08-01 carried the very
