@@ -8,6 +8,52 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.52.0 — the grids stop repainting the slow way, and the Posse tab can make a soul
+  (2026-08-28).**
+
+  Both of these are Cole's, reported the same afternoon.
+
+  **"Switching between tabs is a little slow."** Measured before anything was touched, with a new
+  `--timetabs` diagnostic that separates the two costs hiding in that sentence: the FIRST selection
+  of a tab runs its builder, once per session, and every later selection is pure WinForms layout and
+  paint. They want opposite fixes, and guessing which one a person is feeling is how you optimise
+  the wrong half.
+
+  A switch to an already-built tab averaged **133 ms**, against roughly 100 ms as the point a click
+  starts to feel like it waited. The three worst were **Posse 325 ms, Tracker 214, Encounter 140** —
+  which are exactly the three tabs carrying a `DataGridView`. Reference, which carries none, was
+  25 ms. The second half of the measurement decided the fix: **Release and Debug timed the same**
+  (133.4 against 134.8), and managed code that is CPU-bound does not do that. The cost was paint,
+  so tightening the code behind those tabs would have moved nothing.
+
+  `DataGridView.DoubleBuffered` is `protected`, which is why nobody sets it and why grids this size
+  flicker. Reflection is the ordinary way in, and `StyleGrid` already ran over all four grids, so it
+  is one place. Measured after: **mean 133 → 95 ms**, Posse **325 → 145**, Tracker **214 → 121**,
+  Encounter **140 → 95**, Generators **121 → 76**.
+
+  The same treatment on the `TabControl` itself is **not** here, and that is also a measurement.
+  It came back at 99 ms against 94.8, inside a run-to-run spread of about 10% — no benefit worth
+  the back-buffer, so the attempt is recorded in a comment beside the code rather than shipped.
+  The round count went from 5 to 15 for the same reason: 5 was inside the noise.
+
+  **The Posse tab could only add a blank row.** Cole: *"When you click on the 'New Soul' button on
+  the first tab, there is no way to create the stats for the New Soul or customize it in any way."*
+  Everything needed already existed and none of it was reachable from the tab a Keeper actually runs
+  the table from: the soul wizard walks Chapter III by hand, `CharGen.Generate` rolls one, and the
+  New Soul tab holds whatever was last made. **＋ Add soul** is a menu now, with all three on it —
+  build by hand, roll with a level and Calling you pick, or take the New Soul tab's sheet — and the
+  blank row kept for the Keeper typing a player's paper sheet in. This is **G7**, and the tracker
+  records Cole naming two of these routes back on 2026-08-26.
+
+  All three land through one `SeatSoul`, split out of the old `SoulToPosse`, because the conversion
+  carries three things that would drift across three copies: the Nerve recalc a Stone Nerve soul
+  needs, the faith or sign pool opening full, and the Notes line with Origin, subpath and armour.
+
+  **The self-test's new check was wrong first, and sabotage is what said so.** It asked whether a
+  seated soul had `BloodMax > 0`, which cannot fail — `PartyMember.BloodMax` clamps to `[1,999]`, so
+  a seat that copied nothing at all still answered 1. Deliberately breaking `SeatSoul` passed the
+  check. It compares against the sheet's own numbers now, and the same sabotage fails it. 41 checks.
+
 - **The PDFs are out of the history, and the clone is 4.7 MB (2026-08-28).**
 
   Untracking them the day before stopped the repo growing and left the past where it was: 68 blobs,

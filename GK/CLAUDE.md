@@ -99,8 +99,10 @@ behind the UI is how the map markers once passed a check they should have failed
 Per-version feature history lives in `CHANGELOG.md`, which is the version record; what follows is
 what each tab *is*, plus the decisions worth not re-deriving.
 
-- **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4), inline
-  damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread Checks with
+- **Posse** — full party sheet (Blood, Defense, saves, Nerve, Grit, Mark 0–6, Taint 0–4),
+  **＋ Add soul ▾** (v1.52.0, G7: build one by hand through the soul wizard, roll one at a level and
+  Calling you pick, take the New Soul tab's sheet, or a blank row for typing a paper sheet in — all
+  four land through one `SeatSoul`), inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread Checks with
   the real Nerve-loss ladder, New Session reset, Rest ▾ (long rest), send-to-Tracker, ▲▼ reorder,
   a **Gender** column (persisted), double-click for a soul's Ledger window or the Notes editor, and
   **✦ Level up** — a dialog offering only what the new level unlocks, drawn from the generator's
@@ -693,6 +695,35 @@ repeatedly. A `new Font(...)` assigned once at construction, and owned by the co
 what most of the UI does — the rule is about **repeating** paths. (Two existing sites got this right
 and are worth copying: `StyleRollLog` mints one bold variant and disposes it on `Disposed`;
 `StyleTabs` disposes the bold face it makes per paint.)
+
+## A grid that is not double-buffered is the slowest thing on a tab (v1.52.0)
+
+Cole reported that switching tabs felt slow. `GritKeeper.exe --timetabs` is the answer to that
+class of report: it shows a real window and times both costs separately, because two different
+things hide inside "slow" and they want opposite fixes.
+
+* **First selection** of a tab runs its builder. Once per session, 200–1000 ms. Already deferred
+  on purpose (see the ctor's note) — that third of the launch is paid a tab at a time instead.
+* **Every later selection** is WinForms layout and paint of a page that already exists. No amount
+  of lazy building touches this one.
+
+The measurement that decided the fix: **Release and Debug timed the same** (133.4 ms against
+134.8). CPU-bound managed code does not do that, so the cost was paint, and tightening the code
+behind those tabs would have moved nothing. The three slowest tabs were the three carrying a
+`DataGridView` — Posse 325 ms, Tracker 214, Encounter 140 — against 25 ms for Reference, which
+carries none.
+
+`DataGridView.DoubleBuffered` is **protected**, which is why it is so often left off. `BufferGrid`
+sets it by reflection and `StyleGrid` calls it, so all four grids get it from one place. After:
+mean **133 → 95 ms**, Posse **325 → 145**.
+
+**Two things not to redo.** The same treatment on the `TabControl` measured as nothing (99 ms
+against 94.8, inside a ~10% run-to-run spread) — a TabControl owner-draws only its strip, so the
+back-buffer covers the whole page area and saves none of the work that costs; the comment beside
+`StyleTabs` records the attempt. And **5 rounds is inside the noise** — `--timetabs` runs 15.
+
+Switch time tracks the control count of a tab at roughly 2 ms a control on this laptop, so the
+remaining lever is fewer controls per page, not faster code.
 
 ## Verification standard for this app
 

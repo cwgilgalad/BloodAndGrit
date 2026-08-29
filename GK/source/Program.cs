@@ -21,6 +21,30 @@ static class Program
             return;
         }
 
+        // Measure what a tab switch costs, on a real shown window: `GritKeeper.exe --timetabs`.
+        // A diagnostic rather than a check -- it prints numbers and returns 0 either way, because
+        // what counts as slow is a judgement and belongs to whoever is reading it.
+        if (args != null && Array.IndexOf(args, "--timetabs") >= 0)
+        {
+            AttachConsole(-1);
+            ApplicationConfiguration.Initialize();
+            AppState.UseForTesting(Path.Combine(Path.GetTempPath(), "gritkeeper-timetabs"));
+            Db.Load(); CharGen.Load(); Look.Load();
+            // The scratch folder looks like a first run, and a first run opens the tour offer as a
+            // MODAL on Shown -- which waits for a click that a timing run is never going to make.
+            // Answer it in the prefs rather than adding a test-only flag to the form.
+            MainForm.SuppressFirstRunTour = true;
+            using (var mf = new MainForm(RunMode.KeeperEngine))
+            {
+                mf.Show();
+                Application.DoEvents();
+                Console.WriteLine(mf.TimeTabs(rounds: 15));   // 5 was inside the noise; 15 settles it
+                mf.Hide();
+            }
+            Environment.Exit(0);
+            return;
+        }
+
         // The daybook: a capped record of what the app just did, kept in memory and written out only
         // when there is a reason to. The two tiers below answer "it stopped"; this answers the report
         // a table actually makes — "that roll can't have been a 3", "the tracker lost somebody" —
@@ -172,6 +196,23 @@ static class Program
                         foreach (var s in stale) Line("       undo cannot see: " + s);
                         Chk(stale.Count == 0,
                             $"GUI: every field of the session is captured for undo ({stale.Count} invisible)");
+
+                        // G7, 2026-08-28: the Posse tab could only add a BLANK row, which is what
+                        // Cole hit -- "no way to create the stats for the New Soul or customize it
+                        // in any way". It can now build, roll or import one, and all three land
+                        // through SeatSoul. Checked rather than assumed, because "it compiled" and
+                        // "the row has numbers in it" are different claims.
+                        var rolled = CharGen.Generate(3, false, "Gunhand");
+                        var seated = mf.SeatSoul(rolled);
+                        // Against the SHEET's numbers, not against zero. The first version of this
+                        // asked BloodMax > 0 and could not fail: PartyMember.BloodMax clamps to
+                        // [1,999], so a seat that copied nothing still answered 1. Sabotage found it.
+                        Chk(seated != null && seated.Name == rolled.Name
+                            && seated.BloodMax == rolled.Blood && seated.BloodCur == rolled.Blood
+                            && seated.Defense == rolled.Defense && seated.Fort == rolled.Fort
+                            && seated.Will == rolled.Will && seated.Level == rolled.Level
+                            && seated.Calling == rolled.Calling && seated.Sheet != null,
+                            "G7: a soul seated from the Posse tab carries the sheet's own numbers");
                     }
                 }
 

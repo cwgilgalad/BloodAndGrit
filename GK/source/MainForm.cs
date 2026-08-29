@@ -542,6 +542,92 @@ public partial class MainForm : Sheet
              + name;
     }
 
+    // ---------------------------------------------------------- G7: seating a soul from the Posse tab
+    /// <summary>The blank row the button used to add on its own. Still wanted: a Keeper typing a
+    /// player's paper sheet in wants an empty line, not a rolled stranger to overwrite.</summary>
+    void AddBlankSoul()
+    {
+        party.Add(new PartyMember());
+        posseGrid.CurrentCell = posseGrid.Rows[party.Count - 1].Cells[0];
+        Log("Blank row added to the posse.");
+    }
+
+    /// <summary>Chapter III walked by hand, then seated. The same wizard the New Soul tab opens —
+    /// reached from the tab the table is actually run from.</summary>
+    void AddSoulByHand()
+    {
+        using var wiz = new SoulWizard();
+        if (wiz.ShowDialog(this) != DialogResult.OK || wiz.Result == null) return;
+        var p = SeatSoul(wiz.Result);
+        SelectPosseRow(p);
+    }
+
+    /// <summary>Roll one, with the two choices worth having in front of a Keeper who wants a soul
+    /// now: what level, and whether it is anybody in particular. Everything else is drawn the way
+    /// the New Soul tab draws it.</summary>
+    void AddSoulRolled()
+    {
+        using var f = new Sheet
+        {
+            Text = "Roll a soul", Width = 430, Height = 258, BackColor = Paper,
+            FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, ShowIcon = false
+        };
+        var lvl = new NumericUpDown { Left = 150, Top = 20, Width = 70, Minimum = 1, Maximum = 10, Value = 1 };
+        Tip.SetToolTip(lvl, "What level the soul is rolled at");
+        var cal = new ComboBox { Left = 150, Top = 56, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
+        cal.Items.Add("(let the book choose)");
+        foreach (var c in CharGen.D.callings.Select(c => c.name)) cal.Items.Add(c);
+        cal.SelectedIndex = 0;
+        Tip.SetToolTip(cal, "Which Calling, or leave it to the book");
+        var org = new ComboBox { Left = 150, Top = 92, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
+        org.Items.Add("(let the book choose)");
+        foreach (var o in CharGen.D.origins.Select(o => o.name)) org.Items.Add(o);
+        org.SelectedIndex = 0;
+        Tip.SetToolTip(org, "Which Origin, or leave it to the book");
+        var method = new ComboBox { Left = 150, Top = 128, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
+        method.Items.AddRange(new object[] { "Honest Array (15/14/13/12/10/8)", "Rolled (4d6 drop lowest)" });
+        method.SelectedIndex = 0;
+        Tip.SetToolTip(method, "How the six ability scores are found — the fixed array, or dice");
+
+        // Raw Buttons carrying a DialogResult, the way every other dialog in the app does it
+        // (see Tour.cs). The Btn helper is for handler-driven buttons, and audit_ui.py rightly
+        // reads that helper with a null handler as a control that does nothing when pressed.
+        // Written without the helper's parentheses on purpose: the audit scans comments too.
+        var ok = new Button { Text = "Roll it", Left = 194, Top = 172, Width = 96, Height = 30,
+                              DialogResult = DialogResult.OK };
+        var no = new Button { Text = "Cancel", Left = 296, Top = 172, Width = 96, Height = 30,
+                              DialogResult = DialogResult.Cancel };
+        Tip.SetToolTip(ok, "Roll the soul and seat it in the posse");
+        Tip.SetToolTip(no, "Close without adding anybody");
+
+        f.Controls.AddRange(new Control[]
+        {
+            Lbl("Level:", 120), Lbl("Calling:", 120), Lbl("Origin:", 120), Lbl("Ability scores:", 120),
+            lvl, cal, org, method, ok, no
+        });
+        // The four labels are positioned after the fact so the AddRange above stays readable.
+        int[] tops = { 22, 58, 94, 130 };
+        for (int i = 0; i < 4; i++) { f.Controls[i].Left = 20; f.Controls[i].Top = tops[i]; }
+        f.AcceptButton = ok; f.CancelButton = no;
+
+        if (f.ShowDialog(this) != DialogResult.OK) return;
+        string calling = cal.SelectedIndex == 0 ? null : (string)cal.SelectedItem;
+        string origin = org.SelectedIndex == 0 ? null : (string)org.SelectedItem;
+        var sheet = CharGen.Generate((int)lvl.Value, method.SelectedIndex == 1, calling, origin);
+        var seated = SeatSoul(sheet);
+        SelectPosseRow(seated);
+    }
+
+    /// <summary>Put the cursor on a soul just seated, so the Keeper can see what arrived rather
+    /// than hunting the bottom of the grid for it.</summary>
+    void SelectPosseRow(PartyMember p)
+    {
+        if (p == null || posseGrid == null) return;
+        int i = party.IndexOf(p);
+        if (i >= 0 && i < posseGrid.Rows.Count) posseGrid.CurrentCell = posseGrid.Rows[i].Cells[0];
+    }
+
     // ---------------------------------------------------------- lazy tabs
     // A tab page that hasn't been filled in yet, mapped to the builder that will fill it.
     readonly Dictionary<TabPage, Func<TabPage>> pendingTabs = new();
@@ -992,6 +1078,11 @@ public partial class MainForm : Sheet
     /// each tab to its own text — the labels are ten different lengths.</para></summary>
     static void StyleTabs(TabControl tabs)
     {
+        // NOT double-buffered, deliberately. Tried on 2026-08-28 for the same reason the grids
+        // were; --timetabs could not tell it apart from no change (94.8 ms against 99.0, inside a
+        // run-to-run spread of about 10%). A TabControl owner-draws only its strip, so buffering it
+        // allocates a back-buffer the size of the whole page area and saves none of the work that
+        // costs. Left off for want of any measured benefit, rather than because it measured worse.
         tabs.DrawMode = TabDrawMode.OwnerDrawFixed;
         tabs.DrawItem += (s, e) =>
         {
@@ -1066,6 +1157,70 @@ public partial class MainForm : Sheet
         var found = new List<string>();
         foreach (var t in allTabs) { RealizeTab(t); WalkForTips(t, t.Text, found); }
         return found;
+    }
+
+    /// <summary>Time what a tab switch actually costs. `GritKeeper.exe --timetabs`.
+    ///
+    /// <para>Cole reported on 2026-08-28 that switching tabs felt slow. Two different costs hide
+    /// behind that sentence and they want opposite fixes, so they are reported apart: the FIRST
+    /// selection of a tab runs its builder (once per session), and every later selection is pure
+    /// WinForms layout and paint. Guessing which one a person is feeling is how you optimise the
+    /// wrong half.</para>
+    ///
+    /// <para>Run against a SHOWN form. An unshown form skips layout and paint and reports a
+    /// flattering nothing.</para></summary>
+    internal string TimeTabs(int rounds)
+    {
+        var sb = new System.Text.StringBuilder();
+        var sw = new System.Diagnostics.Stopwatch();
+        sb.AppendLine($"GritKeeper tab timing — v{typeof(MainForm).Assembly.GetName().Version}, {Mode} mode");
+        sb.AppendLine();
+
+        // -- first selection: the builder runs --
+        sb.AppendLine("  first selection (builds the tab, once per session)");
+        var order = new List<TabPage>();
+        for (int i = 0; i < tabsCtl.TabPages.Count; i++) order.Add(tabsCtl.TabPages[i]);
+        foreach (var t in order)
+        {
+            bool pending = pendingTabs.ContainsKey(t);
+            sw.Restart();
+            tabsCtl.SelectedTab = t;
+            Application.DoEvents();          // let WinForms actually lay out and paint it
+            sw.Stop();
+            sb.AppendLine($"    {t.Text,-12} {sw.Elapsed.TotalMilliseconds,7:F1} ms{(pending ? "  (built here)" : "")}");
+        }
+        sb.AppendLine();
+
+        // -- every later selection: layout and paint only --
+        sb.AppendLine($"  later selections (already built), {rounds} rounds over {order.Count} tabs");
+        var worst = new Dictionary<string, double>();
+        var total = new Dictionary<string, double>();
+        for (int r = 0; r < rounds; r++)
+            foreach (var t in order)
+            {
+                sw.Restart();
+                tabsCtl.SelectedTab = t;
+                Application.DoEvents();
+                sw.Stop();
+                double ms = sw.Elapsed.TotalMilliseconds;
+                total[t.Text] = total.TryGetValue(t.Text, out var a) ? a + ms : ms;
+                worst[t.Text] = worst.TryGetValue(t.Text, out var w) && w > ms ? w : ms;
+            }
+        static int Kids(Control c)
+        {
+            int n = 1;
+            foreach (Control k in c.Controls) n += Kids(k);
+            return n;
+        }
+        foreach (var t in order)
+            sb.AppendLine($"    {t.Text,-12} mean {total[t.Text] / rounds,6:F1} ms   worst {worst[t.Text],6:F1} ms"
+                          + $"   {Kids(t),5} controls");
+
+        sb.AppendLine();
+        double mean = total.Values.Sum() / (rounds * order.Count);
+        sb.AppendLine($"  mean switch on an already-built tab: {mean:F1} ms");
+        sb.AppendLine("  (a click starts to feel like it waited somewhere around 100 ms)");
+        return sb.ToString();
     }
 
     // A button that drops a menu of choices on click, so one control offers several
@@ -1596,8 +1751,36 @@ public partial class MainForm : Sheet
         return box;
     }
 
+    /// <summary>Turn on double-buffering for a DataGridView.
+    ///
+    /// <para>The property is <c>protected</c> on Control, so a grid cannot be buffered from
+    /// outside without reflection. Unbuffered, a grid repaints cell by cell straight to the
+    /// screen: every switch onto a tab carrying one costs a full uncomposited redraw, and the
+    /// Posse grid is twenty columns in Fill mode, which recomputes every width as it goes.</para>
+    ///
+    /// <para>Measured 2026-08-28 with <c>--timetabs</c>: the three grid tabs were the three
+    /// slowest to switch to (Posse 325 ms, Tracker 214, Encounter 140) against 25 ms for
+    /// Reference, which has no grid. Release and Debug timed the same, which is the tell that
+    /// this is paint rather than code.</para>
+    ///
+    /// <para>Wrapped in a try: reflection against a framework internal is exactly the thing that
+    /// disappears in a later .NET, and a grid that is merely slower is not worth taking the app
+    /// down for.</para></summary>
+    static void BufferGrid(DataGridView g)
+    {
+        try
+        {
+            typeof(DataGridView)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance
+                                             | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(g, true);
+        }
+        catch { /* a grid that paints the slow way still paints */ }
+    }
+
     void StyleGrid(DataGridView g)
     {
+        BufferGrid(g);
         g.BorderStyle = BorderStyle.None;
         g.BackgroundColor = Paper;
         g.EnableHeadersVisualStyles = false;
@@ -1944,7 +2127,15 @@ public partial class MainForm : Sheet
         // ---- action bar: inline amount spinner instead of pop-up prompts ----
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(4), BackColor = Color.FromArgb(243, 237, 221) };
 
-        bar.Controls.Add(Btn("＋ Add soul", (s, e) => { party.Add(new PartyMember()); posseGrid.CurrentCell = posseGrid.Rows[party.Count - 1].Cells[0]; }, 95, "Add a blank character to the posse"));
+        // G7, 2026-08-28. This was one button that added a blank row, on the tab a Keeper runs the
+        // table from, with no way to reach any of the three things that can actually make a soul.
+        bar.Controls.Add(MenuBtn("＋ Add soul ▾", 110,
+            "Put a soul in the posse — built by hand, rolled, taken off the New Soul tab, or blank",
+            ("Build one by hand…  (every choice yours)", (s, e) => AddSoulByHand()),
+            ("Roll one…  (pick level and Calling)", (s, e) => AddSoulRolled()),
+            ("-", null),
+            ("Take the New Soul tab's sheet", (s, e) => SoulToPosse()),
+            ("Blank row  (typing one in from paper)", (s, e) => AddBlankSoul())));
         bar.Controls.Add(Btn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
         bar.Controls.Add(Btn("▲", (s, e) => MovePC(-1), 38, "Move the selected soul up the list"));
         bar.Controls.Add(Btn("▼", (s, e) => MovePC(+1), 38, "Move the selected soul down the list"));

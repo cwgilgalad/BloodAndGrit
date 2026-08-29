@@ -35,8 +35,14 @@ public partial class MainForm
     /// <summary>The first-launch offer. A choice, not an announcement: the tour is the default
     /// button because somebody opening this for the first time usually does want the tour, but
     /// declining is one click and is remembered forever.</summary>
+    /// <summary>Set by the --timetabs diagnostic. The offer is a MODAL raised from Shown, and a
+    /// measuring run has nobody to click it; redirecting the state folder is not enough, because a
+    /// scratch folder is exactly what a first run looks like.</summary>
+    internal static bool SuppressFirstRunTour;
+
     internal void OfferTourOnFirstRun()
     {
+        if (SuppressFirstRunTour) return;
         var prefs = Prefs.Load();
         if (prefs.ToldTheTour) return;
 

@@ -174,7 +174,18 @@ public partial class MainForm
     void SoulToPosse()
     {
         if (lastSoul == null) { Nope("Make a soul first."); return; }
-        var s = lastSoul;
+        SeatSoul(lastSoul);
+    }
+
+    /// <summary>Seat a finished sheet in the posse, with everything the grid needs derived from it.
+    ///
+    /// <para>Split out of <see cref="SoulToPosse"/> on 2026-08-28 for G7. The Posse tab can now
+    /// build, roll and import a soul itself, and each of those has to land the same way this one
+    /// does: the Nerve recalc a Stone Nerve soul needs, the faith or sign pool opening full, and
+    /// the Notes line carrying Origin, subpath and armour. Three copies of that would have drifted
+    /// on the first rule change.</para></summary>
+    internal PartyMember SeatSoul(CharacterSheet s)
+    {
         var p = new PartyMember
         {
             Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
@@ -190,6 +201,7 @@ public partial class MainForm
         p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
         party.Add(p);
         Log($"{s.Name} joins the posse.");
+        return p;
     }
 
     // ============================================================ LEVEL UP
