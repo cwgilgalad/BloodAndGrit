@@ -293,8 +293,8 @@ public partial class MainForm
         var page = new TabPage("Encounter") { BackColor = Paper };
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         top.Controls.Add(Lbl("Party level:"));
-        encLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Width = 55, Margin = new Padding(3, 6, 3, 3) };
-        encLevel.Value = Math.Clamp(partyLevelHint, 1, 10);     // built on first visit — adopt the loaded value
+        encLevel = new NumericUpDown { Minimum = 1, Maximum = Rules.MaxLevel, Width = 55, Margin = new Padding(3, 6, 3, 3) };
+        encLevel.Value = Math.Clamp(partyLevelHint, 1, Rules.MaxLevel);     // built on first visit — adopt the loaded value
         encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; CaptureUndo(); RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);

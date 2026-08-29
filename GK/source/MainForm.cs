@@ -573,7 +573,7 @@ public partial class MainForm : Sheet
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false
         };
-        var lvl = new NumericUpDown { Left = 150, Top = 20, Width = 70, Minimum = 1, Maximum = 10, Value = 1 };
+        var lvl = new NumericUpDown { Left = 150, Top = 20, Width = 70, Minimum = 1, Maximum = Rules.MaxLevel, Value = 1 };
         Tip.SetToolTip(lvl, "What level the soul is rolled at");
         var cal = new ComboBox { Left = 150, Top = 56, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
         cal.Items.Add("(let the book choose)");
@@ -3084,7 +3084,7 @@ public partial class MainForm : Sheet
             { var c = Db.Find(n); if (c != null) encounter.Add(new EncounterPick(c)); }
             if (s.PartyLevelHint >= 1)
             {
-                partyLevelHint = Math.Clamp(s.PartyLevelHint, 1, 10);
+                partyLevelHint = Math.Clamp(s.PartyLevelHint, 1, Rules.MaxLevel);
                 if (encLevel != null) encLevel.Value = partyLevelHint;
             }
             // A fight in progress survives a restart — and the threads on the trail with it. Traces

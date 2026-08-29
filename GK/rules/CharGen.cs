@@ -494,7 +494,7 @@ public static class CharGen
     {
         var cal = D?.callings?.Find(c => c.name == calling);
         if (cal == null) return false;                 // unknown Calling: say nothing rather than guess
-        return SignsFor(cal, 10).Count == 0 && MiraclesFor(cal, 10).Count == 0;
+        return SignsFor(cal, Rules.MaxLevel).Count == 0 && MiraclesFor(cal, Rules.MaxLevel).Count == 0;
     }
 
     // ---- armor (Player's Book Ch. X, "On Armor") ----
@@ -649,7 +649,7 @@ public static class CharGen
 
     public static CharacterSheet Generate(int level, bool rolled, string fixedCalling = null, string fixedOrigin = null)
     {
-        level = Math.Clamp(level, 1, 10);
+        level = Math.Clamp(level, 1, Rules.MaxLevel);
         var s = new CharacterSheet { Level = level, Method = rolled ? "The Gamble (rolled)" : "The Honest Array" };
 
         // ---- Step 3/4: Origin & Calling (order swapped so the Origin constraint can see the Calling) ----
@@ -863,7 +863,7 @@ public static class CharGen
     /// Generate. Choices are honored where legal; gaps are filled the way Generate would.
     public static CharacterSheet Assemble(AssembleSpec spec)
     {
-        int level = Math.Clamp(spec.Level, 1, 10);
+        int level = Math.Clamp(spec.Level, 1, Rules.MaxLevel);
         var cal = D.callings.First(c => c.name == spec.Calling);
         var org = D.origins.First(o => o.name == spec.Origin);
         bool isFaith = cal.group == "Faith";
@@ -1068,7 +1068,7 @@ public static class CharGen
         var cal = D.callings.First(c => c.name == cur.Calling);
         int N = cur.Level + 1;
         var g = new LevelUpGrants { NewLevel = N, HitDie = cal.hitDie };
-        if (cur.Level >= 10) { g.AtCeiling = true; return g; }
+        if (cur.Level >= Rules.MaxLevel) { g.AtCeiling = true; return g; }
 
         g.Boost = N is 5 or 10;
         g.Edge = N % 2 == 1;
@@ -1120,7 +1120,7 @@ public static class CharGen
         var org = D.origins.First(o => o.name == cur.Origin);
         bool isFaith = cal.group == "Faith";
         var s = Clone(cur);
-        if (cur.Level >= 10) return s;                    // the frontier's ceiling
+        if (cur.Level >= Rules.MaxLevel) return s;         // the frontier's ceiling
         int N = cur.Level + 1; s.Level = N;
 
         if (N is 5 or 10)                                  // boost first, as in Generate
@@ -1366,7 +1366,11 @@ public static class CharGen
             int expect = s.PreGiftScores[a] + gift + s.BoostedAbilities.Count(b => b == a);
             Check(s.Scores[a] == expect, $"{a} score {s.Scores[a]} ≠ pre-gift {s.PreGiftScores[a]} + gift {gift} + boosts");
         }
-        Check(s.AbilityBoostLevels.SequenceEqual(new[] { 5, 10 }.Where(l => l <= s.Level)), "ability boosts not exactly at 5th/10th");
+        // Every fifth level to the ceiling, derived rather than listed — at MaxLevel 15 this
+        // becomes 5/10/15 with no edit here. The message names the levels it checked.
+        var wantBoosts = Enumerable.Range(1, Rules.MaxLevel / 5).Select(n => n * 5).Where(l => l <= s.Level).ToList();
+        Check(s.AbilityBoostLevels.SequenceEqual(wantBoosts),
+            $"ability boosts not exactly at {string.Join("/", wantBoosts)}");
 
         // Blood: full Hit Die + CON at 1st, per-level rolls after (Ch. III), + Tough as Rawhide
         Check(s.BloodRolls.Count == s.Level, "one Blood gain per level required");
@@ -1966,7 +1970,7 @@ public static class CharGen
         string pick = greater?.Replace(" Mastery", "").Replace(" (Greater)", "");
 
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var row in cal.rows.Where(r => r.level <= Math.Clamp(level, 1, 10)).OrderBy(r => r.level))
+        foreach (var row in cal.rows.Where(r => r.level <= Math.Clamp(level, 1, Rules.MaxLevel)).OrderBy(r => r.level))
             foreach (var f in row.features ?? new())
             {
                 if (f == "Edge" || f.StartsWith("Sign learned", StringComparison.Ordinal)

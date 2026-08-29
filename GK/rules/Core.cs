@@ -2369,6 +2369,21 @@ public static class Rules
     /// answer for every one of them under <i>Putting It Down</i>, and the shooting buys the minutes
     /// to reach it. The app says so rather than reporting a number it has measured to be a lie.
     /// </para></summary>
+    /// <summary>The highest level a soul can reach. Ten until the Fifteen Levels program raises it.
+    ///
+    /// <para>Named on 2026-08-28 because it was written as a bare 10 in a dozen places — three
+    /// clamps and two ceilings in <c>CharGen</c>, the validator that spells out where the ability
+    /// boosts fall, and six spinner maxima across the app. A ceiling that lives in twelve places is
+    /// raised in eleven of them, and the one left behind is a UI cap nobody re-reads until a
+    /// Keeper cannot type the level they want.</para>
+    ///
+    /// <para>The spine does not care what this is: <c>AttackFor</c>, <c>StrongSave</c>,
+    /// <c>WeakSave</c> and <c>PartyTier</c> are linear in level and were confirmed on 2026-08-28 to
+    /// reproduce all 760 published table cells across the nineteen Callings exactly. What gates the
+    /// number is the DATA — a Calling with rows to 10 cannot be played at 11 — so this moves only
+    /// once <c>chargen.json</c> has the rows.</para></summary>
+    public const int MaxLevel = 10;
+
     public const int ArithmeticStopsAt = 4;
 
     /// <summary>What to say about an encounter holding something at or above

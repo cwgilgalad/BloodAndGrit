@@ -21,7 +21,7 @@ public partial class MainForm
 
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, 6, 8, 6), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Lbl("Level:"));
-        soulLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Value = 1, Width = 52, Margin = new Padding(3, 6, 3, 3) };
+        soulLevel = new NumericUpDown { Minimum = 1, Maximum = Rules.MaxLevel, Value = 1, Width = 52, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(soulLevel, "1st is a greenhorn; 10th is a long, unlikely old age");
         bar.Controls.Add(soulLevel);
 
@@ -221,11 +221,11 @@ public partial class MainForm
                 "Level up", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        if (p.Level >= 10)
+        if (p.Level >= Rules.MaxLevel)
         {
             MessageBox.Show(owner,
-                $"{p.Name} already stands at 10th level — the frontier's ceiling. There's nothing "
-                + "above it in the book.",
+                $"{p.Name} already stands at {Rules.MaxLevel}th level — the frontier's ceiling. "
+                + "There's nothing above it in the book.",
                 "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -235,7 +235,7 @@ public partial class MainForm
         if (g.AtCeiling)
         {
             MessageBox.Show(owner,
-                $"{p.Name}'s sheet already stands at 10th level — the frontier's ceiling.",
+                $"{p.Name}'s sheet already stands at {Rules.MaxLevel}th level — the frontier's ceiling.",
                 "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -407,7 +407,7 @@ public partial class MainForm
         if (answer != DialogResult.Yes) return false;
 
         int bloodCur = p.BloodCur, nerveCur = p.NerveCur;
-        var s = CharGen.Generate(Math.Clamp(p.Level, 1, 10), rolled: false, fixedCalling: p.Calling);
+        var s = CharGen.Generate(Math.Clamp(p.Level, 1, Rules.MaxLevel), rolled: false, fixedCalling: p.Calling);
         s.Name = p.Name;
         // Keep the row's gender; where the row has none — every pre-v1.9.0 demo row — leave it
         // blank rather than let the generator's coin-flip write one in. Ruth "Six-Finger"

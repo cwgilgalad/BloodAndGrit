@@ -298,7 +298,7 @@ public partial class MainForm
             col.Controls.Add(Note("Every choice ahead is filtered to what the book allows. Anything left on \"" + LetBook + "\" is rolled for you at the end, by the same rules as the generator."));
             var row1 = new FlowLayoutPanel { AutoSize = true };
             row1.Controls.Add(Lbl("Level:"));
-            wLevel = new NumericUpDown { Minimum = 1, Maximum = 10, Value = level, Width = 56, Margin = new Padding(3, 6, 3, 3) };
+            wLevel = new NumericUpDown { Minimum = 1, Maximum = Rules.MaxLevel, Value = level, Width = 56, Margin = new Padding(3, 6, 3, 3) };
             Tipped(wLevel, "How experienced this soul already is. 1 is a fresh character; the wizard walks every "
                 + "level up to this one, so a higher number means more Edges, more skill increases, more Blood — and more steps to answer. "
                 + "Changing it clears the Edge, skill-increase, Sign and boost picks, since which of those you get depends on it.");
