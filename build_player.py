@@ -1122,16 +1122,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Bushwhack 1d6, Quick Hands</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Edge, Bushwhack 1d6, Quick Hands</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Road Sense</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, Trade</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>The Drop</td></tr>
-      <tr><td>5</td><td class="c">+5</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Bushwhack 2d6, Getaway</td></tr>
+      <tr><td>5</td><td class="c">+5</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Edge, Bushwhack 2d6, Getaway</td></tr>
       <tr><td>6</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+7</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Hard Ride</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Bushwhack 3d6</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+10</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>Dead or Alive, Bushwhack 4d6, Trade Mastery</td></tr>
+      <tr><td>11</td><td class="c">+11</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>Cold Trail</td></tr>
+      <tr><td>12</td><td class="c">+12</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+13</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Bushwhack 5d6, Nowhere to Run</td></tr>
+      <tr><td>14</td><td class="c">+14</td><td class="c">+4</td><td class="c">+9</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+15</td><td class="c">+5</td><td class="c">+9</td><td class="c">+9</td><td>The Warrant</td></tr>
     </tbody>
   </table>
   <h4>Bushwhack</h4>
@@ -1163,6 +1168,23 @@ body{ background:#525659; }
   unready quarry is an automatic critical hit. And you are never truly cornered: declare a bolt-hole — a relay horse, a
   confederate, a lawman who owes you, a back trail only you know — and the Keeper will honor it, once, when all seems lost.
   A great many men have been promised to the rope, and you are the one who delivers them.</p>
+  <h4>Cold Trail</h4>
+  <p>A trail stops going cold on you. Given a name and one thing that belonged to the man — a hat, a letter, a horse he
+  rode — you may sit an hour with it at dusk and learn the direction he lies in and roughly how far, once each day. It
+  tells you nothing of what stands between. Many a bounty man has ridden four hundred miles on a true bearing and
+  arrived a week after the funeral.</p>
+  <h4>Nowhere to Run</h4>
+  <p>You have closed too many doors to leave one open now. A quarry you have Struck this scene cannot Disengage from you
+  without first beating your Notice with an Athletics or Stealth check, and any cover he takes is cover you have already
+  used yourself. When he runs anyway, your first shot after him counts him unaware.</p>
+  <h4>The Warrant</h4>
+  <p>Your name has become a kind of law. Once per session you may write a warrant of your own — on the back of a bill, on
+  a barn door, on nothing at all — naming one creature or one man. Until the session ends, or the warrant is served, you
+  always know the direction of the named and how far off it lies, your Bushwhack against it is an automatic critical
+  hit, and any lawman, hand or honest citizen who hears the name will help you against it or stand out of your way.
+  Serve it, and the country pays: the Keeper grants one lasting boon out of what the warrant was worth, and the paper
+  goes on the wall of some office where men will read the name for fifty years. Write the wrong name and you will find
+  that out the same way.</p>
 
   <div class="quote">"Folks ask how I bring them in when faster men could not. I do not bring them in fast. I bring them in
     tired — a week of no fire, no sleep, no notion of where they are, until the open country has done my work for me and the
@@ -1195,16 +1217,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td>Sudden Strike +1d6, Pathfinder</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td>Edge, Sudden Strike +1d6, Pathfinder</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+0</td><td>Ghost</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+1</td><td>Edge, Evasion, Trail</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>—</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>Sudden Strike +2d6</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+1</td><td>Edge, Sudden Strike +2d6</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Uncanny Step</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+2</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+3</td><td>Sudden Strike +3d6</td></tr>
-      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+3</td><td>Edge, Vanish, Trail Mastery</td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+3</td><td>Edge, Sudden Strike +3d6</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+3</td><td>Vanish, Trail Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+3</td><td class="c">+7</td><td class="c">+3</td><td>Never Was Here</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+4</td><td class="c">+8</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+4</td><td class="c">+8</td><td class="c">+4</td><td>Sudden Strike +4d6, The Long Odds</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+4</td><td class="c">+9</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+5</td><td class="c">+9</td><td class="c">+5</td><td>Gone</td></tr>
     </tbody>
   </table>
   <h4>Sudden Strike</h4>
@@ -1221,6 +1248,22 @@ body{ background:#525659; }
   <p>Your reflexes are inhuman. On a successful Reflex save against an effect that would harm an area — a blast, a cave-in,
   a sweep of fire — you take no harm at all rather than half. On a <em>critical</em> success, you also end your move in any
   open square adjacent to the danger.</p>
+  <h4>Never Was Here</h4>
+  <p>You have got so good at leaving that the leaving takes the arriving with it. After a night in a place you may spend an
+  hour undoing your own presence in it: the ledger entry, the stall in the livery, the face behind the bar. Anyone
+  questioned about you afterward remembers a man, remembers nothing useful, and grows less certain the harder they are
+  pressed. Dogs and children are unaffected, and neither are the dead.</p>
+  <h4>The Long Odds</h4>
+  <p>Evasion becomes something worse for whatever is throwing at you. On a failed save against an effect Evasion would have
+  halved, you take half instead of full; on a success you take none and may Step for free. The blast that catches the
+  posse has caught you three hundred times, and you have gone under it three hundred times.</p>
+  <h4>Gone</h4>
+  <p>There is no situation you cannot walk out of. Once per session, as a free action at any moment including one in which
+  you are held, bound, buried, grappled, surrounded, unconscious or falling, you are simply elsewhere: any place you
+  could plausibly have reached on foot within the last hour, unharmed, with whatever you were carrying and one thing or
+  one willing soul you had a hand on. Nothing that was watching can say how. The cost is that you leave: whatever you
+  were in the middle of goes on without you, and the country between you and it is a day's ride wide by the time you
+  think better of it.</p>
 
   
   <div class="box">
@@ -1251,16 +1294,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>The Contraption, Powder & Fuse</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Edge, The Contraption, Powder & Fuse</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Jury-Rig</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, Discipline</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Cut the Charge</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>A Second Contraption, Field Expedient</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Edge, The Contraption (second), Field Expedient</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Overbuilt</td></tr>
-      <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>A Third Contraption</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>The Contraption (third)</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Machine Age, A Fourth Contraption, Discipline Mastery</td></tr>
+      <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Machine Age, The Contraption (fourth), Discipline Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Contraption (fifth), Proving Ground</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>The Standing Work</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+4</td><td class="c">+9</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+5</td><td class="c">+9</td><td class="c">+9</td><td>The Century Coming</td></tr>
     </tbody>
   </table>
   <h4>Ingenuity</h4>
@@ -1268,7 +1316,7 @@ body{ background:#525659; }
   after a full rest and a chance to sit with your tools. It is the measure of how much of your attention your devices
   are still owed.</p>
   <h4>The Contraption</h4>
-  <p>You have built one thing that exists nowhere else. Choose a frame from the list below; you build another at 5th, 8th and 10th level, and you may rebuild any of them over a night with your tools. Working a frame costs 1 Ingenuity and a Beat, and here is the part that matters: anybody you have shown it to may work it instead of you. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.</p>
+  <p>You have built one thing that exists nowhere else. Choose a frame from the list below; you build another at 5th, 8th, 10th and 11th level, and you may rebuild any of them over a night with your tools. Working a frame costs 1 Ingenuity and a Beat, and here is the part that matters: anybody you have shown it to may work it instead of you. On a natural 1, or any time the Keeper rules you have asked too much of it, it breaks; mending it takes an hour and your hands, and it is never quite the same afterward. You have stopped expecting it to be.</p>
   <div class="box">
     <h4>A Contraption&rsquo;s Frames</h4>
     <ul class="dash">
@@ -1294,6 +1342,23 @@ body{ background:#525659; }
   <p>You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules something genuinely beyond their design was asked of them.</p>
   <h4>The Machine Age</h4>
   <p>At 10th level the things you make outlast the making of them. Choose one of your contraptions: it costs no Ingenuity to work, it does not break, and it can be handed to somebody else and will work for them. You have crossed the line between a trick and a tool, and the century coming will be built out of what is on your side of it.</p>
+  <h4>Proving Ground</h4>
+  <p>You have finally got somewhere to test things before they are needed. Given a day and a place to work, you may rebuild
+  any contraption into any other frame, and once per scene you may declare that a contraption you are working has been
+  tuned for exactly this: it does not break on a natural 1, and its save DC rises by 2 against the specific thing you
+  built the tuning for. You were up all night. It shows in the work and it shows in your face.</p>
+  <h4>The Standing Work</h4>
+  <p>Given four hours, a place and hands to help, you raise something that does not travel: a redoubt, a sluice, a spanned
+  gap, a wall with a gate in it. It gives cover the Keeper rates as greater, holds against anything you can still shoot
+  for a scene, and can be worked by anyone you have shown it to. It stays where you built it after you have gone, which
+  is more than most men manage.</p>
+  <h4>The Century Coming</h4>
+  <p>Once per session, you build a thing that does not exist yet. Name the problem in front of the posse and describe the
+  machine that answers it; if the Keeper can imagine it built out of what this century has — iron, steam, powder, wire,
+  glass, water and time — then you have built it, over an hour and whatever it costs, and it works once, fully, at the
+  scale the problem needs. A rail car that outruns a thing on the track behind it. A cage that will hold what nothing
+  holds. A light that reaches the far side of the valley. Afterward it is scrap, and you are the only one who knows how
+  it went together, which is a heavy thing to be.</p>
 
   <div class="quote">
     "He would not tell us what the thing in the crate was for. He said it was for one job and one
@@ -1325,16 +1390,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Fortune's Favor, Cardsharp</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Edge, Fortune's Favor, Cardsharp</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Hedge Your Bets</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, Game</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Cold Deck</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Ace in the Hole</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Edge, Ace in the Hole</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Press Your Luck</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stack the Odds</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The House Always Wins, Game Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>Marked Deck</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Table Stakes</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+4</td><td class="c">+9</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+5</td><td class="c">+9</td><td class="c">+9</td><td>All In</td></tr>
     </tbody>
   </table>
   <h4>Fortune's Favor</h4>
@@ -1372,6 +1442,21 @@ body{ background:#525659; }
   dawn. And once per session you may <strong>call the turn</strong>: declare, before it is cast, that a single die — yours, or
   one thrown against you — comes up its best or its worst, a natural 20 or a natural 1, as though fate had dealt it from the
   bottom of the deck for you. The bill for such certainty always comes due. It simply does not come due tonight.</p>
+  <h4>Marked Deck</h4>
+  <p>You have stopped needing to see the cards. Once per scene you may spend 2 Favor to know one true thing about a person
+  in front of you that they are actively hiding — what they are carrying, what they mean to do next, or who they answer
+  to — as though you had caught the flicker of it in their hands. It is never the whole hand. It is enough to bet on.</p>
+  <h4>Table Stakes</h4>
+  <p>You can put something on the table that is not money. Once per scene, name a stake — an hour of your life, a memory,
+  the use of your gun hand, a favour owed to somebody frightening — and gain 1d6 Favor at once. The Keeper decides what
+  the stake costs and when it is collected, and the Keeper will collect it. Nobody who plays this long plays for chips.</p>
+  <h4>All In</h4>
+  <p>Once per session you may go all in. Declare it before any roll that matters, spend every point of Favor you have, and
+  take the following for the rest of the scene: every d20 you roll is rolled twice and you keep the better, you cannot
+  be reduced below 1 Blood, and any single die anyone throws in that scene may be rerolled by you once, whoever threw
+  it. When the scene ends, the house takes its cut. You lose all Favor until the next dawn, you take a lasting mark of
+  the Keeper's choosing — a debt, a name, a limp, a face you now owe — and everyone who watched it happen knows they
+  watched something they will not see twice.</p>
 
   <div class="quote">"I have lost more money than most men will ever see, and I will give you the secret of it free, since you
     won't believe me anyhow: the cards do not care. The cards never cared. You play the man, and the odds, and your own cold
@@ -1405,16 +1490,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+2</td><td class="c">+0</td><td>Deadly Aim, Gunhand's Edge</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+2</td><td class="c">+0</td><td>Edge, Deadly Aim, Gunhand's Edge</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+3</td><td class="c">+3</td><td class="c">+0</td><td>Trick Shot</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td>Edge, School</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>—</td></tr>
-      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Lightning Hand</td></tr>
+      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Edge, Lightning Hand</td></tr>
       <tr><td>6</td><td class="c">+6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+7</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Edge</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>No Quarter, School Mastery</td></tr>
+      <tr><td>11</td><td class="c">+11</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>Second Nature</td></tr>
+      <tr><td>12</td><td class="c">+12</td><td class="c">+8</td><td class="c">+8</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+13</td><td class="c">+8</td><td class="c">+8</td><td class="c">+4</td><td>Six Living Men</td></tr>
+      <tr><td>14</td><td class="c">+14</td><td class="c">+9</td><td class="c">+9</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+15</td><td class="c">+9</td><td class="c">+9</td><td class="c">+5</td><td>The Fastest Alive</td></tr>
     </tbody>
   </table>
   <h4>Deadly Aim</h4>
@@ -1436,6 +1526,21 @@ body{ background:#525659; }
   <p>When you drop a foe to 0 Blood or below with a firearm, you may immediately make one more attack against a different
   target within range, free of the Multiple Attack Penalty. There is no limit to how many times this may chain in a single
   round but your own luck.</p>
+  <h4>Second Nature</h4>
+  <p>The gun has stopped being a thing you use. You reload, clear a jam, change hands and take cover without spending a
+  Beat on any of it, you never suffer a penalty for shooting from horseback or in the dark at a shape you have already
+  hit once, and a called shot costs you 2 less on the roll. It has been years since you had to think about the part in
+  the middle.</p>
+  <h4>Six Living Men</h4>
+  <p>You have cleared a room before and you can do it again. Once per scene, spend your whole turn and name up to your PRE
+  modifier in targets you can see, minimum two: make one Strike against each at your full attack. Missing one ends it
+  there. Men who have seen it done stop being brave in the order they were standing.</p>
+  <h4>The Fastest Alive</h4>
+  <p>There is nothing left to be faster than. Once per session, declare it at any point in any scene: you act first,
+  before every creature present regardless of what any die said, and for that one turn every Strike you make hits
+  without a roll and counts as a critical against anything you can still shoot. Then it is over, and you are a man
+  standing in the smoke with an empty gun and a full second of nothing to do. You are Slowed for the following round,
+  and every soul who lived through it will carry the story, which is how the next one finds you.</p>
 
   <div class="quote">
     "A pistol is an argument that ends the conversation. Most arguments out here
@@ -1469,16 +1574,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Command, Reputation</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Command, Reputation</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Hold the Line</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Oath</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>—</td></tr>
-      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Unflinching</td></tr>
+      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Unflinching</td></tr>
       <tr><td>6</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Last Stand, Oath Mastery</td></tr>
+      <tr><td>11</td><td class="c">+11</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Deputize</td></tr>
+      <tr><td>12</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+13</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>The Long Arm</td></tr>
+      <tr><td>14</td><td class="c">+14</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+15</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>This Is My Town</td></tr>
     </tbody>
   </table>
   <h4>Command</h4>
@@ -1494,6 +1604,21 @@ body{ background:#525659; }
   <p>Once per session, when an ally within sight would drop to 0 Blood, you may shout them upright: they remain conscious and
   acting until the end of the fight or until struck again. Some Marshals have held a doorway with five dead men still standing
   at their word.</p>
+  <h4>Deputize</h4>
+  <p>You can make a lawman out of a shopkeep. Over ten minutes, swear in up to your PRE modifier in willing souls, minimum
+  two: for the next day they gain +2 on saves against fear, count as trained in one skill you name, and may take the
+  Ready action on your word without spending a Beat. Sworn hands who die under your badge are on your account, and the
+  town will keep that account whether you do or not.</p>
+  <h4>The Long Arm</h4>
+  <p>Word of you travels faster than you do. In any settlement inside a week's ride, you may send ahead: when you arrive, a
+  thing you asked for has been done — a man held, a road watched, a room kept, a wire sent on. Once per session, and
+  never a thing that takes courage from somebody who has none.</p>
+  <h4>This Is My Town</h4>
+  <p>Once per session, plant yourself and say it. Name a place you can see the whole of — a street, a church, a bridge, a
+  camp — and for the rest of the scene nothing hostile crosses into it without beating your Will save, every ally inside
+  it is immune to fear and heals 1d8 Blood the first time they drop below half, and you may Command any ally within it
+  as a free action once per round instead of once per scene. You may not leave the ground you named while it stands.
+  Whatever wanted in will still be out there at dawn, and it will know your face now, and where you sleep.</p>
 
   <div class="quote">
     "I never asked to be followed. I only stood where the road forked and would not move,
@@ -1530,16 +1655,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Hawken Rifle, Dead Aim 1d6, Hard Country</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Hawken Rifle, Dead Aim 1d6, Hard Country</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Read Sign</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Range</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Skinner</td></tr>
-      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Dead Aim 2d6</td></tr>
+      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Dead Aim 2d6</td></tr>
       <tr><td>6</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Iron Constitution</td></tr>
       <tr><td>7</td><td class="c">+7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Mountain Sense</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>Unbroken</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>King of the High Country, Dead Aim 3d6, Range Mastery</td></tr>
+      <tr><td>11</td><td class="c">+11</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Dead Aim 4d6, Winter Count</td></tr>
+      <tr><td>12</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+13</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>The Far Shot</td></tr>
+      <tr><td>14</td><td class="c">+14</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+15</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Mountain Knows You</td></tr>
     </tbody>
   </table>
   <h4>Hawken Rifle</h4>
@@ -1548,8 +1678,7 @@ body{ background:#525659; }
   the shots a lesser hand calls lucky.</p>
   <h4>Dead Aim</h4>
   <p>Spend a Beat to steady your rifle — this is the <em>Aim</em> action — and your next shot this turn deals the extra
-  damage shown on a hit: <strong>1d6</strong> at 1st level, <strong>2d6</strong> at 5th, and <strong>3d6</strong> once you
-  are King of the High Country. Patience, a good rest, and a held breath are worth more than any luck.</p>
+  damage shown on a hit: <strong>1d6</strong> at 1st level, <strong>2d6</strong> at 5th, <strong>3d6</strong> once you are King of the High Country, and <strong>4d6</strong> at 11th. Patience, a good rest, and a held breath are worth more than any luck.</p>
   <h4>Hard Country</h4>
   <p>The wilderness is your parlor. You are never lost in wild country, you ignore natural difficult terrain — scree,
   deadfall, brush, snow — and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger
@@ -1578,6 +1707,22 @@ body{ background:#525659; }
   doors you gain a standing +1 to Defense and to all saves; and once per scene a single steadied rifle shot is an automatic
   critical against a living or unnatural quarry you have studied with Skinner. The mountain does not give up its king easily,
   and neither, in the end, do you.</p>
+  <h4>Winter Count</h4>
+  <p>You have kept a count of your winters the old way, and the years are worth something. Once per session, name any
+  wilderness, weather, beast, trail or man you have plausibly met before, and you have: you know one true and useful
+  thing about it that nobody in the posse could have known, and you gain +4 on your next check concerning it. The Keeper
+  decides what the year was.</p>
+  <h4>The Far Shot</h4>
+  <p>Distance has stopped being a penalty and started being an advantage. You suffer no penalty for range with a long gun
+  at any distance you can see, and a steadied shot taken from beyond the reach of anything shooting back ignores cover
+  that is not solid stone. The rifle was always the argument. Standing far enough away was the rest of it.</p>
+  <h4>The Mountain Knows You</h4>
+  <p>The high country has decided you belong to it. Once per session, out of doors and away from a town, call on it: for
+  the rest of the scene the ground, the weather and the beasts of that place are on your side. Terrain hinders your
+  enemies and never you, wind and snow and dark obscure them and never you, and one beast of the country arrives to
+  fight beside you until the scene ends. Every Dead Aim shot you take that scene is an automatic critical against
+  anything living. The mountain asks in return that you never bring the thing you are hunting into a town, and it will
+  know.</p>
 
   <div class="quote">"Folks down in the settlements think the wild is empty. I have wintered alone above the timberline with
     the wind screaming for three months, and I will tell you it is the most crowded place I know. Something up there counts
@@ -1614,16 +1759,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td class="c">+0</td><td>Pay Dirt, Powderman</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td class="c">+0</td><td>Edge, Pay Dirt, Powderman</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td class="c">+0</td><td>Grubstake</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td>Edge, Claim</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Dowse, Field Inventions</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Assayer's Eye</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td>Edge, Assayer's Eye</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Demolitionist</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td>Edge, Sapper</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+6</td><td class="c">+2</td><td>Overcharge</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+6</td><td class="c">+3</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>The Mother Lode, Claim Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+7</td><td class="c">+3</td><td>The Deep Vein</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+8</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+8</td><td class="c">+4</td><td>Bring It Down</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+9</td><td class="c">+4</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+9</td><td class="c">+5</td><td>What the Ground Owes</td></tr>
     </tbody>
   </table>
   <h4>Pay Dirt</h4>
@@ -1677,6 +1827,22 @@ body{ background:#525659; }
   for one round: treat every check you make that round as one degree of success better. The deep digging has changed you,
   too: you feel it in your fillings when the Old Dark stirs underground, and the Keeper gives you a moment's warning before
   it surfaces. You have learned what sleeps in the deep. You keep digging anyway.</p>
+  <h4>The Deep Vein</h4>
+  <p>You have learned to read a country the way another man reads a page. Once per day, sink a shaft with your mind rather
+  than a pick: name a thing that could be under the ground within a mile — water, ore, a worked passage, a buried body,
+  a cavity — and learn whether it is there, how deep, and what lies between you and it. Your Pay Dirt pool refreshes at
+  the start of every scene rather than each dawn.</p>
+  <h4>Bring It Down</h4>
+  <p>You have stopped blasting rock and started blasting structures. Given ten minutes to place charges and a thing that
+  stands — a wall, a bridge, a trestle, a mine mouth, a house — you drop it, whole, when you choose to. Anything inside
+  or under takes 8d6 and is buried; anything the size of a barn or larger takes half. There is no save to be somewhere
+  else once the charges are set, only to be somewhere else before.</p>
+  <h4>What the Ground Owes</h4>
+  <p>You have taken enough out of the earth that it has started paying without being asked. Once per session, in any place
+  with ground under it, call in the debt: the earth gives you exactly one thing the posse needs and could conceivably be
+  down there. A seam of silver to buy a town's cooperation. A spring in a dry country. A worked tunnel running under the
+  wall you cannot get through. A vein of something that burns. It is real, it is yours, and it is enough. What comes up
+  with it is the Keeper's to decide, and something is always down there with the good stuff.</p>
 
   <div class="quote">
     "Folks say I struck it lucky. I struck it <em>deep</em>, is what I did, and lucky was getting back up the shaft.
@@ -1712,16 +1878,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Field Surgery, Anatomist</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Field Surgery, Anatomist</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Tonics</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Practice</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Precise Strike 1d6</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Alienist</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Alienist</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Precise Strike 2d6</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Precise Strike 3d6, Miracle Worker, Practice Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Precise Strike 4d6, The Waking Draught</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Read the Body</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Hour After</td></tr>
     </tbody>
   </table>
   <h4>Field Surgery</h4>
@@ -1743,6 +1914,22 @@ body{ background:#525659; }
   pull a character back from death itself so long as the body is whole and no more than a minute has passed — or can lift a
   single Lasting Injury or bodily Affliction entirely. Whether the patient is grateful for what you have done is between
   them and their god.</p>
+  <h4>The Waking Draught</h4>
+  <p>You have mixed something that argues with unconsciousness. Once per scene, a dose brings a dying or senseless patient
+  to their feet with 1d8 + your level in Blood and a clear head for ten minutes, whatever put them down. When the ten
+  minutes are up they drop where they stand and cannot be raised this way again until they have slept. Used on the
+  Marked or the uncanny it does nothing at all, and they will know you tried.</p>
+  <h4>Read the Body</h4>
+  <p>A living thing in front of you is a document you can read. Spend a Beat studying any creature: learn its remaining
+  Blood, its lowest save, whether it is diseased, poisoned, possessed, expectant, healing or already dead, and the
+  single most fragile thing about it. Your Precise Strike against that creature ignores any damage reduction for the
+  rest of the scene.</p>
+  <h4>The Hour After</h4>
+  <p>Once per session, given a body no more than an hour dead and whole enough to work on, you bring it back. Not a Beyond
+  check and not a prayer: an hour of surgery, both hands, everything you have, and at the end of it the patient
+  breathes. They return at 1 Blood with a Lasting Injury of the Keeper's choosing and no memory of the interval, and
+  they are not quite the same about the dark afterward. You may not do this twice for the same soul, and the second time
+  you do it for anybody at all in a season, something notices that a doctor out here is undoing its work.</p>
   
   <div class="box">
     <h4>Practices of the Sawbones</h4>
@@ -1804,16 +1991,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Healing Hands, Herb-Lore</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Healing Hands, Herb-Lore</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mend the Body</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Way</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Draw Out the Sickness</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Call Back the Breath</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Call Back the Breath</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Soothe the Spirit</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Hands of Life, Way Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Long Song</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Turn the Sickness Back</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>Call Back the Name</td></tr>
     </tbody>
   </table>
   <h4>Healing Hands</h4>
@@ -1849,6 +2041,22 @@ body{ background:#525659; }
   lifted, the freshly dying raised, fear washed clean away. For one moment you are the thing this country refuses to be. The
   cost is borne in your own body — you take on a measure of what you healed, a share of the wounds and the dread — and you
   cannot do it again until you have rested and grieved what it cost you.</p>
+  <h4>The Long Song</h4>
+  <p>You have learned to sing a thing all the way through rather than in pieces. Over an hour of singing, spend any amount
+  of Vital Breath: everything it would heal, it heals, and it will also lift one disease, poison, or Affliction from
+  every soul in the circle. It cannot be hurried and it cannot be sung twice in a day. A camp that has heard it sleeps
+  without dreaming.</p>
+  <h4>Turn the Sickness Back</h4>
+  <p>What was put into a body can be sent back to whoever put it there. When you draw out a disease, poison, curse or
+  Affliction, you may hold it in your hands rather than let it go: for the rest of the scene you may place it on any
+  creature you touch or point at within thirty feet, which suffers it with no save if it is the one that dealt it, or
+  with a Fortitude save otherwise. Carrying it costs you 1 Vital Breath a round and it is unpleasant to hold.</p>
+  <h4>Call Back the Name</h4>
+  <p>Once per session, over a night and a fire, you may call a soul back that has been gone as much as a day. Speak the
+  name until the name answers. The body must be present and need not be whole; what returns is whole, at half Blood,
+  with everything it was. The price is fixed and is not paid by them: you give up a year of your own life, every point
+  of Vital Breath until the next dawn, and one thing you loved about the world, which the Keeper names and which does
+  not come back. Do it four times and you will be very old and very quiet.</p>
 
   <div class="box gold">
     <h4>A Note on the Name</h4>
@@ -1886,16 +2094,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Sacraments, Rite of Exorcism</td></tr>
-      <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Holy Water &amp; Relic</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Sacraments, Rite of Exorcism</td></tr>
+      <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Holy Water & Relic</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Order</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Sanctuary</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Viaticum</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Viaticum</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, The Greater Rite</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Church Militant, Order Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Greater Rite (second), Cure of Souls</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Anathema</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Word Made Binding</td></tr>
     </tbody>
   </table>
   <h4>Sacraments</h4>
@@ -1926,12 +2139,29 @@ body{ background:#525659; }
   <h4>The Greater Rite</h4>
   <p>You learn one major liturgical working: <em>Bell, Book, and Candle</em> (a ten-minute rite that banishes a lesser
   uncanny outright, or a greater one for a day and a night), or the <em>Consecration of a Haunt</em> (which lays a binding
-  on the very stones of a haunted place). Choose at 7th; the Keeper may permit more in play.</p>
+  on the very stones of a haunted place). Choose at 7th and a second at 11th; the Keeper may permit more in play.</p>
   <h4>The Church Militant</h4>
   <p>Once per session, draw on the whole weight of the Church behind you. As an action, name the unclean in Latin and
   command it: it makes a Will save against your Sacrament DC or is destroyed if a lesser thing, banished if a greater, and
   in any case driven Frightened and Slowed. Every ally who can hear the Rite is immune to fear until the scene ends. Two
   thousand years of the dead speak the words with you, and for one moment, the dark remembers that it has lost this argument before.</p>
+  <h4>Cure of Souls</h4>
+  <p>You have a parish now, whether or not it has a building. Any soul you have shriven, married, buried kin for, or sat
+  with through a bad night counts as yours: they gain +2 on saves against the uncanny while you live, you always know if
+  one of them has died, and once per session one of them turns up where you need them, doing what little they can. It is
+  never much. It is never nothing, either.</p>
+  <h4>Anathema</h4>
+  <p>You may pronounce a thing cut off. Name an uncanny creature you have seen and speak the sentence over an hour with
+  bell, book and candle: for the next day it cannot enter consecrated ground, cannot be healed by any means, cannot be
+  aided by another of its kind, and takes 2d8 holy damage each time it touches you. It will know who did it and it will
+  know where the church is.</p>
+  <h4>The Word Made Binding</h4>
+  <p>Once per session you may speak once with the whole authority of the office behind you, and the world is obliged.
+  Command a single thing of one creature that can hear you, in plain language, in one sentence: leave, kneel, release
+  her, tell the truth, be still, go back. Anything you can still shoot obeys outright. Anything past that must beat your
+  Will save or obey for one round, which is often the round that mattered. Then you are hollowed out — no Grace, no
+  Miracles, and no second word until the next dawn — and you will spend a long time wondering whether it was your
+  authority or Someone Else's, and whether the difference is any of your business.</p>
 
   <div class="quote">
     "The boy's father asked me did I believe, truly, that the words would hold the thing in his son.
@@ -1966,16 +2196,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Conviction, Sermon</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Conviction, Sermon</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Ward</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Testament</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Brimstone 1d6</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Lay On Hands</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Lay On Hands</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Brimstone 2d6</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 3d6, Revelation, Testament Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 4d6, The Camp Meeting</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Testify</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Great Awakening</td></tr>
     </tbody>
   </table>
   <h4>Conviction</h4>
@@ -2003,6 +2238,23 @@ body{ background:#525659; }
   and the one thing it fears — and is struck Frightened 1 for the scene, while your companions ignore the next Dread Check they would
   face. The Word, spoken once with perfect certainty, still moves something. You simply never learn what, or whether it was
   listening, or merely could not bear to be seen.</p>
+  <h4>The Camp Meeting</h4>
+  <p>Give you a night, a fire and a crowd, and you will change the temper of a place. Everyone who stays to the end of the
+  meeting recovers all Nerve, gains +2 on their next save against fear or the uncanny, and will tell you what they came
+  there to confess. What they confess is the useful part. A town has never yet been converted, but it has often been
+  talked into helping.</p>
+  <h4>Testify</h4>
+  <p>You have stopped preaching at the dark and started giving evidence about it. Once per scene, spend 2 Conviction and
+  name what an uncanny thing did: it takes 4d6 damage that nothing reduces, and every ally who heard you may immediately
+  reroll one save they failed this scene. The truth spoken plainly about a thing that lives on not being spoken of costs
+  it.</p>
+  <h4>The Great Awakening</h4>
+  <p>Once per session, you preach the sermon you have been carrying your whole life. Everything within earshot that can
+  hear you and is not uncanny recovers all Blood and all Nerve and is immune to fear for the scene. Everything within
+  earshot that is uncanny takes 10d6 and must beat your Will save or be Frightened and unable to approach you for the
+  rest of the scene, and the lesser sort of uncanny that fails is simply undone where it stands. When you finish you
+  have nothing left: no Conviction, no voice for a day, and the certain knowledge that you have spent something you will
+  not get back and cannot count.</p>
 
   <div class="quote">
     "I have buried ninety souls and christened thirty, and I keep the arithmetic in the same book.
@@ -2039,16 +2291,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Spirit-Sight, The Helping Spirits</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Spirit-Sight, The Helping Spirits</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mending Hands</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Spirit-Pact</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Spirit-Walk</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Don the Aspect</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Don the Aspect</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Commune</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Become the Mask, Spirit-Pact Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Wide Circle</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Two Worlds at Once</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Land Answers</td></tr>
     </tbody>
   </table>
   <h4>Spirit-Sight</h4>
@@ -2084,6 +2341,21 @@ body{ background:#525659; }
   a beast-king, an ancestor of terrible weight. While the spirit rides, you wield gifts far beyond a mortal's. But when it
   departs, make a Will save (DC the Keeper sets) or a little of it stays, and a little of you does not return. Wear the mask
   too often and the question stops being whether it comes off, and starts being who is wearing whom.</p>
+  <h4>The Wide Circle</h4>
+  <p>The spirits that answer you have started bringing others. Your Helping Spirits may be sent to any ally you can see
+  rather than only to yourself, and once per scene you may ask the spirits of a place one question about what has
+  happened there, which they answer honestly and rudely. Places where something bad was done answer loudest.</p>
+  <h4>Two Worlds at Once</h4>
+  <p>You have stopped having to cross over. You see and may act upon the spirit world and this one together: you always
+  know what is present and unseen, you may Strike an incorporeal thing with a bare hand as though it were solid, and you
+  may Spirit-Walk without leaving your body behind for anything to find. Holding both open is tiring, and you dream
+  badly.</p>
+  <h4>The Land Answers</h4>
+  <p>Once per session, ask the country itself for help, and it helps. The spirits of the place take a side for the rest of
+  the scene: name a single thing you want from it, and the land does that thing. The river rises. The rock closes. The
+  herd turns. The fog comes down and lifts only for your people. The dead of that ground stand up and remember whose
+  they were. It is not a spell and there is no save; it is a place deciding, and places decide slowly and completely.
+  Afterward you owe it, and the Keeper will name what it wants, and it will want something you would rather keep.</p>
 
   <div class="quote">
     "My grandmother told me the spirits are not servants and not enemies. They are neighbors,
@@ -2119,16 +2391,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>The Vigil, Nurse</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, The Vigil, Nurse</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Hold the Lamp</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Order</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Not One Step</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>The Cool Cloth</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, The Cool Cloth</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, The Long Watch</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Least of These, Order Mastery</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Longer Watch</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Between You and It</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Lamp Does Not Go Out</td></tr>
     </tbody>
   </table>
   <h4>Mercy</h4>
@@ -2154,6 +2431,22 @@ body{ background:#525659; }
   <p>You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a full rest's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.</p>
   <h4>The Least of These</h4>
   <p>At 10th level you have spent so long standing between other people and the dark that the dark has learned your face. Once per session, when a soul within your reach would die or be taken, dragged off, possessed, unmade or called away, you may refuse it. They are not. The cost is yours: you drop to 1 Blood, lose all remaining Mercy, and cannot do it again until the next session. Whatever wanted them now knows exactly who you are.</p>
+  <h4>The Longer Watch</h4>
+  <p>You have sat up with worse than this. You need no sleep on a night you have chosen to keep watch, and every soul
+  resting under your watch recovers Nerve fully and wakes with +2 on their first save of the day. You may keep three
+  such nights in a row before it starts to tell, and it does tell.</p>
+  <h4>Between You and It</h4>
+  <p>Standing in front of somebody has become a thing you are good at rather than a thing you are brave about. As a
+  reaction, take any single attack, effect or grab aimed at an ally within ten feet upon yourself instead, and reduce it
+  by your level. You may do this as many times a round as you have reactions, which is once, and there has never yet
+  been a round in which you did not use it.</p>
+  <h4>The Lamp Does Not Go Out</h4>
+  <p>Once per session, set your lamp down and refuse the dark on behalf of everyone inside its light. For the rest of the
+  scene, no ally within thirty feet of you can die, be taken, be possessed, be unmade or be reduced below 1 Blood; every
+  one of them is immune to fear; and any uncanny thing that enters the light must beat your Will save each round or be
+  unable to act at all. You may not move from where you set it down and you may not attack. Every point of damage the
+  light refuses is dealt to you instead, and it will be more than you have. Sisters who do this are usually doing it for
+  the last time, and they know that when they set the lamp down.</p>
 
   <div class="quote">
     "We asked her to come away from the door. She said she would, directly, and did not.
@@ -2185,16 +2478,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>The Hunt, Sanctified Iron, Zeal</td></tr>
+      <tr><td>1</td><td class="c">+1</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, The Hunt, Sanctified Iron, Zeal</td></tr>
       <tr><td>2</td><td class="c">+2</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Steeled Nerve</td></tr>
       <tr><td>3</td><td class="c">+3</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Creed</td></tr>
       <tr><td>4</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Recognize the Unclean</td></tr>
-      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Judgment 1d8</td></tr>
+      <tr><td>5</td><td class="c">+5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Judgment 1d8</td></tr>
       <tr><td>6</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
       <tr><td>7</td><td class="c">+7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Relentless</td></tr>
       <tr><td>8</td><td class="c">+8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>Judgment 2d8</td></tr>
       <tr><td>9</td><td class="c">+9</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Pyre, Judgment 3d8, Creed Mastery</td></tr>
+      <tr><td>11</td><td class="c">+11</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Judgment 4d8, The Name Written Down</td></tr>
+      <tr><td>12</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+13</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>No Sanctuary</td></tr>
+      <tr><td>14</td><td class="c">+14</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+15</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Last Fire</td></tr>
     </tbody>
   </table>
   <h4>The Hunt</h4>
@@ -2234,6 +2532,22 @@ body{ background:#525659; }
   each new quarry. And once per session, when you reduce an uncanny quarry to 0 Blood, you may perform the rites of ending —
   salt, fire, the severed name — and ensure it <strong>stays dead</strong>: it does not rise, reform, or return. Nothing the
   Keeper has prepared survives the Pyre. The cost is the man you have become to wield it.</p>
+  <h4>The Name Written Down</h4>
+  <p>You keep a book, and what goes in the book does not come out. Enter a creature's name and one true fact about it, and
+  thereafter you always know whether it lives, you gain +2 on every roll against it, and it cannot conceal its nature
+  from you by any means. You may carry as many names as your WIT modifier. Crossing one out is the only way to make
+  room, and there are two ways to cross one out.</p>
+  <h4>No Sanctuary</h4>
+  <p>A thing you are hunting has nowhere to be. It cannot heal, regenerate, reform or be aided while you are within a
+  hundred feet of it, and any ward, threshold, holy ground or bound place that shelters it opens for you and closes
+  behind you. What you have hunted onto consecrated ground stays on it.</p>
+  <h4>The Last Fire</h4>
+  <p>Once per session, light the fire you have been carrying since the beginning. For the rest of the scene you are
+  wreathed in a cold white burning: you take no damage from any uncanny source, every Strike you land deals an
+  additional 6d8 to unclean things, and anything reduced to 0 Blood in that light is ended outright — no rising, no
+  reforming, no return, nothing left to salt. When it goes out you are at 1 Blood, all Zeal spent, and Fatigued until
+  you have slept a full night somewhere with a roof. It is understood among your order that a man only gets so many of
+  these, and that nobody has ever counted his own correctly.</p>
 
   <div class="box">
     <h3>On Hunting, and on Zealotry</h3>
@@ -2270,19 +2584,22 @@ body{ background:#525659; }
   ranked and gated exactly as the Signs are.</p>
 
   <h2 id="ix-m-rank">Rank and the Pool</h2>
-  <p><strong>Rank.</strong> Every Miracle carries a Rank from one to five, and you reach a new Rank at the same rungs a
-  sign-worker does: <strong>1st, 3rd, 5th, 7th, and 9th level</strong>. You may learn and work any Miracle of a Rank
-  your level allows, and no higher; ask for more than you have earned and the grace simply does not come. You begin
-  knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a repertoire of six by the
-  height of a frontier life.</p>
+  <p><strong>Rank.</strong> Every Miracle carries a Rank from one to eight, and you reach a new Rank at the same rungs a
+  sign-worker does: <strong>1st, 3rd, 5th, 7th, and 9th level</strong>, and then 11th, 13th, and 15th. You may learn and
+  work any Miracle of a Rank your level allows, and no higher; ask for more than you have earned and the grace simply
+  does not come. You begin knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a
+  repertoire of six by the height of a frontier life and nine by the end of a very long one.</p>
+  <p class="note">Ranks Six and Seven hold four Miracles apiece and Rank Eight holds three. All three of the Rank Eight
+  Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
+  between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
   <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
   countable — the Padre's <em>Grace</em>, the Preacher's <em>Conviction</em>, the Shaman's <em>Breath</em>, the Medicine
-  Man's <em>Vital Breath</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
+  Man's <em>Vital Breath</em>, the Sister's <em>Mercy</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
   &ldquo;2&nbsp;Faith,&rdquo; it means two points of that pool, whatever your Calling names it. The pool refreshes with
   the dawn (or the dawn Mass, or the morning offering), and it runs dry, as faith does, exactly when the night is longest.</p>
   <p class="note" id="ix-m-dc">Where a Miracle forces a save, the DC is your <strong>Miracle DC = 10 + half your level +
-  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman and the
-  Medicine Man, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
+  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman, the
+  Medicine Man and the Sister, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
   worked as an <em>Action</em> costs one Beat, and one worked as a <em>Reaction</em> is taken on another's turn.</p>
 
   <h2 id="ix-m-lists">The Seven Lists</h2>
@@ -2323,6 +2640,33 @@ body{ background:#525659; }
   <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Spread your arms and stand for them. For the scene, no ally who can hear you may be brought below 1 Blood by uncanny harm — struck to the edge of death, and no further, while your voice holds. Ordinary lead still kills as it pleases. The dark does not get to.</p>
   <h3 id="ix-m-hour">The Hour Is Not Yours</h3>
   <p><em>Rank 5 · Reaction · 5 Faith.</em> When a soul you can see is about to die, and die rather than merely fall, say aloud that the hour is not yours to take. It is not taken. They lie Dying one point above dead and no worse, stable at once and until somebody reaches them. Whatever was coming for that soul now knows your name, knows you said it out loud, and has been given a reason to learn where you sleep.</p>
+  <h3 id="ix-m-cupnotemptie">The Cup Not Emptied</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Bless what little there is. Food, water, medicine, powder, lamp oil, bandage
+  — whatever is in front of you, there is now enough of it for everyone here, for a week. It is plain and it is
+  sufficient and it does not keep past the week. A great many hard winters have turned on somebody being able to do
+  this.</p>
+  <h3 id="ix-m-outofdepths">Out of the Depths</h3>
+  <p><em>Rank 7 · One minute · 7 Faith.</em> Reach for somebody who has been taken. Name a soul who is possessed, bound,
+  called away, hollowed out, sold, or being worn by something else, and pull. They come back at once, out of whatever has them, whole enough to speak and to say what happened. Whatever had them is now aware that you can do this, and where you were
+  standing when you did it.</p>
+  <h3 id="ix-m-answer">The Answer</h3>
+  <p><em>Rank 8 · One minute · your whole pool of Faith.</em> Most prayers are not answered. Ask, once, for a single thing,
+  in your own words, aloud, in front of whoever is there — and it is granted, whatever it was. The dead one back. The
+  fire out. The army turned. The sickness lifted off a county. The thing that has been coming, not coming. There is no
+  save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and
+  you will spend the rest of your life being careful about what you ask for, having found out that it works.</p>
+  <h3 id="ix-m-greaterlove">Greater Love</h3>
+  <p><em>Rank 8 · Reaction · your whole pool of Faith.</em> Step in front of all of it. Any harm, effect, death, taking or
+  unmaking about to fall on any number of souls you can see falls on you instead, entire and undivided, and they are
+  untouched and unaware until it is over. You will very likely not survive it. If you do not, you cannot be raised,
+  called back, or spoken to afterward by any means: you are where the people you saved are not, and that was the
+  arrangement.</p>
+  <h3 id="ix-m-longroadhome">The Long Road Home</h3>
+  <p><em>Rank 8 · One hour · your whole pool of Faith.</em> Take everyone home. Every soul who has been with you and is
+  willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has
+  ever called home, safely, together, however far it is and whatever holds them. Doors open. Distances shorten. The dead
+  walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to
+  travel anywhere the ordinary way without knowing exactly how much shorter it could have been.</p>
   <h2 id="ix-m-list-liturgy">The Liturgy</h2>
   <p>The Padre's alone: Latin, sacrament, and the long authority of a Church that has been writing the dark down for eighteen centuries. The words work whether or not the celebrant believes them.</p>
   <h3 id="ix-m-asperges">Asperges Me</h3>
@@ -2337,6 +2681,10 @@ body{ background:#525659; }
   <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Lay the Church's ban upon a place, an object, or a grave. For a day and a night no uncanny thing may enter it, use it, or draw strength from it, as though the ground itself had been forbidden to them by an authority older than their hunger.</p>
   <h3 id="ix-m-tedeum">Te Deum</h3>
   <p><em>Rank 5 · One minute · 5 Faith · Will save.</em> The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words.</p>
+  <h3 id="ix-m-requiem">The Requiem</h3>
+  <p><em>Rank 6 · One hour · 6 Faith.</em> Sing the whole of it over a burying ground, a battlefield, a burned house, a
+  mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means.
+  Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them.</p>
   <h2 id="ix-m-list-revival">The Revival</h2>
   <p>The Preacher's alone: the open Word, the camp meeting, the mourner's bench, and conviction loud enough to be heard over the guns.</p>
   <h3 id="ix-m-mourner">Call to the Mourner's Bench</h3>
@@ -2351,6 +2699,11 @@ body{ background:#525659; }
   <p><em>Rank 4 · sustained · 4 Faith.</em> Preach a rolling revival and do not stop. For three rounds, so long as you keep the Word going and take no other action, every ally who can hear you regains Nerve and shakes one condition at the start of each round. The tent shakes. So does the dark outside it.</p>
   <h3 id="ix-m-pentecost">Pentecost</h3>
   <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Tongues of fire, and every ear hearing in its own language. For the scene your Brimstone strikes every uncanny thing you can see at once, and the Marked cannot resist it by their Mark. The fire does not fall often. When it does, it does not ask permission.</p>
+  <h3 id="ix-m-wholetownris">The Whole Town Rises</h3>
+  <p><em>Rank 6 · One minute · 6 Faith.</em> Preach until the place stands up. Every living soul within earshot who is not
+  hostile to you recovers all Blood and Nerve, shakes every condition, and for the next hour will fight, carry, dig or
+  stand where you ask them to. They will not do anything they believe is wrong, and afterward they will be very tired
+  and will want to know what came over them.</p>
   <h2 id="ix-m-list-spirits">The Spirits</h2>
   <p>The Shaman's alone: not commands but courtesies, asked of the crowded country and its neighbors — beast and weather, river and rock, and the honored dead.</p>
   <h3 id="ix-m-smallword">A Word to the Small Spirits</h3>
@@ -2367,6 +2720,11 @@ body{ background:#525659; }
   <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it — able to speak, and to rage, and to bargain, but not to go.</p>
   <h3 id="ix-m-greatspirit">Call the Great Spirit</h3>
   <p><em>Rank 5 · One minute · 5 Faith.</em> Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked.</p>
+  <h3 id="ix-m-councilofdea">The Council of the Dead</h3>
+  <p><em>Rank 7 · One hour · 7 Faith.</em> Call the dead of a place together and sit down with them. Every spirit within a
+  mile that will come, comes, and they answer honestly for an hour: what was done here, by whom, where it is now, and
+  what would settle it. They are not obliged to be kind and they are frequently not. Once in a while one of them asks
+  you for something, and then you have a second problem.</p>
   <h2 id="ix-m-list-mending">The Mending</h2>
   <p>The Medicine Man's alone: the quiet, stubborn craft of keeping the wounded alive, one sure mending at a time, so the deep well is there when the worst comes.</p>
   <h3 id="ix-m-poultice">The Poultice</h3>
@@ -2381,6 +2739,11 @@ body{ background:#525659; }
   <p><em>Rank 4 · 1 Beat · 4 Faith.</em> Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one.</p>
   <h3 id="ix-m-longmercy">The Long Mercy</h3>
   <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today.</p>
+  <h3 id="ix-m-bodymadewhol">The Body Made Whole</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Put a person back the way they were made. All Blood restored, every disease,
+  poison and Affliction gone, every Lasting Injury undone, limbs and sight and hearing returned. Whatever was done to
+  them is not done to them any more. It works once on any one soul, ever, and both of you will know afterward which day
+  it was.</p>
   <h2 id="ix-m-list-consecration">The Consecrations</h2>
   <p>The Witch Hunter's alone, and fueled by Zeal rather than a healer's pool: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution.</p>
   <h3 id="ix-m-saltline">Salt the Threshold</h3>
@@ -2395,6 +2758,11 @@ body{ background:#525659; }
   <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at &minus;2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all.</p>
   <h3 id="ix-m-reckoningfire">The Reckoning Fire</h3>
   <p><em>Rank 5 · 1 Beat · 5 Faith · Reflex save.</em> Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck.</p>
+  <h3 id="ix-m-groundmadeho">The Ground Made Holy</h3>
+  <p><em>Rank 7 · One hour · 7 Faith.</em> Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or
+  draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay
+  buried and quiet. It ends only if the ground is broken deliberately by a living hand, which somebody will eventually
+  get around to.</p>
   <h2 id="ix-m-list-vigil">The Vigil</h2>
   <p>The Sister's alone: the work of sitting up with what should not be left alone. It wards, it watches, and it refuses to move, and there is almost nothing in it that will win a fight. That is not what it was written for.</p>
   <h3 id="ix-m-handheld">Hand Held</h3>
@@ -2409,6 +2777,11 @@ body{ background:#525659; }
   <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for.</p>
   <h3 id="ix-m-notbemoved">She Will Not Be Moved</h3>
   <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose.</p>
+  <h3 id="ix-m-untilmorning">Until Morning</h3>
+  <p><em>Rank 7 · One minute · 7 Faith.</em> Sit down with them and say that this is not the night. Until dawn, no soul
+  inside the room, the camp or the house may die: the dying do not go, the mortal wound waits, the sickness holds where
+  it is. It does not cure any of it and morning still comes. What it buys is the hours, and the hours are usually what
+  was wanted.</p>
   <div class="pageno">24</div>
 </section>
 
@@ -2447,16 +2820,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Devotion, Dark Communion, The Glad Mark</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Devotion, Dark Communion, The Glad Mark</td></tr>
       <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
-      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Sacrifice, <strong>Devotion</strong></td></tr>
+      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Sacrifice, Devotion</td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Gifts of the Patron</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Gifts of the Patron</td></tr>
       <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
       <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Rapture</td></tr>
       <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Devotion (Greater)</strong></td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, Devotion (Greater)</td></tr>
       <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Vessel</td></tr>
+      <tr><td>11</td><td class="c">+9</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Patron's Ear</td></tr>
+      <tr><td>12</td><td class="c">+10</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+11</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Sign learned, What Is Owed</td></tr>
+      <tr><td>14</td><td class="c">+12</td><td class="c">+4</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+13</td><td class="c">+5</td><td class="c">+5</td><td class="c">+9</td><td>The Patron Comes</td></tr>
     </tbody>
   </table>
   <h4>Devotion</h4>
@@ -2492,6 +2870,23 @@ body{ background:#525659; }
   body. When the scene ends, make a Will save against a DC the Keeper sets. Fail, and a little more of you stays behind the
   veil; fail at high Mark, and you do not come back at all, but step willingly into the dark a finished thing. The most
   devoted Dark Cultist's last prayer is always answered, exactly as it was asked.</p>
+  <h4>The Patron's Ear</h4>
+  <p>It listens now without being called. Once per scene, ask a question of your Patron in your own head and receive an
+  answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each
+  answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.</p>
+  <h4>What Is Owed</h4>
+  <p>You have learned the shape of the ledger you are in. Once per scene, name a price and pay it — Blood, Nerve, a memory,
+  a year, a companion's luck — and take back exactly what it was worth: damage undone, a save passed, a Sign worked for
+  free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is
+  more than most bargains offer.</p>
+  <h4>The Patron Comes</h4>
+  <p>Once per session, you may open the way and let something through. It comes. For one scene the Patron is present in
+  the world where you are standing — not summoned, not bound, not yours — and it does what it came to do, which will
+  include the thing you wanted, and will not stop there. Say what you asked for and the Keeper says what arrives; the
+  thing you asked for happens completely. Everything else that happens is the Keeper's. Your Mark rises by 1 permanently
+  and cannot be reduced, every soul who witnessed it must save against fear at your Devotion DC or be Frightened for a
+  day, and the place it stood in is never quite right again. You will do this more than once. That is the part they
+  never believe when they are told.</p>
 
   <div class="box">
     <h3>On Playing a Dark Cultist</h3>
@@ -2532,16 +2927,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>False Gospel, The Conduit</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td class="c">+2</td><td>Edge, False Gospel, The Conduit</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+0</td><td class="c">+3</td><td class="c">+3</td><td>Stolen Wonder</td></tr>
-      <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, <strong>Gospel</strong></td></tr>
+      <tr><td>3</td><td class="c">+2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+3</td><td>Edge, Gospel</td></tr>
       <tr><td>4</td><td class="c">+3</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Honeyed Word</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Visit the Cost</td></tr>
+      <tr><td>5</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td class="c">+4</td><td>Edge, Visit the Cost</td></tr>
       <tr><td>6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Stolen Wonder</td></tr>
       <tr><td>7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+5</td><td class="c">+5</td><td>Edge, Feed the Dark</td></tr>
       <tr><td>8</td><td class="c">+7</td><td class="c">+2</td><td class="c">+6</td><td class="c">+6</td><td>Stolen Wonder</td></tr>
-      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge, <strong>Gospel (Greater)</strong></td></tr>
+      <tr><td>9</td><td class="c">+8</td><td class="c">+3</td><td class="c">+6</td><td class="c">+6</td><td>Edge, Gospel (Greater)</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>The Hollow Crown</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+3</td><td class="c">+7</td><td class="c">+7</td><td>Stolen Wonder (fourth), The Bigger Lie</td></tr>
+      <tr><td>12</td><td class="c">+11</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+4</td><td class="c">+8</td><td class="c">+8</td><td>Stolen Wonder (fifth), Believers</td></tr>
+      <tr><td>14</td><td class="c">+13</td><td class="c">+4</td><td class="c">+9</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+5</td><td class="c">+9</td><td class="c">+9</td><td>The Word Made Flesh</td></tr>
     </tbody>
   </table>
   <h4>The Conduit</h4>
@@ -2573,6 +2973,23 @@ body{ background:#525659; }
   But you are no longer entirely the one preaching; the Keeper may put a word in your mouth and turn your hand, as the thing
   behind the curtain stretches into the room it has rented all this time. When the scene ends the Mark advances, and you
   understand the shape of the trick at last: you did not gather a flock for yourself. You baited a hook. You were the worm.</p>
+  <h4>The Bigger Lie</h4>
+  <p>The small ones stopped working on you years ago; the enormous ones have never failed. Once per session, tell a lie so
+  large that checking it is somebody else's job — an army behind you, a pardon in your pocket, a dead man alive, the
+  whole town in on it — and until it is disproved by direct evidence, everyone who heard it acts as though it were so.
+  The disproving is a scene of its own, and you should be elsewhere by then.</p>
+  <h4>Believers</h4>
+  <p>You have gathered enough of them that they have become a resource rather than an audience. You command a congregation
+  of your PRE modifier × 5 souls, which travels with you or is left where it is useful. They will lie for you, work for
+  you, take a beating for you and give you what they have. They will not knowingly die for you. Once per session, they
+  turn out to be exactly where you needed somebody. What you spend them on is on your account.</p>
+  <h4>The Word Made Flesh</h4>
+  <p>Once per session, a lie of yours becomes true. Name any single thing you have publicly claimed this session — a
+  healing you faked, an authority you invented, a prophecy you made up on the spot, a power you do not have — and it is
+  now the case, fully and in the world, for as long as the scene runs. The healed stand up. The prophecy occurs. The
+  power is yours and works. Something made it so, and it was not you, and it did not do it as a favour. Your Mark rises
+  by 1 and cannot be reduced, and from then on the thing that answered will occasionally make your lies true without
+  being asked, at the moment least convenient to you, in front of the people you most needed to keep fooled.</p>
 
   <div class="box gold">
     <h4 id="ix-three-debts">Three Debts: Hexer, Witch, False Prophet</h4>
@@ -2616,16 +3033,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Witch-Sight, Signs, Marked</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Witch-Sight, Signs, Marked</td></tr>
       <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
-      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, <strong>Bargain</strong></td></tr>
+      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Bargain</td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Blood Price</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Blood Price</td></tr>
       <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
       <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
       <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Bargain (Greater)</strong></td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, Bargain (Greater)</td></tr>
       <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, Adept</td></tr>
+      <tr><td>11</td><td class="c">+9</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Deeper Bargain</td></tr>
+      <tr><td>12</td><td class="c">+10</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+11</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Sign learned, Adept (Second)</td></tr>
+      <tr><td>14</td><td class="c">+12</td><td class="c">+4</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+13</td><td class="c">+5</td><td class="c">+5</td><td class="c">+9</td><td>The Long Debt</td></tr>
     </tbody>
   </table>
   <h4>Signs</h4>
@@ -2645,6 +3067,20 @@ body{ background:#525659; }
   <h4>Adept</h4>
   <p>At 10th level, choose one Sign you know. You may work it without spending Nerve once per scene — though never without
   consequence.</p>
+  <h4>The Deeper Bargain</h4>
+  <p>You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its
+  Nerve cost as damage that cannot be healed until you have slept. A Hexer who has learned this generally learns it in
+  one particular night, and remembers that night for good.</p>
+  <h4>Adept (Second)</h4>
+  <p>Choose a second Sign you know. It too may be worked once per scene without spending Nerve. The consequence attached to
+  it does not stop attaching.</p>
+  <h4>The Long Debt</h4>
+  <p>Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have
+  the Nerve, at any scale the fiction can hold — a Sign laid on a town, on a river, on a bloodline, on a night. It
+  works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the
+  Keeper takes something from the world you were standing in. A person. A place. A year of somebody's life who never
+  asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly
+  what it is worth and you are never the one paying.</p>
 
   <div class="box gold">
     <h4>Working a Sign — the Short of It</h4>
@@ -2682,16 +3118,21 @@ body{ background:#525659; }
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>The Craft, Familiar, The Evil Eye</td></tr>
+      <tr><td>1</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+2</td><td>Edge, The Craft, Familiar, The Evil Eye</td></tr>
       <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
-      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, <strong>Craft</strong></td></tr>
+      <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Craft</td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned, Brew</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Hex</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Hex</td></tr>
       <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
       <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge</td></tr>
       <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
-      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, <strong>Craft (Greater)</strong></td></tr>
+      <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, Craft (Greater)</td></tr>
       <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Old Witch</td></tr>
+      <tr><td>11</td><td class="c">+9</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Second Familiar</td></tr>
+      <tr><td>12</td><td class="c">+10</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
+      <tr><td>13</td><td class="c">+11</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Sign learned, The Deep Craft</td></tr>
+      <tr><td>14</td><td class="c">+12</td><td class="c">+4</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
+      <tr><td>15</td><td class="c">+13</td><td class="c">+5</td><td class="c">+5</td><td class="c">+9</td><td>What the Old Ones Knew</td></tr>
     </tbody>
   </table>
   <h4>The Craft</h4>
@@ -2723,6 +3164,22 @@ body{ background:#525659; }
   <p>At 10th level your curses set like winter ground: a target who fails a Hex carries it until it is lifted by rite,
   apology, or your death. Once per session you may speak a <em>true curse</em> of dire and lasting effect, the kind that
   follows a bloodline. You have outlived everyone who feared you young. The ones who fear you now are right to.</p>
+  <h4>The Second Familiar</h4>
+  <p>A second beast comes to you and stays. Bind it as you bound the first, from the table of familiars: you gain its boon
+  as well, both may be abroad at once, and either may carry the Evil Eye for you at a distance you can walk in an hour.
+  Two of them will not stay in the same room, and you will spend a surprising amount of your life managing that.</p>
+  <h4>The Deep Craft</h4>
+  <p>Your brews and hexes have stopped being small. A Brew you make lasts a season rather than a day and may be given away
+  without weakening, and a Hex you lay may name a condition for its lifting rather than a duration — a spoken apology, a
+  returned thing, a river crossed, a name said three times. Most who carry one never learn the condition, which is
+  generally the point.</p>
+  <h4>What the Old Ones Knew</h4>
+  <p>Once per session, do the thing the old women in the stories do. Change one thing that has already happened this
+  session, as though it had gone otherwise: the shot missed, the door was locked, the letter never came, she was
+  somewhere else that night. It is not an illusion and nobody remembers it the old way except you and anything older
+  than you. The world simply is as you have said. What it costs is fixed: you age a year, the nearest living thing that
+  trusts you dies quietly within the week, and one of your own memories goes into the gap to hold it open. You will not
+  know which one is missing. You will only notice, sometimes, that there is a space where a name used to be.</p>
 
   <div class="box gold">
     <h4>Witch and Hexer — the Difference</h4>
@@ -2907,9 +3364,12 @@ body{ background:#525659; }
     <span class="src">&mdash; Marshal T. Coyle</span>
   </div>
   <p class="dropcap lead">Every character gains an Edge at 1st level and at each odd level after — 1st, 3rd, 5th, 7th, and 9th —
-  and may also raise one ability score by a point at 5th and 10th. Edges are the deliberate choices that shape what your
-  character is good at. Some have requirements, noted in parentheses. A selection follows, grouped by the part of you they
-  sharpen; your Keeper may allow others.</p>
+  and then again at 12th and 14th, and may also raise one ability score by a point at 5th, 10th and 15th. Edges are the
+  deliberate choices that shape what your character is good at. Some have requirements, noted in parentheses. A selection
+  follows, grouped by the part of you they sharpen; your Keeper may allow others.</p>
+  <p class="note">An Edge marked <strong>(11th)</strong> cannot be taken before eleventh level, whatever else you meet. Those
+  are what the two late Edges are for, and a Calling's own late Edge builds on the feature it names, so the pair of them are
+  usually taken together.</p>
 
   <h2 id="ix-eg">Edges of the Gun</h2>
   <p class="note">These knacks come alive under the Iron Code (Chapter XI). Where one speaks of <em>Strikes</em>, <em>Beats</em>,
@@ -2924,7 +3384,13 @@ body{ background:#525659; }
     <li id="ix-e-steady"><strong>Steady Shot.</strong> If you do not move on your turn, ignore the first range increment penalty and gain +1 to hit. With a Kickback weapon you also ignore the recoil penalty.</li>
     <li id="ix-e-throw"><strong>Throw the Stick.</strong> If you carry powder, you may hurl a lit charge in place of a Strike, lobbing it a fair distance to burst where it lands.</li>
     <li id="ix-e-two-gun"><strong>Two-Gun.</strong> Fight with a pistol in each hand. Your off-hand Strike does not increase your Multiple Attack Penalty for that round, though it is still made at the current penalty.</li>
-  </ul>
+    <li id="ix-e-two-guns-speaking"><strong>Two Guns Speaking.</strong> (Two-Gun, 11th) Both irons at once count as one Strike: roll once, and on a
+      hit apply the damage of both weapons. Your Multiple Attack Penalty does not rise for it. Reloading two guns still takes reloading two guns.</li>
+    <li id="ix-e-through-and-through"><strong>Through and Through.</strong> (11th) A shot that drops a foe carries on. When a Strike reduces a
+      creature to 0 Blood, make one free Strike at the same attack against a second creature standing behind or beside it.</li>
+    <li id="ix-e-the-last-round"><strong>The Last Round.</strong> (11th) You are never out at the moment it matters. Once per scene, declare that the
+      chamber you thought was empty is not, and take one Strike with it at +2. Nobody has ever caught you counting.</li>
+</ul>
 
   <h2 id="ix-ebd">Edges of the Body</h2>
   <ul class="dash">
@@ -2933,7 +3399,11 @@ body{ background:#525659; }
     <li id="ix-e-iron-gut"><strong>Iron Gut.</strong> +2 on Fortitude saves against poison, disease, drink, and spoiled provisions — and you can hold your liquor past any reasonable man.</li>
     <li id="ix-e-saddle-born"><strong>Saddle-Born.</strong> You and your horse act as one; never fall from the saddle by mishap, and fight mounted without penalty.</li>
     <li id="ix-e-rawhide"><strong>Tough as Rawhide.</strong> Gain +1 Blood per level, now and as you advance.</li>
-  </ul>
+    <li id="ix-e-old-bones-old-habits"><strong>Old Bones, Old Habits.</strong> (11th) You do not get Fatigued, by weather, wounds, want of sleep, hard
+      travel or the uncanny. You still feel all of it. You have simply stopped letting it decide anything.</li>
+    <li id="ix-e-get-up"><strong>Get Up.</strong> (Hard to Kill, 11th) Once per scene, on your own turn while Dying, stand at half your Blood with
+      everything you were holding. Whatever put you down is entitled to be surprised.</li>
+</ul>
 
   <h2 id="ix-emn">Edges of Mind and Nerve</h2>
   <ul class="dash">
@@ -2943,7 +3413,14 @@ body{ background:#525659; }
     <li id="ix-e-iron-will"><strong>Iron Will.</strong> Once per scene, reroll a failed save against fear, charm, or compulsion and keep the better result.</li>
     <li id="ix-e-stone"><strong>Stone Nerve.</strong> Gain +2 maximum Nerve per level, and +1 on Dread Checks. The horrors find you harder ground.</li>
     <li id="ix-e-unshakable"><strong>Unshakable.</strong> (RES 13) The first time each scene you would lose Nerve, lose none instead. You have seen worse, or tell yourself so.</li>
-  </ul>
+    <li id="ix-e-nothing-new-under-the-"><strong>Nothing New Under the Sun.</strong> (11th) You have seen a version of this before. Gain +4 on any
+      check to identify a creature, a working, a poison, a mechanism or a scheme, and the Keeper will tell you one true thing about it whether you
+      rolled well or not.</li>
+    <li id="ix-e-the-long-view"><strong>The Long View.</strong> (11th) Once per session, ask the Keeper what the worst likely consequence of the plan
+      on the table is, and get a straight answer. It is not prophecy. It is thirty years of watching plans.</li>
+    <li id="ix-e-known-far-off"><strong>Known Far Off.</strong> (11th) Your name has travelled ahead of you. In any settlement, somebody already knows
+      it and one of the following is true, your choice: they are glad, they are afraid, or they owe you. The Keeper says who.</li>
+</ul>
 
   <h2 id="ix-efr">Edges of the Frontier</h2>
   <ul class="dash">
@@ -2952,7 +3429,11 @@ body{ background:#525659; }
     <li id="ix-e-pathfinder"><strong>Pathfinder.</strong> You are never truly lost; gain +2 on overland travel and always find water, forage, and safe ground where others find none.</li>
     <li id="ix-e-powder"><strong>Powder Sense.</strong> +2 to set, spot, or disarm charges and traps, and your own blasts never catch a friend you can plainly see.</li>
     <li id="ix-e-tracker"><strong>Tracker.</strong> +3 on Survival to track, and you may track across stone, shallow water, and the spoor of unnatural things.</li>
-  </ul>
+    <li id="ix-e-the-country-knows-you"><strong>The Country Knows You.</strong> (11th) You are never lost, never without water, and never without a
+      place to sleep out of the weather, in any country you have crossed once before. Nothing hostile finds your camp by accident.</li>
+    <li id="ix-e-winter-proof"><strong>Winter-Proof.</strong> (Iron Gut, 11th) Cold, heat, thin air, thirst, bad water and foul air do you no harm at
+      all, and you may carry one soul through the same for a day.</li>
+</ul>
 
   <h2 id="ix-eod">Edges of the Old Dark</h2>
   <ul class="dash">
@@ -2960,7 +3441,11 @@ body{ background:#525659; }
     <li id="ix-e-salt-wise"><strong>Salt-Wise.</strong> +2 on Lore (Occult), and the Old Rites (Chapter XIII) take you half the usual time and materials.</li>
     <li id="ix-e-touched"><strong>Touched.</strong> (RES 13) You have brushed the uncanny and lived. Gain Witch-Sight, +1 Mark, and an unsettling certainty about where the dark is thickest.</li>
     <li id="ix-e-warded"><strong>Warded.</strong> (Salt-Wise) Scribe a ward at a threshold that the uncanny cannot cross uninvited for a night; the crossing costs such a thing dearly.</li>
-  </ul>
+    <li id="ix-e-bearing-it"><strong>Bearing It.</strong> (11th) Your Mark does not show. No creature, holy ground, ward or gift of sight registers
+      it, and it costs you none of its usual penalties in front of the living. It has all the same effects on what you are becoming.</li>
+    <li id="ix-e-the-second-voice"><strong>The Second Voice.</strong> (11th) Once per scene, work a Sign you know as a reaction rather than on your
+      turn. Something in your throat does the speaking and it is not quite your accent.</li>
+</ul>
   <div class="pageno">32</div>
 </section>
 
@@ -2974,34 +3459,72 @@ body{ background:#525659; }
   <h3>Worldly Callings</h3>
   <ul class="dash">
     <li><strong>Bounty Hunter — Run It Down.</strong> (Getaway) After a Bushwhack lands, immediately Step and Stride for free; your quarry must spend an action to break away, or you stay on him through the dust.</li>
+    <li><strong>Bounty Hunter — The Trail Warms.</strong> (Cold Trail, 11th) Cold Trail may be worked twice a day, and a bearing you take once holds
+      for a week without repeating it.</li>
     <li><strong>Drifter — Long Gone.</strong> Once per scene, when no enemy is looking your way, you may slip from sight even while observed and take a free Stride into cover.</li>
+    <li><strong>Drifter — No Such Person.</strong> (Never Was Here, 11th) Never Was Here reaches a whole county rather than a place, and paper about
+      you goes missing along with the rest.</li>
     <li><strong>Engineer — Charge Already Set.</strong> Once per fight, declare that you prepared this ground before the shooting started. One explosive of yours is already placed where you now say it is, and goes off on your Beat.</li>
+    <li><strong>Engineer — Bench-Tested.</strong> (Proving Ground, 11th) Two contraptions may be tuned at once rather than one, and a tuned
+      contraption may be handed to somebody else already tuned.</li>
     <li><strong>Gambler — Double or Nothing.</strong> Once per scene, before you roll, name the stake: on a success the result is one degree better; on a failure, one degree worse. The house is always watching.</li>
+    <li><strong>Gambler — The Whole Deck.</strong> (Marked Deck, 11th) Marked Deck reads a whole room rather than one person: one true hidden thing
+      about each of up to four people you can see.</li>
     <li><strong>Gunhand — Pistolero's Tally.</strong> When you drop a foe with a Strike, your next Strike this round ignores the Multiple Attack Penalty.</li>
+    <li><strong>Gunhand — The Middle Part.</strong> (Second Nature, 11th) Called shots cost you nothing at all, and you may change your grip, your
+      weapon and your cover in the same Beat.</li>
     <li><strong>Marshal — The Long Arm.</strong> When you Demoralize a foe or invoke the law against it, allies who can hear you gain +1 on their next Strike against that foe.</li>
+    <li><strong>Marshal — Sworn and Standing.</strong> (Deputize, 11th) Deputized hands keep their oath for a week rather than a day, and one of them
+      may take a hit meant for you.</li>
     <li><strong>Mountain Man — One Shot, One Kill.</strong> (Dead Aim) Once per scene, a steadied shot against a foe unaware of you deals <strong>maximum</strong> Dead Aim dice and ignores any Damage Reduction from hide or armor — the shot you spend an hour in the cold to earn.</li>
+    <li><strong>Mountain Man — Kept Count.</strong> (Winter Count, 11th) Winter Count may be called twice a session, and the second telling gives the
+      posse the bonus as well as you.</li>
     <li><strong>Prospector — Hang Fire.</strong> (Powderman) Set a charge to blow on a trigger you name — a tripwire, a gunshot, a spoken word — and it waits, patient as the deep, until that moment comes.</li>
+    <li><strong>Prospector — Read the Whole Seam.</strong> (The Deep Vein, 11th) The Deep Vein reaches five miles rather than one, and names what is
+      down there without your having to guess it first.</li>
     <li><strong>Prospector — Highball Charge.</strong> (Powderman) Once per scene, overpack a single charge: it deals <strong>maximum dice</strong> and doubles its burst radius. Stand well back, and count your friends first.</li>
     <li><strong>Prospector — Laid By.</strong> Once per session, declare that you laid by a useful mundane item, a cached supply, or a contact in this place — within reason, you did.</li>
     <li><strong>Sawbones — Battlefield Surgeon.</strong> Your field care in the thick of a fight provokes no reaction and restores an extra die of Blood.</li>
+    <li><strong>Sawbones — Two Doses.</strong> (The Waking Draught, 11th) You carry a second dose, and a patient raised by either may act for twenty
+      minutes rather than ten.</li>
   </ul>
 
   <h3>Callings of Faith</h3>
   <ul class="dash">
     <li><strong>Medicine Man — Mending Hands.</strong> Your remedies lift one lingering affliction — Sickened, Drained, the first grip of a curse — along with the Blood they restore.</li>
+    <li><strong>Medicine Man — The Song Carries.</strong> (The Long Song, 11th) The Long Song may be sung over a whole camp of any size, and those who
+      hear it are proof against fear until the next dusk.</li>
     <li><strong>Padre — Shepherd's Word.</strong> Spend a Beat to grant an ally who can hear you an immediate save, with your bonus, against a fear already gripping them.</li>
+    <li><strong>Padre — The Parish Wide.</strong> (Cure of Souls, 11th) Your parish includes anyone who has ever taken shelter under your roof, and
+      two of them turn up each session rather than one.</li>
     <li><strong>Preacher — Hellfire Sermon.</strong> Your invocations against the unclean reach every foe who can hear your voice, not one alone.</li>
+    <li><strong>Preacher — The Fire Catches.</strong> (The Camp Meeting, 11th) A camp meeting leaves behind a standing congregation: that town will
+      answer a call from you once, later, however far away you are.</li>
     <li><strong>Shaman — Spirit-Spoken.</strong> Once per scene, put one yes-or-no question to the spirits about this land, its dead, or what passed here, and be answered true.</li>
+    <li><strong>Shaman — The Circle Holds.</strong> (The Wide Circle, 11th) The Helping Spirits may be sent to every ally at once, and the spirits of
+      a place will answer two questions rather than one.</li>
     <li><strong>Sister — Between Them and It.</strong> When a foe would Strike an ally adjacent to you, you may take the Strike yourself instead. You are Off-Guard until your next turn, and the ally may not refuse.</li>
+    <li><strong>Sister — The Third Night.</strong> (The Longer Watch, 11th) You may keep watch for a week rather than three nights before it tells,
+      and one soul under your watch heals a Lasting Injury over it.</li>
     <li><strong>Witch Hunter — Bane-Sharpened.</strong> When you exploit your quarry's known weakness, deal an extra die of damage; you also name the kind of any uncanny thing on sight.</li>
+    <li><strong>Witch Hunter — The Longer Book.</strong> (The Name Written Down, 11th) Your book holds twice as many names, and a name in it cannot
+      lie to you in any tongue, at any distance.</li>
   </ul>
 
   <h3>Callings of the Old Dark</h3>
   <ul class="dash">
     <li><strong>Dark Cultist — Devoted Unto Death.</strong> You are immune to fear of the power you serve, and once per scene may shrug off a wound's effect for a round — the Mark keeps the tally.</li>
+    <li><strong>Dark Cultist — It Volunteers.</strong> (The Patron's Ear, 11th) Once per session the Patron answers a question you did not ask, at the
+      moment it becomes relevant, whether or not you wanted it.</li>
     <li><strong>False Prophet — Golden Tongue.</strong> You may work a single Deceive against an entire crowd at once, as readily as against one trusting soul.</li>
+    <li><strong>False Prophet — Told Twice.</strong> (The Bigger Lie, 11th) A lie of yours that is disproved may be told again, once, to a different
+      audience, as though it never had been.</li>
     <li><strong>Hexer — Hard Bargain.</strong> Once per scene, work a Sign for one less Nerve than it asks; the unpaid cost comes due later, at a time of the Keeper's choosing.</li>
+    <li><strong>Hexer — Interest Deferred.</strong> (The Deeper Bargain, 11th) Damage taken through The Deeper Bargain may be pushed onto a willing
+      soul who has agreed to it, once per scene.</li>
     <li><strong>Witch — Bitter Brew.</strong> Keep one extra charm or poison prepared, and your brews hold their potency a full day longer than another's would.</li>
+    <li><strong>Witch — The Third Beast.</strong> (The Second Familiar, 11th) A third familiar comes to you and binds. The three of them will not be
+      in the same county, and you will manage.</li>
   </ul>
   <div class="pageno">33</div>
 </section>
@@ -3708,6 +4231,10 @@ body{ background:#525659; }
   <p>So when a fight is going badly in a way that feels arithmetical rather than unlucky, stop trying to win it. Ask
   what the thing wants, what it will not cross, what it was before, and who in this county already knows. That is not
   the Keeper being merciful. It is the game working as designed.</p>
+  <p id="ix-still-shoot">A few rules later in this book say <strong>a thing you can still shoot</strong>, and that is
+  the line they mean: everything on the near side of it, which is most of what you will ever meet, and which lead and
+  powder and a good position will eventually finish. The far side has an answer instead. Your Keeper knows which side
+  of the line anything is on and will tell you, usually by the second round, usually by how the arithmetic feels.</p>
 
   <h2 id="ix-wounds">Wounds, Bleeding, and Death</h2>
   <p>Your <strong>Blood</strong> is your hit points; it is also, plainly, your blood. At <strong>0 Blood</strong> you fall,
@@ -4070,8 +4597,8 @@ body{ background:#525659; }
   does, and its <strong>Backlash</strong> — what the dark exacts when the working slips. There are forty of them here,
   across three lists, and no single soul will ever hold more than a handful.</p>
   <h2 id="ix-sign-rank">Rank and Reach</h2>
-  <p>Every Sign carries a <strong>Rank</strong> from one to five. The Rank measures the reach: how far into
-  the old country you have to go to fetch the words, and how much of you comes back with them. A Rank Five
+  <p>Every Sign carries a <strong>Rank</strong> from one to eight. The Rank measures the reach: how far into
+  the old country you have to go to fetch the words, and how much of you comes back with them. A Rank Eight
   Sign is no harder to pronounce than a Rank One. It simply costs more to mean it. You may
   learn and work any Sign of a Rank your level allows, and no other. There is no arguing the point with a Sign
   of a Rank above you: the words are there, the meaning is not, and nothing happens at all.</p>
@@ -4083,11 +4610,17 @@ body{ background:#525659; }
       <tr><td class="c">3</td><td class="c">5th level</td><td>Working harm, working mercy, working across distance</td></tr>
       <tr><td class="c">4</td><td class="c">7th level</td><td>Binding and unbinding: wards, contracts, curses that hold</td></tr>
       <tr><td class="c">5</td><td class="c">9th level</td><td>The deep reach. Every one of these costs something permanent</td></tr>
+      <tr><td class="c">6</td><td class="c">11th level</td><td>Past what the books hold. You are working from memory and nerve</td></tr>
+      <tr><td class="c">7</td><td class="c">13th level</td><td>Weather, ground, sleep, luck — the conditions other people live inside</td></tr>
+      <tr><td class="c">8</td><td class="c">15th level</td><td>One rank, three Signs, and each is the last thing a worker learns</td></tr>
     </tbody>
   </table>
   <p class="note">You do not gain new Signs merely for reaching a Rank. Your Calling's table says how many Signs you
   know; the Rank says which ones you are allowed to choose from. A tenth-level Hexer knows fewer Signs than there are
   Signs in this chapter, and will go to her grave never having learned most of them. That is the intended shape of it.</p>
+  <p class="note">Ranks Six and Seven hold four Signs apiece and Rank Eight holds three, which is not an oversight.
+  Nobody was ever meant to have a menu at that reach. A worker who gets there has three or four of them at most, has
+  paid for every one, and knows exactly which of them she will not use again.</p>
 
   <h2 id="ix-sign-price">The Price</h2>
   <p>Signs are paid for in three coins, and the difference between them is the difference between a bad night and a
@@ -4158,6 +4691,33 @@ body{ background:#525659; }
   <p><em>Rank 5 · One minute · 5 Nerve and 1 Mark.</em> Hold a soul at the very edge of death until dawn. They do not worsen, do not wake, and cannot be killed by anything short of fire or the deliberate hand of something old. <strong>Backlash:</strong> Whatever was coming for them waits at the foot of the bed until sunrise, and it is patient, and it can be seen.</p>
   <h3 id="ix-s-debt">The Debt Called In</h3>
   <p><em>Rank 5 · 1 Beat · 5 Nerve and 1 Mark.</em> Everything out here owes something to something. Name a creature you can see and call in what it owes, whether or not you are the one it owes it to. It takes 6d6 at once and is Frightened of you until the end of its next turn, and there is no save, because a debt is not an opinion. Backlash: you take a point of Mark for having reached that far into a ledger that was never yours, and that is the whole of the price.</p>
+  <h3 id="ix-s-unwrittenhou">The Unwritten Hour</h3>
+  <p><em>Rank 6 · 1 Beat · 6 Nerve and 1 Mark.</em> Say that the last round did not happen, and it did not. Everything
+  since your own last turn comes undone: the shot, the fall, the word spoken, the door opened. Everyone acts again from
+  where they stood, knowing nothing. Backlash: you remember both hours, and for a day you cannot reliably tell which of
+  the two you are living in. Roll a flat check the first time it matters, and the Keeper will not tell you why.</p>
+  <h3 id="ix-s-nothinganswe">Nothing Answers Here</h3>
+  <p><em>Rank 6 · One minute · 6 Nerve.</em> Draw the line and close it. For an hour, inside a hundred feet of where you
+  drew it, no Sign works, no Miracle is granted, no uncanny thing does the thing it does, and nothing may be summoned,
+  banished, healed by grace or harmed by a working. It is quiet in there in a way that frightens people who have never
+  heard it. Backlash: you are inside it too, and you cannot lift it early.</p>
+  <h3 id="ix-s-groundgives">The Ground Gives</h3>
+  <p><em>Rank 7 · 1 Beat · 7 Nerve and 1 Mark.</em> The country stops holding still. For the scene, within sight, you move
+  the ground: a road becomes a ravine, a river runs the other way, a wall is somewhere else, a floor opens, a hill
+  stands where there was flat. One change a round, each of them real and each of them permanent unless something changes
+  it back. Backlash: the ground remembers who moved it, and every working you attempt on that land afterward costs one
+  more Nerve, for good.</p>
+  <h3 id="ix-s-noonesleepst">No One Sleeps Tonight</h3>
+  <p><em>Rank 7 · One minute · 7 Nerve and 1 Mark.</em> Take the night off a place. For a full night, nobody inside a mile
+  sleeps, rests, recovers Blood or Nerve, regains a pool, or heals by any means short of a Miracle. The uncanny do not
+  restore themselves either, which is generally the point, and the living get to dawn with nothing left. Backlash: you
+  do not sleep for three nights afterward, and the third one is bad.</p>
+  <h3 id="ix-s-wordunderwor">The Word Under the Word</h3>
+  <p><em>Rank 8 · One minute · your whole pool of Nerve and 1 Mark, permanently.</em> Every working has a word under it
+  that nobody says. Say it. One working of any kind, anywhere you have ever been — a curse, a ward, a binding, a
+  Miracle, a Sign, a thing a creature was made to do — comes apart and has never worked. It may be one that finished a
+  hundred years ago, and the hundred years rearrange themselves around its absence. Backlash: your Mark rises by one and
+  does not come down, and one working of your own, chosen by the Keeper, comes apart at the same moment.</p>
   <h2 id="ix-signs-bargain">The Bargain</h2>
   <p>For those who reached out and took: the Hexer, the Dark Cultist, the False Prophet. These Signs are stronger than the Common ones and priced accordingly, most often in Mark.</p>
   <h3 id="ix-s-debt">Debt Collected</h3>
@@ -4184,6 +4744,21 @@ body{ background:#525659; }
   <p><em>Rank 5 · 1 Beat · 5 Nerve and 1 Mark · Reflex save.</em> The ground splits along something that was never a fault line. Every creature within thirty feet takes 6d8 and saves for half. The crack does not close. <strong>Backlash:</strong> The ground remembers. That country gains a step of Taint, permanently.</p>
   <h3 id="ix-s-calling">The Calling</h3>
   <p><em>Rank 5 · One minute · 5 Nerve and 1 Mark.</em> You call something out of the dark to bargain or to serve, and it comes. What it is, what it wants, and whether it consents to leave are the Keeper's to decide. It stays until it is sent back, or until it has what it came for. <strong>Backlash:</strong> The most dangerous Sign in this book. Work it last, or never.</p>
+  <h3 id="ix-s-whatwaspromi">What Was Promised</h3>
+  <p><em>Rank 6 · 1 Beat · 6 Nerve and 1 Mark.</em> Something out there owes you, and you have decided to say so out loud. Name the debt, and you take payment instantly: any single effect of a Sign of Rank 5 or under, worked instantly and without its
+  own cost, whether or not you know it. Backlash: the ledger is not yours to read. Whatever you took is added to what
+  you owe at twice the value, and the Keeper decides when that is collected and from whom.</p>
+  <h3 id="ix-s-sellnight">Sell the Night</h3>
+  <p><em>Rank 7 · One minute · 7 Nerve and 2 Mark.</em> Offer up a night that has not happened yet. Name a night in the
+  coming year and hand it over; until then you work every Sign at one Rank higher than you have earned, pay one less
+  Nerve for each, and cannot be reduced below 1 Blood by anything uncanny. Backlash: on the night you sold, you are not
+  yours. Where you went and what was done with you is the Keeper's, and you will hear about some of it later.</p>
+  <h3 id="ix-s-nameyouwereg">The Name You Were Given</h3>
+  <p><em>Rank 8 · One minute · your whole pool of Nerve and 2 Mark, permanently.</em> Everything that was made was named
+  when it was made, and the name is still true. Speak the true name of one creature you can see, however old and however
+  great, and it must do one thing you say, in one sentence, at once and completely, whatever it is. It cannot refuse and there is no
+  save. Backlash: it now knows that you know, it knows yours, and it has as long as it likes to do something about that.
+  Very few workers have used this twice, and the ones who did were not around to be asked why.</p>
   <h2 id="ix-signs-craft">The Craft</h2>
   <p>The Witch's alone. Older than the dark the Hexer bargains with, handed down a crooked family line, and largely concerned with houses, weather, kin, and grudges.</p>
   <h3 id="ix-s-sourmilk">Sour the Milk</h3>
@@ -4214,6 +4789,22 @@ body{ background:#525659; }
   <p><em>Rank 5 · One hour · 5 Nerve.</em> Trade a year of your own life for a working of any Rank you know, at no other cost, worked as though you were the greatest of your line. The year is taken from the far end. The bargain is struck at once, and what you bought is worked as any other. <strong>Backlash:</strong> None at the time. The Craft always collects at the far end, and it is never late.</p>
   <h3 id="ix-s-hearth">The Hearth Unbroken</h3>
   <p><em>Rank 5 · One hour · 5 Nerve.</em> For one night a place is genuinely safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. <strong>Backlash:</strong> One night only, and the same roof will not answer twice in the same season. Choose the night with care.</p>
+  <h3 id="ix-s-longwinter">The Long Winter</h3>
+  <p><em>Rank 6 · One hour · 6 Nerve.</em> Lay cold on a country and let it stay. For a season, the valley or the town you
+  name is colder than it should be: crops fail slowly, the sick get sicker, the roads close early, and anything that was
+  buried stays buried. The old women who can do this rarely explain why they have. Backlash: you feel the cold yourself
+  for the whole of it, and no fire ever quite reaches you again.</p>
+  <h3 id="ix-s-turningofyea">The Turning of the Year</h3>
+  <p><em>Rank 7 · One hour · 7 Nerve · Fortitude save.</em> Put years into a thing or take them out, permanently. A door rots off its hinges; a corpse is
+  bones; a green field is a harvest; a wound is an old scar; a young man is old. A creature resists with a Fortitude
+  save against your Sign DC, and a willing one need not. Ten years is the usual reach, and forty is the most anyone has
+  managed. Backlash: the years have to go somewhere. They go into you, and they show.</p>
+  <h3 id="ix-s-housethatsta">The House That Stands</h3>
+  <p><em>Rank 8 · One night · your whole pool of Nerve, permanently.</em> Over a night's work you make a place yours in a
+  way that outlasts you. Nothing uncanny enters it uninvited, ever. Nothing inside it can be scried, called, compelled
+  or taken. It does not burn, and the weather leaves it alone, and it will be standing when the town around it is a
+  scatter of foundations. Backlash: you may never have another, you may not leave it for more than a season without it
+  beginning to fail, and something will spend the rest of your life on the porch waiting to be asked in.</p>
   <div class="pageno">49</div>
 </section>
 
@@ -4277,7 +4868,9 @@ body{ background:#525659; }
   <div class="divider"></div>
   <p class="dropcap lead">You advance by living through things that should have killed you. The Keeper awards experience for
   danger faced, mysteries unraveled, and scenes played true — or simply marks the passing of each hard chapter with a level.
-  Either way, growth is slow, and tenth level is a long, unlikely old age for a soul in this country.</p>
+  Either way, growth is slow, and tenth level is a long, unlikely old age for a soul in this country. Past it lies
+  a stretch of five more that most tables will never see, and which the book prints anyway; see <em>Past the Tenth</em>
+  below for what it is for.</p>
   <p>After the manner of Pathfinder Second Edition, advancement runs on a flat tally: <strong>every level costs 1,000
   experience</strong>. The Keeper awards experience for the dangers you survive and the mysteries you close; when your
   tally reaches 1,000 you gain a level and subtract 1,000, carrying the remainder toward the next.</p>
@@ -4296,12 +4889,12 @@ body{ background:#525659; }
   many thousands. Keepers who prefer may set the tally aside entirely; see below.</p>
   <h2 id="ix-level-brings">What a Level Brings</h2>
   <ul class="dash">
-    <li>One <strong>ability score</strong> raised by a point at 5th and at 10th level.</li>
+    <li>One <strong>ability score</strong> raised by a point at 5th, 10th, and 15th level.</li>
     <li>Better <strong>attack and saves</strong>, as your Calling's table shows — and as <em>Attack Rank and the Saves</em>, below, lets you reckon without the book.</li>
     <li>More <strong>Blood</strong>: roll your Calling's Hit Die (or take its average) and add your CON modifier.</li>
     <li>New <strong>Calling features</strong>; an Old Dark path (Bargain, Craft, Gospel, or Devotion) deepens at 3rd and 9th; the gifted learn new <strong>Signs</strong> at the listed levels.</li>
-    <li>An <strong>Edge</strong> at 1st, 3rd, 5th, 7th, and 9th level.</li>
-    <li>A <strong>skill increase</strong> at 3rd, 5th, 7th, and 9th level, raising one skill's proficiency a step (toward Expert, then Master, as your level allows).</li>
+    <li>An <strong>Edge</strong> at 1st, 3rd, 5th, 7th, and 9th level, and again at 12th and 14th.</li>
+    <li>A <strong>skill increase</strong> at 3rd, 5th, 7th, and 9th level, and again at 11th and 13th, raising one skill's proficiency a step (toward Expert, then Master, as your level allows).</li>
   </ul>
   <h2 id="ix-ranks">Attack Rank and the Saves</h2>
   <p>Two of the figures on your Calling's table follow a plain rule, so you may reckon either in your
@@ -4321,8 +4914,24 @@ body{ background:#525659; }
   save is 2 plus half your level</strong>; a <strong>weak save is a third of your level</strong>; both
   round down. Add the keyed ability on top — Fortitude (CON), Reflex (DEX), Will (RES).</p>
   <p>A Hexer will never outshoot a Gunhand, and is not meant to. But the country's teeth grow sharper as
-  you climb, and no soul should arrive at a tenth-level reckoning unable to hit a barn door for the sole
+  you climb, and no soul should arrive at a late reckoning unable to hit a barn door for the sole
   crime of having learned to read the dark.</p>
+
+  <h2 id="ix-past-tenth">Past the Tenth</h2>
+  <p>Tenth level is where a frontier life tops out. Your path Mastery lands there, your second ability point lands
+  there, and the write-up of your Calling's tenth-level feature is written as an ending because for most souls it is
+  one. Five more levels are printed after it, and they are a different kind of thing.</p>
+  <p>Eleventh through fifteenth is what becomes of somebody who does not stop. The pattern is plain and it is the
+  same for every Calling: a feature at 11th, an Edge at 12th, a feature at 13th, an Edge at 14th, and at 15th one
+  named thing that only that Calling can do. Sign-workers reach Rank Six at 11th, Seven at 13th, and Eight at 15th.
+  Miracle-workers reach the same ranks on the same rungs.</p>
+  <p>Read the fifteenth-level entries before you promise a table this band. Every one of them is once a session, every
+  one of them changes the situation rather than the arithmetic, and every one of them costs something the character
+  does not get back — a year, a memory, a name, a person who trusted you, a mark that will not come off. That is
+  deliberate. A soul who has gone this far past a frontier life has not been getting stronger for free, and the
+  fifteenth-level entry is the book saying out loud what the bill has been.</p>
+  <p class="note">Most campaigns end somewhere between 6th and 10th, and nothing is missing from one that does. Treat
+  11th through 15th as the long ending you play toward once, with a table that has been together a while.</p>
 
   <h2 id="ix-milestones">Milestones over Tallies</h2>
   <p>Many Keepers dispense with counting experience and simply raise the whole party a level when the story turns a corner —

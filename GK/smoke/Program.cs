@@ -584,7 +584,7 @@ foreach (var (table, floor) in new[]
             .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
             .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
 
-        T("durations: all ninety-four workings still read", workings.Count == 94);
+        T("durations: all 116 workings still read", workings.Count == 116);
         // A duration is "findable" when the printed line names one, or when the thing resolves on
         // the spot. What must not exist any more is a working where neither is true.
         var mute = workings.Where(w =>
@@ -597,10 +597,16 @@ foreach (var (table, floor) in new[]
             bool saysWhen = t.Contains("until") || t.Contains("scene") || t.Contains("dawn")
                          || t.Contains("night") || t.Contains("hour") || t.Contains("day")
                          || t.Contains("round") || t.Contains("month") || t.Contains("done")
-                         || t.Contains("at once");
+                         || t.Contains("at once")
+                         // B6 brought three more units the book now genuinely uses. A season is
+                         // how The Long Winter is written, a week is how The Cup Not Emptied is,
+                         // and the Rank 8 workings are simply permanent.
+                         || t.Contains("season") || t.Contains("week") || t.Contains("permanent")
+                         || t.Contains("for good") || t.Contains("instantly");
             return !saysWhen && w.Damage.Length == 0 && w.Heal.Length == 0 && w.Nerve.Length == 0;
         }).ToList();
-        T($"durations: no working is silent about how long it lasts ({mute.Count} silent)", mute.Count == 0);
+        T($"durations: no working is silent about how long it lasts"
+    + (mute.Count > 0 ? " — " + string.Join(", ", mute.Select(w => w.Name)) : ""), mute.Count == 0);
 
         Rules.Working W(string n) => workings.First(w => w.Name == n);
         T("durations: a question put to the dark is over when it is answered",
@@ -1364,7 +1370,7 @@ foreach (var (table, floor) in new[]
     var all   = signs.Concat(mirs).ToList();
     Rules.Working W(string n) => all.First(x => x.Name == n);
 
-    T("working: every Sign and Miracle is read", all.Count == 94);
+    T("working: every Sign and Miracle is read", all.Count == 116);
 
     // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
     // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
@@ -1378,7 +1384,7 @@ foreach (var (table, floor) in new[]
     T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
     // Four of the forty-four print "Backlash: None" and then say something about why. The other
     // forty cost the worker something, and those are the ones the app should warn about.
-    T("working: forty of the forty-four actually bite", signs.Count(w => w.BacklashBites) == 40);
+    T("fifty-one of the fifty-five Signs actually bite", signs.Count(w => w.BacklashBites) == 51);
 
     // ---- the other half of the bargain, and the half a player actually chooses on ----
     // Backlash and the Mark are what a Sign COSTS. What it BUYS has to stay worth it, or the
@@ -1418,7 +1424,7 @@ foreach (var (table, floor) in new[]
 
     // Nothing is left as a shrug: Unclear is a legal answer but it should be rare, and right now
     // the two chapters give it up entirely.
-    T("working: every one of the ninety-four resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
+    T("working: every one of the 116 resolves to a shape", all.All(w => w.Shape != Rules.WorkShape.Unclear));
 
     // The shapes the old dialog could not express at all.
     T("working: Witch-Sight is worked on the worker", W("Witch-Sight").Shape == Rules.WorkShape.Self);
@@ -2651,7 +2657,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         var pc = Rules.ParseCost(sg.cost);
         T($"cost: Sign [{sg.name}] names its action", pc.Time.Length > 0);
         T($"cost: Sign [{sg.name}] is not paid in Faith", pc.Faith == 0);
-        T($"cost: Sign [{sg.name}] has a rank on the spine", sg.rank >= 1 && sg.rank <= 5);
+        T($"cost: Sign [{sg.name}] has a rank on the spine", sg.rank >= 1 && sg.rank <= 8);
         if (pc.Spends) signsCosting++;
     }
     foreach (var mi in CharGen.D.miracles)
@@ -2659,7 +2665,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         var pc = Rules.ParseCost(mi.cost);
         T($"cost: Miracle [{mi.name}] names its action", pc.Time.Length > 0);
         T($"cost: Miracle [{mi.name}] is not paid in Nerve", pc.Nerve == 0);
-        T($"cost: Miracle [{mi.name}] has a rank on the spine", mi.rank >= 1 && mi.rank <= 5);
+        T($"cost: Miracle [{mi.name}] has a rank on the spine", mi.rank >= 1 && mi.rank <= 8);
         if (pc.Spends) miraclesCosting++;
     }
     T($"cost: nearly every Sign costs something ({signsCosting}/{CharGen.D.signs.Count})",
@@ -3021,9 +3027,12 @@ T("every rider resolves to prose the book prints", cg.callings.All(c =>
     CharGen.StrikeRiders(c.name, 15).All(r => !string.IsNullOrWhiteSpace(r.Desc))));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
-T("44 signs across three lists", cg.signs.Count == 44
+T("55 signs across three lists", cg.signs.Count == 55
     && cg.signs.All(s => s.list is "common" or "bargain" or "craft"));
-T("every sign carries a Rank of 1-5", cg.signs.All(s => s.rank >= 1 && s.rank <= 5));
+T("every sign carries a Rank of 1-8", cg.signs.All(s => s.rank >= 1 && s.rank <= 8));
+// Rank 8 is meant to be thin, and thin is a thing a test can hold. Three Signs, one per list.
+T("Rank 8 holds three Signs, one to each list", cg.signs.Count(s => s.rank == 8) == 3
+    && cg.signs.Where(s => s.rank == 8).Select(s => s.list).Distinct().Count() == 3);
 T("every Rank is represented on every list", new[] { "common", "bargain", "craft" }
     .All(l => Enumerable.Range(1, 5).All(r => cg.signs.Any(s => s.list == l && s.rank == r))));
 T("sign names are unique", cg.signs.Select(s => s.name).Distinct().Count() == cg.signs.Count);
@@ -3184,15 +3193,58 @@ T("the Craft is the Witch's alone", cg.callings
         T("and the binding survives a saved session", reloaded.IsFamiliarOf(her));
     }
 }
+// B6. A ladder that stops short of the ceiling used to throw KeyNotFoundException out of
+// LevelUp, in a Keeper's hands, mid-session. KnownAt holds the last rung now, so the fault would
+// be silent instead of loud -- which is worse. This is the assertion that keeps it loud.
+T("every known-at ladder covers every level to the ceiling", cg.callings.All(c =>
+    (c.signsKnownAt == null || Enumerable.Range(1, Rules.MaxLevel)
+        .All(l => c.signsKnownAt.ContainsKey(l.ToString())))
+    && (c.miraclesKnownAt == null || Enumerable.Range(1, Rules.MaxLevel)
+        .All(l => c.miraclesKnownAt.ContainsKey(l.ToString())))));
+// Cole, 2026-08-30: every Calling gets a notable, significant thing at 15th. Nineteen rows, each
+// naming at least one feature that is not an Edge and not a scaling step of something older.
+T("every Calling reaches a named capstone at the ceiling", cg.callings.All(c =>
+    c.rows.Where(r => r.level == Rules.MaxLevel).SelectMany(r => r.features)
+     .Any(f => f != "Edge" && f != "Sign learned"
+            && c.featureDescs != null && c.featureDescs.ContainsKey(f))));
+T("every Calling's table runs the whole way", cg.callings.All(c =>
+    c.rows.Select(r => r.level).OrderBy(l => l).SequenceEqual(Enumerable.Range(1, Rules.MaxLevel))));
+// The printed table and Validate's count are two statements of the Edge rule, and until 2026-08-30
+// nothing compared them: the tables named 3rd/7th/9th while Validate counted 1/3/5/7/9, so a player
+// at 5th was never told about an Edge they already had. This is what stops that recurring.
+T("every table prints an Edge on exactly the rungs that grant one", cg.callings.All(c =>
+    c.rows.Where(r => r.features.Contains("Edge")).Select(r => r.level).OrderBy(l => l)
+     .SequenceEqual(Enumerable.Range(1, Rules.MaxLevel).Where(Rules.IsEdgeLevel))));
+// The two late Edges at 12th and 14th want something worth reaching for, so B6 gated thirty-one
+// Edges behind 11th. EdgeEligible enforces reqLevel; this is what proves it does.
+T("Edges gated at 11th are not offered before it", cg.edges.Concat(cg.callingEdges)
+    .Count(e => e.reqLevel == 11) == 31);
+{
+    // Ask about the whole gate rather than one Edge: a generated soul may already OWN the Edge you
+    // named, and EligibleEdges quite correctly stops offering what you have. The first draft of
+    // this assertion did exactly that and failed for a reason that was not the reason.
+    var late = cg.edges.Concat(cg.callingEdges).Where(e => e.reqLevel == 11).Select(e => e.name).ToHashSet();
+    var young = CharGen.Generate(9, false, "Gunhand");
+    var old = CharGen.Generate(Rules.MaxLevel, false, "Gunhand");
+    T("no 11th-level Edge is offered to a 9th-level soul",
+        !CharGen.EligibleEdges(young).Any(late.Contains));
+    T("a soul at the ceiling is offered some of them",
+        CharGen.EligibleEdges(old).Concat(old.Edges).Any(late.Contains));
+    T("and never holds one it could not have earned", CharGen.Generate(9, false, "Gunhand")
+        .Edges.Concat(young.BonusCombatEdges).All(e => !late.Contains(e)));
+}
+
 T("sign-workers and signLists are the same four callings", cg.callings
     .All(c => (c.signsKnownAt != null) == (c.signLists != null && c.signLists.Count > 0)));
-T("Rank opens at 1st, 3rd, 5th, 7th, 9th", Enumerable.Range(1, 10)
+T("Rank opens on every odd rung to the ceiling", Enumerable.Range(1, Rules.MaxLevel)
     .All(l => CharGen.SignRankAt(l) == (l + 1) / 2));
+T("the top Rank is reached at the top level", CharGen.SignRankAt(Rules.MaxLevel) == 8
+    && CharGen.SignRankAt(Rules.MaxLevel - 1) == 7);
 // A Calling must never be asked to know more Signs than its Rank has actually opened.
 T("no caster is starved of legal signs at any level", cg.callings
     .Where(c => c.signsKnownAt != null)
-    .All(c => Enumerable.Range(1, 10)
-        .All(l => CharGen.SignsFor(c, l).Count >= c.signsKnownAt[l.ToString()] + 1)));
+    .All(c => Enumerable.Range(1, Rules.MaxLevel)
+        .All(l => CharGen.SignsFor(c, l).Count >= CharGen.KnownAt(c.signsKnownAt, l) + 1)));
 // Hedge Magic (Ch. IX) is the only way a non-caster ever holds a Sign, and it reaches
 // the shallow end only: the Common Signs at Rank 1, at any level, forever.
 {
@@ -3204,7 +3256,7 @@ T("no caster is starved of legal signs at any level", cg.callings
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
-T("50 miracles across seven lists", cg.miracles.Count == 50 && cg.miracles.All(m =>
+T("61 miracles across seven lists", cg.miracles.Count == 61 && cg.miracles.All(m =>
     m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
            or "vigil"));
 
@@ -3233,12 +3285,17 @@ T("50 miracles across seven lists", cg.miracles.Count == 50 && cg.miracles.All(m
         && foul.desc.Contains("Backlash:", StringComparison.Ordinal)
         && !stand.desc.Contains("Backlash", StringComparison.Ordinal));
 }
-T("every miracle carries a Rank of 1-5", cg.miracles.All(m => m.rank >= 1 && m.rank <= 5));
+T("every miracle carries a Rank of 1-8", cg.miracles.All(m => m.rank >= 1 && m.rank <= 8));
 T("every Rank is represented on every miracle list", new[] {
     "blessing", "liturgy", "revival", "spirits", "mending", "consecration", "vigil" }
     .All(l => Enumerable.Range(1, 5).All(rk => cg.miracles.Any(m => m.list == l && m.rank == rk))));
 T("miracle names are unique", cg.miracles.Select(m => m.name).Distinct().Count() == cg.miracles.Count);
-T("Signs and Miracles ride the one Rank spine", Enumerable.Range(1, 10)
+// All three Rank 8 Miracles are Common Blessings, so every Calling of Faith reaches the same
+// three at 15th. That is a design decision from B6 and not an accident of the list.
+T("Rank 8 holds three Miracles, all of them Common Blessings",
+    cg.miracles.Count(m => m.rank == 8) == 3
+    && cg.miracles.Where(m => m.rank == 8).All(m => m.list == "blessing"));
+T("Signs and Miracles ride the one Rank spine", Enumerable.Range(1, Rules.MaxLevel)
     .All(l => CharGen.MiracleRankAt(l) == CharGen.SignRankAt(l)));
 // Exactly the six Callings of Faith work Miracles, and none of them works a Sign.
 T("the six faith callings work Miracles", cg.callings
@@ -3265,7 +3322,8 @@ T("no faith calling is starved of legal miracles at any level", cg.callings
     .Where(c => c.miraclesKnownAt != null)
     .All(c => Enumerable.Range(1, 10)
         .All(l => CharGen.MiraclesFor(c, l).Count >= c.miraclesKnownAt[l.ToString()] + 1)));
-T("every calling has 10 table rows", cg.callings.All(c => c.rows.Count == 10 && c.rows.Select(r => r.level).SequenceEqual(Enumerable.Range(1, 10))));
+T($"every calling has {Rules.MaxLevel} table rows", cg.callings.All(c => c.rows.Count == Rules.MaxLevel
+    && c.rows.Select(r => r.level).SequenceEqual(Enumerable.Range(1, Rules.MaxLevel))));
 T("attack/saves never regress", cg.callings.All(c => Enumerable.Range(1, 9).All(l =>
     c.Row(l + 1).atk >= c.Row(l).atk && c.Row(l + 1).fort >= c.Row(l).fort
     && c.Row(l + 1).@ref >= c.Row(l).@ref && c.Row(l + 1).will >= c.Row(l).will)));
@@ -3585,7 +3643,7 @@ foreach (var c in cg.callings)
     foreach (bool rolled in new[] { false, true })
     {
         var s = CharGen.Generate(1, rolled, c.name);
-        for (int target = 2; target <= 10; target++)
+        for (int target = 2; target <= Rules.MaxLevel; target++)
         {
             var before = s;
             int preBlood = before.BloodRolls.Count;
@@ -3602,17 +3660,19 @@ foreach (var c in cg.callings)
             T($"levelup keeps prior signs: {c.name} → L{target}", before.SignsKnown.SequenceEqual(s.SignsKnown.Take(before.SignsKnown.Count)));
         }
         var capped = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
-        T($"levelup ceiling no-op: {c.name}", capped.Level == 10 && CharGen.Validate(capped).Count == 0);
+        var capLv = CharGen.Validate(capped);
+        T($"levelup ceiling no-op: {c.name}" + (capLv.Count > 0 ? " — " + capLv[0] : ""),
+            capped.Level == Rules.MaxLevel && capLv.Count == 0);
         T($"levelup preview at ceiling: {c.name}", CharGen.PreviewLevelUp(s).AtCeiling);
     }
 
-// under a fixed seed the whole grow-up is reproducible (Generate + nine LevelUps)
+// under a fixed seed the whole grow-up is reproducible (Generate + every LevelUp to the ceiling)
 {
     string Grow(int seed)
     {
         Rules.Reseed(seed);
         var s = CharGen.Generate(1, false, "Marshal");
-        for (int L = 2; L <= 10; L++) s = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
+        for (int L = 2; L <= Rules.MaxLevel; L++) s = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
         return System.Text.Json.JsonSerializer.Serialize(s);
     }
     T("levelup reproducible under a fixed seed", Grow(0x1010) == Grow(0x1010));
@@ -4281,7 +4341,9 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
               says || !lim.Any || lim.Cadence == FeatureCadence.Dawn);
         }
     T("every stated limit is read", stated == read);
-    T("the book still states as many limits as it did", stated == 36);
+    // 36 before B6. Fifty-seven new feature write-ups arrived with the levels above ten, and
+    // every fifteenth-level capstone is once a session by design, so the number had to move.
+    T($"the book still states as many limits as it did ({stated})", stated == 71);
 
     // --- the shapes the book actually uses ---
     CgCalling Cal(string n) => callings.First(c => c.name == n);

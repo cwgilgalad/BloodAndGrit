@@ -41,6 +41,9 @@ public class CgEdge
     public string name { get; set; } public string group { get; set; } public string desc { get; set; }
     public Dictionary<string, int> reqAbility { get; set; }
     public string reqEdge { get; set; } public string reqTrained { get; set; }
+    /// <summary>The level this Edge opens at. B6's twelve Greater Edges and the nineteen late
+    /// Calling Edges carry 11; everything written before B6 leaves it null and opens at 1st.</summary>
+    public int? reqLevel { get; set; }
     public bool notFaith { get; set; } public string effect { get; set; }
     // calling-locked edges
     public string calling { get; set; } public string reqFeature { get; set; }
@@ -456,6 +459,21 @@ public static class CharGen
     /// <summary>The highest Rank a soul of this level may reach: Rank 1 at 1st, then a new Rank at
     /// 3rd, 5th, 7th and 9th. One spine for both magic systems, read from the data where it is
     /// stated so the book's table and this rule cannot part company.</summary>
+    /// <summary>How many Signs or Miracles a Calling knows at a level, off its own ladder.
+    ///
+    /// <para>Ten sites indexed <c>signsKnownAt[level]</c> and <c>miraclesKnownAt[level]</c> directly,
+    /// which threw <c>KeyNotFoundException</c> the moment B6 raised the ceiling past what the data
+    /// covered — in <c>LevelUp</c>, which is to say in a Keeper's hands mid-session. A ladder that
+    /// stops short now holds its last rung instead of crashing. The gap itself is still a fault, and
+    /// the smoke suite fails on it: see the assertion that every ladder covers 1 to MaxLevel.</para></summary>
+    public static int KnownAt(Dictionary<string, int> ladder, int level)
+    {
+        if (ladder == null || ladder.Count == 0) return 0;
+        for (int l = Math.Max(1, level); l >= 1; l--)
+            if (ladder.TryGetValue(l.ToString(), out var n)) return n;
+        return 0;
+    }
+
     public static int RankAt(int level)
         => D.rankAtLevel.TryGetValue(level.ToString(), out var r) ? r
          : Math.Clamp((level + 1) / 2, 1, 5);
@@ -691,8 +709,8 @@ public static class CharGen
         var featureSet = new List<string>();
         for (int L = 1; L <= level; L++)
         {
-            // ability boost first at 5/10 (Ch. IX / XIV: one point at 5th and 10th)
-            if (L == 5 || L == 10)
+            // ability boost first (Ch. IX / XIV: one point at 5th, 10th and 15th)
+            if (Rules.IsAbilityBoostLevel(L))
             {
                 string best = cal.keyAbilities[0];
                 s.Scores[best] += 1;
@@ -706,7 +724,7 @@ public static class CharGen
                 if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) featureSet.Add(f);
 
             // Edges at 1st and each odd level (Ch. IX), plus the Gunhand's bonus combat Edge
-            if (L % 2 == 1)
+            if (Rules.IsEdgeLevel(L))
             {
                 var pick2 = PickEdge(s, cal, isFaith, null);
                 if (pick2 != null) s.Edges.Add(pick2);
@@ -718,7 +736,7 @@ public static class CharGen
             }
 
             // skill increase at 3/5/7/9 (Ch. VIII: a step toward Expert, then Master as level allows)
-            if (L is 3 or 5 or 7 or 9) ApplySkillIncrease(s, cal, L);
+            if (Rules.IsSkillIncreaseLevel(L)) ApplySkillIncrease(s, cal, L);
         }
         s.Features = featureSet;
 
@@ -733,14 +751,14 @@ public static class CharGen
         // Signs (Ch. VII / XIII): only the Old Dark works them by nature; Hedge Magic adds one
         var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
                             .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
-        int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[level.ToString()] : 0;
+        int signCount = KnownAt(cal.signsKnownAt, level);
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         while (s.SignsKnown.Count < Math.Min(signCount, signNames.Count))
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
         // Miracles (Ch. VI): the five Callings of Faith, from their lists, gated by Rank
         var miracleNames = MiraclesFor(cal, level).Select(x => x.name).ToList();
-        int miracleCount = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[level.ToString()] : 0;
+        int miracleCount = KnownAt(cal.miraclesKnownAt, level);
         while (s.MiraclesKnown.Count < Math.Min(miracleCount, miracleNames.Count))
         { var m = Pick(miracleNames); if (!s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m); }
 
@@ -893,7 +911,7 @@ public static class CharGen
         int edgeIdx = 0, gunIdx = 0, incIdx = 0, boostIdx = 0;
         for (int L = 1; L <= level; L++)
         {
-            if (L == 5 || L == 10)
+            if (Rules.IsAbilityBoostLevel(L))
             {
                 string ab = boostIdx < spec.Boosts.Count && Ab.Contains(spec.Boosts[boostIdx]) ? spec.Boosts[boostIdx] : cal.keyAbilities[0];
                 boostIdx++;
@@ -908,7 +926,7 @@ public static class CharGen
                 if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) featureSet.Add(f);
             s.Features = featureSet;                           // keep current for eligibility checks
 
-            if (L % 2 == 1)
+            if (Rules.IsEdgeLevel(L))
             {
                 var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
                 string want = edgeIdx < spec.Edges.Count ? spec.Edges[edgeIdx] : null;
@@ -930,7 +948,7 @@ public static class CharGen
                 }
             }
 
-            if (L is 3 or 5 or 7 or 9)
+            if (Rules.IsSkillIncreaseLevel(L))
             {
                 string target = incIdx < spec.SkillIncreases.Count ? spec.SkillIncreases[incIdx] : null;
                 incIdx++;
@@ -954,7 +972,7 @@ public static class CharGen
 
         var signNames = SignsFor(cal, level, s.Edges.Contains("Hedge Magic"))
                             .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
-        int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[level.ToString()] : 0;
+        int signCount = KnownAt(cal.signsKnownAt, level);
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         signCount = Math.Min(signCount, signNames.Count);
         foreach (var sg in spec.Signs.Where(signNames.Contains).Distinct())
@@ -963,7 +981,7 @@ public static class CharGen
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
         var miracleNames = MiraclesFor(cal, level).Select(x => x.name).ToList();
-        int miracleCount = Math.Min(cal.miraclesKnownAt != null ? cal.miraclesKnownAt[level.ToString()] : 0, miracleNames.Count);
+        int miracleCount = Math.Min(KnownAt(cal.miraclesKnownAt, level), miracleNames.Count);
         foreach (var m in spec.Miracles.Where(miracleNames.Contains).Distinct())
             if (s.MiraclesKnown.Count < miracleCount) s.MiraclesKnown.Add(m);
         while (s.MiraclesKnown.Count < miracleCount)
@@ -1070,15 +1088,15 @@ public static class CharGen
         var g = new LevelUpGrants { NewLevel = N, HitDie = cal.hitDie };
         if (cur.Level >= Rules.MaxLevel) { g.AtCeiling = true; return g; }
 
-        g.Boost = N is 5 or 10;
-        g.Edge = N % 2 == 1;
+        g.Boost = Rules.IsAbilityBoostLevel(N);
+        g.Edge = Rules.IsEdgeLevel(N);
         g.GunEdge = g.Edge && cal.bonusCombatEdgeAtOdd;
-        g.SkillIncrease = N is 3 or 5 or 7 or 9;
+        g.SkillIncrease = Rules.IsSkillIncreaseLevel(N);
         g.Subpath = N >= 3 && cal.subpath != null && cal.subpath.options.Count > 0 && cur.Subpath == null;
 
         int Signs(int lvl)
         {
-            int c = cal.signsKnownAt != null ? cal.signsKnownAt[lvl.ToString()] : 0;
+            int c = KnownAt(cal.signsKnownAt, lvl);
             if (cur.Edges.Contains("Hedge Magic")) c += 1;
             return Math.Min(c, SignsFor(cal, lvl, cur.Edges.Contains("Hedge Magic")).Count);
         }
@@ -1086,7 +1104,7 @@ public static class CharGen
 
         int Miracles(int lvl)
         {
-            int c = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[lvl.ToString()] : 0;
+            int c = KnownAt(cal.miraclesKnownAt, lvl);
             return Math.Min(c, MiraclesFor(cal, lvl).Count);
         }
         g.NewMiracleSlots = Math.Max(0, Miracles(N) - Miracles(cur.Level));
@@ -1123,7 +1141,7 @@ public static class CharGen
         if (cur.Level >= Rules.MaxLevel) return s;         // the frontier's ceiling
         int N = cur.Level + 1; s.Level = N;
 
-        if (N is 5 or 10)                                  // boost first, as in Generate
+        if (Rules.IsAbilityBoostLevel(N))                  // boost first, as in Generate
         {
             string ab = Ab.Contains(ch.Boost ?? "") ? ch.Boost : cal.keyAbilities[0];
             s.Scores[ab] += 1; s.AbilityBoostLevels.Add(N); s.BoostedAbilities.Add(ab);
@@ -1135,7 +1153,7 @@ public static class CharGen
         foreach (var f in cal.Row(N).features)
             if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) s.Features.Add(f);
 
-        if (N % 2 == 1)
+        if (Rules.IsEdgeLevel(N))
         {
             var owned = s.Edges.Concat(s.BonusCombatEdges).ToHashSet();
             var want = ch.Edge != null ? EdgeByName(ch.Edge) : null;
@@ -1153,7 +1171,7 @@ public static class CharGen
             }
         }
 
-        if (N is 3 or 5 or 7 or 9)
+        if (Rules.IsSkillIncreaseLevel(N))
         {
             string t = ch.SkillIncrease; bool applied = false;
             if (t != null && D.skills.Any(k => k.name == t))
@@ -1170,7 +1188,7 @@ public static class CharGen
 
         var signNames = SignsFor(cal, N, s.Edges.Contains("Hedge Magic"))
                             .Select(x => x.name).ToList();                   // Ch. XIII list + Rank gate
-        int signCount = cal.signsKnownAt != null ? cal.signsKnownAt[N.ToString()] : 0;
+        int signCount = KnownAt(cal.signsKnownAt, N);
         if (s.Edges.Contains("Hedge Magic")) signCount += 1;
         signCount = Math.Min(signCount, signNames.Count);
         foreach (var sg in ch.NewSigns.Where(signNames.Contains).Distinct())
@@ -1179,7 +1197,7 @@ public static class CharGen
         { var sg = Pick(signNames); if (!s.SignsKnown.Contains(sg)) s.SignsKnown.Add(sg); }
 
         var miracleNames = MiraclesFor(cal, N).Select(x => x.name).ToList();
-        int miracleCount = Math.Min(cal.miraclesKnownAt != null ? cal.miraclesKnownAt[N.ToString()] : 0, miracleNames.Count);
+        int miracleCount = Math.Min(KnownAt(cal.miraclesKnownAt, N), miracleNames.Count);
         foreach (var m in ch.NewMiracles.Where(miracleNames.Contains).Distinct())
             if (s.MiraclesKnown.Count < miracleCount && !s.MiraclesKnown.Contains(m)) s.MiraclesKnown.Add(m);
         while (s.MiraclesKnown.Count < miracleCount)
@@ -1208,6 +1226,7 @@ public static class CharGen
         // "though you are not a Hexer" — Hedge Magic is for souls WITHOUT the Signs
         // feature; the four sign-working Callings already have the whole craft
         if (e.effect == "sign+1" && cal.signsKnownAt != null) return false;
+        if (e.reqLevel is int rl && s.Level < rl) return false;
         if (e.reqAbility != null && e.reqAbility.Any(kv => s.Scores[kv.Key] < kv.Value)) return false;
         if (e.reqEdge != null && !owned.Contains(e.reqEdge)) return false;
         if (e.reqTrained != null && !s.SkillRanks.ContainsKey(e.reqTrained)) return false;
@@ -1421,7 +1440,7 @@ public static class CharGen
         int witAtCreation = s.PreGiftScores["WIT"] + (org.gifts.TryGetValue("WIT", out var wg) ? wg : 0);
         int expectTrained = Math.Max(1, cal.trainedSkills + Mod(witAtCreation));
         int newFromIncreases = s.SkillRanks.Count - expectTrained - s.OriginSkills.Distinct().Count();
-        int increases = new[] { 3, 5, 7, 9 }.Count(l => l <= s.Level);
+        int increases = Enumerable.Range(1, s.Level).Count(Rules.IsSkillIncreaseLevel);
         Check(newFromIncreases >= 0 && newFromIncreases <= increases,
             $"trained-skill count {s.SkillRanks.Count} outside Calling {cal.trainedSkills}+WIT rules");
         int steps = s.SkillRanks.Values.Sum(r => r - 1) + newFromIncreases;
@@ -1439,7 +1458,7 @@ public static class CharGen
         Check(s.Features.SequenceEqual(expectFeatures), "feature list diverges from the Calling table");
 
         // edges: count, prerequisites, faith bans
-        int expectEdges = new[] { 1, 3, 5, 7, 9 }.Count(l => l <= s.Level);
+        int expectEdges = Enumerable.Range(1, s.Level).Count(Rules.IsEdgeLevel);
         Check(s.Edges.Count == expectEdges, $"{s.Edges.Count} edges ≠ {expectEdges} earned (Ch. IX)");
         Check(cal.bonusCombatEdgeAtOdd ? s.BonusCombatEdges.Count == expectEdges : s.BonusCombatEdges.Count == 0,
             "bonus combat edges only for the Gunhand, one per odd level");
@@ -1451,6 +1470,7 @@ public static class CharGen
             var e = all.FirstOrDefault(x => x.name == name);
             if (e == null) { v.Add($"unknown edge {name}"); continue; }
             Check(!(e.notFaith && isFaith), $"{name} is barred to Callings of Faith");
+            if (e.reqLevel is int rl) Check(s.Level >= rl, $"{name} opens at {rl}th and this soul is {s.Level}");
             if (e.reqAbility != null) foreach (var kv in e.reqAbility) Check(s.Scores[kv.Key] >= kv.Value, $"{name} needs {kv.Key} {kv.Value}");
             if (e.reqEdge != null) Check(owned.Contains(e.reqEdge), $"{name} requires the {e.reqEdge} edge");
             if (e.reqTrained != null) Check(s.SkillRanks.ContainsKey(e.reqTrained), $"{name} requires training in {e.reqTrained}");
@@ -1466,7 +1486,7 @@ public static class CharGen
         // Signs: the Old Dark works them; Faith never; Hedge Magic adds one; counts per table
         Check(!(cal.signsKnownAt != null && owned.Contains("Hedge Magic")),
             "Hedge Magic on a Calling that already has the Signs feature");
-        int expectSigns = cal.signsKnownAt != null ? cal.signsKnownAt[s.Level.ToString()] : 0;
+        int expectSigns = KnownAt(cal.signsKnownAt, s.Level);
         if (owned.Contains("Hedge Magic")) expectSigns += 1;
         var legal = SignsFor(cal, s.Level, owned.Contains("Hedge Magic"));
         expectSigns = Math.Min(expectSigns, legal.Count);
@@ -1486,7 +1506,7 @@ public static class CharGen
 
         // Miracles (Ch. VI): the five Callings of Faith, from their lists, gated by the same Rank.
         // The Old Dark and the mundane never hold one; a Calling never mixes Signs and Miracles.
-        int expectMiracles = cal.miraclesKnownAt != null ? cal.miraclesKnownAt[s.Level.ToString()] : 0;
+        int expectMiracles = KnownAt(cal.miraclesKnownAt, s.Level);
         var legalM = MiraclesFor(cal, s.Level);
         expectMiracles = Math.Min(expectMiracles, legalM.Count);
         Check(s.MiraclesKnown.Count == expectMiracles, $"{s.MiraclesKnown.Count} miracles ≠ {expectMiracles} allowed");
