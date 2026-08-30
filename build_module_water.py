@@ -6,11 +6,11 @@
 # under the wells, failing one well at a time — and then stops at the mission door. Both earlier
 # modules end within sight of San Clavo and neither goes in. This one goes in, and then goes under.
 # Every number under "What the Night Costs" came out of GK/playtest.
-from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.5"
+VERSION = "1.6"
 SLUG = "what-the-water-answers"
 
 H = shell(
@@ -42,6 +42,7 @@ CONTENTS = '''
   <h1 class="chapter">Contents</h1>
   ''' + contents([
       ("what", "What This Is"),
+      ("basin", "Perdition Basin"),
       ("truth", "The Truth of It"),
       ("turn", "The Terms of the Loan"),
       ("hook", "The Hook, and Getting Them There"),
@@ -696,7 +697,9 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BASIN = basin("Mission San Clavo", this_module="III")
+
+BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)

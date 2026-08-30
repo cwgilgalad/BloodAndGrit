@@ -6,11 +6,11 @@
 # keyed and run: every scene placed, every person given a want, every fight played on the engine
 # before a word was written about how hard it is. The numbers in "What the night costs" came out
 # of GK/playtest and nowhere else.
-from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.4"
+VERSION = "1.5"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -42,6 +42,7 @@ CONTENTS = '''
   <h1 class="chapter">Contents</h1>
   ''' + contents([
       ("what", "What This Is"),
+      ("basin", "Perdition Basin"),
       ("truth", "The Truth of It"),
       ("turn", "What the Town Has Already Decided"),
       ("hook", "The Hook, and Getting Them There"),
@@ -680,7 +681,9 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BASIN = basin("Coffin Wells", this_module="I")
+
+BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)

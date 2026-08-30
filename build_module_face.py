@@ -6,11 +6,11 @@
 # paragraph keyed: eight souls under one roof, a tell that a posse in a hurry will shoot past, and
 # a Tier III thing the safe-table rule does NOT refuse — which makes it the opposite lesson from
 # module I. Every number under "What the Night Costs" came out of GK/playtest.
-from modules_common import (night_costs, shell, splice, finish, report, runhead, quote, readaloud,
+from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.4"
+VERSION = "1.5"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -42,6 +42,7 @@ CONTENTS = '''
   <h1 class="chapter">Contents</h1>
   ''' + contents([
       ("what", "What This Is"),
+      ("basin", "Perdition Basin"),
       ("truth", "The Truth of It"),
       ("turn", "The Woman Going East"),
       ("hook", "The Hook, and Getting Them There"),
@@ -697,7 +698,9 @@ AFTER = '''
 </section>
 '''
 
-BODY = (CONTENTS + WHAT + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
+BASIN = basin("Saltlick Station", this_module="II")
+
+BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
 html = splice(H, BODY)
