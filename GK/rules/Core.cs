@@ -1141,6 +1141,12 @@ public static class Rules
         (17,  9, 40, 11, 5, "2d6+4", "16"),
         (20, 13, 70, 15, 8, "2d8+6", "20"),
         (23, 17,110, 19,11, "3d8+8", "25"),
+        // B6, 2026-08-30. Six, seven and eight, to meet Rank 8 at 15th level. The Blood column
+        // stops meaning anything at the top: VIII carries 0 because no table has ever emptied one,
+        // and a number there would be a promise the arithmetic cannot keep (see ArithmeticStopsAt).
+        (26, 21,160, 23,14, "4d8+10", "28"),
+        (29, 25,220, 27,17, "4d10+12", "30"),
+        (32, 29,  0, 31,20, "5d10+15", "30"),
     };
 
     /// <summary>Sign and spoor — the safe-table rule's numbers (Bestiary, Appendix: The Grounds).
@@ -1818,8 +1824,13 @@ public static class Rules
     /// ("3 Nerve or 6 Blood") rather than flattening it away.</summary>
     public record PowerCost(string Time, int Nerve, int Faith, int Blood, int Mark, int OrBlood, string Save)
     {
+        /// <summary>Set when the line asks for the whole pool rather than a countable number of
+        /// it — B6's six Rank 8 workings, which cost everything the worker has. Six lines that read
+        /// as free to a parser looking only for digits is not a cost model anybody should ship.</summary>
+        public bool Everything { get; init; }
+
         /// <summary>Does working this ask anything a soul has to actually spend?</summary>
-        public bool Spends => Nerve > 0 || Faith > 0 || Blood > 0 || Mark > 0;
+        public bool Spends => Everything || Nerve > 0 || Faith > 0 || Blood > 0 || Mark > 0;
         public bool HasSave => !string.IsNullOrEmpty(Save);
     }
 
@@ -1830,6 +1841,7 @@ public static class Rules
     public static PowerCost ParseCost(string cost)
     {
         string time = ""; int nerve = 0, faith = 0, blood = 0, mark = 0, orBlood = 0; string save = "";
+        bool everything = (cost ?? "").Contains("whole pool", StringComparison.OrdinalIgnoreCase);
         foreach (var raw in (cost ?? "").Split('·', StringSplitOptions.RemoveEmptyEntries))
         {
             string seg = raw.Trim();
@@ -1861,7 +1873,7 @@ public static class Rules
                 }
             }
         }
-        return new PowerCost(time, nerve, faith, blood, mark, orBlood, save);
+        return new PowerCost(time, nerve, faith, blood, mark, orBlood, save) { Everything = everything };
     }
 
     // ---- what a working actually DOES (Ch. XIII, Ch. VI, and every creature's special line) ----
@@ -2035,7 +2047,9 @@ public static class Rules
 
         // --- the radius, where the book prints one ---
         int feet = 0;
-        var ft = System.Text.RegularExpressions.Regex.Match(effect, @"within\s+(\w+)\s+feet",
+        // "inside a hundred feet" is the same statement as "within 100 feet"; the reader knew
+        // only one of the two spellings and read a hundred-foot working as touching nobody.
+        var ft = System.Text.RegularExpressions.Regex.Match(effect, @"(?:within|inside)\s+(?:a\s+)?(\w+)\s+feet",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         if (ft.Success)
         {
@@ -2137,7 +2151,11 @@ public static class Rules
             && feet == 0 && !pc.HasSave && damage.Length == 0 && ongoing.Length == 0
             && heal.Length == 0 && nerve.Length == 0)
             shape = WorkShape.Trait;
-        else if (feet > 0 || Has(effect, @"\bEach\s+(?:lesser|creature|soul|of them)|Every\s+creature|every\s+ally|every\s+uncanny|\bAllies\s+who|the\s+party\b|in\s+the\s+camp\b"))
+        else if (feet > 0 || Has(effect, @"\bEach\s+(?:lesser|creature|soul|of them)|Every\s+creature|every\s+ally|every\s+uncanny|\bAllies\s+who|the\s+party\b|in\s+the\s+camp\b"
+                           // Rank 6-8 works on crowds and counties rather than on a radius in feet.
+                           + @"|[Ee]very\s+living\s+soul|[Ee]very\s+soul\s+(?:who|within|inside|but)|[Ee]veryone\s+(?:here|who|inside)"
+                           + @"|within\s+earshot|(?:nobody|no\s+soul)\s+(?:inside|within)|inside\s+a\s+mile|[Ee]verything\s+within"
+                           + @"|[Ee]veryone\s+(?:acts|present|within|inside)"))
             shape = WorkShape.Area;
         else if (Has(effect, @"another'?s?\s+Sign|End\s+another|their\s+Sign\s+DC|unmakes\s+the\s+lower"
                            + @"|their\s+working\s+DC|the\s+worker'?s\s+DC|comes\s+apart"
@@ -2145,9 +2163,14 @@ public static class Rules
             shape = WorkShape.Counter;
         else if (Has(effect, @"your\s+familiar|year\s+of\s+your\s+own\s+life|\byou\s+work\b|as\s+though\s+you\s+were|wear\s+it\s+for"))
             shape = WorkShape.Self;
-        else if (Has(effect, @"across\s+a\s+doorway|on\s+a\s+wall|Lay\s+your\s+palm|Ask\s+the\s+dark|Put\s+a\s+question|Bless\s+a\s+journey|out\s+of\s+the\s+dark|wherever\s+they\s+are|the\s+ground\s+splits|that\s+country|\ba\s+house\b|(?:its|that)\s+roof|a\s+place\s+is|into\s+a\s+(?:cord|draught)|Call\s+up\b|the\s+weather\b|upon\s+a\s+place|a\s+grave\b|patch\s+of\s+ground|Sanctify|spirits\s+of\s+(?:a|that)\s+(?:place|ground)|ammunition|Undo\s+one|\bthe\s+bounds\s+of\b|\ba\s+doorway\b|\ba\s+threshold\b|\ba\s+corpse\b|\ba\s+flame\s+you\b"))
+        else if (Has(effect, @"across\s+a\s+doorway|on\s+a\s+wall|Lay\s+your\s+palm|Ask\s+the\s+dark|Put\s+a\s+question|Bless\s+a\s+journey|out\s+of\s+the\s+dark|wherever\s+they\s+are|the\s+ground\s+splits|that\s+country|\ba\s+house\b|(?:its|that)\s+roof|a\s+place\s+is|into\s+a\s+(?:cord|draught)|Call\s+up\b|the\s+weather\b|upon\s+a\s+place|a\s+grave\b|patch\s+of\s+ground|Sanctify|spirits\s+of\s+(?:a|that)\s+(?:place|ground)|ammunition|Undo\s+one|\bthe\s+bounds\s+of\b|\ba\s+doorway\b|\ba\s+threshold\b|\ba\s+corpse\b|\ba\s+flame\s+you\b"
+                           // Rank 6-8 again: the thing worked on is a place at map scale.
+                           + @"|[Cc]onsecrate\s+ground|burying\s+ground|dead\s+of\s+a\s+place|on\s+a\s+country"
+                           + @"|the\s+bounded\s+place|[Bb]less\s+what|make\s+a\s+place\s+yours|[Tt]ake\s+the\s+night\s+off"
+                           // a petition granted is a working on the world, not on a combatant
+                           + @"|it\s+is\s+granted"))
             shape = WorkShape.Place;
-        else if (Has(effect, @"\bally\b|\ballies\b|companion|another\s+soul|\ba\s+soul\b|one\s+soul\s+who|(?:wounded|hurt|mortally\s+hurt)\s+soul|their\s+Frightened|a\s+dying\b|the\s+dying\b|Take\s+an\s+ally|in\s+the\s+hands\s+of|give\s+it\s+back"))
+        else if (Has(effect, @"\bally\b|\ballies\b|companion|another\s+soul|\ba\s+soul\b|one\s+soul\s+who|(?:wounded|hurt|mortally\s+hurt)\s+soul|their\s+Frightened|a\s+dying\b|the\s+dying\b|Take\s+an\s+ally|in\s+the\s+hands\s+of|give\s+it\s+back|\ba\s+person\b|the\s+patient\b"))
             shape = WorkShape.Ally;
         else if (pc.HasSave || Has(effect, @"One\s+living\s+creature|\ba\s+creature\b|Name\s+a\s+creature|one\s+creature|Point\s+and\s+name|the\s+creature\b|\ba\s+thing\b"))
             shape = WorkShape.OneCreature;
@@ -2382,7 +2405,28 @@ public static class Rules
     /// reproduce all 760 published table cells across the nineteen Callings exactly. What gates the
     /// number is the DATA — a Calling with rows to 10 cannot be played at 11 — so this moves only
     /// once <c>chargen.json</c> has the rows.</para></summary>
-    public const int MaxLevel = 10;
+    public const int MaxLevel = 15;
+
+    /// <summary>The levels that hand out a skill increase: 3rd, 5th, 7th, 9th, and then 11th and
+    /// 13th once B6 opened the band above ten. It was written as a bare <c>L is 3 or 5 or 7 or 9</c>
+    /// in four places, which is one place short of the number that gets missed.</summary>
+    public static bool IsSkillIncreaseLevel(int level)
+        => level is 3 or 5 or 7 or 9 or 11 or 13;
+
+    /// <summary>The levels that hand out an Edge: 1st, 3rd, 5th, 7th, 9th, and then 12th and 14th.
+    ///
+    /// <para>Named on 2026-08-30 because it was a bare <c>new[] { 1, 3, 5, 7, 9 }</c> inside
+    /// <c>Validate</c> while the nineteen printed level tables named only 3rd, 7th and 9th, and the
+    /// Drifter's named 3rd, 7th and 10th. Two statements of one rule with nothing comparing them, so
+    /// a player at 5th level was never told about an Edge the app had already given them. The tables
+    /// print all seven now and a smoke assertion holds them to this.</para></summary>
+    public static bool IsEdgeLevel(int level)
+        => level is 1 or 3 or 5 or 7 or 9 or 12 or 14;
+
+    /// <summary>The levels that raise an ability score: every fifth, to the ceiling. Derived rather
+    /// than listed, so raising <see cref="MaxLevel"/> takes 5/10 to 5/10/15 with no edit here.</summary>
+    public static bool IsAbilityBoostLevel(int level)
+        => level > 0 && level % 5 == 0 && level <= MaxLevel;
 
     public const int ArithmeticStopsAt = 4;
 

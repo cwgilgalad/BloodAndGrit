@@ -209,6 +209,7 @@ def scene(n, title, body):
 # ---------------------------------------------------------------- the shell transform
 
 MODULE_CSS = """
+.lvl tr.here td{ background:rgba(140,26,26,.07); font-weight:600; }
   /* ---- Adventure-module additions ---- */
   .statblock{ background:#efe6cf; border:1px solid var(--gold-d); border-left:4px solid var(--blood); padding:9px 13px 11px; margin:1.0em 0; }
   .statblock .sb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1.5px solid var(--gold-d); padding-bottom:4px; margin-bottom:6px; }
@@ -312,6 +313,90 @@ def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
         if a in H:
             H = H.replace(a, b, 1)
     return H
+
+
+# ---------------------------------------------------------------- the country all three share
+# Cole, 2026-08-30. All three modules were already set in Perdition Basin and none of them told the
+# reader where that was, which left three adventures in one county reading as three unrelated
+# nights. This is the one description of the basin the three share; each passes its own place and
+# gets the other two named for it, so the order is stated in every copy and typed in none.
+
+BASIN_PLACES = [
+    ("Calvary Crossing", "the county seat, where the Stage Road fords the river. A marshal, a bank, "
+                         "a doctor, and the only well in the basin that still runs sweet."),
+    ("Coffin Wells", "a silver camp gone sour, four days south. The water turned first here, and the "
+                     "town has been arguing about why for a year."),
+    ("Saltlick Station", "a stage stop on the north road, forty miles from anywhere, with a "
+                         "station-keeper, a barn, and eight beds nobody wants."),
+    ("Mission San Clavo", "a ruin on the east wall, abandoned since 1809. The padres who built it "
+                          "dug a well, and then they stopped digging wells."),
+    ("The Painted Mesa", "rising red in the south-east, and the ground of the people who were here "
+                         "before the mission and told the padres what lay under the water."),
+    ("The Homesteads", "strung along the failing Calvary River, one family to a bend, each of them "
+                       "one dry season from leaving."),
+]
+
+BASIN_MODULES = [
+    ("I", "The Salt at Coffin Wells", "1st", "Coffin Wells"),
+    ("II", "A Face Not His Own", "3rd", "Saltlick Station"),
+    ("III", "What the Water Answers", "5th", "Mission San Clavo"),
+]
+
+
+def basin(here, *, this_module):
+    """The shared Perdition Basin section. `here` is this module's place; `this_module` its numeral."""
+    from perdition_map import player_map_html
+
+    rows = ""
+    for name, what in BASIN_PLACES:
+        mark = ' <strong>&mdash; this module</strong>' if name == here else ""
+        rows += f"    <li><strong>{name}</strong> &mdash; {what}{mark}</li>\n"
+
+    seq = ""
+    for num, title, lvl, place in BASIN_MODULES:
+        me = ' class="here"' if num == this_module else ""
+        seq += (f'      <tr{me}><td>{num}</td><td><em>{title}</em></td><td class="c">{lvl}</td>'
+                f"<td>{place}</td></tr>\n")
+
+    return f'''
+<section class="page" id="basin">
+  {runhead("The Basin")}
+  <h1 class="chapter">Perdition Basin</h1>
+  {quote("A bowl of grass and dust with a bad river through the middle of it, and every well in it "
+         "dug by somebody who did not ask first.",
+         "N. Ashby, the Keeper&rsquo;s Book")}
+  <p>This module is set in <strong>Perdition Basin</strong>, the ready-made country of the
+  Keeper&rsquo;s Book (Ch. XIII), and so are the other two. It is a hard, dry county in the
+  territory: a bowl of grass and dust ringed by mesa and badland, its life strung along the failing
+  Calvary River and the scattered wells that are the only sure water for a day&rsquo;s ride in any
+  direction. A few days&rsquo; ride crosses the whole of it.</p>
+  <p>You do not need the Keeper&rsquo;s Book to run this night. What that chapter adds is the reason
+  the wells are the way they are, and it is worth having before you run all three.</p>
+
+  {player_map_html()}
+
+  <h2 id="basin-places">What a Rider Knows</h2>
+  <ul>
+{rows}  </ul>
+
+  <h2 id="basin-three">The Three Nights</h2>
+  <p>Each stands alone and each is a night at the table. Run in order they are a campaign: the same
+  county, the same water, one town at a time, and by the third the posse has worked out what has
+  been wrong with the basin since 1809.</p>
+  <table class="lvl">
+    <thead><tr><th>Module</th><th>The night</th><th class="c">Level</th><th>Where</th></tr></thead>
+    <tbody>
+{seq}    </tbody>
+  </table>
+  {keeper("Souls who ride all three should be the same souls. The basin pays a table back for "
+          "continuity more than most country does: the marshal at Calvary Crossing remembers them, "
+          "the water gets worse while they are away, and a homestead they saved in Module I is a "
+          "place they can fall back to in Module III. If your table wants fresh characters each "
+          "time, run them as three separate nights and let the basin be the only thing that "
+          "carries over. It carries plenty.", "Running the three")}
+  <div class="pageno">3</div>
+</section>
+'''
 
 
 def splice(H, BODY):

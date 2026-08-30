@@ -8,6 +8,82 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.53.0 — fifteen levels, the lore that was queued and never written, and one
+  chapter for both kinds of working. Player's v2.41, Keeper's v2.22, Bestiary v2.17, modules
+  v1.5/v1.5/v1.6 (2026-08-30).**
+
+  Five things Cole asked for in one afternoon, and they turned out to answer each other.
+
+  **"Make sure that all characters get a notable, significant ability or feat or new Sign or
+  Miracle at level 15."** The game reaches fifteenth level. Ninety-five new table rows, fifty-seven
+  named features, eleven Signs and eleven Miracles at Ranks 6 to 8, and thirty-one Edges that open
+  at 11th. None of the numbers were typed: `AttackFor`, `StrongSave` and `WeakSave` reproduce all
+  760 published cells exactly, so the 380 new ones are the same arithmetic carried on, and what was
+  authored is the part a formula cannot produce.
+
+  All nineteen fifteenth-level entries are once per session, change the situation rather than a
+  number, and cost something that does not come back. The Gambler goes all in and takes a lasting
+  mark of the Keeper's choosing. The Sister sets her lamp down and every point the light refuses is
+  dealt to her instead. The Witch changes one thing that already happened, ages a year, and loses a
+  memory into the gap to hold it open — she will not know which one. A smoke assertion holds all
+  nineteen to being real named features rather than an Edge with a flourish.
+
+  **Three faults came out of raising the ceiling, all of them latent.** The Edge rule was written
+  in three places and they disagreed: the printed tables named 3rd/7th/9th, `Validate` counted
+  1/3/5/7/9, and the code that hands them out gave one on every odd level. The last two matched
+  only because 1 to 10 makes those the same set, so a fifteenth-level soul grew an eighth Edge
+  nobody earned, and a player at 5th had never been told about one they already had.
+  `Rules.IsEdgeLevel` names the rungs once and a new assertion holds every printed table to it. Two
+  known-at ladders stopped at ten and the app indexed them by level, so an 11th-level Padre threw
+  `KeyNotFoundException` out of `LevelUp`, in a Keeper's hands, mid-session. And nineteen capstones
+  said *once each session*, which `ReadLimit` cannot read, so the Tracker would have rationed none
+  of them; the book's own phrasing was right and mine was the odd one out.
+
+  **Two of the twenty-two new workings resolved to the wrong shape**, which fails no assertion.
+  B2 wrote that lesson down and it landed again on cue. Found by printing all 116 and reading them.
+
+  **"I can't find expanded Patron lore or any of the other lore I wanted."** Measured: of the seven
+  threads queued on 2026-08-25, four appeared zero times in any of the six books. **"The Player's
+  book is very dense and the Keeper's book is very light."** Also measured: 70,000 words against
+  27,000.
+
+  Those two are one problem. What each Patron offers, takes and signs with was printed in the
+  *Player's* Book, along with the table of which Gospel masks which Patron — a thing the False
+  Prophet's own player is meant never to learn. Both are Keeper-side now, and the Player's Book
+  keeps the six as the country tells them: campfire stories that contradict each other on purpose,
+  out of which the Mad Spaniard walks. Keeper's Book **XV, The Powers of the Territory** carries
+  the rest — Redemption and the Golden Circle, the Mad Spaniard, the Dread Mother, the Pinkertons,
+  St. Louis money, and the alliance in the Rockies with all four readings kept open, each with what
+  it makes the campaign about and how the players would find out. The chapter states the evidence
+  and refuses the conclusion, and says that it is refusing it.
+
+  **"It would make more sense to have all Signs and Miracles in the same chapter."** They had been
+  split by Calling group rather than subject, eighty pages apart, in a book that spends both their
+  opening paragraphs comparing them to each other. Chapter XIII is **Signs, Miracles & Old Rites**.
+
+  **"Perdition Basin is the ready-made location, so make it part of the three modules."** They
+  already were — Coffin Wells, Saltlick Station, Mission San Clavo are all basin places — and none
+  of them said so where a reader would see it. The three now share a section written once in
+  `modules_common.basin()`: the country, the rider's map, the places with this module's own marked,
+  and a table of all three nights.
+
+  **The Bestiary reaches Tier VIII**, because the rank you can work is the Tier you can face. The
+  ladder prints Defense, Attack and saves to VIII and the Blood column stops at VII, since nothing
+  has ever emptied a Tier VIII thing and a number there would be a promise the arithmetic cannot
+  keep. Seven apex creatures, which are Chapter XV's lore given bodies, and not one can be shot to
+  a conclusion: one is undone in a courthouse, one by replacing what it does for a county, one by a
+  printing press.
+
+  **Four Roman-numeral readers stopped at V and only one said so.** `gen_appendix` skips a stat
+  block whose numeral it cannot read, so six creatures would have been quietly absent from an
+  appendix subtitled *Every thing in this book*. All four share one longest-first pattern now.
+  Three audit checks had the ladder's length typed into them; the worst failed the moment all three
+  sites agreed at 8, which is the state it exists to certify.
+
+  Smoke **16,451 / 0**, self-test **41/41**, `verify_rules` **1714** cross-checks,
+  `audit_consistency` **88,142**, `verify_all --full` **10/10**. All six books measure clean on
+  desktop and phone.
+
 - **GritKeeper v1.52.0 — the grids stop repainting the slow way, and the Posse tab can make a soul
   (2026-08-28).**
 

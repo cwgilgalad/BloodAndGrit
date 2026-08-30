@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.38 · Keeper's Book v2.20 · Bestiary v2.16 ·
-GritKeeper app v1.52.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.41 · Keeper's Book v2.22 · Bestiary v2.17 ·
+GritKeeper app v1.53.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -122,12 +122,12 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.38 | 232 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.20 | 105 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.16 | 199 | none (175 creatures) |
-| Module I — The Salt at Coffin Wells | v1.4 | 29 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.4 | 30 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.5 | 30 | one inline SVG map (two panels), downloadable |
+| The Player's Book | v2.41 | 264 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.22 | 116 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.17 | 209 | none (182 creatures) |
+| Module I — The Salt at Coffin Wells | v1.5 | 32 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.5 | 33 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.6 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.38) — structure
+## The Player's Book (v2.41) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -487,9 +487,9 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.20) — structure
+## The Keeper's Book (v2.22) — structure
 
-Chapters I–XIV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
+Chapters I–XV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
 Basin** realizes the Ch. XI "Salt Valley" Haunted-County seed and is the home ground of both
 starter adventures, so the three move together; and the **Index** is `id="bookindex"`, deliberately
@@ -510,10 +510,10 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.16) — structure & conventions
+## The Bestiary (v2.17) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
-(`id="bookindex"`) that auto-lists all **175 creatures** by name (from every `<p class="cr-name">`,
+(`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
 so it can never drift) plus ~19 curated chapter/concept entries. Note the long-standing
 Roll-by-Tier appendix keeps `id="index"` — the alphabetical index is a separate `id="bookindex"`.
 
@@ -585,6 +585,14 @@ its Tier in levels**):
 | III | 17 | +9 | 40 | +11 / +5 | 2d6+4 | 16 |
 | IV | 20 | +13 | 70 | +15 / +8 | 2d8+6 | 20 |
 | V | 23 | +17 | 110 | +19 / +11 | 3d8+8 | 25 |
+| VI | 26 | +21 | 160 | +23 / +14 | 4d8+10 | 28 |
+| VII | 29 | +25 | 220 | +27 / +17 | 4d10+12 | 30 |
+| VIII | 32 | +29 | — | +31 / +20 | 5d10+15 | 30 |
+
+*(VI-VIII added in B6, 2026-08-30, to meet Rank 8 at 15th level. The Blood column stops at VII
+on purpose: no table has ever emptied a Tier VIII thing and a number there would be a promise
+the arithmetic cannot keep. What one has instead of hit points is a condition under which it
+stops, printed under its own *Putting It Down*.)*
 
 **Encounter budget:** 4 points/PC; an even foe = 8, a mook = 4, a standout = 16.
 (Repriced off the harness in v1.44.0, from the printed 1 · 4 · 8. `Rules.BudgetRungs` is the
@@ -593,7 +601,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.52.0) — the C# desktop app
+## GritKeeper (v1.53.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
