@@ -48,13 +48,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.16 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.16)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.17 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.17)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.16</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.17</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.16 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.17 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
@@ -1743,6 +1743,107 @@ INDEX = f"""<!-- INDEX -->
 </section>
 """
 
+# ---------------------------------------------------------------- THE APEX (Tiers VI-VIII)
+APEX = f"""<!-- APEX -->
+<section class="page" id="apex">
+  {runhead('VII. The Old Dark')}
+  <h2 id="ix-apex">The Apex &mdash; Tiers VI to VIII</h2>
+  <p class="chapter-sub">Seven things at the top of the ladder, and what each is instead of a fight.</p>
+  {quote("I have met one. I will not be meeting another, and I would take it kindly if you did not ask me which.",
+         "from the field-books of N. Ashby, the last entry in that hand")}
+  <p class="dropcap lead">These are the powers of Keeper&rsquo;s Book Ch. XV given bodies, and every one of them is a
+  <em>situation</em>. None can be shot to a conclusion. The stat lines are printed so a Keeper knows what the shooting
+  buys, which is minutes, and the minutes are for somebody else to use.</p>
+  <p>Run one of these across a season. Do not run two. A table that meets two apex things learns that the world is
+  full of them, and the world is not, and that is most of why the first one worked.</p>
+
+  {creature(
+    sb("The Parcel", "Tier VI &middot; a boundary being assembled", "&mdash;", 160, "fixed; it is the ground", "+23", "+14", "+23",
+       "nothing directly. Any creature standing inside a closed bound acts as though one Tier higher",
+       "<strong>It is not finished.</strong> Somebody is buying land in pieces that do not adjoin, at prices no farmer would pay, and each deed closed brings the shape nearer done. Seven of the nine corners are bought.",
+       "DC 28, 1d10 &mdash; and only once a bound closes",
+       "It is undone in a courthouse. Break the title on one parcel and the shape cannot close: buy it, void it, burn the record, or find an heir willing to contest. Every other approach has been tried, and the deeds outlived the people who tried them."),
+    lore=[
+      "The Golden Circle&rsquo;s ledger runs to nine pages and the parcels on it have nothing in common. A dry lake in Nevada. Two sections of the Painted Mesa&rsquo;s old ground. A hundred and sixty acres of worthless slope above Leadville, bought for eleven thousand dollars in gold. Officers of the Circle will tell you, if pressed and drunk, that the purchases are strategic. They believe it. Not one of them wrote the list.",
+      "What the parcels have in common shows only on a map large enough to hold all of them, and the shape it makes is not one any surveyor drew. Land inside a closed bound is not haunted, and nothing lives there that did not live there before. It is only that the country inside has become a little more agreeable to certain kinds of visitor, and the agreeableness spreads outward from each corner at the speed of the paperwork."],
+    found="In a county recorder&rsquo;s office, three years before anybody notices. On the ground, as an unremarkable stretch of nothing that livestock will not cross.",
+    keeper="This is the book&rsquo;s argument that paperwork is worse than teeth, and it runs at the speed of a land dispute. There is no monster and there should not be one for a long while: the players find a deed, then a second, then a clerk who has processed eleven of these and is uneasy about it. The pressure is that every closing makes the next easier and the players can watch the map fill. Give them the win in a courthouse or a records fire and let them feel how strange a victory that is. If they insist on violence, the men holding the deeds are ordinary men with lawyers, and killing them passes the parcels to heirs who know nothing and will sell to the next offer, which is worse. Pair it with the Ledger if you want the table to understand that the money and the land are one problem.")}
+
+  {creature(
+    sb("The Ninth Child", "Tier VI &middot; the due, come to collect itself", 26, 150, "walks, and is never hurried", "+23", "+14", "+23",
+       "a hand taken +21 (4d8+10, and the touched saves or begins to agree with it)",
+       "<strong>It asks first.</strong> It states the debt, correctly, with dates, and waits. It will not enter uninvited, and it has never had to wait longer than three nights.",
+       "DC 28, 1d10",
+       "Pay the debt with something else the family is owed, or prove the ledger wrong &mdash; a Dread Mother&rsquo;s house keeps immaculate records and will honour a correction. Killing it costs the family three generations of protection and brings a second one by spring."),
+    lore=[
+      "A house of the Dread Mother keeps a woman alive through a bad birth, and her daughter through a worse one, and her granddaughter through the fever that took eleven others in the same county. Three generations. Then something knocks. It is polite. It has the dates. It wants the ninth child of the line and it has waited eighty years to want it.",
+      "Roughly one family in nine says yes. The ones who refuse are not punished in any way a marshal could charge; the house simply stops answering its door, and the family learns over the following decade what the protection had been doing all along. The Ninth Child does not argue the point. It comes back the next year and states the debt again."],
+    found="On a porch, at a decent hour, having ridden in openly. It will have introduced itself to the neighbours.",
+    keeper="Play it as the most reasonable thing your players have ever met, because that is the whole horror. It is right about the debt. It is kind to children. It will take an honest counter-offer and will not take a lie. The scene to aim for is the family arguing in the next room while it waits on the porch with its hat off, and the temptation to end this with a gun should be enormous and should be wrong. If they take the shot they have ruined the family they meant to save, the second one comes in spring, and by then they know it. Use this once. It does not survive repetition and it is the most upsetting page in the book.")}
+
+  {creature(
+    sb("The Circuit", "Tier VI &middot; one revival, in eleven towns at once", 26, 160, "it travels by wagon, like anybody", "+14", "+14", "+23",
+       "no attack of its own. Its preachers strike as Tier II men and there are a great many of them",
+       "<strong>It is one thing.</strong> Eleven tent revivals across four counties share a memory, a purse and a hunger. Close one and the other ten know within the hour and adjust.",
+       "DC 28, 1d10",
+       "It ends when the flock ends, and the flock is people. Ruin its reputation in one town and it withdraws from that county for a year; ruin it in all four and it dies, which takes a season, a printing press, and somebody the towns will believe."),
+    lore=[
+      "A revival comes through and it is a good one. The drunks dry out. The fighting stops. Six months later the town is quieter than before the tent came &mdash; not worse, quieter &mdash; and the preacher is four counties away doing it again. The Red Sermon has learned to run a circuit, and a circuit is harder to kill than a church.",
+      "The eleven preachers do not know they are one thing. Each believes he is called, and each is right in a way he would not enjoy having explained. What they share is underneath: one purse, one appetite, and one memory, so that a question asked in Cheyenne is answered in Denver by a man who was not there."],
+    found="Anywhere with a hard winter behind it and a printing press. It goes where people have recently needed help and got none.",
+    keeper="The Circuit is a faction that happens to be a monster, and it should be fought the way you fight a faction: for people, in public, slowly. Never let the players find a lair. What they find is a good man in a pulpit doing measurable good, and the arithmetic behind him, and the problem of proving arithmetic to a congregation. Give them one preacher who is genuinely decent and genuinely does not know, because the session where they have to decide what to do about him is the session this creature exists for.")}
+
+  {creature(
+    sb("The Gentleman on the Road", "Tier VII &middot; met, and never resolved", 29, 220, "as he pleases; he is never seen to arrive", "+27", "+27", "+27",
+       "he has never struck anybody. Should he, treat it as +25 (4d10+12) and reconsider your campaign",
+       "<strong>He is unfailingly polite.</strong> He knows your business. He asks after people you have not thought of in years, by name, gets the details right, and one detail is always wrong in a way you notice later.",
+       "DC 30, 1d10 &mdash; and only for those who work the Old Dark and know what they are looking at",
+       "He cannot be, and this is not a challenge. He leaves when the conversation is over. What a party can do is find out what he wants, which nobody has managed in a hundred and forty years."),
+    lore=[
+      "The Mad Spaniard is not a Patron and every story about him is attached to one. A gentleman in a good coat forty years out of fashion, met on a road at an hour when no one should be on it. In the mining camps he warns men off the bad veins and is thanked. On the Llano he is said to have ridden with the comancheros and to have been the reason they stopped. In the Rockies they say he is going from cult to cult with a proposal.",
+      "He has been described the same way by people with no reason to have compared notes, for longer than any of them lived, and the description includes a scar he did not have in the earliest tellings. He never lies. He never explains. Everything he says is true and incomplete, and the incompleteness is always the part that would have helped."],
+    found="On a road, at an hour when nobody should be on it, shortly before something changes.",
+    keeper="Before you use him, decide which of the four readings of the Rockies alliance he belongs to (Keeper&rsquo;s Book Ch. XV) and write it down, because he plays completely differently under each and your players will eventually ask him something you have to answer. Then run him warm. A frightening thing that is kind is worth six that are not. The numbers above exist for one situation, which is a player deciding to shoot a courteous stranger on a road, and if that happens the correct outcome is not a fight: he looks at them for a moment, says something accurate about their mother, and is not there. Never let him be resolved. He is worth more to your campaign unanswered than any answer you could give him.")}
+
+  {creature(
+    sb("The Ledger of the Territory", "Tier VII &middot; the money, made legible", "&mdash;", 220, "it is wherever its paper is", "+27", "+17", "+27",
+       "none. It ruins by foreclosure, and the men who carry that out are Tier I and do not know what they serve",
+       "<strong>It is not conscious and it does not need to be.</strong> Every note, lien and correspondent account in four territories, behaving as one appetite, none of the clerks aware of any of it.",
+       "DC 30, 1d10 (for the soul who works out what they are looking at)",
+       "Nothing kills it and something can starve it. A county that holds its own paper is outside the thing entirely, and the players can make one county do that. It takes a season, a bank, and more courage in a meeting hall than in any fight in this book."),
+    lore=[
+      "Follow any bank in the Territories back far enough and it is a correspondent of a bank in St. Louis, and that one of a house in New York, and somewhere in the middle of the chain the names stop being people. The Ledger is what you see when you finally hold the whole chain in your head at once, and almost nobody does, and the ones who do are changed by it.",
+      "It has no malice. It has a direction. Ruin an interest in one county and the capital behind it writes off the loss and funds two more the following spring in two other counties, and the players will hear about those counties. Nothing they did was pointless. Everything they did was local. Both are true and the distance between them is the campaign."],
+    found="In an office on Olive Street, held by a clerk who has never been west of Kansas City and would be genuinely distressed to hear what happened at Coffin Wells.",
+    keeper="The clerk is the encounter. He is not culpable and he is not innocent, he cannot be shot to any purpose, and if the players reach St. Louis and find him he is the most disquieting thing they have met &mdash; a polite, tired man who approved the note that funded the Vane Interest and eleven others this year and has no idea. Run the Ledger as a clock rather than an enemy, and give the players exactly one lever that works: a county that comes to hold its own paper. Make them earn it in meeting halls. A table that wins this one has done something no amount of shooting could have.")}
+
+  {creature(
+    sb("The Dread Mother", "Tier VIII &middot; a purpose, rather than an appetite", 32, "&mdash;", "she does not travel; her houses do", "+31", "+20", "+31",
+       "she has never struck a living soul. Every harm laid at her door was done by somebody keeping a promise",
+       "<strong>She is not one of the six.</strong> Her people are adamant on the point. The six are appetites; she is a purpose, and a purpose is far harder to sit across a table from.",
+       "DC 30, 1d10 + Affliction",
+       "Nothing ends her. What can be ended is a house, one at a time, by giving the county something that does what the house did &mdash; a doctor, a midwife, a fund, a road to the next town. Take the house without replacing it and the county buries the difference within two winters, and the next house is welcomed."),
+    lore=[
+      "What her people say, when they say anything, is that she is what the country was before it was a country, and that everything the six Patrons do is an argument among her children. Her houses are clean. The food is good. They take in the women nobody else will, they keep the springs, and they are usually the only medicine inside forty miles. Nobody who goes in hungry comes out hungry.",
+      "The price is generational and it is paid by people who never agreed to it. A house asks for a child, eventually, from a family it has kept alive for three, and it asks politely, and it has always asked politely. She herself has never been seen. Every soul who claims otherwise describes a different woman, and all of them describe her hands the same way."],
+    found="Nowhere. Her houses are found at the edge of towns that needed one, and they were there before the town was.",
+    keeper="Never give the players a raid to conduct. The Dread Mother is the hardest thing in this book to run and the most rewarding, because there is no monster and the harm is real and so is the good. Give them a woman who is alive because of one of these houses, and a debt coming due on her granddaughter, and let them work out what an answer even looks like. If a fight happens it should be against a frightened midwife holding a lamp, and the players should feel bad about it for a long time. The victory available here is building something: the win condition is a county that no longer needs her, and that is a season of work and the best ending this book has.")}
+
+  {creature(
+    sb("What the Patrons Are Afraid Of", "Tier VIII &middot; unnamed, and left that way", 32, "&mdash;", "unknown", "+31", "+31", "+31",
+       "unknown, and no account of it agrees with any other",
+       "<strong>Read this before you use it.</strong> This entry is deliberately empty in the middle. Whether it exists at all depends on which of the four readings of the Rockies alliance you chose in Keeper&rsquo;s Book Ch. XV, and under two of those readings there is nothing here and the fear is the point.",
+       "DC 30, 1d10 + Affliction",
+       "There is no answer printed here because printing one would settle a question this game keeps open on purpose. Whatever ends it, your table finds it, and you will know it when they say it out loud."),
+    lore=[
+      "Beginning about four years ago, cults that have never cooperated with anything began cooperating. A Devourer congregation in Montana and a Red Sermon circuit out of Denver moved money through the same three banks. A Cold Deep cell wintered at a Thing Beneath the Mountain dig and neither side lost anybody, which has never once happened. There are four separate written accounts of the same meeting and no two agree on who called it.",
+      "One reading of that evidence is that something above the six is compelling it, and that the Patrons are frightened. This entry is that reading, and it is written thin on purpose. Three other readings fit every fact just as well: they are genuinely conspiring; they are not cooperating at all and the pattern is in the observer; or all six have been dealing with the same thing wearing six faces for a century."],
+    found="In the gap between what your players have proved and what they have concluded.",
+    keeper="Do not answer this early and do not answer it twice. A table will carry an unanswered question for years and will do most of your work for you while it carries it, and the moment you confirm a reading three quarters of the Rockies goes quiet. If you use this entry at all, use it in the last session of a campaign or the one before, and never in a way that requires a speech. The best version of this creature is the one your players assembled themselves out of four sessions of evidence, and your job is to be a little less certain than they are.")}
+  <div class="pageno">180</div>
+</section>
+"""
+
 GROUNDS = f"""<!-- GROUNDS -->
 <section class="page" id="grounds">
   {runhead('Appendix: The Grounds')}
@@ -1990,6 +2091,9 @@ BUILD = f"""<!-- BUILD -->
       <tr><td><strong>III</strong></td><td>17</td><td>+9</td><td>40</td><td>+11 / +5</td><td>2d6+4</td><td>16</td></tr>
       <tr><td><strong>IV</strong></td><td>20</td><td>+13</td><td>70</td><td>+15 / +8</td><td>2d8+6</td><td>20</td></tr>
       <tr><td><strong>V</strong></td><td>23</td><td>+17</td><td>110</td><td>+19 / +11</td><td>3d8+8</td><td>25</td></tr>
+      <tr><td><strong>VI</strong></td><td>26</td><td>+21</td><td>160</td><td>+23 / +14</td><td>4d8+10</td><td>28</td></tr>
+      <tr><td><strong>VII</strong></td><td>29</td><td>+25</td><td>220</td><td>+27 / +17</td><td>4d10+12</td><td>30</td></tr>
+      <tr><td><strong>VIII</strong></td><td>32</td><td>+29</td><td>&mdash;</td><td>+31 / +20</td><td>5d10+15</td><td>30</td></tr>
     </tbody>
   </table>
   <p><strong>The encounter budget:</strong> 4 points per player character. An even-Tier foe costs 8; a mook (a Tier
@@ -2001,6 +2105,15 @@ BUILD = f"""<!-- BUILD -->
   problem with an answer, and the answer is printed under its own <em>Putting It Down</em>. Price the shooting as the
   minutes it buys the posse, never as the way the thing dies. The Keeper's Book Ch. IV says the same at greater
   length, under <em>Where the arithmetic stops</em>.</p>
+  <p id="ix-tier-top"><strong>And the Blood column stops at VII.</strong> That is not an omission. A Tier VIII
+  thing has no Blood total because no table has ever emptied one and the number would only be a promise the
+  arithmetic cannot keep. Give it whatever total the scene needs it to survive, or none at all. What a Tier VIII
+  creature has instead of hit points is a condition under which it stops, and that condition is printed under its
+  <em>Putting It Down</em>, and it is the entire encounter. Everything at VI and VII is the same problem in a
+  smaller size: the numbers are there to price the minutes, never the ending.</p>
+  <p class="note">A party of 12th to 15th level can face a Tier VI or VII thing and expect to survive the meeting
+  if they have already worked out what it wants. Nobody is meant to face a Tier VIII on level terms, at any level.
+  It is a piece of the world that has taken an interest, and the win is that it loses interest.</p>
 
   <h2>The House Rules of the Dead</h2>
   <ul>
@@ -2035,13 +2148,17 @@ BUILD = f"""<!-- BUILD -->
 import re
 from collections import defaultdict
 
-ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
+ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8}
+# Longest first. Alternation is first-match, so "V|VI" reads VI as V, and the word boundary
+# that hides that today stops hiding it the moment a numeral gains a suffix.
+TIER_RE = r"\b(VIII|VII|VI|IV|IX|V|III|II|I)\b"
 
 
 def primary_tier(tier_str):
     head = tier_str.split("&middot;")[0]
-    romans = re.findall(r'\b(I|II|III|IV|V)\b', head)
-    return ROMAN[romans[0]] if romans else 9
+    romans = re.findall(TIER_RE, head)
+    # 99 rather than 9, because 8 is a real tier now and the fallback has to sort after it.
+    return ROMAN[romans[0]] if romans else 99
 
 
 def name_key(name_html):
@@ -2136,7 +2253,7 @@ def gen_appendix(body, ids):
             tier_str = re.search(r'<span class="sb-tier">(.*?)</span>', blk, re.S).group(1)
             name = re.search(r'<span class="sb-name">(.*?)</span>', blk, re.S).group(1)
             head = tier_str.split("&middot;")[0]
-            romans = re.findall(r'\b(I|II|III|IV|V)\b', head)
+            romans = re.findall(TIER_RE, head)
             if not romans:
                 continue
             if '/' in head:  # dual stat block (e.g. flock / prophet): list in each tier
@@ -2145,11 +2262,14 @@ def gen_appendix(body, ids):
             else:            # single or range: place at its lowest (first) tier
                 tiers[ROMAN[romans[0]]].append(name)
     sub = {1: "(1st&ndash;2nd lvl)", 2: "(~4th lvl)", 3: "(~6th lvl)",
-           4: "(~8th lvl)", 5: "(~10th lvl &amp; beyond)"}
-    lbl = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
+           4: "(~8th lvl)", 5: "(~10th lvl)", 6: "(~12th lvl)", 7: "(~14th lvl)",
+           8: "(nobody faces one on level terms)"}
+    lbl = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII"}
     rows = []
-    for t in (1, 2, 3, 4, 5):
+    for t in range(1, 9):
         names = sorted(dict.fromkeys(tiers[t]), key=name_key)
+        if not names:
+            continue
         rows.append(f'      <tr><td><strong>{lbl[t]}</strong> <span class="sub">{sub[t]}</span></td>'
                     f'<td>{", ".join(names)}</td></tr>')
     new_tbody = "<tbody>\n" + "\n".join(rows) + "\n    </tbody>"
@@ -2703,8 +2823,9 @@ def build_hard(sb, runhead, quote, creature):
 
 
 HARD = build_hard(sb, runhead, quote, creature)
-BODY = CONTENTS + HOWTO + DEAD + BEASTS + MEN + SPIRITS + WILD + OLD + LIVING + HARD + INDEX + GROUNDS + BUILD
-_CSEC = ["dead", "beasts", "men", "spirits", "wild", "olddark", "living", "hard"]
+BODY = CONTENTS + HOWTO + DEAD + BEASTS + MEN + SPIRITS + WILD + OLD + APEX + LIVING + HARD + INDEX + GROUNDS + BUILD
+_CSEC = ["dead", "beasts", "men", "spirits", "wild", "olddark",
+         "living", "hard", "apex"]
 BODY = sort_sections(BODY, _CSEC)   # each section: tier asc, then name asc
 BODY = gen_appendix(BODY, _CSEC)    # appendix regenerated from actual stat blocks
 

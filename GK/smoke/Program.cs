@@ -73,7 +73,7 @@ for (int i = 0; i < 50; i++)
 
 // ---- Data loads, extra tables merge, terrain entries resolve to real creatures ----
 Db.Load();
-T("175 creatures", Db.Creatures.Count == 175);
+T("182 creatures", Db.Creatures.Count == 182);
 T("creature names unique", Db.Creatures.Select(c => c.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() == Db.Creatures.Count);
 T("all stat blocks parse", Db.Creatures.All(c => c.BloodValue > 0 && c.DefenseValue > 0));
 T("eight creature chapters", Db.Creatures.Select(c => c.chapter).Distinct().Count() == 8);   // Bestiary II-IX; I is How to Read the Dead
@@ -113,7 +113,10 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
         // riders are non-empty text (the special maneuvers/auras the Keeper narrates)
         T($"[{c.name}] riders are non-empty", riders.All(r => r.Trim().Length > 0));
     }
-    T("most creatures have at least one Strike", noStrikeCreatures <= 25);   // ~intangible hazards only
+    // 25 before B6. Five of the seven apex creatures print no attack line at all -- the Parcel,
+    // the Ledger, the Dread Mother, What the Patrons Are Afraid Of, and the Circuit, whose harm is
+    // done by ordinary preachers. A thing whose Putting It Down is a courthouse has no claw die.
+    T($"most creatures have at least one Strike ({noStrikeCreatures})", noStrikeCreatures <= 30);
     T("attacks parse into 120+ strikes", totalStrikes >= 120);
     T("the great majority of strikes carry dice", withDice >= totalStrikes - 10);
     T("some creature attacks are elemental (fire/cold/…)", elemental >= 3);
@@ -184,16 +187,32 @@ foreach (var (ground, list) in Db.Terrain)
         T($"terrain resolves [{ground}]: {entry}", Db.Find(nm) != null);
     }
 
-// Every creature can be rolled. A Bestiary entry no table ever offers is one a Keeper has to
-// already know about to use, which defeats the point of having the tables. The White Bison is
-// the one deliberate exception — Ch. XII says it has gone quiet, so it stays off.
+// Every creature can be rolled, bar the ones deliberately held off the tables. A Bestiary entry
+// no table ever offers is one a Keeper has to already know about to use, which defeats the point
+// of having the tables -- so the exceptions are NAMED here, and adding one is a deliberate act.
+//
+//   The White Bison  -- Ch. XII says it has gone quiet.
+//   The seven apex   -- Tiers VI to VIII (B6, 2026-08-30). Every one is a season of play that a
+//                       Keeper chooses, and a wilderness table that can roll the Dread Mother on a
+//                       2 is a table nobody can use at all.
 {
+    var heldBack = new HashSet<string>
+    {
+        "The White Bison",
+        "The Parcel", "The Ninth Child", "The Circuit",
+        "The Gentleman on the Road", "The Ledger of the Territory",
+        "The Dread Mother", "What the Patrons Are Afraid Of",
+    };
     var onTables = new HashSet<string>(
         Db.Terrain.SelectMany(kv => kv.Value)
                   .Select(e => System.Text.RegularExpressions.Regex.Match(e, @"^(.*?)(\s*\(|$)").Groups[1].Value.Trim()));
     var unreachable = Db.Creatures.Select(c => c.name).Where(n => !onTables.Contains(n)).ToList();
-    T("every creature is reachable from some terrain table, bar the one held back",
-        unreachable.Count == 1 && unreachable[0] == "The White Bison");
+    T($"every creature is reachable from some terrain table, bar the {heldBack.Count} held back"
+      + (unreachable.Except(heldBack).Any() ? " — " + string.Join(", ", unreachable.Except(heldBack)) : ""),
+      !unreachable.Except(heldBack).Any());
+    // and an exception that stops being an exception is a stale list, which is its own fault
+    T("nothing on the held-back list has quietly reappeared on a table",
+        heldBack.All(n => Db.Find(n) == null || unreachable.Contains(n)));
 }
 
 // The generators the Keeper actually presses. A re-extraction of tables.json that lands without

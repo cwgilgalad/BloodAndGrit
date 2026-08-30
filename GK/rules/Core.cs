@@ -1141,6 +1141,12 @@ public static class Rules
         (17,  9, 40, 11, 5, "2d6+4", "16"),
         (20, 13, 70, 15, 8, "2d8+6", "20"),
         (23, 17,110, 19,11, "3d8+8", "25"),
+        // B6, 2026-08-30. Six, seven and eight, to meet Rank 8 at 15th level. The Blood column
+        // stops meaning anything at the top: VIII carries 0 because no table has ever emptied one,
+        // and a number there would be a promise the arithmetic cannot keep (see ArithmeticStopsAt).
+        (26, 21,160, 23,14, "4d8+10", "28"),
+        (29, 25,220, 27,17, "4d10+12", "30"),
+        (32, 29,  0, 31,20, "5d10+15", "30"),
     };
 
     /// <summary>Sign and spoor — the safe-table rule's numbers (Bestiary, Appendix: The Grounds).

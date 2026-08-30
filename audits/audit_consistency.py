@@ -55,7 +55,7 @@ import extract_creatures             # noqa: E402  the Bestiary as the app reads
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
+ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8}
 FAILURES = []
 CHECKS = [0]
 
@@ -151,8 +151,11 @@ def check_threat_by_tier(dig, core, claude):
         fail("one of the three sites could not be read "
              f"(book={tb is not None}, app={rows_cs is not None}, doc={rows_md is not None})")
         return
-    if not (len(tb["rows"]) == len(rows_cs) == len(rows_md) == 5):
-        fail(f"row counts differ: book {len(tb['rows'])}, app {len(rows_cs)}, doc {len(rows_md)}")
+    # How many Tiers there are is a fact about the ladder, not about this check. It was typed as
+    # 5 here, so the day all three sites agreed at 8 this failed for saying so (B6, 2026-08-30).
+    tiers = len(tb["rows"])
+    if not (tiers == len(rows_cs) == len(rows_md)) or tiers < 5:
+        fail(f"row counts differ: book {tiers}, app {len(rows_cs)}, doc {len(rows_md)}")
         return
     # book cols:  Tier Defense Attack Blood Saves Damage Dread
     # app tuple:  def atk blood hi lo dmg dread
@@ -165,6 +168,12 @@ def check_threat_by_tier(dig, core, claude):
                "saves": (int(ar[3]), int(ar[4])), "damage": ar[5].strip(), "dread": nums(ar[6])}
         doc = {"defense": nums(mr[1]), "attack": nums(mr[2]), "blood": nums(mr[3]),
                "saves": nums(mr[4]), "damage": mr[5].strip(), "dread": nums(mr[6])}
+        # A printed em dash yields no numbers; the C# tuple has to write something and writes 0.
+        # They are the same statement -- "no number belongs here" -- in the two notations available.
+        for side in (book, doc):
+            for field in ("defense", "blood"):
+                if side[field] == () and app[field] == (0,):
+                    side[field] = (0,)
         for field in ("defense", "attack", "blood", "saves", "damage", "dread"):
             CHECKS[0] += 2
             n += 2
@@ -172,7 +181,7 @@ def check_threat_by_tier(dig, core, claude):
                 fail(f"Tier {tier} {field}: book {book[field]!r} vs app {app[field]!r}")
             if book[field] != doc[field]:
                 fail(f"Tier {tier} {field}: book {book[field]!r} vs CLAUDE.md {doc[field]!r}")
-    ok(f"5 Tiers x 6 fields agree across all three sites ({n} comparisons)")
+    ok(f"{tiers} Tiers x 6 fields agree across all three sites ({n} comparisons)")
 
 
 def check_spoor(dig, core):
@@ -328,7 +337,15 @@ def check_benchmarks(dig, creatures, verbose):
     if tb is None:
         fail("the benchmark table could not be read")
         return
-    bench = {i: {"defense": nums(r[1])[0], "blood": nums(r[3])[0]}
+    # A Tier may print an em dash rather than a number, and Tier VIII prints one for Blood on
+    # purpose (B6, 2026-08-30): nothing has ever emptied one, so a benchmark there would be a
+    # promise the ladder cannot keep. A missing benchmark means that field is not measured at that
+    # Tier, rather than an IndexError halfway through the run.
+    def _first(cell):
+        v = nums(cell)
+        return v[0] if v else None
+
+    bench = {i: {"defense": _first(r[1]), "blood": _first(r[3])}
              for i, r in enumerate(tb["rows"], start=1)}
     # The band. The book calls these benchmarks and says outright that a creature may sit off them,
     # so a tight band would fail on design rather than on error. The band used is the distance to
@@ -346,8 +363,10 @@ def check_benchmarks(dig, creatures, verbose):
                 continue
             v = v[0]
             here = bench[t][field]
-            below = bench[max(lo_t, t - 1)][field]
-            above = bench[min(hi_t, t + 1)][field]
+            if here is None:
+                continue
+            below = bench[max(lo_t, t - 1)][field] or here
+            above = bench[min(hi_t, t + 1)][field] or here
             span = max(here - below, above - here, 2)
             if not (here - 2 * span <= v <= here + 2 * span):
                 out.append((c["name"], t, field, v, here))
@@ -357,6 +376,8 @@ def check_benchmarks(dig, creatures, verbose):
         for t in sorted(bench):
             vals = sorted(nums(c.get("blood", ""))[0] for c in creatures
                           if c["tier"] == t and nums(c.get("blood", "")))
+            if bench[t]["blood"] is None:
+                continue
             if vals:
                 mid = vals[len(vals) // 2]
                 print(f"          Tier {t}: {len(vals):>3} creatures, Blood {vals[0]}-{vals[-1]}, "
@@ -454,20 +475,34 @@ def check_chapter_refs(dig):
     for name, book in dig["books"].items():
         have[name] = {c["roman"] for c in book["chapters"] if c["roman"]}
     spine = have.get("blood-and-grit.html", set())
+    # A reference may name the book it points at, and that form is the easiest of all to check
+    # against the right book -- which this did not do until 2026-08-30, when the Bestiary's new
+    # apex entries were failed for citing "Keeper's Book Ch. XV", a chapter that exists.
+    NAMED = {"keeper": "keeper-handbook.html", "player": "blood-and-grit.html",
+             "bestiary": "bestiary.html"}
     bad = 0
     for name, book in dig["books"].items():
         own = have[name]
         for ch, sec, para in X.all_text(book):
-            for m in re.finditer(r"\bCh(?:apter|\.)\s+([IVXL]+)\b", para):
+            for m in re.finditer(r"(?:(Keeper|Player|Bestiary)(?:&rsquo;s|'s|\u2019s)?\s+Book\s+)?"
+                                 r"\bCh(?:apter|\.)\s+([IVXL]+)\b", para):
                 CHECKS[0] += 1
-                n = ROMAN.get(m.group(1)) or X.ROMAN.get(m.group(1))
+                n = ROMAN.get(m.group(2)) or X.ROMAN.get(m.group(2))
                 if n is None:
                     continue
-                # A reference resolves against the book it is in, or against the Player's Book,
-                # which is the shared spine every other book is built on and cites by default.
+                named = NAMED.get((m.group(1) or "").lower())
+                if named:
+                    # it said which book: resolve against that one and nothing else
+                    if n not in have.get(named, set()):
+                        bad += 1
+                        fail(f"{name} — {ch}: \"{m.group(1)}'s Book Chapter {m.group(2)}\" is not a "
+                             f"chapter of {named}")
+                    continue
+                # A bare reference resolves against the book it is in, or against the Player's
+                # Book, which is the shared spine every other book is built on and cites by default.
                 if n not in own and n not in spine:
                     bad += 1
-                    fail(f"{name} — {ch}: \"Chapter {m.group(1)}\" exists in neither this book "
+                    fail(f"{name} — {ch}: \"Chapter {m.group(2)}\" exists in neither this book "
                          f"(I–{max(own) if own else 0}) nor the Player's Book")
     if not bad:
         ok(f"every Chapter reference in all six books resolves "
