@@ -386,7 +386,7 @@ body{ background:#525659; }
     <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">148</span></li>
     <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">171</span></li>
     <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">181</span></li>
-    <li><a href="#signs">XIII. Signs &amp; Old Rites</a><span class="pg">191</span></li>
+    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">191</span></li>
     <li><a href="#advancement">XIV. Advancement</a><span class="pg">207</span></li>
     <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">210</span></li>
     <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">212</span></li>
@@ -1962,7 +1962,7 @@ body{ background:#525659; }
   fire, silver, and a zealot's certainty, hunting the dark's servants back to their dens.</p>
   <p>All five work <strong>Miracles</strong> — a chosen, ranked repertoire of graces, each paid from its own
   pool of faith made countable. The Callings are laid out first; the Miracles they draw on, and the rules that govern
-  them, close the chapter under <em>The Work of Faith</em>.</p>
+  them, are gathered with the Signs in Chapter XIII, under <em>The Work of Faith</em>.</p>
 
   <div class="box gold">
     <h4>A Note on Faiths Not Your Own</h4>
@@ -2013,8 +2013,7 @@ body{ background:#525659; }
   + your full level (not half), refreshed each dawn. Every gift below draws on it. Where another healer counts pennies, you
   carry a purse.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, at the close of this
-  chapter), drawing on the <strong>Common Blessings</strong> and on <strong>the Mending</strong> — the quiet, stubborn craft of keeping the wounded alive, paid from your Vital Breath.
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Mending</strong> — the quiet, stubborn craft of keeping the wounded alive, paid from your Vital Breath.
   You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
   <h4>Herb-Lore</h4>
   <p>You gather and prepare remedies from the living country — poultices, teas, tinctures, splints. Gain +2 on
@@ -2116,8 +2115,7 @@ body{ background:#525659; }
   dawn Mass (or its private equivalent). Grace fuels every rite below. A Padre who has missed his offices too long begins
   the day with the pool halved — the Church is exacting about its bookkeeping.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, at the close of this
-  chapter), drawing on the <strong>Common Blessings</strong> and on <strong>the Liturgy</strong> — the sacramental Latin the Church has kept against the dark for eighteen centuries, paid from your Grace.
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Liturgy</strong> — the sacramental Latin the Church has kept against the dark for eighteen centuries, paid from your Grace.
   You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
   <h4>Rite of Exorcism</h4>
   <p>Your signature work. Against a possessing spirit, a controlling influence, or the Mark working in a living soul, spend
@@ -2217,8 +2215,7 @@ body{ background:#525659; }
   <p>You have a pool of <strong>Conviction</strong> equal to your PRE modifier + half your level (minimum 1), refreshed each
   dawn. Conviction fuels your sermons and miracles. It is faith made countable — and it runs dry exactly when you need it most.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, at the close of this
-  chapter), drawing on the <strong>Common Blessings</strong> and on <strong>the Revival</strong> — the mourner&rsquo;s bench, the camp meeting, and the fire that falls when the Word is loud enough, paid from your Conviction.
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Revival</strong> — the mourner&rsquo;s bench, the camp meeting, and the fire that falls when the Word is loud enough, paid from your Conviction.
   You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
   <h4>Sermon</h4>
   <p>Spend 1 Conviction and speak for a round. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on
@@ -2318,8 +2315,7 @@ body{ background:#525659; }
   standing boon and a called-upon boon fueled by your pool of <strong>Breath</strong> (RES modifier + half level, refreshed
   each dawn). You may make peace with a second Aspect at 6th level.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, at the close of this
-  chapter), drawing on the <strong>Common Blessings</strong> and on <strong>the Spirits</strong> — courtesies asked of the crowded country and its neighbors, paid from your Breath.
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Spirits</strong> — courtesies asked of the crowded country and its neighbors, paid from your Breath.
   You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
   <h4>Mending Hands</h4>
   <p>Spend Breath to heal 1d8 Blood per point by touch and song, or to ease a frightened soul — granting back Nerve or a
@@ -2415,7 +2411,7 @@ body{ background:#525659; }
   <h4>The Vigil</h4>
   <p>You were not called to preach and never wanted to be. What you took were vows of work: to go where the sick are, to stay when others leave, and to keep watch over what should not be left alone. You work Miracles from the blessing and vigil lists, spending Mercy, and your Miracle DC is 10 + half your level + your RES modifier. Your order taught you that a thing watched is a thing that cannot get on with what it was doing.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, at the close of this chapter), drawing
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing
   on the <strong>Common Blessings</strong> and on <strong>the Vigil</strong> — the warding, watching work of an
   order that has always been sent to sit up with things nobody else will — paid from your Mercy. You begin knowing
   two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
@@ -2508,7 +2504,7 @@ body{ background:#525659; }
   <h4>Zeal &amp; the Consecrations</h4>
   <p>You carry a cold and countable certainty: a pool of <strong>Zeal</strong> equal to your WIT modifier + half
   your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your <strong>Miracles</strong>
-  (see <em>The Work of Faith</em>, at the close of this chapter), drawn from the <strong>Common Blessings</strong>
+  (see <em>The Work of Faith</em>, in Chapter XIII), drawn from the <strong>Common Blessings</strong>
   and from <strong>the Consecrations</strong> — salt, silver, fire, ward, and the litany of weaknesses that turns
   a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, and
   9th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.</p>
@@ -2567,221 +2563,6 @@ body{ background:#525659; }
       <li><strong>The Warden.</strong> Scribe wards that bar the uncanny and shield others from the Old Dark. <em>Mastery (10th):</em> once per scene, sanctify the ground around you, which no uncanny thing may cross.</li>
     </ul>
   </div>
-  <div class="pageno">24</div>
-</section>
-
-<section class="page" id="miracles">
-  <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
-  <h2 id="ix-miracles">The Work of Faith</h2>
-  <p class="chapter-sub">Miracles, their Rank, and the pool that pays for them.</p>
-  <div class="divider"></div>
-  <p class="dropcap lead">Where the Old Dark works <strong>Signs</strong> (Chapter XIII), the faithful work
-  <strong>Miracles</strong>, and the two run deeper apart than the tongue you pray in. A Sign is taken, and the taking
-  is noticed, and the debt is entered in a ledger that never forgets. A Miracle is <em>asked for</em>, on the knees, of
-  a higher and quieter thing, and now and again it is granted. It costs no Mark and draws no Backlash. It costs the
-  pool, and it risks the oldest disappointment there is: a prayer that goes unanswered.</p>
-  <p>Each of the six Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
-  ranked and gated exactly as the Signs are.</p>
-
-  <h2 id="ix-m-rank">Rank and the Pool</h2>
-  <p><strong>Rank.</strong> Every Miracle carries a Rank from one to eight, and you reach a new Rank at the same rungs a
-  sign-worker does: <strong>1st, 3rd, 5th, 7th, and 9th level</strong>, and then 11th, 13th, and 15th. You may learn and
-  work any Miracle of a Rank your level allows, and no higher; ask for more than you have earned and the grace simply
-  does not come. You begin knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a
-  repertoire of six by the height of a frontier life and nine by the end of a very long one.</p>
-  <p class="note">Ranks Six and Seven hold four Miracles apiece and Rank Eight holds three. All three of the Rank Eight
-  Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
-  between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
-  <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
-  countable — the Padre's <em>Grace</em>, the Preacher's <em>Conviction</em>, the Shaman's <em>Breath</em>, the Medicine
-  Man's <em>Vital Breath</em>, the Sister's <em>Mercy</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
-  &ldquo;2&nbsp;Faith,&rdquo; it means two points of that pool, whatever your Calling names it. The pool refreshes with
-  the dawn (or the dawn Mass, or the morning offering), and it runs dry, as faith does, exactly when the night is longest.</p>
-  <p class="note" id="ix-m-dc">Where a Miracle forces a save, the DC is your <strong>Miracle DC = 10 + half your level +
-  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman, the
-  Medicine Man and the Sister, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
-  worked as an <em>Action</em> costs one Beat, and one worked as a <em>Reaction</em> is taken on another's turn.</p>
-
-  <h2 id="ix-m-lists">The Seven Lists</h2>
-  <p>Every worker of Miracles draws on the <strong>Common Blessings</strong>, the shared grammar of grace. Beyond that,
-  each Calling holds one list of its own, closed to the others: the Padre his <strong>Liturgy</strong>, the Preacher his
-  <strong>Revival</strong>, the Shaman the <strong>Spirits</strong>, the Medicine Man the <strong>Mending</strong>,
-  the Witch Hunter the <strong>Consecrations</strong>, and the Sister the <strong>Vigil</strong>. A Padre and a Preacher answer the same dark; they do not answer it
-  with the same words, and this is where the difference is written down.</p>
-  <div class="pageno">24</div>
-</section>
-<section class="page">
-  <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
-  <h2 id="ix-m-list-blessing">The Common Blessings</h2>
-  <p>Worked by any Calling of Faith — the shared grammar of grace, learned first and leaned on hardest when the deeper work runs dry.</p>
-  <h3 id="ix-m-steadying">The Steadying Word</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it. The steadiness holds until that save is rolled.</p>
-  <h3 id="ix-m-light">A Light Unfailing</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> A steady light rises at your word, warm where Cold Lamp is cold, and lasts an hour. The uncanny will not willingly step into it, and the Marked find it hard to meet.</p>
-  <h3 id="ix-m-road">The Blessing of the Road</h3>
-  <p><em>Rank 2 · Ten minutes · 2 Faith.</em> Bless a journey before it is begun. For the next day the party ignores the first hazard of the trail and travels at +2 on Survival to find the way, the water, and the safe camp.</p>
-  <h3 id="ix-m-clasped">Hands Clasped</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Take an ally's hand, or bid them take another's. For the scene the two of you share your saves against fear — whichever of you rolls better, both use — and neither may be made to flee while the other stands.</p>
-  <h3 id="ix-m-notwhile">Not While I Stand</h3>
-  <p><em>Rank 2 · Reaction · 2 Faith.</em> Something uncanny is being worked where you can see it. Say no. Roll d20 + half your level + your Miracle ability against the worker's DC; on a success it comes apart at once, its price already spent. You may answer a Sign, a curse in the moment it lands, or the working of any uncanny thing. You may not answer a Miracle: what is asked for in good faith is not yours to refuse. Nothing here can turn on you and no failure is worse than failing, so you may do it as often as you can pay for it.</p>
-  <h3 id="ix-m-warding">The Warding Psalm</h3>
-  <p><em>Rank 3 · Reaction · 3 Faith.</em> As an uncanny blow lands on you or a soul beside you, speak the psalm and turn it: the attack is halved, and its wielder gives ground a step. You may do this once per round, and not on ordinary lead.</p>
-  <h3 id="ix-m-anoint">Anoint the Iron</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Faith.</em> Touch a weapon, speak over it, and give it back. For the scene it counts as blessed and as silver both, and every hit it lands on something uncanny deals an extra 1d6. It does not have to be your weapon and it does not have to stay in your hands; put it in the hands of whoever out here is best with it, which is rarely you.</p>
-  <h3 id="ix-m-named">The Unclean Named</h3>
-  <p><em>Rank 3 · 1 Beat · 2 Faith · Will save.</em> Point and name a thing for what it truly is. It saves or its nature stands revealed to all who can hear you, and it suffers a &minus;2 against you and yours until the scene ends. Some things have not been named aloud in a long age, and do not care for it.</p>
-  <h3 id="ix-m-vigil">The Vigil</h3>
-  <p><em>Rank 4 · One minute · 3 Faith.</em> Keep the watch and pray it through. Until dawn, no one in the camp may be surprised or driven by fear, and every soul but you sleeps easy under it. You take no rest, and you will feel the want of it come morning.</p>
-  <h3 id="ix-m-rebuke">Rebuke the Dark</h3>
-  <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Raise your voice against the unclean things in sight. Each lesser uncanny saves or flees you for a round per two levels, and a greater one that fails is Frightened and gives ground. The oldest of them only smile — but the small ones run.</p>
-  <h3 id="ix-m-miracle">The Miracle Plain</h3>
-  <p><em>Rank 5 · 1 Beat · 0 Faith.</em> Once, and never lightly: ask for the thing that cannot be asked for, and now and again receive it. Undo one calamity of the moment just past — a death, a fire caught, a fall — as the Keeper allows. It empties your whole pool to nothing and cannot be tried again until you have rested and given thanks. Most prayers are not answered. This is about the ones that are.</p>
-  <h3 id="ix-m-covenant">The Covenant</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Spread your arms and stand for them. For the scene, no ally who can hear you may be brought below 1 Blood by uncanny harm — struck to the edge of death, and no further, while your voice holds. Ordinary lead still kills as it pleases. The dark does not get to.</p>
-  <h3 id="ix-m-hour">The Hour Is Not Yours</h3>
-  <p><em>Rank 5 · Reaction · 5 Faith.</em> When a soul you can see is about to die, and die rather than merely fall, say aloud that the hour is not yours to take. It is not taken. They lie Dying one point above dead and no worse, stable at once and until somebody reaches them. Whatever was coming for that soul now knows your name, knows you said it out loud, and has been given a reason to learn where you sleep.</p>
-  <h3 id="ix-m-cupnotemptie">The Cup Not Emptied</h3>
-  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Bless what little there is. Food, water, medicine, powder, lamp oil, bandage
-  — whatever is in front of you, there is now enough of it for everyone here, for a week. It is plain and it is
-  sufficient and it does not keep past the week. A great many hard winters have turned on somebody being able to do
-  this.</p>
-  <h3 id="ix-m-outofdepths">Out of the Depths</h3>
-  <p><em>Rank 7 · One minute · 7 Faith.</em> Reach for somebody who has been taken. Name a soul who is possessed, bound,
-  called away, hollowed out, sold, or being worn by something else, and pull. They come back at once, out of whatever has them, whole enough to speak and to say what happened. Whatever had them is now aware that you can do this, and where you were
-  standing when you did it.</p>
-  <h3 id="ix-m-answer">The Answer</h3>
-  <p><em>Rank 8 · One minute · your whole pool of Faith.</em> Most prayers are not answered. Ask, once, for a single thing,
-  in your own words, aloud, in front of whoever is there — and it is granted, whatever it was. The dead one back. The
-  fire out. The army turned. The sickness lifted off a county. The thing that has been coming, not coming. There is no
-  save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and
-  you will spend the rest of your life being careful about what you ask for, having found out that it works.</p>
-  <h3 id="ix-m-greaterlove">Greater Love</h3>
-  <p><em>Rank 8 · Reaction · your whole pool of Faith.</em> Step in front of all of it. Any harm, effect, death, taking or
-  unmaking about to fall on any number of souls you can see falls on you instead, entire and undivided, and they are
-  untouched and unaware until it is over. You will very likely not survive it. If you do not, you cannot be raised,
-  called back, or spoken to afterward by any means: you are where the people you saved are not, and that was the
-  arrangement.</p>
-  <h3 id="ix-m-longroadhome">The Long Road Home</h3>
-  <p><em>Rank 8 · One hour · your whole pool of Faith.</em> Take everyone home. Every soul who has been with you and is
-  willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has
-  ever called home, safely, together, however far it is and whatever holds them. Doors open. Distances shorten. The dead
-  walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to
-  travel anywhere the ordinary way without knowing exactly how much shorter it could have been.</p>
-  <h2 id="ix-m-list-liturgy">The Liturgy</h2>
-  <p>The Padre's alone: Latin, sacrament, and the long authority of a Church that has been writing the dark down for eighteen centuries. The words work whether or not the celebrant believes them.</p>
-  <h3 id="ix-m-asperges">Asperges Me</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith · Fortitude save.</em> Sprinkle holy water and speak the old antiphon. Each Marked or uncanny thing within reach saves or takes 1d6 and recoils, hissing at the water and the Latin both.</p>
-  <h3 id="ix-m-crossing">The Sign of the Cross</h3>
-  <p><em>Rank 1 · Reaction · 1 Faith.</em> The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time. The blessing holds until it is spent.</p>
-  <h3 id="ix-m-litany">The Litany of the Saints</h3>
-  <p><em>Rank 2 · One minute · 2 Faith.</em> Call the long roll of the faithful dead, and let the living hear how many stood before them. Every ally who listens gains one reroll against fear, kept until the scene ends or it is spent.</p>
-  <h3 id="ix-m-unction">Extreme Unction</h3>
-  <p><em>Rank 3 · One minute · 2 Faith.</em> Anoint the dying with oil and the last words. They are stabilized at once, wake with 1d6 Blood, and — whatever comes after — cannot rise as one of the restless dead. The rite is a mercy first and a precaution second, but it is both.</p>
-  <h3 id="ix-m-interdict">The Interdict</h3>
-  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Lay the Church's ban upon a place, an object, or a grave. For a day and a night no uncanny thing may enter it, use it, or draw strength from it, as though the ground itself had been forbidden to them by an authority older than their hunger.</p>
-  <h3 id="ix-m-tedeum">Te Deum</h3>
-  <p><em>Rank 5 · One minute · 5 Faith · Will save.</em> The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words.</p>
-  <h3 id="ix-m-requiem">The Requiem</h3>
-  <p><em>Rank 6 · One hour · 6 Faith.</em> Sing the whole of it over a burying ground, a battlefield, a burned house, a
-  mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means.
-  Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them.</p>
-  <h2 id="ix-m-list-revival">The Revival</h2>
-  <p>The Preacher's alone: the open Word, the camp meeting, the mourner's bench, and conviction loud enough to be heard over the guns.</p>
-  <h3 id="ix-m-mourner">Call to the Mourner's Bench</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith · Will save.</em> Round on one sinner — mortal or monstrous — and call them forward to answer for it. They save or lose their next action, rooted and named before the whole room.</p>
-  <h3 id="ix-m-amen">The Amen Corner</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Work the crowd, and let them work back. Allies who can hear you and answer aloud gain +1 to hit for a round. Faith, the Preacher will tell you, is a call and a response.</p>
-  <h3 id="ix-m-altarcall">The Altar Call</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Lay hands and call a soul back to itself: heal a touched ally 2d6, and they may at once reroll one save they have just failed. Come forward, the Preacher says. It is not too late — not quite yet.</p>
-  <h3 id="ix-m-testify">Testify</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Faith · Will save.</em> Speak a true and terrible thing into the silence. One creature saves or is Frightened 2 and made to blurt the last lie it told. The Preacher has found that the guilty fear the truth far worse than the gun. The naming is resolved at once; the fear it leaves lessens a step each turn, as fear does.</p>
-  <h3 id="ix-m-campmeeting">The Camp Meeting</h3>
-  <p><em>Rank 4 · sustained · 4 Faith.</em> Preach a rolling revival and do not stop. For three rounds, so long as you keep the Word going and take no other action, every ally who can hear you regains Nerve and shakes one condition at the start of each round. The tent shakes. So does the dark outside it.</p>
-  <h3 id="ix-m-pentecost">Pentecost</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Tongues of fire, and every ear hearing in its own language. For the scene your Brimstone strikes every uncanny thing you can see at once, and the Marked cannot resist it by their Mark. The fire does not fall often. When it does, it does not ask permission.</p>
-  <h3 id="ix-m-wholetownris">The Whole Town Rises</h3>
-  <p><em>Rank 6 · One minute · 6 Faith.</em> Preach until the place stands up. Every living soul within earshot who is not
-  hostile to you recovers all Blood and Nerve, shakes every condition, and for the next hour will fight, carry, dig or
-  stand where you ask them to. They will not do anything they believe is wrong, and afterward they will be very tired
-  and will want to know what came over them.</p>
-  <h2 id="ix-m-list-spirits">The Spirits</h2>
-  <p>The Shaman's alone: not commands but courtesies, asked of the crowded country and its neighbors — beast and weather, river and rock, and the honored dead.</p>
-  <h3 id="ix-m-smallword">A Word to the Small Spirits</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly. The answer given, the working is done.</p>
-  <h3 id="ix-m-offering">The Offering</h3>
-  <p><em>Rank 1 · One minute · 1 Faith.</em> Leave tobacco, salt, or bread, and name the debt. The spirits of that ground grant safe passage, or +2 on one task done there, for as long as the gift is respected and the ground not fouled.</p>
-  <h3 id="ix-m-beastgift">Borrow the Beast's Gift</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Ask a nearby animal spirit for the loan of one gift, and wear it for a scene: an owl's eyes in the dark, a wolf's nose, a hare's speed, a bear's thick hide. The spirits lend gladly and expect the courtesy of thanks.</p>
-  <h3 id="ix-m-pack">Set the Pack On</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
-  <h3 id="ix-m-weather">Turn the Weather</h3>
-  <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour — a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel and grants the favor, not the command.</p>
-  <h3 id="ix-m-snare">The Spirit-Snare</h3>
-  <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it — able to speak, and to rage, and to bargain, but not to go.</p>
-  <h3 id="ix-m-greatspirit">Call the Great Spirit</h3>
-  <p><em>Rank 5 · One minute · 5 Faith.</em> Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked.</p>
-  <h3 id="ix-m-councilofdea">The Council of the Dead</h3>
-  <p><em>Rank 7 · One hour · 7 Faith.</em> Call the dead of a place together and sit down with them. Every spirit within a
-  mile that will come, comes, and they answer honestly for an hour: what was done here, by whom, where it is now, and
-  what would settle it. They are not obliged to be kind and they are frequently not. Once in a while one of them asks
-  you for something, and then you have a second problem.</p>
-  <h2 id="ix-m-list-mending">The Mending</h2>
-  <p>The Medicine Man's alone: the quiet, stubborn craft of keeping the wounded alive, one sure mending at a time, so the deep well is there when the worst comes.</p>
-  <h3 id="ix-m-poultice">The Poultice</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse.</p>
-  <h3 id="ix-m-setbone">Set the Bone</h3>
-  <p><em>Rank 1 · One minute · 1 Faith.</em> Splint, wrap, and set what is broken. Ease the penalty of one Lasting Injury for a day, buying a wounded soul the working hours the country would sooner deny them.</p>
-  <h3 id="ix-m-fever">The Fever Broken</h3>
-  <p><em>Rank 2 · One minute · 2 Faith.</em> Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done.</p>
-  <h3 id="ix-m-healsleep">The Sleep of Healing</h3>
-  <p><em>Rank 3 · One minute · 3 Faith.</em> Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn.</p>
-  <h3 id="ix-m-shared">The Life Shared</h3>
-  <p><em>Rank 4 · 1 Beat · 4 Faith.</em> Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one.</p>
-  <h3 id="ix-m-longmercy">The Long Mercy</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today.</p>
-  <h3 id="ix-m-bodymadewhol">The Body Made Whole</h3>
-  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Put a person back the way they were made. All Blood restored, every disease,
-  poison and Affliction gone, every Lasting Injury undone, limbs and sight and hearing returned. Whatever was done to
-  them is not done to them any more. It works once on any one soul, ever, and both of you will know afterward which day
-  it was.</p>
-  <h2 id="ix-m-list-consecration">The Consecrations</h2>
-  <p>The Witch Hunter's alone, and fueled by Zeal rather than a healer's pool: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution.</p>
-  <h3 id="ix-m-saltline">Salt the Threshold</h3>
-  <p><em>Rank 1 · One minute · 1 Faith · Will save.</em> Lay a line of blessed salt across a door, a window, a circle of camp. Uncanny things save or cannot cross it until dawn or until the line is broken by a living hand — theirs cannot break it.</p>
-  <h3 id="ix-m-weakness">The Litany of Weakness</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Recite what you know of a thing's banes — the silver, the fire, the true name, the running water. Your next Judgment against it deals +1d8, the knowledge sharpening the blow.</p>
-  <h3 id="ix-m-silverround">Silver the Round</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger. The blessing holds until those three shots are fired, or until dawn, whichever comes first.</p>
-  <h3 id="ix-m-branding">The Branding</h3>
-  <p><em>Rank 3 · One minute · 3 Faith · Will save.</em> Mark your quarry with the sign of the hunt. For a day you always know its direction and rough distance, it cannot hide from you by any uncanny means, and it knows, wherever it runs, that it has been marked.</p>
-  <h3 id="ix-m-killground">Consecrate the Killing Ground</h3>
-  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at &minus;2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all.</p>
-  <h3 id="ix-m-reckoningfire">The Reckoning Fire</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith · Reflex save.</em> Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck.</p>
-  <h3 id="ix-m-groundmadeho">The Ground Made Holy</h3>
-  <p><em>Rank 7 · One hour · 7 Faith.</em> Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or
-  draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay
-  buried and quiet. It ends only if the ground is broken deliberately by a living hand, which somebody will eventually
-  get around to.</p>
-  <h2 id="ix-m-list-vigil">The Vigil</h2>
-  <p>The Sister's alone: the work of sitting up with what should not be left alone. It wards, it watches, and it refuses to move, and there is almost nothing in it that will win a fight. That is not what it was written for.</p>
-  <h3 id="ix-m-handheld">Hand Held</h3>
-  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Take hold of a soul who has just failed a Dread Check and give them something to hold back. They reroll it at once, and keep the second result even if it is worse. Most take the second result gladly. The ones who do not are why you keep hold a moment longer than they want.</p>
-  <h3 id="ix-m-watchkept">The Watch Kept</h3>
-  <p><em>Rank 1 · Ten minutes · 1 Faith.</em> Walk the bounds of a camp, a room, a cellar stair, naming what you mean to keep out. Until you sleep or leave, every soul inside takes +2 on Dread Checks, and nothing uncanny crosses the line you walked without you knowing the moment it does. It does not stop anything. It only means you are never the last to find out.</p>
-  <h3 id="ix-m-lampunquenched">The Lamp Unquenched</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it.</p>
-  <h3 id="ix-m-nothingcomesin">Nothing Comes In</h3>
-  <p><em>Rank 3 · One minute · 3 Faith · Will save.</em> Stand in a doorway, a gate, a stair-head, and refuse it. For a scene, anything uncanny that would cross must first make a Will save against your Miracle DC; on a failure it cannot cross at all this round and must spend its turn trying again. It can still reach through. It can still call. It cannot simply walk in, and a great many of them have never had to learn what to do about that.</p>
-  <h3 id="ix-m-bodykeptwhole">The Body Kept Whole</h3>
-  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for.</p>
-  <h3 id="ix-m-notbemoved">She Will Not Be Moved</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose.</p>
-  <h3 id="ix-m-untilmorning">Until Morning</h3>
-  <p><em>Rank 7 · One minute · 7 Faith.</em> Sit down with them and say that this is not the night. Until dawn, no soul
-  inside the room, the camp or the house may die: the dying do not go, the mortal wound waits, the sickness holds where
-  it is. It does not cure any of it and morning still comes. What it buys is the hours, and the hours are usually what
-  was wanted.</p>
   <div class="pageno">24</div>
 </section>
 
@@ -3203,80 +2984,69 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-patrons">The Patrons of the Old Dark</h2>
-  <p>The Old Dark is not one thing, and it is not a god. It is a depth — and certain shapes move in that depth, old and
-  vast and particular, each with its own hunger and its own coin. These are the <strong>Patrons</strong>: the powers a Hexer
-  borrows from on his Bargain, a Dark Cultist serves in her Devotion, and a False Prophet feeds through his Gospel without
-  ever quite naming. A Witch seldom deals with them directly; her Craft is older and quieter. None of them are kind. The
-  kindest thing that can be said of any is that it keeps its bargains exactly.</p>
-  <p>What follow are the Patrons most often met in the Territories. A Keeper should feel free to invent others, or to leave
-  every one of these a rumor — the Old Dark is largest when it is least explained.</p>
+  <p>The Old Dark is a depth rather than a god, and things move in that depth. Certain of them are old enough and
+  particular enough to be worth a name, and those are the <strong>Patrons</strong>: the powers a Hexer borrows from on
+  his Bargain, a Dark Cultist serves in her Devotion, and a False Prophet feeds through his Gospel without ever quite
+  learning whose plate he is filling. A Witch seldom deals with them at all. Her Craft is older and quieter and does not
+  need them.</p>
+  <p>Nobody has written any of this down honestly. What follows is what the country says, which is a different thing:
+  six sets of stories, collected off men who were drunk, frightened, or lying, and set out here in the order they are
+  usually told. Your Keeper knows which parts are true. You are not going to find out by asking.</p>
 
   <h3>The Devourer</h3>
-  <p>A vast and patient hunger in the deep places, all teeth and growth. <em>It offers</em> strength, swiftness, and a body
-  that knits its own wounds and never stops wanting. <em>It takes</em> an appetite that outgrows your power to feed it, until
-  the day the hunger decides your body suits it and declines to give it back. <em>Its sign:</em> food spoils, livestock
-  vanish, and the served grow lean no matter how they gorge.</p>
+  <p>They tell it about the winter of the Ellender party, snowed in above the tree line with eleven souls and four days
+  of flour. Nine came down in the spring, fat and glossy and walking easy, and would not say what they ate. The story
+  has been told in a dozen counties with a dozen different names on it, which is either evidence that it never happened
+  or evidence that it keeps happening. Every telling agrees on the same two details: nobody ever went hungry again, and
+  nobody ever stopped eating.</p>
 
   <h3>The Whisperer</h3>
-  <p>A thing made of secrets and the spaces between thoughts. <em>It offers</em> knowledge — true facts, hidden weaknesses,
-  names, and a voice that staggers the mind. <em>It takes</em> by giving: understanding you cannot un-know, that does not fit
-  inside a mortal skull and must make room. <em>Its sign:</em> a whisper at the edge of sleep, shared dreams, sudden
-  unbearable certainties, and the same strange word surfacing in many mouths at once.</p>
+  <p>There is a version of this one in every town and it is always about somebody's uncle. The uncle woke one morning
+  knowing a thing he had no way to know, and it was right, and he made money off it. Then he woke knowing another. In
+  the tellings where the uncle is a figure of fun, he ends up in the territorial asylum shouting corrections at the
+  walls. In the tellings where he is a warning, he ends up perfectly calm and perfectly correct and no longer anybody's
+  uncle. The tellings where he is a figure of fun are considerably more common, and considerably newer.</p>
 
   <h3>The Cold Deep</h3>
-  <p>Not a hungry thing, nor a clever one — a vast, indifferent cold, older than warmth, that will outlast every fire.
-  <em>It offers</em> numbness, a calm nothing can rattle, a grip like the grave, and a steadiness against your own end.
-  <em>It takes</em> the warmth from a soul a degree at a time, until nothing is left that can be moved. <em>Its sign:</em>
-  the temperature drops, lamps gutter, and the dying report that it is, at the last, terribly easy.</p>
+  <p>Nobody tells a story about the Cold Deep. They tell you about a person. A widow who stopped wearing black and
+  stopped wearing anything else either; a man who buried a child in March and was seen in June and had nothing at all
+  behind his eyes; a deputy who walked into a burning house and out again and never once mentioned it. The country
+  notices this kind of quiet, and it does not have a word for it, so it borrows one from the weather.</p>
 
   <h3>The Long Trail</h3>
-  <p>Death itself, as this country knows it: a presence at the end of every road, a rider always one ridge behind.
-  <em>It offers</em> passage <em>past</em> death — a stay of the reaper's hand, a return from the far side, an unerring eye
-  for the dying and the doomed. <em>It takes</em> what it lends, with interest; those it carries back come back a little
-  wrong, and it follows them home. <em>Its sign:</em> animals that will not pass a certain place, a horseman seen at dusk
-  who is gone at a second look, and the Came-Back-Wrong, who remember the dark on the other side.</p>
+  <p>Every road out here has a rider on it one ridge behind you, and every teamster who has ever been asked about him
+  says the same thing: he is not gaining. The stories divide sharply on what happens when he does. Half of them say
+  the dead come back and the other half say the dead come back <em>wrong</em>, and both halves are told by people who
+  claim to have seen it. There is a third kind of story, less often told, in which somebody who ought to have died
+  simply did not, and afterward could always tell you exactly when anybody in the room was going to.</p>
 
   <h3>The Thing Beneath the Mountain</h3>
-  <p>An old god of the deep stone, sealed long ago by peoples who knew better than to name it, and now dug toward by every
-  shaft and adit in the Territories. <em>It offers</em> gold, rich veins, the secrets of rock and metal, and dominion in the
-  dark below the world. <em>It takes</em> a little waking with every blast — and it has been waking a long time now.
-  <em>Its sign:</em> the <em>bad veins</em> where the Old Dark runs close, the madness that takes deep miners, and a patient
-  sound past the silver, like water that learned to wait.</p>
+  <p>The Cornish miners will not work a bad vein and will not tell an American why. The Mexican crews have a different
+  set of names for the same thing and the same refusal. Ask any of them and you get a shrug and a change of subject;
+  ask a company man and you get a lecture about superstition and productivity. Two facts are not in dispute anywhere in
+  the Territories. Some seams pay better than they have any business paying. And the men who work them stop coming up
+  for air.</p>
 
   <h3>The Red Sermon</h3>
-  <p>The hunger that wears faces and feeds on worship. <em>It offers</em> miracles that truly work, crowds that come, and
-  devotion that fills the plate and the pews. <em>It takes</em> the flock, hollowing a congregation a soul at a time, and at
-  the last it takes the preacher too, wearing his gospel openly through him. <em>Its sign:</em> a revival that leaves a town
-  emptier than it found it, and a kind face that is almost — not quite — right.</p>
+  <p>This is the newest of the six and the one people are least willing to tell in front of a preacher. A revival comes
+  through, and it is a good one, and the drunks dry out and the fighting stops and the collection plate goes around
+  twice. Six months later the town is quieter than it was before the tent came. Not worse. Quieter. The story is always
+  told by somebody from the next county over, and it is never their own town, and if you ride to the town they name you
+  will find a perfectly ordinary place where nobody remembers a revival.</p>
 
-  <h3>The False Prophet and the Patrons</h3>
-  <p>Of all who deal with the Old Dark, the False Prophet deals most blindly. A Hexer signs a Bargain and reads its
-  terms; a Dark Cultist names the thing she serves and calls it grace. The False Prophet, more often than not, half-believes
-  his own pulpit — or believes only in the collection plate — and never learns whose appetite his gospel truly feeds. The
-  Patron is content to go unnamed. Worship is worship, and it eats just as well from a congregation that thinks it prays to
-  Heaven.</p>
-  <p>A Prophet's <em>Conduit</em> and <em>Tribute</em> are, in plain terms, a Patron's hunger fed secondhand: every soul
-  gathered, frightened, healed, or fleeced sends its portion down into the dark, and the dark sends a little power back up
-  through the Prophet as wonders. The shape of those wonders betrays the Patron behind them, for a Prophet's
-  <strong>Gospel</strong> is only the mask his Patron wears:</p>
-  <ul class="dash">
-    <li>The <strong>Borrowed Saint</strong> most often fronts the <strong>Red Sermon</strong> — the face-wearing hunger that loves a crowded revival tent — though a healer's gospel can as easily mask the <strong>Long Trail</strong>, trading true cures for a quiet claim on the cured.</li>
-    <li>The <strong>Doomsayer</strong> serves a Patron of fear and ruin: the <strong>Whisperer</strong>, whose prophecies come true because it whispered them first, or the <strong>Devourer</strong>, whose promised judgments are only its appetite given a date.</li>
-    <li>The <strong>Golden Calf</strong> answers to whatever pays — commonly the <strong>Red Sermon</strong> again, or the <strong>Thing Beneath the Mountain</strong>, whose veins of easy gold are never free for long.</li>
-  </ul>
-  <p>The reckoning, when it comes, is the Patron stepping out from behind the mask. A Prophet who has fed his Patron well
-  enough and long enough does not retire; he is <em>worn</em> — the <em>Hollow Crown</em> of his tenth level is the Patron
-  wearing openly, at last, the man it made. A Prophet who tries to quit, or who fails to deliver the worship he promised,
-  learns that the Patron collects in arrears — and that a congregation can be turned upon its shepherd in a single evening.</p>
-
-  <div class="box gold">
-    <h4>On Naming the Unnameable</h4>
-    <p>Players seldom need the truth of a Patron, and are often better without it. A Hexer knows the terms of her Bargain,
-    not the thing's true shape; a Dark Cultist's Devotion is faith, not knowledge. Keep the Patrons mostly off the page — a
-    rumor, a sign, a price come due — and they stay frightening. Explain one fully and you have made it a monster with a
-    stat line, which is a far smaller thing.</p>
+  <div class="box">
+    <h4>The Mad Spaniard</h4>
+    <p>He is not a Patron and every story about him is attached to one. A gentleman in a good coat, forty years out of
+    date, met on a road at an hour when no one should be on it. He is unfailingly polite. He knows your business. He
+    asks after people you have not thought about in years, by name, and gets the details right, and one of the details
+    is always wrong in a way you do not notice until later.</p>
+    <p>The stories cannot agree on what he wants and are unanimous that he wants something. In the mining camps he
+    warns men off the bad veins and is thanked for it. On the Llano he is said to have ridden with the comancheros and
+    to have been the reason they stopped. In the Rockies they say he is going from cult to cult with a proposal. He has
+    been described the same way for a hundred and forty years by people with no reason to have compared notes, and the
+    description includes a scar he did not have in the earliest tellings.</p>
+    <p>Every soul who works the Old Dark hears of him eventually. A good many claim to have met him. A few have.</p>
   </div>
-  <div class="pageno">30</div>
 </section>
 
 <!-- ===================== VIII. SKILLS ===================== -->
@@ -4586,16 +4356,20 @@ body{ background:#525659; }
   <div class="pageno">48</div>
 </section>
 <section class="page" id="signs">
-  <div class="runhead"><span class="l">Blood &amp; Grit</span><span>XIII. Signs &amp; Old Rites</span></div>
-  <h1 class="chapter">XIII. Signs &amp; Old Rites</h1>
+  <div class="runhead"><span class="l">Blood &amp; Grit</span><span>XIII. Signs, Miracles &amp; Old Rites</span></div>
+  <h1 class="chapter">XIII. Signs, Miracles &amp; Old Rites</h1>
 
-  <p class="chapter-sub">The borrowed words of the dark, and the folk-craft that holds it off.</p>
+  <p class="chapter-sub">The borrowed words of the dark, the words asked for on the knees, and the folk-craft that holds both off.</p>
   <div class="divider"></div>
   <p class="dropcap lead">There is power in the old country beneath the country, and it can be reached — by the Hexer freely,
   by the Touched a little, by the desperate at ruinous cost. <strong>Signs</strong> are worked acts of will and word. Each one lists its
   <strong>Rank</strong>, its casting time, its price in Nerve or Blood, the save it forces where it forces one, what it
-  does, and its <strong>Backlash</strong> — what the dark exacts when the working slips. There are forty of them here,
+  does, and its <strong>Backlash</strong> — what the dark exacts when the working slips. There are fifty-five of them here,
   across three lists, and no single soul will ever hold more than a handful.</p>
+  <p>The <strong>Miracles</strong> are in this chapter too, beginning at <em>The Work of Faith</em>. They are the other
+  half of the same subject and the book kept them eighty pages apart for years, which helped nobody: a Sign is taken and
+  a Miracle is asked for, and the difference between those two sentences is most of what this chapter is about. The
+  <strong>Old Rites</strong> close it out, and belong to neither.</p>
   <h2 id="ix-sign-rank">Rank and Reach</h2>
   <p>Every Sign carries a <strong>Rank</strong> from one to eight. The Rank measures the reach: how far into
   the old country you have to go to fetch the words, and how much of you comes back with them. A Rank Eight
@@ -4808,8 +4582,223 @@ body{ background:#525659; }
   <div class="pageno">49</div>
 </section>
 
+<section class="page" id="miracles">
+  <div class="runhead"><span class="l">XIII. Signs, Miracles &amp; Old Rites</span><span>Blood &amp; Grit</span></div>
+  <h2 id="ix-miracles">The Work of Faith</h2>
+  <p class="chapter-sub">Miracles, their Rank, and the pool that pays for them.</p>
+  <div class="divider"></div>
+  <p class="dropcap lead">Where the Old Dark works <strong>Signs</strong> (Chapter XIII), the faithful work
+  <strong>Miracles</strong>, and the two run deeper apart than the tongue you pray in. A Sign is taken, and the taking
+  is noticed, and the debt is entered in a ledger that never forgets. A Miracle is <em>asked for</em>, on the knees, of
+  a higher and quieter thing, and now and again it is granted. It costs no Mark and draws no Backlash. It costs the
+  pool, and it risks the oldest disappointment there is: a prayer that goes unanswered.</p>
+  <p>Each of the six Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
+  ranked and gated exactly as the Signs are.</p>
+
+  <h2 id="ix-m-rank">Rank and the Pool</h2>
+  <p><strong>Rank.</strong> Every Miracle carries a Rank from one to eight, and you reach a new Rank at the same rungs a
+  sign-worker does: <strong>1st, 3rd, 5th, 7th, and 9th level</strong>, and then 11th, 13th, and 15th. You may learn and
+  work any Miracle of a Rank your level allows, and no higher; ask for more than you have earned and the grace simply
+  does not come. You begin knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a
+  repertoire of six by the height of a frontier life and nine by the end of a very long one.</p>
+  <p class="note">Ranks Six and Seven hold four Miracles apiece and Rank Eight holds three. All three of the Rank Eight
+  Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
+  between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
+  <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
+  countable — the Padre's <em>Grace</em>, the Preacher's <em>Conviction</em>, the Shaman's <em>Breath</em>, the Medicine
+  Man's <em>Vital Breath</em>, the Sister's <em>Mercy</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
+  &ldquo;2&nbsp;Faith,&rdquo; it means two points of that pool, whatever your Calling names it. The pool refreshes with
+  the dawn (or the dawn Mass, or the morning offering), and it runs dry, as faith does, exactly when the night is longest.</p>
+  <p class="note" id="ix-m-dc">Where a Miracle forces a save, the DC is your <strong>Miracle DC = 10 + half your level +
+  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman, the
+  Medicine Man and the Sister, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
+  worked as an <em>Action</em> costs one Beat, and one worked as a <em>Reaction</em> is taken on another's turn.</p>
+
+  <h2 id="ix-m-lists">The Seven Lists</h2>
+  <p>Every worker of Miracles draws on the <strong>Common Blessings</strong>, the shared grammar of grace. Beyond that,
+  each Calling holds one list of its own, closed to the others: the Padre his <strong>Liturgy</strong>, the Preacher his
+  <strong>Revival</strong>, the Shaman the <strong>Spirits</strong>, the Medicine Man the <strong>Mending</strong>,
+  the Witch Hunter the <strong>Consecrations</strong>, and the Sister the <strong>Vigil</strong>. A Padre and a Preacher answer the same dark; they do not answer it
+  with the same words, and this is where the difference is written down.</p>
+  <div class="pageno">24</div>
+</section>
 <section class="page">
-  <div class="runhead"><span class="l">XIII. Signs &amp; Old Rites</span><span>Blood &amp; Grit</span></div>
+  <div class="runhead"><span class="l">XIII. Signs, Miracles &amp; Old Rites</span><span>Blood &amp; Grit</span></div>
+  <h2 id="ix-m-list-blessing">The Common Blessings</h2>
+  <p>Worked by any Calling of Faith — the shared grammar of grace, learned first and leaned on hardest when the deeper work runs dry.</p>
+  <h3 id="ix-m-steadying">The Steadying Word</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Speak to one soul who can hear you and mean it. They shake off Frightened, or gain +2 on their next save against fear. It works on the faithless and the profane alike; steadiness is not particular about who receives it. The steadiness holds until that save is rolled.</p>
+  <h3 id="ix-m-light">A Light Unfailing</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> A steady light rises at your word, warm where Cold Lamp is cold, and lasts an hour. The uncanny will not willingly step into it, and the Marked find it hard to meet.</p>
+  <h3 id="ix-m-road">The Blessing of the Road</h3>
+  <p><em>Rank 2 · Ten minutes · 2 Faith.</em> Bless a journey before it is begun. For the next day the party ignores the first hazard of the trail and travels at +2 on Survival to find the way, the water, and the safe camp.</p>
+  <h3 id="ix-m-clasped">Hands Clasped</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Take an ally's hand, or bid them take another's. For the scene the two of you share your saves against fear — whichever of you rolls better, both use — and neither may be made to flee while the other stands.</p>
+  <h3 id="ix-m-notwhile">Not While I Stand</h3>
+  <p><em>Rank 2 · Reaction · 2 Faith.</em> Something uncanny is being worked where you can see it. Say no. Roll d20 + half your level + your Miracle ability against the worker's DC; on a success it comes apart at once, its price already spent. You may answer a Sign, a curse in the moment it lands, or the working of any uncanny thing. You may not answer a Miracle: what is asked for in good faith is not yours to refuse. Nothing here can turn on you and no failure is worse than failing, so you may do it as often as you can pay for it.</p>
+  <h3 id="ix-m-warding">The Warding Psalm</h3>
+  <p><em>Rank 3 · Reaction · 3 Faith.</em> As an uncanny blow lands on you or a soul beside you, speak the psalm and turn it: the attack is halved, and its wielder gives ground a step. You may do this once per round, and not on ordinary lead.</p>
+  <h3 id="ix-m-anoint">Anoint the Iron</h3>
+  <p><em>Rank 3 · 1 Beat · 3 Faith.</em> Touch a weapon, speak over it, and give it back. For the scene it counts as blessed and as silver both, and every hit it lands on something uncanny deals an extra 1d6. It does not have to be your weapon and it does not have to stay in your hands; put it in the hands of whoever out here is best with it, which is rarely you.</p>
+  <h3 id="ix-m-named">The Unclean Named</h3>
+  <p><em>Rank 3 · 1 Beat · 2 Faith · Will save.</em> Point and name a thing for what it truly is. It saves or its nature stands revealed to all who can hear you, and it suffers a &minus;2 against you and yours until the scene ends. Some things have not been named aloud in a long age, and do not care for it.</p>
+  <h3 id="ix-m-vigil">The Vigil</h3>
+  <p><em>Rank 4 · One minute · 3 Faith.</em> Keep the watch and pray it through. Until dawn, no one in the camp may be surprised or driven by fear, and every soul but you sleeps easy under it. You take no rest, and you will feel the want of it come morning.</p>
+  <h3 id="ix-m-rebuke">Rebuke the Dark</h3>
+  <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Raise your voice against the unclean things in sight. Each lesser uncanny saves or flees you for a round per two levels, and a greater one that fails is Frightened and gives ground. The oldest of them only smile — but the small ones run.</p>
+  <h3 id="ix-m-miracle">The Miracle Plain</h3>
+  <p><em>Rank 5 · 1 Beat · 0 Faith.</em> Once, and never lightly: ask for the thing that cannot be asked for, and now and again receive it. Undo one calamity of the moment just past — a death, a fire caught, a fall — as the Keeper allows. It empties your whole pool to nothing and cannot be tried again until you have rested and given thanks. Most prayers are not answered. This is about the ones that are.</p>
+  <h3 id="ix-m-covenant">The Covenant</h3>
+  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Spread your arms and stand for them. For the scene, no ally who can hear you may be brought below 1 Blood by uncanny harm — struck to the edge of death, and no further, while your voice holds. Ordinary lead still kills as it pleases. The dark does not get to.</p>
+  <h3 id="ix-m-hour">The Hour Is Not Yours</h3>
+  <p><em>Rank 5 · Reaction · 5 Faith.</em> When a soul you can see is about to die, and die rather than merely fall, say aloud that the hour is not yours to take. It is not taken. They lie Dying one point above dead and no worse, stable at once and until somebody reaches them. Whatever was coming for that soul now knows your name, knows you said it out loud, and has been given a reason to learn where you sleep.</p>
+  <h3 id="ix-m-cupnotemptie">The Cup Not Emptied</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Bless what little there is. Food, water, medicine, powder, lamp oil, bandage
+  — whatever is in front of you, there is now enough of it for everyone here, for a week. It is plain and it is
+  sufficient and it does not keep past the week. A great many hard winters have turned on somebody being able to do
+  this.</p>
+  <h3 id="ix-m-outofdepths">Out of the Depths</h3>
+  <p><em>Rank 7 · One minute · 7 Faith.</em> Reach for somebody who has been taken. Name a soul who is possessed, bound,
+  called away, hollowed out, sold, or being worn by something else, and pull. They come back at once, out of whatever has them, whole enough to speak and to say what happened. Whatever had them is now aware that you can do this, and where you were
+  standing when you did it.</p>
+  <h3 id="ix-m-answer">The Answer</h3>
+  <p><em>Rank 8 · One minute · your whole pool of Faith.</em> Most prayers are not answered. Ask, once, for a single thing,
+  in your own words, aloud, in front of whoever is there — and it is granted, whatever it was. The dead one back. The
+  fire out. The army turned. The sickness lifted off a county. The thing that has been coming, not coming. There is no
+  save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and
+  you will spend the rest of your life being careful about what you ask for, having found out that it works.</p>
+  <h3 id="ix-m-greaterlove">Greater Love</h3>
+  <p><em>Rank 8 · Reaction · your whole pool of Faith.</em> Step in front of all of it. Any harm, effect, death, taking or
+  unmaking about to fall on any number of souls you can see falls on you instead, entire and undivided, and they are
+  untouched and unaware until it is over. You will very likely not survive it. If you do not, you cannot be raised,
+  called back, or spoken to afterward by any means: you are where the people you saved are not, and that was the
+  arrangement.</p>
+  <h3 id="ix-m-longroadhome">The Long Road Home</h3>
+  <p><em>Rank 8 · One hour · your whole pool of Faith.</em> Take everyone home. Every soul who has been with you and is
+  willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has
+  ever called home, safely, together, however far it is and whatever holds them. Doors open. Distances shorten. The dead
+  walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to
+  travel anywhere the ordinary way without knowing exactly how much shorter it could have been.</p>
+  <h2 id="ix-m-list-liturgy">The Liturgy</h2>
+  <p>The Padre's alone: Latin, sacrament, and the long authority of a Church that has been writing the dark down for eighteen centuries. The words work whether or not the celebrant believes them.</p>
+  <h3 id="ix-m-asperges">Asperges Me</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith · Fortitude save.</em> Sprinkle holy water and speak the old antiphon. Each Marked or uncanny thing within reach saves or takes 1d6 and recoils, hissing at the water and the Latin both.</p>
+  <h3 id="ix-m-crossing">The Sign of the Cross</h3>
+  <p><em>Rank 1 · Reaction · 1 Faith.</em> The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time. The blessing holds until it is spent.</p>
+  <h3 id="ix-m-litany">The Litany of the Saints</h3>
+  <p><em>Rank 2 · One minute · 2 Faith.</em> Call the long roll of the faithful dead, and let the living hear how many stood before them. Every ally who listens gains one reroll against fear, kept until the scene ends or it is spent.</p>
+  <h3 id="ix-m-unction">Extreme Unction</h3>
+  <p><em>Rank 3 · One minute · 2 Faith.</em> Anoint the dying with oil and the last words. They are stabilized at once, wake with 1d6 Blood, and — whatever comes after — cannot rise as one of the restless dead. The rite is a mercy first and a precaution second, but it is both.</p>
+  <h3 id="ix-m-interdict">The Interdict</h3>
+  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Lay the Church's ban upon a place, an object, or a grave. For a day and a night no uncanny thing may enter it, use it, or draw strength from it, as though the ground itself had been forbidden to them by an authority older than their hunger.</p>
+  <h3 id="ix-m-tedeum">Te Deum</h3>
+  <p><em>Rank 5 · One minute · 5 Faith · Will save.</em> The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words.</p>
+  <h3 id="ix-m-requiem">The Requiem</h3>
+  <p><em>Rank 6 · One hour · 6 Faith.</em> Sing the whole of it over a burying ground, a battlefield, a burned house, a
+  mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means.
+  Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them.</p>
+  <h2 id="ix-m-list-revival">The Revival</h2>
+  <p>The Preacher's alone: the open Word, the camp meeting, the mourner's bench, and conviction loud enough to be heard over the guns.</p>
+  <h3 id="ix-m-mourner">Call to the Mourner's Bench</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith · Will save.</em> Round on one sinner — mortal or monstrous — and call them forward to answer for it. They save or lose their next action, rooted and named before the whole room.</p>
+  <h3 id="ix-m-amen">The Amen Corner</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Work the crowd, and let them work back. Allies who can hear you and answer aloud gain +1 to hit for a round. Faith, the Preacher will tell you, is a call and a response.</p>
+  <h3 id="ix-m-altarcall">The Altar Call</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Lay hands and call a soul back to itself: heal a touched ally 2d6, and they may at once reroll one save they have just failed. Come forward, the Preacher says. It is not too late — not quite yet.</p>
+  <h3 id="ix-m-testify">Testify</h3>
+  <p><em>Rank 3 · 1 Beat · 3 Faith · Will save.</em> Speak a true and terrible thing into the silence. One creature saves or is Frightened 2 and made to blurt the last lie it told. The Preacher has found that the guilty fear the truth far worse than the gun. The naming is resolved at once; the fear it leaves lessens a step each turn, as fear does.</p>
+  <h3 id="ix-m-campmeeting">The Camp Meeting</h3>
+  <p><em>Rank 4 · sustained · 4 Faith.</em> Preach a rolling revival and do not stop. For three rounds, so long as you keep the Word going and take no other action, every ally who can hear you regains Nerve and shakes one condition at the start of each round. The tent shakes. So does the dark outside it.</p>
+  <h3 id="ix-m-pentecost">Pentecost</h3>
+  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Tongues of fire, and every ear hearing in its own language. For the scene your Brimstone strikes every uncanny thing you can see at once, and the Marked cannot resist it by their Mark. The fire does not fall often. When it does, it does not ask permission.</p>
+  <h3 id="ix-m-wholetownris">The Whole Town Rises</h3>
+  <p><em>Rank 6 · One minute · 6 Faith.</em> Preach until the place stands up. Every living soul within earshot who is not
+  hostile to you recovers all Blood and Nerve, shakes every condition, and for the next hour will fight, carry, dig or
+  stand where you ask them to. They will not do anything they believe is wrong, and afterward they will be very tired
+  and will want to know what came over them.</p>
+  <h2 id="ix-m-list-spirits">The Spirits</h2>
+  <p>The Shaman's alone: not commands but courtesies, asked of the crowded country and its neighbors — beast and weather, river and rock, and the honored dead.</p>
+  <h3 id="ix-m-smallword">A Word to the Small Spirits</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly. The answer given, the working is done.</p>
+  <h3 id="ix-m-offering">The Offering</h3>
+  <p><em>Rank 1 · One minute · 1 Faith.</em> Leave tobacco, salt, or bread, and name the debt. The spirits of that ground grant safe passage, or +2 on one task done there, for as long as the gift is respected and the ground not fouled.</p>
+  <h3 id="ix-m-beastgift">Borrow the Beast's Gift</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Ask a nearby animal spirit for the loan of one gift, and wear it for a scene: an owl's eyes in the dark, a wolf's nose, a hare's speed, a bear's thick hide. The spirits lend gladly and expect the courtesy of thanks.</p>
+  <h3 id="ix-m-pack">Set the Pack On</h3>
+  <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
+  <h3 id="ix-m-weather">Turn the Weather</h3>
+  <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour — a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel and grants the favor, not the command.</p>
+  <h3 id="ix-m-snare">The Spirit-Snare</h3>
+  <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it — able to speak, and to rage, and to bargain, but not to go.</p>
+  <h3 id="ix-m-greatspirit">Call the Great Spirit</h3>
+  <p><em>Rank 5 · One minute · 5 Faith.</em> Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked.</p>
+  <h3 id="ix-m-councilofdea">The Council of the Dead</h3>
+  <p><em>Rank 7 · One hour · 7 Faith.</em> Call the dead of a place together and sit down with them. Every spirit within a
+  mile that will come, comes, and they answer honestly for an hour: what was done here, by whom, where it is now, and
+  what would settle it. They are not obliged to be kind and they are frequently not. Once in a while one of them asks
+  you for something, and then you have a second problem.</p>
+  <h2 id="ix-m-list-mending">The Mending</h2>
+  <p>The Medicine Man's alone: the quiet, stubborn craft of keeping the wounded alive, one sure mending at a time, so the deep well is there when the worst comes.</p>
+  <h3 id="ix-m-poultice">The Poultice</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse.</p>
+  <h3 id="ix-m-setbone">Set the Bone</h3>
+  <p><em>Rank 1 · One minute · 1 Faith.</em> Splint, wrap, and set what is broken. Ease the penalty of one Lasting Injury for a day, buying a wounded soul the working hours the country would sooner deny them.</p>
+  <h3 id="ix-m-fever">The Fever Broken</h3>
+  <p><em>Rank 2 · One minute · 2 Faith.</em> Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done.</p>
+  <h3 id="ix-m-healsleep">The Sleep of Healing</h3>
+  <p><em>Rank 3 · One minute · 3 Faith.</em> Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn.</p>
+  <h3 id="ix-m-shared">The Life Shared</h3>
+  <p><em>Rank 4 · 1 Beat · 4 Faith.</em> Open the well to more than one at once. Divide your healing among every ally you can reach — 2d8 to be shared out as you choose — the mercy spread thin across many rather than poured into one.</p>
+  <h3 id="ix-m-longmercy">The Long Mercy</h3>
+  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> Hold a mortally hurt soul back from the door for a full day and night without the well draining further, so that a true cure, a hard ride, or a better healer may reach them in time. You cannot mend what took them. You can refuse to let it finish the work today.</p>
+  <h3 id="ix-m-bodymadewhol">The Body Made Whole</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Put a person back the way they were made. All Blood restored, every disease,
+  poison and Affliction gone, every Lasting Injury undone, limbs and sight and hearing returned. Whatever was done to
+  them is not done to them any more. It works once on any one soul, ever, and both of you will know afterward which day
+  it was.</p>
+  <h2 id="ix-m-list-consecration">The Consecrations</h2>
+  <p>The Witch Hunter's alone, and fueled by Zeal rather than a healer's pool: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution.</p>
+  <h3 id="ix-m-saltline">Salt the Threshold</h3>
+  <p><em>Rank 1 · One minute · 1 Faith · Will save.</em> Lay a line of blessed salt across a door, a window, a circle of camp. Uncanny things save or cannot cross it until dawn or until the line is broken by a living hand — theirs cannot break it.</p>
+  <h3 id="ix-m-weakness">The Litany of Weakness</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Recite what you know of a thing's banes — the silver, the fire, the true name, the running water. Your next Judgment against it deals +1d8, the knowledge sharpening the blow.</p>
+  <h3 id="ix-m-silverround">Silver the Round</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Bless and silver-wash a handful of ammunition on the spot. The next three shots fired from it count as silver and blessed for overcoming the uncanny's resistances, whoever pulls the trigger. The blessing holds until those three shots are fired, or until dawn, whichever comes first.</p>
+  <h3 id="ix-m-branding">The Branding</h3>
+  <p><em>Rank 3 · One minute · 3 Faith · Will save.</em> Mark your quarry with the sign of the hunt. For a day you always know its direction and rough distance, it cannot hide from you by any uncanny means, and it knows, wherever it runs, that it has been marked.</p>
+  <h3 id="ix-m-killground">Consecrate the Killing Ground</h3>
+  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sanctify a patch of ground and make it a trap for the unclean. Within it, uncanny things fight at &minus;2 and cannot flee by any supernatural means — no stepping through shadow, no sinking into earth. What comes onto this ground leaves it on your terms or not at all.</p>
+  <h3 id="ix-m-reckoningfire">The Reckoning Fire</h3>
+  <p><em>Rank 5 · 1 Beat · 5 Faith · Reflex save.</em> Call a consecrated flame that burns the unclean and spares the rest. Every uncanny thing in a wide reach takes 6d6 holy fire, save for half, and what the fire kills does not rise, reform, or return. The living may stand in it unharmed. The dark has no such luck.</p>
+  <h3 id="ix-m-groundmadeho">The Ground Made Holy</h3>
+  <p><em>Rank 7 · One hour · 7 Faith.</em> Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or
+  draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay
+  buried and quiet. It ends only if the ground is broken deliberately by a living hand, which somebody will eventually
+  get around to.</p>
+  <h2 id="ix-m-list-vigil">The Vigil</h2>
+  <p>The Sister's alone: the work of sitting up with what should not be left alone. It wards, it watches, and it refuses to move, and there is almost nothing in it that will win a fight. That is not what it was written for.</p>
+  <h3 id="ix-m-handheld">Hand Held</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Take hold of a soul who has just failed a Dread Check and give them something to hold back. They reroll it at once, and keep the second result even if it is worse. Most take the second result gladly. The ones who do not are why you keep hold a moment longer than they want.</p>
+  <h3 id="ix-m-watchkept">The Watch Kept</h3>
+  <p><em>Rank 1 · Ten minutes · 1 Faith.</em> Walk the bounds of a camp, a room, a cellar stair, naming what you mean to keep out. Until you sleep or leave, every soul inside takes +2 on Dread Checks, and nothing uncanny crosses the line you walked without you knowing the moment it does. It does not stop anything. It only means you are never the last to find out.</p>
+  <h3 id="ix-m-lampunquenched">The Lamp Unquenched</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it.</p>
+  <h3 id="ix-m-nothingcomesin">Nothing Comes In</h3>
+  <p><em>Rank 3 · One minute · 3 Faith · Will save.</em> Stand in a doorway, a gate, a stair-head, and refuse it. For a scene, anything uncanny that would cross must first make a Will save against your Miracle DC; on a failure it cannot cross at all this round and must spend its turn trying again. It can still reach through. It can still call. It cannot simply walk in, and a great many of them have never had to learn what to do about that.</p>
+  <h3 id="ix-m-bodykeptwhole">The Body Kept Whole</h3>
+  <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for.</p>
+  <h3 id="ix-m-notbemoved">She Will Not Be Moved</h3>
+  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose.</p>
+  <h3 id="ix-m-untilmorning">Until Morning</h3>
+  <p><em>Rank 7 · One minute · 7 Faith.</em> Sit down with them and say that this is not the night. Until dawn, no soul
+  inside the room, the camp or the house may die: the dying do not go, the mortal wound waits, the sickness holds where
+  it is. It does not cure any of it and morning still comes. What it buys is the hours, and the hours are usually what
+  was wanted.</p>
+  <div class="pageno">24</div>
+</section>
+
+<section class="page">
+  <div class="runhead"><span class="l">XIII. Signs, Miracles &amp; Old Rites</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-old-rites">The Old Rites</h2>
   <p>Rites are folk-craft, not sorcery — anyone may attempt them with the right materials, time, and a skill check (usually
   Lore: Occult or Survival). They cost no Nerve, but they are slow, and failure has its own price. A <strong>critical
