@@ -1730,8 +1730,22 @@ public static class CharGen
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
     static readonly System.Text.RegularExpressions.Regex CountedUses = new(
-        @"\b(?<n>once|twice|three times|four times|five times|\d+ times) per\s+"
-        + @"(?<when>turn|round|scene|fight|encounter|session|quarry|wound|patient|target)\b",
+        @"\b(?<n>once|twice|three times|four times|five times|\d+ times) (?:per|each|a)\s+"
+        + @"(?<when>turn|round|scene|fight|encounter|session|day|night|quarry|wound|patient|target)\b",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>"The first time each scene you would lose Nerve, lose none instead." A
+    /// once-per-X limit written as a trigger, which is the shape a table forgets soonest, and
+    /// five features in the book were written this way and read as having no limit at all.
+    ///
+    /// <para>The cadence word is required, and that is the whole precision of this pattern. Two
+    /// sentences in the data say "the first time" and mean nothing of the kind — <i>"Most do not,
+    /// the first time"</i> and <i>"Roll a flat check the first time it matters"</i> — and a
+    /// counter drawn beside either of those teaches a Keeper to stop trusting the counters that
+    /// matter.</para></summary>
+    static readonly System.Text.RegularExpressions.Regex FirstTimeEach = new(
+        @"\b(?:the\s+)?first time (?:each|per|in a|in each)\s+"
+        + @"(?<when>turn|round|scene|fight|encounter|session|day|night)\b",
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
     static FeatureCadence WhenOf(string w) => w.ToLowerInvariant() switch
@@ -1742,6 +1756,8 @@ public static class CharGen
         "scene" or "fight" or "encounter" => FeatureCadence.Scene,
         // Once per quarry, once per wound: the fiction says when, so the Keeper does.
         "quarry" or "wound" or "patient" or "target" => FeatureCadence.Trigger,
+        // A day and a night both end at the dawn that refreshes every pool in this game.
+        "day" or "night" or "dawn" => FeatureCadence.Dawn,
         _ => FeatureCadence.Session,
     };
 
@@ -1787,6 +1803,15 @@ public static class CharGen
                 Ability = m.Groups["abl"].Value.ToUpperInvariant(),
                 HalfLevel = m.Groups["half"].Success,
                 Min = m.Groups["min"].Success ? int.Parse(m.Groups["min"].Value) : 1,
+                Phrase = SentenceAround(desc, m.Index),
+            };
+
+        m = FirstTimeEach.Match(desc);
+        if (m.Success)
+            return new FeatureLimit
+            {
+                Cadence = WhenOf(m.Groups["when"].Value),
+                Uses = 1,
                 Phrase = SentenceAround(desc, m.Index),
             };
 

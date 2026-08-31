@@ -3274,6 +3274,51 @@ T("no caster is starved of legal signs at any level", cg.callings
     T("a mundane Calling without Hedge Magic reaches no Sign at all",
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
+// ---- G6: the two phrasings ReadLimit could not read (2026-08-30) -------------------------------
+// The Tracker's rationed strip draws a card for every feature that states a limit, so a limit the
+// parser cannot read is a limit nobody at the table remembers. Five real ones were going unread,
+// and both halves of the fix are asserted here: what must now be read, and what must still not be.
+{
+    // "the first time each X" is a once-per-X limit written as a trigger, which is the shape a
+    // table forgets soonest.
+    var undertaker = CharGen.D.origins.First(o => o.name == "The Undertaker");
+    var veteran = CharGen.D.origins.First(o => o.name == "The Veteran");
+    var unshakable = CharGen.D.edges.First(e => e.name == "Unshakable");
+    foreach (var (what, text, want) in new (string, string, FeatureCadence)[]
+    {
+        ("the Undertaker's burden", undertaker.burden, FeatureCadence.Session),
+        ("the Veteran's burden", veteran.burden, FeatureCadence.Session),
+        ("Unshakable", unshakable.desc, FeatureCadence.Scene),
+    })
+    {
+        var lim = CharGen.ReadLimit(text);
+        T($"limit read: {what} is once per {want}", lim.Any && lim.Cadence == want && lim.Uses == 1);
+    }
+
+    // "once a day" / "once per day" was a cadence the parser knew as a word and not as a counter.
+    var coldTrail = CharGen.D.callings.First(c => c.name == "Bounty Hunter").featureDescs["Cold Trail"];
+    var deepVein = CharGen.D.callings.First(c => c.name == "Prospector").featureDescs["The Deep Vein"];
+    T("limit read: Cold Trail is once a day", CharGen.ReadLimit(coldTrail).Cadence == FeatureCadence.Dawn);
+    T("limit read: The Deep Vein is once a day", CharGen.ReadLimit(deepVein).Cadence == FeatureCadence.Dawn);
+
+    // And the half that is easy to get wrong. Both of these say "the first time" and mean nothing
+    // of the kind; a counter drawn beside either teaches a Keeper to distrust the ones that matter.
+    foreach (var (what, text) in new[]
+    {
+        ("The Long Whisper", CharGen.D.signs.First(x => x.name == "The Long Whisper").desc),
+        ("The Unwritten Hour", CharGen.D.signs.First(x => x.name == "The Unwritten Hour").desc),
+    })
+        T($"no limit invented from narrative: {what}", !CharGen.ReadLimit(text).Any);
+
+    // the shapes themselves, stated plainly so a future edit to the pattern has something to fail
+    T("first-time-each needs its cadence word",
+        !CharGen.ReadLimit("Roll a check the first time it matters.").Any
+        && CharGen.ReadLimit("The first time each scene, do the thing.").Cadence == FeatureCadence.Scene);
+    T("a day and a night both end at dawn",
+        CharGen.ReadLimit("Once a night, do the thing.").Cadence == FeatureCadence.Dawn
+        && CharGen.ReadLimit("Once per day, do the thing.").Cadence == FeatureCadence.Dawn);
+}
+
 // ---- the Witch's familiars (B6b, 2026-08-30) --------------------------------------------------
 // This was the project's standing fault in its purest form for four months: the book stated the
 // boon as a principle ("a +2 to one sense or skill befitting its nature") and CharGen decided it
@@ -4417,9 +4462,16 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var callings = CharGen.D.callings;
 
     // --- the reader agrees with a plain scan of the prose ---
+    // Deliberately a SECOND statement of "the book says there is a limit here", written apart from
+    // ReadLimit's own patterns so the parser is checked against something that is not itself. When
+    // ReadLimit learns a phrasing, this has to learn it too, in its own words -- otherwise the
+    // Dawn escape hatch on the second assertion below quietly absorbs the disagreement instead of
+    // reporting it, which is what happened when G6 taught the parser and not this (2026-08-30).
     var broad = new System.Text.RegularExpressions.Regex(
-        @"\b(once|twice|three times|four times|five times|\d+ times|a number of times) per "
-        + @"(turn|round|scene|fight|encounter|session|quarry|wound|patient|target)\b",
+        @"\b(once|twice|three times|four times|five times|\d+ times|a number of times) (per|each|a) "
+        + @"(turn|round|scene|fight|encounter|session|day|night|quarry|wound|patient|target)\b"
+        + @"|\bfirst time (each|per|in a|in each) "
+        + @"(turn|round|scene|fight|encounter|session|day|night)\b",
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     int stated = 0, read = 0;
     foreach (var cal in callings)
@@ -4437,7 +4489,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("every stated limit is read", stated == read);
     // 36 before B6. Fifty-seven new feature write-ups arrived with the levels above ten, and
     // every fifteenth-level capstone is once a session by design, so the number had to move.
-    T($"the book still states as many limits as it did ({stated})", stated == 71);
+    T($"the book still states as many limits as it did ({stated})", stated == 73);
 
     // --- the shapes the book actually uses ---
     CgCalling Cal(string n) => callings.First(c => c.name == n);
