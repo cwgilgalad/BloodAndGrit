@@ -43,11 +43,11 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 **Saltlick Station · a posse of four at level 3 · party Tier 2**
 
-- **Finished the night on their feet: 1 of 12 runs.** Broke off and rode out: 9. Put down to the last soul: 2.
-- Souls down at the end, on average: **2.6 of 4**.
+- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 10. Put down to the last soul: 2.
+- Souls down at the end, on average: **2.8 of 4**.
 - Nerve left across the whole posse, on average: **49.0 of 68.3**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **1 of 12**, put down to the last soul 2.
+- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 2.
 
 ### Fight by fight
 
@@ -55,8 +55,8 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the tack room, and the two it has already been inside | TII | 9/12 | 3/12 | 2.1 | 37% | 60% |
-| the yard at first light | TIII | 1/9 | 6/9 | 1.3 | 16% | 88% |
+| the tack room, and the two it has already been inside | TII | 9/12 | 3/12 | 2.2 | 37% | 60% |
+| the yard at first light | TIII | 0/9 | 7/9 | 1.3 | 16% | 86% |
 
 ### The way through
 
@@ -101,6 +101,6 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 | Adventure | Level | Finished (cold) | Finished (tended) | Broke off | Put down | Avg souls down |
 |---|---|---|---|---|---|---|
 | The Salt at Coffin Wells | 1 | 0/12 | 0/12 | 11 | 1 | 2.4 |
-| A Face Not His Own | 3 | 1/12 | 1/12 | 9 | 2 | 2.6 |
+| A Face Not His Own | 3 | 0/12 | 0/12 | 10 | 2 | 2.8 |
 | What the Water Answers | 5 | 0/12 | 0/12 | 10 | 2 | 2.9 |
 

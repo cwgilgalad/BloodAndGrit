@@ -8,6 +8,37 @@ Desktop\Git repos.)
 
 ---
 
+- **Module II v1.6 — the difficulty numbers three releases printed were numbers no engine
+  produced, and now something checks (2026-08-30).**
+
+  I reported after the v1.53.0 ship that the modules' *What the Night Costs* tables were still
+  pre-fix from the Mountain Man weapon bug. That was wrong: `0774022` on 2026-08-27 re-ran the
+  harness on an armed posse, exactly as it says on the tin. The tracker's note was stale and I
+  repeated it without checking.
+
+  Checking it found a worse fault underneath. The committed `PLAYTEST.md` disagreed with the
+  engine that was in the repo when this session began — proved by building the pre-session commit
+  in a worktree and running the harness there, which reproduced today's numbers and not the
+  committed ones. The cause is `c8301d7`, the B5 pass, which added **Not While I Stand**, a Rank 2
+  Common Blessing. A 3rd-level Preacher draws from Ranks 1 and 2, so it entered the harness posse's
+  eligible pool and shifted every draw after it. From that commit on, `PLAYTEST.md` recorded a
+  night no engine would play, and **modules v1.4, v1.5 and v1.6 all shipped it**: *A Face Not His
+  Own* told a Keeper a Tier III fight had been cleared once in nine runs when the engine's answer
+  was never.
+
+  Nothing went red, and nothing could have. `modules_common.night_costs()` generates each table
+  from `PLAYTEST.md` at build time, which is the right architecture with one hole in it: nothing
+  re-ran the harness. `audit_names.py` checks that the file has a section per module and that the
+  titles match, which is a different question entirely.
+
+  **`audits/audit_playtest.py`** closes it. It plays all 36 adventures on the current library under
+  the fixed base seed and holds `PLAYTEST.md` to the result, so the file and the engine cannot part
+  company again; `--write` updates it. Six seconds, and it is in the `--full` tier. Proved to bite
+  by changing one number in the file and watching it fail with the line.
+
+  Also gone: 648 MB of `net8.0` build output under `GK/`, orphaned since the .NET 10 move in
+  v1.46.0. All four projects target `net10.0`; nothing tracked lived there.
+
 - **GritKeeper v1.53.0 — fifteen levels, the lore that was queued and never written, and one
   chapter for both kinds of working. Player's v2.41, Keeper's v2.22, Bestiary v2.17, modules
   v1.5/v1.5/v1.6 (2026-08-30).**
