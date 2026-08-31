@@ -866,6 +866,22 @@ public partial class MainForm
                 Tipped(wChoice, $"{Cal.choice.label} — the {Cal.name}'s own standing choice, made at 1st level and written on the sheet.");
                 wChoice.SelectedItem = choicePick != null && wChoice.Items.Contains(choicePick) ? choicePick : wChoice.Items[0];
                 col.Controls.Add(wChoice);
+
+                // The Witch's familiars each grant a DIFFERENT skill (Ch. VII, the table of
+                // familiars), and a list of eleven beast names does not say so. Picking the fox
+                // because a witch ought to have a fox, and learning afterward that it was the
+                // Deceive one, is a choice the player never got to make. Same detail panel the
+                // subpath pick uses.
+                var famDetail = new Label { AutoSize = true, MaximumSize = new Size(300, 0),
+                                            ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
+                void ShowFamiliar()
+                {
+                    var f = CharGen.FamiliarFor(wChoice.SelectedItem as string);
+                    famDetail.Text = f == null ? "" : $"+2 {f.skill} while it is near — {f.why}.";
+                }
+                wChoice.SelectedIndexChanged += (s, e) => ShowFamiliar();
+                ShowFamiliar();
+                if (famDetail.Text.Length > 0) col.Controls.Add(famDetail);
             }
             return col;
         }

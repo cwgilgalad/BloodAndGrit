@@ -8,6 +8,44 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.42 — the Witch picks her familiar, and the rule stops living in a switch
+  statement (2026-08-30).**
+
+  B6b and G5, and they are one job. Cole asked on 2026-08-26 for picking a familiar to be part of
+  character creation and to show on the sheet. What was in the way is the project's standing fault
+  in its purest form: Ch. VII stated the boon as a **principle** — "a +2 to one sense or skill
+  befitting its nature," left to the table — while `CharGen.FamiliarSkillFor` quietly **decided**
+  it, keying cat to Stealth and crow to Notice in a switch statement nobody had printed. The app
+  and the players were running two different games, and no test could say so, because only one side
+  had committed to anything.
+
+  The beasts are `chargen.json` data now, the Player's Book prints them as a table generated from
+  it, and both switches read the data. **Eleven beasts rather than five**, because B6 gave the
+  Witch a second familiar at 11th and an Edge for a third, and a menu of five furnishing three
+  picks is not a menu. Every beast grants a different skill and every skill is one Ch. VIII has,
+  which is held by an assertion apiece.
+
+  **The Binding** has rules where it had a phrase. Ch. VII said a lost familiar is replaced "over a
+  long night's rite" and stopped: no cost, no roll, no limit. It is a night, 3 Nerve and a thing of
+  yours the beast keeps, against a Lore (Occult) check whose DC climbs 2 for every familiar you
+  have ever bound.
+
+  `check_familiars` holds the printed table to the data — beast, skill, reason and the rite's five
+  clauses — and is the check that would have caught this in 2026-04. Proved on four sabotages.
+
+  **Two of my own assertions were vacuous, and it took three sabotages to find out.** The resolver
+  matches longest-name-first so "a black snake" is never read as some shorter row, and asserting
+  that against the shipped table proves nothing: no beast's name is a substring of another's, so
+  the ordering cannot be observed. The first fix constructed a colliding row and appended it, which
+  put it *after* the row it collides with, where unordered iteration still finds the right one. It
+  goes at the front now, and breaking the resolver fails it.
+
+  Also: `verify_rules` assumed every `<table class="lvl">` in the Player's Book is a Calling's level
+  table. The familiar table borrowed the class for one build and reported as six missing rows on a
+  Calling that has them, which sends you looking in entirely the wrong place. It says so by name now.
+
+  Smoke **16,504 / 0**. Player's Book 264 → 266 pages.
+
 - **Module II v1.6 — the difficulty numbers three releases printed were numbers no engine
   produced, and now something checks (2026-08-30).**
 

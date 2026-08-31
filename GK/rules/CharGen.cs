@@ -36,6 +36,24 @@ public class CgShape
     public string gift { get; set; }
 }
 
+/// <summary>One beast on the Witch's table of familiars (Player's Book Ch. VII). Until
+/// 2026-08-30 this rule existed only as a switch statement in this file: the book stated the boon
+/// as a principle and left the beast-to-skill mapping to the table, while the app quietly decided
+/// it. Nothing could compare them, because the book had nothing to compare against.</summary>
+public class CgFamiliar
+{
+    public string name { get; set; } public string skill { get; set; }
+    public string why { get; set; } public string note { get; set; }
+}
+
+/// <summary>The Binding — what it takes to bind a familiar, and what it costs to lose one. The
+/// book said "over a long night's rite" and stopped: no cost, no roll, no limit on how often.</summary>
+public class CgFamiliarRite
+{
+    public string name { get; set; } public string time { get; set; } public string cost { get; set; }
+    public string check { get; set; } public string failure { get; set; } public string limit { get; set; }
+}
+
 public class CgEdge
 {
     public string name { get; set; } public string group { get; set; } public string desc { get; set; }
@@ -168,6 +186,8 @@ public class CgData
     public List<CgMiracle> miracles { get; set; } = new();
     /// <summary>The shared five-Rank spine: level → highest Rank, for Signs and Miracles alike.</summary>
     public Dictionary<string, int> rankAtLevel { get; set; } = new();
+    public List<CgFamiliar> familiars { get; set; } = new();
+    public CgFamiliarRite familiarRite { get; set; }
     public Dictionary<string, string> hungerLadder { get; set; } = new();
     public List<CgWeapon> weapons { get; set; } = new();
     public List<CgArmor> armor { get; set; } = new();
@@ -2419,19 +2439,33 @@ public static class CharGen
     /// <para>Null for a beast nobody has keyed. The book states the boon as a principle — "a +2 to
     /// one sense or skill befitting its nature" — and leaves the choice to the table, so a sixth
     /// animal gets the generic line and no automatic bonus, rather than a guessed one.</para></summary>
-    public static string FamiliarSkillFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    public static string FamiliarSkillFor(string kind) => FamiliarFor(kind)?.skill;
+
+    /// <summary>The row on the book's own table of familiars, matched however the sheet spells it.
+    /// A saved sheet says "a black snake" and the table says the same, but a Keeper who typed
+    /// "snake" by hand should still get the boon, so the match is on the beast rather than the
+    /// article. Longest name first, so "a black snake" is never read as some other row.</summary>
+    public static CgFamiliar FamiliarFor(string kind)
     {
-        var k when k.Contains("cat")   => "Stealth",
-        var k when k.Contains("crow")  => "Notice",
-        var k when k.Contains("hare")  => "Acrobatics",
-        var k when k.Contains("toad")  => "Medicine",
-        var k when k.Contains("snake") => "Insight",
-        _ => null,
-    };
+        string k = (kind ?? "").ToLowerInvariant();
+        if (k.Length == 0 || D?.familiars == null) return null;
+        foreach (var f in D.familiars.OrderByDescending(x => x.name.Length))
+        {
+            string beast = f.name.ToLowerInvariant();
+            foreach (var a in new[] { "a ", "an " })
+                if (beast.StartsWith(a, StringComparison.Ordinal)) { beast = beast.Substring(a.Length); break; }
+            if (k.Contains(beast, StringComparison.Ordinal)) return f;
+        }
+        return null;
+    }
 
     /// <summary>Why that skill and not another — the half of the boon line that is prose, kept
     /// beside the half that is a rule so a Keeper reading the sheet gets both.</summary>
-    static string FamiliarReasonFor(string kind) => (kind ?? "").ToLowerInvariant() switch
+    static string FamiliarReasonFor(string kind) => FamiliarFor(kind)?.why ?? LegacyReasonFor(kind);
+
+    /// <summary>Kept only so a session saved before the table existed still reads. Anything the
+    /// data knows about is answered above; this is the tail of five beasts and nothing else.</summary>
+    static string LegacyReasonFor(string kind) => (kind ?? "").ToLowerInvariant() switch
     {
         var k when k.Contains("cat")   => "it goes where you cannot and comes back",
         var k when k.Contains("crow")  => "it sees the country from above and tells you",

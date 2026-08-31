@@ -3274,6 +3274,81 @@ T("no caster is starved of legal signs at any level", cg.callings
     T("a mundane Calling without Hedge Magic reaches no Sign at all",
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
+// ---- the Witch's familiars (B6b, 2026-08-30) --------------------------------------------------
+// This was the project's standing fault in its purest form for four months: the book stated the
+// boon as a principle ("a +2 to one sense or skill befitting its nature") and CharGen decided it
+// in a switch statement, and nothing could compare them because only one side had committed to
+// anything. The table is data now. verify_rules holds the printed page to it; these hold the
+// readers to it.
+{
+    var fams = CharGen.D.familiars;
+    T("the table of familiars is data, and it has eleven beasts", fams.Count == 11);
+    T("every familiar grants a skill this game has", fams.All(f =>
+        CharGen.D.skills.Any(sk => sk.name == f.skill)));
+    T("no two familiars grant the same skill", fams.Select(f => f.skill).Distinct().Count() == fams.Count);
+    T("every familiar carries a reason and a note", fams.All(f =>
+        !string.IsNullOrWhiteSpace(f.why) && !string.IsNullOrWhiteSpace(f.note)));
+
+    // Resolution has to survive every spelling a sheet might hold. A saved session writes the
+    // table's own name ("a black snake"); a Keeper typing by hand writes "snake"; the old switch
+    // matched on the bare beast and sheets in the wild depend on that still working.
+    foreach (var f in fams)
+    {
+        string bare = f.name.StartsWith("an ", StringComparison.Ordinal) ? f.name.Substring(3)
+                    : f.name.StartsWith("a ", StringComparison.Ordinal) ? f.name.Substring(2) : f.name;
+        T($"familiar resolves by its printed name: {f.name}", CharGen.FamiliarFor(f.name)?.skill == f.skill);
+        T($"familiar resolves by the beast alone: {bare}", CharGen.FamiliarFor(bare)?.skill == f.skill);
+        T($"and FamiliarSkillFor agrees: {f.name}", CharGen.FamiliarSkillFor(f.name) == f.skill);
+    }
+    // The longest-first ordering in FamiliarFor is load-bearing, and asserting it against the
+    // shipped table proves nothing: no beast's name is a substring of another's today, so the
+    // ordering cannot be observed. Sabotaging the resolver produced a green run, which is how
+    // this was caught. So construct the collision the ordering exists for, and take it back out.
+    {
+        var snake = fams.First(f => f.name == "a black snake");
+        var collide = new CgFamiliar { name = "a snake", skill = "Survival", why = "x", note = "y" };
+        // At the FRONT: appended, it sits after "a black snake" and unordered iteration finds the
+        // right row anyway, so the sabotage passes and the assertion is still vacuous. Found by
+        // sabotaging twice -- the first constructed case was as toothless as the one it replaced.
+        CharGen.D.familiars.Insert(0, collide);
+        try
+        {
+            T("a longer beast name wins over a shorter one it contains",
+                CharGen.FamiliarFor("a black snake")?.name == snake.name);
+            T("and the shorter one still resolves on its own",
+                CharGen.FamiliarFor("a snake")?.name == collide.name);
+        }
+        finally { CharGen.D.familiars.Remove(collide); }
+        T("the table is put back the way it was", CharGen.D.familiars.Count == fams.Count);
+    }
+    T("a beast the table does not hold resolves to nothing", CharGen.FamiliarFor("a badger") == null);
+    T("and so does nothing at all", CharGen.FamiliarFor(null) == null && CharGen.FamiliarFor("") == null);
+
+    // The Witch's own option list IS the table, rather than a copy of part of it.
+    var witch = CharGen.D.callings.First(c => c.name == "Witch");
+    T("the Witch chooses from the whole table", witch.choice != null
+        && witch.choice.options.OrderBy(x => x, StringComparer.Ordinal)
+             .SequenceEqual(fams.Select(f => f.name).OrderBy(x => x, StringComparer.Ordinal)));
+
+    // and a rolled Witch never comes out holding a beast the book does not print
+    for (int i = 0; i < 40; i++)
+    {
+        var w = CharGen.Generate(1, i % 2 == 1, "Witch");
+        if (CharGen.FamiliarFor(w.FamiliarKind) == null)
+        { T($"a rolled Witch's familiar is on the table: {w.FamiliarKind}", false); break; }
+    }
+    T("forty rolled Witches all bound a beast the book prints", true);
+
+    // The Binding. Ch. VII said "over a long night's rite" and stopped -- no cost, no roll, no
+    // limit on how often, which is not a rule a Keeper can adjudicate.
+    var rite = CharGen.D.familiarRite;
+    T("the Binding has rules rather than a phrase", rite != null
+        && new[] { rite.name, rite.time, rite.cost, rite.check, rite.failure, rite.limit }
+             .All(x => !string.IsNullOrWhiteSpace(x)));
+    T("the Binding names a check somebody can roll", rite.check.Contains("Lore (Occult)", StringComparison.Ordinal)
+        && rite.check.Contains("DC", StringComparison.Ordinal));
+}
+
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
 T("61 miracles across seven lists", cg.miracles.Count == 61 && cg.miracles.All(m =>
     m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
