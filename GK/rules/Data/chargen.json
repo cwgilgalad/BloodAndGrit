@@ -6901,7 +6901,7 @@
    ],
    "featureDescs": {
     "The Craft": "You know and work Signs (Chapter XIII), beginning with two and learning another at each even level, paid in Nerve and risking Backlash as the Hexer's are, and choosing freely from any Rank your level has opened. Where you differ is the list. You draw on the Common Signs and on the Craft, and the Craft is closed to every other Calling in this book — no Hexer learns the Poppet, and no cultist will ever ward a house. The Craft is inherited, not borrowed: you do not begin Marked, and you advance the Mark only through genuine recklessness, never automatically. The dark did not hand you this. Your line did.",
-    "Familiar": "A small beast is bound to you — a cat, a crow, a hare, a toad, a black snake. It is cannier than any animal, scouts and spies at your bidding, can deliver a touch-range Sign for you, and grants a standing boon while near (a +2 to one sense or skill befitting its nature). You share its senses at will. Should it die, you are Sickened until you can bind another over a long night's rite — and you will feel the loss far longer than the penalty lasts.",
+    "Familiar": "A small beast is bound to you, and it is not a pet. It is cannier than any animal, scouts and spies at your bidding, can deliver a touch-range Sign for you, and grants a standing boon while near: +2 to the one skill its nature suits, from the table of familiars below. You share its senses at will. Choose the beast when you make the Witch, and choose it rather than roll it, because the skill comes with it. Should it die you are Sickened until you bind another by the Binding, and you will feel the loss far longer than the penalty lasts.",
     "The Evil Eye": "With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls and a run of small misfortunes for a round per two levels. It costs no Nerve, but everyone who sees you do it remembers your face.",
     "Brew": "This is the kitchen craft, not the Rank 3 Sign of the same family — The Brewing bottles a working, while this bottles medicine. Given a kitchen, a fire, and time, you brew the work of the Goods chapter and more — healing poultices, sleeping draughts, truth-loosening teas, and poisons that no assayer can name. Treat your brews as a Sawbones' Tonics, with effects you and the Keeper devise; the dose is in the making, and the making is in your hands.",
     "Hex": "Your maledictions grow teeth. As an action and 1 Nerve, lay a true Hex on a foe (Will save vs Sign DC): Frightened, Clumsy, Sickened, or cursed with ruinous luck (foes' crits against allies, your crits against the cursed) for a scene. A Hexed soul knows it is Hexed, and knows who did it, which is sometimes the worst of it.",
@@ -6999,7 +6999,13 @@
      "a crow",
      "a hare",
      "a toad",
-     "a black snake"
+     "a black snake",
+     "an owl",
+     "a hound",
+     "a goat",
+     "a magpie",
+     "a fox",
+     "a horse"
     ]
    },
    "startMark": 0,
@@ -7329,5 +7335,81 @@
   "13": 7,
   "14": 7,
   "15": 8
+ },
+ "familiars": [
+  {
+   "name": "a cat",
+   "skill": "Stealth",
+   "why": "it goes where you cannot and comes back",
+   "note": "Doors, rafters, the space under a floor. It will not hurry and it will not be hurried."
+  },
+  {
+   "name": "a crow",
+   "skill": "Notice",
+   "why": "it sees the country from above and tells you",
+   "note": "A mile of trail in a minute, and it remembers faces. Crows hold a grudge for years."
+  },
+  {
+   "name": "a hare",
+   "skill": "Acrobatics",
+   "why": "its quickness is in your feet",
+   "note": "It runs the moment before the thing happens, which is a warning if you are watching it."
+  },
+  {
+   "name": "a toad",
+   "skill": "Medicine",
+   "why": "it knows what grows and what it is for",
+   "note": "It sits in the herb patch and it is never wrong about which one. Slow, and does not mind."
+  },
+  {
+   "name": "a black snake",
+   "skill": "Insight",
+   "why": "it feels what a body is doing before the body admits it",
+   "note": "Cold and patient. It knows a liar by the heat of him and has no opinion about lying."
+  },
+  {
+   "name": "an owl",
+   "skill": "Survival",
+   "why": "it keeps the night the way you keep the day",
+   "note": "It hunts while you sleep and it will wake you. Owls are bad luck to everyone but their witch."
+  },
+  {
+   "name": "a hound",
+   "skill": "Intimidate",
+   "why": "it stands where you stand and does not move",
+   "note": "The only familiar most people can see coming, which is half of what it is for."
+  },
+  {
+   "name": "a goat",
+   "skill": "Athletics",
+   "why": "it climbs what will not be climbed and carries what will not be carried",
+   "note": "Stubborn past reason, eats anything, and will put itself between you and a thing once."
+  },
+  {
+   "name": "a magpie",
+   "skill": "Sleight",
+   "why": "it takes what shines and brings it to you",
+   "note": "It cannot be taught what is yours. It can be taught what you want."
+  },
+  {
+   "name": "a fox",
+   "skill": "Deceive",
+   "why": "it is never quite where it was and never quite what it seemed",
+   "note": "It runs a false trail better than you do, and it enjoys it, which is the unnerving part."
+  },
+  {
+   "name": "a horse",
+   "skill": "Ride",
+   "why": "the two of you have stopped needing reins",
+   "note": "A familiar nobody suspects, in a country where every soul has one. It will not be stolen."
+  }
+ ],
+ "familiarRite": {
+  "name": "The Binding",
+  "time": "one night, from dusk to the first light",
+  "cost": "3 Nerve, and a thing of yours the beast chooses and keeps",
+  "check": "a Lore (Occult) check against DC 15 + 2 per familiar you have bound before, this one included",
+  "failure": "the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down",
+  "limit": "you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen"
  }
 }

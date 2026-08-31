@@ -3274,6 +3274,236 @@ T("no caster is starved of legal signs at any level", cg.callings
     T("a mundane Calling without Hedge Magic reaches no Sign at all",
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
+// ---- the survey's furniture: Density, Growth, and moving what it scattered (2026-08-30) --------
+// Cole asked for an option to grow more trees and natural objects, and for more control over all
+// of them. Both are in MapSpec now, and every scattered mark records its own prim span.
+{
+    MapSpec Spec(int density = 0, int growth = 0, string terrain = null) => new MapSpec
+    {
+        Terrain = terrain ?? MapGen.Terrains[0], Scale = 2, Seed = 4242, Landmarks = 4,
+        Density = density, Growth = growth,
+    };
+
+    T("the two ladders are named for the app to offer",
+        MapGen.Densities.Length == 5 && MapGen.Growths.Length == 4
+        && MapGen.Densities[0] == "as the country runs" && MapGen.Growths[0] == "as the country runs");
+
+    // Index 0 has to draw exactly what the survey drew before either option existed, or every map
+    // in every saved session redraws differently the moment this ships.
+    var plain = MapGen.Generate(Spec());
+    T("a survey scatters marks and records every one", plain.Scatter.Count > 0);
+    T("every scattered mark owns a real prim span", plain.Scatter.All(sc =>
+        sc.PrimCount > 0 && sc.PrimStart >= 0 && sc.PrimStart + sc.PrimCount <= plain.P.Count));
+
+    // Density: thicker means more, sparser means fewer, on the same seed and the same country.
+    int sparse = MapGen.Generate(Spec(density: 1)).Scatter.Count;
+    int usual = plain.Scatter.Count;
+    int crowded = MapGen.Generate(Spec(density: 4)).Scatter.Count;
+    T($"density thins the country ({sparse} < {usual})", sparse < usual);
+    T($"and thickens it ({crowded} > {usual})", crowded > usual);
+
+    // Growth: timbered means MORE of what actually grows there, on every ground, and bare means
+    // less. Asked of every terrain rather than one, because the interesting failure is a ground
+    // whose kit has no timber in it at all.
+    int leaner = 0, richer = 0;
+    foreach (var terrain in MapGen.Terrains)
+    {
+        var bare = MapGen.Generate(Spec(growth: 1, terrain: terrain));
+        var timbered = MapGen.Generate(Spec(growth: 3, terrain: terrain));
+        int Green(MapModel m) => m.Scatter.Count(sc =>
+            sc.Name is "tree" or "forest" or "pine" or "pinestand" or "orchard"
+                    or "scrub" or "tuft" or "grass" or "reeds" or "cactus" or "marsh");
+        if (Green(bare) < Green(MapGen.Generate(Spec(terrain: terrain)))) leaner++;
+        if (Green(timbered) > Green(MapGen.Generate(Spec(terrain: terrain)))) richer++;
+        // and no setting may empty a country of furniture entirely
+        T($"a leaning still furnishes {terrain}", bare.Scatter.Count > 0 && timbered.Scatter.Count > 0);
+    }
+    T($"bare thins the growth on most grounds ({leaner}/{MapGen.Terrains.Length})",
+        leaner >= MapGen.Terrains.Length / 2);
+    T($"timbered thickens it on most grounds ({richer}/{MapGen.Terrains.Length})",
+        richer >= MapGen.Terrains.Length / 2);
+
+    // Moving one, the same operation a landmark gets.
+    {
+        var m = MapGen.Generate(Spec(density: 3));
+        var sc = m.Scatter[0];
+        float x0 = sc.X, y0 = sc.Y;
+        var before = (float[])m.P[sc.PrimStart].Pts.Clone();
+        MapGen.MoveScatter(m, 0, x0 + 40, y0 - 25);
+        var after = m.P[sc.PrimStart].Pts;
+        T("moving a scattered mark translates its own prims",
+            Math.Abs(after[0] - before[0] - 40) < 0.001f && Math.Abs(after[1] - before[1] + 25) < 0.001f
+            && sc.X == x0 + 40 && sc.Y == y0 - 25);
+        T("and the mark under a point is the one that gets picked up",
+            MapGen.ScatterAt(m, x0 + 40, y0 - 25) == 0);
+        T("a point in open country picks up nothing", MapGen.ScatterAt(m, -500, -500) == -1);
+    }
+
+    // Removing one. THIS is the assertion that earns its keep: RemoveScatter cuts prims out of the
+    // middle of an array that four separate lists hold offsets into, and getting the re-basing
+    // wrong does not throw. It silently makes some other feature's label drag part of the river.
+    {
+        var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 77,
+                                              Landmarks = 5, Secrets = true, Town = true, Density = 3 });
+        // remember the actual geometry every surviving feature owns, by value
+        (string who, float[] pts)[] Snapshot(MapModel mm) =>
+            mm.Landmarks.Select(l => (l.Name, (float[])mm.P[l.PrimStart].Pts.Clone()))
+              .Concat(mm.Secrets.Select(l => (l.Name, (float[])mm.P[l.PrimStart].Pts.Clone())))
+              .Concat(mm.Town == null ? Array.Empty<(string, float[])>()
+                                      : new[] { (mm.Town.Name, (float[])mm.P[mm.Town.PrimStart].Pts.Clone()) })
+              .ToArray();
+
+        int cut = m.Scatter.Count / 2;                       // from the MIDDLE, so spans really shift
+        var keepName = m.Scatter[cut].Name;
+        var was = Snapshot(m);
+        int prims = m.P.Count, marks = m.Scatter.Count, span = m.Scatter[cut].PrimCount;
+
+        T("a scattered mark can be taken off", MapGen.RemoveScatter(m, cut));
+        T("its prims go with it", m.P.Count == prims - span && m.Scatter.Count == marks - 1);
+
+        var now = Snapshot(m);
+        T("and every other feature still owns the geometry it owned", was.Length == now.Length
+            && was.Zip(now).All(z => z.First.who == z.Second.who
+                                  && z.First.pts.SequenceEqual(z.Second.pts)));
+        T("every surviving scatter span is still in range", m.Scatter.All(sc =>
+            sc.PrimStart >= 0 && sc.PrimCount > 0 && sc.PrimStart + sc.PrimCount <= m.P.Count));
+        T("removing nothing is refused rather than thrown",
+            !MapGen.RemoveScatter(m, -1) && !MapGen.RemoveScatter(m, 9999) && !MapGen.RemoveScatter(null, 0));
+    }
+}
+
+// ---- G6: the two phrasings ReadLimit could not read (2026-08-30) -------------------------------
+// The Tracker's rationed strip draws a card for every feature that states a limit, so a limit the
+// parser cannot read is a limit nobody at the table remembers. Five real ones were going unread,
+// and both halves of the fix are asserted here: what must now be read, and what must still not be.
+{
+    // "the first time each X" is a once-per-X limit written as a trigger, which is the shape a
+    // table forgets soonest.
+    var undertaker = CharGen.D.origins.First(o => o.name == "The Undertaker");
+    var veteran = CharGen.D.origins.First(o => o.name == "The Veteran");
+    var unshakable = CharGen.D.edges.First(e => e.name == "Unshakable");
+    foreach (var (what, text, want) in new (string, string, FeatureCadence)[]
+    {
+        ("the Undertaker's burden", undertaker.burden, FeatureCadence.Session),
+        ("the Veteran's burden", veteran.burden, FeatureCadence.Session),
+        ("Unshakable", unshakable.desc, FeatureCadence.Scene),
+    })
+    {
+        var lim = CharGen.ReadLimit(text);
+        T($"limit read: {what} is once per {want}", lim.Any && lim.Cadence == want && lim.Uses == 1);
+    }
+
+    // "once a day" / "once per day" was a cadence the parser knew as a word and not as a counter.
+    var coldTrail = CharGen.D.callings.First(c => c.name == "Bounty Hunter").featureDescs["Cold Trail"];
+    var deepVein = CharGen.D.callings.First(c => c.name == "Prospector").featureDescs["The Deep Vein"];
+    T("limit read: Cold Trail is once a day", CharGen.ReadLimit(coldTrail).Cadence == FeatureCadence.Dawn);
+    T("limit read: The Deep Vein is once a day", CharGen.ReadLimit(deepVein).Cadence == FeatureCadence.Dawn);
+
+    // And the half that is easy to get wrong. Both of these say "the first time" and mean nothing
+    // of the kind; a counter drawn beside either teaches a Keeper to distrust the ones that matter.
+    foreach (var (what, text) in new[]
+    {
+        ("The Long Whisper", CharGen.D.signs.First(x => x.name == "The Long Whisper").desc),
+        ("The Unwritten Hour", CharGen.D.signs.First(x => x.name == "The Unwritten Hour").desc),
+    })
+        T($"no limit invented from narrative: {what}", !CharGen.ReadLimit(text).Any);
+
+    // the shapes themselves, stated plainly so a future edit to the pattern has something to fail
+    T("first-time-each needs its cadence word",
+        !CharGen.ReadLimit("Roll a check the first time it matters.").Any
+        && CharGen.ReadLimit("The first time each scene, do the thing.").Cadence == FeatureCadence.Scene);
+    T("a day and a night both end at dawn",
+        CharGen.ReadLimit("Once a night, do the thing.").Cadence == FeatureCadence.Dawn
+        && CharGen.ReadLimit("Once per day, do the thing.").Cadence == FeatureCadence.Dawn);
+}
+
+// ---- Tiers read as Tiers, all the way up (a critic's pass, 2026-08-30) ------------------------
+// Rules.Roman stopped at V, so every creature B6 put at VI, VII and VIII printed as "T6" on its
+// list row and in TierNote -- the fifth Roman-numeral reader in one session written to the old
+// ceiling. Held to the Bestiary's own vocabulary rather than to a literal list.
+T("every Tier the data uses has a numeral", Db.Creatures.Select(c => c.tier).Where(t => t > 0)
+    .Distinct().All(t => !char.IsDigit(Rules.Roman(t)[0])));
+T("and they are the numerals the books print",
+    Rules.Roman(5) == "V" && Rules.Roman(6) == "VI" && Rules.Roman(7) == "VII"
+    && Rules.Roman(8) == "VIII");
+T("a creature's own line names its Tier in numerals", Db.Creatures
+    .Where(c => c.tier >= 6).All(c => c.ToString().EndsWith("T" + Rules.Roman(c.tier), StringComparison.Ordinal)));
+
+// ---- the Witch's familiars (B6b, 2026-08-30) --------------------------------------------------
+// This was the project's standing fault in its purest form for four months: the book stated the
+// boon as a principle ("a +2 to one sense or skill befitting its nature") and CharGen decided it
+// in a switch statement, and nothing could compare them because only one side had committed to
+// anything. The table is data now. verify_rules holds the printed page to it; these hold the
+// readers to it.
+{
+    var fams = CharGen.D.familiars;
+    T("the table of familiars is data, and it has eleven beasts", fams.Count == 11);
+    T("every familiar grants a skill this game has", fams.All(f =>
+        CharGen.D.skills.Any(sk => sk.name == f.skill)));
+    T("no two familiars grant the same skill", fams.Select(f => f.skill).Distinct().Count() == fams.Count);
+    T("every familiar carries a reason and a note", fams.All(f =>
+        !string.IsNullOrWhiteSpace(f.why) && !string.IsNullOrWhiteSpace(f.note)));
+
+    // Resolution has to survive every spelling a sheet might hold. A saved session writes the
+    // table's own name ("a black snake"); a Keeper typing by hand writes "snake"; the old switch
+    // matched on the bare beast and sheets in the wild depend on that still working.
+    foreach (var f in fams)
+    {
+        string bare = f.name.StartsWith("an ", StringComparison.Ordinal) ? f.name.Substring(3)
+                    : f.name.StartsWith("a ", StringComparison.Ordinal) ? f.name.Substring(2) : f.name;
+        T($"familiar resolves by its printed name: {f.name}", CharGen.FamiliarFor(f.name)?.skill == f.skill);
+        T($"familiar resolves by the beast alone: {bare}", CharGen.FamiliarFor(bare)?.skill == f.skill);
+        T($"and FamiliarSkillFor agrees: {f.name}", CharGen.FamiliarSkillFor(f.name) == f.skill);
+    }
+    // The longest-first ordering in FamiliarFor is load-bearing, and asserting it against the
+    // shipped table proves nothing: no beast's name is a substring of another's today, so the
+    // ordering cannot be observed. Sabotaging the resolver produced a green run, which is how
+    // this was caught. So construct the collision the ordering exists for, and take it back out.
+    {
+        var snake = fams.First(f => f.name == "a black snake");
+        var collide = new CgFamiliar { name = "a snake", skill = "Survival", why = "x", note = "y" };
+        // At the FRONT: appended, it sits after "a black snake" and unordered iteration finds the
+        // right row anyway, so the sabotage passes and the assertion is still vacuous. Found by
+        // sabotaging twice -- the first constructed case was as toothless as the one it replaced.
+        CharGen.D.familiars.Insert(0, collide);
+        try
+        {
+            T("a longer beast name wins over a shorter one it contains",
+                CharGen.FamiliarFor("a black snake")?.name == snake.name);
+            T("and the shorter one still resolves on its own",
+                CharGen.FamiliarFor("a snake")?.name == collide.name);
+        }
+        finally { CharGen.D.familiars.Remove(collide); }
+        T("the table is put back the way it was", CharGen.D.familiars.Count == fams.Count);
+    }
+    T("a beast the table does not hold resolves to nothing", CharGen.FamiliarFor("a badger") == null);
+    T("and so does nothing at all", CharGen.FamiliarFor(null) == null && CharGen.FamiliarFor("") == null);
+
+    // The Witch's own option list IS the table, rather than a copy of part of it.
+    var witch = CharGen.D.callings.First(c => c.name == "Witch");
+    T("the Witch chooses from the whole table", witch.choice != null
+        && witch.choice.options.OrderBy(x => x, StringComparer.Ordinal)
+             .SequenceEqual(fams.Select(f => f.name).OrderBy(x => x, StringComparer.Ordinal)));
+
+    // and a rolled Witch never comes out holding a beast the book does not print
+    for (int i = 0; i < 40; i++)
+    {
+        var w = CharGen.Generate(1, i % 2 == 1, "Witch");
+        if (CharGen.FamiliarFor(w.FamiliarKind) == null)
+        { T($"a rolled Witch's familiar is on the table: {w.FamiliarKind}", false); break; }
+    }
+    T("forty rolled Witches all bound a beast the book prints", true);
+
+    // The Binding. Ch. VII said "over a long night's rite" and stopped -- no cost, no roll, no
+    // limit on how often, which is not a rule a Keeper can adjudicate.
+    var rite = CharGen.D.familiarRite;
+    T("the Binding has rules rather than a phrase", rite != null
+        && new[] { rite.name, rite.time, rite.cost, rite.check, rite.failure, rite.limit }
+             .All(x => !string.IsNullOrWhiteSpace(x)));
+    T("the Binding names a check somebody can roll", rite.check.Contains("Lore (Occult)", StringComparison.Ordinal)
+        && rite.check.Contains("DC", StringComparison.Ordinal));
+}
+
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
 T("61 miracles across seven lists", cg.miracles.Count == 61 && cg.miracles.All(m =>
     m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
@@ -4342,9 +4572,16 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var callings = CharGen.D.callings;
 
     // --- the reader agrees with a plain scan of the prose ---
+    // Deliberately a SECOND statement of "the book says there is a limit here", written apart from
+    // ReadLimit's own patterns so the parser is checked against something that is not itself. When
+    // ReadLimit learns a phrasing, this has to learn it too, in its own words -- otherwise the
+    // Dawn escape hatch on the second assertion below quietly absorbs the disagreement instead of
+    // reporting it, which is what happened when G6 taught the parser and not this (2026-08-30).
     var broad = new System.Text.RegularExpressions.Regex(
-        @"\b(once|twice|three times|four times|five times|\d+ times|a number of times) per "
-        + @"(turn|round|scene|fight|encounter|session|quarry|wound|patient|target)\b",
+        @"\b(once|twice|three times|four times|five times|\d+ times|a number of times) (per|each|a) "
+        + @"(turn|round|scene|fight|encounter|session|day|night|quarry|wound|patient|target)\b"
+        + @"|\bfirst time (each|per|in a|in each) "
+        + @"(turn|round|scene|fight|encounter|session|day|night)\b",
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     int stated = 0, read = 0;
     foreach (var cal in callings)
@@ -4362,7 +4599,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("every stated limit is read", stated == read);
     // 36 before B6. Fifty-seven new feature write-ups arrived with the levels above ten, and
     // every fifteenth-level capstone is once a session by design, so the number had to move.
-    T($"the book still states as many limits as it did ({stated})", stated == 71);
+    T($"the book still states as many limits as it did ({stated})", stated == 73);
 
     // --- the shapes the book actually uses ---
     CgCalling Cal(string n) => callings.First(c => c.name == n);

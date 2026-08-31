@@ -65,6 +65,15 @@ def load_book():
         rows = {int(l): (int(a), int(f), int(r), int(w))
                 for l, a, f, r, w in ROW_RE.findall(m.group(0))}
         callings[name] = {"rank": rank, "rows": rows}
+    # Every <table class="lvl"> in this book is a Calling's level table, and the class is how they
+    # are found. A reference table that borrows the class is read as a second table for whichever
+    # Calling it sits under, and reports as that Calling's rows going missing -- which is where you
+    # then go looking. Say so here instead.
+    n = len(TBL_RE.findall(html))
+    if n != len(callings):
+        raise SystemExit(f"verify_rules: {n} tables carry class=\"lvl\" but only {len(callings)} "
+                         f"Callings own one. A reference table has borrowed the class; give it a "
+                         f"plain <table>.")
     return callings
 
 
@@ -804,6 +813,75 @@ def check_fight_ledger(problems):
             problems.append(f"{c['name']}: the 'You pay' half is too short to be an honest price")
     return checks
 
+# ---------------------------------------------------------- the Witch's familiars (B6b, 2026-08-30)
+# Until this table existed, the beast-to-skill mapping was a rule that lived ONLY in C#:
+# `CharGen.FamiliarSkillFor` keyed cat to Stealth and crow to Notice, and the book said "a +2 to one
+# sense or skill befitting its nature" and left it to the table. The app and the players were
+# playing two different games and nothing could say so, because the book had nothing to check
+# against. It is data now, printed from the data, and held to it here.
+
+FAM_ROW = re.compile(r"<tr><td><strong>([^<]+)</strong></td>"
+                     r'<td class="c">\+2 ([^<]+)</td><td>(.*?)</td></tr>', re.S)
+
+
+def check_familiars(problems):
+    d = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    fams, rite = d.get("familiars"), d.get("familiarRite")
+    if not fams or not rite:
+        problems.append("chargen.json carries no familiars table")
+        return 0
+    html = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    m = re.search(r"<h4>The Table of Familiars</h4>.*?</table>", html, re.S)
+    if not m:
+        problems.append("the Player's Book prints no table of familiars")
+        return 0
+
+    book = {name.strip().lower(): (skill.strip(), _tidy(TAG_RE.sub("", why)))
+            for name, skill, why in FAM_ROW.findall(m.group(0))}
+    checks = 1
+    if len(book) != len(fams):
+        problems.append(f"familiars: the book prints {len(book)}, the data holds {len(fams)}")
+
+    for f in fams:
+        checks += 2
+        key = f["name"].lower()
+        if key not in book:
+            problems.append(f"familiar {f['name']}: in the data, not on the printed table")
+            continue
+        skill, why = book[key]
+        if skill != f["skill"]:
+            problems.append(f"familiar {f['name']}: book grants {skill}, data grants {f['skill']}")
+        want = _tidy(f["why"].capitalize() + ". " + f["note"])
+        if why != want:
+            problems.append(f"familiar {f['name']}: the printed reason is not the data's")
+
+    # no two beasts may grant the same skill, or the choice is a re-skin
+    checks += 1
+    skills = [f["skill"] for f in fams]
+    if len(set(skills)) != len(skills):
+        dupes = sorted({x for x in skills if skills.count(x) > 1})
+        problems.append(f"familiars: {', '.join(dupes)} granted by more than one beast")
+
+    # and every one of them has to be a skill this game actually has
+    known = {x["name"] for x in d["skills"]}
+    for f in fams:
+        checks += 1
+        if f["skill"] not in known:
+            problems.append(f"familiar {f['name']}: {f['skill']} is not a skill in Ch. VIII")
+
+    # the Binding, whose five clauses are printed in the same box
+    rite_box = re.search(r"<h4 id=\"ix-binding\">.*?</div>", html, re.S)
+    if not rite_box:
+        problems.append("the Player's Book prints no Binding rite")
+        return checks
+    text = _tidy(TAG_RE.sub(" ", rite_box.group(0)))
+    for field in ("time", "cost", "check", "failure", "limit"):
+        checks += 1
+        if _tidy(rite[field]) not in text:
+            problems.append(f"the Binding: the book does not print its {field}")
+    return checks
+
+
 # ------------------------------------------------------------------ the Index, alphabetised
 # 331 rows under 23 letter headings, and until 2026-08-27 nothing checked either that a row sat
 # under its own letter or that the rows inside a letter were in order. Both had drifted.
@@ -891,6 +969,7 @@ def main():
     checks += check_arithmetic_stops(problems)
     checks += check_workings(problems)
     checks += check_fight_ledger(problems)
+    checks += check_familiars(problems)
     checks += check_index_order(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")

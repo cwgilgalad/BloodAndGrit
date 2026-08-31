@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.41 -->
+<!-- Blood & Grit — The Player's Book · Version 2.42 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.41)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.42)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.41</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.42</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -361,7 +361,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.41 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.42 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -2924,10 +2924,11 @@ body{ background:#525659; }
   The Craft is inherited, not borrowed: you do <strong>not</strong> begin Marked, and you advance the Mark only through
   genuine recklessness, never automatically. The dark did not hand you this. Your line did.</p>
   <h4 id="ix-familiar">Familiar</h4>
-  <p>A small beast is bound to you — a cat, a crow, a hare, a toad, a black snake. It is cannier than any animal, scouts and
-  spies at your bidding, can deliver a touch-range Sign for you, and grants a standing boon while near (a +2 to one sense or
-  skill befitting its nature). You share its senses at will. Should it die, you are Sickened until you can bind another over
-  a long night's rite — and you will feel the loss far longer than the penalty lasts.</p>
+  <p>A small beast is bound to you, and it is not a pet. It is cannier than any animal, scouts and spies at your bidding,
+  can deliver a touch-range Sign for you, and grants a standing boon while near: +2 to the one skill its nature suits,
+  from the table of familiars below. You share its senses at will. Choose the beast when you make the Witch, and choose
+  it rather than roll it, because the skill comes with it. Should it die you are Sickened until you bind another by the
+  Binding, and you will feel the loss far longer than the penalty lasts.</p>
   <h4>The Evil Eye</h4>
   <p>With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls
   and a run of small misfortunes for a round per two levels. It costs no Nerve, but everyone who sees you do it remembers
@@ -2980,6 +2981,34 @@ body{ background:#525659; }
     </ul>
   </div>
   <div class="pageno">29</div>
+  <div class="box">
+    <h4>The Table of Familiars</h4>
+    <p>Choose one when you make the Witch. The beast decides the boon, so choose the beast you want
+    to be carrying rather than the one that sounds best in a story. Nothing stops a Keeper adding a
+    beast this table has missed; give it one skill, and only one.</p>
+    <table>
+      <thead><tr><th>The beast</th><th class="c">While it is near</th><th>What it is, and what it is for</th></tr></thead>
+      <tbody>
+      <tr><td><strong>A cat</strong></td><td class="c">+2 Stealth</td><td>It goes where you cannot and comes back. Doors, rafters, the space under a floor. It will not hurry and it will not be hurried.</td></tr>
+      <tr><td><strong>A crow</strong></td><td class="c">+2 Notice</td><td>It sees the country from above and tells you. A mile of trail in a minute, and it remembers faces. Crows hold a grudge for years.</td></tr>
+      <tr><td><strong>A hare</strong></td><td class="c">+2 Acrobatics</td><td>Its quickness is in your feet. It runs the moment before the thing happens, which is a warning if you are watching it.</td></tr>
+      <tr><td><strong>A toad</strong></td><td class="c">+2 Medicine</td><td>It knows what grows and what it is for. It sits in the herb patch and it is never wrong about which one. Slow, and does not mind.</td></tr>
+      <tr><td><strong>A black snake</strong></td><td class="c">+2 Insight</td><td>It feels what a body is doing before the body admits it. Cold and patient. It knows a liar by the heat of him and has no opinion about lying.</td></tr>
+      <tr><td><strong>An owl</strong></td><td class="c">+2 Survival</td><td>It keeps the night the way you keep the day. It hunts while you sleep and it will wake you. Owls are bad luck to everyone but their witch.</td></tr>
+      <tr><td><strong>A hound</strong></td><td class="c">+2 Intimidate</td><td>It stands where you stand and does not move. The only familiar most people can see coming, which is half of what it is for.</td></tr>
+      <tr><td><strong>A goat</strong></td><td class="c">+2 Athletics</td><td>It climbs what will not be climbed and carries what will not be carried. Stubborn past reason, eats anything, and will put itself between you and a thing once.</td></tr>
+      <tr><td><strong>A magpie</strong></td><td class="c">+2 Sleight</td><td>It takes what shines and brings it to you. It cannot be taught what is yours. It can be taught what you want.</td></tr>
+      <tr><td><strong>A fox</strong></td><td class="c">+2 Deceive</td><td>It is never quite where it was and never quite what it seemed. It runs a false trail better than you do, and it enjoys it, which is the unnerving part.</td></tr>
+      <tr><td><strong>A horse</strong></td><td class="c">+2 Ride</td><td>The two of you have stopped needing reins. A familiar nobody suspects, in a country where every soul has one. It will not be stolen.</td></tr>
+      </tbody>
+    </table>
+    <h4 id="ix-binding">The Binding</h4>
+    <p>The rite that binds one, and the rite that replaces one. It takes <strong>one night, from dusk to the first light</strong>
+    and costs <strong>3 Nerve, and a thing of yours the beast chooses and keeps</strong>. Roll a Lore (Occult) check against DC 15 + 2 per familiar you have bound before, this one included. On a failure, the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down.</p>
+    <p>How many you may hold: you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen.</p>
+    <p class="note">A witch who has lost three has a reputation, and it is not the reputation she
+    would have chosen. The country counts them even when she does not.</p>
+  </div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>

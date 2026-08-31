@@ -1108,6 +1108,14 @@ public class Survey
     /// Secret index -> the two floats of where the Keeper put it.
     public Dictionary<int, float[]> Secrets { get; set; } = new();
 
+    /// Scattered-mark index -> where the Keeper put it. Keyed on the index the SURVEY generated,
+    /// not the current one, because <see cref="ScatterGone"/> renumbers the live list.
+    public Dictionary<int, float[]> Scatter { get; set; } = new();
+
+    /// The generated indices of scattered marks the Keeper has taken off the sheet. Applied after
+    /// the moves and in descending order, or a removal invalidates the index of every move above it.
+    public List<int> ScatterGone { get; set; } = new();
+
     /// Where the town was dragged to, or null if it still sits where the survey seated it.
     public float[] Town { get; set; }
 }
@@ -1122,7 +1130,12 @@ public static class Rules
     public static void Reseed(int seed) => Rng = new Random(seed);
     public static void ReseedEntropy() => Rng = new Random();
 
-    public static string Roman(int t) => t switch { 1=>"I",2=>"II",3=>"III",4=>"IV",5=>"V", _=>t.ToString() };
+    /// <summary>A Tier as the books print it. It stopped at V until 2026-08-30, so every Tier VI
+    /// creature B6 added read as "T6" on its list row and in <see cref="TierNote"/> — the fifth
+    /// Roman-numeral reader in one session to have been written to the old ceiling.</summary>
+    public static string Roman(int t) => t switch
+    { 1=>"I", 2=>"II", 3=>"III", 4=>"IV", 5=>"V", 6=>"VI", 7=>"VII", 8=>"VIII", 9=>"IX", 10=>"X",
+      _=>t.ToString() };
 
     static readonly System.Text.RegularExpressions.Regex FirstIntRe =
         new(@"\d+", System.Text.RegularExpressions.RegexOptions.Compiled);

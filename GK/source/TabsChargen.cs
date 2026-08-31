@@ -92,7 +92,10 @@ public partial class MainForm
         {
             Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 11f, FontStyle.Italic), ForeColor = Gold, BackColor = Paper,
-            Text = "Eight steps from a blank page to a soul worth losing.\n\n" +
+            // Interpolated rather than typed. It read "Eight steps" for as long as the wizard has
+            // had nine — the same fault CLAUDE.md records against the Reference screen, which told
+            // Keepers it held eleven leaves for two releases while it held thirteen.
+            Text = $"{SpelledSteps(StepCount)} steps from a blank page to a soul worth losing.\n\n" +
                    "🎲 Make a soul rolls the whole character for you, strictly by the book —\n" +
                    "pin a level, Calling, or Origin first if you have one in mind.\n\n" +
                    "🧭 Wizard… walks you through every choice yourself: abilities, skills,\n" +

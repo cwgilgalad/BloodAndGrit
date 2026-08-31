@@ -16,7 +16,7 @@ public partial class MainForm
     // The Trail Maps drafting table: set the ground, the scale, and the hour, and
     // MapGen draws a named frontier survey. The preview here, the SVG export, and
     // the PDF export all replay the same primitive list, so they always match.
-    ComboBox mapGround, mapScale, mapTime, mapWater, mapSky;
+    ComboBox mapGround, mapScale, mapTime, mapWater, mapSky, mapGrowth, mapDensity;
     CheckBox mapTrail, mapRail, mapTown, mapGrid, mapSecrets, mapMarkOut;
     NumericUpDown mapLm, mapSeed;
     TextBox mapName;
@@ -44,6 +44,11 @@ public partial class MainForm
     // The Keeper's-layer marks move the same way; keyed by index, not text, because
     // two secrets on one map can carry the same line.
     int secDragIdx = -1;
+    // The scattered furniture — every tree, rock and reed bed — grabbable since 2026-08-30.
+    int scatDragIdx = -1;
+    bool scatDragMoved;
+    readonly Dictionary<int, (float x, float y)> scatEdits = new();
+    readonly SortedSet<int> scatGone = new();
     bool secDragMoved;
     readonly Dictionary<int, (float x, float y)> secEdits = new();
 
@@ -166,6 +171,19 @@ public partial class MainForm
             "The sky over the survey — fair, overcast, rain, fog, blowing dust, snow, a blizzard. "
             + "Left on “As the sky wills” the country picks what it would actually get: the high "
             + "country gets snow, the badlands get heat and sand.");
+        // A FlowLayoutPanel wraps where it runs out of room, and it will happily leave a label at
+        // the end of one row with its combo at the start of the next. Break the row deliberately
+        // here so the pair always travels together.
+        rowGen.SetFlowBreak(rowGen.Controls[rowGen.Controls.Count - 1], true);
+        rowGen.Controls.Add(Lbl("Growth:"));
+        mapGrowth = Combo(rowGen, MapGen.Growths, 0, 150,
+            "Which way to lean what grows on this ground. It thickens or thins the country's OWN "
+            + "growth rather than importing somebody else's, so “timbered” gives the high country "
+            + "pines and the deep desert cactus. Left alone, the ground runs as it always has.");
+        rowGen.Controls.Add(Lbl(" Furniture:"));
+        mapDensity = Combo(rowGen, MapGen.Densities, 0, 150,
+            "How thickly the survey scatters trees, rock, brush and the rest. It changes how much "
+            + "is drawn, never what kind — for that, use Growth beside it.");
         rowGen.Controls.Add(Lbl(" Landmarks:"));
         mapLm = new NumericUpDown { Minimum = 0, Maximum = 12, Value = 5, Width = 48, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(mapLm, "How many named places the survey marks");
@@ -227,7 +245,7 @@ public partial class MainForm
         {
             lmEditMode = lmEditBtn.Checked;
             lmEditBtn.Text = lmEditMode ? "✥ Moving — on" : "✥ Move things";
-            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; townDrag = false; }
+            if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; scatDragIdx = -1; townDrag = false; }
             mapPanel.Invalidate();
             if (lmEditMode) Log("Moving is on: drag the town, a landmark, or a red secret. Right-click one to put it back.");
         };
@@ -239,7 +257,7 @@ public partial class MainForm
         rowWork.Controls.Add(Btn("Marker colors ▾", (s, e) => ShowKindInkMenu((Button)s), 112,
             "Choose the ink for each kind of marker — and remember it. A single marker can also take " +
             "a color of its own: right-click it on the map."));
-        rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
+        rowWork.Controls.Add(DangerBtn("Clear markers", (s, e) =>
         {
             if (mapMarkers.Count == 0) { Nope("No markers on the map."); return; }
             if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;
@@ -435,6 +453,8 @@ public partial class MainForm
         Trail = mapTrail.Checked, Rail = mapRail.Checked, Town = mapTown.Checked,
         Grid = mapGrid.Checked, Secrets = mapSecrets.Checked,
         Landmarks = (int)mapLm.Value,
+        Growth = mapGrowth?.SelectedIndex ?? 0,
+        Density = mapDensity?.SelectedIndex ?? 0,
         Seed = (int)mapSeed.Value,
         PlaceName = mapName?.Text ?? ""
     };
@@ -501,6 +521,8 @@ public partial class MainForm
         if (mapGround == null) return surveyState;
         var sv = new Survey { Spec = MapSpecFromUi(), EditSeed = lmEditSeed };
         foreach (var kv in lmEdits) sv.Landmarks[kv.Key] = new[] { kv.Value.x, kv.Value.y };
+        foreach (var kv in scatEdits) sv.Scatter[kv.Key] = new[] { kv.Value.x, kv.Value.y };
+        sv.ScatterGone = scatGone.ToList();
         foreach (var kv in secEdits) sv.Secrets[kv.Key] = new[] { kv.Value.x, kv.Value.y };
         if (townEdit is (float tx, float ty)) sv.Town = new[] { tx, ty };
         return sv;
@@ -523,6 +545,8 @@ public partial class MainForm
             mapTime.SelectedIndex = Math.Clamp(sv.Spec.Time, 0, mapTime.Items.Count - 1);
             mapWater.SelectedIndex = Math.Clamp(sv.Spec.Water, 0, mapWater.Items.Count - 1);
             mapSky.SelectedIndex = Math.Clamp(sv.Spec.Weather, 0, mapSky.Items.Count - 1);
+            mapGrowth.SelectedIndex = Math.Clamp(sv.Spec.Growth, 0, mapGrowth.Items.Count - 1);
+            mapDensity.SelectedIndex = Math.Clamp(sv.Spec.Density, 0, mapDensity.Items.Count - 1);
             mapTrail.Checked = sv.Spec.Trail; mapRail.Checked = sv.Spec.Rail;
             mapTown.Checked = sv.Spec.Town; mapGrid.Checked = sv.Spec.Grid;
             mapSecrets.Checked = sv.Spec.Secrets;
@@ -532,6 +556,9 @@ public partial class MainForm
 
             lmEdits.Clear();
             foreach (var kv in sv.Landmarks ?? new()) if (kv.Value is { Length: 2 }) lmEdits[kv.Key] = (kv.Value[0], kv.Value[1]);
+            scatEdits.Clear(); scatGone.Clear();
+            foreach (var kv in sv.Scatter ?? new()) if (kv.Value is { Length: 2 }) scatEdits[kv.Key] = (kv.Value[0], kv.Value[1]);
+            foreach (int g in sv.ScatterGone ?? new()) scatGone.Add(g);
             secEdits.Clear();
             foreach (var kv in sv.Secrets ?? new()) if (kv.Value is { Length: 2 }) secEdits[kv.Key] = (kv.Value[0], kv.Value[1]);
             townEdit = sv.Town is { Length: 2 } t ? (t[0], t[1]) : null;
@@ -547,9 +574,10 @@ public partial class MainForm
         mapBusy = true;
         if (newSeed) mapSeed.Value = Rules.Rng.Next(0, 1000000);
         curMap = MapGen.Generate(MapSpecFromUi());
-        lmDragIdx = -1; secDragIdx = -1; townDrag = false;   // the model they pointed into is gone
+        lmDragIdx = -1; secDragIdx = -1; scatDragIdx = -1; townDrag = false;   // the model they pointed into is gone
         int seed = (int)mapSeed.Value;
-        if (seed != lmEditSeed) { lmEdits.Clear(); secEdits.Clear(); townEdit = null; lmEditSeed = seed; }
+        if (seed != lmEditSeed)
+        { lmEdits.Clear(); secEdits.Clear(); scatEdits.Clear(); scatGone.Clear(); townEdit = null; lmEditSeed = seed; }
         else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
         {
             for (int i = 0; i < curMap.Landmarks.Count; i++)
@@ -558,6 +586,14 @@ public partial class MainForm
             for (int i = 0; i < curMap.Secrets.Count; i++)
                 if (secEdits.TryGetValue(i, out var at))
                     MapGen.MoveSecret(curMap, i, at.x, at.y);
+            // Moves FIRST, keyed to the index the survey generated. Removals after, and in
+            // descending order: taking one out renumbers everything above it, so removing low-to-high
+            // would apply the next removal to the wrong mark and the next move to a different tree.
+            foreach (var kv in scatEdits)
+                if (kv.Key >= 0 && kv.Key < curMap.Scatter.Count)
+                    MapGen.MoveScatter(curMap, kv.Key, kv.Value.x, kv.Value.y);
+            foreach (int gone in scatGone.Reverse())
+                MapGen.RemoveScatter(curMap, gone);
             if (townEdit is (float tex, float tey)) MapGen.MoveTown(curMap, tex, tey);
         }
         mapPanel.Model = curMap;
@@ -713,6 +749,8 @@ public partial class MainForm
                 // the town is tested last: a landmark standing in the town's streets is the
                 // smaller, more precise target, so it wins the click
                 if (HitTown(e.Location)) { townDrag = true; townDragMoved = false; mapPanel.Invalidate(); return; }
+                scatDragIdx = HitScatter(e.Location);
+                if (scatDragIdx >= 0) { mapPanel.Invalidate(); return; }
             }
             if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
             {
@@ -749,6 +787,17 @@ public partial class MainForm
                 float ny = Math.Clamp((e.Y - oy) / sc, 32, m.H - 48);
                 MapGen.MoveLandmark(m, lmDragIdx, nx, ny);
                 lmDragMoved = true;
+                mapPanel.Invalidate();
+                return;
+            }
+            if (scatDragIdx >= 0)
+            {
+                // a tighter margin than a secret's: furniture sits closer to the neatline than a
+                // labelled mark can, because it carries no text to run off the sheet
+                float nx = Math.Clamp((e.X - ox) / sc, 8, m.W - 8);
+                float ny = Math.Clamp((e.Y - oy) / sc, 8, m.H - 8);
+                MapGen.MoveScatter(m, scatDragIdx, nx, ny);
+                scatDragMoved = true;
                 mapPanel.Invalidate();
                 return;
             }
@@ -812,6 +861,47 @@ public partial class MainForm
                     var m2 = mapPanel.Model;
                     int li = HitLandmark(e.Location), si = li >= 0 ? -1 : HitSecret(e.Location);
                     bool onTown = li < 0 && si < 0 && HitTown(e.Location);
+                    int sci = li < 0 && si < 0 && !onTown ? HitScatter(e.Location) : -1;
+                    if (sci >= 0)
+                    {
+                        var mark = m2.Scatter[sci];
+                        var fmenu = PopupMenu();
+                        string what = MarkName(mark.Name);
+                        var back = fmenu.Items.Add($"Put the {what} back where the survey drew it", null, (ss, ee) =>
+                        {
+                            MapGen.MoveScatter(m2, sci, mark.GenX, mark.GenY);
+                            scatEdits.Remove(sci);
+                            CaptureUndo();
+                            mapPanel.Invalidate();
+                        });
+                        back.Enabled = scatEdits.ContainsKey(sci);
+                        if (!back.Enabled) back.ToolTipText = "It is where the survey put it.";
+                        // No confirm: one tree is not a confirm-worthy loss, and a dialog on every
+                        // removal makes clearing a stand of timber unbearable. Ctrl+Z is the answer.
+                        fmenu.Items.Add($"Take the {what} off the map", null, (ss, ee) =>
+                        {
+                            if (!MapGen.RemoveScatter(m2, sci)) return;
+                            scatGone.Add(sci);
+                            scatEdits.Remove(sci);
+                            scatDragIdx = -1;
+                            lmEditSeed = (int)mapSeed.Value;
+                            Log($"{char.ToUpper(what[0])}{what.Substring(1)} taken off the map.");
+                            CaptureUndo();
+                            mapPanel.Invalidate();
+                        });
+                        var all = fmenu.Items.Add($"Put all the furniture back ({scatEdits.Count + scatGone.Count})", null, (ss, ee) =>
+                        {
+                            int n = scatEdits.Count + scatGone.Count;
+                            if (n == 0) return;
+                            if (!Confirm($"Put all {n} moved or removed mark(s) back the way the survey drew them?")) return;
+                            scatEdits.Clear(); scatGone.Clear();
+                            MapDraw(false, quiet: true);
+                            CaptureUndo();
+                        });
+                        all.Enabled = scatEdits.Count + scatGone.Count > 0;
+                        fmenu.Show(mapPanel, e.Location);
+                        return;
+                    }
                     if (li < 0 && si < 0 && !onTown) { ShowSheetMenu(e.Location); return; }
                     if (onTown)
                     {
@@ -903,6 +993,19 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
+            if (scatDragIdx >= 0)
+            {
+                if (scatDragMoved && mapPanel.Model != null)
+                {
+                    var sc2 = mapPanel.Model.Scatter[scatDragIdx];
+                    scatEdits[scatDragIdx] = (sc2.X, sc2.Y);
+                    lmEditSeed = (int)mapSeed.Value;
+                    CaptureUndo();                 // one undo step per completed drag
+                }
+                scatDragIdx = -1; scatDragMoved = false;
+                mapPanel.Invalidate();
+                return;
+            }
             if (secDragIdx >= 0)
             {
                 if (secDragMoved && mapPanel.Model != null)
@@ -942,6 +1045,42 @@ public partial class MainForm
         return (p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= r * r;
     }
 
+    /// <summary>The scattered mark under the cursor, or -1. Tested LAST of everything on the
+    /// sheet: a landmark, a secret and the town were all placed and named on purpose, and a tree
+    /// standing near the Hanging Tree must not steal the grab from it.</summary>
+    /// <summary>What to call a scattered mark in a menu. The symbol names are the survey's
+    /// vocabulary ("pinestand", "deadtree"), and a menu that offers to take off "the deadtree" is
+    /// a menu written for the program rather than for the Keeper reading it.</summary>
+    static string MarkName(string sym) => sym switch
+    {
+        "deadtree" => "dead tree",
+        "pinestand" => "stand of pines",
+        "tuft" => "tuft of grass",
+        "hills" => "hills",
+        "snowpeak" => "peak",
+        "hoodoo" => "hoodoo",
+        "tailing" => "tailings",
+        "stack" => "smokestack",
+        "pens" => "stock pens",
+        "soddy" => "soddy",
+        null or "" => "mark",
+        _ => sym,
+    };
+
+    int HitScatter(Point p)
+    {
+        var m = mapPanel.Model;
+        if (m == null) return -1;
+        var (s, ox, oy) = MapXform(m, mapPanel.ClientRectangle);
+        if (s <= 0) return -1;
+        for (int i = m.Scatter.Count - 1; i >= 0; i--)
+        {
+            float x = ox + m.Scatter[i].X * s, y = oy + m.Scatter[i].Y * s;
+            if ((p.X - x) * (p.X - x) + (p.Y - y) * (p.Y - y) <= 13 * 13) return i;
+        }
+        return -1;
+    }
+
     int HitSecret(Point p)
     {
         var m = mapPanel.Model;
@@ -972,7 +1111,8 @@ public partial class MainForm
         using (var edge = new Pen(Gold, 1.4f))
         using (var ink = new SolidBrush(Ink))
         {
-            string hint = "Moving is on — drag the town, a landmark, or a red secret. Right-click one to put it back.";
+            string hint = "Moving is on — drag the town, a landmark, a red secret, or any tree or rock. "
+                        + "Right-click one to put it back or take it off.";
             var sz = g.MeasureString(hint, f);
             float bw = sz.Width + 22, bx = dest.X + (dest.Width - bw) / 2, by = dest.Y + 6;
             g.FillRectangle(band, bx, by, bw, sz.Height + 8);
@@ -995,6 +1135,15 @@ public partial class MainForm
             float x = ox + m.Landmarks[i].X * s, y = oy + m.Landmarks[i].Y * s;
             g.DrawEllipse(i == lmDragIdx ? held : ring, x - 14, y - 14, 28, 28);
         }
+        // The furniture rings too, but thin: there can be seventy of these, and circles as heavy
+        // as the landmark rings would bury the map they are drawn on.
+        using (var scatRing = new Pen(Color.FromArgb(120, Gold), 1f))
+        using (var scatHeld = new Pen(Gold, 2.2f))
+            for (int i = 0; i < m.Scatter.Count; i++)
+            {
+                float x = ox + m.Scatter[i].X * s, y = oy + m.Scatter[i].Y * s;
+                g.DrawEllipse(i == scatDragIdx ? scatHeld : scatRing, x - 11, y - 11, 22, 22);
+            }
         // the Keeper's marks ring in their own red, so the two kinds never read as one
         using var secRing = new Pen(Blood, 1.6f) { DashPattern = new[] { 3f, 2.5f } };
         using var secHeld = new Pen(Blood, 2.6f);

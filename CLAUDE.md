@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.41 · Keeper's Book v2.22 · Bestiary v2.17 ·
-GritKeeper app v1.53.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.42 · Keeper's Book v2.22 · Bestiary v2.17 ·
+GritKeeper app v1.54.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -122,11 +122,11 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.41 | 264 | one inline SVG map (Appendix E) + cover emblem |
+| The Player's Book | v2.42 | 266 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.22 | 116 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.17 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.5 | 32 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.5 | 33 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.6 | 33 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.6 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.41) — structure
+## The Player's Book (v2.42) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -601,7 +601,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.53.0) — the C# desktop app
+## GritKeeper (v1.54.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

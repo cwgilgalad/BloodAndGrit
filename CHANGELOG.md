@@ -8,6 +8,160 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.54.0 — a critic's pass, and seven things that counted against the app
+  (2026-08-30).**
+
+  Cole asked for a pass over the app as though writing it up for a magazine, and for whatever
+  counted against it to be fixed. Driven and photographed rather than read: ten tabs captured out
+  of the Debug build with `PrintWindow`, then looked at. Seven findings, and four of them are the
+  app disagreeing with itself rather than matters of taste.
+
+  **The Bestiary could not reach its own top Tiers.** The tier filter was a typed list ending at
+  "Tier V", and B6 had just put seven creatures at VI, VII and VIII. A Keeper filtering for the
+  apex saw nothing and had no way to find them but scrolling. It reads the loaded creatures now,
+  and matches on the numeral rather than the combo's index — index-matching held only while every
+  tier from I upward had a creature in it.
+
+  **Every Tier above V printed as a digit.** `Rules.Roman` stopped at V, so a Tier VI creature read
+  as "T6" on its list row and in the tier note. That is the fifth Roman-numeral reader in one
+  session written to the old ceiling.
+
+  **"Eight steps from a blank page"** on the New Soul tab, while the wizard has had nine since the
+  Person step was added. Exactly the fault this file records under *counts that appear in prose
+  must be derived* — the Reference screen said eleven leaves for two releases while it held
+  thirteen. Interpolated now, and the self-test holds the wizard to the number the tab prints
+  rather than to a floor of `>= 8`, which is the assertion that let the wrong number stand.
+
+  **Six buttons that empty the table looked exactly like Heal.** `Clear posse` sat flush against
+  `Heal` in identical grey on the tab a Keeper spends the whole session on, and the corral's own
+  `Clear rides` sat six inches below it. The Tracker has been red since v1.19 and its comment says
+  why; nothing carried that reasoning anywhere else, because `audit_ui.py` only ever asked whether
+  a red button was safe and never whether a dangerous button was red. It asks both now and **found
+  a seventh on its first run** that the screenshots had missed. `Clear log` stays grey on purpose:
+  a record of what happened is not a thing the table is built from.
+
+  **The Posse toolbar was nineteen controls with no grouping at all**, on the busiest tab in the
+  app, while the Tracker groups its own with rules. Four groups now, matching what the bar does.
+
+  **The Encounter tab asked a question it could answer.** It printed "6 souls × 4" in the budget
+  line, proving it knew the posse, then defaulted the party level to a bare 2 while every soul was
+  1st. It reads the posse's median level now and falls back to the stored hint only for an empty
+  table.
+
+  **And the Growth dropdown was orphaned from its label** by a FlowLayoutPanel wrap — mine, from
+  the map work earlier the same day, and visible in the first screenshot of that tab.
+
+  Smoke **16,552 / 0**, self-test 41/41, `verify_all --app` 13/13.
+
+- **GritKeeper v1.54.0 — the survey grows what you ask it to, and every tree on the map can be
+  picked up (2026-08-30).**
+
+  Cole: *"Can there be an option to generate more trees and natural objects by choosing appropriate
+  seed options, and I would like to see more customizability among all objects on a map."* Two
+  things, and the second was the larger gap.
+
+  **Growth and Furniture** are two new dials beside Landmarks. Furniture is how thickly the survey
+  scatters trees, rock and brush, from sparse to crowded. Growth leans a ground toward or away from
+  what grows on it, and it boosts the terrain's **own** growth rather than importing somebody
+  else's: timbered high country gives pines, timbered desert gives cactus, and a ground with
+  nothing green in its kit at all gets a modest stand rather than a forest it has no business
+  carrying. Bare never empties a country, because a scatter that is all rock reads as a rendering
+  fault rather than as a choice. Both settings default to *as the country runs*, which draws exactly
+  what the survey drew before they existed, so no saved map redraws differently.
+
+  **And every scattered mark is now a thing.** Until today the survey drew each tree, rock, cactus
+  and reed bed straight into the prim list with nothing recording where one ended and the next
+  began, so the only objects a Keeper could move were the named landmarks, the red secrets and the
+  town. You could pick up the Hanging Tree and not the tree standing beside it. Each mark records
+  its own prim span now, rings thin while moving is on, drags like anything else, and right-clicks
+  to *put it back* or *take it off the map*. Removals and moves both survive a save.
+
+  **The trap in that, and the assertion that guards it.** Removing a mark cuts prims out of the
+  middle of the array that four separate lists hold offsets into — landmarks, secrets, town and the
+  scatter itself. Miss one and nothing throws: some other feature's label quietly starts dragging a
+  piece of the river around. The smoke test does not ask whether the call succeeded, it snapshots
+  the geometry every surviving feature owns and holds it across the cut. Deleting one of the four
+  re-base loops fails it.
+
+  Leaving the geometry in place at zero opacity would have worked and every renderer here honours
+  it. Rejected: an exported SVG a Keeper drops into a VTT should not carry invisible trees, and a
+  removed thing that is still in the file comes back.
+
+  Re-applying the edits after a redraw is order-critical and says so: moves first, keyed to the
+  index the survey generated, then removals in **descending** order. Ascending would apply the next
+  removal to the wrong mark and somebody's tree-move to a different tree.
+
+  Smoke **16,549 / 0**, self-test 41/41.
+
+- **Player's Book v2.42 — the Witch picks her familiar, and the rule stops living in a switch
+  statement (2026-08-30).**
+
+  B6b and G5, and they are one job. Cole asked on 2026-08-26 for picking a familiar to be part of
+  character creation and to show on the sheet. What was in the way is the project's standing fault
+  in its purest form: Ch. VII stated the boon as a **principle** — "a +2 to one sense or skill
+  befitting its nature," left to the table — while `CharGen.FamiliarSkillFor` quietly **decided**
+  it, keying cat to Stealth and crow to Notice in a switch statement nobody had printed. The app
+  and the players were running two different games, and no test could say so, because only one side
+  had committed to anything.
+
+  The beasts are `chargen.json` data now, the Player's Book prints them as a table generated from
+  it, and both switches read the data. **Eleven beasts rather than five**, because B6 gave the
+  Witch a second familiar at 11th and an Edge for a third, and a menu of five furnishing three
+  picks is not a menu. Every beast grants a different skill and every skill is one Ch. VIII has,
+  which is held by an assertion apiece.
+
+  **The Binding** has rules where it had a phrase. Ch. VII said a lost familiar is replaced "over a
+  long night's rite" and stopped: no cost, no roll, no limit. It is a night, 3 Nerve and a thing of
+  yours the beast keeps, against a Lore (Occult) check whose DC climbs 2 for every familiar you
+  have ever bound.
+
+  `check_familiars` holds the printed table to the data — beast, skill, reason and the rite's five
+  clauses — and is the check that would have caught this in 2026-04. Proved on four sabotages.
+
+  **Two of my own assertions were vacuous, and it took three sabotages to find out.** The resolver
+  matches longest-name-first so "a black snake" is never read as some shorter row, and asserting
+  that against the shipped table proves nothing: no beast's name is a substring of another's, so
+  the ordering cannot be observed. The first fix constructed a colliding row and appended it, which
+  put it *after* the row it collides with, where unordered iteration still finds the right one. It
+  goes at the front now, and breaking the resolver fails it.
+
+  Also: `verify_rules` assumed every `<table class="lvl">` in the Player's Book is a Calling's level
+  table. The familiar table borrowed the class for one build and reported as six missing rows on a
+  Calling that has them, which sends you looking in entirely the wrong place. It says so by name now.
+
+  Smoke **16,504 / 0**. Player's Book 264 → 266 pages.
+
+- **Module II v1.6 — the difficulty numbers three releases printed were numbers no engine
+  produced, and now something checks (2026-08-30).**
+
+  I reported after the v1.53.0 ship that the modules' *What the Night Costs* tables were still
+  pre-fix from the Mountain Man weapon bug. That was wrong: `0774022` on 2026-08-27 re-ran the
+  harness on an armed posse, exactly as it says on the tin. The tracker's note was stale and I
+  repeated it without checking.
+
+  Checking it found a worse fault underneath. The committed `PLAYTEST.md` disagreed with the
+  engine that was in the repo when this session began — proved by building the pre-session commit
+  in a worktree and running the harness there, which reproduced today's numbers and not the
+  committed ones. The cause is `c8301d7`, the B5 pass, which added **Not While I Stand**, a Rank 2
+  Common Blessing. A 3rd-level Preacher draws from Ranks 1 and 2, so it entered the harness posse's
+  eligible pool and shifted every draw after it. From that commit on, `PLAYTEST.md` recorded a
+  night no engine would play, and **modules v1.4, v1.5 and v1.6 all shipped it**: *A Face Not His
+  Own* told a Keeper a Tier III fight had been cleared once in nine runs when the engine's answer
+  was never.
+
+  Nothing went red, and nothing could have. `modules_common.night_costs()` generates each table
+  from `PLAYTEST.md` at build time, which is the right architecture with one hole in it: nothing
+  re-ran the harness. `audit_names.py` checks that the file has a section per module and that the
+  titles match, which is a different question entirely.
+
+  **`audits/audit_playtest.py`** closes it. It plays all 36 adventures on the current library under
+  the fixed base seed and holds `PLAYTEST.md` to the result, so the file and the engine cannot part
+  company again; `--write` updates it. Six seconds, and it is in the `--full` tier. Proved to bite
+  by changing one number in the file and watching it fail with the line.
+
+  Also gone: 648 MB of `net8.0` build output under `GK/`, orphaned since the .NET 10 move in
+  v1.46.0. All four projects target `net10.0`; nothing tracked lived there.
+
 - **GritKeeper v1.53.0 — fifteen levels, the lore that was queued and never written, and one
   chapter for both kinds of working. Player's v2.41, Keeper's v2.22, Bestiary v2.17, modules
   v1.5/v1.5/v1.6 (2026-08-30).**

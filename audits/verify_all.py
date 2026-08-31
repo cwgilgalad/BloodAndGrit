@@ -67,6 +67,11 @@ CHECKS = [
      "every option the rules print is one some path can reach"),
     ("prose",     ["audit_ai_tells.py", "--commits"],  SECONDS, False, False,
      "the repo's own prose reads as written rather than generated"),
+    # Seconds rather than instant: it plays 36 full adventures on the real engine. Worth every one
+    # of them -- three module releases shipped difficulty numbers no engine produced, because the
+    # only thing standing between the harness and the printed page was somebody remembering.
+    ("playtest",  ["audit_playtest.py"],               SECONDS, False, False,
+     "PLAYTEST.md is what the engine plays, and the modules print it"),
     # These two are a pair and this is the order: rebuild, then compare against what is committed.
     ("idempotent", ["audit_idempotent_build.py"],      SLOW,    True,  False,
      "building twice yields byte-identical output"),

@@ -231,7 +231,11 @@ static class Program
                 {
                     var (pages, untipped) = MainForm.BuildWizardStepsForSelfTest(cal, "The Outlaw", 9);
                     wizards++;
-                    Chk(pages >= 8, $"GUI: the soul wizard builds every step for a {cal} ({pages} pages)");
+                    // Held to the number the New Soul tab PRINTS, not to a floor. It printed
+                    // "Eight steps" while the wizard had nine, and `>= 8` is exactly the
+                    // assertion that lets that stand (2026-08-30).
+                    Chk(pages == MainForm.StepCount,
+                        $"GUI: the soul wizard builds all {MainForm.StepCount} steps for a {cal} ({pages} pages)");
                     // The wizard's tooltips are its manual — see BuildWizardStepsForSelfTest.
                     silent += untipped.Count;
                     if (untipped.Count > 0)

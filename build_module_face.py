@@ -10,7 +10,7 @@ from modules_common import (basin, night_costs, shell, splice, finish, report, r
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.5"
+VERSION = "1.6"
 SLUG = "a-face-not-his-own"
 
 H = shell(

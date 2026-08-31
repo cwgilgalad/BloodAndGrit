@@ -49,6 +49,18 @@ public sealed class MapSpec
     // Appended last so every stored Scale/Time/Water index keeps its old meaning.
     public int Weather { get; set; }
 
+    /// <summary>How much natural furniture the survey scatters — an index into
+    /// <see cref="MapGen.Densities"/>. 0 is what the country ran at before this existed, so an
+    /// old survey redraws exactly as it did. Appended after Weather for the same reason Weather
+    /// was appended after Water: every stored index keeps its meaning.</summary>
+    public int Density { get; set; }
+
+    /// <summary>Which way to lean a ground's own furniture — an index into
+    /// <see cref="MapGen.Growths"/>: as the country runs, bare, brushy, timbered. It weights the
+    /// terrain's OWN growth rather than importing somebody else's, so timbered high country gives
+    /// pines and timbered desert gives cactus.</summary>
+    public int Growth { get; set; }
+
     /// <summary>What this place is called, when the Keeper already knows — the town rolled on the
     /// Generators tab, or a name typed on the Map bar. Empty means the survey names it itself. It
     /// replaces the drawn name only; the roll that would have produced one is still made, so
@@ -75,6 +87,13 @@ public sealed class MapModel
     public List<Prim> P = new();
     public List<Landmark> Landmarks = new();
     public List<Landmark> Secrets = new();     // the Keeper's-layer marks, movable the same way
+
+    /// <summary>Every scattered natural mark — each tree, rock, cactus and reed bed — with the
+    /// prim span it drew into, so one can be picked up or taken off like anything else on the
+    /// sheet. Before 2026-08-30 these went straight into <see cref="P"/> with nothing recording
+    /// where one ended and the next began, which is why a Keeper could move a Hanging Tree and
+    /// not the tree beside it. <see cref="Landmark.Name"/> holds the symbol.</summary>
+    public List<Landmark> Scatter = new();
 
     // The settlement, when it's a discrete town rather than a city ward that fills the
     // whole sheet — movable exactly like a landmark, so a town the survey seated badly
@@ -588,13 +607,24 @@ public static class MapGen
                          "grass", "hill", "forest", "hoodoo" },
         };
         if (city) kit = new[] { "stack", "stack", "depot", "pens", "church", "wharf", "stack", "pens" };
+        // A city's blocks are built, not grown, so Growth leaves them alone -- leaning a stockyard
+        // toward "brushy" is a question about a different kind of map.
+        if (!city) kit = LeanGrowth(kit, sp.Growth);
         int count = city ? 9 : (sp.Scale == 0 ? 16 : 30);
+        if (sp.Density > 0 && sp.Density < DensityScale.Length)
+            count = Math.Max(1, (int)MathF.Round(count * DensityScale[sp.Density]));
         for (int i = 0; i < count; i++)
         {
             var (x, y) = Place(rngLand, 15 * k + (city ? 20 : 12));
             if (float.IsNaN(x)) continue;
             string sym = kit[rngLand.Next(kit.Length)];
+            int scatterStart = P.Count;
             Sym(P, rngLand, sym, x, y, k);
+            // Recorded so this one mark can be moved or taken off later. The symbol goes in Name
+            // because that is what a Keeper is picking up: "that cactus", not "scatter mark 14".
+            if (P.Count > scatterStart)
+                m.Scatter.Add(new Landmark { Name = sym, X = x, Y = y, GenX = x, GenY = y,
+                                             PrimStart = scatterStart, PrimCount = P.Count - scatterStart });
             // In a city, the little marks sit on the built-up blocks, so name what each one is —
             // otherwise it's a scatter of unreadable symbols. Country marks (a tree, a hill) need no label.
             if (city && CitySymCaption(sym) is string cap)
@@ -1071,6 +1101,54 @@ public static class MapGen
     // ---------------------------------------------------------- symbols
     // Little line-art marks in a surveyor's hand. Each is centered on (x, y) and
     // scales with k so a battle map's features read bigger than a territory's.
+    /// <summary>How thick the scatter runs. Index 0 is the count the survey used before there was
+    /// a choice, so an existing map redraws unchanged.</summary>
+    public static readonly string[] Densities =
+        { "as the country runs", "sparse", "thin", "thick", "crowded" };
+
+    static readonly float[] DensityScale = { 1f, 0.45f, 0.72f, 1.6f, 2.4f };
+
+    /// <summary>Which way to lean the ground's furniture.</summary>
+    public static readonly string[] Growths = { "as the country runs", "bare", "brushy", "timbered" };
+
+    // What counts as growing, split so "timbered" can mean the timber a ground actually has.
+    static readonly HashSet<string> Timber = new(StringComparer.Ordinal)
+        { "tree", "forest", "pine", "pinestand", "orchard" };
+    static readonly HashSet<string> Brush = new(StringComparer.Ordinal)
+        { "scrub", "tuft", "grass", "reeds", "cactus", "marsh" };
+
+    /// <summary>Lean a ground's kit toward or away from what grows on it.
+    ///
+    /// <para>Boosting the terrain's OWN growth is the whole of the design. A generic "add trees"
+    /// would put a pine wood in the Deep Desert, which is not a map anybody wants; the desert's own
+    /// growth is cactus, so that is what thickens. A ground with nothing green in its kit at all —
+    /// the salt flats, a burned-over ruin — gets one modest entry rather than a forest, so the
+    /// option does something everywhere without lying about the country.</para>
+    ///
+    /// <para>Bare never empties a kit: at least one growth entry survives, because a scatter that
+    /// is all rock reads as a rendering fault rather than as a choice.</para></summary>
+    static string[] LeanGrowth(string[] kit, int growth)
+    {
+        if (growth <= 0 || growth >= Growths.Length) return kit;
+        var own = kit.Where(Timber.Contains).Distinct().ToArray();
+        var brush = kit.Where(Brush.Contains).Distinct().ToArray();
+
+        if (growth == 1)                                   // bare
+        {
+            var bareKit = kit.Where(s => !Timber.Contains(s) && !Brush.Contains(s)).ToList();
+            if (bareKit.Count == 0) return kit;             // a kit that is nothing but growth stays
+            bareKit.Add(own.FirstOrDefault() ?? brush.FirstOrDefault() ?? "scrub");
+            return bareKit.ToArray();
+        }
+
+        var thicker = kit.ToList();
+        var add = growth == 2 ? (brush.Length > 0 ? brush : new[] { "scrub" })
+                              : (own.Length > 0 ? own : new[] { "tree" });
+        int times = own.Length == 0 && growth == 3 ? 2 : 3;  // a ground with no timber gets less of it
+        for (int r = 0; r < times; r++) thicker.AddRange(add);
+        return thicker.ToArray();
+    }
+
     static void Sym(List<Prim> P, Random rng, string s, float x, float y, float k)
     {
         void L(float x0, float y0, float x1, float y1, string col, float w) =>
@@ -1258,6 +1336,58 @@ public static class MapGen
 
     public static void MoveSecret(MapModel m, int index, float nx, float ny)
         => MoveFeature(m, m.Secrets, index, nx, ny);
+
+    /// <summary>Move one scattered natural mark — a tree, a rock, a reed bed. Every one of them
+    /// records its own prim span since 2026-08-30, so this is the same operation a landmark gets
+    /// and not a special case.</summary>
+    public static void MoveScatter(MapModel m, int index, float nx, float ny)
+        => MoveFeature(m, m.Scatter, index, nx, ny);
+
+    /// <summary>Take one scattered mark off the sheet for good.
+    ///
+    /// <para>The care here is the re-basing. Cutting prims out of the middle of <see cref="MapModel.P"/>
+    /// shifts the index of everything after them, and FOUR lists hold offsets into that array —
+    /// the landmarks, the secrets, the town and the scatter. Miss one and removing a tree makes
+    /// some other feature's label start dragging a piece of the river around with it.</para>
+    ///
+    /// <para>Leaving the geometry in place at zero opacity would have worked and is what every
+    /// renderer here honours. It is not done, because an exported SVG a Keeper drops into a VTT
+    /// should not carry invisible trees, and a removed thing that is still in the file comes
+    /// back.</para></summary>
+    public static bool RemoveScatter(MapModel m, int index)
+    {
+        if (m == null || index < 0 || index >= m.Scatter.Count) return false;
+        var gone = m.Scatter[index];
+        int at = gone.PrimStart, n = gone.PrimCount;
+        if (n <= 0 || at < 0 || at + n > m.P.Count) return false;
+
+        m.P.RemoveRange(at, n);
+        m.Scatter.RemoveAt(index);
+
+        void Rebase(Landmark lm)
+        {
+            if (lm != null && lm.PrimStart > at) lm.PrimStart -= n;
+        }
+        foreach (var lm in m.Landmarks) Rebase(lm);
+        foreach (var lm in m.Secrets) Rebase(lm);
+        foreach (var lm in m.Scatter) Rebase(lm);
+        Rebase(m.Town);
+        return true;
+    }
+
+    /// <summary>The scattered mark nearest a point, within <paramref name="within"/>, or -1. What
+    /// the app needs to let somebody click a tree and pick it up.</summary>
+    public static int ScatterAt(MapModel m, float x, float y, float within = 26f)
+    {
+        int best = -1;
+        float bestD = within * within;
+        for (int i = 0; i < (m?.Scatter.Count ?? 0); i++)
+        {
+            float dx = m.Scatter[i].X - x, dy = m.Scatter[i].Y - y, d = dx * dx + dy * dy;
+            if (d <= bestD) { bestD = d; best = i; }
+        }
+        return best;
+    }
 
     /// Move the whole settlement — street, roofs, church, name — to a new seat.
     public static void MoveTown(MapModel m, float nx, float ny)

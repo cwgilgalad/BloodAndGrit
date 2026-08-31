@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.41", KeeperBookVer = "2.22", BestiaryVer = "2.17";
+    internal const string PlayerBookVer = "2.42", KeeperBookVer = "2.22", BestiaryVer = "2.17";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -2136,12 +2136,16 @@ public partial class MainForm : Sheet
             ("-", null),
             ("Take the New Soul tab's sheet", (s, e) => SoulToPosse()),
             ("Blank row  (typing one in from paper)", (s, e) => AddBlankSoul())));
-        bar.Controls.Add(Btn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
+        bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => RemoveSelectedPC(), 90, "Remove the selected soul (or press Delete)"));
         bar.Controls.Add(Btn("▲", (s, e) => MovePC(-1), 38, "Move the selected soul up the list"));
         bar.Controls.Add(Btn("▼", (s, e) => MovePC(+1), 38, "Move the selected soul down the list"));
         bar.Controls.Add(Btn("✦ Level up", (s, e) => LevelUpMember(SelectedPC(), this), 90, "Advance the selected soul one level (New Soul–built souls only)"));
 
-        bar.Controls.Add(Lbl("  Amount:"));
+        // The bar does four separate things and drew them as one wall of nineteen controls. The
+        // Tracker has grouped its own with rules since v1.19; this is the same idiom, on the tab a
+        // Keeper actually spends the session on.
+        bar.Controls.Add(BarSep());
+        bar.Controls.Add(Lbl("Amount:"));
         adjAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 3, Width = 60, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(adjAmount, "How much Blood the Damage/Heal buttons apply");
         bar.Controls.Add(adjAmount);
@@ -2214,6 +2218,7 @@ public partial class MainForm : Sheet
         // (Kept above the call rather than inside it: audit_ui.py walks a call character by
         // character and reads an apostrophe as the start of a char literal, so a comment about a
         // Marshal's Last Stand written between these parentheses eats the tooltip behind it.)
+        bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("New session", (s, e) =>
         {
             if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, refreshes the faith "
@@ -2235,8 +2240,9 @@ public partial class MainForm : Sheet
         bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest — restore Blood and Nerve to full",
             ("Whole posse — heal to full", (s, e) => RestPosse()),
             ("Selected soul — heal to full", (s, e) => RestSoul(SelectedPC()))));
+        bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("Send posse → Tracker", (s, e) => PartyToTracker(), 155, "Put the whole posse onto the combat tracker"));
-        bar.Controls.Add(Btn("Clear posse", (s, e) =>
+        bar.Controls.Add(DangerBtn("Clear posse", (s, e) =>
         {
             if (party.Count == 0) { Log("The posse is already empty."); return; }
             if (!Confirm($"Clear the whole posse? Removes all {party.Count} soul(s) for a fresh start.")) return;
@@ -3269,8 +3275,9 @@ public partial class MainForm : Sheet
             // control IS the field. Driving the backing int instead would move nothing and pass.
             Probe("PartyLevelHint", () =>
             {
-                if (encLevel != null) encLevel.Value = encLevel.Value == 10 ? 1 : encLevel.Value + 1;
-                else partyLevelHint = partyLevelHint == 10 ? 1 : partyLevelHint + 1;
+                if (encLevel != null)
+                    encLevel.Value = encLevel.Value >= Rules.MaxLevel ? 1 : encLevel.Value + 1;
+                else partyLevelHint = partyLevelHint >= Rules.MaxLevel ? 1 : partyLevelHint + 1;
             });
 
             // A soul's three side-stores — the ration, the reckoning, and the whole character

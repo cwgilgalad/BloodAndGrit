@@ -3,7 +3,7 @@ namespace BloodAndGritKeeper;
 public partial class MainForm
 {
     // ============================================================ THE SOUL WIZARD
-    // Chapter III's eight steps, walked by hand: the Keeper (or a player at their
+    // Chapter III's steps, walked by hand: the Keeper (or a player at their
     // shoulder) makes every choice the random generator would have rolled. Each pick
     // list is filtered to what the book allows, and the finished sheet goes through
     // CharGen.Assemble + Validate like any other.
@@ -36,6 +36,21 @@ public partial class MainForm
     // the system's white one after v1.32.0 dressed the rest. It is also the longest-lived window in
     // the app — nine steps of a character — so it is the last place a Keeper should be looking at
     // somebody else's chrome.
+    /// <summary>How many steps the wizard walks. Prose that quotes the number interpolates this
+    /// rather than typing a word: the New Soul tab said "Eight steps" for as long as the wizard has
+    /// had nine, which is the same fault CLAUDE.md records against the Reference screen's leaf
+    /// count. Set from the step table itself the first time a wizard is built.</summary>
+    internal static int StepCount = 9;
+
+    /// <summary>The step count as a word, for the one sentence that says it in prose. Small
+    /// deliberately: the only values this will ever see are the ones a character-creation wizard
+    /// can plausibly have, and a general number-speller would be more code than the sentence.</summary>
+    internal static string SpelledSteps(int n) => n switch
+    {
+        6 => "Six", 7 => "Seven", 8 => "Eight", 9 => "Nine", 10 => "Ten",
+        11 => "Eleven", 12 => "Twelve", _ => n.ToString(),
+    };
+
     sealed class SoulWizard : Sheet
     {
         public CharacterSheet Result;
@@ -119,6 +134,7 @@ public partial class MainForm
                 ("8 · Coin & outfit",          BuildOutfit,    CollectOutfit,    () => true),
                 ("9 · The person",             BuildPerson,    CollectPerson,    () => true),
             };
+            StepCount = steps.Length;
             ShowStep(0);
         }
 
@@ -866,6 +882,22 @@ public partial class MainForm
                 Tipped(wChoice, $"{Cal.choice.label} — the {Cal.name}'s own standing choice, made at 1st level and written on the sheet.");
                 wChoice.SelectedItem = choicePick != null && wChoice.Items.Contains(choicePick) ? choicePick : wChoice.Items[0];
                 col.Controls.Add(wChoice);
+
+                // The Witch's familiars each grant a DIFFERENT skill (Ch. VII, the table of
+                // familiars), and a list of eleven beast names does not say so. Picking the fox
+                // because a witch ought to have a fox, and learning afterward that it was the
+                // Deceive one, is a choice the player never got to make. Same detail panel the
+                // subpath pick uses.
+                var famDetail = new Label { AutoSize = true, MaximumSize = new Size(300, 0),
+                                            ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
+                void ShowFamiliar()
+                {
+                    var f = CharGen.FamiliarFor(wChoice.SelectedItem as string);
+                    famDetail.Text = f == null ? "" : $"+2 {f.skill} while it is near — {f.why}.";
+                }
+                wChoice.SelectedIndexChanged += (s, e) => ShowFamiliar();
+                ShowFamiliar();
+                if (famDetail.Text.Length > 0) col.Controls.Add(famDetail);
             }
             return col;
         }
