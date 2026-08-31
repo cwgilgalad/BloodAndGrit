@@ -9,6 +9,9 @@ Reads GK/source/*.cs and checks every button the app builds through the shared h
   * MenuBtn's items each carry a handler,
   * it is at least 24px on its narrow side (WCAG 2.5.8 Target Size (Minimum), AA — Microsoft's
     own Windows control guidance lands on ~23px, so 24 is the floor both agree on),
+  * a multi-line status label is measured rather than given a constant Height (the Encounter
+    verdict carried Height = 26 and silently rendered NOTHING of its second line for three
+    releases; UI Automation could read the string, so every check that could see it passed),
   * a destructive button is recoverable: it either confirms first or edits an undo-backed list,
   * and the reverse — a button that empties a list the Keeper built by hand wears the warning
     face rather than the ordinary one. Six did not, across four tabs, until a critic's pass

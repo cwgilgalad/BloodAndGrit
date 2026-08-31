@@ -3417,6 +3417,29 @@ T("no caster is starved of legal signs at any level", cg.callings
         && CharGen.ReadLimit("Once per day, do the thing.").Cadence == FeatureCadence.Dawn);
 }
 
+// ---- Ch. IV's second correction to the budget (G2, 2026-08-31) --------------------------------
+// The chapter makes two corrections and the app carried one of them: the arithmetic ceiling, and
+// "from 5th level on, price a fight one rung dearer than the table says". The Encounter tab is the
+// only place in the app a fight is ever priced and it had never said the second.
+T($"the dearer rule opens at {Rules.PriceDearerFrom}th and not before",
+    Rules.DearerNote(Rules.PriceDearerFrom - 1) == null
+    && Rules.DearerNote(Rules.PriceDearerFrom) != null);
+T("it holds all the way to the ceiling",
+    Enumerable.Range(Rules.PriceDearerFrom, Rules.MaxLevel - Rules.PriceDearerFrom + 1)
+        .All(l => Rules.DearerNote(l) != null));
+T("and it quotes the book rather than paraphrasing it",
+    Rules.DearerNote(Rules.MaxLevel).Contains("one rung dearer than the table says", StringComparison.Ordinal));
+// A NOTE, never an adjustment. The Keeper is reading the printed ladder off the same screen, so an
+// app that quietly inflated the spend would be disagreeing with a table in front of them.
+T("the note changes no price", Enumerable.Range(1, Rules.MaxLevel).All(l =>
+    Rules.Cost(2, l).cost == Rules.Cost(2, l).cost && Rules.BudgetPerSoul == 4));
+{
+    // the same fight, priced at 4th and at 5th: the arithmetic is identical and only the note moves
+    var atFour = Rules.Cost(2, 4); var atFive = Rules.Cost(2, 5);
+    T("pricing at 4th and 5th differs only by the party Tier, never by the note",
+        (atFour.cost == atFive.cost) == (Rules.PartyTier(4) == Rules.PartyTier(5)));
+}
+
 // ---- Tiers read as Tiers, all the way up (a critic's pass, 2026-08-30) ------------------------
 // Rules.Roman stopped at V, so every creature B6 put at VI, VII and VIII printed as "T6" on its
 // list row and in TierNote -- the fifth Roman-numeral reader in one session written to the old

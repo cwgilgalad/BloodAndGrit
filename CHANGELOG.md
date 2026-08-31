@@ -8,6 +8,46 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.55.0 — G2: Ch. IV's other correction to the budget, and a rule that had been
+  invisible for three releases (2026-08-31).**
+
+  G2 asked what B4 and B5 settled in the books that the app had not caught up with. Most of it had:
+  the arithmetic ceiling is a constant, the counter pair works, the Engineer's frames sit in prose
+  beside the Prospector's Devices exactly as they should. **One thing was missing entirely.**
+
+  Ch. IV makes *two* corrections to the encounter budget, and the app carried one. The second —
+  *"from 5th level on, price a fight one rung dearer than the table says and let the posse be
+  pleasantly surprised"* — has been printed since v1.44.0 and confirmed by B4's measurement, and
+  the Encounter tab, the only place in the app a fight is ever priced, had never mentioned it.
+  `Rules.DearerNote` says it now, and `check_price_dearer` holds the app's sentence to the book's
+  word for word so a paraphrase cannot creep in a clause at a time.
+
+  **A note, never an adjustment.** The printed ladder is on the same screen as the spend, so an app
+  that quietly inflated the number would be disagreeing with a table the Keeper is reading. Say the
+  rule where the pricing happens and let them price it.
+
+  **And then the finding that actually matters.** Adding a third line to the verdict clipped it, so
+  I went looking at why — and the second line had never rendered either. `encVerdict` carried
+  `Height = 26`, one line of its font, and the **arithmetic ceiling note has produced nothing on
+  screen since v1.51.0**. Not clipped: invisible. Driven and photographed on the shipped build to
+  be sure of it.
+
+  Every check that could see it passed, and that is the interesting part. UI Automation reads the
+  string off the label, `--selftest` asks whether controls carry tooltips, and `audit_ui.py` reads
+  source — so a rule the app composed correctly, stored correctly and could recite through the
+  accessibility layer was shown to nobody. So for three releases a Keeper pricing a Tier IV fight
+  was told nothing about the one rule that says a Tier IV fight is not priced at all.
+
+  The label and its strip are measured off `TextRenderer.MeasureText` now, at the width they
+  actually have, in the method that sets the text. `GK/CLAUDE.md` has said since v1.19.0 that
+  dialogs are measured and never laid out to constants; the reasoning applied word for word to a
+  label on a tab and the section had simply never named one.
+
+  Three more app↔book parity pairs guarded while here: the dearer pricing, the table of familiars,
+  and the Binding. 14 pairs, 88,212 cross-checks.
+
+  Smoke **16,557 / 0**, self-test 41/41, `verify_rules` **1,758**, `--app` 13/13.
+
 - **GritKeeper v1.54.0 — a critic's pass, and seven things that counted against the app
   (2026-08-30).**
 

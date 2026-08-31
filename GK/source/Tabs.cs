@@ -229,6 +229,7 @@ public partial class MainForm
     static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
+    Panel encBottom;
     Panel encBar;
     int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
 
@@ -395,8 +396,17 @@ public partial class MainForm
             MI(menu, "Take it off the plan", () => { encounter.Remove(pick); RefreshEncounter(); });
         });
 
-        var bottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
-        encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
+        // Height is set by measurement in RefreshEncounter, never here. The verdict runs to one,
+        // two or three lines depending on what is on the plan, and 26px fitted exactly one.
+        //
+        // Measured on 2026-08-31 by driving the shipped build and photographing it: the arithmetic
+        // ceiling note has been a second line since v1.51.0 and did not render AT ALL. Not clipped
+        // -- invisible. UI Automation read the string off the label, so every assertion that could
+        // see it passed, and a Keeper pricing a Tier IV fight was told nothing on the one tab that
+        // prices fights. Same landmine GK/CLAUDE.md records against dialogs, on a label.
+        encBottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
+        var bottom = encBottom;
+        encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.TopLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
         // Owner-drawn rather than a ProgressBar: a themed ProgressBar ignores ForeColor outright,
         // so the bar could never agree with the verdict line above it. Drawing it also buys the
         // budget tick — the mark that says where "a fair, hard fight" actually sits, so being
@@ -450,10 +460,16 @@ public partial class MainForm
         // Past Tier III the budget is measured to be a lie, and a number the app knows is a lie is
         // the same fault as a Beat action it prints and cannot spend. Said, never enforced.
         string arith = Rules.ArithmeticNote(encounter.Count == 0 ? 0 : encounter.Max(p => p.Creature.tier));
+        // Ch. IV's other correction to the budget, and the one the app has never said. It is a note
+        // and not an adjustment: the printed ladder is on the same screen, so an app that inflated
+        // the spend would be disagreeing with a table the Keeper is reading.
+        string dearer = encounter.Count == 0 ? null : Rules.DearerNote((int)encLevel.Value);
         encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × {Rules.BudgetPerSoul})"
                         + $"     {Rules.BudgetVerdict(spend, budget)}"
+                        + (dearer == null ? "" : "\r\n" + dearer)
                         + (arith == null ? "" : "\r\n" + arith);
         encVerdict.ForeColor = BudgetColor(spend, budget);
+        SizeVerdict();
         // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
         int lvl = (int)encLevel.Value;
         Tip.SetToolTip(encLevel, Rules.JuniorForTier(lvl)
@@ -464,6 +480,24 @@ public partial class MainForm
             : "Sets each creature's role and cost against the posse");
         encSpend = spend; encBudget = budget;
         encBar?.Invalidate();
+    }
+
+    /// <summary>Fit the verdict label and the strip under it to the text the verdict actually has.
+    ///
+    /// <para>One line, two or three, depending on whether the plan trips Ch. IV's dearer pricing
+    /// and the arithmetic ceiling. Measured at the width the label really has — a constant height
+    /// clipped the second line for as long as there has been one.</para></summary>
+    void SizeVerdict()
+    {
+        if (encVerdict == null || encBottom == null) return;
+        int w = encVerdict.ClientSize.Width;
+        if (w <= 0) w = Math.Max(200, encBottom.ClientSize.Width - encBottom.Padding.Horizontal);
+        int h = TextRenderer.MeasureText(encVerdict.Text, encVerdict.Font,
+                                         new Size(w, 0), TextFormatFlags.WordBreak).Height;
+        encVerdict.Height = Math.Max(26, h + 4);
+        // The panel holds the verdict, the bar, and its own padding. Sizing it from the parts
+        // rather than from a second constant is what keeps the two from disagreeing.
+        encBottom.Height = encVerdict.Height + (encBar?.Height ?? 22) + encBottom.Padding.Vertical + 4;
     }
 
     /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can

@@ -752,6 +752,29 @@ already records against the Reference screen's leaf count. All three are derived
 self-test holds the wizard to the number the tab prints rather than to a floor of eight — `>= 8`
 being exactly the assertion that let the wrong number stand.
 
+## A label with a constant height shows one line, and says nothing about the rest (v1.55.0)
+
+The Encounter tab's verdict is composed from up to three pieces: the spend, Ch. IV's dearer
+pricing, and the arithmetic ceiling. `encVerdict` was built with `Height = 26`, which is one line
+of Segoe UI 10.5 bold, and **the second line rendered nothing at all** from v1.51.0 until this was
+found. Not clipped — absent.
+
+What makes it worth a section is that **every check that could see it passed**. UI Automation reads
+the whole string off the label, so a probe that asks the app what it is showing gets all three
+lines; `--selftest` asks whether controls carry tooltips; `audit_ui.py` reads source. The app
+composed the rule correctly, stored it correctly, and could recite it through the accessibility
+layer to anybody who asked — and showed it to nobody. A Keeper pricing a Tier IV fight was told
+nothing about the one rule that says a Tier IV fight is not priced at all.
+
+Found by driving the shipped build and **photographing it**, which is the only thing that finds
+this class. It is the same landmine already recorded under *Dialogs are measured, never laid out to
+constants*; that section just never named a label on a tab. `SizeVerdict()` measures with
+`TextRenderer.MeasureText` at the width the label actually has, in the method that sets the text,
+and sizes the strip below it from its parts rather than from a second constant.
+
+**The rule for anything new:** a label whose text is composed from more than one piece is measured,
+never given a `Height`. `audit_ui.py`'s docstring carries it.
+
 ## Verification standard for this app
 
 - `dotnet build -c Release` → 0 warnings, 0 errors (`-warnaserror` in CI).
