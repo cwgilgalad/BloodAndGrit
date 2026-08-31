@@ -117,13 +117,13 @@ public partial class MainForm
             RideToTracker(r);
         }, 92, "Put it on the combat tracker — it can be shot at like anything else"));
 
-        bar.Controls.Add(Btn("✕ Remove", (s, e) =>
+        bar.Controls.Add(DangerBtn("✕ Remove", (s, e) =>
         {
             if (SelectedRide() is not Ride r) { Nope("Select a ride first."); return; }
             RemoveRide(r);
         }, 88, "Sold, lost, or left behind (or press Delete)"));
 
-        bar.Controls.Add(Btn("Clear rides", (s, e) =>
+        bar.Controls.Add(DangerBtn("Clear rides", (s, e) =>
         {
             if (rides.Count == 0) { Nope("Nothing in the corral."); return; }
             if (!Confirm($"Clear all {rides.Count} ride(s)?")) return;

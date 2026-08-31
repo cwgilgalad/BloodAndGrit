@@ -3417,6 +3417,18 @@ T("no caster is starved of legal signs at any level", cg.callings
         && CharGen.ReadLimit("Once per day, do the thing.").Cadence == FeatureCadence.Dawn);
 }
 
+// ---- Tiers read as Tiers, all the way up (a critic's pass, 2026-08-30) ------------------------
+// Rules.Roman stopped at V, so every creature B6 put at VI, VII and VIII printed as "T6" on its
+// list row and in TierNote -- the fifth Roman-numeral reader in one session written to the old
+// ceiling. Held to the Bestiary's own vocabulary rather than to a literal list.
+T("every Tier the data uses has a numeral", Db.Creatures.Select(c => c.tier).Where(t => t > 0)
+    .Distinct().All(t => !char.IsDigit(Rules.Roman(t)[0])));
+T("and they are the numerals the books print",
+    Rules.Roman(5) == "V" && Rules.Roman(6) == "VI" && Rules.Roman(7) == "VII"
+    && Rules.Roman(8) == "VIII");
+T("a creature's own line names its Tier in numerals", Db.Creatures
+    .Where(c => c.tier >= 6).All(c => c.ToString().EndsWith("T" + Rules.Roman(c.tier), StringComparison.Ordinal)));
+
 // ---- the Witch's familiars (B6b, 2026-08-30) --------------------------------------------------
 // This was the project's standing fault in its purest form for four months: the book stated the
 // boon as a principle ("a +2 to one sense or skill befitting its nature") and CharGen decided it

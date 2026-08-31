@@ -8,6 +8,51 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.54.0 — a critic's pass, and seven things that counted against the app
+  (2026-08-30).**
+
+  Cole asked for a pass over the app as though writing it up for a magazine, and for whatever
+  counted against it to be fixed. Driven and photographed rather than read: ten tabs captured out
+  of the Debug build with `PrintWindow`, then looked at. Seven findings, and four of them are the
+  app disagreeing with itself rather than matters of taste.
+
+  **The Bestiary could not reach its own top Tiers.** The tier filter was a typed list ending at
+  "Tier V", and B6 had just put seven creatures at VI, VII and VIII. A Keeper filtering for the
+  apex saw nothing and had no way to find them but scrolling. It reads the loaded creatures now,
+  and matches on the numeral rather than the combo's index — index-matching held only while every
+  tier from I upward had a creature in it.
+
+  **Every Tier above V printed as a digit.** `Rules.Roman` stopped at V, so a Tier VI creature read
+  as "T6" on its list row and in the tier note. That is the fifth Roman-numeral reader in one
+  session written to the old ceiling.
+
+  **"Eight steps from a blank page"** on the New Soul tab, while the wizard has had nine since the
+  Person step was added. Exactly the fault this file records under *counts that appear in prose
+  must be derived* — the Reference screen said eleven leaves for two releases while it held
+  thirteen. Interpolated now, and the self-test holds the wizard to the number the tab prints
+  rather than to a floor of `>= 8`, which is the assertion that let the wrong number stand.
+
+  **Six buttons that empty the table looked exactly like Heal.** `Clear posse` sat flush against
+  `Heal` in identical grey on the tab a Keeper spends the whole session on, and the corral's own
+  `Clear rides` sat six inches below it. The Tracker has been red since v1.19 and its comment says
+  why; nothing carried that reasoning anywhere else, because `audit_ui.py` only ever asked whether
+  a red button was safe and never whether a dangerous button was red. It asks both now and **found
+  a seventh on its first run** that the screenshots had missed. `Clear log` stays grey on purpose:
+  a record of what happened is not a thing the table is built from.
+
+  **The Posse toolbar was nineteen controls with no grouping at all**, on the busiest tab in the
+  app, while the Tracker groups its own with rules. Four groups now, matching what the bar does.
+
+  **The Encounter tab asked a question it could answer.** It printed "6 souls × 4" in the budget
+  line, proving it knew the posse, then defaulted the party level to a bare 2 while every soul was
+  1st. It reads the posse's median level now and falls back to the stored hint only for an empty
+  table.
+
+  **And the Growth dropdown was orphaned from its label** by a FlowLayoutPanel wrap — mine, from
+  the map work earlier the same day, and visible in the first screenshot of that tab.
+
+  Smoke **16,552 / 0**, self-test 41/41, `verify_all --app` 13/13.
+
 - **GritKeeper v1.54.0 — the survey grows what you ask it to, and every tree on the map can be
   picked up (2026-08-30).**
 

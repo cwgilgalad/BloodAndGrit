@@ -9,7 +9,10 @@ Reads GK/source/*.cs and checks every button the app builds through the shared h
   * MenuBtn's items each carry a handler,
   * it is at least 24px on its narrow side (WCAG 2.5.8 Target Size (Minimum), AA — Microsoft's
     own Windows control guidance lands on ~23px, so 24 is the floor both agree on),
-  * a destructive button is recoverable: it either confirms first or edits an undo-backed list.
+  * a destructive button is recoverable: it either confirms first or edits an undo-backed list,
+  * and the reverse — a button that empties a list the Keeper built by hand wears the warning
+    face rather than the ordinary one. Six did not, across four tabs, until a critic's pass
+    with screenshots found them by eye on 2026-08-30; this rule found a seventh on its first run.
 
 Plus two checks on the things around the buttons:
 
@@ -185,6 +188,12 @@ MIN_TARGET_PX = 24
 # them lands on the Universal Undo stack without the caller doing anything, which is what makes
 # a destructive button on one of them recoverable.
 UNDO_BACKED = r"\b(party|tracker|signs|encounter|clocks|rides)\.(Clear|Remove|RemoveAt)\("
+
+# The collections a Keeper builds by hand over a session. A button that empties one of these
+# is a button that costs real work to undo by hand, and it must not look like the button
+# beside it that heals somebody. Only `.Clear()` counts: Remove takes one row, which is a
+# smaller loss and usually the whole point of the button.
+EMPTIES_THE_TABLE = r"\b(party|tracker|encounter|clocks|rides|mapMarkers|beasts)\.Clear\(\)"
 
 # ---- a button may refuse, but it may not refuse in silence (v1.36.0) ----
 # The check above proves a button HAS a handler. This one asks the next question, which is the one
@@ -364,6 +373,21 @@ def main():
                         findings.append(f"{where}  DangerBtn({label}) — destructive, but the "
                                         "handler neither confirms nor touches an undo-backed list")
 
+                # ---- and the reverse: a plain button that empties the table ----
+                # The check above asks whether a RED button is safe. This asks the question that
+                # actually bit: whether a button that empties something the Keeper built by hand
+                # is red at all. Six were not, across four tabs, and were found by a critic's pass
+                # with screenshots rather than by anything that runs (2026-08-30). The Tracker's
+                # own bar had been red since v1.19 and its comment said why; nothing carried that
+                # reasoning to the other five.
+                if helper == "Btn" and hidx is not None and hidx < len(args):
+                    reach = args[hidx]
+                    for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
+                        reach += body_of(alltext, callee)
+                    if re.search(EMPTIES_THE_TABLE, reach):
+                        findings.append(f"{where}  Btn({label}) — empties a list the Keeper built "
+                                        "by hand and wears the ordinary face; use DangerBtn")
+
                 # ---- and it may not refuse in silence ----
                 # The handler as written, plus the body of whatever it delegates to, since half the
                 # bar is `(s, e) => RestPosse()` and the refusal lives inside the method.
@@ -502,7 +526,7 @@ def main():
             print("  " + f)
         return 1
     print("every button has a handler, a tooltip and a hittable target; every destructive button\n"
-          "is recoverable; every modal dialog answers Esc; no two menu items share an access key;\n"
+          "is recoverable and looks it; every modal dialog answers Esc; no two menu items share an access key;\n"
           "and every keyboard shortcut is bound once and printed from the same table.")
     return 0
 

@@ -171,7 +171,11 @@ public partial class MainForm
             "The sky over the survey — fair, overcast, rain, fog, blowing dust, snow, a blizzard. "
             + "Left on “As the sky wills” the country picks what it would actually get: the high "
             + "country gets snow, the badlands get heat and sand.");
-        rowGen.Controls.Add(Lbl(" Growth:"));
+        // A FlowLayoutPanel wraps where it runs out of room, and it will happily leave a label at
+        // the end of one row with its combo at the start of the next. Break the row deliberately
+        // here so the pair always travels together.
+        rowGen.SetFlowBreak(rowGen.Controls[rowGen.Controls.Count - 1], true);
+        rowGen.Controls.Add(Lbl("Growth:"));
         mapGrowth = Combo(rowGen, MapGen.Growths, 0, 150,
             "Which way to lean what grows on this ground. It thickens or thins the country's OWN "
             + "growth rather than importing somebody else's, so “timbered” gives the high country "
@@ -253,7 +257,7 @@ public partial class MainForm
         rowWork.Controls.Add(Btn("Marker colors ▾", (s, e) => ShowKindInkMenu((Button)s), 112,
             "Choose the ink for each kind of marker — and remember it. A single marker can also take " +
             "a color of its own: right-click it on the map."));
-        rowWork.Controls.Add(Btn("Clear markers", (s, e) =>
+        rowWork.Controls.Add(DangerBtn("Clear markers", (s, e) =>
         {
             if (mapMarkers.Count == 0) { Nope("No markers on the map."); return; }
             if (!Confirm($"Clear all {mapMarkers.Count} marker(s) from the map?")) return;

@@ -725,6 +725,33 @@ back-buffer covers the whole page area and saves none of the work that costs; th
 Switch time tracks the control count of a tab at roughly 2 ms a control on this laptop, so the
 remaining lever is fewer controls per page, not faster code.
 
+## A red button is a promise, and it has to be kept on every tab (v1.54.0)
+
+A critic's pass on 2026-08-30 — ten tabs driven out of the Debug build and photographed with
+`PrintWindow`, then looked at — found six buttons that empty something a Keeper built by hand and
+wear the ordinary grey face. `Clear posse` sat flush against `Heal` in identical grey on the tab a
+Keeper spends the whole session on.
+
+The Tracker had it right since v1.19 and its own comment says why: *"that means '＋ Add' never
+lands on 'Clear field' — they were adjacent and identical before."* Nothing carried that reasoning
+to the other five tabs, because nothing could: `audit_ui.py` asked only the FORWARD question, that
+a `DangerBtn` be recoverable, and never the reverse one, that a button which empties the table be
+a `DangerBtn` at all.
+
+It asks both now, and **found a seventh on its first run** (`Clear threads`) that the screenshots
+had missed. `Clear log` is deliberately exempt: the roll log is a record of what happened rather
+than a thing the table is built from, and painting every clear-shaped button red is how red stops
+meaning anything.
+
+The other half of that pass is the more general lesson, and it is the same one four builders taught
+in the same session: **a ceiling written as a literal survives the raise.** `Rules.Roman` stopped
+at V, so every Tier VI creature printed as "T6"; the Bestiary's tier filter was a typed list ending
+at "Tier V", so the seven apex creatures could not be filtered to at all; and the New Soul tab said
+"Eight steps" for as long as the wizard has had nine, which is precisely the fault `CLAUDE.md`
+already records against the Reference screen's leaf count. All three are derived now, and the
+self-test holds the wizard to the number the tab prints rather than to a floor of eight — `>= 8`
+being exactly the assertion that let the wrong number stand.
+
 ## Verification standard for this app
 
 - `dotnet build -c Release` → 0 warnings, 0 errors (`-warnaserror` in CI).

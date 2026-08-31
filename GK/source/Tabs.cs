@@ -39,7 +39,12 @@ public partial class MainForm
         Tip.SetToolTip(beastTier, "Show one Tier only. A creature's Tier is what makes it a fair, hard fight "
             + "for a posse of twice that many levels — Tier II is written for four 4th-level souls. Two Tiers "
             + "over the posse and the app will offer it as a sign on the trail instead of a thing on the field.");
-        beastTier.Items.AddRange(new object[] { "Any tier", "Tier I", "Tier II", "Tier III", "Tier IV", "Tier V" });
+        // Built from the creatures actually loaded rather than typed. It was a literal list ending
+        // at Tier V, so the seven creatures B6 added at VI, VII and VIII could not be filtered to at
+        // all — the same ceiling-as-a-literal that four Roman-numeral readers had in the builders.
+        beastTier.Items.Add("Any tier");
+        foreach (int t in Db.Creatures.Select(c => c.tier).Where(t => t > 0).Distinct().OrderBy(t => t))
+            beastTier.Items.Add("Tier " + Rules.Roman(t));
         beastTier.SelectedIndex = 0; beastTier.SelectedIndexChanged += (s, e) => FilterBeasts();
         filters.Controls.Add(beastTier);
         beastChapter = new ComboBox { Width = 215, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -131,7 +136,13 @@ public partial class MainForm
     void FilterBeasts()
     {
         string q = (beastSearch?.Text ?? "").Trim().ToLowerInvariant();
-        int tier = beastTier?.SelectedIndex ?? 0;
+        // Read off the chosen item rather than its index. Index-matching held only while every
+        // tier from I upward had at least one creature; the day one is empty, every choice below it
+        // silently filters to a different tier than the one it names.
+        int tier = 0;
+        if (beastTier?.SelectedIndex > 0 && beastTier.SelectedItem is string tierPick)
+            for (int bt = 1; bt <= 12; bt++)
+                if (tierPick == "Tier " + Rules.Roman(bt)) { tier = bt; break; }
         string chap = beastChapter?.SelectedIndex > 0 ? beastChapter.SelectedItem.ToString() : null;
         beastList.BeginUpdate();
         beastList.Items.Clear();
@@ -288,13 +299,27 @@ public partial class MainForm
         return t.Length == 0 ? null : Db.Find(t);
     }
 
+    /// <summary>The level the posse is actually at, or null when there is nobody to read. The
+    /// median rather than the mean: one 9th-level guest at a table of 1st-level souls should not
+    /// price every fight for a party that does not exist.</summary>
+    int? PosseLevel()
+    {
+        var levels = party.Where(p => p.Level > 0).Select(p => p.Level).OrderBy(l => l).ToList();
+        return levels.Count == 0 ? null : levels[levels.Count / 2];
+    }
+
     TabPage BuildEncounterTab()
     {
         var page = new TabPage("Encounter") { BackColor = Paper };
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
         top.Controls.Add(Lbl("Party level:"));
         encLevel = new NumericUpDown { Minimum = 1, Maximum = Rules.MaxLevel, Width = 55, Margin = new Padding(3, 6, 3, 3) };
-        encLevel.Value = Math.Clamp(partyLevelHint, 1, Rules.MaxLevel);     // built on first visit — adopt the loaded value
+        // Built on first visit. It adopted the stored hint, which defaults to a bare 2 -- so the
+        // tab printed "6 souls x 4" in the budget line, proving it knew the posse, and then asked
+        // what level they were while every one of them was 1st. Read the posse when there is one;
+        // the hint is the fallback for an empty table, and a Keeper's own choice still wins,
+        // because ValueChanged writes it straight back into the hint.
+        encLevel.Value = Math.Clamp(PosseLevel() ?? partyLevelHint, 1, Rules.MaxLevel);
         encLevel.ValueChanged += (s, e) => { partyLevelHint = (int)encLevel.Value; CaptureUndo(); RefreshEncounter(); };
         Tip.SetToolTip(encLevel, "Sets each creature's role and cost against the posse");
         top.Controls.Add(encLevel);
@@ -319,7 +344,7 @@ public partial class MainForm
             if (encGrid.CurrentRow?.DataBoundItem is not EncounterPick p) { Nope("Select a foe in the plan first."); return; }
             encounter.Remove(p); RefreshEncounter();
         }, 85, "Take the selected foe out of the encounter"));
-        top.Controls.Add(Btn("Clear", (s, e) =>
+        top.Controls.Add(DangerBtn("Clear", (s, e) =>
         {
             if (encounter.Count == 0) { Nope("The plan is already empty."); return; }
             if (Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); }
@@ -5442,7 +5467,7 @@ public partial class MainForm
             if (AutoSave()) Log("Session saved.");
             else Nope("The session did NOT save — see the message above, or use File ▸ Save session as…");
         }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
-        cbar.Controls.Add(Btn("Clear threads", (s, e) =>
+        cbar.Controls.Add(DangerBtn("Clear threads", (s, e) =>
         {
             if (clocks.Count == 0) { Nope("No threads to clear."); return; }
             if (Confirm($"Clear all {clocks.Count} thread(s) and their clocks for a fresh start?"))
