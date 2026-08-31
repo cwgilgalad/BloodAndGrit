@@ -96,6 +96,15 @@ add_index.py
 #     get an import error rather than a map. It fails this file's own test twice over. Still on
 #     disk, still works, recoverable from history.
 tools/mapdiff.mjs
+#   * a tool whose own docstring says not to trust it: measure_contents.py compares the static
+#     placeholder page numbers in the build_*.py sources against where things actually render.
+#     Untracked 2026-08-31. Nothing runs it, it is in no audit tier, and its first four lines tell
+#     the reader the numbers it reports are NOT what anybody sees, because nav_tools.py resolves
+#     every Contents number live at render time. It was written on 2026-08-27 to chase a fault that
+#     did not exist and demoted the same day; the two mentions left in the repo are the CHANGELOG
+#     and the tracker explaining why. The placeholders it tidies are a no-JS fallback nothing
+#     displays and nothing checks. Still on disk, still runs, recoverable from history.
+measure_contents.py
 #   * the six PDFs. Untracked 2026-08-27. They are printed output, they were already shipping
 #     inside the Release zips, and git stores no delta between two prints of the same book, so
 #     sixty-eight blobs of them had grown to 206 MB of history against about 4 MB of actual text.
