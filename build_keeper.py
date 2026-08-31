@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.22 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.22)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.23 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.23)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.22</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.23</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.22 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.23 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -1144,6 +1144,68 @@ CH7 = f"""<!-- VII -->
   <div class="keeper-note"><span class="kn-tag">At the table</span>Never let the Prophet's player pick the Patron. Pick
   it yourself, early, write it down, and run every wonder he works as that thing reaching through him. The session
   where he finds out is worth more than any session where he knew.</div>
+
+  <h2 id="returned">Running One Who Came Back</h2>
+  <p>One Origin in Ch. IV died and did not stay dead, and it is the only one that hands a player a
+  track with an ending on it. The Player&rsquo;s Book gives them the four Shapes, what each one
+  hungers for, and what it costs to mend. What it cannot give them is you, and every one of those
+  feedings is a scene you have to run.</p>
+
+  <div class="keeper-note"><span class="kn-tag">The bargain, and do not soften it</span>Hunger is
+  the payoff and the doom in the same track. Mending is the only healing a Returned soul has &mdash;
+  not rest, not medicine, not a Miracle worked over them &mdash; and it costs a step. That is the
+  whole design: the resource that keeps them standing is the resource that takes them away, and the
+  player trades one for the other knowingly, in front of everybody, every fight. It is the best
+  bargain the Old Dark offers anyone. <strong>Do not hand a step back out of kindness.</strong>
+  Nothing in the rules returns one, no dawn eases it, and a Keeper who quietly forgives a Hunger has
+  taken the price off the only Origin whose price is the point.</div>
+
+  <h3>The feeding is a scene, and you decide what it costs</h3>
+  <p>Three of the four Shapes feed on somebody who did not volunteer, and the rules deliberately do
+  not price that &mdash; because the price is a matter for your table and not for a table in a book.
+  What the four ask for is different in kind, and running them the same way wastes them:</p>
+  <ul class="dash">
+    <li><strong>The Risen</strong> wants a night of being treated as a person by somebody who knows
+    what they are. That is the easiest feeding to grant and the hardest to keep granting: it costs
+    another character&rsquo;s time and nerve, and the second time somebody makes an excuse is a
+    better scene than any fight that session.</li>
+    <li><strong>The Sanguine</strong> drinks, and somebody is less afterward. Ask who, by name, and
+    ask it every time. A player who has to look at the same NPC twice runs this Shape very
+    differently from one who is allowed to say &ldquo;somebody in town.&rdquo;</li>
+    <li><strong>The Hollow</strong> takes a true memory from somebody willing to give it, and they
+    do not get it back. This is the cruelest of the four and the quietest: nobody bleeds, and a year
+    later the man cannot remember his sister&rsquo;s face. Write down what was taken. Bring it up.</li>
+    <li><strong>The Tolled</strong> does the errand and is not told why. This one feeds itself: the
+    lender always has work, so the question is never <em>can they feed</em> but <em>what did they
+    just do</em>, and you get to answer that three sessions later.</li>
+  </ul>
+
+  <h3>Run the ladder, not the number</h3>
+  <p>Hunger climbs and nothing brings it down but feeding, so a Returned soul&rsquo;s arc has a
+  shape you can plan around. Early on it is a nuisance the player manages. Around the middle it
+  starts costing other people. At the top it is the only thing anyone at the table is thinking
+  about.</p>
+  <ul class="dash">
+    <li><strong>At the first step or two</strong>, say nothing mechanical. Describe: the cold room,
+    the dog that will not settle, the food that tastes of nothing.</li>
+    <li><strong>At the third</strong>, the numbness lands &mdash; they stop losing Nerve to dread.
+    Play it as the gift the book calls it and the loss it is. A soul who has stopped being able to
+    be frightened has stopped being able to care, and the other players should notice before the
+    player does.</li>
+    <li><strong>At the last step</strong>, the Player&rsquo;s Book warns and permits. So do you.
+    Say plainly what it will cost, let them do it, and mean it. A soul who spends their last step to
+    stay upright one more round is what this Origin is for.</li>
+  </ul>
+  <p>And when a soul is Consumed, honour it exactly as you honour a sixth Mark: they pass into your
+  hands, and what walks out of that is the next character&rsquo;s reason to ride.</p>
+
+  <div class="keeper-note"><span class="kn-tag">The safety line, and it is not optional</span>Three
+  of these four feed on people. Any Shape&rsquo;s feeding may be ruled bloodless, or handled
+  off-screen with a sentence, or moved to a willing NPC who has their own reasons &mdash; and none
+  of that costs the rules a thing, because the mechanical cost is the Hunger and the Hunger is
+  unchanged. Ask before the first session, not during it. The same standing line covers this as
+  covers everything else in this book: the horror is the country&rsquo;s, and nobody at your table
+  has to sit through a scene they did not agree to.</div>
 
   <h2>Carrying the Marked</h2>
   <div class="keeper-note"><span class="kn-tag">The long fall</span>A Marked character is a slow tragedy you are
@@ -2537,6 +2599,8 @@ KEEP_INDEX = [
     ("When players dabble", "hazards"), ("Plain hazards of a hard country", "hazards"),
     ("Rewards &amp; Reckonings", "rewards"), ("Advancement (Keeper's side)", "rewards"),
     ("Grit (running)", "rewards"), ("Carrying the Marked", "rewards"),
+    ("Running one who Came Back", "returned"), ("The Returned (running)", "returned"),
+    ("Hunger (running one)", "returned"), ("Feeding a Returned soul", "returned"),
     ("The Patrons at the table", "patrons-table"), ("The Dark's Wages", "rewards"),
     ("The Cast", "cast"), ("An NPC in three lines", "cast"),
     ("Reaction &amp; morale", "cast"), ("Folk of the frontier", "cast"),

@@ -8,6 +8,37 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Book v2.23, Player's v2.43 — G3: the Keeper's Book learns that a Returned character
+  exists, and one prose tell that had already shipped (2026-08-31).**
+
+  Measured before writing a word: **"Returned", "Hunger", "Came Back Wrong" and all four Shape
+  names appear zero times in the Keeper's Book.** v1.49.0 built the whole subsystem — a track that
+  only climbs, the only healing such a soul has, four Shapes with four different feedings — into
+  the Player's Book and the app, and left the person who adjudicates every one of those feeding
+  scenes with nothing whatsoever.
+
+  Ch. III gains *Running One Who Came Back*, beside *Carrying the Marked* and written to match it,
+  because they are the same kind of thing: a track that only climbs, whose end is a player losing a
+  character. It says what to do rather than restating the rules — the four feedings run differently
+  and running them the same way wastes them, the ladder has a shape you can plan around, and the
+  Consumed are honoured exactly as a sixth Mark is.
+
+  Two things it deliberately does not do. It does not restate the Shapes, which are the Player's
+  Book's and would be a second copy of a fact. And it does not soften the bargain: Hunger is the
+  payoff and the doom in one track, and a Keeper who quietly forgives a step has taken the price
+  off the only Origin whose price is the point. The section says so in as many words. The safety
+  line is repeated as a Keeper's note, because three of the four feed on people.
+
+  **And a prose tell that had already shipped.** The Shaman's fifteenth-level capstone, written in
+  B6, carried *"It is not a spell and there is no save; it is a place deciding"* — negative
+  parallelism, the one cadence this project bans outright, and it went out in v1.54.0.
+
+  It shipped because **the release gate has never read the books.** `audit_ai_tells.py` scans the
+  README, both CLAUDE.md files and the CHANGELOG by default, and the six books only under
+  `--books`, which the gate did not pass. The books are the deliverable and the reason the standard
+  exists at all. The gate passes it now; the eleven extra seconds are the cheapest insurance in the
+  suite.
+
 - **GritKeeper v1.55.0 — G2: Ch. IV's other correction to the budget, and a rule that had been
   invisible for three releases (2026-08-31).**
 

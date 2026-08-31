@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.42 · Keeper's Book v2.22 · Bestiary v2.17 ·
+**Current versions: Player's Book v2.43 · Keeper's Book v2.23 · Bestiary v2.17 ·
 GritKeeper app v1.55.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -122,8 +122,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.42 | 266 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.22 | 116 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.43 | 266 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.23 | 118 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.17 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.5 | 32 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.6 | 33 | one inline SVG map, downloadable |
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.42) — structure
+## The Player's Book (v2.43) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -487,7 +487,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.22) — structure
+## The Keeper's Book (v2.23) — structure
 
 Chapters I–XV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition

@@ -65,8 +65,12 @@ CHECKS = [
      "the Keeper-side rules read the same in every book and in the app"),
     ("diversity", ["audit_diversity.py"],              INSTANT, False, False,
      "every option the rules print is one some path can reach"),
-    ("prose",     ["audit_ai_tells.py", "--commits"],  SECONDS, False, False,
-     "the repo's own prose reads as written rather than generated"),
+    # --books is not optional and it was missing until 2026-08-31. The gate scanned the README, the
+    # two CLAUDE.md files and the CHANGELOG, and never once read the six books -- which are the
+    # deliverable, and the reason the prose standard exists at all. A negative parallelism written
+    # into a Calling's capstone in B6 shipped in v1.54.0 and was found by hand afterward.
+    ("prose",     ["audit_ai_tells.py", "--books", "--commits"], SECONDS, False, False,
+     "the books and the repo's own prose read as written rather than generated"),
     # Seconds rather than instant: it plays 36 full adventures on the real engine. Worth every one
     # of them -- three module releases shipped difficulty numbers no engine produced, because the
     # only thing standing between the harness and the printed page was somebody remembering.
