@@ -1108,6 +1108,14 @@ public class Survey
     /// Secret index -> the two floats of where the Keeper put it.
     public Dictionary<int, float[]> Secrets { get; set; } = new();
 
+    /// Scattered-mark index -> where the Keeper put it. Keyed on the index the SURVEY generated,
+    /// not the current one, because <see cref="ScatterGone"/> renumbers the live list.
+    public Dictionary<int, float[]> Scatter { get; set; } = new();
+
+    /// The generated indices of scattered marks the Keeper has taken off the sheet. Applied after
+    /// the moves and in descending order, or a removal invalidates the index of every move above it.
+    public List<int> ScatterGone { get; set; } = new();
+
     /// Where the town was dragged to, or null if it still sits where the survey seated it.
     public float[] Town { get; set; }
 }

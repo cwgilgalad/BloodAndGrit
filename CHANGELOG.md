@@ -8,6 +8,46 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.54.0 — the survey grows what you ask it to, and every tree on the map can be
+  picked up (2026-08-30).**
+
+  Cole: *"Can there be an option to generate more trees and natural objects by choosing appropriate
+  seed options, and I would like to see more customizability among all objects on a map."* Two
+  things, and the second was the larger gap.
+
+  **Growth and Furniture** are two new dials beside Landmarks. Furniture is how thickly the survey
+  scatters trees, rock and brush, from sparse to crowded. Growth leans a ground toward or away from
+  what grows on it, and it boosts the terrain's **own** growth rather than importing somebody
+  else's: timbered high country gives pines, timbered desert gives cactus, and a ground with
+  nothing green in its kit at all gets a modest stand rather than a forest it has no business
+  carrying. Bare never empties a country, because a scatter that is all rock reads as a rendering
+  fault rather than as a choice. Both settings default to *as the country runs*, which draws exactly
+  what the survey drew before they existed, so no saved map redraws differently.
+
+  **And every scattered mark is now a thing.** Until today the survey drew each tree, rock, cactus
+  and reed bed straight into the prim list with nothing recording where one ended and the next
+  began, so the only objects a Keeper could move were the named landmarks, the red secrets and the
+  town. You could pick up the Hanging Tree and not the tree standing beside it. Each mark records
+  its own prim span now, rings thin while moving is on, drags like anything else, and right-clicks
+  to *put it back* or *take it off the map*. Removals and moves both survive a save.
+
+  **The trap in that, and the assertion that guards it.** Removing a mark cuts prims out of the
+  middle of the array that four separate lists hold offsets into — landmarks, secrets, town and the
+  scatter itself. Miss one and nothing throws: some other feature's label quietly starts dragging a
+  piece of the river around. The smoke test does not ask whether the call succeeded, it snapshots
+  the geometry every surviving feature owns and holds it across the cut. Deleting one of the four
+  re-base loops fails it.
+
+  Leaving the geometry in place at zero opacity would have worked and every renderer here honours
+  it. Rejected: an exported SVG a Keeper drops into a VTT should not carry invisible trees, and a
+  removed thing that is still in the file comes back.
+
+  Re-applying the edits after a redraw is order-critical and says so: moves first, keyed to the
+  index the survey generated, then removals in **descending** order. Ascending would apply the next
+  removal to the wrong mark and somebody's tree-move to a different tree.
+
+  Smoke **16,549 / 0**, self-test 41/41.
+
 - **Player's Book v2.42 — the Witch picks her familiar, and the rule stops living in a switch
   statement (2026-08-30).**
 

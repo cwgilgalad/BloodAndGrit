@@ -3274,6 +3274,104 @@ T("no caster is starved of legal signs at any level", cg.callings
     T("a mundane Calling without Hedge Magic reaches no Sign at all",
         CharGen.SignsFor(noSigns, 10).Count == 0);
 }
+// ---- the survey's furniture: Density, Growth, and moving what it scattered (2026-08-30) --------
+// Cole asked for an option to grow more trees and natural objects, and for more control over all
+// of them. Both are in MapSpec now, and every scattered mark records its own prim span.
+{
+    MapSpec Spec(int density = 0, int growth = 0, string terrain = null) => new MapSpec
+    {
+        Terrain = terrain ?? MapGen.Terrains[0], Scale = 2, Seed = 4242, Landmarks = 4,
+        Density = density, Growth = growth,
+    };
+
+    T("the two ladders are named for the app to offer",
+        MapGen.Densities.Length == 5 && MapGen.Growths.Length == 4
+        && MapGen.Densities[0] == "as the country runs" && MapGen.Growths[0] == "as the country runs");
+
+    // Index 0 has to draw exactly what the survey drew before either option existed, or every map
+    // in every saved session redraws differently the moment this ships.
+    var plain = MapGen.Generate(Spec());
+    T("a survey scatters marks and records every one", plain.Scatter.Count > 0);
+    T("every scattered mark owns a real prim span", plain.Scatter.All(sc =>
+        sc.PrimCount > 0 && sc.PrimStart >= 0 && sc.PrimStart + sc.PrimCount <= plain.P.Count));
+
+    // Density: thicker means more, sparser means fewer, on the same seed and the same country.
+    int sparse = MapGen.Generate(Spec(density: 1)).Scatter.Count;
+    int usual = plain.Scatter.Count;
+    int crowded = MapGen.Generate(Spec(density: 4)).Scatter.Count;
+    T($"density thins the country ({sparse} < {usual})", sparse < usual);
+    T($"and thickens it ({crowded} > {usual})", crowded > usual);
+
+    // Growth: timbered means MORE of what actually grows there, on every ground, and bare means
+    // less. Asked of every terrain rather than one, because the interesting failure is a ground
+    // whose kit has no timber in it at all.
+    int leaner = 0, richer = 0;
+    foreach (var terrain in MapGen.Terrains)
+    {
+        var bare = MapGen.Generate(Spec(growth: 1, terrain: terrain));
+        var timbered = MapGen.Generate(Spec(growth: 3, terrain: terrain));
+        int Green(MapModel m) => m.Scatter.Count(sc =>
+            sc.Name is "tree" or "forest" or "pine" or "pinestand" or "orchard"
+                    or "scrub" or "tuft" or "grass" or "reeds" or "cactus" or "marsh");
+        if (Green(bare) < Green(MapGen.Generate(Spec(terrain: terrain)))) leaner++;
+        if (Green(timbered) > Green(MapGen.Generate(Spec(terrain: terrain)))) richer++;
+        // and no setting may empty a country of furniture entirely
+        T($"a leaning still furnishes {terrain}", bare.Scatter.Count > 0 && timbered.Scatter.Count > 0);
+    }
+    T($"bare thins the growth on most grounds ({leaner}/{MapGen.Terrains.Length})",
+        leaner >= MapGen.Terrains.Length / 2);
+    T($"timbered thickens it on most grounds ({richer}/{MapGen.Terrains.Length})",
+        richer >= MapGen.Terrains.Length / 2);
+
+    // Moving one, the same operation a landmark gets.
+    {
+        var m = MapGen.Generate(Spec(density: 3));
+        var sc = m.Scatter[0];
+        float x0 = sc.X, y0 = sc.Y;
+        var before = (float[])m.P[sc.PrimStart].Pts.Clone();
+        MapGen.MoveScatter(m, 0, x0 + 40, y0 - 25);
+        var after = m.P[sc.PrimStart].Pts;
+        T("moving a scattered mark translates its own prims",
+            Math.Abs(after[0] - before[0] - 40) < 0.001f && Math.Abs(after[1] - before[1] + 25) < 0.001f
+            && sc.X == x0 + 40 && sc.Y == y0 - 25);
+        T("and the mark under a point is the one that gets picked up",
+            MapGen.ScatterAt(m, x0 + 40, y0 - 25) == 0);
+        T("a point in open country picks up nothing", MapGen.ScatterAt(m, -500, -500) == -1);
+    }
+
+    // Removing one. THIS is the assertion that earns its keep: RemoveScatter cuts prims out of the
+    // middle of an array that four separate lists hold offsets into, and getting the re-basing
+    // wrong does not throw. It silently makes some other feature's label drag part of the river.
+    {
+        var m = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 77,
+                                              Landmarks = 5, Secrets = true, Town = true, Density = 3 });
+        // remember the actual geometry every surviving feature owns, by value
+        (string who, float[] pts)[] Snapshot(MapModel mm) =>
+            mm.Landmarks.Select(l => (l.Name, (float[])mm.P[l.PrimStart].Pts.Clone()))
+              .Concat(mm.Secrets.Select(l => (l.Name, (float[])mm.P[l.PrimStart].Pts.Clone())))
+              .Concat(mm.Town == null ? Array.Empty<(string, float[])>()
+                                      : new[] { (mm.Town.Name, (float[])mm.P[mm.Town.PrimStart].Pts.Clone()) })
+              .ToArray();
+
+        int cut = m.Scatter.Count / 2;                       // from the MIDDLE, so spans really shift
+        var keepName = m.Scatter[cut].Name;
+        var was = Snapshot(m);
+        int prims = m.P.Count, marks = m.Scatter.Count, span = m.Scatter[cut].PrimCount;
+
+        T("a scattered mark can be taken off", MapGen.RemoveScatter(m, cut));
+        T("its prims go with it", m.P.Count == prims - span && m.Scatter.Count == marks - 1);
+
+        var now = Snapshot(m);
+        T("and every other feature still owns the geometry it owned", was.Length == now.Length
+            && was.Zip(now).All(z => z.First.who == z.Second.who
+                                  && z.First.pts.SequenceEqual(z.Second.pts)));
+        T("every surviving scatter span is still in range", m.Scatter.All(sc =>
+            sc.PrimStart >= 0 && sc.PrimCount > 0 && sc.PrimStart + sc.PrimCount <= m.P.Count));
+        T("removing nothing is refused rather than thrown",
+            !MapGen.RemoveScatter(m, -1) && !MapGen.RemoveScatter(m, 9999) && !MapGen.RemoveScatter(null, 0));
+    }
+}
+
 // ---- G6: the two phrasings ReadLimit could not read (2026-08-30) -------------------------------
 // The Tracker's rationed strip draws a card for every feature that states a limit, so a limit the
 // parser cannot read is a limit nobody at the table remembers. Five real ones were going unread,
