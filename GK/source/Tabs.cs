@@ -125,6 +125,7 @@ public partial class MainForm
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        ReadingMenu(beastView, "The stat block");
 
         split.Panel1.Controls.Add(leftPanel);
         split.Panel2.Controls.Add(Measure(beastView, 14, 580));
@@ -229,6 +230,7 @@ public partial class MainForm
     static readonly Font SpoorFont = new("Segoe UI", 9.5f, FontStyle.Bold);   // see the encounter grid's CellFormatting
     ComboBox encPick;
     Label encVerdict;
+    Panel encBottom;
     Panel encBar;
     int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
 
@@ -395,8 +397,17 @@ public partial class MainForm
             MI(menu, "Take it off the plan", () => { encounter.Remove(pick); RefreshEncounter(); });
         });
 
-        var bottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
-        encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
+        // Height is set by measurement in RefreshEncounter, never here. The verdict runs to one,
+        // two or three lines depending on what is on the plan, and 26px fitted exactly one.
+        //
+        // Measured on 2026-08-31 by driving the shipped build and photographing it: the arithmetic
+        // ceiling note has been a second line since v1.51.0 and did not render AT ALL. Not clipped
+        // -- invisible. UI Automation read the string off the label, so every assertion that could
+        // see it passed, and a Keeper pricing a Tier IV fight was told nothing on the one tab that
+        // prices fights. Same landmine GK/CLAUDE.md records against dialogs, on a label.
+        encBottom = new Panel { Dock = DockStyle.Bottom, Height = 64, BackColor = Color.FromArgb(243, 237, 221), Padding = new Padding(8, 6, 8, 6) };
+        var bottom = encBottom;
+        encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.TopLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
         // Owner-drawn rather than a ProgressBar: a themed ProgressBar ignores ForeColor outright,
         // so the bar could never agree with the verdict line above it. Drawing it also buys the
         // budget tick — the mark that says where "a fair, hard fight" actually sits, so being
@@ -450,10 +461,16 @@ public partial class MainForm
         // Past Tier III the budget is measured to be a lie, and a number the app knows is a lie is
         // the same fault as a Beat action it prints and cannot spend. Said, never enforced.
         string arith = Rules.ArithmeticNote(encounter.Count == 0 ? 0 : encounter.Max(p => p.Creature.tier));
+        // Ch. IV's other correction to the budget, and the one the app has never said. It is a note
+        // and not an adjustment: the printed ladder is on the same screen, so an app that inflated
+        // the spend would be disagreeing with a table the Keeper is reading.
+        string dearer = encounter.Count == 0 ? null : Rules.DearerNote((int)encLevel.Value);
         encVerdict.Text = $"Spend {spend}  /  budget {budget}   ({party.Count} souls × {Rules.BudgetPerSoul})"
                         + $"     {Rules.BudgetVerdict(spend, budget)}"
+                        + (dearer == null ? "" : "\r\n" + dearer)
                         + (arith == null ? "" : "\r\n" + arith);
         encVerdict.ForeColor = BudgetColor(spend, budget);
+        SizeVerdict();
         // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
         int lvl = (int)encLevel.Value;
         Tip.SetToolTip(encLevel, Rules.JuniorForTier(lvl)
@@ -464,6 +481,24 @@ public partial class MainForm
             : "Sets each creature's role and cost against the posse");
         encSpend = spend; encBudget = budget;
         encBar?.Invalidate();
+    }
+
+    /// <summary>Fit the verdict label and the strip under it to the text the verdict actually has.
+    ///
+    /// <para>One line, two or three, depending on whether the plan trips Ch. IV's dearer pricing
+    /// and the arithmetic ceiling. Measured at the width the label really has — a constant height
+    /// clipped the second line for as long as there has been one.</para></summary>
+    void SizeVerdict()
+    {
+        if (encVerdict == null || encBottom == null) return;
+        int w = encVerdict.ClientSize.Width;
+        if (w <= 0) w = Math.Max(200, encBottom.ClientSize.Width - encBottom.Padding.Horizontal);
+        int h = TextRenderer.MeasureText(encVerdict.Text, encVerdict.Font,
+                                         new Size(w, 0), TextFormatFlags.WordBreak).Height;
+        encVerdict.Height = Math.Max(26, h + 4);
+        // The panel holds the verdict, the bar, and its own padding. Sizing it from the parts
+        // rather than from a second constant is what keeps the two from disagreeing.
+        encBottom.Height = encVerdict.Height + (encBar?.Height ?? 22) + encBottom.Padding.Vertical + 4;
     }
 
     /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can
@@ -1563,6 +1598,7 @@ public partial class MainForm
         };
         if (AppIcon != null) win.Icon = AppIcon;
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        ReadingMenu(rtf, c.name);
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -2182,13 +2218,22 @@ public partial class MainForm
         {
             var chip = new Label
             {
-                Left = 8, Top = y, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
+                Left = 8, Top = y, Width = CW - 16, AutoEllipsis = true, UseMnemonic = false,
                 Text = e.Says, Font = new Font("Segoe UI", 8.25f),
                 ForeColor = e.IsBoon ? Verdigris : Blood,
             };
+            // Measured, not a flat 15. Tidy() cuts a clause at its first "and", which keeps most
+            // chips to one line and made a constant look right for a long time — but "+2 to make a
+            // quick exit when the law takes an interest" has no "and" in it to cut at, and it wants
+            // two lines. The driven clipping walk in --selftest found it on 2026-09-01: same fault
+            // as the Encounter verdict, same fix. AutoEllipsis stays as the backstop for anything
+            // genuinely enormous, and the strip is a FlowLayoutPanel, so a taller card costs
+            // nothing but its own pixels.
+            chip.Height = Math.Max(15, TextRenderer.MeasureText(chip.Text, chip.Font,
+                                       new Size(chip.Width, 0), TextFormatFlags.WordBreak).Height);
             Tip.SetToolTip(chip, e.Phrase);
             card.Controls.Add(chip);
-            y += 15;
+            y += chip.Height;
         }
         card.Height = y + 6;
         card.Paint += (s, e) =>
@@ -2433,6 +2478,7 @@ public partial class MainForm
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
             Font = new Font("Segoe UI", 10f), Text = CallingCardText(soul)
         };
+        ReadingMenu(rtf, $"{soul.Name} — {soul.Calling}");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -4750,6 +4796,9 @@ public partial class MainForm
         }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        // The surface most worth copying out of in the whole app: a rolled town, a rolled name, a
+        // rolled rumour is written down somewhere else or it is lost.
+        ReadingMenu(genOut, "What the generator rolled");
         // A read-only RichTextBox gets no menu from WinForms, so a right-click on a rolled-up town
         // did nothing whatever — not even Copy on the selection the Keeper had just made. Everything
         // here exists as a button below; what the menu adds is the roll going straight into the
@@ -5004,6 +5053,7 @@ public partial class MainForm
         bar.Controls.Add(refCount);
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
+        ReadingMenu(refView, "This reference leaf");
         // The tables are laid to the pane's width, so the pane changing width relaid them — but only
         // when the number of CHARACTERS across actually changes. A resize drag raises this event
         // dozens of times a second and re-dealing a leaf on every one of them would redraw the whole

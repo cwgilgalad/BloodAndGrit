@@ -113,6 +113,10 @@ static class Program
             // also makes the run hermetic: what the self-test does no longer depends on what
             // happens to be saved on the machine running it.
             AppState.UseForTesting(Path.Combine(Path.GetTempPath(), "gritkeeper-selftest"));
+            // The clipping audits SHOW the form (off-screen) — an unshown one measures nothing —
+            // and a scratch folder looks like a first run, which opens the tour offer as a MODAL on
+            // Shown. Nobody is here to click it. Same reason as --timetabs above.
+            MainForm.SuppressFirstRunTour = true;
             Db.Load();
             CharGen.Load();
             Look.Load();
@@ -181,6 +185,24 @@ static class Program
                         var quiet = mf.AuditTabTips();
                         foreach (var q in quiet) Line("       silent: " + q);
                         Chk(quiet.Count == 0, $"GUI: every control on all ten tabs says what it is ({quiet.Count} silent)");
+
+                        // G8, 2026-08-31. The question none of the other checks ask: does what a
+                        // control HOLDS fit inside what a Keeper can SEE? The Encounter verdict
+                        // carried Height = 26 and showed nothing of its second line from v1.51.0,
+                        // and every check in the repo passed for three releases -- UI Automation
+                        // reads a label's whole string, the tip walk asks about tooltips, and
+                        // audit_ui reads source. This is measure_book.py's clipping check, for the
+                        // app: content larger than the box it is drawn in, on every realized tab.
+                        var cut = mf.AuditTabClipping();
+                        foreach (var q in cut) Line("      clipped: " + q);
+                        Chk(cut.Count == 0, $"GUI: every tab shows what it holds ({cut.Count} clipped)");
+
+                        // And the half that finds anything: the same walk with the tabs DRIVEN
+                        // into states a Keeper reaches. The realize-only walk above sees every tab
+                        // empty, and the bug this was written for lived in a loaded one.
+                        var driven = mf.AuditDrivenClipping();
+                        foreach (var q in driven) Line("      clipped: " + q);
+                        Chk(driven.Count == 0, $"GUI: and still shows it with the tabs loaded ({driven.Count} clipped)");
 
                         // Full screen moves the Map tab's real contents into another window and
                         // hands them back. Checked because the failure is silent and permanent:

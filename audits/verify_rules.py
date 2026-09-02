@@ -694,6 +694,55 @@ def check_arithmetic_stops(problems):
                             f"has always kept out of the players' hands")
     return checks
 
+# ------------------------------------------ Ch. IV's OTHER correction to the budget (2026-08-31)
+# The chapter makes two, and until today the app carried one of them. "From 5th level on, price a
+# fight one rung dearer than the table says" has been printed since v1.44.0 and was confirmed by
+# B4's measurement; the Encounter tab, which is the only place in the app a fight is ever priced,
+# had never said it. Held here in the shape check_arithmetic_stops set: the number in one place,
+# the sentence in one place, and the book it comes from asked whether it still says so.
+
+CS_DEARER_N = re.compile(r"public const int PriceDearerFrom = (\d+);")
+CS_DEARER_S = re.compile(r'DearerNote\(int partyLevel\)(.*?);', re.S)
+
+
+def check_price_dearer(problems):
+    src = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
+    m, body = CS_DEARER_N.search(src), CS_DEARER_S.search(src)
+    if not m or not body:
+        problems.append("Core.cs: no PriceDearerFrom / DearerNote — Ch. IV's second correction "
+                        "to the budget is not in the app")
+        return 0
+    level = int(m.group(1))
+    checks = 2
+
+    # The Keeper's Book is where the rule is printed, and it names the level in ordinal words.
+    book = _flat("keeper-handbook.html")
+    ordinal = {1: "1st", 2: "2nd", 3: "3rd"}.get(level, f"{level}th")
+    if f"from {ordinal} level on" not in book.lower():
+        problems.append(f"keeper-handbook.html: does not say \"from {ordinal} level on\", which is "
+                        f"what Core.cs's PriceDearerFrom is set to")
+    if "one rung dearer" not in book:
+        problems.append("keeper-handbook.html: no longer prices a fight \"one rung dearer\" — "
+                        "the app is quoting a rule the book has stopped making")
+
+    # And the app's own sentence has to be the book's, not a paraphrase of it. This is the half
+    # that rots quietly: a rule restated in the app's own words drifts a clause at a time and every
+    # test still passes.
+    checks += 1
+    said = body.group(1)
+    for phrase in ("one rung dearer than the table says", "pleasantly surprised"):
+        if phrase not in said:
+            problems.append(f"Core.cs: DearerNote does not say {phrase!r} — the app is "
+                            "paraphrasing Ch. IV rather than quoting it")
+
+    # A note, never an adjustment: the printed ladder is on the same screen as the spend.
+    checks += 1
+    tab = (ROOT / "GK/source/Tabs.cs").read_text(encoding="utf-8")
+    if "Rules.DearerNote(" not in tab:
+        problems.append("Tabs.cs: the Encounter tab does not print DearerNote, so the only place "
+                        "the app prices a fight still leaves the rule unsaid")
+    return checks
+
 # ------------------------------------------------------- the ninety-four Signs and Miracles
 # The largest surface in the book with no guard on it at all, found on 2026-08-27 while adding
 # eight workings: the Callings' features, their Perks, their paths, the arms table, Ch. IV's
@@ -967,6 +1016,7 @@ def main():
     checks += check_origins(problems)
     checks += check_perks(problems)
     checks += check_arithmetic_stops(problems)
+    checks += check_price_dearer(problems)
     checks += check_workings(problems)
     checks += check_fight_ledger(problems)
     checks += check_familiars(problems)

@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.42 -->
+<!-- Blood & Grit — The Player's Book · Version 2.44 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.42)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.44)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.42</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.44</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -361,7 +361,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.42 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.44 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -1073,6 +1073,11 @@ body{ background:#525659; }
   <h1 class="chapter">V. Worldly Callings</h1>
   <p class="chapter-sub">The trades of the desperate, from first blood to last stand.</p>
   <div class="divider"></div>
+  <div class="quote">
+    "Out here a man is what he can do before sundown. The rest is what he tells people in town, and the town has heard it."
+    <span class="src">— Eb Tuttle, trapper</span>
+  </div>
+
   <p class="dropcap lead">A Calling is what your character does when the talking stops — the trade by which they earn
   coin, enemies, and an early grave. Each advances over ten levels, the highest a mortal is likely to reach before the
   country collects its due. Your Calling sets your Hit Die (the dice you roll for Blood), your war-progression (Base
@@ -1949,6 +1954,11 @@ body{ background:#525659; }
   <h1 class="chapter">VI. Callings of Faith</h1>
   <p class="chapter-sub">For those who answer the dark with a louder Word.</p>
   <div class="divider"></div>
+  <div class="quote">
+    "I have buried ninety-one and married eleven. Do not ask me which work I believe in. Ask me which one I would still do for nothing."
+    <span class="src">— Rev. A. Jensen</span>
+  </div>
+
   <p class="dropcap lead">Not every power in this country is bought from the Old Dark beneath it. Some is asked for, on
   the knees, of a higher and quieter thing — and sometimes the asking is answered, though never plainly. The Callings of
   Faith draw their strength from conviction: the certainty, against all evidence, that the world has a maker and the maker
@@ -2350,7 +2360,7 @@ body{ background:#525659; }
   <p>Once per session, ask the country itself for help, and it helps. The spirits of the place take a side for the rest of
   the scene: name a single thing you want from it, and the land does that thing. The river rises. The rock closes. The
   herd turns. The fog comes down and lifts only for your people. The dead of that ground stand up and remember whose
-  they were. It is not a spell and there is no save; it is a place deciding, and places decide slowly and completely.
+  they were. No spell, no save. A place has decided, and places decide slowly and completely.
   Afterward you owe it, and the Keeper will name what it wants, and it will want something you would rather keep.</p>
 
   <div class="quote">
@@ -3018,6 +3028,12 @@ body{ background:#525659; }
   his Bargain, a Dark Cultist serves in her Devotion, and a False Prophet feeds through his Gospel without ever quite
   learning whose plate he is filling. A Witch seldom deals with them at all. Her Craft is older and quieter and does not
   need them.</p>
+  <p>Six of them have names that hold still long enough to be written down, and those six are the only part of all
+  that depth which has ever answered anybody. Everything else down there is weather. That is why the country uses the
+  one name for the two things and never notices it is doing it: a teamster who says <em>the Old Dark</em> in a saloon
+  means the six, because the six are the part that talks back, and a Hexer who says it means the deep the six came out
+  of, because that is where his loan is drawn from. Neither of them is wrong. Take the phrase to mean whichever fits,
+  and understand that it is one ancient and indifferent thing being described from two distances.</p>
   <p>Nobody has written any of this down honestly. What follows is what the country says, which is a different thing:
   six sets of stories, collected off men who were drunk, frightened, or lying, and set out here in the order they are
   usually told. Your Keeper knows which parts are true. You are not going to find out by asking.</p>
@@ -3063,19 +3079,10 @@ body{ background:#525659; }
   told by somebody from the next county over, and it is never their own town, and if you ride to the town they name you
   will find a perfectly ordinary place where nobody remembers a revival.</p>
 
-  <div class="box">
-    <h4>The Mad Spaniard</h4>
-    <p>He is not a Patron and every story about him is attached to one. A gentleman in a good coat, forty years out of
-    date, met on a road at an hour when no one should be on it. He is unfailingly polite. He knows your business. He
-    asks after people you have not thought about in years, by name, and gets the details right, and one of the details
-    is always wrong in a way you do not notice until later.</p>
-    <p>The stories cannot agree on what he wants and are unanimous that he wants something. In the mining camps he
-    warns men off the bad veins and is thanked for it. On the Llano he is said to have ridden with the comancheros and
-    to have been the reason they stopped. In the Rockies they say he is going from cult to cult with a proposal. He has
-    been described the same way for a hundred and forty years by people with no reason to have compared notes, and the
-    description includes a scar he did not have in the earliest tellings.</p>
-    <p>Every soul who works the Old Dark hears of him eventually. A good many claim to have met him. A few have.</p>
-  </div>
+  <p class="note">There are other things told of out here that are none of the six and are spoken of in the same
+  breath as them: riders who keep turning up in the wrong century, houses that keep their own accounts, a woman down
+  in New Orleans that certain kinds of people go to hear. Ask around in the game. Your Keeper knows, and the finding
+  out is worth more to you than the reading would have been.</p>
 </section>
 
 <!-- ===================== VIII. SKILLS ===================== -->
@@ -3894,6 +3901,11 @@ body{ background:#525659; }
   <h1 class="chapter">XI. Conflict &amp; the Iron Code</h1>
   <p class="chapter-sub">How violence is reckoned, and how quickly it ends a life.</p>
   <div class="divider"></div>
+  <div class="quote">
+    "Everybody at the table knows how a fight starts. The Code is there so everybody knows how it ends."
+    <span class="src">— Marshal T. Coyle</span>
+  </div>
+
   <p class="dropcap lead">Violence in <em>Blood and Grit</em> is fast, ugly, and rarely fair. A gunfight lasts a
   handful of seconds, and someone dies inside them. Fight only when you must, from cover when you can, and never in the belief
   that your numbers make you safe. They do not. The rules of the gun are called the <strong>Iron Code</strong>, though no
@@ -4390,6 +4402,11 @@ body{ background:#525659; }
 
   <p class="chapter-sub">The borrowed words of the dark, the words asked for on the knees, and the folk-craft that holds both off.</p>
   <div class="divider"></div>
+  <div class="quote">
+    "A Sign and a Miracle look precisely the same from ten feet off. I have written that sentence three times now and I like it less on each reading."
+    <span class="src">— from the burned journal of Eliza Hart, Surveyor</span>
+  </div>
+
   <p class="dropcap lead">There is power in the old country beneath the country, and it can be reached — by the Hexer freely,
   by the Touched a little, by the desperate at ruinous cost. <strong>Signs</strong> are worked acts of will and word. Each one lists its
   <strong>Rank</strong>, its casting time, its price in Nerve or Blood, the save it forces where it forces one, what it
@@ -5151,6 +5168,11 @@ body{ background:#525659; }
   <h1 class="chapter">E. Appendix: The Country</h1>
   <p class="chapter-sub">Perdition Basin &mdash; a stretch of frontier to start your riding, drawn as a rider knows it.</p>
   <div class="divider"></div>
+  <div class="quote">
+    "You may keep a country in your head or you may keep it on paper. Do both, then ride out, and you will learn in one afternoon that neither of them was the country."
+    <span class="src">— from the field-books of N. Ashby, naturalist</span>
+  </div>
+
   <p class="dropcap lead">Your Keeper may set you down anywhere; the country is wide. But if you want a place to begin
   &mdash; a map to point at and say <em>there, that is where we met</em> &mdash; here is one, ready-made.
   <strong>Perdition Basin</strong> is a hard, dry county in the territory: a bowl of grass and dust ringed by mesa and

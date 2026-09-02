@@ -438,6 +438,12 @@ PARITY = [
      r"\bpublic string FamiliarOf\b"),
     ("the Familiar-Bound's spirit-carry", r"carries your spirit to a new dawn",
      r"\bpublic bool FamiliarCarried\b"),
+    # Added 2026-08-31. The first is G2's finding: Ch. IV makes two corrections to the encounter
+    # budget and the app carried one of them. The other two are B6b's — a rule that lived only in
+    # a C# switch statement until the book printed the table it decides from.
+    ("Ch. IV's dearer pricing", r"price a fight one rung", r"\bPriceDearerFrom\b"),
+    ("the table of familiars", r"from the table of familiars", r"\bCgFamiliar\b"),
+    ("the Binding rite", r"\bThe Binding\b", r"\bCgFamiliarRite\b"),
 ]
 
 

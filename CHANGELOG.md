@@ -8,6 +8,198 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.44, Keeper's v2.24, Bestiary v2.18 — the lore Cole corrected by hand, and
+  the Old Dark finally defined (2026-09-01/02).**
+
+  Seven corrections in one session, all of them variations on the same complaint: the lore was
+  wrong, and it was in the wrong book.
+
+  **The Mad Spaniard is Tristan de la Sombra.** A conquistador of the 1540s, detached east after a
+  watercourse with an entrada that never came back. Starvation took half his reason and the sheer
+  scale of the country took the rest, every man with him died, and in his last clear hours he
+  begged aloud for terms from anything that would hear him. Something did, and he was willing,
+  which is the detail the whole figure hangs on: no trick was worked on him and no bargain was
+  pressed. He is known by the moniker; the name is Keeper-side. He walks the roads of 1885 in the
+  clothes he died out of, armour far less often than the stories claim, and what a traveller
+  registers is that the clothes are *dated* and cannot be placed within three centuries. Every
+  "forty years out of fashion" and "a hundred and forty years" in the repo moved with him, in the
+  Keeper's Book, the Bestiary and `creatures.json`.
+
+  **Redemption says plainly now that it means to make itself a new Confederacy**, and its capital
+  is named for the first time: **Jubilee**, nine thousand souls, named by men who knew exactly which
+  year of release they were invoking. It carries the rumour Cole asked for, that the only way in is
+  by rail. The geography behind that is real, which is what makes it worth printing: the Algodones
+  sand hills had no road across them until 1915 and the Southern Pacific has crossed them since
+  1877.
+
+  **The Dread Mother leads a loose federation of covens**, called among themselves **the Long
+  Table** — a coven that has been recognised is *seated*, one that has offended is *asked to
+  stand*, and no two accounts agree how many seats there are, though nine turns up more often than
+  chance would allow. She governs from old New Orleans, below Canal Street, and she is emphatically
+  no Patron: nothing is granted in her name and no Sign has ever answered a rite that called on
+  her. What she has is authority.
+
+  **The Rockies is no longer an alliance.** Cultists of *different* Patrons gather at *different*
+  places, separately, and nobody knows why. The four readings survive, because they are the best
+  thing in the chapter, re-pointed from cooperation to convergence.
+
+  **St. Louis became railroad barons in Kansas City.** The clerk survived the move: he was always
+  the encounter rather than the villain, and a land office on Delaware Street holds him as well as
+  Olive Street did.
+
+  **The six Patrons get half a page each** — the door each waits at, the ground it already holds,
+  who serves it and how those people look from outside, three signs to drop without explaining, and
+  a d6 of what it has already done within a day's ride. That last is the difference between lore
+  and a tool: a Keeper five minutes from the table cannot use a paragraph about cosmic indifference,
+  and can use *the schoolhouse well went sweet*.
+
+  **And a new section says what the Old Dark is.** Cole asked for two things that only look like
+  they disagree: tie the Patrons together as the ancient cosmic evil of that name, and leave the
+  depth-rather-than-a-god blurb exactly as the Player's Book has always had it. They reconcile
+  without moving a word. The depth is the Old Dark; the six are the only parts of it that ever took
+  a shape and kept it, which makes them the only parts that have ever answered anybody. So a
+  teamster who says *the Old Dark* means the six and a Hexer who says it means the depth, and both
+  are right. Both books now say so.
+
+  **The Mad Spaniard box left the Player's Book whole.** Three paragraphs of checkable history
+  about a figure whose entire value is that a player cannot check anything about him was the
+  clearest case of Keeper lore printed player-side.
+
+  **Kept vague on purpose.** A Keeper's note at the head of Ch. XV says the names are the only fixed
+  things in it and invites a Keeper to contradict everything else; de la Sombra's three centuries
+  are what the tellings say rather than what happened, which stops the new origin quietly killing
+  one of the four readings; and the Patron dossiers say out loud that the ground, the servants, the
+  signs and the d6s are offers.
+
+  **Five chapter epigraphs**, on Cole's ask for prose that is colourful with more generated quotes.
+  Measured first, which turned a vague instruction into a finishable job: the Keeper's Book and the
+  Bestiary already carried one on every chapter that has one to carry, and the Player's Book carried
+  14 of 19. The five without were V, VI, XI, XIII and Appendix E. Contents and Index are now the
+  only sections in any of the three books without a quote, which is correct.
+
+  Two numbers taken while the ruler was out. The em-dash rate, this repo's one standing prose
+  finding, is coming down as new material displaces old: **11.67 / 11.99 / 14.89** per thousand
+  against the 14.8–16.3 recorded when the program opened, and a 3.23 human baseline still well
+  below. And Cole's complaint that the Keeper's Book was "very light" has been answered by **5,113
+  words**, 31,086 to 36,199, all of it material that was either missing or printed in the wrong
+  book.
+
+- **GritKeeper v1.55.0 — the app is asked what it SHOWS, eight dead right-clicks, and a CI that had
+  been red for three days (2026-09-01/02).**
+
+  **G8: a way to drive the app and debug what it finds.** The first version of the clipping walk was
+  worthless and said otherwise. It reported `0 clipped` on every tab, and went on reporting it with
+  the Encounter-verdict bug deliberately put back in. The cause: on a form that has never been
+  shown, WinForms answers `Visible` with the EFFECTIVE visibility, so every control on it says no
+  and `Clipped()` bailed on its first line for all of them; every `TabPage` also still reports its
+  design-time 200×100. `TimeTabs` has carried the warning since 2026-08-28 — *run against a SHOWN
+  form; an unshown one skips layout and paint and reports a flattering nothing* — and it turns out
+  to apply to anything that measures, not only to anything that times. `ShownOffScreen()` now puts
+  the window at −32000,−32000 for the duration and `FrontAndLaidOut()` selects each page, and the
+  sabotage fails the check with *needs 76px and has 26px*. On its first honest run it found a live
+  clip nobody had reported: the Origin boon chips on the Tracker's Calling strip are laid out at a
+  flat 15px, and *"+2 to make a quick exit when the law takes an interest"* wants two lines because
+  it has no "and" in it for `Tidy()` to cut at. Measured now, like the verdict.
+
+  **G7's remainder: eight reading surfaces that ignored a right-click.** Counting first changed what
+  the job was. Every list and grid already answered one, and the two a Keeper lives in are the fat
+  ones — Posse 17 items, Tracker 18, each with a heading naming the row. Every *reading* surface
+  ignored one, because WinForms hands a `TextBox` the native Cut/Copy/Paste menu for free and hands
+  a `RichTextBox` nothing at all. So the eight places a Keeper most wants to copy out of — the stat
+  block, a creature's own window, a soul's Calling card, the generator output, the Reference leaf
+  and the three help windows — were the eight where a right-click did nothing whatsoever.
+  `ReadingMenu` wires all eight; the roll log gets the heading it was the only menu in the app to
+  lack; and `audit_ui.py` gains a fifth rule so the next one cannot repeat it, proved against four
+  synthetic sources and then against the tree by sabotage.
+
+  **CI had been red since 2026-08-30 and nobody knew.** Three `verify` runs on main failed on
+  `error CS1574: XML comment has cref attribute 'TierNote' that could not be resolved` — a member
+  that has never existed, introduced with the fifteen-levels work; the docstring meant
+  `ArithmeticNote`. It survived for two reasons, and the second is the one to keep. CI builds with
+  `-warnaserror`, where CS1574 is fatal, and the documented local command did not carry the flag; it
+  does now. And **a plain incremental build reports only the warnings of the files it recompiled**,
+  so building `GK/source` over and over printed "0 Warning(s)" while `GK/rules` sat untouched with
+  the warning still in it. Silence from a project that was skipped is not a clean bill and looks
+  exactly like one. `verify_all.py --full` now runs the same build CI runs, 37s, so a book-heavy
+  session cannot leave main failing again.
+
+  One more found on the way in, and it is the failure mode this repo fears most. Installing the new
+  audit rule at the wrong indent moved the modal-dialog Esc check inside it, and the audit went on
+  passing while reporting *"modal dialogs checked for an Esc route: 0"*. It had been 25 the run
+  before. The count line was the only thing that showed it, which is why every rule in that file
+  prints one.
+
+- **Keeper's Book v2.23, Player's v2.43 — G3: the Keeper's Book learns that a Returned character
+  exists, and one prose tell that had already shipped (2026-08-31).**
+
+  Measured before writing a word: **"Returned", "Hunger", "Came Back Wrong" and all four Shape
+  names appear zero times in the Keeper's Book.** v1.49.0 built the whole subsystem — a track that
+  only climbs, the only healing such a soul has, four Shapes with four different feedings — into
+  the Player's Book and the app, and left the person who adjudicates every one of those feeding
+  scenes with nothing whatsoever.
+
+  Ch. III gains *Running One Who Came Back*, beside *Carrying the Marked* and written to match it,
+  because they are the same kind of thing: a track that only climbs, whose end is a player losing a
+  character. It says what to do rather than restating the rules — the four feedings run differently
+  and running them the same way wastes them, the ladder has a shape you can plan around, and the
+  Consumed are honoured exactly as a sixth Mark is.
+
+  Two things it deliberately does not do. It does not restate the Shapes, which are the Player's
+  Book's and would be a second copy of a fact. And it does not soften the bargain: Hunger is the
+  payoff and the doom in one track, and a Keeper who quietly forgives a step has taken the price
+  off the only Origin whose price is the point. The section says so in as many words. The safety
+  line is repeated as a Keeper's note, because three of the four feed on people.
+
+  **And a prose tell that had already shipped.** The Shaman's fifteenth-level capstone, written in
+  B6, carried *"It is not a spell and there is no save; it is a place deciding"* — negative
+  parallelism, the one cadence this project bans outright, and it went out in v1.54.0.
+
+  It shipped because **the release gate has never read the books.** `audit_ai_tells.py` scans the
+  README, both CLAUDE.md files and the CHANGELOG by default, and the six books only under
+  `--books`, which the gate did not pass. The books are the deliverable and the reason the standard
+  exists at all. The gate passes it now; the eleven extra seconds are the cheapest insurance in the
+  suite.
+
+- **GritKeeper v1.55.0 — G2: Ch. IV's other correction to the budget, and a rule that had been
+  invisible for three releases (2026-08-31).**
+
+  G2 asked what B4 and B5 settled in the books that the app had not caught up with. Most of it had:
+  the arithmetic ceiling is a constant, the counter pair works, the Engineer's frames sit in prose
+  beside the Prospector's Devices exactly as they should. **One thing was missing entirely.**
+
+  Ch. IV makes *two* corrections to the encounter budget, and the app carried one. The second —
+  *"from 5th level on, price a fight one rung dearer than the table says and let the posse be
+  pleasantly surprised"* — has been printed since v1.44.0 and confirmed by B4's measurement, and
+  the Encounter tab, the only place in the app a fight is ever priced, had never mentioned it.
+  `Rules.DearerNote` says it now, and `check_price_dearer` holds the app's sentence to the book's
+  word for word so a paraphrase cannot creep in a clause at a time.
+
+  **A note, never an adjustment.** The printed ladder is on the same screen as the spend, so an app
+  that quietly inflated the number would be disagreeing with a table the Keeper is reading. Say the
+  rule where the pricing happens and let them price it.
+
+  **And then the finding that actually matters.** Adding a third line to the verdict clipped it, so
+  I went looking at why — and the second line had never rendered either. `encVerdict` carried
+  `Height = 26`, one line of its font, and the **arithmetic ceiling note has produced nothing on
+  screen since v1.51.0**. Not clipped: invisible. Driven and photographed on the shipped build to
+  be sure of it.
+
+  Every check that could see it passed, and that is the interesting part. UI Automation reads the
+  string off the label, `--selftest` asks whether controls carry tooltips, and `audit_ui.py` reads
+  source — so a rule the app composed correctly, stored correctly and could recite through the
+  accessibility layer was shown to nobody. So for three releases a Keeper pricing a Tier IV fight
+  was told nothing about the one rule that says a Tier IV fight is not priced at all.
+
+  The label and its strip are measured off `TextRenderer.MeasureText` now, at the width they
+  actually have, in the method that sets the text. `GK/CLAUDE.md` has said since v1.19.0 that
+  dialogs are measured and never laid out to constants; the reasoning applied word for word to a
+  label on a tab and the section had simply never named one.
+
+  Three more app↔book parity pairs guarded while here: the dearer pricing, the table of familiars,
+  and the Binding. 14 pairs, 88,212 cross-checks.
+
+  Smoke **16,557 / 0**, self-test 41/41, `verify_rules` **1,758**, `--app` 13/13.
+
 - **GritKeeper v1.54.0 — a critic's pass, and seven things that counted against the app
   (2026-08-30).**
 

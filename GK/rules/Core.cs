@@ -1131,7 +1131,7 @@ public static class Rules
     public static void ReseedEntropy() => Rng = new Random();
 
     /// <summary>A Tier as the books print it. It stopped at V until 2026-08-30, so every Tier VI
-    /// creature B6 added read as "T6" on its list row and in <see cref="TierNote"/> — the fifth
+    /// creature B6 added read as "T6" on its list row and in <see cref="ArithmeticNote"/>: the fifth
     /// Roman-numeral reader in one session to have been written to the old ceiling.</summary>
     public static string Roman(int t) => t switch
     { 1=>"I", 2=>"II", 3=>"III", 4=>"IV", 5=>"V", 6=>"VI", 7=>"VII", 8=>"VIII", 9=>"IX", 10=>"X",
@@ -2452,6 +2452,25 @@ public static class Rules
          : $"Tier {Roman(highestTier)} is past where the budget is arithmetic. Nothing this big dies "
          + "of being shot at — the posse needs its Putting It Down, and the shooting buys the minutes "
          + "to reach it (Keeper's Book Ch. IV).";
+
+    /// <summary>The level from which Ch. IV says to price a fight one rung dearer than the table.
+    ///
+    /// <para>Measured in B4 and printed since v1.44.0: the budget is honest from 1st to 6th and
+    /// over-spends at 5th, because a posse's damage stops climbing while a creature's Blood does
+    /// not. The book's answer is a correction the Keeper applies in their head.</para></summary>
+    public const int PriceDearerFrom = 5;
+
+    /// <summary>What to say about pricing a fight for a posse at or past
+    /// <see cref="PriceDearerFrom"/>, or null when there is nothing to say.
+    ///
+    /// <para>A NOTE, never an adjustment. The app must not quietly inflate the spend: the Keeper is
+    /// reading the printed ladder off the same screen, and a number that disagrees with the table
+    /// beside it is the fault this project spends its whole audit suite preventing. Say the rule
+    /// where the pricing happens and let the Keeper price it.</para></summary>
+    public static string DearerNote(int partyLevel)
+        => partyLevel < PriceDearerFrom ? null
+         : $"From {PriceDearerFrom}th level on, price a fight one rung dearer than the table says "
+         + "and let the posse be pleasantly surprised (Keeper's Book Ch. IV).";
 
     public static (int cost, string role, bool spoor) Cost(int creatureTier, int partyLevel)
     {

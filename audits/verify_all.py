@@ -65,8 +65,12 @@ CHECKS = [
      "the Keeper-side rules read the same in every book and in the app"),
     ("diversity", ["audit_diversity.py"],              INSTANT, False, False,
      "every option the rules print is one some path can reach"),
-    ("prose",     ["audit_ai_tells.py", "--commits"],  SECONDS, False, False,
-     "the repo's own prose reads as written rather than generated"),
+    # --books is not optional and it was missing until 2026-08-31. The gate scanned the README, the
+    # two CLAUDE.md files and the CHANGELOG, and never once read the six books -- which are the
+    # deliverable, and the reason the prose standard exists at all. A negative parallelism written
+    # into a Calling's capstone in B6 shipped in v1.54.0 and was found by hand afterward.
+    ("prose",     ["audit_ai_tells.py", "--books", "--commits"], SECONDS, False, False,
+     "the books and the repo's own prose read as written rather than generated"),
     # Seconds rather than instant: it plays 36 full adventures on the real engine. Worth every one
     # of them -- three module releases shipped difficulty numbers no engine produced, because the
     # only thing standing between the harness and the printed page was somebody remembering.
@@ -142,11 +146,22 @@ def build_plan(args):
         plan.append((name, [sys.executable, str(ROOT / "audits" / argv[0])] + argv[1:],
                      ROOT, advisory, note))
 
+    # The BUILD belongs to --full as well as --app, and it cost three red CI runs to learn why.
+    # On 2026-08-30 a `<see cref="TierNote"/>` naming a member that has never existed went in with
+    # the fifteen-levels work. CI builds with -warnaserror, where CS1574 is fatal, so every push to
+    # main failed from that afternoon until 2026-09-02. Nobody saw it, for two reasons worth
+    # keeping: the session was about books, so --full was the tier being run and --full did not
+    # compile anything; and a plain incremental `dotnet build` reports only the warnings of the
+    # files it actually recompiled, so building GK/source over and over says "0 Warning(s)" while
+    # GK/rules sits untouched with a warning in it. Compiling here makes every tier above --quick
+    # agree with the gate that can actually stop a release.
+    if args.full or args.app or args.release:
+        dotnet = shutil.which("dotnet") or r"C:\Program Files\dotnet\dotnet.exe"
+        plan.append(("build", [dotnet, "build", "-c", "Release", "-warnaserror"],
+                     ROOT / "GK/source", False, "0 warnings, 0 errors, the same flags CI uses"))
     if args.app or args.release:
         dotnet = shutil.which("dotnet") or r"C:\Program Files\dotnet\dotnet.exe"
         exe = ROOT / "GK/source/bin/Release/net10.0-windows/win-x64/GritKeeper.exe"
-        plan.append(("build", [dotnet, "build", "-c", "Release", "-warnaserror"],
-                     ROOT / "GK/source", False, "0 warnings, 0 errors"))
         plan.append(("smoke", [dotnet, "run", "-c", "Release"],
                      ROOT / "GK/smoke", False, "the headless logic suite"))
         plan.append(("selftest", [str(exe), "--selftest"],
