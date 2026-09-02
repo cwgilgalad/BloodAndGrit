@@ -21,7 +21,8 @@ index to it.
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|
-| v1.54.0 **← current** | `gritkeeper-v1.54.0` | 2026-08-31 | Blood & Grit — GritKeeper v1.54.0 · Books v1.9 · Modules v1.7 |
+| v1.55.0 **← current** | `gritkeeper-v1.55.0` | 2026-09-02 | Blood & Grit — GritKeeper v1.55.0 · Books v1.10 · Modules v1.7 |
+| v1.54.0 | `gritkeeper-v1.54.0` | 2026-08-31 | Blood & Grit — GritKeeper v1.54.0 · Books v1.9 · Modules v1.7 |
 | v1.53.0 | `gritkeeper-v1.53.0` | 2026-08-30 | Blood & Grit — GritKeeper v1.53.0 · Books v1.8 · Modules v1.6 |
 | v1.52.0 | `gritkeeper-v1.52.0` | 2026-08-29 | Blood & Grit — GritKeeper v1.52.0 · Books v1.7 · Modules v1.5 |
 | v1.51.0 | `gritkeeper-v1.51.0` | 2026-08-28 | Blood & Grit — GritKeeper v1.51.0 · Books v1.7 · Modules v1.5 |
@@ -84,7 +85,8 @@ index to it.
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|
-| v1.9 **← current** | `books-v1.9` | 2026-08-30 | Books v1.9 — Player's v2.42: the table of familiars and the Binding |
+| v1.10 **← current** | `books-v1.10` | 2026-09-02 | Books v1.10 — Player's v2.44, Keeper's v2.24, Bestiary v2.18: the Territory's history straightened out, and the Patrons given half a page each |
+| v1.9 | `books-v1.9` | 2026-08-30 | Books v1.9 — Player's v2.42: the table of familiars and the Binding |
 | v1.8 | `books-v1.8` | 2026-08-30 | Books v1.8 — Player's v2.41, Keeper's v2.22, Bestiary v2.17: fifteen levels, the Powers of the Territory, Signs and Miracles in one chapter |
 | v1.7 | `books-v1.7` | 2026-08-27 | Player's v2.38, Keeper's v2.20, Bestiary v2.16 — every Contents number is the page it lands on |
 | v1.6 | `books-v1.6` | 2026-08-27 | Blood & Grit — Books v1.6 (Player's Book v2.33 — sixteen Origins, nineteen Callings, and a Perk on every one) |
