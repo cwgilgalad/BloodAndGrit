@@ -1159,6 +1159,192 @@ public partial class MainForm : Sheet
         return found;
     }
 
+    // ---------------------------------------------------------- G8: what the app SHOWS
+    /// <summary>Every control whose text does not fit the space it is drawn in.
+    ///
+    /// <para>The gap this closes, in one sentence: on 2026-08-31 the Encounter tab's verdict label
+    /// was found to have been rendering NOTHING of its second line since v1.51.0, and every check
+    /// in the repo passed the whole time. UI Automation reads a label's full string, so a driver
+    /// that asks the app what it is showing is told all of it; <c>--selftest</c> asks about
+    /// tooltips; <c>audit_ui.py</c> reads source. The app held the rule, stored the rule, and could
+    /// recite the rule — and showed it to nobody.</para>
+    ///
+    /// <para>So this asks the one question none of those do, and it is the same question
+    /// <c>measure_book.py</c> has asked of the books since the beginning: does what is in it fit
+    /// inside what a person can see?</para></summary>
+    internal static void WalkForClipping(Control root, string where, List<string> into)
+    {
+        foreach (Control c in root.Controls)
+        {
+            // Scrollers are walked through but never measured: content larger than the viewport is
+            // what a scroller is FOR. Same for a grid, which scrolls and clips columns on purpose.
+            bool scrolls = c is RichTextBox or TextBoxBase or DataGridView or ListBox
+                        || (c is ScrollableControl sc && sc.AutoScroll);
+            if (!scrolls && Clipped(c) is string why) into.Add($"{where} · {why}");
+            WalkForClipping(c, where, into);
+        }
+    }
+
+    /// <summary>Why this control clips, or null. Kept apart from the walk so the reasoning is in
+    /// one place and every exemption below has to state its own case.</summary>
+    static string Clipped(Control c)
+    {
+        // An AutoSize control is already the size of its text; a hidden or unlaid-out one is a tab
+        // nobody has looked at yet rather than a fault.
+        if (c.AutoSize || !c.Visible || c.Width <= 0 || c.Height <= 0) return null;
+        if (string.IsNullOrWhiteSpace(c.Text)) return null;
+        // Only the kinds that draw their own text in a fixed box. A ComboBox and a NumericUpDown
+        // hold an editable value that legitimately runs past the field.
+        if (c is not (Label or ButtonBase or GroupBox)) return null;
+
+        var flags = TextFormatFlags.WordBreak;
+        var need = TextRenderer.MeasureText(c.Text, c.Font,
+                        new Size(Math.Max(1, c.ClientSize.Width - c.Padding.Horizontal), 0), flags);
+        int have = c.ClientSize.Height - c.Padding.Vertical;
+        // Two pixels of slack: MeasureText and GDI+ disagree at the last pixel, and a check that
+        // fires at 1px is a check somebody turns off.
+        if (need.Height <= have + 2) return null;
+
+        string what = c.Text.Replace("\r", " ").Replace("\n", " ").Trim();
+        if (what.Length > 64) what = what.Substring(0, 61) + "…";
+        return $"{c.GetType().Name} \"{what}\" needs {need.Height}px and has {have}px";
+    }
+
+    /// <summary>Put the window on screen — far off it — for the duration of a measuring check,
+    /// and put everything back afterward.
+    ///
+    /// <para>This is the difference between a check and a decoration, and it was learned the
+    /// expensive way. On a form that has never been shown, WinForms answers <c>Visible</c> with the
+    /// EFFECTIVE visibility: the form is not visible, so every control on it says no. Every TabPage
+    /// still reports its design-time 200x100 as well, because nothing has laid out. A clipping walk
+    /// over that measures precisely nothing and hands back a clean sheet — which is what the first
+    /// version of this check did, and it went on doing it with the original bug deliberately put
+    /// back in.</para>
+    ///
+    /// <para><see cref="TimeTabs"/> has carried the same warning since 2026-08-28 — <em>run against
+    /// a SHOWN form; an unshown one skips layout and paint and reports a flattering nothing</em> —
+    /// and it turns out to apply to anything that measures, not only to anything that times.</para>
+    ///
+    /// <para>Off-screen rather than hidden, because hidden is the failure. -32000 is past every
+    /// monitor Windows will report, so nothing flashes up in front of whoever ran the gate.</para>
+    /// </summary>
+    internal IDisposable ShownOffScreen()
+    {
+        bool wasVisible = Visible;
+        var wasStart = StartPosition;
+        var wasLoc = Location;
+        bool wasTask = ShowInTaskbar;
+        if (!wasVisible)
+        {
+            StartPosition = FormStartPosition.Manual;
+            ShowInTaskbar = false;
+            Location = new Point(-32000, -32000);
+            Show();
+            Application.DoEvents();          // let WinForms actually lay the thing out
+        }
+        return new Restorer(() =>
+        {
+            if (wasVisible) return;
+            Hide();
+            ShowInTaskbar = wasTask;
+            StartPosition = wasStart;
+            Location = wasLoc;
+        });
+    }
+
+    /// <summary>Run an action when the using-block ends. Small enough to write inline, named so the
+    /// audits below read as what they are.</summary>
+    sealed class Restorer : IDisposable
+    {
+        readonly Action undo;
+        internal Restorer(Action a) { undo = a; }
+        public void Dispose() => undo();
+    }
+
+    /// <summary>Bring a tab to the front, laid out, so the walk measures the geometry it really
+    /// gets. A page that is not the selected one is not visible and is not measured at all.</summary>
+    void FrontAndLaidOut(TabPage t)
+    {
+        RealizeTab(t);
+        if (tabsCtl.TabPages.Contains(t)) tabsCtl.SelectedTab = t;
+        Application.DoEvents();
+    }
+
+    /// <summary>Realize every tab and ask each one what it cannot show. The companion to
+    /// <see cref="AuditTabTips"/>, and run from the same place.</summary>
+    internal List<string> AuditTabClipping()
+    {
+        var found = new List<string>();
+        using (ShownOffScreen())
+            foreach (var t in allTabs) { FrontAndLaidOut(t); WalkForClipping(t, t.Text, found); }
+        return found;
+    }
+
+    /// <summary>Drive the tabs into states a Keeper actually reaches, and ask again what they
+    /// cannot show.
+    ///
+    /// <para>This is the half that finds anything, and the reason is worth writing down. The walk
+    /// above sees every tab EMPTY, and the bug that motivated the whole check lived in a state an
+    /// empty tab never reaches: the Encounter verdict is one line with nothing on the plan, and one
+    /// line fits. Put the worst thing in the book on it at 5th level and it becomes three, two of
+    /// which rendered nothing at all from v1.51.0. Sabotaged on 2026-08-31 to be sure — with the
+    /// fix taken back out, the realize-only walk still reported nothing wrong.</para>
+    ///
+    /// <para>Every state is put back afterward. The self-test runs against a real
+    /// <see cref="AppState.Dir"/>, and a check that leaves somebody's table rearranged is a check
+    /// they run once.</para></summary>
+    internal List<string> AuditDrivenClipping()
+    {
+        var found = new List<string>();
+        using var shown = ShownOffScreen();
+        foreach (var t in allTabs) RealizeTab(t);
+
+        // ---- the Encounter tab, holding the case that shipped broken ----
+        // The dearest thing on the ladder at a level past Ch. IV's dearer rule, so the verdict
+        // carries the spend, the dearer note and the arithmetic ceiling: three lines.
+        var worst = Db.Creatures.Where(c => c.tier >= Rules.ArithmeticStopsAt)
+                                .OrderByDescending(c => c.tier).FirstOrDefault();
+        if (worst != null && encLevel != null)
+        {
+            int wasLevel = (int)encLevel.Value;
+            int wasCount = encounter.Count;
+            try
+            {
+                encLevel.Value = Math.Clamp(Rules.PriceDearerFrom, encLevel.Minimum, encLevel.Maximum);
+                encounter.Add(new EncounterPick(worst));
+                RefreshEncounter();
+                var page = allTabs.FirstOrDefault(t => t.Text == "Encounter");
+                if (page != null) FrontAndLaidOut(page);
+                if (page != null)
+                    WalkForClipping(page, $"Encounter (a plan at level {encLevel.Value})", found);
+            }
+            finally
+            {
+                while (encounter.Count > wasCount) encounter.RemoveAt(encounter.Count - 1);
+                encLevel.Value = Math.Clamp(wasLevel, encLevel.Minimum, encLevel.Maximum);
+                RefreshEncounter();
+            }
+        }
+
+        // ---- the Tracker, with the posse and something to fight ----
+        {
+            int wasField = tracker.Count;
+            try
+            {
+                PartyToTracker();
+                // skipSafeTable: the rule would offer a dialog for a thing this big, and a
+                // self-test may never wait on an answer nobody is there to give.
+                if (worst != null) AddCreatureToTracker(worst, 1, skipSafeTable: true);
+                var page = allTabs.FirstOrDefault(t => t.Text == "Tracker");
+                if (page != null) FrontAndLaidOut(page);
+                if (page != null) WalkForClipping(page, "Tracker (the field seated)", found);
+            }
+            finally { while (tracker.Count > wasField) tracker.RemoveAt(tracker.Count - 1); }
+        }
+
+        return found;
+    }
+
     /// <summary>Time what a tab switch actually costs. `GritKeeper.exe --timetabs`.
     ///
     /// <para>Cole reported on 2026-08-28 that switching tabs felt slow. Two different costs hide

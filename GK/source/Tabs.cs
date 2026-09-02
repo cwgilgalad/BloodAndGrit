@@ -2216,13 +2216,22 @@ public partial class MainForm
         {
             var chip = new Label
             {
-                Left = 8, Top = y, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
+                Left = 8, Top = y, Width = CW - 16, AutoEllipsis = true, UseMnemonic = false,
                 Text = e.Says, Font = new Font("Segoe UI", 8.25f),
                 ForeColor = e.IsBoon ? Verdigris : Blood,
             };
+            // Measured, not a flat 15. Tidy() cuts a clause at its first "and", which keeps most
+            // chips to one line and made a constant look right for a long time — but "+2 to make a
+            // quick exit when the law takes an interest" has no "and" in it to cut at, and it wants
+            // two lines. The driven clipping walk in --selftest found it on 2026-09-01: same fault
+            // as the Encounter verdict, same fix. AutoEllipsis stays as the backstop for anything
+            // genuinely enormous, and the strip is a FlowLayoutPanel, so a taller card costs
+            // nothing but its own pixels.
+            chip.Height = Math.Max(15, TextRenderer.MeasureText(chip.Text, chip.Font,
+                                       new Size(chip.Width, 0), TextFormatFlags.WordBreak).Height);
             Tip.SetToolTip(chip, e.Phrase);
             card.Controls.Add(chip);
-            y += 15;
+            y += chip.Height;
         }
         card.Height = y + 6;
         card.Paint += (s, e) =>
