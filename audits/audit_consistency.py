@@ -475,6 +475,71 @@ def check_shared_vocabulary(dig):
             print(f"            …{para[max(0, idx - 55):idx + 55]}…")
 
 
+
+
+# Repeats that are meant to be there. Kept short and each one earns its line, because an allow-list
+# is how a check stops finding things.
+OK_TWICE = {
+    # The Bestiary's rule of thumb, printed once in the by-Tier appendix's opening and again as the
+    # caption over the Threat-by-Tier table. A Keeper reads one or the other, rarely both.
+    "A creature is a fair, hard fight for a party of twice its Tier in levels.",
+}
+
+
+def check_no_accidental_repeats(dig):
+    """The same sentence printed twice in one book, which is a copy rather than a refrain.
+
+    Written 2026-09-02, after two keeper-notes in Ch. XV were found duplicated. The cause was a
+    re-runnable patch helper whose "already applied" guard was `old not in s and new in s` -- which
+    never fires when `new` contains `old`, and "append a sentence to this paragraph" is exactly that
+    shape. Nothing else in the repo asks whether a book repeats itself.
+
+    Exactly twice is the signature. Genuine refrains repeat more than that: the Disciplines boiler-
+    plate 15 times, the Signs ladder 5, the safety line 3. Creature furniture is cut first, because
+    a module prints a creature's Found line in its roster and again in its stat block on purpose.
+    """
+    print("\nNo accidental repeats — a sentence printed twice in one book is a copy, not a refrain")
+    # Creature text repeats BY DESIGN. A module prints a stat block generated from creatures.json in
+    # its roster and again where the fight happens, so the same Found line and the same Putting It
+    # Down land in two sections on purpose. Rather than guess at markup, ask the source: anything
+    # already in creatures.json is generated furniture rather than authored prose.
+    generated = set()
+    for c in json.loads((ROOT / "GK/rules/Data/creatures.json").read_text(encoding="utf-8")):
+        for v in c.values():
+            for piece in (v if isinstance(v, list) else [v]):
+                if not isinstance(piece, str):
+                    continue
+                for t in re.split(r"(?<=[.!?])\s+", piece):
+                    t = re.sub(r"\s+", " ", t).strip()
+                    if len(t) >= 70:
+                        # Indexed by the TAIL, because a module prints these under a run-in label
+                        # ("Putting it down Draw it onto dry land and end it there...") and the
+                        # extractor hands back label and sentence as one string. The tail is the
+                        # part that is verbatim from the data either way.
+                        generated.add(t[-40:])
+    found = 0
+    for name, book in dig["books"].items():
+        counts = {}
+        for ch, sec, para in X.all_text(book):
+            for s in re.split(r"(?<=[.!?])\s+", para):
+                s = re.sub(r"\s+", " ", s).strip()
+                # A stat line is data, not prose: two Callings legitimately share
+                # "Hit Die d10 · Trained Skills 4 + WIT · ...". The middot is this house's
+                # separator for those and appears in no running sentence.
+                if (len(s) >= 70 and "·" not in s and s[-1] in ".!?"
+                        and s not in OK_TWICE and s[-40:] not in generated):
+                    counts.setdefault(s, []).append(f"{ch}" + (f" / {sec}" if sec else ""))
+        for s, where in counts.items():
+            CHECKS[0] += 1
+            if len(where) == 2:
+                found += 1
+                fail(f"{name}: printed twice — \"{s[:96]}…\"")
+                print(f"          {where[0]}")
+                print(f"          {where[1]}")
+    if not found:
+        ok("no sentence of 70 characters or more appears exactly twice in any of the six books")
+
+
 def check_chapter_refs(dig):
     print("\nCross-references — every chapter a book points at is a chapter that exists")
     have = {}
@@ -558,6 +623,7 @@ def main():
     check_conditions(dig, creatures)
     check_benchmarks(dig, creatures, args.verbose)
     check_shared_vocabulary(dig)
+    check_no_accidental_repeats(dig)
     check_chapter_refs(dig)
     check_app_book_parity(dig, core, (ROOT / "GK/rules/CharGen.cs").read_text(encoding="utf-8"))
 
