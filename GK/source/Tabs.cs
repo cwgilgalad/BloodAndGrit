@@ -125,6 +125,7 @@ public partial class MainForm
         leftPanel.Controls.Add(beastList); leftPanel.Controls.Add(filters);
 
         beastView = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        ReadingMenu(beastView, "The stat block");
 
         split.Panel1.Controls.Add(leftPanel);
         split.Panel2.Controls.Add(Measure(beastView, 14, 580));
@@ -1597,6 +1598,7 @@ public partial class MainForm
         };
         if (AppIcon != null) win.Icon = AppIcon;
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        ReadingMenu(rtf, c.name);
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -2476,6 +2478,7 @@ public partial class MainForm
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
             Font = new Font("Segoe UI", 10f), Text = CallingCardText(soul)
         };
+        ReadingMenu(rtf, $"{soul.Name} — {soul.Calling}");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -4793,6 +4796,9 @@ public partial class MainForm
         }, 112, "Empty the output box and start a fresh page"));
 
         genOut = new RichTextBox { ReadOnly = true, Font = new Font("Consolas", 10.5f), BackColor = Color.FromArgb(252, 249, 240), BorderStyle = BorderStyle.None };
+        // The surface most worth copying out of in the whole app: a rolled town, a rolled name, a
+        // rolled rumour is written down somewhere else or it is lost.
+        ReadingMenu(genOut, "What the generator rolled");
         // A read-only RichTextBox gets no menu from WinForms, so a right-click on a rolled-up town
         // did nothing whatever — not even Copy on the selection the Keeper had just made. Everything
         // here exists as a button below; what the menu adds is the roll going straight into the
@@ -5047,6 +5053,7 @@ public partial class MainForm
         bar.Controls.Add(refCount);
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
+        ReadingMenu(refView, "This reference leaf");
         // The tables are laid to the pane's width, so the pane changing width relaid them — but only
         // when the number of CHARACTERS across actually changes. A resize drag raises this event
         // dozens of times a second and re-dealing a leaf on every one of them would redraw the whole

@@ -250,6 +250,40 @@ ABSENCE = re.compile(
     r"|IsNullOrWhiteSpace\(\s*([\w.]+))")
 
 
+
+# ---- a reading surface has to answer a right-click (2026-09-02) ----
+# WinForms hands a TextBox the native edit control's Cut/Copy/Paste menu and hands a RichTextBox
+# nothing at all. The asymmetry is invisible while writing the code and total at the table: on
+# 2026-09-02 all EIGHT read-only RichTextBoxes in the app ignored a right-click, among them the
+# stat block, the generator output and the Reference leaf — the three surfaces a Keeper most wants
+# to copy out of. Every list and grid in the app had answered a right-click for a year.
+#
+# So: a read-only RichTextBox is wired to ReadingMenu within six lines of being built. Six lines
+# rather than anywhere-in-the-file because three of the eight are called `rtf` in one file, and a
+# file-wide search would let one wiring satisfy all three. A guard that an unrelated line elsewhere
+# can satisfy stops firing exactly when it matters.
+RTB = re.compile(r"\b(?:var\s+|\w[\w<>.\[\]]*\s+)?(\w+)\s*=\s*new\s+RichTextBox\b")
+
+
+def reading_surfaces(text):
+    """Every read-only RichTextBox, as (line, name, wired)."""
+    lines = text.split("\n")
+    out = []
+    for m in RTB.finditer(text):
+        line = text.count("\n", 0, m.start()) + 1
+        name = m.group(1)
+        # The initializer may be inline or spread over several lines; read to its closing brace,
+        # or to the semicolon if there is no brace at all.
+        tail = text[m.end():m.end() + 700]
+        end = tail.find("}") if tail.lstrip().startswith("{") else tail.find(";")
+        init = tail[:end if end != -1 else 240]
+        if "ReadOnly = true" not in init:
+            continue      # an editable one wants Cut and Paste too: a decision, not an omission
+        after = "\n".join(lines[line - 1: line + 6])
+        out.append((line, name, f"ReadingMenu({name}" in after))
+    return out
+
+
 def control_fields(alltext):
     """Every identifier in the tree declared as a WinForms control (or a drawing object)."""
     names = set()
@@ -318,6 +352,7 @@ def main():
     alltext = "\n".join(sources.values())
     controls = control_fields(alltext)
     quietcount = 0
+    rtbcount = 0
 
     for name, text in sources.items():
         path = SRC / name
@@ -402,6 +437,14 @@ def main():
                     for line in silent_refusals(reach, controls, alltext):
                         findings.append(f"{where}  {helper}({label}) — refuses in silence: "
                                         f"`{line}` stops the work and says nothing")
+
+
+        # ---- a reading surface has to answer a right-click ----
+        for line, name, wired in reading_surfaces(text):
+            rtbcount += 1
+            if not wired:
+                findings.append(f"{path.name}:{line}  the read-only RichTextBox built as `{name}` "
+                                "has no ReadingMenu — a right-click on it does nothing at all")
 
         # ---- modal dialogs must answer Esc ----
         # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
@@ -521,6 +564,7 @@ def main():
         print(f"modal dialogs checked for an Esc route: {dlgcount}")
         print(f"menu access keys checked for collisions:  {mnemcount}")
         print(f"keyboard bindings checked for collisions: {keycount}")
+        print(f"reading surfaces checked for a right-click: {rtbcount}")
         print()
 
     if findings:
@@ -530,7 +574,7 @@ def main():
         return 1
     print("every button has a handler, a tooltip and a hittable target; every destructive button\n"
           "is recoverable and looks it; every modal dialog answers Esc; no two menu items share an access key;\n"
-          "and every keyboard shortcut is bound once and printed from the same table.")
+          "every keyboard shortcut is bound once and printed from the same table; and every reading surface answers a right-click.")
     return 0
 
 

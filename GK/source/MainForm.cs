@@ -1510,6 +1510,43 @@ public partial class MainForm : Sheet
         };
     }
 
+    /// <summary>Give a read-only reading surface the right-click that every other text control on
+    /// Windows already has, plus anything else that belongs to what it is showing.
+    ///
+    /// <para>Found by counting, 2026-09-02, on Cole's standing report that the right-click menus are
+    /// thin. Every list and grid in this app answers a right-click and the two a Keeper lives in
+    /// offer seventeen and eighteen items. Every <em>reading</em> surface ignored one, and there are
+    /// eight. The cause is a WinForms asymmetry: a <see cref="TextBox"/> inherits the native edit
+    /// control's menu for free and a <see cref="RichTextBox"/> inherits nothing, so the eight places
+    /// a Keeper most wants to copy out of were the eight where a right-click did nothing at all.</para>
+    ///
+    /// <para>This does not breach the rule stated above <see cref="GridMenu{T}"/> — a menu offers the
+    /// operations the buttons above it offer, and no more, so it can never quietly become a second
+    /// set of features. Copy and select are not features; they are what a text control does. Anything
+    /// passed as <paramref name="extra"/> must still be something a button on the same tab does.</para>
+    /// </summary>
+    void ReadingMenu(RichTextBox rtf, string what, params (string label, Action go)[] extra)
+    {
+        rtf.MouseDown += (s, e) =>
+        {
+            if (e.Button != MouseButtons.Right) return;
+            var menu = PopupMenu();
+            MIHead(menu, what);
+            // Clipboard.SetText throws on an empty string, so both copies are gated on having
+            // something rather than on the call being wrapped in a swallow.
+            MI(menu, "Copy the selection", () => Clipboard.SetText(rtf.SelectedText),
+               rtf.SelectionLength > 0);
+            MI(menu, "Copy all of it", () => Clipboard.SetText(rtf.Text), rtf.TextLength > 0);
+            MI(menu, "Select all", () => { rtf.Focus(); rtf.SelectAll(); }, rtf.TextLength > 0);
+            if (extra is { Length: > 0 })
+            {
+                MISep(menu);
+                foreach (var (label, go) in extra) MI(menu, label, go);
+            }
+            menu.Show(rtf, e.Location);
+        };
+    }
+
     /// <summary>One menu line. Kept as a helper so every list's menu is built the same way and every
     /// label goes through <see cref="Amp"/> — a menu item reads "&amp;" as a mnemonic, and these are
     /// creature names and prose, not accelerators.</summary>
@@ -3114,6 +3151,9 @@ public partial class MainForm : Sheet
         // below already offers, so no reader has to hunt for the button.
         ListMenu<string>(rollLog, (menu, line) =>
         {
+            // The only menu in the app that never said what it was acting on. Trimmed, because a
+            // roll line can be long enough to make the menu wider than the pane it opens over.
+            MIHead(menu, line.Length > 52 ? line.Substring(0, 49) + "…" : line);
             MI(menu, "Copy this line", () => Clipboard.SetText(line));
             MI(menu, $"Copy the whole log  ({rollLog.Items.Count} lines)",
                 () => Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>())));

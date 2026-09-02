@@ -237,6 +237,7 @@ public partial class MainForm
         if (win == null) return;
 
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        ReadingMenu(rtf, "The Five-Minute Lesson");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -368,6 +369,7 @@ public partial class MainForm
         if (win == null) return;
 
         var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Consolas", 10f) };
+        ReadingMenu(rtf, "Keyboard shortcuts");
         void H(string s) { rtf.SelectionFont = Face("Segoe UI", 12f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void M(string s) { rtf.SelectionFont = Face("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
 
@@ -489,6 +491,7 @@ public partial class MainForm
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
             Left = 18, Top = 14, Width = 508, Height = 412
         };
+        ReadingMenu(rtf, "What GritKeeper needs");
         void H(string s) { rtf.SelectionFont = Face("Segoe UI", 11.5f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void L(string k, string v)
         {
