@@ -1023,6 +1023,36 @@ CH7 = f"""<!-- VII -->
   bargains solve the immediate problem and plant the next one. A player who took the deal to save a friend, and would
   take it again, is exactly where the game wants them: one step further down a road they chose.</p>
 
+  <h2 id="patrons-olddark">The Old Dark, and the Six in It</h2>
+  <p>The Player's Book tells a player that the Old Dark is a depth rather than a god: the deep strata
+  of buried gods, drowned hungers and patient things that were ancient when the first peoples here
+  were young, which does not love him and does not hate him, and which lends and is inherited and is
+  worshipped and always collects. Every word of that is true and it is the right amount for him to
+  have. What it leaves out is where the six Patrons sit inside it, and you cannot run this game
+  without knowing.</p>
+  <p>The Old Dark is one thing. It is ancient, it is cosmic, and it is evil in the way a January is
+  evil: without appetite for you in particular, and fatal all the same. It has no centre a man could
+  ride to, no throne, no name of its own that anything has ever used, and no interest whatever in
+  being understood. Under all of that, in the part that has never moved, it is simply deep.</p>
+  <p>The <strong>six Patrons are the parts of it that took a shape and kept it</strong>. Old enough
+  and particular enough to be worth a name, settled enough to be recognised twice, and, crucially,
+  the only parts of the whole depth that have ever answered anybody. Everything else down there is
+  weather. So when a teamster in a saloon says the Old Dark he means the six, because the six are
+  the only part of it that has ever spoken; and when a Hexer says it he means the depth the six came
+  out of, because that is where his loan is drawn from. Both are right. The book uses the phrase
+  both ways on purpose, and your players will learn the difference the year they need it.</p>
+  <div class="keeper-note"><span class="kn-tag">Four things to hold to</span><strong>They are not a
+  pantheon.</strong> None of the six rules another, none owes another anything, and you should never
+  let your players confirm that any two of them are aware of each other. <strong>They are not
+  devils.</strong> A devil wants your soul and has a use for it; these want what they want and take
+  the soul as packaging. <strong>They are not cruel</strong>, and playing them as cruel makes them
+  small; a thing that hates you can be reasoned with, and the horror here is that nothing is being
+  withheld and nothing is being aimed. And <strong>whether there are six of them at all</strong> is
+  a live question this book deliberately never settles. See Ch. XV: one of the four readings of the
+  Rockies is that all six cults have spent a century dealing with one thing wearing six faces.</div>
+  <p>Which is the whole shape of it. One depth, six mouths, and a country sitting on top of the lot
+  of it wondering why the wells go bad.</p>
+
   <h2 id="patrons-table">The Patrons at the Table</h2>
   <p>The Player's Book names six Patrons (Ch. VII) and wisely tells no more than a drifter's rumor of each. Here is
   the rest &mdash; how each one actually comes at a table of players, and when. Thirty years behind a screen teaches
@@ -1030,54 +1060,145 @@ CH7 = f"""<!-- VII -->
   wrong moment is a memory the table keeps for years. A Patron never simply appears. Each waits at a different door,
   and the players open every one of those doors themselves.</p>
 
-  <h3>The Devourer &mdash; the door of want</h3>
-  <p>It comes when the body is failing: the snowed-in pass, the tainted well, the wound going bad three days' ride
-  from help. It has no voice and needs none &mdash; its offer arrives as meat. Game where no game should be, strength
-  flooding into a starving frame, and only afterward the understanding of what was traded. Make the offer only after
-  the players have said out loud what they might be willing to do to survive, and never a moment sooner &mdash;
-  otherwise it is you tempting them, and not the country. Its progress shows at every camp thereafter: the served one
-  eats first, eats most, and stops asking what the meat is. Let the other players notice before the one who took it does.</p>
+  <h3 id="patron-devourer">The Devourer, at the door of want</h3>
+  <p>It comes when the body is failing: the snowed-in pass, the tainted well, the wound going bad three days'
+  ride from help. It has no voice and needs none, because its offer arrives as meat. Game where no game should be,
+  strength flooding into a starving frame, and only afterward the understanding of what was traded. Make the offer
+  only after your players have said out loud what they might be willing to do to survive, and never a moment sooner,
+  or it is you tempting them instead of the country. Its progress shows at every camp after: the served one eats
+  first, eats most, and stops asking what the meat is. Let the other players notice before the one who took it does.</p>
+  <p><strong>The ground it already holds.</strong> Every pass that has ever caught people, and there are a hundred of them. The high country above the
+  tree line in the Bitterroots and the Sierra, the cutoffs that looked shorter on the map, the wintering camps that
+  did not get resupplied. Its ground is anywhere hunger has once been the whole of the news, and hunger stays in
+  ground the way salt does. A cabin where a party ate badly forty years ago is still its cabin, and the family
+  homesteading there now have noticed that the stove draws wrong.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> Congregations, and they do not hide. A Devourer congregation is the best-fed settlement in a starving
+  county, and it is generous with it: they will feed your posse, and the food will be excellent, and they will be
+  hurt if you decline. Eating together is the whole of the worship. What they will not do is say grace, keep Lent,
+  or let anybody eat alone, and the third of those is the one that eventually frightens a guest.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> Stock gone from a locked barn with no blood on the straw and no tracks in the mud. A lean man who eats
+  four suppers in one evening in four different houses and is hungry after. And good cooking smelled clearly, a mile
+  from any house, in a country with nobody in it.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the beef herd came through fat off bad grass &middot; 2 a funeral with a closed coffin and no
+  undertaker's bill &middot; 3 two children fostered out of a house that has plenty &middot; 4 the church supper is
+  now every week &middot; 5 a trapper's line has been robbed all winter and nothing left behind &middot; 6 a man
+  came down off the pass alone and will not say how many went up</p>
 
-  <h3>The Whisperer &mdash; the door of the question</h3>
-  <p>It waits on curiosity, and its moment is the fact the players cannot reach: the name three sessions hunted, the
-  hour the train passes, what is really under the church. It answers questions no one has asked aloud &mdash; a
-  certainty arriving at the edge of sleep, sourceless and correct. The craft here is discipline: everything it says
-  must be true, every time, or it dies as a horror at your table. Its price rides inside the gift &mdash; each answer
-  carries one more truth the asker did not want and cannot now unknow. It is the Patron for the party's thinker, and
-  it will find the one soul at your table who cannot leave a locked box alone.</p>
+  <h3 id="patron-whisperer">The Whisperer, at the door of the question</h3>
+  <p>It waits on curiosity, and its moment is the fact your players cannot reach: the name they have hunted
+  for three sessions, the hour the train passes, what is really under the church. It answers questions nobody asked
+  aloud, as a certainty arriving at the edge of sleep, sourceless and correct. The craft here is discipline.
+  Everything it says has to be true, every single time, or it dies as a horror at your table. Its price rides inside
+  the gift: each answer carries one more truth the asker did not want and cannot now unknow. It is the Patron for
+  your party's thinker, and it will find the one soul at the table who cannot leave a locked box alone.</p>
+  <p><strong>The ground it already holds.</strong> It holds no ground at all, which is what makes it the hardest of the six to get away from. What it has
+  instead is correspondents: an assay office, a land office, a newspaper morgue, a telegraph key, a county clerk who
+  keeps beautiful books, a schoolmaster with a library of forty volumes and a great deal of time. Wherever this
+  country writes things down, it is already there, reading over a shoulder.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> Individuals, almost never groups, and that is the tell. Two Whisperer men in one town will not know
+  about each other, and will be genuinely furious to find out. From outside they look like the useful sort: the
+  fellow who always knows which judge is sitting, the woman who can tell you what a claim sold for in 1873. They are
+  helpful. They keep being helpful. Around the fourth or fifth time a man is right about something he had no way to
+  know, a posse stops being grateful.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> The same unusual word turning up in three separate conversations in one day. A dog that will not go
+  into a room where nothing is. And a letter answering a question that was never posted.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the newspaper printed a death two days early &middot; 2 the assayer resigned and burned his books
+  &middot; 3 four people dreamed the same street &middot; 4 a child is correcting the schoolmaster's dates
+  &middot; 5 the telegraph operator has stopped sleeping &middot; 6 somebody has been buying up old survey
+  maps</p>
 
-  <h3>The Cold Deep &mdash; the door of hurt</h3>
-  <p>It comes to the grieving and the broken, and never during the horror &mdash; after. The shaking hour past
-  midnight when it is over; the day after the funeral; the first camp after a soul has Broken at 0 Nerve. It does not
-  offer power. It offers relief &mdash; an end to the shaking &mdash; and relief is the hardest offer a player ever
-  refuses on behalf of a hurting character. Its price is paid in subtraction, and you should run it that way: the
-  character stops flinching, then stops weeping, then stops laughing. Roll no dice for any of it. Just let the table
+  <h3 id="patron-colddeep">The Cold Deep, at the door of hurt</h3>
+  <p>It comes to the grieving and the broken, and it never comes during the horror. It comes after: the
+  shaking hour past midnight when the thing is over, the day after the funeral, the first camp after a soul has
+  Broken at 0 Nerve. What it offers is relief, an end to the shaking, and relief is the hardest offer a player ever
+  refuses on behalf of a character who is hurting. Its price is paid in subtraction, and you should run it that way.
+  The character stops flinching, then stops weeping, then stops laughing. Roll no dice for any of it. Let the table
   watch a friend go quiet.</p>
+  <p><strong>The ground it already holds.</strong> Water that does not move. Wells, cisterns, stock tanks, a lake with no outlet, the flooded lower levels
+  of any mine that has ever been abandoned wet. Add to that every house where somebody sat up all night with a body,
+  and every room a family has shut the door on and stopped going into. In a hard winter its ground doubles, and there
+  is nothing anybody can do about that.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> Cells: four to nine people, quiet, orderly, and kind. They are the ones who turn up after a fire with
+  blankets and no questions, and they are extremely good at it, and everyone in the county is glad of them. What
+  gives them away is that none of them are afraid of anything, including the things that ought to frighten a person,
+  and that the widows they take in stop visiting their own kin.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> Lamps guttering in a still room with the door shut. A stock tank iced at the edges in October. And the
+  dying reporting, clearly and with some surprise, that it is easy.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the well went sweet and nobody will drink from it &middot; 2 a woman came back from the funeral and
+  put the mourning away that night &middot; 3 the schoolhouse is cold on one side &middot; 4 three men went down
+  the shaft and one came up calm &middot; 5 the doctor has stopped charging &middot; 6 nobody in the house has
+  raised their voice in a month</p>
 
-  <h3>The Long Trail &mdash; the door of the grave</h3>
-  <p>It bargains exactly once, and its circumstance is a death &mdash; there at the table, with the body still warm
-  and the players still silent. That is the hour the rider is on the ridge. One offer, in plain terms, no haggling;
-  refused, it touches its hat brim and is gone, and it does not come back for that soul. Never offer twice &mdash;
-  scarcity is the whole of its power, and the table must learn the refusal was real. If the deal is taken, remember
-  that those it carries back come back a little wrong, and that the door it opened stays ajar: the returned soul sees
-  the dusk rider now on every far ridge, and knows who it is waiting for.</p>
+  <h3 id="patron-longtrail">The Long Trail, at the door of the grave</h3>
+  <p>It bargains exactly once, and its circumstance is a death: there at the table, with the body still warm
+  and your players still silent. That is the hour the rider is on the ridge. One offer, in plain terms, no haggling.
+  Refused, it touches its hat brim and is gone, and it does not come back for that soul. Never offer twice. Scarcity
+  is the whole of its power, and the table has to learn that the refusal was real. If the deal is taken, remember
+  that the ones it carries back come back a little wrong, and that the door it opened stays ajar: the returned soul
+  sees the dusk rider now on every far ridge, and knows who it is waiting for.</p>
+  <p><strong>The ground it already holds.</strong> Roads, and specifically the ones that have killed people. The dry crossings, the cutoffs somebody
+  recommended, the emigrant graves fenced with wagon iron, the twelve miles of any trail where a train lost its
+  animals. It holds every burying ground that has a gate, and it is very particular about gates. A grave off on its
+  own by the road is its ground twice over.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> It has the fewest servants of the six and the most useful ones. Undertakers, teamsters, outriders, the
+  men who carry the mail through country the mail should not go through: people whose work is moving the dead, or
+  moving past them without stopping. They are not a cult and would be baffled to be called one. They simply know
+  certain courtesies, they perform them without discussion, and they will not travel with anybody who refuses to.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> A horse that will not pass one particular spot on a road it has walked a hundred times. A rider on the
+  ridge at dusk who is gone at the second look and was never any nearer. And a fresh grave whose date is next
+  week.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the stage came in on time with nobody driving &middot; 2 the undertaker has ordered ahead &middot;
+  3 a man buried in March was seen in June and said nothing &middot; 4 the mail rider will not take the north road
+  &middot; 5 someone left the burying-ground gate open and the town is upset out of proportion &middot; 6 a dog has
+  sat at the same point on the trail for four days</p>
 
-  <h3>The Thing Beneath the Mountain &mdash; the door of the strike</h3>
-  <p>The one Patron that pays first and bargains after. Its circumstance is prosperity: the vein too rich for the
-  ground it sits in, the claim sold suspiciously cheap, the town growing faster than any honest town grows. It seldom
-  addresses the players at all &mdash; it works through the diggings and the money, and every dollar out of that
-  ground is a signature on its paper. Run it as economics before you run it as horror: the players profit, the town
-  booms, and only slowly does the arithmetic of what is waking underneath come due. It corrupts towns, not souls,
-  and lets the town do the rest to the players.</p>
+  <h3 id="patron-thingbeneath">The Thing Beneath the Mountain, at the door of the strike</h3>
+  <p>The one Patron that pays first and bargains afterward. Its circumstance is prosperity: the vein too rich
+  for the ground it sits in, the claim sold suspiciously cheap, the town growing faster than an honest town grows.
+  It seldom addresses your players at all, because it works through the diggings and the money, and every dollar out
+  of that ground is a signature on its paper. Run it as economics before you run it as horror. The players profit,
+  the town booms, and only slowly does the arithmetic of what is waking underneath come due. It corrupts towns
+  rather than souls, and then lets the town do the rest to the players.</p>
+  <p><strong>The ground it already holds.</strong> Seams. The bad veins the Cornish crews will not work and will not explain, the deep levels on the
+  Comstock where the rock comes up too hot to hold, a hundred and sixty acres of worthless slope above Leadville
+  that somebody paid eleven thousand dollars in gold for. Its ground grows every year, because its ground is
+  wherever men have dug, and this country digs faster every season. Butte is the clearest case and the least useful
+  one, because Butte is already lost and a lost town has nothing left to lose in front of your players.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> Companies. It is the only one of the six with a payroll, and that is the whole horror of it: the cult
+  files quarterly returns. From outside it looks like a well-run concern that pays on time, houses its men decently,
+  and has an unusually low turnover in the deep levels for reasons the bookkeeper is not curious about. There is no
+  altar to find. There is a ledger, and the ledger is worse.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> Assay results that are better than the ore. A shift that will not go below the fourth level and will
+  not put a reason in writing. And a sound past the silence when the pumps stop, patient and regular, which the old
+  hands have agreed among themselves is water.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the company bought the water rights for the whole valley &middot; 2 four men are deaf in one ear and
+  all four worked the same face &middot; 3 the new levels are being timbered by outsiders &middot; 4 the assay
+  office burned &middot; 5 wages went up and nobody asked &middot; 6 the shaft is being sunk past any seam on the
+  survey</p>
 
-  <h3>The Red Sermon &mdash; the door of the flock</h3>
-  <p>It rarely wants the players. It wants the crowd around them, and so it comes at the table sideways &mdash;
-  through the revival tent, the new church, the charity that is feeding the hungry and filling the pews. Its moment
-  is the moment your players begin to love a congregation, a town, a good man in a pulpit. What it offers a soul is
-  legitimate success &mdash; full pews, a town's love, a gospel that visibly works &mdash; which is why it is the
-  Patron that catches Preachers and Prophets who set out meaning well. Fight it as a rival for people, not a monster
-  in the dark: every session the players spend elsewhere, it gains a family, a deacon, a street. The horror is
-  arithmetic, and the players can read it in the faces at the church socials.</p>
+  <h3 id="patron-redsermon">The Red Sermon, at the door of the flock</h3>
+  <p>It rarely wants your players. It wants the crowd around them, so it comes at the table sideways: through
+  the revival tent, the new church, the charity that is feeding the hungry and filling the pews. Its moment is the
+  moment your players begin to love a congregation, a town, a good man in a pulpit. What it offers a soul is
+  legitimate success, full pews and a town's love and a gospel that visibly works, which is why it catches Preachers
+  and Prophets who set out meaning entirely well. Fight it as a rival for people rather than a monster in the dark.
+  Every session your players spend elsewhere, it gains a family, a deacon, a street. The horror is arithmetic, and
+  they can read it in the faces at the church socials.</p>
+  <p><strong>The ground it already holds.</strong> It holds no ground, because it travels, and that is what makes it the only one of the six that can
+  arrive somewhere your players have already made safe. Its ground is the circuit: brush arbors, tent poles left
+  standing in a field, a new church with fresh paint and a subscription list, the third county in a row where a good
+  revival came through last spring. Ride the circuit backward and the towns get quieter the further back you go.</p>
+  <p><strong>Who serves it, and how they look from outside.</strong> Congregations who do not know, which makes them the only cult in this book whose members are innocent.
+  From outside they look like the best thing that ever happened to a hard county. The drunks dry out. The fighting
+  stops. The collection plate goes round twice and the money goes where it was promised. What is wrong is
+  underneath: a year on, the town is smaller, and nobody can name who left, and the ones who remain have all begun
+  to say the same phrase.</p>
+  <p><strong>Three signs, to drop without explaining.</strong> A hymn sung in unison by people who could not have learned it. A tent that goes up in a night with no
+  wagons on the road. And a good man in a pulpit whose face is very slightly wrong, in the way a copied signature is
+  wrong.</p>
+  <p class="note"><strong>d6, what it has already done within a day's ride:</strong> 1 the revival came back a second year &middot; 2 the collection has outgrown the town &middot; 3 four
+  families sold up in one week and left no address &middot; 4 the new deacon is somebody's dead brother's name
+  &middot; 5 the schoolhouse is being used for meetings &middot; 6 the preacher has stopped needing to eat</p>
 
   <div class="keeper-note"><span class="kn-tag">The veteran's rules</span>Four rules carry all six. A Patron makes
   its offer at the moment of weakness it owns and not before &mdash; hold the offer you have planned until the door
@@ -2382,15 +2503,30 @@ CH15 = f"""<!-- XV -->
   dark, and a Keeper who lights all six of these lamps at once has built a map instead of a country.</p>
 
   <h2 id="powers-redemption">Redemption, and the Golden Circle</h2>
-  <p>There is a country on the California and Arizona line that the United States does not admit exists and does not
-  presently have the appetite to remove. It calls itself <strong>Redemption</strong>. It has a capital of nine thousand
-  souls, a printing press, a customs house, two newspapers that agree with each other, and a flag that is almost but
-  not exactly the one that lost. It has been there eleven years. Twice a year somebody in Washington proposes doing
-  something about it, and twice a year the arithmetic of doing something about it is laid out and the proposal dies.</p>
-  <p>Redemption is not primarily a horror. It is a functioning polity of stubborn, frightened, ordinary people, a good
-  many of whom came out because there was nothing to go back to, and it should be played that way. Its wheat is real.
-  Its schools are real. A rider who behaves himself can eat well there and be treated decently, and will notice that
-  the decency has an edge on it.</p>
+  <p>There is a country on the California and Arizona line that the United States does not admit exists and has no
+  present appetite for removing. It calls itself <strong>Redemption</strong>, and it is entirely open about what it
+  intends: it means to make itself a new Confederacy. A second nation on this continent, with its own constitution
+  already drafted and printed, its own scrip, a militia in grey that drills on Saturdays, and a flag that is almost
+  but not exactly the one that lost. The schoolbooks say so. It is painted on the wall of the customs house. Eleven
+  years of saying it out loud have made it ordinary there, and the ordinariness is the part a rider from outside
+  finds hardest to sit with.</p>
+  <p>The capital is <strong>Jubilee</strong>, nine thousand souls in the lee of the Cargo Muchacho hills. The name was
+  chosen by men who knew their Leviticus perfectly well, understood exactly which year of release they were invoking,
+  and took it anyway; ask one of them about it and he will hold your eye the whole time he answers. The town has a
+  printing press, two newspapers that agree with each other, a seminary, a bank of its own, and a spur off the
+  Southern Pacific that ends at the depot and goes nowhere after.</p>
+  <p>Everyone in the Territories who has never been to Jubilee knows one thing about it: <strong>the only way in is by
+  rail</strong>. West of the city lie forty miles of sand hills that no wagon has crossed and no horse crosses twice.
+  East is the river and the customs post. North and south is lava and dry wash and nothing to drink. The story gets
+  told with great confidence in Yuma and Tucson and San Diego by men who have never been within a hundred miles of the
+  place, and the men who have been do not trouble to correct it, which is worth noticing on its own. Whether it is
+  strictly true is yours to decide, and it is a better decision than it looks: a city with one door is a siege, a
+  trap, and a smuggler's fortune all at once, and your players will work out which of the three they are living in.</p>
+  <p>Play Redemption as a working country before you play it as a horror. Its wheat is real and its schools are real,
+  and a rider who behaves himself will eat well there and be treated with courtesy. A good many of the people came out
+  because there was nothing at all to go back to. What they have built has an edge on it that a visitor feels inside a
+  day and cannot name until the third: everyone is very polite, everyone is armed, and nobody asks where you were in
+  the war, because they have already decided.</p>
   <p>The <strong>Golden Circle</strong> is the thing inside it. An older society with an older name, resurgent, well
   funded, and roughly one part unreconstructed politics to one part something considerably worse. Its officers believe
   they are restoring a nation. What they are actually doing, and have been doing since before Redemption existed, is
@@ -2403,43 +2539,92 @@ CH15 = f"""<!-- XV -->
   find the ledger long before they find out who wrote the list.</div>
 
   <h2 id="powers-spaniard">The Mad Spaniard</h2>
-  <p>The Player's Book gives him as a legend and gives no more, and you should hold that line for a long time. He is
-  the single most useful figure in this chapter precisely because he can be met and cannot be resolved.</p>
-  <p>What is consistent across a hundred and forty years of tellings: a courteous gentleman in a good coat forty years
-  out of fashion, met on a road at an hour when no one should be on it, who knows the traveller's business and asks
-  after their people by name. What is consistent across the tellings that come from people who work the Old Dark: he
-  turns up shortly before something changes, he gives one piece of accurate advice, and he takes nothing at all.</p>
-  <p>You do not need to decide what he is, and this chapter recommends you do not. What you should decide, and write
-  down, is <strong>which of the four readings of the Rockies alliance he belongs to</strong> — see below — because he
-  reads completely differently under each, and the players will eventually ask him a question you have to answer.</p>
+  <p>Nobody uses his name. Along four hundred miles of road he is <em>the Mad Spaniard</em> and nothing else, and you
+  should let him stay that way for years. He is the most useful figure in this chapter for one reason: he can be met
+  and he cannot be resolved.</p>
+  <p>His name is <strong>Tristan de la Sombra</strong>, and he came into this country in the 1540s with an entrada
+  that went out after a river and a city and found neither.</p>
+
+  <h3>What happened on the Llano</h3>
+  <p>The record covers it in a sentence. A party was detached to follow a watercourse east. It did not come back. The
+  chronicle lists the men among the lost and moves on without stopping, and that is the whole of what was written
+  down. What was not written down is the rest of it: the grass closing behind them and leaving no trail, the plain
+  running out past every estimate any of them could make and then running out further, the horses going first and the
+  men after. Somewhere in the middle of all that space the captain's mind came apart. Starvation did half the work.
+  The scale of the country did the other half, and that half does not mend.</p>
+  <p>Every man who rode out with him died. He did not, and the reason is the part that matters. In his last clear
+  hours he was begging aloud for terms from anything at all that would hear him, and something heard. He was willing.
+  Hold on to that: no trick was worked on him and no bargain was pressed on him. He asked, out loud, in an empty
+  country, and got an answer.</p>
+  <p>Three hundred and forty years later he is still walking, and the madness never left him. It only slowed down.</p>
+
+  <h3>Meeting him</h3>
+  <p>He is met on a road at an hour when nobody should be on it. He is unfailingly courteous. He knows the traveller's
+  business, and he asks after their people by name, and he gets the details right, and one detail is always wrong in a
+  way nobody notices until later.</p>
+  <p>He wears what he wore. Doublet and trunk hose, a short cloak, a plumed hat, boots kept better than the weather
+  allows; a cuirass and a morion sometimes, though far less often than the stories claim, and never on a road where
+  armour would get him remarked on. People notice that something is off about him a good while before they can say
+  what, and when they finally reach for it they land on the clothes. <strong>Dated.</strong> Out of fashion. Nobody on
+  this continent can place them within three centuries, so a traveller does the arithmetic he is able to do and
+  settles on an eccentric, an actor off a border stage, a gentleman of the old Mexican families gone about in his
+  grandfather's things. Then he is a day down the road before he thinks about the hat again.</p>
+  <p>What is consistent in the tellings that come from people who work the Old Dark: he turns up shortly before
+  something changes, he gives one piece of accurate advice, and he takes nothing whatsoever. In the mining camps he
+  warns men off the bad veins and is thanked for it. On the Llano, which he has never really left, he is said to have
+  ridden a season with the comancheros and to have been the reason they stopped. In the Rockies they say he is going
+  from gathering to gathering with a proposal.</p>
+
+  <h3>What you have to decide</h3>
+  <p>You do not need to settle what he is now, and this chapter recommends you leave it open. What you should settle,
+  and write on the inside of your screen, is <strong>which reading of the Rockies gatherings he belongs to</strong>:
+  he plays completely differently under each, and sooner or later your players will ask him a question you have to
+  answer in his voice.</p>
   <ul class="dash">
-    <li>He is a Patron's herald, and the courtesy is the trap.</li>
-    <li>He is a man who made a bargain in 1740 and has spent the time since trying to unmake it.</li>
-    <li>He is nothing supernatural whatsoever and there have been eleven of him, which is worse.</li>
-    <li>He is on your players' side, has been for a century, and is losing.</li>
+    <li>He is a herald, and the courtesy is the trap, and the thing he made terms with in 1541 has been walking him
+    around this country ever since like a lamp on a pole.</li>
+    <li>He has spent three hundred years trying to unmake what he agreed to, and every accurate warning he has ever
+    given a stranger was an instalment against it.</li>
+    <li>He died on the Llano with the rest of them, and there have been eleven men since who found the coat. That is
+    the worst of the four and the easiest to run.</li>
+    <li>He is on your players' side, has been since before there was a country to be on a side in, and is losing.</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The one rule</span>He never lies and he never explains. Everything he
-  says is true and incomplete, and the incompleteness is always the part that would have helped. Play him warm. A
-  frightening thing that is kind is worth six that are not.</div>
+  says is true and incomplete, and the incomplete part is always the part that would have helped. Play him warm: a
+  frightening thing that is kind is worth six that are not. And let the madness show once a night, in something small
+  and wrong. He asks after a king who has been dead two hundred years. He thanks a man for a courtesy nobody
+  performed. He counts the party twice and gets a different number.</div>
 </section>
 
 <section class="page">
   {runhead('XV. The Powers of the Territory')}
   <h2 id="powers-mother">The Dread Mother</h2>
-  <p>She is not one of the six Patrons and the cults that serve her are adamant about the distinction, which is the
-  first interesting thing about her. The six are appetites. She is a <em>purpose</em>, and a purpose is a great deal
-  harder to sit across a table from.</p>
-  <p>What her people say, when they will say anything, is that she is what the country was before it was a country,
-  and that everything the six Patrons do is an argument among her children. What they do is not frightening in
-  isolation: they tend springs, they keep birthing houses, they take in women nobody else will, and they are usually
-  the only medicine within forty miles. Their houses are clean and the food is good and nobody who goes in hungry
-  comes out hungry.</p>
+  <p>She is no Patron, and the women who serve her will correct you on that before they answer anything else. Nothing
+  is granted in her name. No Bargain is struck with her, no Devotion is paid to her, no Sign has ever answered a rite
+  that called on her, and a Hexer who tried it would get silence and would deserve it. What she has instead is a good
+  deal harder to sit across a table from: she has <strong>authority</strong>.</p>
+  <p>From the bayou parishes to the Sierra there are covens that share no rite, no vocabulary, and no enemy, and that
+  all acknowledge the same woman. The federation is loose on purpose. A coven keeps its own practice and its own
+  quarrels and answers to nobody about either; what it owes is a hearing when word comes, a tithe twice a year, and a
+  truthful answer if it is asked a question. That is the whole of the obligation, and it has held longer than anyone
+  can account for.</p>
+  <p>She governs, so far as anyone outside can establish, from <strong>old New Orleans</strong>: below Canal Street,
+  in the quarter the city has spent eighty years pretending is only its past. Every account agrees on the city. No
+  account comes from anybody who was received. Witches talk about going down to hear her the way other people talk
+  about a pilgrimage they fully intend to make and keep not making.</p>
+  <p>What her covens actually do is unfrightening in isolation. They tend springs. They keep birthing houses. They
+  take in women nobody else will take in, and forty miles from anywhere they are the only medicine there is. The
+  houses are clean, the food is good, and nobody who goes in hungry comes out hungry.</p>
   <p>The price is generational and it is paid by people who did not agree to it. A Mother's house asks for a child,
   eventually, from a family it has kept alive for three. It asks politely. It has always asked politely. Something on
   the order of one family in nine says yes, and the ones who say no are not punished in any way a marshal could
   charge, which is the difficulty.</p>
   <div class="keeper-note"><span class="kn-tag">Running her</span>The Dread Mother is the hardest thing in this
-  chapter to run and the most rewarding, because there is no monster to shoot and the harm is real. Never give the
+  chapter to run and the most rewarding, because there is no monster to shoot and the harm is real. Keep her at the
+  far end of a long hallway: a Keeper who puts her on stage has spent her, and what is left is an old woman in a chair
+  in a wet city, which is worth much less than the silence she came out of. Keep her at the
+  far end of a long hallway: a Keeper who puts her on stage has spent her, and what is left is an old woman in a chair
+  in a wet city, which is worth much less than the silence she came out of. Never give the
   players a raid to conduct. Give them a woman who is alive because of one of these houses, and a debt coming due on
   her granddaughter, and let them work out what an answer even looks like. If a fight happens it should be with a
   frightened midwife holding a lamp, and the players should feel bad about it afterward.</div>
@@ -2465,67 +2650,82 @@ CH15 = f"""<!-- XV -->
     report.</li>
   </ul>
 
-  <h2 id="powers-money">St. Louis Money</h2>
-  <p>Follow any bank in the Territories back far enough and it is a correspondent of a bank in St. Louis, and that
-  bank is a correspondent of one in New York, and somewhere in the middle of that chain the names stop being people.
-  This is the least dramatic thread in the chapter and the one that most changes how a campaign feels, because it
-  supplies the answer to the question a good table asks by its second year: <em>who benefits?</em></p>
-  <p>The useful figure is not a villain. It is a clerk. Somebody in an office on Olive Street approves the note that
-  funds the Vane Interest's purchase of the basin, and has approved eleven others like it this year, and has never
-  been west of Kansas City, and would be genuinely distressed to learn what happened at Coffin Wells. He is not
-  culpable and he is not innocent and he cannot be shot, and if the players ever get to St. Louis and find him he is
-  the most disquieting thing they have met.</p>
-  <div class="keeper-note"><span class="kn-tag">Running it</span>Money is a clock, not an enemy. When the players
-  ruin an interest, the capital behind it does not seek revenge — it writes off the loss and funds two more the
-  following spring, in two other counties, and the players will hear about those counties. Nothing they do is
-  pointless. Everything they do is local. Both of those are true and the tension between them is the campaign.</div>
+  <h2 id="powers-money">Kansas City Money</h2>
+  <p>Follow any bank in the Territories back far enough and it is a correspondent of a bank in Kansas City, and behind
+  that bank stand four or five men who own railroads. They are the least dramatic thread in this chapter and the one
+  that most changes how a campaign feels, because they answer the question a good table starts asking in its second
+  year: <em>who benefits?</em></p>
+  <p>The barons are worth understanding on their own terms, because nothing they do requires the Old Dark and all of
+  it helps. A road needs land, so it buys land, in strips two hundred miles long and in blocks nobody can see the
+  shape of from the ground. A road needs freight, so it needs a county to have something worth freighting, so it
+  lends into the county, so it owns the note on the mine and the note on the mill and eventually the note on the
+  bank. None of that is a conspiracy. It is a business, run well, by men who would be insulted to be called anything
+  but businessmen, and it puts the deed to half the Territories in about nine pockets.</p>
+  <p>The useful figure at the table is not one of the nine. It is a clerk in the land office on Delaware Street who
+  approved the note that funded the Vane Interest's purchase of the basin, and eleven others like it this year, and
+  who has never been west of Dodge, and would be genuinely distressed to learn what happened at Coffin Wells. He is
+  not culpable and he is not innocent and he cannot be shot to any purpose. If your players ever get to Kansas City
+  and find him, he will be the most disquieting thing they have met all campaign.</p>
+  <div class="keeper-note"><span class="kn-tag">Running it</span>Run money as a clock rather than an enemy. When
+  the players ruin an interest, the capital behind it takes no revenge at all: it writes the loss off, funds two more
+  the following spring in two other counties, and the players will hear about those counties. Nothing they do is
+  pointless. Everything they do is local. Both are true at once, and the tension between them is the campaign. Give
+  them exactly one lever that works, and make them earn it in meeting halls: a county that comes to hold its own
+  paper. A table that wins this one has done something no amount of shooting could have done.</div>
 </section>
 
 <section class="page">
   {runhead('XV. The Powers of the Territory')}
-  <h2 id="powers-rockies">The Alliance in the Rockies</h2>
-  <p>Beginning about four years ago, cults that have never cooperated with anything began cooperating. A Devourer
-  congregation in Montana and a Red Sermon revival circuit out of Denver moved money through the same three banks. A
-  Cold Deep cell wintered at a Thing Beneath the Mountain dig and neither side lost anybody, which has never once
-  happened. Somebody has bought a hundred and sixty worthless acres above Leadville for eleven thousand dollars in
-  gold. There are at least four separate written accounts of the same meeting, and no two of them agree on who called
-  it.</p>
+  <h2 id="powers-rockies">The Gatherings in the Rockies</h2>
+  <p>Beginning about four years ago, word started coming down out of the high country about gatherings. A Devourer
+  congregation out of Montana wintering above the Boulder River, three hundred strong, in weather that should have
+  killed half of them. A Red Sermon circuit that leaves Denver every spring and comes back forty people short. Cold
+  Deep men, who do not gather and have never gathered, camped nine weeks at a dry lake in the Sawatch and gone by
+  the time anybody rode up. A dig above Leadville on a hundred and sixty acres of worthless slope that somebody paid
+  eleven thousand dollars in gold for.</p>
+  <p>Here is the shape of it, and the shape is the whole difficulty. They are cultists of <strong>different
+  Patrons</strong>, in <strong>different places</strong>, and there is no evidence at all that any of them is trying
+  to reach any of the others. Nobody has caught two of these congregations in the same valley. Nobody has traced a
+  letter between them. They come up, they camp, they wait, and eventually they go home, and not one soul who has been
+  will say a word about what for. Four separate written accounts survive of a meeting nobody can place, and no two
+  agree on who called it or whether it was called at all.</p>
   <p>That is the evidence. <strong>This book does not tell you what it means, and that is deliberate.</strong> Four
-  readings fit every fact above. Pick one and write it on the inside of your screen, or leave it unpicked and let the
-  players' guesses decide it late. Every one of the four runs off these same pages.</p>
+  readings fit every fact above. Pick one and write it on the inside of your screen, or leave it unpicked and let your
+  players' guesses settle it late. All four run off these same pages.</p>
   <table class="lvl">
     <thead><tr><th>The reading</th><th>What it makes the campaign about</th><th>How the players find out</th></tr></thead>
     <tbody>
-      <tr><td><strong>They really are conspiring.</strong> The Patrons have agreed on something, which means they are
-      neither vast nor indifferent, which is the frightening part.</td><td>Cosmic politics. The players are ants who
-      have noticed the gardeners talking.</td><td>By getting into a room they should not be in, and understanding
-      perhaps a third of what is said.</td></tr>
-      <tr><td><strong>They are not working together at all.</strong> Six appetites happen to be converging on one
-      place for six unrelated reasons, and the pattern is in the observer.</td><td>Paranoia, and the cost of being
-      wrong. The players build a conspiracy and act on it.</td><td>Slowly and humiliatingly, after they have already
+      <tr><td><strong>They were all called, and all six answered.</strong> The Patrons have agreed on something,
+      which makes them neither vast nor indifferent, which is the frightening part.</td><td>Cosmic politics. The
+      players are ants who have noticed the gardeners talking.</td><td>By getting into a room they should not be in
+      and understanding perhaps a third of what is said in it.</td></tr>
+      <tr><td><strong>Nobody called anything.</strong> Six appetites are converging on one range for six unrelated
+      reasons, and the pattern lives entirely in whoever is drawing the map.</td><td>Paranoia, and the price of being
+      wrong. The players build a conspiracy and then act on it.</td><td>Slowly and humiliatingly, well after they have
       done something drastic about it.</td></tr>
-      <tr><td><strong>The cults are mistaken about who answers them.</strong> All six have been dealing with the same
-      thing wearing six faces, and it has been letting them believe otherwise for a century.</td><td>Revelation. Every
-      earlier session is re-read in a worse light.</td><td>One detail that appears in two rites that should share
-      nothing. Plant it in session four and let it sit.</td></tr>
-      <tr><td><strong>Something above them is compelling it.</strong> The Patrons are frightened, and are being made
-      to do this, and the Dread Mother's people have been saying so all along.</td><td>Scale. The horror the players
-      have spent a campaign learning to survive turns out to be somebody's livestock.</td><td>By a Patron asking them
-      for help, badly, and meaning it.</td></tr>
+      <tr><td><strong>The cults are mistaken about who answers them.</strong> All six have been dealing with one thing
+      wearing six faces, which is exactly why they gather in six places and never once meet.</td><td>Revelation. Every
+      earlier session gets re-read in a worse light.</td><td>One detail that turns up in two rites that should share
+      nothing at all. Plant it in session four and let it sit.</td></tr>
+      <tr><td><strong>Something above them is driving them up there.</strong> The Patrons are frightened, they are
+      being made to do this, and the Dread Mother's covens have been saying so all along.</td><td>Scale. The horror
+      the players spent a campaign learning to survive turns out to be somebody's livestock.</td><td>By a Patron
+      asking them for help, badly, and meaning it.</td></tr>
     </tbody>
   </table>
   <div class="keeper-note"><span class="kn-tag">The one thing not to do</span>Do not answer it early and do not answer
-  it twice. A table can carry an unanswered question for years and will do most of your work for you while it carries
-  it. The moment you confirm a reading, three quarters of the Rockies goes quiet, so confirm it in the last session of
-  the campaign or the one before, and never in a way that requires a speech.</div>
+  it twice. A table can carry an unanswered question for years and will do most of your work for you the whole time
+  it carries it. The moment you confirm a reading, three quarters of the Rockies goes quiet, so confirm it in the last
+  session of the campaign or the one before, and never in a way that needs a speech.</div>
 
   <h2 id="powers-together">Using More Than One</h2>
-  <p>These six touch, and the touching points are where a long campaign lives. The Golden Circle's parcel list is the
-  Rockies alliance seen from the outside by people who do not know what they are buying. The Mad Spaniard turns up in
-  Redemption and in the Rockies and is remembered in both. The Dread Mother's houses are the only institution in the
-  Territories that has ever refused St. Louis money, and no one has asked them why. The Pinkerton assigned to the
-  players will, by the end, have compiled a better account of the alliance than the players have, and will not be
-  believed by anyone in Chicago.</p>
+  <p>These six touch, and the touching points are where a long campaign lives. The Golden Circle's parcel list is
+  the Rockies gatherings seen from outside by men who have no idea what they are buying. The Mad Spaniard turns up in
+  Jubilee and in the Rockies and is remembered in both, and in Jubilee he is remembered from before the town was
+  there. The Dread Mother's houses are the only institution in the Territories that has ever turned down Kansas City
+  money, and nobody has thought to ask them why. And the Pinkerton assigned to your players will, by the end, have
+  compiled a better account of the gatherings than the players have, and will not be believed by a single soul in
+  Chicago.</p>
   <p>Two threads is a campaign. Three is a good long one. All six is a setting sourcebook, and a setting sourcebook is
   a different and lesser thing than a country your players are frightened of.</p>
 </section>
@@ -2556,6 +2756,7 @@ _chq = {
  "keepersyear": ("A single night is a campfire tale. A year of them, told right, is the country itself &mdash; and the players will swear they lived there.", "from a Keeper's ledger"),
  "basin": ("I have mapped every well in this country and named every town. It is the wells I no longer sleep for. A town is only people. A well is a door, and someone has been leaving them open.", "from the field-books of N. Ashby, naturalist"),
  "screen": ("Everything a Keeper needs mid-night fits on one card. Everything a Keeper fears fits in the pause before the players roll.", "from a Keeper's ledger"),
+ "powers": ("I have ridden through three of these and had supper with a fourth. My advice is the same as my father&rsquo;s: know which one owns the ground you are standing on, and never say the name of a second one while you are standing on it.", "Eb Tuttle, trapper"),
 }
 for _cid,(_t,_s) in _chq.items():
     BODY = _inject_quote(BODY, _cid, _t, _s)
@@ -2601,7 +2802,14 @@ KEEP_INDEX = [
     ("Grit (running)", "rewards"), ("Carrying the Marked", "rewards"),
     ("Running one who Came Back", "returned"), ("The Returned (running)", "returned"),
     ("Hunger (running one)", "returned"), ("Feeding a Returned soul", "returned"),
-    ("The Patrons at the table", "patrons-table"), ("The Dark's Wages", "rewards"),
+    ("The Old Dark (what it is)", "patrons-olddark"),
+    ("The six, and the depth", "patrons-olddark"),
+    ("The Patrons at the table", "patrons-table"),
+    ("The Devourer", "patron-devourer"), ("The Whisperer", "patron-whisperer"),
+    ("The Cold Deep", "patron-colddeep"), ("The Long Trail", "patron-longtrail"),
+    ("The Thing Beneath the Mountain", "patron-thingbeneath"),
+    ("The Red Sermon", "patron-redsermon"),
+    ("The Dark's Wages", "rewards"),
     ("The Cast", "cast"), ("An NPC in three lines", "cast"),
     ("Reaction &amp; morale", "cast"), ("Folk of the frontier", "cast"),
     ("The town as a character", "cast"), ("Factions", "cast"),
@@ -2642,13 +2850,17 @@ KEEP_INDEX = [
     # --- XV. The Powers of the Territory ---
     ("The Powers of the Territory", "powers"),
     ("Redemption (the new Confederacy)", "powers-redemption"),
+    ("Jubilee (Redemption's capital)", "powers-redemption"),
     ("The Golden Circle", "powers-redemption"),
     ("The Mad Spaniard", "powers-spaniard"),
+    ("Tristan de la Sombra", "powers-spaniard"),
     ("The Dread Mother", "powers-mother"),
+    ("The covens (the federation)", "powers-mother"),
     ("The Pinkertons", "powers-pinkertons"),
-    ("St. Louis money", "powers-money"),
-    ("The Alliance in the Rockies", "powers-rockies"),
-    ("The four readings (the alliance)", "powers-rockies"),
+    ("Kansas City money", "powers-money"),
+    ("The railroad barons", "powers-money"),
+    ("The Gatherings in the Rockies", "powers-rockies"),
+    ("The four readings (the gatherings)", "powers-rockies"),
 ]
 new_html = build_index(
     new_html, curated=KEEP_INDEX, creatures=False,

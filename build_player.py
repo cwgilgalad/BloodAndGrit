@@ -3018,6 +3018,12 @@ body{ background:#525659; }
   his Bargain, a Dark Cultist serves in her Devotion, and a False Prophet feeds through his Gospel without ever quite
   learning whose plate he is filling. A Witch seldom deals with them at all. Her Craft is older and quieter and does not
   need them.</p>
+  <p>Six of them have names that hold still long enough to be written down, and those six are the only part of all
+  that depth which has ever answered anybody. Everything else down there is weather. That is why the country uses the
+  one name for the two things and never notices it is doing it: a teamster who says <em>the Old Dark</em> in a saloon
+  means the six, because the six are the part that talks back, and a Hexer who says it means the deep the six came out
+  of, because that is where his loan is drawn from. Neither of them is wrong. Take the phrase to mean whichever fits,
+  and understand that it is one ancient and indifferent thing being described from two distances.</p>
   <p>Nobody has written any of this down honestly. What follows is what the country says, which is a different thing:
   six sets of stories, collected off men who were drunk, frightened, or lying, and set out here in the order they are
   usually told. Your Keeper knows which parts are true. You are not going to find out by asking.</p>
@@ -3063,19 +3069,10 @@ body{ background:#525659; }
   told by somebody from the next county over, and it is never their own town, and if you ride to the town they name you
   will find a perfectly ordinary place where nobody remembers a revival.</p>
 
-  <div class="box">
-    <h4>The Mad Spaniard</h4>
-    <p>He is not a Patron and every story about him is attached to one. A gentleman in a good coat, forty years out of
-    date, met on a road at an hour when no one should be on it. He is unfailingly polite. He knows your business. He
-    asks after people you have not thought about in years, by name, and gets the details right, and one of the details
-    is always wrong in a way you do not notice until later.</p>
-    <p>The stories cannot agree on what he wants and are unanimous that he wants something. In the mining camps he
-    warns men off the bad veins and is thanked for it. On the Llano he is said to have ridden with the comancheros and
-    to have been the reason they stopped. In the Rockies they say he is going from cult to cult with a proposal. He has
-    been described the same way for a hundred and forty years by people with no reason to have compared notes, and the
-    description includes a scar he did not have in the earliest tellings.</p>
-    <p>Every soul who works the Old Dark hears of him eventually. A good many claim to have met him. A few have.</p>
-  </div>
+  <p class="note">There are other things told of out here that are none of the six and are spoken of in the same
+  breath as them: riders who keep turning up in the wrong century, houses that keep their own accounts, a woman down
+  in New Orleans that certain kinds of people go to hear. Ask around in the game. Your Keeper knows, and the finding
+  out is worth more to you than the reading would have been.</p>
 </section>
 
 <!-- ===================== VIII. SKILLS ===================== -->
