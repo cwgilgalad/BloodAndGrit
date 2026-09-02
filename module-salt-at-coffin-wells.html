@@ -379,7 +379,9 @@ body{ background:#525659; }
 </section>
 
 <!-- ===================== EPIGRAPH ===================== -->
-<section class="page">
+<!-- nonum: front matter. The cover is .title-page and excluded already; these two are the only
+     other sheets in any of the six books that a reader does not expect a number on. -->
+<section class="page nonum">
   <div class="quote" style="margin-top:120px;">
     "A banker will tell you a debt is a number. It is not. It is a thing you have promised,
     and out here the things you promise come to collect in person."
@@ -1083,8 +1085,14 @@ body{ background:#525659; }
         var spans=runhead.querySelectorAll('span');
         for(var i=0;i<spans.length;i++){ var t=spans[i].textContent.trim(); if(t && t.indexOf('Blood')<0){ chap=t; break; } }
       }
-      var numbered=!!sec.querySelector(':scope > .pageno');
       var isCover=sec.classList.contains('title-page');
+      // Numbered unless the section says otherwise. It was the other way round until 2026-09-02,
+      // read off a hand-placed <div class="pageno"> that only the Player's Book shell carried --
+      // so the Keeper's Book printed 0 of 129 sheet numbers, the Bestiary 0 of 209, and each
+      // module 3 of 32, and nobody could tell from the source because finalize() writes the real
+      // number and the marker was only ever a flag. A reader expects a numbered page; that is the
+      // default a new chapter should inherit without anyone remembering to add anything.
+      var numbered=!isCover && !sec.classList.contains('nonum');
       var blocks=[].slice.call(sec.children).filter(function(n){ return n.nodeType===1 && !n.classList.contains('runhead') && !n.classList.contains('pageno'); });
       var isChapter=blocks.length && blocks[0].tagName==='H1';
       return {chap:chap, numbered:numbered, id:sec.id||null, isCover:isCover, isChapter:isChapter, blocks:blocks};
@@ -1483,6 +1491,13 @@ body{ background:#525659; }
         return;
       }
       if(sd.id && sd.blocks.length){ sd.blocks[0].id=sd.id; }
+      // A chapter always opens a sheet, and so does front matter -- which after 2026-09-02 is
+      // exactly what `!numbered` means, since every other section is numbered by default. The
+      // two are still one test because they want the same thing: a cover, an epigraph and a
+      // Contents each own their sheet. Everything else FLOWS, which is the paginator's whole
+      // job, and is why the Keeper's Book came in two sheets shorter the day the default
+      // flipped: its sections had all been unnumbered, so each had been forcing a break it
+      // never needed.
       var forceFresh = sd.isChapter || !sd.numbered || cur===null;
       if(forceFresh){
         curGroup++;

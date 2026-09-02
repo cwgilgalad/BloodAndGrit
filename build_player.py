@@ -349,7 +349,9 @@ body{ background:#525659; }
 </section>
 
 <!-- ===================== EPIGRAPH ===================== -->
-<section class="page">
+<!-- nonum: front matter. The cover is .title-page and excluded already; these two are the only
+     other sheets in any of the six books that a reader does not expect a number on. -->
+<section class="page nonum">
   <div class="quote" style="margin-top:120px;">
     "We came west to be made new, and found instead that the country was older
     than newness, older than God, and had been waiting a long while in the quiet for company."
@@ -365,7 +367,7 @@ body{ background:#525659; }
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
-<section class="page" id="contents">
+<section class="page nonum" id="contents">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>Contents</span></div>
   <h1 class="chapter">Contents</h1>
   <p class="chapter-sub">What you will find in this book, and the order of it.</p>
@@ -470,7 +472,6 @@ body{ background:#525659; }
     lived and suffered it, with more care than you treat the things with teeth. See the guidance on the
     First Peoples in Chapter IV before you bring them to your table.</p>
   </div>
-  <div class="pageno">4</div>
 </section>
 
 <!-- ===================== II. HOW THE GAME IS PLAYED ===================== -->
@@ -567,7 +568,6 @@ body{ background:#525659; }
     Everything else at this table will lie to keep you breathing — including, in time, yourself."
     <span class="src">— attributed to a faro dealer in Leadwater, before the fire</span>
   </div>
-  <div class="pageno">5</div>
 </section>
 
 <!-- ===================== III. MAKING A CHARACTER ===================== -->
@@ -593,7 +593,6 @@ body{ background:#525659; }
     thumb: Beats and rounds are for the gunfight, the scene is for the situation, the session is for the evening, and
     downtime and the arc are for everything in between.</p>
   </div>
-  <div class="pageno">6</div>
 </section>
 
 <section class="page" id="character">
@@ -720,7 +719,6 @@ body{ background:#525659; }
     <li><strong>What is your vice?</strong> Drink, the cards, laudanum, violence, the Word. It will comfort you and it will cost you.</li>
     <li><strong>What keeps you moving?</strong> A debt, a grave to find, a person to reach, a sin to outrun. Survival needs a reason.</li>
   </ul>
-  <div class="pageno">7</div>
 </section>
 
 <section class="page">
@@ -774,7 +772,6 @@ body{ background:#525659; }
     <em>Blood &amp; Grit</em> hinges on the nine points directly — the dark and the divine care far more whether you are
     holy, unholy, or merely a frightened soul who has not yet decided which.</p>
   </div>
-  <div class="pageno">8</div>
 </section>
 
 <!-- ===================== IV. ORIGINS ===================== -->
@@ -1064,7 +1061,6 @@ body{ background:#525659; }
   frontier's Chinese Prospectors, Gamblers, Drifters, and Bounty Hunters are all a matter of record. Their district,
   their family across the water, and what the remittance is for go into the four Questions, not into a stat.</p>
 
-  <div class="pageno">9</div>
 </section>
 
 <!-- ===================== V. CALLINGS ===================== -->
@@ -1107,7 +1103,6 @@ body{ background:#525659; }
   your save proficiencies by level, added to saves along with the keyed ability; <strong>Features</strong> are gained at the
   listed level. The number beside <strong>Trained Skills</strong> in the statline, plus your WIT modifier, is how many skills
   you begin trained in; you gain a skill increase at 3rd, 5th, 7th, and 9th level.</p>
-  <div class="pageno">10</div>
 </section>
 
 <section class="page">
@@ -1205,7 +1200,6 @@ body{ background:#525659; }
       <li><strong>The Trailsman.</strong> You handle and run down mounts with ease, and ride harder than any man you hunt. <em>Mastery (10th):</em> once per scene, you run a quarry to ground that no horse and no head start could have saved.</li>
     </ul>
   </div>
-  <div class="pageno">11</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
@@ -1280,7 +1274,6 @@ body{ background:#525659; }
       <li><strong>The Hunter's Trail.</strong> You never lose a trail and gain +2 against ambush and to read a quarry. <em>Mastery (10th):</em> once per scene, study a foe a moment and learn the weakness that undoes it.</li>
     </ul>
   </div>
-  <div class="pageno">12</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
@@ -1477,7 +1470,6 @@ body{ background:#525659; }
       <li><strong>The Mechanic.</strong> Your Favor pool grows, and once per scene you may set a die to any face you please. <em>Mastery (10th):</em> once per scene, stack fate entirely — take the better result on every roll for a round.</li>
     </ul>
   </div>
-  <div class="pageno">13</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
@@ -1562,7 +1554,6 @@ body{ background:#525659; }
       <li><strong>The Long Rifle.</strong> Ignore the penalty at the first range increment, and Aim as a single Beat. <em>Mastery (10th):</em> a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted.</li>
     </ul>
   </div>
-  <div class="pageno">14</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
@@ -1641,7 +1632,6 @@ body{ background:#525659; }
       <li><strong>The Shield.</strong> You may intercept a blow meant for an ally at your side. <em>Mastery (10th):</em> once per scene, become the only target the enemy may strike, or turn aside a killing blow aimed at another.</li>
     </ul>
   </div>
-  <div class="pageno">15</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
@@ -1743,7 +1733,6 @@ body{ background:#525659; }
       <li><strong>The Trapper.</strong> You set deadfalls, snares, and pit-traps swiftly and well; a trap on ground you have readied forces the unwary to save or be caught — Grabbed, Slowed, or wounded as the trap allows. <em>Mastery (10th):</em> once per scene, a sprung trap is ruinous — the quarry, beast or man, is caught fast and badly hurt.</li>
     </ul>
   </div>
-  <div class="pageno">16</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
@@ -1865,7 +1854,6 @@ body{ background:#525659; }
       <li><strong>The Powder Claim.</strong> Prepare extra charges, and your bursts gain +5 feet of radius. <em>Mastery (10th):</em> once per scene, set off a single ruinous blast that can level a building, or a monster.</li>
     </ul>
   </div>
-  <div class="pageno">17</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">V. Worldly Callings</span><span>Blood &amp; Grit</span></div>
@@ -1945,7 +1933,6 @@ body{ background:#525659; }
       <li><strong>The Surgeon.</strong> Your Treat Wounds restores an extra die, and you stabilize the dying as a single Beat. <em>Mastery (10th):</em> once per scene, drag a freshly-fallen ally back to their feet and fighting.</li>
     </ul>
   </div>
-  <div class="pageno">18</div>
 </section>
 
 <!-- ===================== VI. CALLINGS OF FAITH ===================== -->
@@ -1983,7 +1970,6 @@ body{ background:#525659; }
     a table wishes to portray such a figure, do so as a person of faith — with the care urged in Chapter IV — and leave the
     sacred specifics of any living tradition off the character sheet entirely.</p>
   </div>
-  <div class="pageno">19</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
@@ -2085,7 +2071,6 @@ body{ background:#525659; }
       <li><strong>The Warding Way.</strong> Craft charms that turn aside the dark and its lesser servants. <em>Mastery (10th):</em> once per scene, draw a circle of protection no uncanny thing may enter.</li>
     </ul>
   </div>
-  <div class="pageno">20</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VI. Callings of Faith</span></div>
@@ -2187,7 +2172,6 @@ body{ background:#525659; }
       <li><strong>The Shepherd.</strong> Bless allies who can hear you and ward them against fear. <em>Mastery (10th):</em> once per scene, raise a sanctuary that shields all nearby from harm for a round.</li>
     </ul>
   </div>
-  <div class="pageno">21</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
@@ -2278,7 +2262,6 @@ body{ background:#525659; }
       <li><strong>The Wrathful Testament.</strong> Gain a bonus against the uncanny and those who serve it. <em>Mastery (10th):</em> once per scene, your smite banishes a lesser horror outright.</li>
     </ul>
   </div>
-  <div class="pageno">22</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VI. Callings of Faith</span></div>
@@ -2379,7 +2362,6 @@ body{ background:#525659; }
       <li><strong>The Land Pact.</strong> Command small workings of wind, water, ember, and stone. <em>Mastery (10th):</em> once per scene, loose a great elemental working — a sudden storm, a swallowing earth.</li>
     </ul>
   </div>
-  <div class="pageno">23</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
@@ -2573,7 +2555,6 @@ body{ background:#525659; }
       <li><strong>The Warden.</strong> Scribe wards that bar the uncanny and shield others from the Old Dark. <em>Mastery (10th):</em> once per scene, sanctify the ground around you, which no uncanny thing may cross.</li>
     </ul>
   </div>
-  <div class="pageno">24</div>
 </section>
 
 <!-- ===================== VII. THE HEXER ===================== -->
@@ -2593,7 +2574,6 @@ body{ background:#525659; }
   <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried was not a wolf, and it was not Abner. Salt the grave. Do not mark it.&rdquo;
     <span class="src">&mdash; Marshal T. Coyle, on a matter he would not enter in the ledger</span></div>
 
-  <div class="pageno">25</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
@@ -2699,7 +2679,6 @@ body{ background:#525659; }
       <li><strong>The Whisperer.</strong> Spend Devotion to pluck a secret from a mind or the air, and to whisper madness — confusion, fear, or a Dread Check. <em>Greater (9th):</em> once per session, speak the Unspeakable Word — unmake a mind, or wring one true and terrible answer from your Patron.</li>
     </ul>
   </div>
-  <div class="pageno">26</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VII. Callings of the Old Dark</span></div>
@@ -2806,7 +2785,6 @@ body{ background:#525659; }
       <li><strong>The Golden Calf.</strong> You and your faithful prosper — conjure good fortune and draw a sourceless income wherever you preach. <em>Greater (9th):</em> once per session, seal a covenant of plenty over a town for the arc, while the dark quietly mortgages the deceived.</li>
     </ul>
   </div>
-  <div class="pageno">27</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
@@ -2890,7 +2868,6 @@ body{ background:#525659; }
       <li><strong>The Spiritist.</strong> See and briefly question the recently dead; set a willing spirit to watch and warn (+5 Notice). <em>Greater (9th):</em> once per session, invite a willing spirit to act through you for a round, borrowing a skill or memory; the unwilling risks possession.</li>
     </ul>
   </div>
-  <div class="pageno">28</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VII. Callings of the Old Dark</span></div>
@@ -2990,7 +2967,6 @@ body{ background:#525659; }
       <li><strong>The Moon-Daughter.</strong> See in the dark; once a night take to the air until dawn; slip into a sleeper's dreams to glean or leave a secret. <em>Greater (9th):</em> once per session, ride the night sky to any place you have been, carrying your coven, and walk the dreams of the distant sleeping.</li>
     </ul>
   </div>
-  <div class="pageno">29</div>
   <div class="box">
     <h4>The Table of Familiars</h4>
     <p>Choose one when you make the Witch. The beast decides the boon, so choose the beast you want
@@ -3155,7 +3131,6 @@ body{ background:#525659; }
     on the one night it would have mattered, and the small wooden marker they put up after."
     <span class="src">— from a primer for greenhorns, sold for a dollar, worth more</span>
   </div>
-  <div class="pageno">31</div>
 </section>
 
 <!-- ===================== IX. EDGES ===================== -->
@@ -3252,7 +3227,6 @@ body{ background:#525659; }
     <li id="ix-e-the-second-voice"><strong>The Second Voice.</strong> (11th) Once per scene, work a Sign you know as a reaction rather than on your
       turn. Something in your throat does the speaking and it is not quite your accent.</li>
 </ul>
-  <div class="pageno">32</div>
 </section>
 
 <section class="page" id="calling-edges">
@@ -3332,7 +3306,6 @@ body{ background:#525659; }
     <li><strong>Witch — The Third Beast.</strong> (The Second Familiar, 11th) A third familiar comes to you and binds. The three of them will not be
       in the same county, and you will manage.</li>
   </ul>
-  <div class="pageno">33</div>
 </section>
 
 <!-- ===================== X. GOODS ===================== -->
@@ -3416,7 +3389,6 @@ body{ background:#525659; }
   spend one Beat to load the next round. A <strong>slow</strong> reload (the cap-and-ball revolver) means fully recharging the
   cylinder takes three rounds of dedicated work — which is why a wise gunhand carries a second loaded cylinder, or a second gun.
   Topping a capacity or repeating weapon back to full takes Beats equal to half its capacity, rounded up.</p>
-  <div class="pageno">34</div>
 </section>
 
 <section class="page">
@@ -3539,7 +3511,6 @@ body{ background:#525659; }
   into the Mark, the rider rolls <strong>Ride</strong> against the thing's Dread DC; on a failure the
   animal bolts, bucks, rears, or flatly refuses, and may throw its rider (see <em>Fighting from the Saddle</em>, Chapter XI).
   A mule rolls this with a bonus; a trained warhorse ignores ordinary frights altogether.</p>
-  <div class="pageno">35</div>
 </section>
 
 <section class="page">
@@ -3594,7 +3565,6 @@ body{ background:#525659; }
   </table>
   <p class="note">A <strong>spare loaded cylinder</strong> turns a slow cap-and-ball reload into a single Interact — the
   difference, often, between a story told and a stone carved.</p>
-  <div class="pageno">36</div>
 </section>
 
 <section class="page">
@@ -3652,7 +3622,6 @@ body{ background:#525659; }
       <tr><td>Tobacco &amp; papers</td><td class="c">25¢</td><td>Week's trail rations</td><td class="c">$3</td></tr>
     </tbody>
   </table>
-  <div class="pageno">37</div>
 </section>
 
 <section class="page">
@@ -3712,7 +3681,6 @@ body{ background:#525659; }
     You cannot un-see what comes for the one who saved a dollar on the salt."
     <span class="src">— Eb Tuttle, outfitter, Calvary Wells mercantile</span>
   </div>
-  <div class="pageno">38</div>
 </section>
 
 <section class="page">
@@ -3751,7 +3719,6 @@ body{ background:#525659; }
   the trouble with it. <strong>Coffin, lead-lined.</strong> A body sealed in lead and buried proper does not rise. Usually.
   <strong>Pinkerton file on a name.</strong> Bought quiet from an agency man: aliases, known associates, last verified
   whereabouts. The Keeper answers three plain questions about the name; the fourth costs more than money.</p>
-  <div class="pageno">39</div>
 </section>
 
 <section class="page">
@@ -3806,7 +3773,6 @@ body{ background:#525659; }
   <p>A hand-forged nail drawn from the door of a church that stood a hundred years and never burned. Driven into a
   threshold, a gatepost, or a wagon-board at dusk, no uncanny thing may cross that doorway until sunrise. In the
   morning the nail is only iron, its century spent in a single night.</p>
-  <div class="pageno">40</div>
 </section>
 
 <section class="page">
@@ -3894,7 +3860,6 @@ body{ background:#525659; }
     when you start to feel how many necks it has known, and how patient it is, and how well it fits."
     <span class="src">— Eb Tuttle, outfitter, declining to set a price</span>
   </div>
-  <div class="pageno">41</div>
 </section>
 <section class="page" id="conflict">
   <div class="runhead"><span class="l">XI. Conflict &amp; the Iron Code</span><span>Blood &amp; Grit</span></div>
@@ -3957,7 +3922,6 @@ body{ background:#525659; }
   <em>well</em>, and whether your own iron betrays you. A natural 20 shifts the result one step better as it does on any
   roll (Chapter II), and in a Strike it always <em>at least</em> hits; a natural 1 shifts one step worse, and always at
   least misses. The country humbles the sure.</p>
-  <div class="pageno">42</div>
 </section>
 
 <section class="page">
@@ -4053,7 +4017,6 @@ body{ background:#525659; }
   <strong>–CON</strong>, at which point you are dead, and out here dead is dead. A Fortitude save (DC 15) or a Medicine
   check (DC 15) can stop the bleeding; a point of Grit can keep you upright and acting one round more (Chapter II).</p>
   <p id="ix-dr"><strong>Damage Reduction (DR)</strong> and <strong>resistance.</strong> Some armor, hides, and unnatural toughness grant <strong>Damage Reduction</strong>: subtract that number from the Blood lost to each qualifying hit, so <em>DR 2 vs blades</em> turns a six-Blood knife wound into four. DR never lowers a hit below zero, and a noted limit (<em>vs blades</em>, <em>vs nonmagical</em>) means it helps only against that source. A creature with <strong>resistance</strong> to a kind of harm — fire, lead, the merely mortal — treats it as steep DR against that source and may shrug such blows off almost wholly; overcoming a resistance, with silver or fire or a blessed weapon, is often the whole of the problem.</p>
-  <div class="pageno">43</div>
 </section>
 
 <section class="page">
@@ -4102,7 +4065,6 @@ body{ background:#525659; }
       <li><strong>Thrown (dynamite, knife, bottle).</strong> –2 from a moving horse — and pray the fuse and the gallop agree.</li>
     </ul>
   </div>
-  <div class="pageno">44</div>
 </section>
 
 <section class="page">
@@ -4142,7 +4104,6 @@ body{ background:#525659; }
     and end a war. The difference was never the gun. It was the half-second she took that he did not."
     <span class="src">— Marshal T. Coyle, on the only lesson worth teaching</span>
   </div>
-  <div class="pageno">45</div>
 </section>
 
 <section class="page" id="nerve">
@@ -4201,7 +4162,6 @@ body{ background:#525659; }
   to count or to pray, a palsy of the hands, or the <em>Thousand-Yard Stare</em> — a flatness that costs –2 on Presence and
   Insight until lifted. They are treated by an Alienist, a Confession, or long safe rest among people who love you, which
   in this country is the rarest medicine of all. (The Keeper's Book carries a full table of them.)</p>
-  <div class="pageno">46</div>
 </section>
 
 <section class="page">
@@ -4335,7 +4295,6 @@ body{ background:#525659; }
     The dark only keeps — patient as a ledger, and twice as honest about what you owe."
     <span class="src">— attributed to the conjure-woman of Calvary Wells</span>
   </div>
-  <div class="pageno">47</div>
 </section>
 
 <section class="page">
@@ -4394,7 +4353,6 @@ body{ background:#525659; }
     stay, never in a hidden number. Use it to give cursed country real weight — and always leave a road back out: a church,
     a rite, a reason to ride for clean air before the land collects what it is owed.</p>
   </div>
-  <div class="pageno">48</div>
 </section>
 <section class="page" id="signs">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>XIII. Signs, Miracles &amp; Old Rites</span></div>
@@ -4625,7 +4583,6 @@ body{ background:#525659; }
   or taken. It does not burn, and the weather leaves it alone, and it will be standing when the town around it is a
   scatter of foundations. Backlash: you may never have another, you may not leave it for more than a season without it
   beginning to fail, and something will spend the rest of your life on the porch waiting to be asked in.</p>
-  <div class="pageno">49</div>
 </section>
 
 <section class="page" id="miracles">
@@ -4666,7 +4623,6 @@ body{ background:#525659; }
   <strong>Revival</strong>, the Shaman the <strong>Spirits</strong>, the Medicine Man the <strong>Mending</strong>,
   the Witch Hunter the <strong>Consecrations</strong>, and the Sister the <strong>Vigil</strong>. A Padre and a Preacher answer the same dark; they do not answer it
   with the same words, and this is where the difference is written down.</p>
-  <div class="pageno">24</div>
 </section>
 <section class="page">
   <div class="runhead"><span class="l">XIII. Signs, Miracles &amp; Old Rites</span><span>Blood &amp; Grit</span></div>
@@ -4840,7 +4796,6 @@ body{ background:#525659; }
   inside the room, the camp or the house may die: the dying do not go, the mortal wound waits, the sickness holds where
   it is. It does not cure any of it and morning still comes. What it buys is the hours, and the hours are usually what
   was wanted.</p>
-  <div class="pageno">24</div>
 </section>
 
 <section class="page">
@@ -4894,7 +4849,6 @@ body{ background:#525659; }
     before you ask the dark anything at all."
     <span class="src">— from a letter found unsent, signed only "your sister, what's left of her"</span>
   </div>
-  <div class="pageno">50</div>
 </section>
 <section class="page" id="advancement">
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>XIV. Advancement</span></div>
@@ -4979,7 +4933,6 @@ body{ background:#525659; }
     court does not adjourn."
     <span class="src">— Rev. Amos Teague, a sermon preached to four graves and one mourner</span>
   </div>
-  <div class="pageno">51</div>
 </section>
 
 <section class="page" id="play">
@@ -5018,7 +4971,6 @@ body{ background:#525659; }
   <p class="note">Note how the dice escalate dread, how the Preacher spends a resource to buy the party's Nerve back, how
   the Iron Code's Beats let Esther trade speed for a steadier shot, and how the Keeper narrates mechanics as sensation —
   never "you take four psychic damage," always the head that turns the wrong way.</p>
-  <div class="pageno">52</div>
 </section>
 
 <section class="page" id="conditions">
@@ -5052,7 +5004,6 @@ body{ background:#525659; }
       <tr><td>Stunned</td><td>Drop what you hold; lose all Beats this round; –2 Defense</td></tr>
     </tbody>
   </table>
-  <div class="pageno">53</div>
 </section>
 
 <section class="page" id="quickref">
@@ -5079,7 +5030,6 @@ body{ background:#525659; }
     The country settles every debt in the end."
     <span class="src">— the last line of the field manual, in every edition</span>
   </div>
-  <div class="pageno">54</div>
 </section>
 
 <!-- ===================== D. APPENDIX: A POSSE, READY-MADE ===================== -->
@@ -5313,7 +5263,6 @@ body{ background:#525659; }
       <div class="bigblank" style="height:300px; margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="pageno">55</div>
 </section>
 
 <!-- ===================== INDEX ===================== -->
@@ -5678,7 +5627,6 @@ body{ background:#525659; }
     <li class="ix-hd">Y</li>
     <li><a href="#ix-1885">Year of 1885, the</a><span class="pg">9</span></li>
   </ul>
-  <div class="pageno">56</div>
 </section>
 </div>
 <script>
@@ -5770,8 +5718,14 @@ body{ background:#525659; }
         var spans=runhead.querySelectorAll('span');
         for(var i=0;i<spans.length;i++){ var t=spans[i].textContent.trim(); if(t && t.indexOf('Blood')<0){ chap=t; break; } }
       }
-      var numbered=!!sec.querySelector(':scope > .pageno');
       var isCover=sec.classList.contains('title-page');
+      // Numbered unless the section says otherwise. It was the other way round until 2026-09-02,
+      // read off a hand-placed <div class="pageno"> that only the Player's Book shell carried --
+      // so the Keeper's Book printed 0 of 129 sheet numbers, the Bestiary 0 of 209, and each
+      // module 3 of 32, and nobody could tell from the source because finalize() writes the real
+      // number and the marker was only ever a flag. A reader expects a numbered page; that is the
+      // default a new chapter should inherit without anyone remembering to add anything.
+      var numbered=!isCover && !sec.classList.contains('nonum');
       var blocks=[].slice.call(sec.children).filter(function(n){ return n.nodeType===1 && !n.classList.contains('runhead') && !n.classList.contains('pageno'); });
       var isChapter=blocks.length && blocks[0].tagName==='H1';
       return {chap:chap, numbered:numbered, id:sec.id||null, isCover:isCover, isChapter:isChapter, blocks:blocks};
@@ -6170,6 +6124,13 @@ body{ background:#525659; }
         return;
       }
       if(sd.id && sd.blocks.length){ sd.blocks[0].id=sd.id; }
+      // A chapter always opens a sheet, and so does front matter -- which after 2026-09-02 is
+      // exactly what `!numbered` means, since every other section is numbered by default. The
+      // two are still one test because they want the same thing: a cover, an epigraph and a
+      // Contents each own their sheet. Everything else FLOWS, which is the paginator's whole
+      // job, and is why the Keeper's Book came in two sheets shorter the day the default
+      // flipped: its sections had all been unnumbered, so each had been forcing a break it
+      // never needed.
       var forceFresh = sd.isChapter || !sd.numbered || cur===null;
       if(forceFresh){
         curGroup++;

@@ -83,6 +83,14 @@ CHECKS = [
      "every built file in the tree matches its committed copy"),
     ("whitespace", ["audit_whitespace.py"],            SLOW,    False, True,
      "per-page bottom gaps, for a human to judge"),
+    # The PRINTED books, which nothing in this repo had ever looked inside. make_pdf.py counted
+    # pages and measured the sheet and stopped, so three faults lived in every print this project
+    # ever made: five of the six books had almost no page numbers, every link was a named
+    # destination that a phone reader will not follow, and no check had compared a Contents number
+    # with the page its own link lands on. SLOW because it reads six PDFs; it skips cleanly when
+    # they are not on disk, which is every tier before step 5 of the ship.
+    ("pdf",       ["audit_pdf.py"],                    SLOW,    False, False,
+     "every sheet numbered, every link an explicit page, every printed number honest"),
 ]
 
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
