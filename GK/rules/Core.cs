@@ -1131,7 +1131,7 @@ public static class Rules
     public static void ReseedEntropy() => Rng = new Random();
 
     /// <summary>A Tier as the books print it. It stopped at V until 2026-08-30, so every Tier VI
-    /// creature B6 added read as "T6" on its list row and in <see cref="TierNote"/> — the fifth
+    /// creature B6 added read as "T6" on its list row and in <see cref="ArithmeticNote"/>: the fifth
     /// Roman-numeral reader in one session to have been written to the old ceiling.</summary>
     public static string Roman(int t) => t switch
     { 1=>"I", 2=>"II", 3=>"III", 4=>"IV", 5=>"V", 6=>"VI", 7=>"VII", 8=>"VIII", 9=>"IX", 10=>"X",

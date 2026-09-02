@@ -146,11 +146,22 @@ def build_plan(args):
         plan.append((name, [sys.executable, str(ROOT / "audits" / argv[0])] + argv[1:],
                      ROOT, advisory, note))
 
+    # The BUILD belongs to --full as well as --app, and it cost three red CI runs to learn why.
+    # On 2026-08-30 a `<see cref="TierNote"/>` naming a member that has never existed went in with
+    # the fifteen-levels work. CI builds with -warnaserror, where CS1574 is fatal, so every push to
+    # main failed from that afternoon until 2026-09-02. Nobody saw it, for two reasons worth
+    # keeping: the session was about books, so --full was the tier being run and --full did not
+    # compile anything; and a plain incremental `dotnet build` reports only the warnings of the
+    # files it actually recompiled, so building GK/source over and over says "0 Warning(s)" while
+    # GK/rules sits untouched with a warning in it. Compiling here makes every tier above --quick
+    # agree with the gate that can actually stop a release.
+    if args.full or args.app or args.release:
+        dotnet = shutil.which("dotnet") or r"C:\Program Files\dotnet\dotnet.exe"
+        plan.append(("build", [dotnet, "build", "-c", "Release", "-warnaserror"],
+                     ROOT / "GK/source", False, "0 warnings, 0 errors, the same flags CI uses"))
     if args.app or args.release:
         dotnet = shutil.which("dotnet") or r"C:\Program Files\dotnet\dotnet.exe"
         exe = ROOT / "GK/source/bin/Release/net10.0-windows/win-x64/GritKeeper.exe"
-        plan.append(("build", [dotnet, "build", "-c", "Release", "-warnaserror"],
-                     ROOT / "GK/source", False, "0 warnings, 0 errors"))
         plan.append(("smoke", [dotnet, "run", "-c", "Release"],
                      ROOT / "GK/smoke", False, "the headless logic suite"))
         plan.append(("selftest", [str(exe), "--selftest"],

@@ -777,7 +777,13 @@ never given a `Height`. `audit_ui.py`'s docstring carries it.
 
 ## Verification standard for this app
 
-- `dotnet build -c Release` → 0 warnings, 0 errors (`-warnaserror` in CI).
+- `dotnet build -c Release -warnaserror` → 0 warnings, 0 errors. **Pass the flag**: it is what
+  CI passes, and the analyzer rules below are only fatal under it. Two further traps, both paid
+  for on 2026-09-02 when CI had been red since the 30th and nobody noticed. A plain incremental
+  build reports the warnings of the files it recompiled and says nothing about a project it
+  skipped, so `0 Warning(s)` after touching `GK/source` is not a clean bill on `GK/rules`. And
+  `verify_all.py --full` did not compile anything at all until that day, so a book-heavy session
+  could leave `main` failing for three pushes; it builds now.
 - **`python verify_release.py`** — one version everywhere, and every past release actually cut.
   Add `--delivered` on this machine to include the exe the desktop shortcut runs. Everything else
   on this list checks the SOURCE; this is the only one that asks whether the source ever became
