@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.23 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.23)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.24 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.24)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.23</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.24</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.23 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.24 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that

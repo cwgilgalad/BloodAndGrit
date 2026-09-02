@@ -48,13 +48,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.17 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.17)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.18 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.18)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.17</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.18</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.17 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.18 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
