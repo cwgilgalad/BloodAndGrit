@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.45 · Keeper's Book v2.24 · Bestiary v2.18).
 
-**App version 1.55.0**
+**App version 1.56.0**
 
 ---
 

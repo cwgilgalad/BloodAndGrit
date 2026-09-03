@@ -8,6 +8,34 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.56.0 — eighteen Callings in the app, and the Sister's Miracles finally appear
+  on the reference leaf (2026-09-02).**
+
+  The app half of the Medicine Man / Shaman merge recorded in the Player's Book v2.45 entry below.
+  `chargen.json` is a transcription of the printed book rather than a second source, so every field
+  here was read back out of the built `blood-and-grit.html` instead of typed a second time, and
+  `verify_rules.py` proves the two agree character for character: 1,716 cross-checks, 0 drift.
+
+  Two faults in the app turned up on the way, and neither had anything to do with the merge.
+
+  **`RefLeafMiracles` walked a hand-written literal of six lists, and the Sister's Vigil was not one
+  of them.** Her seven Miracles had never once been printed on the Reference tab. The loop sat
+  beside a data file that knows the answer, which is exactly the shape of mistake this repo keeps an
+  audit suite to prevent, so it reads the lists out of `CharGen.D.miracles` now and carries only the
+  labels. A list the data holds and the labels have not heard of prints under its own key rather
+  than going quietly missing.
+
+  **The same paragraph said "the five Callings of Faith" while there were six.** It is right today
+  for a different reason than the one that made it wrong.
+
+  Six counted facts in the smoke suite moved, and they are listed rather than adjusted quietly: 55
+  → 56 Signs, 61 → 66 Miracles, 116 → 122 workings twice over, 51 → 52 Signs that bite, and 73 →
+  71 stated feature limits (the merged Shaman carries twelve features where the two Callings between
+  them carried twenty-one). A count assertion is a question the suite asks on every run; answering
+  it is part of the change.
+
+  16,338 smoke checks, 42/42 self-test, `--release` 15/15.
+
 - **Player's Book v2.45 — the Medicine Man and the Shaman become one Calling, and six workings
   put Blood back (2026-09-02).**
 
