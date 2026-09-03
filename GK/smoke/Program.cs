@@ -603,7 +603,7 @@ foreach (var (table, floor) in new[]
             .Concat(CharGen.D.miracles.Select(m => (m.name, kind: "Miracle", m.rank, m.cost, m.desc)))
             .Select(x => Rules.ReadWorking(x.name, x.kind, x.rank, x.cost, x.desc, 5)).ToList();
 
-        T("durations: all 116 workings still read", workings.Count == 116);
+        T("durations: all 122 workings still read", workings.Count == 122);
         // A duration is "findable" when the printed line names one, or when the thing resolves on
         // the spot. What must not exist any more is a working where neither is true.
         var mute = workings.Where(w =>
@@ -1389,7 +1389,7 @@ foreach (var (table, floor) in new[]
     var all   = signs.Concat(mirs).ToList();
     Rules.Working W(string n) => all.First(x => x.Name == n);
 
-    T("working: every Sign and Miracle is read", all.Count == 116);
+    T("working: every Sign and Miracle is read", all.Count == 122);
 
     // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
     // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
@@ -1401,9 +1401,9 @@ foreach (var (table, floor) in new[]
     T("working: a Backlash printed as 'None' still keeps its words",
         W("Salt & Iron").HasBacklash && W("Salt & Iron").Backlash.Contains("kindest"));
     T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
-    // Four of the forty-four print "Backlash: None" and then say something about why. The other
-    // forty cost the worker something, and those are the ones the app should warn about.
-    T("fifty-one of the fifty-five Signs actually bite", signs.Count(w => w.BacklashBites) == 51);
+    // Four print "Backlash: None" and then say something about why. The rest cost the worker
+    // something, and those are the ones the app should warn about.
+    T("fifty-two of the fifty-six Signs actually bite", signs.Count(w => w.BacklashBites) == 52);
 
     // ---- the other half of the bargain, and the half a player actually chooses on ----
     // Backlash and the Mark are what a Sign COSTS. What it BUYS has to stay worth it, or the
@@ -2926,7 +2926,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
             CharGen.AttackFor(rk, L) >= CharGen.AttackFor(rk, L - 1))));
 }
 
-T("19 callings", cg.callings.Count == 19);
+T("18 callings", cg.callings.Count == 18);
 T("16 origins", cg.origins.Count == 16);
 
 // ---- the Perks (v1.50.0) ----------------------------------------------------------------------
@@ -2938,7 +2938,7 @@ T("every Calling carries a Perk", cg.callings.All(c => c.perk != null
     && !string.IsNullOrWhiteSpace(c.perk.name) && !string.IsNullOrWhiteSpace(c.perk.desc)));
 // Null-safe on purpose: a Calling with no Perk at all must report as ONE failure above, not take
 // the remaining three down with a NullReferenceException and hide whatever else is wrong.
-T("Perk names are unique across the nineteen",
+T("Perk names are unique across the eighteen",
     cg.callings.Select(c => c.perk?.name).Distinct().Count() == cg.callings.Count);
 T("no Perk repeats the name of one of its Calling's own features", cg.callings.All(c =>
     c.perk?.name == null || !c.rows.SelectMany(r => r.features).Contains(c.perk.name)));
@@ -3046,7 +3046,7 @@ T("every rider resolves to prose the book prints", cg.callings.All(c =>
     CharGen.StrikeRiders(c.name, 15).All(r => !string.IsNullOrWhiteSpace(r.Desc))));
 T("17 skills", cg.skills.Count == 17);
 // ---- the Signs (Ch. XIII): three lists, five Ranks, and a gate that actually holds ----
-T("55 signs across three lists", cg.signs.Count == 55
+T("56 signs across three lists", cg.signs.Count == 56
     && cg.signs.All(s => s.list is "common" or "bargain" or "craft"));
 T("every sign carries a Rank of 1-8", cg.signs.All(s => s.rank >= 1 && s.rank <= 8));
 // Rank 8 is meant to be thin, and thin is a thing a test can hold. Three Signs, one per list.
@@ -3528,7 +3528,7 @@ T("a creature's own line names its Tier in numerals", Db.Creatures
 }
 
 // ---- the Miracles (Ch. VI): the faith counterpart to the Signs, same Rank spine ----
-T("61 miracles across seven lists", cg.miracles.Count == 61 && cg.miracles.All(m =>
+T("66 miracles across seven lists", cg.miracles.Count == 66 && cg.miracles.All(m =>
     m.list is "blessing" or "liturgy" or "revival" or "spirits" or "mending" or "consecration"
            or "vigil"));
 
@@ -3569,17 +3569,22 @@ T("Rank 8 holds three Miracles, all of them Common Blessings",
     && cg.miracles.Where(m => m.rank == 8).All(m => m.list == "blessing"));
 T("Signs and Miracles ride the one Rank spine", Enumerable.Range(1, Rules.MaxLevel)
     .All(l => CharGen.MiracleRankAt(l) == CharGen.SignRankAt(l)));
-// Exactly the six Callings of Faith work Miracles, and none of them works a Sign.
-T("the six faith callings work Miracles", cg.callings
+// Exactly the five Callings of Faith work Miracles, and none of them works a Sign.
+T("the five faith callings work Miracles", cg.callings
     .Where(c => c.miracleLists != null && c.miracleLists.Count > 0)
     .Select(c => c.name).OrderBy(n => n)
-    .SequenceEqual(new[] { "Medicine Man", "Padre", "Preacher", "Shaman", "Sister",
-                           "Witch Hunter" }));
+    .SequenceEqual(new[] { "Padre", "Preacher", "Shaman", "Sister", "Witch Hunter" }));
 T("miracle-workers and Sign-workers never overlap", cg.callings
     .All(c => !(c.miracleLists?.Count > 0 && c.signLists?.Count > 0)));
-T("every faith calling holds the Common Blessings plus one own list", cg.callings
+// Blessings first for everybody, then one list of your own -- except the Shaman, who holds two.
+// That is not a loosening of the rule; it is the compensation Chapter XIII prints for the Calling
+// that carries what used to be two, and naming him here is what stops it spreading quietly.
+T("every faith calling holds the Common Blessings first", cg.callings
     .Where(c => c.miracleLists != null)
-    .All(c => c.miracleLists.Count == 2 && c.miracleLists[0] == "blessing"));
+    .All(c => c.miracleLists.Count > 0 && c.miracleLists[0] == "blessing"));
+T("one list of your own, and two only for the Shaman", cg.callings
+    .Where(c => c.miracleLists != null)
+    .All(c => c.miracleLists.Count == (c.name == "Shaman" ? 3 : 2)));
 T("the Witch Hunter now has a pool (Zeal)", cg.callings
     .First(c => c.name == "Witch Hunter").pool?.name == "Zeal");
 // the live faith/sign pool the app tracks is re-derived on the sheet (#3): a Padre at 5th holds
@@ -3657,7 +3662,7 @@ T("every calling has an armor preference, all names resolving",
 }
 
 // ---- a faith soul actually receives its Miracles, at the right count and Rank ----
-foreach (var name in new[] { "Padre", "Preacher", "Shaman", "Medicine Man", "Witch Hunter" })
+foreach (var name in new[] { "Padre", "Preacher", "Shaman", "Sister", "Witch Hunter" })
     foreach (int lvl in new[] { 1, 3, 5, 7, 10 })
     {
         var fs = CharGen.Generate(lvl, false, name);
@@ -4621,8 +4626,10 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
         }
     T("every stated limit is read", stated == read);
     // 36 before B6. Fifty-seven new feature write-ups arrived with the levels above ten, and
-    // every fifteenth-level capstone is once a session by design, so the number had to move.
-    T($"the book still states as many limits as it did ({stated})", stated == 73);
+    // every fifteenth-level capstone is once a session by design, so the number had to move. It
+    // moved back down by two when the Medicine Man and the Shaman became one Calling and the
+    // features that were folded away took their once-per-session lines with them.
+    T($"the book still states as many limits as it did ({stated})", stated == 71);
 
     // --- the shapes the book actually uses ---
     CgCalling Cal(string n) => callings.First(c => c.name == n);

@@ -4,7 +4,7 @@
 The rest of the chain is already self-checking: the GritKeeper app reads every number from
 `GK/rules/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
 the data and the app can never quietly disagree (the smoke suite fails first). The one seam left
-to a human hand is the *printed book* — the Player's Book prints nineteen Calling tables that I
+to a human hand is the *printed book* — the Player's Book prints eighteen Calling tables that I
 transcribe into chargen.json. This checks that transcription automatically: it parses the built
 `blood-and-grit.html`, reads each Calling's statline rank and its ten rows of attack and saves,
 and asserts the book agrees with the data AND both agree with the one spine formula (Ch. XIV):
@@ -565,7 +565,7 @@ def check_origins(problems):
                                 f"the printed {half} carries {got}")
     return checks
 
-# ------------------------------------------------------------------- the nineteen Perks
+# ------------------------------------------------------------------- the eighteen Perks
 # A Perk is the one thing a Calling alone does, printed as a band above its level table and typed
 # into chargen.json so the app can sell the Calling in the picker the same way the page does. It is
 # the third surface to be written twice (after the features and the Origins), so it gets the same
@@ -981,8 +981,8 @@ def main():
     data, book = load_data(), load_book()
     problems = []
 
-    if len(book) != 19:
-        problems.append(f"parsed {len(book)} attack tables from the book, expected 19")
+    if len(book) != 18:
+        problems.append(f"parsed {len(book)} attack tables from the book, expected 18")
 
     for name, d in data.items():
         b = book.get(name)

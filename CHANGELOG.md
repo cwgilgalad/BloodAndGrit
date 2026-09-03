@@ -8,6 +8,60 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.45 — the Medicine Man and the Shaman become one Calling, and six workings
+  put Blood back (2026-09-02).**
+
+  Cole: *"Merge Medicine Man with Shaman, taking the best of both. Basically, emphasize the
+  shaman's abilities with animals and shape-shifting, but also make him a healer."*
+
+  Nineteen Callings become eighteen. The **Shaman** keeps the name and the spirit-talker's whole
+  identity, and takes the Medicine Man's depth with it: the pool formula (RES + *full* level, where
+  every other Calling of Faith gets half), the 2d8 a point, the herb-work, Draw Out the Sickness,
+  Soothe the Spirit, The Long Song, and the resurrection at fifteenth. The two halves are held
+  together by one idea rather than stapled: the spirits that lend a wolf's shape are the spirits
+  that close a wound, and the asking is the same asking. One soul is the doctor, the tracker, and
+  the thing in the treeline, depending on the hour.
+
+  The deep well is not a free lunch, and the fight ledger says so where a player will read it
+  before choosing. The Medicine Man's pool paid for healing and nothing else. This one pays for the
+  healing *and* every borrowed shape, so a Shaman spends each scene deciding which of the two the
+  posse needs. Twelve features fill fifteen levels, six from each side of the merge; the
+  Spirit-Pacts are four now (the Beast, the Mending Way, the Ancestor, the Land); and both
+  name-notes are one gold box, because neither word is free to take.
+
+  **Do any Miracles or Signs restore Blood?** Measured across all 61 Miracles and 55 Signs before
+  writing anything, and the answer was worse than the subpath text implies. The Mending had three,
+  the Revival two, the Liturgy one that only worked on the dying, the Craft one. The **Vigil had
+  none** — the Sister runs the fever ward, and her 10th-level mastery is *a soul who dies within
+  your reach does not*, and her list could not restore a single point. The **Spirits had none**.
+  The **Common Blessings had none**. And the False Prophet's Borrowed Saint promises that healing
+  wonders cost 1 less Tribute while neither list he draws on contained one.
+
+  Six new workings, each written for a Calling that already claimed to be a healer: **Clean Water
+  and Clean Cloth** (vigil, r1) and **The Ward Full of Beds** (vigil, r6) for the Sister;
+  **Visitation of the Sick** (liturgy, r2) for the Padre, the rite the Church wrote down before the
+  exorcisms; **What the River Closes** (spirits, r2), which heals clean and leaves no Lasting
+  Injury; **Lend Them the Shape** (spirits, r6), which is the merge's signature and is shape-changing
+  *as* healing; and **Charged to Another Account** (bargain, r2), the Old Dark's version, where the
+  books balance and nobody said whose. The Common Blessings deliberately get none: healing stays a
+  specialist's trade, and handing every Calling of Faith a heal would spend the difference between
+  them for nothing.
+
+  Four faults that predate the merge were fixed on the way past, each one found by looking rather
+  than by being reported. Chapter VI's opening said *six* Callings of Faith, named five, left the
+  **Sister out entirely**, then said "All five" — she was added after the paragraph was written and
+  nothing pointed at it. The Spirits list opened "not commands but courtesies", which is the
+  negative parallelism the prose scan exists to keep out. The app's Miracle reference leaf walked a
+  hand-written literal of six lists and **the Sister's Vigil was not one of them**, so her seven
+  Miracles had never once been printed there; it reads the lists out of the data now and carries
+  only the labels. And the same paragraph called them "the five Callings of Faith" while there were
+  six, which is right today for a different reason than the one that made it wrong.
+
+  `verify_rules.py` proves the eighteen tables against `chargen.json` and the spine formula (1,716
+  cross-checks, 0 drift); the smoke suite counts 16,338 and the self-test 42/42.
+
+---
+
 - **Player's Book v2.44, Keeper's v2.24, Bestiary v2.18 — the lore Cole corrected by hand, and
   the Old Dark finally defined (2026-09-01/02).**
 

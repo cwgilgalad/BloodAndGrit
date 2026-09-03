@@ -283,7 +283,8 @@ def in_quotes(pos, ranges):
 
 
 # Soft-tell words that are part of a proper noun or a real technical compound in THIS project.
-# "Vital Breath" is the Medicine Man's Miracle pool; "landscape-Letter" is a page orientation.
+# "Vital Breath" was the Medicine Man's pool until the merge of 2026-09-02 and is kept here so a
+# reprint of an older book still scans; "landscape-Letter" is a page orientation.
 COMPOUNDS = [r"Vital Breath", r"landscape-Letter", r"landscape Letter"]
 
 
