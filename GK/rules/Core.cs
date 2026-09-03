@@ -225,7 +225,7 @@ public class PartyMember : INotifyPropertyChanged
     public int Grit { get => _grit; set { _grit = Math.Clamp(value, 0, 9); On(); } }
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, 6); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
-    // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Vital Breath,
+    // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
     // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
