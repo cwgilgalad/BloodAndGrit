@@ -71,7 +71,18 @@ _TOC_ENTRY = re.compile(
 _H2 = re.compile(r'<h2\b[^>]*\bid="([^"]+)"[^>]*>(.*?)</h2>', re.S)
 _NEXT_CHAPTER = re.compile(r'<h1 class="chapter"')
 _SECTION = re.compile(r'<section\b[^>]*>')
-_OPENER = re.compile(r'\s*(?:<div class="runhead">.*?</div>)?\s*<h2\b[^>]*\bid="([^"]+)"', re.S)
+# NO re.S, and it is load-bearing. With DOTALL the non-greedy `.*?` backtracks across newlines
+# to any later `</div>`, so this stopped asking "is this h2 the section opener?" and started asking
+# "is there an h2 anywhere below preceded by a closing div?" -- which walked past a chapter's
+# runhead, h1, subtitle, divider and quote to claim the first real <h2> in the chapter. That sent
+# one Contents row per chapter to the chapter's opening page, 49 of them across the six books, for
+# as long as the detailed Contents has existed. The runhead is a single line, so without DOTALL the
+# optional group matches the real runhead or nothing at all.
+_OPENER = re.compile(r'\s*(?:<div class="runhead">.*?</div>)?\s*<h2\b[^>]*\bid="([^"]+)"')
+
+# How far past a <section> tag an <h2> may sit and still be its opener. A runhead is ~120
+# characters; 400 is generous and still nowhere near a chapter's worth of front matter.
+_OPENER_REACH = 400
 
 
 def _section_opener_map(html: str) -> dict:
@@ -87,8 +98,17 @@ def _section_opener_map(html: str) -> dict:
         if not sid:
             continue
         om = _OPENER.match(html, sm.end())
-        if om:
-            m[om.group(1)] = sid.group(1)
+        if not om:
+            continue
+        # The claim is "this h2 opens this section", and it is worth checking rather than
+        # trusting, because when it was silently wrong it was wrong in every book at once and
+        # nothing downstream could tell. An opener is adjacent by definition.
+        reach = om.end() - sm.end()
+        assert reach <= _OPENER_REACH, (
+            f"nav_tools: <h2 id=\"{om.group(1)}\"> is {reach} characters past "
+            f"<section id=\"{sid.group(1)}\"> and is being called its opener. That is the "
+            f"re.S over-match of 2026-09-06 coming back -- see _OPENER.")
+        m[om.group(1)] = sid.group(1)
     return m
 
 

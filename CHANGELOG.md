@@ -8,6 +8,53 @@ Desktop\Git repos.)
 
 ---
 
+- **All six books v-bumped, GritKeeper v1.56.1 — one `re.S` sent 49 Contents rows to the wrong
+  page (2026-09-06).**
+
+  Reported by a handoff written in another session against the printed Keeper's Book: in 14 of its
+  15 chapters, exactly one subentry was listed at its chapter's start page instead of its own. The
+  report was right, right about the shape (*"it is a different entry in each chapter, so it is not
+  positional"*), and right that the fix belonged in the generator rather than the numbers. What it
+  could not see from a PDF is that the fault is in `nav_tools.py`, which all six books share, so
+  the real count is **49**: nine in the Player's Book, fourteen in the Keeper's, one in the
+  Bestiary, and eight or nine in each module.
+
+  **The cause is one flag.** `_OPENER` asks whether an `<h2>` sits immediately after a `<section>`
+  tag, allowing an optional runhead div in between, and it carried `re.S`. With DOTALL, `.`
+  matches a newline — so when `\s*<h2` failed just past the runhead's own `</div>`, the engine
+  backtracked and let the non-greedy `.*?` grow to the next `</div>`, and the next. A chapter
+  opener is a runhead, an `<h1>`, a subtitle, a divider and a quote: five closing divs of runway,
+  and the first real `<h2>` in the chapter is reachable across all of it. The question stopped
+  being *is this h2 the section opener?* and became *is there an h2 anywhere below preceded by a
+  closing div?*, and the answer is almost always yes.
+
+  That h2 was then recorded as the section's opener, so the Contents anchored it to the **section**
+  id — which the paginator stamps on the section's first sheet. Hence one subentry per chapter,
+  listed at the chapter's opening page, in every book, for as long as the detailed Contents has
+  existed. Every one of those headings already carried a perfectly good id of its own.
+
+  Dropping the flag takes it from 49 to 0 and keeps the three genuine section-openers (two in the
+  Player's Book, one in the Bestiary). `_section_opener_map` now also **asserts** that a claimed
+  opener really is adjacent to its section, so a future edit that re-widens the pattern stops the
+  build with the heading it wrongly claimed rather than shipping a Contents that points at the
+  wrong page.
+
+  **Why nothing here caught it, which is the part worth keeping.** `audit_pdf.py` compares a
+  printed Contents number against the page that row's own link lands on. Both come out of the same
+  anchor. So when the anchor was wrong they were wrong *together* and agreed perfectly: 1,171 rows,
+  zero disagreements, 49 of them pointing at the wrong page, on the day before this was found. A
+  check whose two sides share a cause can only ever confirm the cause.
+
+  It has an independent one now: the number printed beside a heading against the page that
+  heading's own **text** is set on. No link is involved, so a wrong anchor has nowhere to hide. It
+  reproduced all 49 on the shipped prints and reports clean on the rebuilt ones — 259 rows sited
+  across the six books. It only tests titles that appear exactly once in the body, because a
+  repeated heading (*"The Hook"*, twice in the Keeper's Book) cannot be resolved from a Contents
+  row without guessing, and a check that guesses is a check that gets switched off.
+
+  Books to Player's v2.46 / Keeper's v2.25 / Bestiary v2.19, modules to v1.6 / v1.7 / v1.7, and the
+  app to v1.56.1 because it quotes all three book versions in its status bar.
+
 - **GritKeeper v1.56.0 — eighteen Callings in the app, and the Sister's Miracles finally appear
   on the reference leaf (2026-09-02).**
 

@@ -83,6 +83,62 @@ def row_number(page, link, words):
     return int(min(cand, key=lambda w: w[0])[4]) if cand else None
 
 
+
+def toc_rows_land_where_they_say(doc, frontmatter):
+    """Every Contents row's printed number against where its heading's TEXT renders.
+
+    This is the check that was missing, and the shape of what it missed is worth keeping. The
+    `row_number` check above compares a printed number with the page its own link lands on --
+    both derived from the same anchor. On 2026-09-06 a handoff reported that in 14 of 15 chapters
+    of the Keeper's Book one subentry was listed at its chapter's start page. It was right, and
+    `audit_pdf.py` had passed all 1,171 rows the day before, because the printed number and the
+    link agreed with each other and were both wrong. The cause was a `re.S` in `nav_tools.py`
+    that let the section-opener test walk past a chapter's whole front matter (49 rows across the
+    six books; see that file).
+
+    So this one never looks at a link. It reads the number printed on the row, finds the page the
+    heading's own words are set on, and asks whether they are the same page.
+    """
+    pages = [re.sub(r"\s+", " ", doc[i].get_text()) for i in range(doc.page_count)]
+    bad = []
+    checked = 0
+    # The Contents region is however many leading sheets actually carry a list of links -- five in
+    # the Player's Book, fewer elsewhere. Taking it as `frontmatter + 2` scanned one sheet of the
+    # Keeper's five and then searched for headings ON the other four, so the Contents' own listing
+    # of a title counted as the place it is printed. Measure the region instead of assuming it.
+    toc_pages = []
+    for i in range(min(12, doc.page_count)):
+        if len(doc[i].get_links()) >= 5:
+            toc_pages.append(i)
+        elif toc_pages:
+            break
+    body_starts = (toc_pages[-1] + 1) if toc_pages else frontmatter
+    for i in toc_pages:
+        page = doc[i]
+        words = page.get_text("words")
+        for l in page.get_links():
+            r = fitz.Rect(l["from"])
+            mid = (r.y0 + r.y1) / 2
+            left = sorted([w for w in words
+                           if abs((w[1] + w[3]) / 2 - mid) < 5 and w[2] <= r.x1 + 2],
+                          key=lambda w: w[0])
+            title = re.sub(r"^[\dIVXLC.\s]+", "", " ".join(w[4] for w in left)).strip()
+            printed = row_number(page, l, words)
+            if printed is None or len(title) < 10:
+                continue
+            # Only rows whose heading is unique in the body. A repeated title ("The Hook") cannot
+            # be resolved from a Contents row without guessing, and a guess would be wrong half
+            # the time.
+            hits = [n + 1 for n, t in enumerate(pages) if title in t and n >= body_starts]
+            if len(hits) != 1:
+                continue
+            checked += 1
+            if hits[0] != printed:
+                bad.append(f"the Contents lists {title[:44]!r} at {printed}, "
+                           f"and it is printed on {hits[0]}")
+    return bad, checked
+
+
 def audit(path, frontmatter):
     doc = fitz.open(path)
     bad = []
@@ -113,6 +169,9 @@ def audit(path, frontmatter):
                 if printed != tgt + 1:
                     bad.append(f"sheet {i+1}: a row prints {printed} and lands on {tgt+1}")
 
+    landed, toc_checked = toc_rows_land_where_they_say(doc, frontmatter)
+    bad.extend(landed)
+
     if unnumbered:
         bad.append(f"{len(unnumbered)} sheet(s) carry no page number: {unnumbered[:12]}")
     if named:
@@ -123,19 +182,21 @@ def audit(path, frontmatter):
 
     pages, toc = doc.page_count, len(doc.get_toc())
     doc.close()
-    return bad, pages, rows, toc
+    return bad, pages, rows, toc, toc_checked
 
 
 def main():
-    missing, findings, total_rows = [], [], 0
+    missing, findings, total_rows, total_toc = [], [], 0, 0
     for name, fm in PDFS:
         p = ROOT / name
         if not p.exists():
             missing.append(name)
             continue
-        bad, pages, rows, toc = audit(p, fm)
+        bad, pages, rows, toc, toc_checked = audit(p, fm)
         total_rows += rows
+        total_toc += toc_checked
         print(f"  {name:<52} {pages:>3} pages · {toc:>2} chapters · {rows:>4} numbered rows"
+              f" · {toc_checked:>3} sited"
               f"{'' if not bad else '   ' + str(len(bad)) + ' FINDING(S)'}")
         for b in bad:
             findings.append(f"{name}: {b}")
@@ -153,7 +214,8 @@ def main():
         return 1
 
     print(f"\nEvery sheet carries its own number, every link is an explicit page, every one of the "
-          f"{total_rows} numbered Contents and Index rows lands where it says, and every book has an "
+          f"{total_rows} numbered Contents and Index rows lands where it says, {total_toc} of them "
+          f"checked against the page the heading is actually printed on, and every book has an "
           f"outline.")
     return 0
 

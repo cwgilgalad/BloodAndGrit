@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.45 · Keeper's Book v2.24 · Bestiary v2.18 ·
-GritKeeper app v1.56.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.46 · Keeper's Book v2.25 · Bestiary v2.19 ·
+GritKeeper app v1.56.1 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -122,12 +122,12 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.45 | 268 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.24 | 127 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.18 | 209 | none (182 creatures) |
-| Module I — The Salt at Coffin Wells | v1.5 | 32 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.6 | 33 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.6 | 33 | one inline SVG map (two panels), downloadable |
+| The Player's Book | v2.46 | 268 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.25 | 127 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.19 | 209 | none (182 creatures) |
+| Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.7 | 33 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.7 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.45) — structure
+## The Player's Book (v2.46) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -487,7 +487,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.24) — structure
+## The Keeper's Book (v2.25) — structure
 
 Chapters I–XV plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Two things it won't tell you: **Ch. XIII Perdition
@@ -510,7 +510,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.18) — structure & conventions
+## The Bestiary (v2.19) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
@@ -601,7 +601,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.56.0) — the C# desktop app
+## GritKeeper (v1.56.1) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
@@ -653,7 +653,10 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   (fine for one table, a hazard for two), and webhook URLs / bot tokens are bearer credentials
   that belong in `prefs.json`, never `session.json`.
 - A one-sheet **"teach it in ten minutes"** player handout.
-- **Higher-level play support** — the Advancement chapter is thin past level 5.
+- ~~**Higher-level play support**~~ — **DONE (v1.53.0–v1.56.0, books v1.8–v1.11).** The whole
+  fifteen-level program: every Calling carries rows 1–15 with a named capstone, Signs and Miracles
+  reach Rank 8, creatures reach Tier VIII, and the spine formulas were met rather than capped
+  (rank = Tier = (level+1)/2). Struck 2026-09-06 — it had been open here since long after it shipped.
 - **The Keeper's Table** got its first full visual pass on 2026-07-09 (Claude Code CLI
   running natively on the user's Windows laptop, all 8 tabs screenshotted) — found and fixed
   an ampersand-mnemonic label bug (see Changelog), nothing else wrong. Still worth another
