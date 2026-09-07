@@ -381,22 +381,22 @@ body{ background:#525659; }
     <li><a href="#character">III. Making a Character</a><span class="pg">17</span></li>
     <li><a href="#origins">IV. Origins &amp; the Peoples of the Frontier</a><span class="pg">25</span></li>
     <li><a href="#callings">V. Worldly Callings</a><span class="pg">40</span></li>
-    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">76</span></li>
-    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">115</span></li>
-    <li><a href="#skills">VIII. Skills</a><span class="pg">137</span></li>
-    <li><a href="#edges">IX. Edges</a><span class="pg">142</span></li>
-    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">148</span></li>
-    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">171</span></li>
-    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">181</span></li>
-    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">191</span></li>
-    <li><a href="#advancement">XIV. Advancement</a><span class="pg">207</span></li>
-    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">210</span></li>
-    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">212</span></li>
-    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">214</span></li>
-    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">216</span></li>
-    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">221</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">224</span></li>
-    <li><a href="#index">Index</a><span class="pg">226</span></li>
+    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">87</span></li>
+    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">117</span></li>
+    <li><a href="#skills">VIII. Skills</a><span class="pg">145</span></li>
+    <li><a href="#edges">IX. Edges</a><span class="pg">150</span></li>
+    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">159</span></li>
+    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">182</span></li>
+    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">193</span></li>
+    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">203</span></li>
+    <li><a href="#advancement">XIV. Advancement</a><span class="pg">241</span></li>
+    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">245</span></li>
+    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">247</span></li>
+    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">249</span></li>
+    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">251</span></li>
+    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">256</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">260</span></li>
+    <li><a href="#index">Index</a><span class="pg">262</span></li>
   </ul>
 </section>
 

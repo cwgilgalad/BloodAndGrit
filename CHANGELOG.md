@@ -8,6 +8,81 @@ Desktop\Git repos.)
 
 ---
 
+- **Keeper's Book v2.30, GritKeeper v1.56.2 — a new Chapter XVI, and two sections moved to
+  where they belonged (2026-09-06).**
+
+  From a handoff written in another session, and the interesting part of it is the test it
+  proposed rather than the chapter it asked for. **A power owns ground, wants something, and can
+  be joined, bought or fought.** Redemption has a capital. The Long Table has seats. The Agency
+  has files. Run Chapter XV's six entries past that and two of them fail it, in opposite
+  directions.
+
+  **The Gatherings in the Rockies** were never a Power. Nobody owns them, nothing can be bought
+  from them, and there is no one to fight. They are the question of whether there are six Patrons
+  at all, which is cosmology, which is **Ch. VII** — and the tell had been sitting in the book for
+  months: VII's own "four things to hold to" box ended by sending the reader to Ch. XV for VII's
+  biggest question. A chapter citing an optional appendix for its own cosmology is a chapter with
+  a section in the wrong place. The whole section moves, word for word, and lands after the six
+  dossiers and before the False Prophet, where the reader has just met all six. The forward
+  reference becomes local.
+
+  **The Mad Spaniard** fails the test from the other side. He holds no ground and wants nothing;
+  he can be met and he cannot be resolved, which was already written into his own section as the
+  reason he is useful. He was the one entry in XV that could not be dealt with. He moves intact to
+  the new chapter.
+
+  **Ch. XVI, *Legends of the Territory*** — the Spaniard, plus two new ones. **The Wills Outfit**
+  is four riders that every account names as five, and its four readings run from a marketing
+  decision to the country supplying the fifth man to anyone who rides with them. **The Weather
+  Song** is a tune with no author and no route that takes new verses nobody writes, and it is the
+  one legend a party cannot approach: no body, no location, nobody to negotiate with. They can
+  only find out they are already inside it. Every entry gives the Keeper four readings and
+  confirms none of them.
+
+  **XV goes from six Powers to four**, which is the part that had to be done by hand. This book
+  contains 53 instances of "six" and almost all of them are the six Patrons; the readings table
+  that moved to VII carries five of them by itself, correctly. Four strings were edited
+  individually and a find-and-replace would have been a catastrophe that built clean.
+
+  Two of those four were not in the handoff and are the reason the count was done by reading
+  rather than by grep. XV's "contradict any of it" box offered **the Mad Spaniard** as its example
+  of a thing the Keeper may freely rewrite, and he is no longer in the chapter to rewrite. And
+  **Eb Tuttle's epigraph** counted "three of these and supper with a fourth" — four of six, a man
+  who has seen most of the country. As four of four it becomes a boast that covers the whole
+  chapter, and a chapter a man has seen all of is a small one. He now counts two and a third.
+
+  Three questions the handoff left open were settled before building. The Spaniard's madness tell
+  — *he counts the party twice and gets a different number* — is **cut**, because he now shares a
+  chapter with a legend built entirely on a miscount and running the same tell four paragraphs
+  apart tells the table the two are connected, which is the one thing this chapter must never do.
+  He apologises, without explanation, for the delay, instead.
+
+  The Weather Song's third reading ended *"No malice in it and no attention. Weather."* and Ch. VII
+  already says *"Everything else down there is weather."* **The echo is a collision, not a rhyme.**
+  VII's weather means SHAPELESS — the negative space around the six, the part of the depth that has
+  never spoken. The Song's meant INDIFFERENT — no malice, no attention. Two claims wearing one
+  word, and closing reading three on VII's word for the undifferentiated Old Dark quietly makes
+  reading three a second Patron reading, which collapses it into reading two and halves what a
+  four-reading spread is built to do. That is the chapter's own rule — *never let two of them
+  explain each other* — turned inward. It now closes **"The country is not telling you. It is only
+  saying,"** which separates three from two on the axis that matters: the Whisperer *tells*, and a
+  fact delivered to nobody in particular still has a speaker behind it; the country only *says*.
+  The title stays *The Weather Song* and the remembered line still asks you to come in out of the
+  weather — that echo is the good one, a legend named for what Ch. VII says the Old Dark mostly is,
+  with no reading confirming the connection.
+
+  And **v2.30 rather than v2.26**: a chapter added and a section moved between two others is not a
+  point change.
+
+  One citation in the handoff is wrong and was caught by checking it: it files the Road Agents
+  under Bestiary Ch. IX. They are in Ch. IV, *Men, and the Shapes of Men*; Ch. IX is *Hard Men &
+  Hard Country*. The Outfit's box cites Ch. IV.
+
+  127 pages to **131**. XV loses seven, VII gains four, XVI adds eight, and one comes back because
+  "Using More Than One" stopped starting its own sheet for the sake of two paragraphs. The app
+  moves to **v1.56.2** for the same reason it moved to v1.56.1: it quotes all three book versions
+  in its status bar, so it moves when they do.
+
 - **All six books v-bumped, GritKeeper v1.56.1 — one `re.S` sent 49 Contents rows to the wrong
   page (2026-09-06).**
 
