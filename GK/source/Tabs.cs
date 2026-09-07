@@ -5310,19 +5310,27 @@ public partial class MainForm
         RH(r, "Miracles & the Miracle DC");
         RT(r, "The faith-side counterpart to the Signs, worked by the five Callings of Faith (Ch. VI). "
              + "Where a Miracle forces a save, the DC is 10 + half your level + your faith ability's modifier "
-             + "(the Padre's and Preacher's PRE, the Shaman's and Medicine Man's RES, the Witch Hunter's WIT).");
+             + "(the Padre's and Preacher's PRE, the Shaman's and Sister's RES, the Witch Hunter's WIT).");
         RT(r, "Same Rank spine as the Signs — Rank opens at 1st, 3rd, 5th, 7th and 9th level, and nothing above "
-             + "your Rank will work. Miracles are paid from your Calling's pool (Grace, Conviction, Breath, Vital "
-             + "Breath, or the Witch Hunter's Zeal), not in Nerve or Blood. Faith does not bite back; the cost is "
+             + "your Rank will work. Miracles are paid from your Calling's pool (Grace, Conviction, Breath, Mercy, "
+             + "or the Witch Hunter's Zeal), not in Nerve or Blood. Faith does not bite back; the cost is "
              + "the pool, and the risk is a prayer unanswered.");
+        // The labels are typed; WHICH lists exist is read out of the data. It was a hand-written
+        // literal of six until 2026-09-02, and the Sister's Vigil was not one of the six, so her
+        // seven Miracles had never appeared on this leaf at all. A list the data holds and this
+        // loop has not heard of now prints under its own key rather than silently going missing.
+        var owner = new Dictionary<string, string> {
+                    ["blessing"]     = "The Common Blessings — any Calling of Faith",
+                    ["liturgy"]      = "The Liturgy — the Padre",
+                    ["revival"]      = "The Revival — the Preacher",
+                    ["spirits"]      = "The Spirits — the Shaman",
+                    ["mending"]      = "The Mending — the Shaman's second list",
+                    ["vigil"]        = "The Vigil — the Sister",
+                    ["consecration"] = "The Consecrations — the Witch Hunter" };
         if (CharGen.D?.miracles?.Count > 0)
-            foreach (var (key, title) in new[] {
-                    ("blessing",     "The Common Blessings — any Calling of Faith"),
-                    ("liturgy",      "The Liturgy — the Padre"),
-                    ("revival",      "The Revival — the Preacher"),
-                    ("spirits",      "The Spirits — the Shaman"),
-                    ("mending",      "The Mending — the Medicine Man"),
-                    ("consecration", "The Consecrations — the Witch Hunter") })
+            foreach (var (key, title) in CharGen.D.miracles.Select(m => m.list).Distinct()
+                         .OrderBy(k => owner.Keys.ToList().IndexOf(k) is var i && i < 0 ? 99 : i)
+                         .Select(k => (k, owner.TryGetValue(k, out var t) ? t : k)))
             {
                 RH(r, title);
                 RTbl(r, new[] { 6, 21, 20, 46 }, new[] { "Rank", "Miracle", "Cost", "The working" },

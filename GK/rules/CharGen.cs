@@ -59,7 +59,7 @@ public class CgEdge
     public string name { get; set; } public string group { get; set; } public string desc { get; set; }
     public Dictionary<string, int> reqAbility { get; set; }
     public string reqEdge { get; set; } public string reqTrained { get; set; }
-    /// <summary>The level this Edge opens at. B6's twelve Greater Edges and the nineteen late
+    /// <summary>The level this Edge opens at. B6's twelve Greater Edges and the eighteen late
     /// Calling Edges carry 11; everything written before B6 leaves it null and opens at 1st.</summary>
     public int? reqLevel { get; set; }
     public bool notFaith { get; set; } public string effect { get; set; }
@@ -1920,7 +1920,7 @@ public static class CharGen
     }
 
     /// <summary>Every extra-damage feature this soul has reached, at the step they have reached
-    /// it — one entry per feature, never one per step. Empty for thirteen of the nineteen
+    /// it — one entry per feature, never one per step. Empty for twelve of the eighteen
     /// Callings, which is correct: most of them kill things with the gun they are holding.
     /// <para>The dice are read off the level table and the condition off the feature's own prose,
     /// so neither can drift from the printed book without <c>verify_rules.py</c> saying so.</para>

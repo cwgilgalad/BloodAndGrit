@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.44 -->
+<!-- Blood & Grit — The Player's Book · Version 2.45 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.44)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.45)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.44</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.45</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.44 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.45 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -1081,21 +1081,21 @@ body{ background:#525659; }
   <p id="ix-perks">Each Calling also carries one <strong>Perk</strong>, printed above its table. A Perk is the single
   thing that Calling alone does, true from 1st level and true forever after. It costs nothing, spends nothing, and is
   never rolled for. Some are worth a great deal at the right moment and nothing at all for weeks; a few are as much
-  reputation as ability, and one or two are frankly a liability, which is rather the point of them. Read the nineteen
+  reputation as ability, and one or two are frankly a liability, which is rather the point of them. Read the eighteen
   Perks together and you have the shortest honest answer to what each Calling is for.</p>
   <p id="ix-ledger">Under the Perk sits a second band, in two halves: <strong>In a fight</strong> and
   <strong>You pay</strong>. The Perk is what a Calling is worth at the table over a long campaign. The ledger is
   narrower and more brutal: what that Calling actually does in a round of shooting, and what it gives up to be
   the thing that does it. Both halves are true. The Marshal will not out-damage anybody in this book and the
   ledger says so plainly, because the Marshal spends its Calling on everyone else's turn and a player who
-  wanted to top a tally should be told before they roll, not after. Read the nineteen ledgers together and the
+  wanted to top a tally should be told before they roll, not after. Read the eighteen ledgers together and the
   shape of a posse falls out of them: somebody has to end things, somebody has to keep the ending from
   happening to you, and the good tables work out early which of them they are short of.</p>
   <p>This book groups the Callings by the well they draw from, across three chapters. The <strong>worldly Callings</strong>
   in this chapter — Gunhand, Drifter, Sawbones (the frontier's word for a doctor), Marshal, Prospector, Mountain Man,
   Bounty Hunter, Engineer, and Gambler — live by
   iron, instinct, learning, law, luck, a hard eye for the unnatural, a quick hand on the wrong side of the law, a head for powder and machinery, and a cooler hand at the card table. Those who draw on <strong>faith</strong> —
-  Padre, Preacher, Shaman, Medicine Man, and the Witch Hunter — are gathered in Chapter VI. And those who walk with
+  Padre, Preacher, Shaman, Sister, and the Witch Hunter — are gathered in Chapter VI. And those who walk with
   the <strong>Old Dark</strong> by pact, by craft, by deceit, or by devotion — Hexer, Witch, False Prophet, and Dark Cultist —
   are given Chapter VII, for such roads ask a toll the others do not.</p>
   <p class="note">Read each table thus: <strong>Attack</strong> is your Calling's attack proficiency by level, read straight
@@ -1951,11 +1951,12 @@ body{ background:#525659; }
   Faith draw their strength from conviction: the certainty, against all evidence, that the world has a maker and the maker
   has not entirely turned away. Whether that certainty is true matters less, mechanically, than that it is <em>held</em>.
   Faith made countable is the rarest currency in the Territories, and it spends.</p>
-  <p>This chapter holds six Callings of Faith, each answering the dark in a different tongue.
+  <p>This chapter holds five Callings of Faith, each answering the dark in a different tongue.
   <strong>Padre</strong> meets it with sacrament, Latin rite, and the long authority of the Church.
   <strong>Preacher</strong> meets it with the open Word and sheer conviction. <strong>Shaman</strong>
-  meets it by walking with the spirits of the living country itself. <strong>Medicine Man</strong> meets it with the
-  oldest answer of all — by keeping the wounded alive in spite of it. And the <strong>Witch Hunter</strong> meets it with
+  meets it by walking with the spirits of the living country and asking them, among other things, to
+  close a wound. <strong>Sister</strong> meets it by staying in the room after everyone sensible has
+  gone. And the <strong>Witch Hunter</strong> meets it with
   fire, silver, and a zealot's certainty, hunting the dark's servants back to their dens.</p>
   <p>All five work <strong>Miracles</strong> — a chosen, ranked repertoire of graces, each paid from its own
   pool of faith made countable. The Callings are laid out first; the Miracles they draw on, and the rules that govern
@@ -1969,107 +1970,6 @@ body{ background:#525659; }
     frontier well of animist and folk belief, and likewise <em>not</em> a stand-in for any real nation's sacred practice. If
     a table wishes to portray such a figure, do so as a person of faith — with the care urged in Chapter IV — and leave the
     sacred specifics of any living tradition off the character sheet entirely.</p>
-  </div>
-</section>
-<section class="page">
-  <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
-  <h2 id="ix-c-medicine">Medicine Man</h2>
-  <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
-  <p>In a country that deals exclusively in wounds, the rarest soul of all is the one who closes them. The Medicine Man is
-  that soul: healer, herb-doctor, prayer-mender, bonesetter — keeper of the only craft the frontier truly cannot do without.
-  Where other Callings of Faith answer the dark with fire or rite, this one answers it with the simple, stubborn insistence
-  that the people in its care are going to <em>live</em>. No Calling keeps a party breathing like this one.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">One Look and You Know.</span> Look at any living thing and name what is wrong with it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. Curing it is a longer conversation, and it starts here.</p>
-  <div class="fight">
-    <div class="brings"><span class="k">In a fight</span>Blood back, and the sickness out with it. More ways to put a soul right than any other Calling in the book.</div>
-    <div class="pays"><span class="k">You pay</span>Almost nothing that ends a fight. You keep the posse alive long enough for somebody else to end it, and you will watch them get the credit.</div>
-  </div>
-  <table class="lvl">
-    <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
-    <tbody>
-      <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Healing Hands, Herb-Lore</td></tr>
-      <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mend the Body</td></tr>
-      <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Way</td></tr>
-      <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Draw Out the Sickness</td></tr>
-      <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Call Back the Breath</td></tr>
-      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Soothe the Spirit</td></tr>
-      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
-      <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
-      <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Hands of Life, Way Mastery</td></tr>
-      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Long Song</td></tr>
-      <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
-      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Turn the Sickness Back</td></tr>
-      <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
-      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>Call Back the Name</td></tr>
-    </tbody>
-  </table>
-  <h4>Healing Hands</h4>
-  <p>You possess the deepest healing well of any Calling: a pool of <strong>Vital Breath</strong> equal to your RES modifier
-  + your full level (not half), refreshed each dawn. Every gift below draws on it. Where another healer counts pennies, you
-  carry a purse.</p>
-  <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Mending</strong> — the quiet, stubborn craft of keeping the wounded alive, paid from your Vital Breath.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
-  <h4>Herb-Lore</h4>
-  <p>You gather and prepare remedies from the living country — poultices, teas, tinctures, splints. Gain +2 on
-  Medicine and Survival, and treat your prepared remedies as a Sawbones' Tonics. Between fights, your herb-work stabilizes
-  the dying and tends the hurt <em>without</em> spending Vital Breath, so that your well is full when the shooting starts.</p>
-  <h4>Mend the Body</h4>
-  <p>By touch, spend 1 Vital Breath to heal <strong>2d8 Blood</strong> — more per point than any other Calling can manage —
-  or to instantly stabilize a dying soul and bring them back to their senses. Pour in more points to mend more — each further point of Vital Breath heals another 2d8.</p>
-  <h4>Draw Out the Sickness</h4>
-  <p>Spend Vital Breath to grant an immediate save against a poison, disease, or Affliction at +4 — or, for
-  3 Vital Breath, end one outright. You may also ease the penalty of a Lasting Injury for a day, buying a wounded
-  companion the time the country would otherwise deny them.</p>
-  <h4>Call Back the Breath</h4>
-  <p>Within a minute of a death, you may spend half your maximum Vital Breath (rounded up) and a long, exhausting effort to call a soul
-  back into a body still whole enough to hold it. It is never certain and never cheap, and the country sometimes takes
-  notice when you cheat it of a meal. But you can do the one thing nearly nothing else in this book can: undo a death.</p>
-  <h4>Soothe the Spirit</h4>
-  <p>Your gift mends more than meat. Restore Nerve as readily as Blood, lift fear from the frightened, and — uniquely —
-  suppress the <em>symptoms</em> of the Mark for a scene, granting a Hexer, a Dark Cultist, or any haunted soul a few hours of
-  true peace. You cannot lift the Mark itself. But you can give the Marked a night's sleep, which they will remember as a
-  kindness long after they have forgotten your name.</p>
-  <h4>Hands of Life</h4>
-  <p>Once per session, a great mercy pours out of you to every soul you can reach: all your companions restored, afflictions
-  lifted, the freshly dying raised, fear washed clean away. For one moment you are the thing this country refuses to be. The
-  cost is borne in your own body — you take on a measure of what you healed, a share of the wounds and the dread — and you
-  cannot do it again until you have rested and grieved what it cost you.</p>
-  <h4>The Long Song</h4>
-  <p>You have learned to sing a thing all the way through rather than in pieces. Over an hour of singing, spend any amount
-  of Vital Breath: everything it would heal, it heals, and it will also lift one disease, poison, or Affliction from
-  every soul in the circle. It cannot be hurried and it cannot be sung twice in a day. A camp that has heard it sleeps
-  without dreaming.</p>
-  <h4>Turn the Sickness Back</h4>
-  <p>What was put into a body can be sent back to whoever put it there. When you draw out a disease, poison, curse or
-  Affliction, you may hold it in your hands rather than let it go: for the rest of the scene you may place it on any
-  creature you touch or point at within thirty feet, which suffers it with no save if it is the one that dealt it, or
-  with a Fortitude save otherwise. Carrying it costs you 1 Vital Breath a round and it is unpleasant to hold.</p>
-  <h4>Call Back the Name</h4>
-  <p>Once per session, over a night and a fire, you may call a soul back that has been gone as much as a day. Speak the
-  name until the name answers. The body must be present and need not be whole; what returns is whole, at half Blood,
-  with everything it was. The price is fixed and is not paid by them: you give up a year of your own life, every point
-  of Vital Breath until the next dawn, and one thing you loved about the world, which the Keeper names and which does
-  not come back. Do it four times and you will be very old and very quiet.</p>
-
-  <div class="box gold">
-    <h4>A Note on the Name</h4>
-    <p>"Medicine Man" carries real and specific meaning in Native American traditions. This Calling is <strong>not</strong> a
-    portrait of any nation's sacred healer or ceremony — those, as Chapters IV and VI insist, stay off the character sheet.
-    It is a deliberately fictional, syncretic frontier healer, blending the herb-doctor, the granny-woman, the faith-healer,
-    and the bonesetter of many trail traditions. Tables are warmly encouraged to rename it to taste — the Healer, the Granny,
-    the Bonesetter, the Yarb-Doctor — and to play the mercy and the craft while leaving real ceremony alone.</p>
-  </div>
-  
-  <div class="box">
-    <h4>Ways of the Medicine Man</h4>
-    <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability — its <strong>Mastery</strong> — at 10th level, the height of a frontier life.</p>
-    <ul class="dash">
-      <li><strong>The Dreaming Way.</strong> You walk in visions and read omens for guidance. <em>Mastery (10th):</em> once per scene, walk the dream to foresee a danger, or to find what is hidden or lost.</li>
-      <li><strong>The Mending Way.</strong> Your remedies are potent and may lift a lingering affliction. <em>Mastery (10th):</em> once per scene, a healing rite mends every ally near you.</li>
-      <li><strong>The Warding Way.</strong> Craft charms that turn aside the dark and its lesser servants. <em>Mastery (10th):</em> once per scene, draw a circle of protection no uncanny thing may enter.</li>
-    </ul>
   </div>
 </section>
 <section class="page">
@@ -2267,16 +2167,24 @@ body{ background:#525659; }
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VI. Callings of Faith</span></div>
   <h2 id="ix-c-shaman">Shaman</h2>
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
-  <p>The Shaman of this book is a spirit-talker: one who has learned that the country is not empty but <em>crowded</em> —
-  with the spirits of beasts and weather, river and rock, and the long-departed dead — and who keeps a working peace with
-  them through respect, offering, and the long apprenticeship of listening. Theirs is not the borrowed power of the Hexer
-  but a relationship, maintained the way any relationship is: with patience, gifts, and a healthy fear of giving offense.</p>
-  <p class="note">See the box opposite (Chapter VI's note, and Chapter IV): this Shaman is a fictional, syncretic frontier
-  archetype, not a portrait of any living nation's sacred role. Play the relationship and the respect; leave real ceremony off the sheet.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">You Dream It First.</span> Every night you sleep on open ground, the Keeper owes you one true thing: an image, a warning, a name, a direction. It is never clear enough to act on cleanly and it has never once been wrong.</p>
+  <p>The Shaman of this book is a spirit-talker: someone who learned early that the country is
+  crowded rather than empty, and who keeps a working peace with whatever crowds it. Beasts and
+  weather, river and rock, and the long-departed dead all hold opinions, and every one of them can
+  be asked. What the Hexer takes on loan, the Shaman gets by asking, and the asking is a
+  relationship maintained the way any relationship is: with patience, gifts, and a healthy fear of
+  giving offense.</p>
+  <p>The oldest use anyone ever found for that relationship was mending. A wound closes because
+  something in the world consents to close it, and a spirit-talker is a person who knows the words
+  for asking. The same breath that borrows a wolf's shape for an hour will knit a broken rib, and
+  out here that makes one soul the doctor, the tracker, and the thing in the treeline, depending on
+  the hour. Towns that have one do not ask which it is tonight. They send for it either way.</p>
+  <p class="note">See the box below, and the boxes in Chapters IV and VI: this Shaman is a fictional,
+  syncretic frontier archetype, not a portrait of any living nation's sacred role. Play the
+  relationship and the respect; leave real ceremony off the sheet.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">They Tell You What Is Wrong.</span> Look at any living thing and name what ails it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. The same neighbors tell you things while you sleep. Every night you bed down on open ground the Keeper owes you one true thing, an image or a warning or a name or a direction. It is never clear enough to act on cleanly and it has never once been wrong.</p>
   <div class="fight">
-    <div class="brings"><span class="k">In a fight</span>The spirits, and the pack with them. Become the Mask changes what you are for the length of a fight.</div>
-    <div class="pays"><span class="k">You pay</span>The thinnest hand in a stand-up fight of any Calling of Faith. What you are best at happens before the shooting and after it.</div>
+    <div class="brings"><span class="k">In a fight</span>Blood back, and the shape to go and collect it. Mending Hands puts a posse on its feet mid-scene at 2d8 a point, and Become the Mask changes what you are for the length of one.</div>
+    <div class="pays"><span class="k">You pay</span>One well pays for all of it. Every scene asks whether the Breath goes into the wounded or into the wolf, and there is never enough for both twice.</div>
   </div>
   <table class="lvl">
     <thead><tr><th class="c">Lvl</th><th class="c">Attack</th><th class="c">Fort</th><th class="c">Ref</th><th class="c">Will</th><th>Class Features</th></tr></thead>
@@ -2284,82 +2192,135 @@ body{ background:#525659; }
       <tr><td>1</td><td class="c">+0</td><td class="c">+2</td><td class="c">+0</td><td class="c">+2</td><td>Edge, Spirit-Sight, The Helping Spirits</td></tr>
       <tr><td>2</td><td class="c">+1</td><td class="c">+3</td><td class="c">+0</td><td class="c">+3</td><td>Mending Hands</td></tr>
       <tr><td>3</td><td class="c">+2</td><td class="c">+3</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Spirit-Pact</td></tr>
-      <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Spirit-Walk</td></tr>
+      <tr><td>4</td><td class="c">+3</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Draw Out the Sickness</td></tr>
       <tr><td>5</td><td class="c">+4</td><td class="c">+4</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Don the Aspect</td></tr>
-      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>—</td></tr>
-      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Commune</td></tr>
-      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>—</td></tr>
+      <tr><td>6</td><td class="c">+5</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Spirit-Walk</td></tr>
+      <tr><td>7</td><td class="c">+6</td><td class="c">+5</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Soothe the Spirit</td></tr>
+      <tr><td>8</td><td class="c">+7</td><td class="c">+6</td><td class="c">+2</td><td class="c">+6</td><td>The Wide Circle</td></tr>
       <tr><td>9</td><td class="c">+8</td><td class="c">+6</td><td class="c">+3</td><td class="c">+6</td><td>Edge</td></tr>
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Become the Mask, Spirit-Pact Mastery</td></tr>
-      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Wide Circle</td></tr>
+      <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>The Long Song</td></tr>
       <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
       <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Two Worlds at Once</td></tr>
       <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
-      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Land Answers</td></tr>
+      <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>Call Back the Name</td></tr>
     </tbody>
   </table>
   <h4>Spirit-Sight</h4>
-  <p>You perceive the spirits of the living world and the unquiet dead, the thin places, and the moods of the country
-  itself. You may address a spirit of place and, with courtesy, be answered — though the spirits keep their own counsel and
-  their own grudges.</p>
+  <p>You perceive the spirits of the living world and the unquiet dead, the thin places, and the
+  moods of the country itself. You may address a spirit of place and, with courtesy, be answered,
+  though the spirits keep their own counsel and their own grudges. What ails a living body shows to
+  this same sight, which is why your doctoring begins with looking rather than with cutting.</p>
   <h4>The Helping Spirits</h4>
-  <p>One or more spirits walk with you — choose an <strong>Aspect</strong>, such as the Wolf (the hunt and the pack), the
-  Raven (cunning and the dead), the River (mending and endurance), or the Elder (memory and counsel). The Aspect grants a
-  standing boon and a called-upon boon fueled by your pool of <strong>Breath</strong> (RES modifier + half level, refreshed
-  each dawn). You may make peace with a second Aspect at 6th level.</p>
+  <p>One or more spirits walk with you. Choose an <strong>Aspect</strong>: the Wolf (the hunt and the
+  pack), the Raven (cunning and the dead), the River (mending and endurance), or the Elder (memory
+  and counsel). The Aspect grants a standing boon and a called-upon boon, both fueled by your pool of
+  <strong>Breath</strong>, equal to your RES modifier + your <em>full</em> level, refreshed each dawn.
+  That is the deepest well any Calling carries, and it has the heaviest demands on it: your mending
+  draws from it, and so does every shape you borrow. You may make peace with a second Aspect at
+  6th level.</p>
   <h4>Miracles</h4>
-  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Spirits</strong> — courtesies asked of the crowded country and its neighbors, paid from your Breath.
+  <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on two lists of your own: <strong>the Spirits</strong>, courtesies asked of the crowded country, and <strong>the Mending</strong>, the stubborn craft of keeping the wounded alive. You are the only Calling of Faith to hold two, which is the whole of what the spirits give you that the pulpit does not.
   You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
   <h4>Mending Hands</h4>
-  <p>Spend Breath to heal 1d8 Blood per point by touch and song, or to ease a frightened soul — granting back Nerve or a
-  fresh save against an Affliction. The spirits mend what they are asked to, in their own time and to their own ends.</p>
-  <h4>Spirit-Walk</h4>
-  <p>Send your spirit out from your body to scout unseen, or step a short way through the spirit-world to cross ground you
-  could not otherwise reach. Your body lies senseless while you wander, and the longer you stay out, the harder the road
-  back; tarry too long and you risk a Dread Check to find your way home.</p>
+  <p>Spend 1 Breath to heal <strong>2d8 Blood</strong> by touch and song, which is more per point than
+  any other Calling manages, or to bring a dying soul back to their senses and stable at once. Pour
+  in more to mend more; each further point heals another 2d8. You also gather and prepare remedies
+  from the living country &mdash; poultices, teas, tinctures, splints. Gain +2 on Medicine and
+  Survival, treat your prepared remedies as a Sawbones' Tonics, and let the herb-work stabilize the
+  dying and tend the hurt between fights <em>without</em> spending a point, so the well is full when
+  the shooting starts.</p>
+  <h4>Draw Out the Sickness</h4>
+  <p>Spend Breath to grant an immediate save against a poison, disease, or Affliction at +4, or, for
+  3 Breath, end one outright. You may also ease the penalty of a Lasting Injury for a day, buying a
+  wounded companion the working hours the country would otherwise deny them.</p>
   <h4>Don the Aspect</h4>
-  <p>For a scene, take on the gifts of a Helping Spirit: the Wolf's claws and speed, the Raven's wings and sight, the
-  River's tirelessness, the Elder's uncanny insight. The change is partial and temporary, and it asks a little of you each
-  time — the spirits lend, they do not give.</p>
-  <h4>Commune</h4>
-  <p>Sit with the land, the weather, or the recently dead and learn what they know: the way through, the coming storm, the
-  game and the water, the name of what walks at night. With proper respect you may also lay a restless spirit to rest, which
-  is the truest service a Shaman renders, and the one the dead remember.</p>
-  <h4>Become the Mask</h4>
-  <p>Once per session you may give yourself wholly over to a great spirit for a scene, embodying its full power — a storm,
-  a beast-king, an ancestor of terrible weight. While the spirit rides, you wield gifts far beyond a mortal's. But when it
-  departs, make a Will save (DC the Keeper sets) or a little of it stays, and a little of you does not return. Wear the mask
-  too often and the question stops being whether it comes off, and starts being who is wearing whom.</p>
+  <p>For a scene, take on the gifts of a Helping Spirit: the Wolf's claws and speed, the Raven's
+  wings and sight, the River's tirelessness, the Elder's uncanny insight. From this level the change
+  may go the whole way, and you may wear the beast's entire shape rather than borrow pieces of it,
+  running as a wolf runs or flying as a raven flies for as long as the Breath holds. What you were
+  carrying stays where you left it, and the spirits lend rather than give, so each wearing asks a
+  little of you.</p>
+  <h4>Spirit-Walk</h4>
+  <p>Send your spirit out from your body to scout unseen, or step a short way through the
+  spirit-world to cross ground you could not otherwise reach. Your body lies senseless while you
+  wander, and the longer you stay out the harder the road back; tarry too long and you risk a Dread
+  Check to find your way home. Out there you may also sit with the land, the weather, or the recently
+  dead and learn what they know: the way through, the coming storm, the game and the water, the name
+  of what walks at night. With proper respect you may lay a restless spirit to rest, which is the
+  truest service a Shaman renders, and the one the dead remember.</p>
+  <h4>Soothe the Spirit</h4>
+  <p>Your gift mends more than meat. Restore Nerve as readily as Blood, lift fear from the
+  frightened, and, uniquely, suppress the <em>symptoms</em> of the Mark for a scene, granting a Hexer,
+  a Dark Cultist, or any haunted soul a few hours of true peace. You cannot lift the Mark itself. You
+  can give the Marked a night's sleep, which they will remember as a kindness long after they have
+  forgotten your name.</p>
   <h4>The Wide Circle</h4>
-  <p>The spirits that answer you have started bringing others. Your Helping Spirits may be sent to any ally you can see
-  rather than only to yourself, and once per scene you may ask the spirits of a place one question about what has
-  happened there, which they answer honestly and rudely. Places where something bad was done answer loudest.</p>
+  <p>The spirits that answer you have started bringing others. Your Helping Spirits may be sent to
+  any ally you can see rather than only to yourself, and once per scene you may ask the spirits of a
+  place one question about what has happened there, which they answer honestly and rudely. Places
+  where something bad was done answer loudest.</p>
+  <h4>Become the Mask</h4>
+  <p>Once per session you may give yourself wholly over to a great spirit for a scene, embodying its
+  full power: a storm, a beast-king, an ancestor of terrible weight. While the spirit rides, you
+  wield gifts far beyond a mortal's. But when it departs, make a Will save (DC the Keeper sets) or a
+  little of it stays, and a little of you does not return. Wear the mask too often and the question
+  stops being whether it comes off, and starts being who is wearing whom.</p>
+  <h4>The Long Song</h4>
+  <p>You have learned to sing a thing all the way through rather than in pieces. Over an hour of
+  singing, spend any amount of Breath: everything it would heal, it heals, and it lifts one disease,
+  poison, or Affliction from every soul in the circle besides. It cannot be hurried and it cannot be
+  sung twice in a day. A camp that has heard it sleeps without dreaming.</p>
   <h4>Two Worlds at Once</h4>
-  <p>You have stopped having to cross over. You see and may act upon the spirit world and this one together: you always
-  know what is present and unseen, you may Strike an incorporeal thing with a bare hand as though it were solid, and you
-  may Spirit-Walk without leaving your body behind for anything to find. Holding both open is tiring, and you dream
-  badly.</p>
-  <h4>The Land Answers</h4>
-  <p>Once per session, ask the country itself for help, and it helps. The spirits of the place take a side for the rest of
-  the scene: name a single thing you want from it, and the land does that thing. The river rises. The rock closes. The
-  herd turns. The fog comes down and lifts only for your people. The dead of that ground stand up and remember whose
-  they were. No spell, no save. A place has decided, and places decide slowly and completely.
-  Afterward you owe it, and the Keeper will name what it wants, and it will want something you would rather keep.</p>
+  <p>You have stopped having to cross over. You see and may act upon the spirit world and this one
+  together: you always know what is present and unseen, you may Strike an incorporeal thing with a
+  bare hand as though it were solid, and you may Spirit-Walk without leaving your body behind for
+  anything to find. Holding both open is tiring, and you dream badly.</p>
+  <h4>Call Back the Name</h4>
+  <p>Once per session, over a night and a fire, you may call back a soul that has been gone as much
+  as a day. Speak the name until the name answers, and the country answers with it: the river, the
+  herd, the rock, and the dead of that ground all lean in and agree that this one comes back. The
+  body must be present and need not be whole; what returns is whole, at half Blood, with everything
+  it was. The price is fixed and is not paid by them. You give up a year of your own life, every
+  point of Breath until the next dawn, and one thing you loved about the world, which the Keeper
+  names and which does not come back. The country is owed as well, and it will name what it wants in
+  its own time, and it will want something you would rather keep. Do it four times and you will be
+  very old and very quiet.</p>
+
+  <div class="quote">
+    "He set my husband's leg and sang over it the better part of an hour, and the next week I saw him
+    walk into the treeline on two feet and come out of it on four. I have thought about that every
+    day since and I have not decided anything. The leg healed straight."
+    <span class="src">&mdash; testimony taken at Two Forks, and entered without comment</span>
+  </div>
 
   <div class="quote">
     "My grandmother told me the spirits are not servants and not enemies. They are neighbors,
-    and a neighbor remembers everything — the borrowed cup, the kind word, the slight at the well.
+    and a neighbor remembers everything &mdash; the borrowed cup, the kind word, the slight at the well.
     Treat them as you would the people whose land you cross. You are, after all, doing both at once."
-    <span class="src">— recorded from a spirit-talker who asked to be named only as a friend of the river</span>
+    <span class="src">&mdash; recorded from a spirit-talker who asked to be named only as a friend of the river</span>
   </div>
-  
+
+  <div class="box gold">
+    <h4>A Note on the Name</h4>
+    <p>"Shaman" and "Medicine Man" both carry real and specific meaning, the first among peoples of
+    northern Asia and the second in Native American traditions. This Calling is <strong>not</strong> a
+    portrait of any nation's sacred healer, spirit-keeper, or ceremony; those, as Chapters IV and VI
+    insist, stay off the character sheet. What is written here is a deliberately fictional, syncretic
+    frontier figure, blending the spirit-talker, the herb-doctor, the granny-woman, the faith-healer
+    and the bonesetter of many trail traditions. Tables are warmly encouraged to rename it to taste,
+    and plenty have: the Spirit-Talker, the Healer, the Granny, the Bonesetter, the Yarb-Doctor.
+    Play the mercy and the craft, and leave real ceremony alone.</p>
+  </div>
+
   <div class="box">
     <h4>Spirit-Pacts of the Shaman</h4>
-    <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability — its <strong>Mastery</strong> — at 10th level, the height of a frontier life.</p>
+    <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability &mdash; its <strong>Mastery</strong> &mdash; at 10th level, the height of a frontier life.</p>
     <ul class="dash">
+      <li><strong>The Beast Pact.</strong> A spirit-beast walks with you, lending its senses and its aid, and the shapes you borrow come easier and hold longer. <em>Mastery (10th):</em> once per scene, take the great beast's shape entire, or call it forth in full to fight beside you.</li>
+      <li><strong>The Mending Way.</strong> Your remedies run deep and may lift a lingering affliction outright. <em>Mastery (10th):</em> once per scene, a healing rite mends every ally near you.</li>
       <li><strong>The Ancestor Pact.</strong> The honored dead counsel you; gain rerolls on lore and warning of danger. <em>Mastery (10th):</em> once per scene, call an ancestral host to stand and fight beside you a round.</li>
-      <li><strong>The Beast Pact.</strong> A spirit-beast walks with you, lending its senses and its aid. <em>Mastery (10th):</em> once per scene, take on the great beast's shape, or call it forth in full.</li>
-      <li><strong>The Land Pact.</strong> Command small workings of wind, water, ember, and stone. <em>Mastery (10th):</em> once per scene, loose a great elemental working — a sudden storm, a swallowing earth.</li>
+      <li><strong>The Land Pact.</strong> Command small workings of wind, water, ember, and stone, and craft charms that turn aside the dark's lesser servants. <em>Mastery (10th):</em> once per scene, loose a great elemental working, a sudden storm or a swallowing earth.</li>
     </ul>
   </div>
 </section>
@@ -3271,9 +3232,6 @@ body{ background:#525659; }
 
   <h3>Callings of Faith</h3>
   <ul class="dash">
-    <li><strong>Medicine Man — Mending Hands.</strong> Your remedies lift one lingering affliction — Sickened, Drained, the first grip of a curse — along with the Blood they restore.</li>
-    <li><strong>Medicine Man — The Song Carries.</strong> (The Long Song, 11th) The Long Song may be sung over a whole camp of any size, and those who
-      hear it are proof against fear until the next dusk.</li>
     <li><strong>Padre — Shepherd's Word.</strong> Spend a Beat to grant an ally who can hear you an immediate save, with your bonus, against a fear already gripping them.</li>
     <li><strong>Padre — The Parish Wide.</strong> (Cure of Souls, 11th) Your parish includes anyone who has ever taken shelter under your roof, and
       two of them turn up each session rather than one.</li>
@@ -3281,8 +3239,11 @@ body{ background:#525659; }
     <li><strong>Preacher — The Fire Catches.</strong> (The Camp Meeting, 11th) A camp meeting leaves behind a standing congregation: that town will
       answer a call from you once, later, however far away you are.</li>
     <li><strong>Shaman — Spirit-Spoken.</strong> Once per scene, put one yes-or-no question to the spirits about this land, its dead, or what passed here, and be answered true.</li>
+    <li><strong>Shaman — The Whole Hurt.</strong> Your mending lifts one lingering affliction — Sickened, Drained, the first grip of a curse — along with the Blood it restores.</li>
     <li><strong>Shaman — The Circle Holds.</strong> (The Wide Circle, 11th) The Helping Spirits may be sent to every ally at once, and the spirits of
       a place will answer two questions rather than one.</li>
+    <li><strong>Shaman — The Song Carries.</strong> (The Long Song, 11th) The Long Song may be sung over a whole camp of any size, and those who
+      hear it are proof against fear until the next dusk.</li>
     <li><strong>Sister — Between Them and It.</strong> When a foe would Strike an ally adjacent to you, you may take the Strike yourself instead. You are Off-Guard until your next turn, and the ally may not refuse.</li>
     <li><strong>Sister — The Third Night.</strong> (The Longer Watch, 11th) You may keep watch for a week rather than three nights before it tells,
       and one soul under your watch heals a Lasting Injury over it.</li>
@@ -3328,13 +3289,12 @@ body{ background:#525659; }
       <tr><td>Gunhand</td><td>3d6 × $10</td></tr>
       <tr><td>Hexer</td><td>2d6 × $5</td></tr>
       <tr><td>Marshal</td><td>3d6 × $10, plus a badge or its like</td></tr>
-      <tr><td>Medicine Man</td><td>2d6 × $10, plus a healer's kit &amp; herbs</td></tr>
       <tr><td>Mountain Man</td><td>2d6 × $10 in pelts, plus a rifle, traps, and a good knife</td></tr>
       <tr><td>Padre</td><td>2d6 × $10, plus vestments &amp; a relic</td></tr>
       <tr><td>Preacher</td><td>2d6 × $10, plus a holy book</td></tr>
       <tr><td>Prospector</td><td>3d6 × $10, plus prospecting tools</td></tr>
       <tr><td>Sawbones</td><td>3d6 × $10, plus a surgeon's kit</td></tr>
-      <tr><td>Shaman</td><td>2d6 × $5, plus the regard of the spirits</td></tr>
+      <tr><td>Shaman</td><td>2d6 × $10, plus a healer's kit, herbs, and the regard of the spirits</td></tr>
       <tr><td>Witch</td><td>2d6 × $5, plus a familiar</td></tr>
       <tr><td>Witch Hunter</td><td>3d6 × $10, plus silver for a few rounds</td></tr>
     </tbody>
@@ -3708,7 +3668,7 @@ body{ background:#525659; }
       <tr><td>Pinkerton file on a name</td><td class="c">$15+</td><td>Surveyor's transit &amp; chains</td><td class="c">$25</td></tr>
     </tbody>
   </table>
-  <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Medicine Man treat one
+  <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman treat one
   extra patient between rests. <strong>Iron vest.</strong> The tailored cousin of the scavenged plate in
   Chapter X — chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
   against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
@@ -4508,6 +4468,8 @@ body{ background:#525659; }
   <p><em>Rank 2 · 1 Beat · 2 Nerve · Reflex save.</em> Shadows within twenty feet take hold. Creatures there save or are held fast until they break loose with a Strength check against your Sign DC. <strong>Backlash:</strong> The dark does not distinguish. Your companions are standing in it too.</p>
   <h3 id="ix-s-coinpain">Coin of Pain</h3>
   <p><em>Rank 2 · 1 Beat · 2 Blood.</em> The trade run backward: open your own arm and buy 1d6 Nerve with the Blood. Some nights this is the only bank still open. <strong>Backlash:</strong> Work it twice in a session and the second working costs a Mark as well.</p>
+  <h3 id="ix-s-charged">Charged to Another Account</h3>
+  <p><em>Rank 2 · 1 Beat · 2 Nerve.</em> Move a hurt off one ledger and onto another. A soul you touch heals 2d8, and one living creature you can see takes that same number, with no save at all if it dealt the wound and a Fortitude save for half if it did not. The books balance. Nobody ever said whose. Backlash: work it twice in a night and the third party stops being optional; the next transfer is charged to you.</p>
   <h3 id="ix-s-crimson">The Crimson Word</h3>
   <p><em>Rank 3 · 1 Beat · 3 Nerve or 6 Blood.</em> You speak a syllable that was not shaped for a human mouth, and a creature you can see takes 3d6 as its own blood turns against it. <strong>Backlash:</strong> On a natural 1, or a critical failure to overcome its resistance, you take the damage.</p>
   <h3 id="ix-s-borrowedface">The Borrowed Face</h3>
@@ -4608,20 +4570,22 @@ body{ background:#525659; }
   Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
   between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
   <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
-  countable — the Padre's <em>Grace</em>, the Preacher's <em>Conviction</em>, the Shaman's <em>Breath</em>, the Medicine
-  Man's <em>Vital Breath</em>, the Sister's <em>Mercy</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
+  countable — the Padre's <em>Grace</em>, the Preacher's <em>Conviction</em>, the Shaman's <em>Breath</em>,
+  the Sister's <em>Mercy</em>, and the Witch Hunter's <em>Zeal</em>. Where a Miracle's cost reads
   &ldquo;2&nbsp;Faith,&rdquo; it means two points of that pool, whatever your Calling names it. The pool refreshes with
   the dawn (or the dawn Mass, or the morning offering), and it runs dry, as faith does, exactly when the night is longest.</p>
   <p class="note" id="ix-m-dc">Where a Miracle forces a save, the DC is your <strong>Miracle DC = 10 + half your level +
-  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman, the
-  Medicine Man and the Sister, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
+  your faith ability's modifier</strong> — Presence for the Padre and the Preacher, Resolve for the Shaman and
+  the Sister, Wits for the Witch Hunter. A casting time given in Beats follows the Iron Code (Chapter XI); a Miracle
   worked as an <em>Action</em> costs one Beat, and one worked as a <em>Reaction</em> is taken on another's turn.</p>
 
   <h2 id="ix-m-lists">The Seven Lists</h2>
   <p>Every worker of Miracles draws on the <strong>Common Blessings</strong>, the shared grammar of grace. Beyond that,
-  each Calling holds one list of its own, closed to the others: the Padre his <strong>Liturgy</strong>, the Preacher his
-  <strong>Revival</strong>, the Shaman the <strong>Spirits</strong>, the Medicine Man the <strong>Mending</strong>,
-  the Witch Hunter the <strong>Consecrations</strong>, and the Sister the <strong>Vigil</strong>. A Padre and a Preacher answer the same dark; they do not answer it
+  each Calling holds a list of its own, closed to the others: the Padre his <strong>Liturgy</strong>, the Preacher his
+  <strong>Revival</strong>, the Witch Hunter the <strong>Consecrations</strong>, and the Sister the
+  <strong>Vigil</strong>. The Shaman alone holds two, the <strong>Spirits</strong> and the
+  <strong>Mending</strong>, which is the whole of what a working peace with the country buys that a
+  pulpit does not. A Padre and a Preacher answer the same dark; they do not answer it
   with the same words, and this is where the difference is written down.</p>
 </section>
 <section class="page">
@@ -4689,6 +4653,8 @@ body{ background:#525659; }
   <p><em>Rank 1 · Reaction · 1 Faith.</em> The oldest gesture in the Church, made in earnest. You or an ally beside you gains +2 against the next uncanny working or fear effect — if the hand is quick enough to make it in time. The blessing holds until it is spent.</p>
   <h3 id="ix-m-litany">The Litany of the Saints</h3>
   <p><em>Rank 2 · One minute · 2 Faith.</em> Call the long roll of the faithful dead, and let the living hear how many stood before them. Every ally who listens gains one reroll against fear, kept until the scene ends or it is spent.</p>
+  <h3 id="ix-m-visitation">Visitation of the Sick</h3>
+  <p><em>Rank 2 · One minute · 2 Faith.</em> The old rite for the bedside, oil and the short form. A soul heals 2d6, gains a fresh save at +2 against a disease or poison working in them, and is eased of pain enough to speak clearly, which is often what the room actually needed. The Church wrote this one down long before it wrote down the exorcisms, and it is used a thousand times as often.</p>
   <h3 id="ix-m-unction">Extreme Unction</h3>
   <p><em>Rank 3 · One minute · 2 Faith.</em> Anoint the dying with oil and the last words. They are stabilized at once, wake with 1d6 Blood, and — whatever comes after — cannot rise as one of the restless dead. The rite is a mercy first and a precaution second, but it is both.</p>
   <h3 id="ix-m-interdict">The Interdict</h3>
@@ -4719,13 +4685,15 @@ body{ background:#525659; }
   stand where you ask them to. They will not do anything they believe is wrong, and afterward they will be very tired
   and will want to know what came over them.</p>
   <h2 id="ix-m-list-spirits">The Spirits</h2>
-  <p>The Shaman's alone: not commands but courtesies, asked of the crowded country and its neighbors — beast and weather, river and rock, and the honored dead.</p>
+  <p>The Shaman's, and courtesies rather than commands: asked of the crowded country and its neighbors, beast and weather, river and rock, and the honored dead.</p>
   <h3 id="ix-m-smallword">A Word to the Small Spirits</h3>
   <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Ask the little spirits of a place one plain thing, courteously: where the water lies, who passed this way, what waits in the next draw. They answer plainly, if they answer, and remember that you asked kindly. The answer given, the working is done.</p>
   <h3 id="ix-m-offering">The Offering</h3>
   <p><em>Rank 1 · One minute · 1 Faith.</em> Leave tobacco, salt, or bread, and name the debt. The spirits of that ground grant safe passage, or +2 on one task done there, for as long as the gift is respected and the ground not fouled.</p>
   <h3 id="ix-m-beastgift">Borrow the Beast's Gift</h3>
   <p><em>Rank 2 · 1 Beat · 2 Faith.</em> Ask a nearby animal spirit for the loan of one gift, and wear it for a scene: an owl's eyes in the dark, a wolf's nose, a hare's speed, a bear's thick hide. The spirits lend gladly and expect the courtesy of thanks.</p>
+  <h3 id="ix-m-riverclose">What the River Closes</h3>
+  <p><em>Rank 2 · One minute · 2 Faith.</em> Lay the hurt in running water, or carry the water to the hurt, and ask. The wound heals 2d6 and closes clean: no rot, no fever, no scar worth the name, and no Lasting Injury out of that wound however bad it looked going in. The river does this for anything it likes and holds no particular opinion about people.</p>
   <h3 id="ix-m-pack">Set the Pack On</h3>
   <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
   <h3 id="ix-m-weather">Turn the Weather</h3>
@@ -4734,13 +4702,15 @@ body{ background:#525659; }
   <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it — able to speak, and to rage, and to bargain, but not to go.</p>
   <h3 id="ix-m-greatspirit">Call the Great Spirit</h3>
   <p><em>Rank 5 · One minute · 5 Faith.</em> Call a great spirit of storm, of beast, or of the honored dead, and it answers for a scene, lending its power to your hand without the peril of wearing its mask. It comes as a neighbor answers a knock — because you have kept faith, and because you asked.</p>
+  <h3 id="ix-m-lendshape">Lend Them the Shape</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> For a soul too broken to walk, borrow a body that is not. Ask an animal spirit, and if it consents your patient wears that shape until the next dawn and is whole inside it: sound of limb, clear of fever, free of every Lasting Injury and every wound short of the mortal. At dawn they come back to their own body and to everything that was wrong with it, less 4d8 Blood's worth that the shape mended while they were out of it. Most of them cry. A few of them ask to go again.</p>
   <h3 id="ix-m-councilofdea">The Council of the Dead</h3>
   <p><em>Rank 7 · One hour · 7 Faith.</em> Call the dead of a place together and sit down with them. Every spirit within a
   mile that will come, comes, and they answer honestly for an hour: what was done here, by whom, where it is now, and
   what would settle it. They are not obliged to be kind and they are frequently not. Once in a while one of them asks
   you for something, and then you have a second problem.</p>
   <h2 id="ix-m-list-mending">The Mending</h2>
-  <p>The Medicine Man's alone: the quiet, stubborn craft of keeping the wounded alive, one sure mending at a time, so the deep well is there when the worst comes.</p>
+  <p>The Shaman's second list, and the older of the two: the quiet, stubborn craft of keeping the wounded alive, one sure mending at a time, so the deep well is there when the worst comes.</p>
   <h3 id="ix-m-poultice">The Poultice</h3>
   <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Press a prepared remedy to the hurt. It heals 1d8 over the next few minutes and costs only the one point — the small, sure mending you lean on so the deep well stays full for worse.</p>
   <h3 id="ix-m-setbone">Set the Bone</h3>
@@ -4783,6 +4753,8 @@ body{ background:#525659; }
   <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Take hold of a soul who has just failed a Dread Check and give them something to hold back. They reroll it at once, and keep the second result even if it is worse. Most take the second result gladly. The ones who do not are why you keep hold a moment longer than they want.</p>
   <h3 id="ix-m-watchkept">The Watch Kept</h3>
   <p><em>Rank 1 · Ten minutes · 1 Faith.</em> Walk the bounds of a camp, a room, a cellar stair, naming what you mean to keep out. Until you sleep or leave, every soul inside takes +2 on Dread Checks, and nothing uncanny crosses the line you walked without you knowing the moment it does. It does not stop anything. It only means you are never the last to find out.</p>
+  <h3 id="ix-m-cleanwater">Clean Water and Clean Cloth</h3>
+  <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Wash it, close it, bind it, and say the words you say. A soul you touch heals 1d8, stops bleeding, and will not take a fever from that wound on its own. Half of what your order knows is this one thing done ten thousand times, and the ones who lived will tell you it was the half that mattered.</p>
   <h3 id="ix-m-lampunquenched">The Lamp Unquenched</h3>
   <p><em>Rank 2 · 1 Beat · 2 Faith.</em> A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it.</p>
   <h3 id="ix-m-nothingcomesin">Nothing Comes In</h3>
@@ -4791,6 +4763,8 @@ body{ background:#525659; }
   <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for.</p>
   <h3 id="ix-m-notbemoved">She Will Not Be Moved</h3>
   <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose.</p>
+  <h3 id="ix-m-wardbeds">The Ward Full of Beds</h3>
+  <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Take a room and make it a ward: a church hall, a bunkhouse, a barn with the stalls knocked out. For a full day every soul laid down in it recovers 2d8 Blood an hour and takes a fresh save each hour against whatever is in them, and nothing uncanny may carry one of them out of it while you are on your feet. You do not sleep while it holds. Nobody has ever known you to.</p>
   <h3 id="ix-m-untilmorning">Until Morning</h3>
   <p><em>Rank 7 · One minute · 7 Faith.</em> Sit down with them and say that this is not the night. Until dawn, no soul
   inside the room, the camp or the house may die: the dying do not go, the mortal wound waits, the sickness holds where
@@ -4821,7 +4795,7 @@ body{ background:#525659; }
     them — a worldly soul who has already paid a little. Anyone at all may attempt the <strong>Old Rites</strong>, for they
     are tradition and patience rather than borrowed power. The First Peoples' own ceremonies are <em>not</em> represented by
     these invented Signs and Rites; see the boxes in Chapters IV and VI.</p>
-    <p><strong>The Callings of Faith may never work a Sign.</strong> A Preacher, Padre, Shaman, Medicine Man, or Witch
+    <p><strong>The Callings of Faith may never work a Sign.</strong> A Preacher, Padre, Shaman, Sister, or Witch
     Hunter draws on faith, rite, and the spirits — never on the Old Dark's borrowed words, which stand opposed to their
     power at the root. A faithful soul may <em>recognize</em> a Sign, <em>resist</em> it, <em>break</em> it, or
     <em>cleanse</em> what it has wrought — much of the Witch Hunter's and the Padre's trade — but they cannot speak one.
@@ -4895,7 +4869,7 @@ body{ background:#525659; }
     <thead><tr><th>Rank</th><th>Your attack</th><th>Callings</th></tr></thead>
     <tbody>
       <tr><td>Practiced</td><td>Equal to your level</td><td>Bounty Hunter, Gunhand, Marshal, Mountain Man, Witch Hunter</td></tr>
-      <tr><td>Steady</td><td>Your level, less 1</td><td>Drifter, Gambler, Prospector, Sawbones, Medicine Man, Padre, Preacher, Shaman, False Prophet</td></tr>
+      <tr><td>Steady</td><td>Your level, less 1</td><td>Drifter, Gambler, Prospector, Sawbones, Padre, Preacher, Shaman, Sister, False Prophet</td></tr>
       <tr><td>Slight</td><td>Your level, less 2 (never below +0)</td><td>Hexer, Witch, Dark Cultist</td></tr>
     </tbody>
   </table>
@@ -5326,9 +5300,11 @@ body{ background:#525659; }
     <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">202</span></li>
     <li><a href="#character">Character creation</a><span class="pg">17</span></li>
     <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">178</span></li>
+    <li><a href="#ix-s-charged">Charged to Another Account (Sign)</a><span class="pg">198</span></li>
     <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">164</span></li>
     <li><a href="#ix-checks">Checks, saves &amp; opposed rolls</a><span class="pg">13</span></li>
     <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">166</span></li>
+    <li><a href="#ix-m-cleanwater">Clean Water and Clean Cloth (Miracle)</a><span class="pg">113</span></li>
     <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">159</span></li>
     <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">198</span></li>
     <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">194</span></li>
@@ -5441,6 +5417,7 @@ body{ background:#525659; }
     <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">179</span></li>
     <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">204</span></li>
     <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">224</span></li>
+    <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">108</span></li>
     <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">198</span></li>
     <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">208</span></li>
     <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">111</span></li>
@@ -5459,7 +5436,7 @@ body{ background:#525659; }
     <li><a href="#ix-mark">Mark, the</a><span class="pg">183</span></li>
     <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">60</span></li>
     <li><a href="#ix-time">Measures of time, the</a><span class="pg">15</span></li>
-    <li><a href="#ix-c-medicine">Medicine Man (Calling)</a><span class="pg">77</span></li>
+    <li><a href="#ix-c-shaman">Medicine Man, see Shaman (Calling)</a><span class="pg">88</span></li>
     <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">110</span></li>
     <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">169</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">34</span></li>
@@ -5605,8 +5582,10 @@ body{ background:#525659; }
     <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">167</span></li>
     <li><a href="#ix-m-list-vigil">Vigil, the (Miracle list)</a><span class="pg">113</span></li>
     <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">104</span></li>
+    <li><a href="#ix-m-visitation">Visitation of the Sick (Miracle)</a><span class="pg">105</span></li>
     <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">160</span></li>
     <li class="ix-hd">W</li>
+    <li><a href="#ix-m-wardbeds">Ward Full of Beds, the (Miracle)</a><span class="pg">113</span></li>
     <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">196</span></li>
     <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">145</span></li>
     <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">103</span></li>
@@ -5614,6 +5593,7 @@ body{ background:#525659; }
     <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">113</span></li>
     <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">158</span></li>
     <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">151</span></li>
+    <li><a href="#ix-m-riverclose">What the River Closes (Miracle)</a><span class="pg">108</span></li>
     <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">202</span></li>
     <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">166</span></li>
     <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">128</span></li>

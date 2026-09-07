@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.44 · Keeper's Book v2.24 · Bestiary v2.18 ·
-GritKeeper app v1.55.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.45 · Keeper's Book v2.24 · Bestiary v2.18 ·
+GritKeeper app v1.56.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -38,7 +38,7 @@ reference screen held eleven leaves for two releases while it held thirteen — 
 `RefLeafTitles.Length` and every mention interpolates it. Apply the same shape to any other number
 the prose quotes, in the books as much as in the app.
 
-**Sign & spoor, the safe-table rule, and the nineteen Callings' tables are the standing examples
+**Sign & spoor, the safe-table rule, and the eighteen Callings' tables are the standing examples
 of one-source-generated-outward** — the discipline is written up under *One source of truth* below,
 and each mechanism is documented in `GK/CLAUDE.md`.
 
@@ -122,8 +122,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.44 | 268 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.24 | 129 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.45 | 268 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.24 | 127 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.18 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.5 | 32 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.6 | 33 | one inline SVG map, downloadable |
@@ -325,7 +325,7 @@ hand in the right order out of memory.
 - **JS valid** — extract the `<script>` and run `node --check`.
 - **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
 - **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
-  nineteen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
+  eighteen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
   since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
   player. Since 2026-08-22 it also holds Ch. IV's encounter ladder against the Bestiary's
   statement of it and against `Rules.BudgetRungs`, which is three sites that had no guard at all
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.44) — structure
+## The Player's Book (v2.45) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -601,7 +601,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.55.0) — the C# desktop app
+## GritKeeper (v1.56.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

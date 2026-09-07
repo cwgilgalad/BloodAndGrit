@@ -225,7 +225,7 @@ public class PartyMember : INotifyPropertyChanged
     public int Grit { get => _grit; set { _grit = Math.Clamp(value, 0, 9); On(); } }
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, 6); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
-    // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Vital Breath,
+    // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
     // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
@@ -2397,7 +2397,7 @@ public static class Rules
     /// Keeper's Book Ch. IV under <i>Where the arithmetic stops</i>, the Bestiary beside
     /// <i>Threat by Tier</i>, and the Player's Book Ch. XI as <i>Some Things You Do Not Shoot</i>.
     /// <para>The reason is one number. A posse's damage per round is flat across ten levels (19 at
-    /// 1st, 21 at 10th) because the gun is the same gun and thirteen of the nineteen Callings add
+    /// 1st, 21 at 10th) because the gun is the same gun and twelve of the eighteen Callings add
     /// nothing to a Strike as they rise. A thing's Blood is not flat: 12 at Tier I, 40 at Tier III,
     /// 110 at Tier V. By Tier IV the posse needs about seven rounds to shoot one down and has about
     /// three before it has killed all of them, and no tactic inside the fight closes that.</para>
@@ -2415,7 +2415,7 @@ public static class Rules
     ///
     /// <para>The spine does not care what this is: <c>AttackFor</c>, <c>StrongSave</c>,
     /// <c>WeakSave</c> and <c>PartyTier</c> are linear in level and were confirmed on 2026-08-28 to
-    /// reproduce all 760 published table cells across the nineteen Callings exactly. What gates the
+    /// reproduce every published table cell across the eighteen Callings exactly. What gates the
     /// number is the DATA — a Calling with rows to 10 cannot be played at 11 — so this moves only
     /// once <c>chargen.json</c> has the rows.</para></summary>
     public const int MaxLevel = 15;
@@ -2429,7 +2429,7 @@ public static class Rules
     /// <summary>The levels that hand out an Edge: 1st, 3rd, 5th, 7th, 9th, and then 12th and 14th.
     ///
     /// <para>Named on 2026-08-30 because it was a bare <c>new[] { 1, 3, 5, 7, 9 }</c> inside
-    /// <c>Validate</c> while the nineteen printed level tables named only 3rd, 7th and 9th, and the
+    /// <c>Validate</c> while the eighteen printed level tables named only 3rd, 7th and 9th, and the
     /// Drifter's named 3rd, 7th and 10th. Two statements of one rule with nothing comparing them, so
     /// a player at 5th level was never told about an Edge the app had already given them. The tables
     /// print all seven now and a smoke assertion holds them to this.</para></summary>
