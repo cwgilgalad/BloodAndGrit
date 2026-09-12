@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.30 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.30)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.31 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.31)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.30</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.31</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.30 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.31 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -165,6 +165,10 @@ CH1 = f"""<!-- I -->
   paced so it lands, and the judgment calls the rules leave to you on purpose. Read the Player's Book first; this
   one assumes it. Where the two ever disagree, the Keeper's word settles it at the table and a note in the margin
   settles it after.</p>
+  <p class="note">You do not have to read the rest of it in order, and if you mean to run this week you
+  should not. <strong>Chapter IX</strong> is a complete first night, built to teach the game while it
+  scares the table. Run that, then come back and read whatever the night made you curious about; this
+  book keeps better once it has something to attach to.</p>
 
   <h2>The Promise</h2>
   <p>Blood &amp; Grit is a western that curdles. It opens in a world the players think they understand &mdash; dust,
@@ -1059,6 +1063,44 @@ CH7 = f"""<!-- VII -->
   there so a Keeper five minutes from the table has something to reach for. Use the ones that fit the county you have
   already built, ignore the rest, and invent freely against them. The door each Patron waits at is the only part worth
   keeping intact, because the door is the mechanism and everything else is scenery.</p>
+
+  <h2 id="patrons-why">Why It Answers at All</h2>
+  <p>Sooner or later somebody asks it, and it is usually the player running the Hexer. If the thing is
+  that old and that large and that thoroughly uninterested, why does it trouble itself with him? Why
+  would a depth that was here before the mountains take a call from a man in a rented room in
+  Leadwater?</p>
+  <p>Have an answer ready, because the question is a good one and a table can hear an empty chair behind
+  the screen. Do not have <em>the</em> answer. The moment a Keeper is certain, the dark goes small. Below
+  are four ways it has been explained by people in a position to know and in no position to be trusted.
+  Run the one that suits the county you have built, keep the other three in your pocket, and confirm
+  none of them aloud, ever, to anybody.</p>
+  <p><strong>The wear.</strong> It never set any terms. It has a shape, and a shape leaned on in the same
+  place for ten thousand years has a groove worn into it. The Devourer answers at the snowed-in pass for
+  the reason a dry wash runs where it runs: that is where everything went, so that is where the channel
+  is. Under this reading the Hexer persuades nothing whatever. He has found a channel and stepped into
+  it, and a mineshaft does not decide to be entered. The Mark, then, is what a channel gets from having
+  been used &mdash; he is worn into a shape that things run downhill into, and in time something does.</p>
+  <p><strong>The debt.</strong> It answers because answering is how it comes to be owed, and being owed
+  is the nearest thing to an appetite anybody has ever managed to prove it has. Nothing down there names
+  a price, argues a rate, or comes to the door. The note is held, somewhere nobody rides to, and it sits
+  there gathering. Under this reading the Tallyman is not sent. He is what a debt turns into when it has
+  sat long enough.</p>
+  <p><strong>The tongue.</strong> A question is the only pressure a man can bring to bear on a depth, and
+  the six are the parts of it shaped enough to take the pressure. They answer the way a canyon answers:
+  in your own voice, later, and changed. Under this reading nothing has ever answered anybody out here,
+  and every bargain ever struck was a man hearing himself come back wrong.</p>
+  <p><strong>The appetite nobody has named.</strong> It answers because it wants something. Ten thousand
+  years of men have gone down after what, and the answer has never come back up, and the thing has never
+  once been in a hurry about it. This reading sits badly beside the box above, which is exactly why it is
+  worth keeping. Hold it in reserve for the night a table has grown comfortable with an indifferent
+  universe.</p>
+  <div class="keeper-note"><span class="kn-tag">However you answer it</span>The stagecraft is the same
+  under all four, and it is one rule: <strong>never let a Patron want. Let it be available.</strong>
+  Whenever you catch yourself about to have one pursue, tempt, argue or gloat, stop, and make it already
+  there instead &mdash; already open, already the easiest thing in the room, already what a tired man
+  reaches for without deciding to. The test afterward is quick. If you can retell the scene with the
+  Patron doing nothing at all and only the players moving, you ran it right. If the scene needs the
+  Patron to have made a decision, you wrote a devil.</div>
 
   <h2 id="patrons-table">The Patrons at the Table</h2>
   <p>The Player's Book names six Patrons (Ch. VII) and wisely tells no more than a drifter's rumor of each. Here is
@@ -2937,6 +2979,8 @@ KEEP_INDEX = [
     ("Hunger (running one)", "returned"), ("Feeding a Returned soul", "returned"),
     ("The Old Dark (what it is)", "patrons-olddark"),
     ("The six, and the depth", "patrons-olddark"),
+    ("Why the dark answers at all", "patrons-why"),
+    ("Bargaining, why it works", "patrons-why"),
     ("The Patrons at the table", "patrons-table"),
     ("The Devourer", "patron-devourer"), ("The Whisperer", "patron-whisperer"),
     ("The Cold Deep", "patron-colddeep"), ("The Long Trail", "patron-longtrail"),
