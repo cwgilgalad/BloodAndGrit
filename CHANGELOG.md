@@ -8,6 +8,48 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.48, Keeper's Book v2.32, Bestiary v2.20, GritKeeper v1.56.4 — the em-dash
+  rate, brought down by moving punctuation and stopped where moving it would cost the voice
+  (2026-09-12).**
+
+  Body prose across the six books measured **11.05 em dashes per thousand words**, against a ~3.2
+  human baseline and GPT-4.1's 10.6 (Freeburg 2026) — the books were running *above* the
+  generated-text rate. It is **9.53** now, 278 dashes lighter, across 295 edits that each asserted
+  their own word sequence unchanged before landing, so nothing but punctuation could move.
+  Player's 9.40 → **8.27**, Keeper's 10.81 → **9.05**, Bestiary 14.05 → **12.01**. The three modules
+  already sat at 3.0–4.1 and were not touched.
+
+  **Measuring the right population mattered.** The figure carried into this session was 12.53, and
+  that counted quote attributions, stat lines, table cells, runheads and the Contents. Stripping the
+  structural uses put the real prose rate at 11.05 — the *Bestiary's* 38 attribution dashes are
+  typography and were never the tell.
+
+  **Three rules survived review.** A dash doing a colon's job becomes a colon (*"three Beats to
+  spend: a Strike, a Stride, a reload"*). A dash between two independent clauses becomes a semicolon
+  (*"Nothing wrong with it; this is a western"*). Explanatory paired asides take parentheses, or
+  commas where they are short noun phrases.
+
+  **A fourth rule was written, measured at 159 further edits, and thrown away.** Turning the dash
+  before a coordinator into a comma flattens the timing the sentence was built on: *"someone worth
+  playing — and worth burying"* loses its beat, and *"a name, a house, an inheritance — and then a
+  war, a debt, or a scandal took it"* becomes a comma list with an ambiguous turn inside it. Quoted
+  speech is excluded from every rule for that reason, and rhetorical enumerations keep their dashes
+  throughout, because there the interruption is the point.
+
+  **Where punctuation stops being the problem.** The Bestiary's remaining 961 prose dashes are
+  largely one shape — *"X — a, b, c — Y"* — repeated through 182 creature entries. The fault there is
+  **cadence**, and `audit_ai_tells.py` already measures it from another angle: burstiness **0.49**,
+  against the Player's 0.65 and the Keeper's 0.94. Uniform sentence length carries further than any
+  dash count, and closing it is a writing pass rather than a regex.
+
+  `creatures.json` was re-extracted, because the Bestiary's `lore`, `found` and `keeperNote` text
+  moved: **123 fields across 90 creatures, 182 creatures on both sides, and zero fields where the
+  words changed** rather than the punctuation. The stale-data check found this by itself.
+
+  **Also worth recording: `audit_ai_tells.py` reads `README.md`, `CLAUDE.md`, `GK/CLAUDE.md`,
+  `CHANGELOG.md` and `NOTICE`. It has never read the books** — the one place the rule about machine
+  prose was actually aimed.
+
 - **Player's Book v2.47, Keeper's Book v2.31, GritKeeper v1.56.3 — the question the table
   always asks, a step that was never in the list, and a book that got longer when its fonts were
   slow (2026-09-11).**

@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.31 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.31)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.32 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.32)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.31</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.32</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.31 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.32 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -92,7 +92,7 @@ H = _set_epigraph(H, "120px",
     '    I have kept it so long I have forgotten how to look at a sunset and see only the sun."',
     "attributed to a keeper of the old tales, the name worn from the page")
 H = _set_epigraph(H, "90px",
-    '"The trick was never the frightening &mdash; any fool with a candle can frighten. The trick is the\n'
+    '"The trick was never the frightening: any fool with a candle can frighten. The trick is the\n'
     '    fairness: letting them see, the breath before the dark takes them, the one turn they should not have taken."',
     "from the margins of a Keeper's ledger")
 
@@ -160,7 +160,7 @@ CH1 = f"""<!-- I -->
   patient, and not on anyone's side. The players brought characters. You bring the dark they walked into.</p>
 
   <h2>What This Book Is</h2>
-  <p>The Player's Book makes a character and keeps them breathing &mdash; the dice, the callings, the guns, the rules
+  <p>The Player's Book makes a character and keeps them breathing: the dice, the callings, the guns, the rules
   of fear from the inside. This book is the other half: the DCs you set, the monsters you run, the way dread is
   paced so it lands, and the judgment calls the rules leave to you on purpose. Read the Player's Book first; this
   one assumes it. Where the two ever disagree, the Keeper's word settles it at the table and a note in the margin
@@ -229,7 +229,7 @@ CH1 = f"""<!-- I -->
     <li><strong>The one who came to be scared.</strong> They lean in at the wrong note, they want the dread. Give them
     the secret Notice rolls, the slow reveals, the thing glimpsed and not explained. They are your best instrument;
     play the horror partly to them and the rest of the table catches it.</li>
-    <li><strong>The one who came to shoot.</strong> Nothing wrong with it &mdash; this is a western. Give them the
+    <li><strong>The one who came to shoot.</strong> Nothing wrong with it; this is a western. Give them the
     gunfight, the standoff, the moment their iron is the only answer. But teach them, gently and early, that some
     nights the gun makes it worse, so the lesson lands before it costs the party someone.</li>
     <li><strong>The one who came to solve.</strong> They want the mystery, the clue, the why. Build them a real puzzle
@@ -240,7 +240,7 @@ CH1 = f"""<!-- I -->
     NPC who trusts only them. A quiet player is often the most invested; they are just waiting to be invited.</li>
     <li><strong>The one pulling away from the table.</strong> The lone wolf, the murder-hobo, the player whose character
     keeps wandering off alone or turning on the others. Usually this is boredom or a want unmet, not malice. Talk to
-    them away from the table, find the want, and write it into the story &mdash; a tie, a grudge, a goal that needs the
+    them away from the table, find the want, and write it into the story: a tie, a grudge, a goal that needs the
     others. A character with a reason to ride with the party rarely rides away from it.</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The check-in</span>Once an arc or so, ask the table plainly: are you
@@ -315,7 +315,7 @@ CH2 = f"""<!-- II -->
 
   <h2>The Dark Has a Plan</h2>
   <div class="keeper-note"><span class="kn-tag">The clock</span>Give the dark a goal and a count of how long until it
-  gets there &mdash; a clock of four to six steps. The cult needs three more nights to finish the rite; the taint spreads
+  gets there: a clock of four to six steps. The cult needs three more nights to finish the rite; the taint spreads
   one homestead a week; the thing under the mine wakes by the new moon. Tick it forward whenever the players dawdle,
   fail, or look away. A ticking clock turns a haunted set-piece into a living threat the players are racing, and it
   tells you, with no agonizing, what happens when they don't show up.</div>
@@ -327,7 +327,7 @@ CH2 = f"""<!-- II -->
   A few habits keep the dark moving toward them:</p>
   <ul>
     <li><strong>Never gate the core clue behind a roll.</strong> The thing the players <em>must</em> know to proceed is
-    not a Notice check they can fail &mdash; it is simply there to be found by anyone who looks. Roll for the bonus, the
+    not a Notice check they can fail; it is simply there to be found by anyone who looks. Roll for the bonus, the
     edge, the thing that makes it easier; never for the thread the whole night hangs on. The rule of three: put the key
     clue in at least three places, so missing one or two doesn't end the game.</li>
     <li><strong>Clues point forward, not just down.</strong> Every clue should suggest a next place to go or a next
@@ -358,8 +358,7 @@ CH2 = f"""<!-- II -->
     angle, the leverage they bring &mdash; and call for Persuade, Deceive, or Intimidate only when the outcome
     genuinely hangs and they've made their case. A good argument lowers the DC or grants the roll outright; a clumsy
     one raises it or forfeits it. Reward the play, not just the stat.</li>
-    <li><strong>Narrate the four degrees here too.</strong> A critical success turns the NPC further than hoped &mdash;
-    they volunteer the next clue, become an ally, name a second name. A critical failure shuts the door and may make an
+    <li><strong>Narrate the four degrees here too.</strong> A critical success turns the NPC further than hoped; they volunteer the next clue, become an ally, name a second name. A critical failure shuts the door and may make an
     enemy: the witness clams up for good, the marshal decides the party is the problem.</li>
     <li><strong>Some things cannot be rolled.</strong> No check makes a loyal man betray his daughter or a Hollow
     Prophet abandon his Word. When the want is bedrock, say so &mdash; let the players find a different lever or a
@@ -420,13 +419,13 @@ CH3 = f"""<!-- III -->
   <div class="keeper-note"><span class="kn-tag">Keeper's eye</span>Nerve is a budget for the whole night, not the first
   fight. If you bleed the party to zero by the second scene you have nowhere left to go and a table of broken
   characters doing chaos for an hour. Drain slow. Let small failures accumulate. Save the 1d10 sights for the
-  reckoning, so the players walk into the climax already frayed &mdash; that is when a single failed save lands like a
+  reckoning, so the players walk into the climax already frayed; that is when a single failed save lands like a
   gunshot.</div>
 
   <h2>Running the Break</h2>
   <p>A character at <strong>0 Nerve</strong> breaks: roll on the Player's Book's table for an uncontrolled response,
   and they take a lasting Affliction. The thing to remember at the table is that a broken character is <em>not</em>
-  benched &mdash; they are made dangerous, to themselves and to the souls beside them. Lean into it. A man firing wild
+  benched; they are made dangerous, to themselves and to the souls beside them. Lean into it. A man firing wild
   at the threat and whatever's near it, a woman frozen useless while the dark closes &mdash; these are the moments the
   players will remember being scared. But keep it short. Hand control back the moment the immediate response plays
   out; a player narrating their own slow ruin is good horror, a player benched for an hour is a bored friend.</p>
@@ -461,7 +460,7 @@ CH3 = f"""<!-- III -->
   it to them.</div>
 
   <h2>Giving Back Nerve</h2>
-  <p>Nerve does not come back in the field. It returns at full only with the new session &mdash; a night survived,
+  <p>Nerve does not come back in the field. It returns at full only with the new session: a night survived,
   a fire, the company of the living. You may grant a small recovery (1d4) in play for a true respite: a safe night
   in a real bed, a hymn sung all the way through, whiskey shared with people who saw the same thing and lived. Never
   in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
@@ -474,8 +473,7 @@ CH3 = f"""<!-- III -->
   <div class="box">
     <h4>The Bleeding of One Eli, Across One Session</h4>
     <ul>
-      <li><strong>Act One, the wrong note.</strong> A mutilated steer, drained and wrong (DC&nbsp;13). He saves &mdash;
-      no loss. The dread is in the suspicion, not the tax. <em>Nerve: 11.</em></li>
+      <li><strong>Act One, the wrong note.</strong> A mutilated steer, drained and wrong (DC&nbsp;13). He saves: no loss. The dread is in the suspicion, not the tax. <em>Nerve: 11.</em></li>
       <li><strong>Act Two, the first true sight.</strong> The dead get up in the Pell barn (DC&nbsp;16). He fails;
       loses 4. This is the night's hinge, and it should sting. <em>Nerve: 7.</em></li>
       <li><strong>Act Two, the cellar.</strong> The half-turned wife, pleading (DC&nbsp;16 again, but once-per-kind
@@ -499,7 +497,7 @@ CH3 = f"""<!-- III -->
   The budget is a feel, not a formula, and the table tells you which way to lean.</div>
 
   <h2>The Mark</h2>
-  <p>Nerve frays; the Mark <em>stains</em>. It is a track of six steps that does not heal on its own &mdash; it only
+  <p>Nerve frays; the Mark <em>stains</em>. It is a track of six steps that does not heal on its own; it only
   ever waits. Grant it rarely and never cheaply, in exactly three cases:</p>
   <ul>
     <li><strong>Breaking utterly</strong> &mdash; only on the rare roll (a 6 on the breaking table, a moment of terrible
@@ -520,9 +518,9 @@ CH3 = f"""<!-- III -->
   <table>
     <thead><tr><th>Step</th><th>What the world does around them</th></tr></thead>
     <tbody>
-      <tr><td><strong>1</strong></td><td>Animals go uneasy &mdash; a dog growls low, a horse sidesteps, the cat leaves the room. Nothing a person would notice yet, but the beasts know.</td></tr>
+      <tr><td><strong>1</strong></td><td>Animals go uneasy: a dog growls low, a horse sidesteps, the cat leaves the room. Nothing a person would notice yet, but the beasts know.</td></tr>
       <tr><td><strong>2</strong></td><td>A cold that travels with them; the fire seems to lean away. Folk feel it without naming it and sit a little farther off.</td></tr>
-      <tr><td><strong>3</strong></td><td>They know things they shouldn't &mdash; a stranger's grief, the bad card coming, the lie under a kind word. The good advice no one asked for, and the unease when it proves right.</td></tr>
+      <tr><td><strong>3</strong></td><td>They know things they shouldn't: a stranger's grief, the bad card coming, the lie under a kind word. The good advice no one asked for, and the unease when it proves right.</td></tr>
       <tr><td><strong>4</strong></td><td>A hunger, a habit, a thing they do now &mdash; salt they must throw, a count they must finish, a taste for the raw or the dark. The other players start to watch them.</td></tr>
       <tr><td><strong>5</strong></td><td>The dark speaks to them plainly and offers, and the offers are good, and turning them down gets harder each time. They are useful now in ways that frighten the people who love them.</td></tr>
       <tr><td><strong>6</strong></td><td>The road's end. What stands up wearing their face answers to you now, not the player &mdash; and it knows everything the character knew, including the party's soft places.</td></tr>
@@ -664,7 +662,7 @@ CH4 = f"""<!-- IV -->
 
   <h2>Building a Threat from Scratch</h2>
   <p>The Bestiary holds {BEST_COUNT} things to fight, and the country always has one more. To make your own,
-  work down this list &mdash; it takes about a minute.</p>
+  work down this list; it takes about a minute.</p>
   <div class="box">
     <h4>Six Steps to a Monster</h4>
     <ul>
@@ -673,7 +671,7 @@ CH4 = f"""<!-- IV -->
       Threat-by-Tier table above. You now have a working monster.</li>
       <li><strong>3. Set its nature.</strong> Choose the strong save: the dead and the cursed hold Will and Fortitude
       and fail Reflex; beasts hold Reflex and Fortitude and fail Will; the Old Dark holds Will above all.</li>
-      <li><strong>4. Give it one Special.</strong> The single thing the numbers don't say &mdash; it heals, it drains,
+      <li><strong>4. Give it one Special.</strong> The single thing the numbers don't say; it heals, it drains,
       it cannot be seen whole, it calls more of its kind. One is plenty; two makes a boss.</li>
       <li><strong>5. Give it one weakness.</strong> The <em>Putting It Down</em> &mdash; the salt, the fire, the stake,
       the named truth. Every monster has its one thing, and learning it is the players' work.</li>
@@ -760,8 +758,7 @@ CH4 = f"""<!-- IV -->
   plan gone wrong, and suddenly the whole party is bleeding out on the church floor. You have tools, and using them is
   not cheating &mdash; it is keeping the promise of fairness when the dice broke it:</p>
   <ul>
-    <li><strong>Capture, don't kill.</strong> Most monsters and all men have reasons to take rather than slay &mdash;
-    a cult needs sacrifices, a Nightwalker needs cattle, an outlaw needs hostages. A downed party can wake bound in
+    <li><strong>Capture, don't kill.</strong> Most monsters and all men have reasons to take rather than slay: a cult needs sacrifices, a Nightwalker needs cattle, an outlaw needs hostages. A downed party can wake bound in
     the cellar with everything to play for, which is far better horror than a sheet of dead characters anyway.</li>
     <li><strong>Bring the dawn.</strong> Sunlight, a relief column, the storm breaking, the ally arriving &mdash; seed
     a clock that can rescue as easily as it can doom. A party pinned and dying saved by the gray of dawn, at the cost
@@ -778,7 +775,7 @@ CH4 = f"""<!-- IV -->
   point at and say <em>we should have run</em> is a story; one they can only call bad luck is a betrayal.</div>
 
   <h2>A Hand at the Table</h2>
-  <p>Rules read cold on the page. Here is the engine warm &mdash; a few beats of real play to show how the pieces move
+  <p>Rules read cold on the page. Here is the engine warm: a few beats of real play to show how the pieces move
   together. The Keeper's words are plain; the dice and rulings are in brackets.</p>
   <div class="box">
     <h4>Worked Example: The Pell Barn</h4>
@@ -788,10 +785,10 @@ CH4 = f"""<!-- IV -->
     <p><strong>Keeper:</strong> Give me a Notice. [<em>Uncertain and consequential, so a roll; the dark hides a
     Risen, DC 15.</em>] &hellip; A 19. [<em>Success.</em>] It's a man's shape, swaying, and the sound coming out
     of him is wind in a chest that quit working a while back. Then it turns, and its eyes catch your
-    lantern, and they are the wrong color clean through. [<em>First true sight of the walking dead &mdash; a Dread
+    lantern, and they are the wrong color clean through. [<em>First true sight of the walking dead: a Dread
     Check, Will DC 16.</em>] Give me a Will save against the dread of it.</p>
     <p><strong>Eli:</strong> &hellip;That's a 7. [<em>Failure: lose 1d6 Nerve, 4 rolled; Eli drops from 9 to 5.</em>]</p>
-    <p><strong>Keeper:</strong> Your nerve goes out of you like water. You've seen dead men &mdash; never one that
+    <p><strong>Keeper:</strong> Your nerve goes out of you like water. You've seen dead men: never one that
     looked back. It comes off the wall toward you, arms rising. You have the time it takes to cross the barn.</p>
     <p><strong>Eli:</strong> I draw and put two in its chest. [<em>Two Beats: a shot, then a second at the Multiple
     Attack Penalty.</em>]</p>
@@ -833,18 +830,18 @@ CH5 = f"""<!-- V -->
   <div class="box">
     <h4>Reading a Stat Block</h4>
     <ul>
-      <li><strong>Tier</strong> (I&ndash;V) is the measure of danger &mdash; a fair, hard fight for a party of twice
+      <li><strong>Tier</strong> (I&ndash;V) is the measure of danger: a fair, hard fight for a party of twice
       that in levels (Ch. IV). <strong>Defense</strong> is the number to hit it; <strong>Blood</strong> is what it takes.</li>
       <li><strong>Saves</strong> are Fortitude / Reflex / Will. <strong>Attacks</strong> give the bonus to hit and the
       damage on a hit; apply the Multiple Attack Penalty to extra strikes as a player would.</li>
       <li><strong>Dread</strong> is the Will-save DC on first sight and the Nerve a failure costs (Ch. III).
       <strong>Mark</strong>, where it appears, is the soul-cost of touching the thing's power.</li>
-      <li><strong>Putting It Down</strong> is the secret &mdash; the weakness the players must learn, usually the hard way.</li>
+      <li><strong>Putting It Down</strong> is the secret: the weakness the players must learn, usually the hard way.</li>
     </ul>
   </div>
 
   <h2>Choosing the Night's Monster</h2>
-  <p>Pick by Tier first &mdash; the budget in Chapter IV tells you what is fair &mdash; then by the kind of fear you want.
+  <p>Pick by Tier first (the budget in Chapter IV tells you what is fair) then by the kind of fear you want.
   The Bestiary is sorted to help: the restless dead for sieges and grief; cursed beasts for the hunt; men and the shapes
   of men for paranoia and the gun; spirits and hauntings for the slow, helpless dread of a place; the wild and the
   weather for survival; and the Old Dark for the nights the players are meant only to survive.</p>
@@ -920,7 +917,7 @@ CH6 = f"""<!-- VI -->
 
   <h2>When Players Dabble</h2>
   <div class="keeper-note"><span class="kn-tag">Bad medicine</span>Sooner or later a player works a sign, reads a rite,
-  or takes a bargain. Let them &mdash; the Old Dark is in the Player's Book for a reason &mdash; but the dark always
+  or takes a bargain. Let them (the Old Dark is in the Player's Book for a reason) but the dark always
   delivers exactly what was asked and never what was wanted, and the bill comes in Mark. A rite worked wrong (a failed
   check) does something, just not the something intended: it calls the wrong thing, or the right thing to the wrong
   place, or works on the caster. The fun is real and the cost is real. Hold to both.</div>
@@ -982,11 +979,11 @@ CH6 = f"""<!-- VI -->
     yourself and grant <em>that</em>, not the intent behind it. The gap between the two is where the horror lives.</li>
     <li><strong>The price is always Mark, and always more than it looks.</strong> A small deal is one step; a large one,
     two or more; a deal to undo death or unmake a loss, the deepest stain the game allows. Name the cost honestly when
-    asked &mdash; the dark does not hide its terms, because it doesn't need to.</li>
+    asked: the dark does not hide its terms, because it doesn't need to.</li>
     <li><strong>Every bargain solves one problem and plants the next.</strong> The deal that saves tonight should be
     the seed of a worse night later. A bargain with no future cost is just a magic item; a bargain that comes back
     wearing a debt is a story. And when the bill comes due, it often comes wearing the Tallyman's coat (see the
-    Bestiary) &mdash; the collector who cannot be refused.</li>
+    Bestiary): the collector who cannot be refused.</li>
   </ul>
 
 </section>
@@ -1079,7 +1076,7 @@ CH7 = f"""<!-- VII -->
   the reason a dry wash runs where it runs: that is where everything went, so that is where the channel
   is. Under this reading the Hexer persuades nothing whatever. He has found a channel and stepped into
   it, and a mineshaft does not decide to be entered. The Mark, then, is what a channel gets from having
-  been used &mdash; he is worn into a shape that things run downhill into, and in time something does.</p>
+  been used; he is worn into a shape that things run downhill into, and in time something does.</p>
   <p><strong>The debt.</strong> It answers because answering is how it comes to be owed, and being owed
   is the nearest thing to an appetite anybody has ever managed to prove it has. Nothing down there names
   a price, argues a rate, or comes to the door. The note is held, somewhere nobody rides to, and it sits
@@ -1400,7 +1397,7 @@ CH7 = f"""<!-- VII -->
   <ul class="dash">
     <li><strong>At the first step or two</strong>, say nothing mechanical. Describe: the cold room,
     the dog that will not settle, the food that tastes of nothing.</li>
-    <li><strong>At the third</strong>, the numbness lands &mdash; they stop losing Nerve to dread.
+    <li><strong>At the third</strong>, the numbness lands; they stop losing Nerve to dread.
     Play it as the gift the book calls it and the loss it is. A soul who has stopped being able to
     be frightened has stopped being able to care, and the other players should notice before the
     player does.</li>
@@ -1475,7 +1472,7 @@ CH7 = f"""<!-- VII -->
       you can't say it in a breath, the players won't be able to either.</li>
       <li><strong>The clock.</strong> What the dark is doing and how many steps until it gets there. Write the steps;
       tick them in play.</li>
-      <li><strong>Three wrong notes.</strong> The omens you'll drop in Act One &mdash; the cold, the silence, the
+      <li><strong>Three wrong notes.</strong> The omens you'll drop in Act One: the cold, the silence, the
       grave. Have more than you'll need.</li>
       <li><strong>The core clue, placed thrice.</strong> The one thing the players must learn, and the three places
       they can learn it (Ch. II). Never gate it behind a roll.</li>
@@ -1526,7 +1523,7 @@ CH8 = f"""<!-- VIII -->
   Black or Mexican, and the outfit that says otherwise is lying to the census.</p>
   <p>Then the rest of the county. Men and women freed by the war came west by the tens of thousands in the exodus of
   '79 and built whole towns of their own on the Kansas and Indian Territory grass, and their sons ride in the Ninth
-  and Tenth Cavalry &mdash; the finest horse soldiers in the Territory, and the ones the Army sends first. The
+  and Tenth Cavalry: the finest horse soldiers in the Territory, and the ones the Army sends first. The
   Chinese laid the Central Pacific through the Sierra, nine men in ten on that grade, and when the rails met they
   went into the mines, the laundries, the market gardens, the fishing boats, and the kitchen of every outfit that
   was lucky enough to hire one; three years back Congress shut the door behind them, and they are still here, and
@@ -1582,14 +1579,14 @@ CH8 = f"""<!-- VIII -->
   a town with a secret in its boot-hill will close ranks against questions. Give it a few standing fixtures and it
   runs itself:</p>
   <ul>
-    <li><strong>A heart &mdash; the place they gather.</strong> The saloon, the church, the store. This is where the
+    <li><strong>A heart: the place they gather.</strong> The saloon, the church, the store. This is where the
     players take the town's temperature and where you stage the public scene: the accusation, the town meeting, the
     funeral. When the heart goes wrong &mdash; the saloon gone silent, the church locked &mdash; the players feel it.</li>
     <li><strong>A handful of faces.</strong> Four or five named locals with wants and tells (three lines each, above)
     are a whole town. Reuse them; let the players learn them. A named barkeep who dies in Act Three is worth more than
     a massacre of strangers.</li>
     <li><strong>A pressure already on it.</strong> Debt, drought, a closing mine, a land-grab, an old feud. The dark
-    rarely arrives to a happy town &mdash; it moves into the cracks already there, and the mundane pressure is what
+    rarely arrives to a happy town; it moves into the cracks already there, and the mundane pressure is what
     makes the supernatural one bite. The bank foreclosing is half the horror before a single corpse walks.</li>
     <li><strong>A way it can be lost.</strong> Know what it looks like when the players fail this town &mdash; emptied,
     burned, hollowed, gone over to the dark. A town that can fall is a town worth saving, and the threat of its
@@ -1635,7 +1632,7 @@ CH9 = f"""<!-- IX -->
   <div class="box">
     <h4>The Truth (for the Keeper alone)</h4>
     <p>Coffin Wells is a dying cattle town. Six weeks ago its banker, <strong>Josiah Vane</strong>, ruined and
-    desperate, dug up the wrong grave on the old mission ground east of town &mdash; the grave of something the
+    desperate, dug up the wrong grave on the old mission ground east of town: the grave of something the
     Spanish padres had staked and salted a century back. He meant to rob it of rumored silver. He woke a
     <strong>Nightwalker</strong> instead, and struck a bargain to save his own neck: blood for the town, fed to it
     quietly, in trade for being spared and made rich.</p>
@@ -1655,7 +1652,7 @@ CH9 = f"""<!-- IX -->
   banker Vane buying a round and steering the talk away. Plant the wrong notes gently: the new graves at the
   boot-hill are <em>disturbed</em>; the dogs won't go east; a homesteader's wife says her husband came home three
   days after they buried him, and won't say more. <strong>No monster yet.</strong> End the act when the party rides
-  out to the Pell homestead to look into the fever &mdash; the marshal's reluctant errand, or their own curiosity.</p>
+  out to the Pell homestead to look into the fever: the marshal's reluctant errand, or their own curiosity.</p>
 
   <h2>Act Two &mdash; The Wrong Note Answers</h2>
   <p>The Pell place is dark, the door open, the supper cold on the table. Here the players meet the dead getting up:
@@ -1856,7 +1853,7 @@ CH10 = f"""<!-- X -->
   it breaks.</p>
 
   <h2>The Souls Under the Roof</h2>
-  <p>Besides the party, give the station a handful of NPCs (Ch. VIII numbers) &mdash; one of whom is the thing. Name
+  <p>Besides the party, give the station a handful of NPCs (Ch. VIII numbers): one of whom is the thing. Name
   them, give each a want and a tell, and let the players get comfortable before anything goes wrong:</p>
   <ul>
     <li><strong>"Eli," the hostler</strong> &mdash; easy, helpful, knows the horses by name. <em>This is the
@@ -1906,8 +1903,7 @@ CH10 = f"""<!-- X -->
   difference is the whole adventure.</p>
 
   <h2>The Box</h2>
-  <p>If they expose it and end it, the storm breaks toward dawn and the survivors ride out into a clean cold morning
-  &mdash; never quite sure, after this, of a stranger's face in poor light. If it slips away into the white, then it
+  <p>If they expose it and end it, the storm breaks toward dawn and the survivors ride out into a clean cold morning: never quite sure, after this, of a stranger's face in poor light. If it slips away into the white, then it
   is out there still, wearing someone the players trusted, and it knows their faces now. Either way, leave one small
   wrong note at the end &mdash; a reflection that lags, a dog that growls at a friend &mdash; and let the table wonder.</p>
 
@@ -1949,7 +1945,7 @@ CH11 = f"""<!-- XI -->
     character they bleed to save (Ch. VIII), and every loss lands. Run it when your table wants attachment, stakes,
     and a place to call theirs.</li>
     <li><strong>The Long Trail.</strong> The players ride, drifting town to town, each a self-contained reckoning, with
-    a single thread pulling them onward &mdash; a name, a debt, a thing they're chasing or that's chasing them. Strength:
+    a single thread pulling them onward: a name, a debt, a thing they're chasing or that's chasing them. Strength:
     variety and momentum; you can run nearly any one-shot as a stop on the road. Run it when your table likes the new
     and the open, and a campaign that's a journey, not a siege.</li>
     <li><strong>The Closing Circle.</strong> The players know, from early, what the great dark is &mdash; the Patron
@@ -1973,12 +1969,12 @@ CH11 = f"""<!-- XI -->
     End it. A campaign that can end, and does, is a story; one that can't is a treadmill (Ch. VII).</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The throughline</span>Whatever frame you choose, run one thread the
-  whole way &mdash; a Patron, a cult, a curse, a Marked soul climbing. Each session is a symptom; the campaign is the
+  whole way: a Patron, a cult, a curse, a Marked soul climbing. Each session is a symptom; the campaign is the
   disease, slowly named. Drop a clue toward the throughline in nearly every night, even the standalone ones, and by the
   end the players will feel the whole year was one story tightening &mdash; because it was.</div>
 
   <h2>Three Campaigns, Ready to Ride</h2>
-  <p>Each of these is a year in a paragraph &mdash; a frame, a throughline, a clock, and the door that closes it. Take
+  <p>Each of these is a year in a paragraph: a frame, a throughline, a clock, and the door that closes it. Take
   one whole, or strip it for parts.</p>
 
   <div class="box">
@@ -2000,7 +1996,7 @@ CH11 = f"""<!-- XI -->
     &mdash; a name, a debt, a string of fair duels &mdash; and every town he's passed through has a fresh grave and a
     piece of the truth. <strong>The clock:</strong> he's always one town ahead, and what he's gathering nears completion
     with each duel he wins. <strong>The door:</strong> the players learn his bargain and its terms, and someone among
-    them must meet him fair, alone, in the open &mdash; the one way he can fall. <strong>Bestiary:</strong> a different
+    them must meet him fair, alone, in the open: the one way he can fall. <strong>Bestiary:</strong> a different
     reckoning each town (the Hexed Beast, the Hanging Judge, the Mesmerist), with the Deathless Gun's shadow over all,
     and the Crossroads Man behind the bargain he made.</p>
   </div>
@@ -2011,7 +2007,7 @@ CH11 = f"""<!-- XI -->
     the sky is starting to look back. <strong>The throughline:</strong> a cult of the Open Eye is working, season by
     season, to tear the veil wide &mdash; and the players have until it's done. <strong>The clock:</strong> a six-step
     rite across the campaign; each arc the players can disrupt a step, or arrive too late and watch it turn. <strong>The
-    door:</strong> reach the Wound before it widens past closing, and pay what closing it costs &mdash; a rite undone, a
+    door:</strong> reach the Wound before it widens past closing, and pay what closing it costs: a rite undone, a
     sacrifice given right, a name struck out. <strong>Bestiary:</strong> the Flock and the Hollow Prophet as the cult's
     body; the Pallid Herald and the Faceless Rider as its heralds; the Wound in the World and the Eye Between Stars at
     the end of everything.</p>
@@ -2192,7 +2188,7 @@ CH12 = f"""<!-- XII -->
   </table>
 
   <div class="keeper-note"><span class="kn-tag">The seed rule</span>Anything you roll here that makes the table lean
-  forward is no longer a random result &mdash; it is now part of the campaign. Write it down, give it a cause, and hang
+  forward is no longer a random result; it is now part of the campaign. Write it down, give it a cause, and hang
   a thread from it (Ch. II). Treat the tables as an oracle. The players will read whatever comes out of them
   as deliberate, so let them be right.</div>
 </section>
@@ -2256,7 +2252,7 @@ CH13 = f"""<!-- XIII -->
   <h2 id="basin-wells">A Reckoning of the Wells</h2>
   <p>The binding is a ring of wells and springs, and the Keeper's map shows the state of each: a plain ring, the nail
   holds; a broken ring, the binding is failing; a struck-through ring, the well is gone and something is already loose.
-  Restore the ring, or learn what it holds, before the last nail falls &mdash; that is the spine. Here is what each one
+  Restore the ring, or learn what it holds, before the last nail falls; that is the spine. Here is what each one
   is, and what it lets up when it goes.</p>
   <table>
     <thead><tr><th>The well</th><th>On the map</th><th>The truth beneath</th></tr></thead>
@@ -2270,9 +2266,9 @@ CH13 = f"""<!-- XIII -->
       <tr><td><strong>the Mission spring</strong></td><td>failing</td><td>The heart of the ring, at San Clavo itself. When
       this nail goes, the Patron's hand is free. The whole campaign is the race to keep it, or re-drive it.</td></tr>
       <tr><td><strong>the South well</strong></td><td>broken</td><td>Gone quietly, out in the Badlands, and nobody living
-      near to notice yet. What came up is yours to choose (roll the Old Dark, Bestiary Ch. VII) &mdash; a whole reckoning
+      near to notice yet. What came up is yours to choose (roll the Old Dark, Bestiary Ch. VII): a whole reckoning
       waiting to be found.</td></tr>
-      <tr><td><strong>Crossing well</strong></td><td>bound</td><td>Still holds &mdash; it waters the county seat, so its
+      <tr><td><strong>Crossing well</strong></td><td>bound</td><td>Still holds; it waters the county seat, so its
       nail is watched. If it ever fails, the disaster is <em>public</em>, and that is a reckoning of a different kind.</td></tr>
       <tr><td><strong>the North seep</strong> &middot; <strong>Roadman's well</strong> &middot; <strong>Painted
       spring</strong></td><td>bound</td><td>The ring's still-sound quarter. The Painted spring the Mesa people tend
@@ -2308,7 +2304,7 @@ CH13 = f"""<!-- XIII -->
   it as the campaign's second night, or as the players' introduction to the idea that a bad well pulls predators the way
   a wound pulls flies.</p>
   <p><span class="hook">Hook &mdash;</span> whatever rides out of Saltlick at dawn wearing a new face (Ch. X) can ride
-  straight into the next town on your map &mdash; a recurring hand for the whole year, if you let it live.</p>
+  straight into the next town on your map: a recurring hand for the whole year, if you let it live.</p>
 
   <h3 id="basin-mission">Mission San Clavo &mdash; the ruined heart</h3>
   <p>The oldest thing the settlers built, and a ruin for fifty years: a broken adobe church on the ground the padres
@@ -2320,7 +2316,7 @@ CH13 = f"""<!-- XIII -->
   <h3 id="basin-homesteads">The Homesteads &mdash; where it shows first</h3>
   <p>Scattered between the towns, the outlying homesteads are the county's nerve endings. A well goes bad out here weeks
   before a town notices: the stock sicken, a buried kinsman comes home wrong, a family stops answering. The homesteads
-  are your early-warning system and your bank of small, sharp tragedies &mdash; the Pell place (Ch. IX) is one; you have
+  are your early-warning system and your bank of small, sharp tragedies: the Pell place (Ch. IX) is one; you have
   a dozen more in a single roll (Ch. XII).</p>
 
   <h3 id="basin-mesa">The Painted Mesa &mdash; the ones who knew</h3>
@@ -2340,15 +2336,15 @@ CH13 = f"""<!-- XIII -->
   <p>Three interests pull on the basin. Each wants something the players can help or hinder; each is on the map as a wash
   of colour (see the Keeper's map). Run them as factions (Ch. VIII): know the want, and you can play the county.</p>
   <ul>
-    <li><strong>The Vane Interest &mdash; the cattle-and-rail money.</strong> Ruined ranchers, a hungry bank, and the
+    <li><strong>The Vane Interest: the cattle-and-rail money.</strong> Ruined ranchers, a hungry bank, and the
     railroad's agents, bound together by the one thing all of them want: the basin cheap and under their thumb. They are
     the hand pulling the nails &mdash; some for the silver, some to clear title to "sour" land, most too willful to hear
     what a nail was for. The human engine of the whole disaster, and the faction the players can actually punch.</li>
-    <li><strong>The Last Bell of San Clavo &mdash; the ring's lone keeper.</strong> One old soul who knows the truth of
+    <li><strong>The Last Bell of San Clavo: the ring's lone keeper.</strong> One old soul who knows the truth of
     the nails and has been re-driving them alone for years, and is losing: <strong>Padre Ildefonso</strong>, or the
     layfamily that kept the mission after the church forgot it. Undermanned, half-broken, and the players' one source for
     the rite that closes a well. A quest-giver who is also a warning of where this ends.</li>
-    <li><strong>The Painted Mesa people &mdash; the ones who knew.</strong> Not a monolith and not a resource: a people
+    <li><strong>The Painted Mesa people: the ones who knew.</strong> Not a monolith and not a resource: a people
     with the oldest true knowledge of the thing under the water, their own reasons to want it kept down, and no debt to
     the settlers that would oblige them to fix the settlers' mess. Earn them, and they are the deepest well of truth in
     the basin. Fail them, and they will let the county reap what it planted &mdash; and who could blame them.</li>
@@ -2359,12 +2355,12 @@ CH13 = f"""<!-- XIII -->
   <ul>
     <li><strong>As a one-shot.</strong> Run either reckoning (Ch. IX or X) exactly as written. The county is the world it
     happens in; the players need never see the ring.</li>
-    <li><strong>As a short arc.</strong> Run both reckonings back to back, then reveal the pattern &mdash; two bad wells,
-    the same silver missing from each &mdash; and let the players decide to chase it. Three to five nights.</li>
+    <li><strong>As a short arc.</strong> Run both reckonings back to back, then reveal the pattern (two bad wells,
+    the same silver missing from each) and let the players decide to chase it. Three to five nights.</li>
     <li><strong>As the Haunted Year</strong> (Ch. XI). The ring is the season clock. Each season a nail falls (you choose
     or roll which well); the players race the map, re-driving what they can and reckoning with what they can't, toward
     the Mission spring and the master nail. <strong>The door that closes it:</strong> re-drive the master nail at San
-    Clavo &mdash; which costs a life freely given, the padres' price and now the players' &mdash; or find the older
+    Clavo (which costs a life freely given, the padres' price and now the players') or find the older
     working the Mesa people hold, and pay <em>its</em> price instead. Either way, someone does not ride out of the basin.</li>
   </ul>
   <p>For everything the map does not name &mdash; a town's third street, a homesteader's face, the rumor in the Crossing
@@ -2386,7 +2382,7 @@ CH14 = f"""<!-- XIV -->
   <div class="divider"></div>
   {quote("Out on the Cimarron a man screams and nobody hears him. In Kansas City a man screams and forty people hear him, and they go on in to supper. I have come to think the second is the worse country.", "Pinkerton operative, reporting to the Chicago office")}
   <div class="narr">There is a fear, when a Keeper first moves the game off the open range, that the dark
-  will not survive the gaslight &mdash; that a country horror needs a lonely country, and that a city with
+  will not survive the gaslight; that a country horror needs a lonely country, and that a city with
   police in it, and a hospital, and four newspapers, and sixty thousand souls, is simply too well lit to be
   frightened in. Put the fear down. The dark does not need the dark. It needs to be able to work unremarked,
   and there has never been a better place for that than a city where nobody knows their neighbor's name.</div>
@@ -2403,8 +2399,8 @@ CH14 = f"""<!-- XIV -->
   <ul>
     <li><strong>Anonymity beats isolation.</strong> A thing that takes one soul a week from a town of two hundred empties
     it in a season and is noticed by Tuesday. The same thing in Kansas City takes one a week forever. The population turns
-    over constantly &mdash; drovers, rail hands, immigrants, whores, drifters, men whose families think they are in Oregon
-    &mdash; and a missing stranger is not a mystery. It is a filing, if that.</li>
+    over constantly (drovers, rail hands, immigrants, whores, drifters, men whose families think they are in Oregon
+   ) and a missing stranger is not a mystery. It is a filing, if that.</li>
     <li><strong>The crowd is cover.</strong> Out on the flat, a stranger on the ridge is an event. On Front Street a
     stranger is Tuesday. Things that could never cross open ground in daylight walk the city at noon in a good coat, and
     the only person who notices is the one who has learned what to look for &mdash; which is your party, and nobody else.</li>
@@ -2492,7 +2488,7 @@ CH14 = f"""<!-- XIV -->
   the thing has been perfectly, boringly legal the entire time. Give the party one honest official, well down the ladder,
   with no power and a family. Everything the campaign is about will run through that person.</div>
   <p>Practically: build the cult as a <em>faction</em> out of Chapter VIII, with a want, a lever, and a line. Its lever is
-  money and standing. Its line is publicity &mdash; it will do a great deal, but not in front of the papers. Everything the party has to work with lives in that gap. The final scene of a city campaign is more often an exposure than a gunfight, and it
+  money and standing. Its line is publicity; it will do a great deal, but not in front of the papers. Everything the party has to work with lives in that gap. The final scene of a city campaign is more often an exposure than a gunfight, and it
   should be: make the players choose between killing the thing and proving it, and let proving it be harder, slower, and
   better.</p>
 
@@ -2824,7 +2820,7 @@ CH16 = f"""<!-- XVI -->
   <p>Four riders, and everyone says five.</p>
   <p>They have worked the same eight counties for twenty-odd years, and worked them small: payrolls, a bank about once
   a year, never a passenger car. They are not the biggest gang in the Territories and never have been. What makes them
-  legendary is arithmetic. Every account names five men &mdash; every deposition, every poster, every eyewitness. Only
+  legendary is arithmetic. Every account names five men: every deposition, every poster, every eyewitness. Only
   four are ever counted at a camp, cornered in a draw, or hanged.</p>
   <p>The fifth is <strong>Tom Wills</strong>. Grey coat, brown horse, forty-odd, quiet. The description fits eleven
   thousand men, and every witness gives it identically, which is the part that should bother a marshal and mostly
