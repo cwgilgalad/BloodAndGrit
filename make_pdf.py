@@ -21,6 +21,7 @@ import os
 import pathlib, sys
 import fitz
 from playwright.sync_api import sync_playwright
+from playwright.sync_api import TimeoutError as PWTimeout
 
 def link_pass(doc):
     """Rewrite every named-destination link as an explicit page destination.
@@ -69,10 +70,39 @@ with sync_playwright() as pw:
     browser = pw.chromium.launch(channel="msedge", headless=True)
     page = browser.new_page(viewport={"width": 1700, "height": 1100})
     for src, out in BOOKS:
-        page.goto(pathlib.Path(src).resolve().as_uri())
-        page.wait_for_selector(".book.pages.ready", timeout=120_000)
-        page.evaluate("document.fonts.ready.then(() => {})")
-        page.evaluate("Promise.all([...document.images].map(i => i.decode().catch(() => {})))")
+        # A book laid out before its webfonts arrived is a longer book -- fallback faces are
+        # wider, so the text needs more sheets, and the real faces then shrink into sheets whose
+        # count is already fixed. That printed a 286 page Player's Book on 2026-09-06 (it is 268)
+        # and the check below could not see it, because `sheets` and `doc.page_count` both come
+        # out of the same render and agreed with each other perfectly.
+        #
+        # So this asks the page something the sheet count cannot answer: WHICH starting gun fired.
+        # The shell re-paginates by itself once the fonts land, so waiting is normally enough; the
+        # reload is for the case where the fetch never finishes at all.
+        laid = None
+        for attempt in range(3):
+            page.goto(pathlib.Path(src).resolve().as_uri())
+            page.wait_for_selector(".book.pages.ready", timeout=120_000)
+            page.evaluate("document.fonts.ready.then(() => {})")
+            page.evaluate("Promise.all([...document.images].map(i => i.decode().catch(() => {})))")
+            try:
+                page.wait_for_function(
+                    "() => document.documentElement.getAttribute('data-laid-out-on') === 'fonts'",
+                    timeout=30_000)
+            except PWTimeout:
+                pass
+            laid = page.get_attribute("html", "data-laid-out-on")
+            faces = page.evaluate(
+                "() => ['EB Garamond','Playfair Display']"
+                ".filter(f => !document.fonts.check('16px \"' + f + '\"'))")
+            if faces:
+                laid = "fallback (missing: " + ", ".join(faces) + ")"
+            if laid == "fonts":
+                break
+            print(f"    {src}: laid out on {laid!r}, not on the fonts \u2014 re-rendering")
+        if laid != "fonts":
+            sys.exit(f"{src}: pagination never ran on the real faces (data-laid-out-on={laid!r}). "
+                     f"Printing it would ship a book set in the fallback font.")
         sheets = page.eval_on_selector_all(".book.pages > .page", "els => els.length")
         # Taken while the browser still has the paginated DOM, so the outline agrees with the
         # Contents by construction rather than by re-parsing the finished PDF.
