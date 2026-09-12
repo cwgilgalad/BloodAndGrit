@@ -8,6 +8,60 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.47, Keeper's Book v2.31, GritKeeper v1.56.3 — the question the table
+  always asks, a step that was never in the list, and a book that got longer when its fonts were
+  slow (2026-09-11).**
+
+  Four days of finished work had been sitting on a session branch while the Release page served the
+  version before it, which is the second time in a fortnight and the reason the first item below
+  exists at all.
+
+  **A book laid out before its fonts arrive is a longer book.** The fallback faces are wider than EB
+  Garamond, so a shell that paginates on them needs more sheets, and when the real faces land the text
+  shrinks into a sheet count already fixed. On 2026-09-06 that printed a **286 page Player's Book that
+  is 268**, and nothing caught it: `sheets` and `doc.page_count` come out of the same render, so they
+  agreed with each other perfectly. All six books now treat the two second timer as a floor rather than
+  a verdict — a reader on a dead connection still gets a paginated book, and when the fonts resolve
+  the book is laid out again — and each records which starting gun fired on `data-laid-out-on`.
+  `make_pdf.py` reads that attribute, checks both faces actually loaded, re-renders up to three times,
+  and exits rather than print a book set in the fallback font.
+
+  **Ch. III promised eight steps and walked you through nine.** The subtitle said eight, the summary
+  table listed eight, and the chapter then ran a **Step 9 — The Compass** with no row anywhere to
+  announce it. That is not cosmetic: Ch. XIII tells a player that *full sanctification on the Compass
+  (Chapter III) clears the whole of it*, so the Mark-clearing rule depends on a step the eight-row
+  table omits. A reader following the table finishes at the four questions and never builds the
+  mechanism. The table gains a ninth row and the subtitle says nine. **92,924 cross-checks pass over
+  these books and none of them looks at whether a chapter agrees with its own summary table** — worth
+  knowing about the shape of the guard, which holds book against data and data against formula, and
+  never holds prose against prose.
+
+  **Ch. VII says "Mark" thirty-eight times and never said where the Mark lives.** A player commits to
+  the Hexer, the Witch, the False Prophet or the Dark Cultist in that chapter, meets the defining cost
+  of the character thirty-eight times, and is sent nowhere; the Mark is defined in Ch. XII, some fifteen
+  thousand words on. The chapter's note paragraph already does this job for Signs (*from Chapter XIII*)
+  and now does it for the Mark, with the instruction to read it first. The book was withholding its
+  terms in the one chapter whose whole subject is a thing that does not withhold its terms.
+
+  **A new Keeper reads nineteen thousand words before reaching a night they can run.** Ch. IX is a
+  complete first session, built to teach the game while it scares the table, and it sits ninth of
+  sixteen with nothing in Ch. I pointing at it. *What This Book Is* now says to run Ch. IX first and
+  come back, because this book keeps better once it has something to attach to.
+
+  **Ch. VII, *Why It Answers at All*.** If the Old Dark is that old and that large and that
+  uninterested, why does it trouble itself with a Hexer in a rented room? The table asks it, and the
+  chapter had the question in it already — the *four things to hold to* box raises it and stops. The
+  answer here is four readings, confirmed none: **the wear** (the door is a groove worn by everything
+  that ever pressed there, and a mineshaft does not decide to be entered), **the debt** (being owed is
+  the nearest thing to an appetite anyone has proved it has, and the Tallyman is what a debt turns into
+  when it has sat long enough), **the tongue** (the six answer the way a canyon answers, in your own
+  voice, later, and changed), and **the appetite nobody has named**, held in reserve for the night a
+  table has grown comfortable with an indifferent universe. Four irreconcilable cosmologies over one
+  piece of stagecraft that holds under all of them: **never let a Patron want — let it be available.**
+  The shape is the one Ch. XVI and the Rockies already use, and it was chosen over a settled answer
+  because the box two paragraphs above promises the book never settles this, and six numbered dossiers
+  were already straining that promise.
+
 - **Keeper's Book v2.30, GritKeeper v1.56.2 — a new Chapter XVI, and two sections moved to
   where they belonged (2026-09-06).**
 

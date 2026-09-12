@@ -67,6 +67,9 @@ UNSHIPPED = {
     "1.49.0": "merged 2026-08-25 and superseded the next morning, when the Fifteen Levels program "
               "opened against it before anything was packaged; the keyboard pass and the Returned "
               "ship inside v1.50.0",
+    "1.56.2": "finished on 2026-09-06 and left on a session branch for five days while the Release "
+              "page served v1.56.1 — the same miss as 1.32.0, two releases after the check that "
+              "caught it was written. Chapter XVI reached the Keeper inside v1.56.3",
 }
 
 
