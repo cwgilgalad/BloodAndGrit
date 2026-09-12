@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.47 -->
+<!-- Blood & Grit — The Player's Book · Version 2.48 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.47)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.48)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.47</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.48</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.47 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.48 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -5344,7 +5344,7 @@ body{ background:#525659; }
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">26</span></li>
     <li class="ix-hd">E</li>
     <li><a href="#edges">Edges</a><span class="pg">149</span></li>
-    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">153</span></li>
+    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">154</span></li>
     <li><a href="#ix-c-engineer">Engineer (Calling)</a><span class="pg">50</span></li>
     <li><a href="#play">Example of play</a><span class="pg">244</span></li>
     <li><a href="#advancement">Experience &amp; levels</a><span class="pg">240</span></li>
@@ -5369,7 +5369,7 @@ body{ background:#525659; }
     <li><a href="#ix-frightened">Frightened</a><span class="pg">246</span></li>
     <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">152</span></li>
     <li class="ix-hd">G</li>
-    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">151</span></li>
+    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">152</span></li>
     <li><a href="#ix-c-gambler">Gambler (Calling)</a><span class="pg">56</span></li>
     <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">175</span></li>
     <li><a href="#ix-o-gambler">Gambler, the (Origin)</a><span class="pg">27</span></li>
@@ -5404,7 +5404,7 @@ body{ background:#525659; }
     <li><a href="#conflict">Iron Code, the</a><span class="pg">181</span></li>
     <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">151</span></li>
     <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">178</span></li>
-    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">151</span></li>
+    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">152</span></li>
     <li class="ix-hd">K</li>
     <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">184</span></li>
     <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">215</span></li>
@@ -5480,7 +5480,7 @@ body{ background:#525659; }
     <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">215</span></li>
     <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">250</span></li>
     <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">231</span></li>
-    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">153</span></li>
     <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">150</span></li>
     <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">93</span></li>
     <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">204</span></li>
@@ -5561,7 +5561,7 @@ body{ background:#525659; }
     <li><a href="#ix-tools">Tools of many trades</a><span class="pg">169</span></li>
     <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">153</span></li>
     <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">153</span></li>
     <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">230</span></li>
     <li><a href="#ix-s-turning">Turning, the (Sign)</a><span class="pg">217</span></li>
     <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">150</span></li>

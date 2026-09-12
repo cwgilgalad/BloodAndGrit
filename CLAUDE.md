@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.47 · Keeper's Book v2.31 · Bestiary v2.19 ·
-GritKeeper app v1.56.3 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.48 · Keeper's Book v2.32 · Bestiary v2.20 ·
+GritKeeper app v1.56.4 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -122,9 +122,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.47 | 267 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.31 | 134 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.19 | 209 | none (182 creatures) |
+| The Player's Book | v2.48 | 267 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.32 | 134 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.20 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.7 | 33 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.7 | 33 | one inline SVG map (two panels), downloadable |
@@ -439,7 +439,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.47) — structure
+## The Player's Book (v2.48) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -487,7 +487,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.31) — structure
+## The Keeper's Book (v2.32) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -534,7 +534,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.19) — structure & conventions
+## The Bestiary (v2.20) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
@@ -625,7 +625,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.56.3) — the C# desktop app
+## GritKeeper (v1.56.4) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
