@@ -381,22 +381,22 @@ body{ background:#525659; }
     <li><a href="#character">III. Making a Character</a><span class="pg">17</span></li>
     <li><a href="#origins">IV. Origins &amp; the Peoples of the Frontier</a><span class="pg">25</span></li>
     <li><a href="#callings">V. Worldly Callings</a><span class="pg">40</span></li>
-    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">76</span></li>
-    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">115</span></li>
-    <li><a href="#skills">VIII. Skills</a><span class="pg">137</span></li>
-    <li><a href="#edges">IX. Edges</a><span class="pg">142</span></li>
-    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">148</span></li>
-    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">171</span></li>
-    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">181</span></li>
-    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">191</span></li>
-    <li><a href="#advancement">XIV. Advancement</a><span class="pg">207</span></li>
-    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">210</span></li>
-    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">212</span></li>
-    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">214</span></li>
-    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">216</span></li>
-    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">221</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">224</span></li>
-    <li><a href="#index">Index</a><span class="pg">226</span></li>
+    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">87</span></li>
+    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">117</span></li>
+    <li><a href="#skills">VIII. Skills</a><span class="pg">145</span></li>
+    <li><a href="#edges">IX. Edges</a><span class="pg">150</span></li>
+    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">159</span></li>
+    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">182</span></li>
+    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">193</span></li>
+    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">203</span></li>
+    <li><a href="#advancement">XIV. Advancement</a><span class="pg">241</span></li>
+    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">245</span></li>
+    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">247</span></li>
+    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">249</span></li>
+    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">251</span></li>
+    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">256</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">260</span></li>
+    <li><a href="#index">Index</a><span class="pg">262</span></li>
   </ul>
 </section>
 
@@ -5613,6 +5613,22 @@ body{ background:#525659; }
 (function(){
   "use strict";
   var done=false;
+  /* Which of the two starting guns fired, kept on the document so a printer can refuse a book
+     that was laid out before its fonts arrived. See the re-run in the bootstrap at the bottom. */
+  var laidOutOn='pending';
+  /* The source book, and the sheets the last run produced. Held so pagination can be re-entered:
+     `document.querySelector('.book')` is no use on a second call, because the paginated output is
+     itself a `.book` and sits before the source in the DOM. */
+  var srcBook=null, lastFrag=null;
+  /* The three families the sheets are measured in. `document.fonts.check` is true for a webfont
+     only once a matching face is actually loaded, so this answers "can the book be set in the
+     type it was written for", which `document.fonts.ready` does not. */
+  function facesIn(){
+    try{
+      return document.fonts.check('16px "EB Garamond"')
+          && document.fonts.check('16px "Playfair Display"');
+    }catch(e){ return false; }
+  }
   function ready(fn){ if(document.readyState!=='loading'){fn();} else {document.addEventListener('DOMContentLoaded',fn);} }
   function fit(){
     var bp=document.querySelector('.book.pages');
@@ -5626,6 +5642,7 @@ body{ background:#525659; }
     if(done) return; done=true;
     try{ paginate(); }catch(e){ console&&console.warn&&console.warn('pagination skipped',e); }
     fit();
+    document.documentElement.setAttribute('data-laid-out-on', laidOutOn);
   }
 
   /* ============================================================
@@ -5643,8 +5660,13 @@ body{ background:#525659; }
   var FEATHER_MAX=24, RUNT_FILL=0.30, PASS_MAX=4;
 
   function paginate(){
-    var origBook=document.querySelector('.book');
+    /* On a re-run the previous sheets have to come out first and the original source has to go
+       back in, or this would cheerfully paginate the last run's output. */
+    if(lastFrag && lastFrag.parentNode){ lastFrag.parentNode.removeChild(lastFrag); lastFrag=null; }
+    var origBook=srcBook||document.querySelector('.book');
     if(!origBook) return;
+    srcBook=origBook;
+    origBook.style.display='';
     var pristine=origBook.cloneNode(true);
     var bonuses={}, banned={};
     var res=null, bookEl=origBook;
@@ -6168,14 +6190,26 @@ body{ background:#525659; }
       });
     });
 
+    lastFrag=res.frag;
     res.frag.classList.add('ready');
   }
 
   ready(function(){
     if(document.fonts&&document.fonts.ready){
-      document.fonts.ready.then(start);
-      setTimeout(start,2000);
-    } else { start(); }
+      /* These books fetch EB Garamond, Playfair Display and Rye over the network, and the two
+         second floor below exists so a reader on a dead connection still gets a paginated book
+         rather than one long scroll. It must not also mean that a reader on a merely SLOW one
+         keeps a book flowed on fallback metrics: fallback faces are wider, so the whole book
+         comes out longer, and on 2026-09-06 that printed a 286 page Player's Book that is 268.
+         So the timer is a floor and not a verdict -- when the real faces land, lay it out again. */
+      document.fonts.ready.then(function(){
+        /* Settled, which is not the same as arrived. */
+        laidOutOn=facesIn()?'fonts':'fallback';
+        if(done){ done=false; }
+        start();
+      });
+      setTimeout(function(){ if(!done){ laidOutOn=facesIn()?'fonts':'timeout'; start(); } },2000);
+    } else { laidOutOn='no-font-api'; start(); }
     var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(fit,120); });
     window.addEventListener('orientationchange',fit);
   });

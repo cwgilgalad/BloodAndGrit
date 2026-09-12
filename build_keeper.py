@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.25 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.25)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.30 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.30)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.25</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.30</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.25 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.30 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -120,22 +120,23 @@ CONTENTS = f"""<!-- ===================== KEEPER CONTENTS ===================== 
   reckoning behind the rules of fear, the things that wait in the dark, and the craft of setting them
   loose without breaking faith with the souls at your table. If you mean to play and not to run, close it.</p>
   <ul class="toc">
-    <li><a href="#chair">I. The Keeper's Chair</a><span class="pg">7</span></li>
-    <li><a href="#running">II. Running the Game</a><span class="pg">12</span></li>
-    <li><a href="#fear">III. Fear, Nerve &amp; the Mark</a><span class="pg">17</span></li>
-    <li><a href="#odds">IV. The Long Odds &mdash; Building the Fight</a><span class="pg">26</span></li>
-    <li><a href="#bestiary">V. A Bestiary of the Frontier</a><span class="pg">37</span></li>
-    <li><a href="#hazards">VI. Cursed Ground, Hazards &amp; Bad Medicine</a><span class="pg">40</span></li>
-    <li><a href="#rewards">VII. Rewards &amp; Reckonings</a><span class="pg">46</span></li>
-    <li><a href="#cast">VIII. The Cast</a><span class="pg">54</span></li>
-    <li><a href="#firstreckoning">IX. A First Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">60</span></li>
-    <li><a href="#secondreckoning">X. A Second Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">64</span></li>
-    <li><a href="#keepersyear">XI. The Keeper's Year <span class="sub">(running a campaign)</span></a><span class="pg">69</span></li>
-    <li><a href="#pocket">XII. The Country in Your Pocket <span class="sub">(rollable tables)</span></a><span class="pg">73</span></li>
-    <li><a href="#basin">XIII. Perdition Basin <span class="sub">(a country ready to ride)</span></a><span class="pg">82</span></li>
-    <li><a href="#city">XIV. The Lamplit City <span class="sub">(running the game in town)</span></a><span class="pg">90</span></li>
-    <li><a href="#powers">XV. The Powers of the Territory <span class="sub">(optional lore)</span></a><span class="pg">96</span></li>
-    <li><a href="#screen">Appendix: The Keeper's Screen</a><span class="pg">99</span></li>
+    <li><a href="#chair">I. The Keeper's Chair</a><span class="pg">8</span></li>
+    <li><a href="#running">II. Running the Game</a><span class="pg">13</span></li>
+    <li><a href="#fear">III. Fear, Nerve &amp; the Mark</a><span class="pg">18</span></li>
+    <li><a href="#odds">IV. The Long Odds &mdash; Building the Fight</a><span class="pg">27</span></li>
+    <li><a href="#bestiary">V. A Bestiary of the Frontier</a><span class="pg">38</span></li>
+    <li><a href="#hazards">VI. Cursed Ground, Hazards &amp; Bad Medicine</a><span class="pg">41</span></li>
+    <li><a href="#rewards">VII. Rewards &amp; Reckonings</a><span class="pg">47</span></li>
+    <li><a href="#cast">VIII. The Cast</a><span class="pg">66</span></li>
+    <li><a href="#firstreckoning">IX. A First Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">72</span></li>
+    <li><a href="#secondreckoning">X. A Second Reckoning <span class="sub">(starter adventure)</span></a><span class="pg">76</span></li>
+    <li><a href="#keepersyear">XI. The Keeper's Year <span class="sub">(running a campaign)</span></a><span class="pg">81</span></li>
+    <li><a href="#pocket">XII. The Country in Your Pocket <span class="sub">(rollable tables)</span></a><span class="pg">85</span></li>
+    <li><a href="#basin">XIII. Perdition Basin <span class="sub">(a country ready to ride)</span></a><span class="pg">94</span></li>
+    <li><a href="#city">XIV. The Lamplit City <span class="sub">(running the game in town)</span></a><span class="pg">102</span></li>
+    <li><a href="#powers">XV. The Powers of the Territory <span class="sub">(optional lore)</span></a><span class="pg">111</span></li>
+    <li><a href="#legends">XVI. Legends of the Territory <span class="sub">(optional lore)</span></a><span class="pg">118</span></li>
+    <li><a href="#screen">Appendix: The Keeper's Screen</a><span class="pg">125</span></li>
   </ul>
 </section>
 """
@@ -1048,8 +1049,9 @@ CH7 = f"""<!-- VII -->
   the soul as packaging. <strong>They are not cruel</strong>, and playing them as cruel makes them
   small; a thing that hates you can be reasoned with, and the horror here is that nothing is being
   withheld and nothing is being aimed. And <strong>whether there are six of them at all</strong> is
-  a live question this book deliberately never settles. See Ch. XV: one of the four readings of the
-  Rockies is that all six cults have spent a century dealing with one thing wearing six faces.</div>
+  a live question this book deliberately never settles. See the gatherings in the Rockies, below:
+  one of the four readings there is that all six cults have spent a century dealing with one thing
+  wearing six faces.</div>
   <p>Which is the whole shape of it. One depth, six mouths, and a country sitting on top of the lot
   of it wondering why the wells go bad.</p>
   <p class="note">What follows is six dossiers, and every part of each one after the first paragraph is an offer
@@ -1247,6 +1249,48 @@ CH7 = f"""<!-- VII -->
       openly.</td><td>A revival that leaves a town emptier than it found it, and a kind face that is almost right.</td></tr>
     </tbody>
   </table>
+
+  <h2 id="patrons-rockies">The Gatherings in the Rockies</h2>
+  <p>Beginning about four years ago, word started coming down out of the high country about gatherings. A Devourer
+  congregation out of Montana wintering above the Boulder River, three hundred strong, in weather that should have
+  killed half of them. A Red Sermon circuit that leaves Denver every spring and comes back forty people short. Cold
+  Deep men, who do not gather and have never gathered, camped nine weeks at a dry lake in the Sawatch and gone by
+  the time anybody rode up. A dig above Leadville on a hundred and sixty acres of worthless slope that somebody paid
+  eleven thousand dollars in gold for.</p>
+  <p>Here is the shape of it, and the shape is the whole difficulty. They are cultists of <strong>different
+  Patrons</strong>, in <strong>different places</strong>, and there is no evidence at all that any of them is trying
+  to reach any of the others. Nobody has caught two of these congregations in the same valley. Nobody has traced a
+  letter between them. They come up, they camp, they wait, and eventually they go home, and not one soul who has been
+  will say a word about what for. Four separate written accounts survive of a meeting nobody can place, and no two
+  agree on who called it or whether it was called at all.</p>
+  <p>That is the evidence. <strong>This book does not tell you what it means, and that is deliberate.</strong> Four
+  readings fit every fact above. Pick one and write it on the inside of your screen, or leave it unpicked and let your
+  players' guesses settle it late. All four run off these same pages.</p>
+  <table class="lvl">
+    <thead><tr><th>The reading</th><th>What it makes the campaign about</th><th>How the players find out</th></tr></thead>
+    <tbody>
+      <tr><td><strong>They were all called, and all six answered.</strong> The Patrons have agreed on something,
+      which makes them neither vast nor indifferent, which is the frightening part.</td><td>Cosmic politics. The
+      players are ants who have noticed the gardeners talking.</td><td>By getting into a room they should not be in
+      and understanding perhaps a third of what is said in it.</td></tr>
+      <tr><td><strong>Nobody called anything.</strong> Six appetites are converging on one range for six unrelated
+      reasons, and the pattern lives entirely in whoever is drawing the map.</td><td>Paranoia, and the price of being
+      wrong. The players build a conspiracy and then act on it.</td><td>Slowly and humiliatingly, well after they have
+      done something drastic about it.</td></tr>
+      <tr><td><strong>The cults are mistaken about who answers them.</strong> All six have been dealing with one thing
+      wearing six faces, which is exactly why they gather in six places and never once meet.</td><td>Revelation. Every
+      earlier session gets re-read in a worse light.</td><td>One detail that turns up in two rites that should share
+      nothing at all. Plant it in session four and let it sit.</td></tr>
+      <tr><td><strong>Something above them is driving them up there.</strong> The Patrons are frightened, they are
+      being made to do this, and the Dread Mother's covens have been saying so all along.</td><td>Scale. The horror
+      the players spent a campaign learning to survive turns out to be somebody's livestock.</td><td>By a Patron
+      asking them for help, badly, and meaning it.</td></tr>
+    </tbody>
+  </table>
+  <div class="keeper-note"><span class="kn-tag">The one thing not to do</span>Do not answer it early and do not answer
+  it twice. A table can carry an unanswered question for years and will do most of your work for you the whole time
+  it carries it. The moment you confirm a reading, three quarters of the Rockies goes quiet, so confirm it in the last
+  session of the campaign or the one before, and never in a way that needs a speech.</div>
 
   <h2 id="prophet-patrons">Whose Plate the False Prophet Fills</h2>
   <p>Of all who deal with the Old Dark the False Prophet deals most blindly, and this is the part he must never be
@@ -2505,10 +2549,11 @@ CH15 = f"""<!-- XV -->
   a complete campaign. What follows is for the table that has been riding a year and has started asking who owns the
   bank that owns the bank.</p>
   <p>Take one thread. Two at the outside. The Territories are frightening in proportion to how much of them is still
-  dark, and a Keeper who lights all six of these lamps at once has built a map instead of a country.</p>
+  dark, and a Keeper who lights all four of these lamps at once has built a map instead of a country.</p>
   <div class="keeper-note"><span class="kn-tag">What is fixed here, and it is very little</span>The names are fixed,
   because a name your players learn has to keep meaning the same thing. Everything under the names is an offer.
-  Contradict any of it. Move Jubilee, give the Mad Spaniard a different century, decide the Long Table has three seats
+  Contradict any of it. Move Jubilee, hand the Golden Circle&rsquo;s list to somebody who knows what is on it, decide the Long Table
+  has three seats
   or three hundred, put the barons in Chicago, or take a thread out of the world entirely and let your players hear
   the rumour anyway. Nothing in this chapter is load-bearing and nothing else in this book checks it. What is written
   here is what one Keeper found useful; the country is yours.</div>
@@ -2546,67 +2591,9 @@ CH15 = f"""<!-- XV -->
   <div class="keeper-note"><span class="kn-tag">Running it</span>The horror here is that the Circle's leadership does
   not know why the parcels matter either. Somebody hands them a list. They have been told it is strategic. Two of the
   parcels are on the Painted Mesa's old ground, one is a dry lake in Nevada, and one is a hundred and sixty acres of
-  worthless slope in the Rockies that the ledger says was bought for eleven thousand dollars in gold. Let the players
+  worthless slope in the Rockies (Ch. VII) that the ledger says was bought for eleven thousand dollars in gold. Let the players
   find the ledger long before they find out who wrote the list.</div>
 
-  <h2 id="powers-spaniard">The Mad Spaniard</h2>
-  <p>Nobody uses his name. Along four hundred miles of road he is <em>the Mad Spaniard</em> and nothing else, and you
-  should let him stay that way for years. He is the most useful figure in this chapter for one reason: he can be met
-  and he cannot be resolved.</p>
-  <p>His name is <strong>Tristan de la Sombra</strong>, and he came into this country in the 1540s with an entrada
-  that went out after a river and a city and found neither.</p>
-
-  <h3>What happened on the Llano</h3>
-  <p>The record covers it in a sentence. A party was detached to follow a watercourse east. It did not come back. The
-  chronicle lists the men among the lost and moves on without stopping, and that is the whole of what was written
-  down. What was not written down is the rest of it: the grass closing behind them and leaving no trail, the plain
-  running out past every estimate any of them could make and then running out further, the horses going first and the
-  men after. Somewhere in the middle of all that space the captain's mind came apart. Starvation did half the work.
-  The scale of the country did the other half, and that half does not mend.</p>
-  <p>Every man who rode out with him died. He did not, and the reason is the part that matters. In his last clear
-  hours he was begging aloud for terms from anything at all that would hear him, and something heard. He was willing.
-  Hold on to that: no trick was worked on him and no bargain was pressed on him. He asked, out loud, in an empty
-  country, and got an answer.</p>
-  <p>That much is what the tellings agree on, and the tellings are all anybody has. Three hundred and forty years
-  later somebody answering that description is still walking the roads, and whatever else has changed, the madness
-  never left him. It only slowed down.</p>
-
-  <h3>Meeting him</h3>
-  <p>He is met on a road at an hour when nobody should be on it. He is unfailingly courteous. He knows the traveller's
-  business, and he asks after their people by name, and he gets the details right, and one detail is always wrong in a
-  way nobody notices until later.</p>
-  <p>He wears what he wore. Doublet and trunk hose, a short cloak, a plumed hat, boots kept better than the weather
-  allows; a cuirass and a morion sometimes, though far less often than the stories claim, and never on a road where
-  armour would get him remarked on. People notice that something is off about him a good while before they can say
-  what, and when they finally reach for it they land on the clothes. <strong>Dated.</strong> Out of fashion. Nobody on
-  this continent can place them within three centuries, so a traveller does the arithmetic he is able to do and
-  settles on an eccentric, an actor off a border stage, a gentleman of the old Mexican families gone about in his
-  grandfather's things. Then he is a day down the road before he thinks about the hat again.</p>
-  <p>What is consistent in the tellings that come from people who work the Old Dark: he turns up shortly before
-  something changes, he gives one piece of accurate advice, and he takes nothing whatsoever. In the mining camps he
-  warns men off the bad veins and is thanked for it. On the Llano, which he has never really left, he is said to have
-  ridden a season with the comancheros and to have been the reason they stopped. In the Rockies they say he is going
-  from gathering to gathering with a proposal.</p>
-
-  <h3>What you have to decide</h3>
-  <p>You do not need to settle what he is now, and this chapter recommends you leave it open. What you should settle,
-  and write on the inside of your screen, is <strong>which reading of the Rockies gatherings he belongs to</strong>:
-  he plays completely differently under each, and sooner or later your players will ask him a question you have to
-  answer in his voice.</p>
-  <ul class="dash">
-    <li>He is a herald, and the courtesy is the trap, and the thing he made terms with in 1541 has been walking him
-    around this country ever since like a lamp on a pole.</li>
-    <li>He has spent three hundred years trying to unmake what he agreed to, and every accurate warning he has ever
-    given a stranger was an instalment against it.</li>
-    <li>He died on the Llano with the rest of them, and there have been eleven men since who found the coat. That is
-    the worst of the four and the easiest to run.</li>
-    <li>He is on your players' side, has been since before there was a country to be on a side in, and is losing.</li>
-  </ul>
-  <div class="keeper-note"><span class="kn-tag">The one rule</span>He never lies and he never explains. Everything he
-  says is true and incomplete, and the incomplete part is always the part that would have helped. Play him warm: a
-  frightening thing that is kind is worth six that are not. And let the madness show once a night, in something small
-  and wrong. He asks after a king who has been dead two hundred years. He thanks a man for a courtesy nobody
-  performed. He counts the party twice and gets a different number.</div>
 </section>
 
 <section class="page">
@@ -2690,66 +2677,193 @@ CH15 = f"""<!-- XV -->
   pointless. Everything they do is local. Both are true at once, and the tension between them is the campaign. Give
   them exactly one lever that works, and make them earn it in meeting halls: a county that comes to hold its own
   paper. A table that wins this one has done something no amount of shooting could have done.</div>
-</section>
-
-<section class="page">
-  {runhead('XV. The Powers of the Territory')}
-  <h2 id="powers-rockies">The Gatherings in the Rockies</h2>
-  <p>Beginning about four years ago, word started coming down out of the high country about gatherings. A Devourer
-  congregation out of Montana wintering above the Boulder River, three hundred strong, in weather that should have
-  killed half of them. A Red Sermon circuit that leaves Denver every spring and comes back forty people short. Cold
-  Deep men, who do not gather and have never gathered, camped nine weeks at a dry lake in the Sawatch and gone by
-  the time anybody rode up. A dig above Leadville on a hundred and sixty acres of worthless slope that somebody paid
-  eleven thousand dollars in gold for.</p>
-  <p>Here is the shape of it, and the shape is the whole difficulty. They are cultists of <strong>different
-  Patrons</strong>, in <strong>different places</strong>, and there is no evidence at all that any of them is trying
-  to reach any of the others. Nobody has caught two of these congregations in the same valley. Nobody has traced a
-  letter between them. They come up, they camp, they wait, and eventually they go home, and not one soul who has been
-  will say a word about what for. Four separate written accounts survive of a meeting nobody can place, and no two
-  agree on who called it or whether it was called at all.</p>
-  <p>That is the evidence. <strong>This book does not tell you what it means, and that is deliberate.</strong> Four
-  readings fit every fact above. Pick one and write it on the inside of your screen, or leave it unpicked and let your
-  players' guesses settle it late. All four run off these same pages.</p>
-  <table class="lvl">
-    <thead><tr><th>The reading</th><th>What it makes the campaign about</th><th>How the players find out</th></tr></thead>
-    <tbody>
-      <tr><td><strong>They were all called, and all six answered.</strong> The Patrons have agreed on something,
-      which makes them neither vast nor indifferent, which is the frightening part.</td><td>Cosmic politics. The
-      players are ants who have noticed the gardeners talking.</td><td>By getting into a room they should not be in
-      and understanding perhaps a third of what is said in it.</td></tr>
-      <tr><td><strong>Nobody called anything.</strong> Six appetites are converging on one range for six unrelated
-      reasons, and the pattern lives entirely in whoever is drawing the map.</td><td>Paranoia, and the price of being
-      wrong. The players build a conspiracy and then act on it.</td><td>Slowly and humiliatingly, well after they have
-      done something drastic about it.</td></tr>
-      <tr><td><strong>The cults are mistaken about who answers them.</strong> All six have been dealing with one thing
-      wearing six faces, which is exactly why they gather in six places and never once meet.</td><td>Revelation. Every
-      earlier session gets re-read in a worse light.</td><td>One detail that turns up in two rites that should share
-      nothing at all. Plant it in session four and let it sit.</td></tr>
-      <tr><td><strong>Something above them is driving them up there.</strong> The Patrons are frightened, they are
-      being made to do this, and the Dread Mother's covens have been saying so all along.</td><td>Scale. The horror
-      the players spent a campaign learning to survive turns out to be somebody's livestock.</td><td>By a Patron
-      asking them for help, badly, and meaning it.</td></tr>
-    </tbody>
-  </table>
-  <div class="keeper-note"><span class="kn-tag">The one thing not to do</span>Do not answer it early and do not answer
-  it twice. A table can carry an unanswered question for years and will do most of your work for you the whole time
-  it carries it. The moment you confirm a reading, three quarters of the Rockies goes quiet, so confirm it in the last
-  session of the campaign or the one before, and never in a way that needs a speech.</div>
 
   <h2 id="powers-together">Using More Than One</h2>
-  <p>These six touch, and the touching points are where a long campaign lives. The Golden Circle's parcel list is
-  the Rockies gatherings seen from outside by men who have no idea what they are buying. The Mad Spaniard turns up in
-  Jubilee and in the Rockies and is remembered in both, and in Jubilee he is remembered from before the town was
+  <p>These four touch, and the touching points are where a long campaign lives &mdash; and the best of them reach
+  outside this chapter, into the six (Ch. VII) and the legends (Ch. XVI). The Golden Circle's parcel list is the
+  Rockies gatherings (Ch. VII) seen from outside by men who have no idea what they are buying. The Mad Spaniard
+  (Ch. XVI) turns up in Jubilee and in the Rockies and is remembered in both, and in Jubilee he is remembered from before the town was
   there. The Dread Mother's houses are the only institution in the Territories that has ever turned down Kansas City
   money, and nobody has thought to ask them why. And the Pinkerton assigned to your players will, by the end, have
   compiled a better account of the gatherings than the players have, and will not be believed by a single soul in
   Chicago.</p>
-  <p>Two threads is a campaign. Three is a good long one. All six is a setting sourcebook, and a setting sourcebook is
-  a different and lesser thing than a country your players are frightened of.</p>
+  <p>Two threads is a campaign. Three is a good long one. All four is a setting sourcebook, and a setting sourcebook
+  is a different and lesser thing than a country your players are frightened of.</p>
 </section>
 """
 
-BODY = CONTENTS + CH1 + CH2 + CH3 + CH4 + CH5 + CH6 + CH7 + CH8 + CH9 + CH10 + CH11 + CH12 + CH13 + CH14 + CH15 + APX
+# ---------------------------------------------------------------- XVI. LEGENDS OF THE TERRITORY
+CH16 = f"""<!-- XVI -->
+<section class="page" id="legends">
+  {runhead('XVI. Legends of the Territory')}
+  <h1 class="chapter">XVI. Legends of the Territory</h1>
+  <p class="chapter-sub">What the country says about itself, and what it will never confirm.</p>
+  <div class="divider"></div>
+  <p class="dropcap lead">A power owns ground, wants something, and can be joined, bought or fought. Redemption has a
+  capital. The Long Table has seats. The Agency has files. A legend has none of that, and it is not a smaller thing so
+  much as a different kind of thing. It is a story the country tells about itself, and its whole use at your table is
+  that your players will hear it long before they meet it, and may never meet it at all.</p>
+  <p>Nothing in this chapter costs a thread. Run all three against any of the four Powers, or against none of them, or
+  run one and nothing else, and let a year of play go by with your table arguing about it in the wagon.</p>
+  <div class="keeper-note"><span class="kn-tag">How to run any of the three</span><strong>They arrive as talk.</strong>
+  Plant each one at least twice, weeks apart, in bar talk and in the mouths of people with no stake in it, before it
+  appears in front of the party at all. A legend that turns up unheralded is only an encounter. <strong>Never confirm
+  a reading.</strong> Each entry gives you four. Pick one for yourself, write it on the inside of your screen, and let
+  the table stay wrong for years. <strong>Never let two of them explain each other.</strong> The moment the Spaniard is
+  in the song, or the song is about the Outfit, all three collapse into one plot and you have traded three legends for
+  one answer. <strong>None of them can be resolved</strong>, and that is what they are for. Nothing here rewards a
+  plan. If your players make one anyway, let it fail in an interesting way rather than telling them it cannot
+  work.</div>
+
+  <h2 id="legends-spaniard">The Mad Spaniard</h2>
+  <p>Nobody uses his name. Along four hundred miles of road he is <em>the Mad Spaniard</em> and nothing else, and you
+  should let him stay that way for years. He is the most useful figure in this chapter for one reason: he can be met
+  and he cannot be resolved.</p>
+  <p>His name is <strong>Tristan de la Sombra</strong>, and he came into this country in the 1540s with an entrada
+  that went out after a river and a city and found neither.</p>
+
+  <h3>What happened on the Llano</h3>
+  <p>The record covers it in a sentence. A party was detached to follow a watercourse east. It did not come back. The
+  chronicle lists the men among the lost and moves on without stopping, and that is the whole of what was written
+  down. What was not written down is the rest of it: the grass closing behind them and leaving no trail, the plain
+  running out past every estimate any of them could make and then running out further, the horses going first and the
+  men after. Somewhere in the middle of all that space the captain's mind came apart. Starvation did half the work.
+  The scale of the country did the other half, and that half does not mend.</p>
+  <p>Every man who rode out with him died. He did not, and the reason is the part that matters. In his last clear
+  hours he was begging aloud for terms from anything at all that would hear him, and something heard. He was willing.
+  Hold on to that: no trick was worked on him and no bargain was pressed on him. He asked, out loud, in an empty
+  country, and got an answer.</p>
+  <p>That much is what the tellings agree on, and the tellings are all anybody has. Three hundred and forty years
+  later somebody answering that description is still walking the roads, and whatever else has changed, the madness
+  never left him. It only slowed down.</p>
+
+  <h3>Meeting him</h3>
+  <p>He is met on a road at an hour when nobody should be on it. He is unfailingly courteous. He knows the traveller's
+  business, and he asks after their people by name, and he gets the details right, and one detail is always wrong in a
+  way nobody notices until later.</p>
+  <p>He wears what he wore. Doublet and trunk hose, a short cloak, a plumed hat, boots kept better than the weather
+  allows; a cuirass and a morion sometimes, though far less often than the stories claim, and never on a road where
+  armour would get him remarked on. People notice that something is off about him a good while before they can say
+  what, and when they finally reach for it they land on the clothes. <strong>Dated.</strong> Out of fashion. Nobody on
+  this continent can place them within three centuries, so a traveller does the arithmetic he is able to do and
+  settles on an eccentric, an actor off a border stage, a gentleman of the old Mexican families gone about in his
+  grandfather's things. Then he is a day down the road before he thinks about the hat again.</p>
+  <p>What is consistent in the tellings that come from people who work the Old Dark: he turns up shortly before
+  something changes, he gives one piece of accurate advice, and he takes nothing whatsoever. In the mining camps he
+  warns men off the bad veins and is thanked for it. On the Llano, which he has never really left, he is said to have
+  ridden a season with the comancheros and to have been the reason they stopped. In the Rockies (Ch. VII) they say he is
+  going from gathering to gathering with a proposal.</p>
+
+  <h3>What you have to decide</h3>
+  <p>You do not need to settle what he is now, and this chapter recommends you leave it open. What you should settle,
+  and write on the inside of your screen, is <strong>which of the four below he belongs to</strong>: he plays
+  completely differently under each, and sooner or later your players will ask him a question you have to answer in
+  his voice. If the gatherings in the Rockies are in play (Ch. VII), settle him against them and let the two answers
+  agree. If they are not, settle him for yourself, and never say a word of it aloud.</p>
+  <ul class="dash">
+    <li>He is a herald, and the courtesy is the trap, and the thing he made terms with in 1541 has been walking him
+    around this country ever since like a lamp on a pole.</li>
+    <li>He has spent three hundred years trying to unmake what he agreed to, and every accurate warning he has ever
+    given a stranger was an instalment against it.</li>
+    <li>He died on the Llano with the rest of them, and there have been eleven men since who found the coat. That is
+    the worst of the four and the easiest to run.</li>
+    <li>He is on your players' side, has been since before there was a country to be on a side in, and is losing.</li>
+  </ul>
+  <div class="keeper-note"><span class="kn-tag">The one rule</span>He never lies and he never explains. Everything he
+  says is true and incomplete, and the incomplete part is always the part that would have helped. Play him warm: a
+  frightening thing that is kind is worth six that are not. And let the madness show once a night, in something small
+  and wrong. He asks after a king who has been dead two hundred years. He thanks a man for a courtesy nobody
+  performed. He apologises, without explanation, for the delay.</div>
+</section>
+
+<section class="page">
+  {runhead('XVI. Legends of the Territory')}
+  <h2 id="legends-outfit">The Wills Outfit</h2>
+  <p>Four riders, and everyone says five.</p>
+  <p>They have worked the same eight counties for twenty-odd years, and worked them small: payrolls, a bank about once
+  a year, never a passenger car. They are not the biggest gang in the Territories and never have been. What makes them
+  legendary is arithmetic. Every account names five men &mdash; every deposition, every poster, every eyewitness. Only
+  four are ever counted at a camp, cornered in a draw, or hanged.</p>
+  <p>The fifth is <strong>Tom Wills</strong>. Grey coat, brown horse, forty-odd, quiet. The description fits eleven
+  thousand men, and every witness gives it identically, which is the part that should bother a marshal and mostly
+  does not.</p>
+
+  <h3>The four who can be counted</h3>
+  <p><strong>Absalom Kell</strong>, sixty-some, does all the talking, and two years of seminary are still audible in
+  it. He is courteous, and he will not be hurried by anybody holding a gun. <strong>Dob Rainey</strong> is the
+  shooter, slow about everything except a fight. <strong>Ida Rainey</strong>, his sister, has planned every job since
+  1871 and has never once been named on a poster, because no marshal has been willing to believe it &mdash; and that
+  error is worth a good deal more to the outfit than Wills is. <strong>Ferris Tuck</strong>, twenty-four, was born
+  after the legend started; he grew up on the stories and rode out to join the thing he had heard about as a boy. He
+  is the only one of the four who will talk about Wills, and the other three shut him down when he does.</p>
+
+  <h3>What you have to decide</h3>
+  <p>Four readings fit every fact above.</p>
+  <ul class="dash">
+    <li><strong>Nothing.</strong> Four people have been selling a fifth man for two decades, and it is the best
+    business decision any of them ever made. A gun nobody can find is worth more than a gun.</li>
+    <li><strong>There is a Tom Wills, and he is the only ordinary one.</strong> A wife in Kansas, a trade, a name on a
+    church roll, four weeks a year in the saddle. Nobody catches him because nobody is looking at his life.</li>
+    <li><strong>One of them died on the first job in 1864 and it kept riding.</strong> This is the Long Trail's
+    reading (Ch. VII), and its sign is already in this book: a rider on the ridge at dusk who is gone at the second
+    look. The four cannot break up, because breaking up would mean agreeing out loud about who the fifth is.</li>
+    <li><strong>The country supplies him.</strong> Anyone who rides one job with these four is the fifth, and does not
+    remember being it.</li>
+  </ul>
+  <div class="keeper-note"><span class="kn-tag">Running them</span>Never confirm anything, and let the players count.
+  The best use of the Outfit is a night's shelter or one job ridden alongside them, with the party doing its own
+  arithmetic at the fire and getting a different answer twice. Tells to drop without explaining: a fifth horse fed at
+  a four-man camp, a telegraph message taken down for a name nobody claims, a poster with four faces and one blank
+  square. If the party ever does kill all four, the sightings keep coming in, and that is the whole payoff. No new
+  stat blocks are needed &mdash; Kell, Ida and Tuck run off the Road Agents in the Bestiary (Ch. IV), and Dob Rainey
+  off the Hired Gun in Ch. VIII.</div>
+
+  <h2 id="legends-song">The Weather Song</h2>
+  <p>Nobody calls it anything. Ask after it by name and you will get a different name in every county, which is the
+  first wrong thing about it and the one nobody notices, because songs are supposed to do that. The line most people
+  remember is the one that asks you to come in out of the weather.</p>
+  <p>It is a tune with no author, no first hearing and no route. It turns up in a camp in the Bitterroots and in a
+  farming village three hundred miles south in the same season, in the mouths of children who did not get it from each
+  other and cannot say who taught them. It is not remarkable to hear. It is only remarkable if you go looking for
+  where it came from, and almost nobody does, because there is no reason on earth to.</p>
+  <p>It takes new verses. Nobody writes them. A verse that was not in the song last year is in it this year, in four
+  counties at once, with the same wrong grammar in each. The new verses are about things that happened &mdash; a
+  crossing that drowned a family, a mine, a winter &mdash; and they are right about details that were never printed,
+  and in two cases were never told to anybody at all.</p>
+  <p>The person who has come nearest to it is a folklorist out of an eastern college, four years into a collecting
+  tour, delighted with her work and thorough about it. She has begun sorting the verses by date. A small number of
+  them do not match anything yet. They sound exactly like the rest.</p>
+
+  <h3>What you have to decide</h3>
+  <p>Four readings fit every fact above.</p>
+  <ul class="dash">
+    <li><strong>Nothing.</strong> Songs travel further and faster than anyone credits &mdash; freighters, rail crews,
+    trail outfits &mdash; and people who are certain they recognise a tune they have never heard are the commonest
+    thing in folklore. The unmatched verses are about things that did happen, in counties where nobody wrote them
+    down.</li>
+    <li><strong>The Whisperer</strong> (Ch. VII), working at a scale it does not usually bother with. Every verse is a
+    true fact delivered to nobody in particular, which costs it nothing, and it is the only way the thing can speak
+    without first being asked.</li>
+    <li><strong>It is the country remembering</strong>, and the country does not sort what has happened from what is
+    coming. No malice in it and no attention. The country is not telling you. It is only saying.</li>
+    <li><strong>Somebody is writing them.</strong> One person, alive right now, and every verse is the plainest
+    confession anybody ever made. It has been sung by children for sixty years and has not once been heard as
+    one.</li>
+  </ul>
+  <div class="keeper-note"><span class="kn-tag">Running it</span>Never write it down, and never read it off a page at
+  the table. Hum four notes, say a line, and say it differently every time; a song the Keeper has drafted is a prop,
+  and a song the Keeper improvises is a legend. Put it in the mouths of children, always in the background, always
+  while something else is happening. Never make a verse a puzzle with a solution. The one scene this legend is for is
+  the night your players hear a verse about something they did that nobody witnessed &mdash; and then you do not
+  explain it, and they hear it again in a different county six sessions later.</div>
+
+  <p>These three cost you nothing against the four Powers, but they do cost each other. Two in a campaign is
+  comfortable. Three is a table that has started to believe everything is connected, which is a fine thing to happen
+  once and a tiresome thing to happen twice.</p>
+</section>
+"""
+
+BODY = CONTENTS + CH1 + CH2 + CH3 + CH4 + CH5 + CH6 + CH7 + CH8 + CH9 + CH10 + CH11 + CH12 + CH13 + CH14 + CH15 + CH16 + APX
 
 
 def _inject_quote(body, cid, text, srcline):
@@ -2774,7 +2888,8 @@ _chq = {
  "keepersyear": ("A single night is a campfire tale. A year of them, told right, is the country itself &mdash; and the players will swear they lived there.", "from a Keeper's ledger"),
  "basin": ("I have mapped every well in this country and named every town. It is the wells I no longer sleep for. A town is only people. A well is a door, and someone has been leaving them open.", "from the field-books of N. Ashby, naturalist"),
  "screen": ("Everything a Keeper needs mid-night fits on one card. Everything a Keeper fears fits in the pause before the players roll.", "from a Keeper's ledger"),
- "powers": ("I have ridden through three of these and had supper with a fourth. My advice is the same as my father&rsquo;s: know which one owns the ground you are standing on, and never say the name of a second one while you are standing on it.", "Eb Tuttle, trapper"),
+ "powers": ("I have ridden through two of these and had supper with a third. My advice is the same as my father&rsquo;s: know which one owns the ground you are standing on, and never say the name of a second one while you are standing on it.", "Eb Tuttle, trapper"),
+ "legends": ("I have heard all three of these told wrong, and I have heard all three told by men who were there. It is the same telling. That is what I cannot get past.", "Delphia Kearse, road house at Sull&rsquo;s Ferry"),
 }
 for _cid,(_t,_s) in _chq.items():
     BODY = _inject_quote(BODY, _cid, _t, _s)
@@ -2827,6 +2942,8 @@ KEEP_INDEX = [
     ("The Cold Deep", "patron-colddeep"), ("The Long Trail", "patron-longtrail"),
     ("The Thing Beneath the Mountain", "patron-thingbeneath"),
     ("The Red Sermon", "patron-redsermon"),
+    ("The gatherings in the Rockies", "patrons-rockies"),
+    ("The four readings (the gatherings)", "patrons-rockies"),
     ("The Dark's Wages", "rewards"),
     ("The Cast", "cast"), ("An NPC in three lines", "cast"),
     ("Reaction &amp; morale", "cast"), ("Folk of the frontier", "cast"),
@@ -2870,16 +2987,23 @@ KEEP_INDEX = [
     ("Redemption (the new Confederacy)", "powers-redemption"),
     ("Jubilee (Redemption's capital)", "powers-redemption"),
     ("The Golden Circle", "powers-redemption"),
-    ("The Mad Spaniard", "powers-spaniard"),
-    ("Tristan de la Sombra", "powers-spaniard"),
     ("The Dread Mother", "powers-mother"),
     ("The Long Table (the federation)", "powers-mother"),
     ("Seated, and asked to stand", "powers-mother"),
     ("The Pinkertons", "powers-pinkertons"),
     ("Kansas City money", "powers-money"),
     ("The railroad barons", "powers-money"),
-    ("The Gatherings in the Rockies", "powers-rockies"),
-    ("The four readings (the gatherings)", "powers-rockies"),
+    # --- XVI. Legends of the Territory ---
+    ("Legends of the Territory", "legends"),
+    ("The Mad Spaniard", "legends-spaniard"),
+    ("Tristan de la Sombra", "legends-spaniard"),
+    ("The Wills Outfit", "legends-outfit"),
+    ("Kell, Absalom", "legends-outfit"),
+    ("Rainey, Dob", "legends-outfit"),
+    ("Rainey, Ida", "legends-outfit"),
+    ("Tuck, Ferris", "legends-outfit"),
+    ("Wills, Tom", "legends-outfit"),
+    ("The Weather Song", "legends-song"),
 ]
 new_html = build_index(
     new_html, curated=KEEP_INDEX, creatures=False,

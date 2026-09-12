@@ -1029,6 +1029,13 @@ body{ background:#525659; }
 (function(){
   "use strict";
   var done=false;
+  /* Which of the two starting guns fired, kept on the document so a printer can refuse a book
+     that was laid out before its fonts arrived. See the re-run in the bootstrap at the bottom. */
+  var laidOutOn='pending';
+  /* The source book, and the sheets the last run produced. Held so pagination can be re-entered:
+     `document.querySelector('.book')` is no use on a second call, because the paginated output is
+     itself a `.book` and sits before the source in the DOM. */
+  var srcBook=null, lastFrag=null;
   function ready(fn){ if(document.readyState!=='loading'){fn();} else {document.addEventListener('DOMContentLoaded',fn);} }
   function fit(){
     var bp=document.querySelector('.book.pages');
@@ -1042,6 +1049,7 @@ body{ background:#525659; }
     if(done) return; done=true;
     try{ paginate(); }catch(e){ console&&console.warn&&console.warn('pagination skipped',e); }
     fit();
+    document.documentElement.setAttribute('data-laid-out-on', laidOutOn);
   }
 
   /* ============================================================
@@ -1059,8 +1067,13 @@ body{ background:#525659; }
   var FEATHER_MAX=24, RUNT_FILL=0.30, PASS_MAX=4;
 
   function paginate(){
-    var origBook=document.querySelector('.book');
+    /* On a re-run the previous sheets have to come out first and the original source has to go
+       back in, or this would cheerfully paginate the last run's output. */
+    if(lastFrag && lastFrag.parentNode){ lastFrag.parentNode.removeChild(lastFrag); lastFrag=null; }
+    var origBook=srcBook||document.querySelector('.book');
     if(!origBook) return;
+    srcBook=origBook;
+    origBook.style.display='';
     var pristine=origBook.cloneNode(true);
     var bonuses={}, banned={};
     var res=null, bookEl=origBook;
@@ -1584,14 +1597,25 @@ body{ background:#525659; }
       });
     });
 
+    lastFrag=res.frag;
     res.frag.classList.add('ready');
   }
 
   ready(function(){
     if(document.fonts&&document.fonts.ready){
-      document.fonts.ready.then(start);
-      setTimeout(start,2000);
-    } else { start(); }
+      /* These books fetch EB Garamond, Playfair Display and Rye over the network, and the two
+         second floor below exists so a reader on a dead connection still gets a paginated book
+         rather than one long scroll. It must not also mean that a reader on a merely SLOW one
+         keeps a book flowed on fallback metrics: fallback faces are wider, so the whole book
+         comes out longer, and on 2026-09-06 that printed a 286 page Player's Book that is 268.
+         So the timer is a floor and not a verdict -- when the real faces land, lay it out again. */
+      document.fonts.ready.then(function(){
+        laidOutOn='fonts';
+        if(done){ done=false; }
+        start();
+      });
+      setTimeout(function(){ if(!done){ laidOutOn='timeout'; start(); } },2000);
+    } else { laidOutOn='no-font-api'; start(); }
     var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(fit,120); });
     window.addEventListener('orientationchange',fit);
   });

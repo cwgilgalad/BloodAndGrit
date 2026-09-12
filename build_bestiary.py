@@ -170,11 +170,11 @@ CONTENTS = f"""<!-- ===================== BESTIARY CONTENTS ====================
     <li><a href="#spirits">V. Spirits &amp; Hauntings</a><span class="pg">76</span></li>
     <li><a href="#wild">VI. The Wild &amp; the Weather</a><span class="pg">106</span></li>
     <li><a href="#olddark">VII. The Old Dark</a><span class="pg">118</span></li>
-    <li><a href="#living">VIII. Beasts of the Living World</a><span class="pg">136</span></li>
-    <li><a href="#hard">IX. Hard Men &amp; Hard Country</a><span class="pg">165</span></li>
-    <li><a href="#index">Appendix: The Roll, by Tier</a><span class="pg">182</span></li>
-    <li><a href="#grounds">Appendix: The Grounds <span class="sub">(encounters by terrain)</span></a><span class="pg">185</span></li>
-    <li><a href="#build">Appendix: Building Your Own Dead</a><span class="pg">193</span></li>
+    <li><a href="#living">VIII. Beasts of the Living World</a><span class="pg">144</span></li>
+    <li><a href="#hard">IX. Hard Men &amp; Hard Country</a><span class="pg">173</span></li>
+    <li><a href="#index">Appendix: The Roll, by Tier</a><span class="pg">190</span></li>
+    <li><a href="#grounds">Appendix: The Grounds <span class="sub">(encounters by terrain)</span></a><span class="pg">193</span></li>
+    <li><a href="#build">Appendix: Building Your Own Dead</a><span class="pg">201</span></li>
   </ul>
 </section>
 """
