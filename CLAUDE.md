@@ -122,8 +122,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.47 | 268 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.31 | 131 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.47 | 267 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.31 | 134 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.19 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.7 | 33 | one inline SVG map, downloadable |

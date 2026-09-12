@@ -5620,7 +5620,7 @@ body{ background:#525659; }
   /* The source book, and the sheets the last run produced. Held so pagination can be re-entered:
      `document.querySelector('.book')` is no use on a second call, because the paginated output is
      itself a `.book` and sits before the source in the DOM. */
-  var srcBook=null, lastFrag=null;
+  var srcBook=null, lastFrag=null, srcPristine=null, srcAnchor=null;
   /* The three families the sheets are measured in. `document.fonts.check` is true for a webfont
      only once a matching face is actually loaded, so this answers "can the book be set in the
      type it was written for", which `document.fonts.ready` does not. */
@@ -5664,11 +5664,24 @@ body{ background:#525659; }
     /* On a re-run the previous sheets have to come out first and the original source has to go
        back in, or this would cheerfully paginate the last run's output. */
     if(lastFrag && lastFrag.parentNode){ lastFrag.parentNode.removeChild(lastFrag); lastFrag=null; }
-    var origBook=srcBook||document.querySelector('.book');
-    if(!origBook) return;
-    srcBook=origBook;
+    if(!srcPristine){
+      var found=document.querySelector('.book');
+      if(!found) return;
+      /* Taken before the first pass touches anything, and kept: the feathering loop below replaces
+         `bookEl` with clones it appends to <body>, so the node the first run started from is not a
+         thing a second run can rely on still being parented. Re-running off a detached source threw
+         `insertBefore of null` and left the book unpaginated. */
+      srcPristine=found.cloneNode(true);
+      srcAnchor=found.parentNode;
+      srcBook=found;
+    } else {
+      if(srcBook && srcBook.parentNode){ srcBook.parentNode.removeChild(srcBook); }
+      srcBook=srcPristine.cloneNode(true);
+      (srcAnchor||document.body).appendChild(srcBook);
+    }
+    var origBook=srcBook;
     origBook.style.display='';
-    var pristine=origBook.cloneNode(true);
+    var pristine=srcPristine;
     var bonuses={}, banned={};
     var res=null, bookEl=origBook;
     for(var pass=0; pass<PASS_MAX; pass++){
@@ -6203,13 +6216,24 @@ body{ background:#525659; }
          keeps a book flowed on fallback metrics: fallback faces are wider, so the whole book
          comes out longer, and on 2026-09-06 that printed a 286 page Player's Book that is 268.
          So the timer is a floor and not a verdict -- when the real faces land, lay it out again. */
+      function relayout(why){ laidOutOn=why; if(done){ done=false; } start(); }
+      /* `document.fonts.ready` settles when nothing is PENDING, which on a page that has not yet
+         drawn a glyph in a face can be true before that face was ever fetched. That is the race
+         that reported 'fallback' on 2026-09-11 while the faces arrived moments later and nothing
+         laid the book out again. So ask for the two families the sheets are measured in by name
+         -- `document.fonts.load` resolves when that face is really usable -- and lay out again
+         when they land. */
+      try{
+        Promise.all(['16px "EB Garamond"','16px "Playfair Display"'].map(function(f){
+          return document.fonts.load(f);
+        })).then(function(){ if(facesIn()&&laidOutOn!=='fonts'){ relayout('fonts'); } })
+          .catch(function(){});
+      }catch(e){}
       document.fonts.ready.then(function(){
         /* Settled, which is not the same as arrived. */
-        laidOutOn=facesIn()?'fonts':'fallback';
-        if(done){ done=false; }
-        start();
+        relayout(facesIn()?'fonts':'fallback');
       });
-      setTimeout(function(){ if(!done){ laidOutOn=facesIn()?'fonts':'timeout'; start(); } },2000);
+      setTimeout(function(){ if(!done){ relayout(facesIn()?'fonts':'timeout'); } },2000);
     } else { laidOutOn='no-font-api'; start(); }
     var t; window.addEventListener('resize',function(){ clearTimeout(t); t=setTimeout(fit,120); });
     window.addEventListener('orientationchange',fit);
