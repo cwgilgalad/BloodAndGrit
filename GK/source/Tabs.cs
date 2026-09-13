@@ -614,15 +614,17 @@ public partial class MainForm
         g.DrawRectangle(pen, r);
     }
 
-    /// <summary>The spoor clock in the Blood column: one box per segment, filled as the posse keeps
-    /// crossing this thing's trail. A full clock is the night it arrives in the flesh.</summary>
-    static void PaintSpoorClock(Graphics g, Rectangle r, int filled)
+    /// <summary>A counted track drawn as boxes: <paramref name="n"/> of them, the first
+    /// <paramref name="filled"/> inked. For the two clocks on this grid that count toward a fixed
+    /// end rather than draining from a maximum — the spoor a posse keeps cutting, and the Mark a
+    /// soul keeps taking. A bar would be the wrong picture for both: six boxes say "six" and
+    /// invite the count, where a bar four fifths along says only "nearly".</summary>
+    static void PaintPips(Graphics g, Rectangle r, int filled, int n, Color ink)
     {
-        int n = Rules.SpoorClockSegments;
         int gap = 2, box = Math.Max(3, (r.Width - gap * (n - 1)) / n);
         int h = Math.Min(r.Height, box + 4);
         int y = r.Y + (r.Height - h) / 2;
-        using var fill = new SolidBrush(Blood);
+        using var fill = new SolidBrush(ink);
         using var pen = new Pen(BarEdge, 1f);
         for (int i = 0; i < n; i++)
         {
@@ -631,6 +633,23 @@ public partial class MainForm
             g.DrawRectangle(pen, cell);
         }
     }
+
+    /// <summary>The spoor clock in the Blood column: one box per segment, filled as the posse keeps
+    /// crossing this thing's trail. A full clock is the night it arrives in the flesh.</summary>
+    static void PaintSpoorClock(Graphics g, Rectangle r, int filled)
+        => PaintPips(g, r, filled, Rules.SpoorClockSegments, Blood);
+
+    /// <summary>How far along the Mark a soul has come, and how near the end of it they are. The
+    /// ink is the Blood bar's own three states read the other way round: the Blood bar goes green
+    /// to gold to red as it empties, so the Mark goes slate to gold to red as it FILLS. One colour
+    /// language for both, which is the whole point of having one.
+    ///
+    /// <para>Slate for the first two, because one Mark is a fact about a character and not yet a
+    /// crisis; gold in the middle, where the bargains start costing; Blood at five, where the next
+    /// one is the last one. The column stops calling this at six and prints <i>Lost</i> instead,
+    /// because a full track is not a reading, it is a thing that has happened.</para></summary>
+    static void PaintMarkPips(Graphics g, Rectangle r, int mark)
+        => PaintPips(g, r, mark, Rules.MarkLost, mark >= 5 ? Blood : mark >= 3 ? Gold : Slate);
     // One italic, shared: a Font handed to a Label isn't disposed with the Label, so building a
     // fresh one every time the Strike dialog opens leaks a handle per fight.
     static readonly Font DialogItalic = new("Segoe UI", 9f, FontStyle.Italic);
@@ -1182,6 +1201,23 @@ public partial class MainForm
             });
         // Widths allow for the ✎ on the editable ones — "Beats ✎" does not fit the 44 that plain
         // "Beats" did, and a clipped header is worse than no marker at all.
+        //
+        // ---- and the thirteen weights are measured, not guessed (v1.57.0) ----
+        // Fill mode makes every weight a SHARE, so seating Nerve and Mark here took width off
+        // the other eleven columns, and the one that could least afford it was the longest
+        // header in the app: "Next strike (MAP)" came out needing 110px in a column that had
+        // 108. It passed the clipping check on the two pixels of slack that check allows —
+        // which is not a margin, it is a coin landing on its edge, and the next narrower
+        // window loses the toss. Shortening the header was the cheap fix and the wrong one:
+        // it says "MAP" instead of what MAP means because a Keeper asked what it meant.
+        // So the sixteen points it needed came off four columns with room to give — Worked
+        // and Last carry short content with a hover behind it, and Nerve and Mark were set
+        // generously to begin with. Next strike now measures 110 into 127.
+        //
+        // These are runtime numbers, from the app measuring its own headers at the size it
+        // opens at — see HeadersThatClip. Change a weight here and re-run --selftest rather
+        // than reasoning about it; the Posse tab traded one clipped header for three, twice,
+        // before anybody measured.
         C("Init", "Init", 58); C("Name", "Name", 152, true); C("BloodCur", "Blood", 68, false,
             "Blood left, drawn as a bar behind the number — full green, hurt gold, near death red. "
             + "On a sign & spoor row it is the spoor clock instead.");
@@ -1192,7 +1228,31 @@ public partial class MainForm
             + "instead: how far past zero they have bled, and how far it is to their CON — which is "
             + $"where the book says it ends. A Fortitude save or a Medicine check at DC {Rules.StabilizeDc} "
             + "stops the bleeding.");
-        C("LastNote", "Last", 74, true,
+        // ---- the two columns the grid cannot bind ----
+        // Blood is on the body; Nerve and the Mark are on the SOUL. The tracker binds Combatant —
+        // what is standing on the field — and Nerve, NerveMax and Mark live on PartyMember, which
+        // is a different object joined to this row by SoulOf(). So these two are unbound: no
+        // DataPropertyName, filled in CellFormatting from the soul behind the row, and read-only
+        // because the soul's sheet and the Dread dialog are where those numbers are allowed to
+        // move. A second place to type a number is a second authority for it.
+        //
+        // They sit together and directly after Blood on purpose. Together, because on a field that
+        // is mostly creatures both are blank on the same rows, and one quiet block reads calmer
+        // than two scattered ones. After Blood, because a game whose engine is dread had the
+        // Keeper leaving the fight to find out how frightened anybody was.
+        void U(string name, string head, int w, string tip)
+            => trkGrid.Columns.Add(new DataGridViewTextBoxColumn
+            { Name = name, FillWeight = w, ReadOnly = true, HeaderText = head, ToolTipText = tip });
+        U("NerveLine", "Nerve", 70,
+            "What this soul has left to face it with, drawn as a bar behind the number in the same "
+            + "colours Blood uses — full green, shaken gold, nearly gone red. At 0 they Break. "
+            + "Posse souls only; change it on the Posse tab or by running the Dread Check.");
+        U("MarkPips", "Mark", 60,
+            $"How far along the Mark this soul has come, one box per step to {Rules.MarkLost}. "
+            + "Slate while it is only a fact, gold where the bargains start costing, red at five. "
+            + $"At {Rules.MarkLost} the cell reads Lost and the character passes into the Keeper's "
+            + "hands (Player's Book Ch. XII). Posse souls only; change it on the Posse tab.");
+        C("LastNote", "Last", 72, true,
             "What just happened here — the damage taken, the healing done, the moment they went down. "
             + "Cleared at the top of each round.");
         C("Defense", "Def", 46, true); C("Beats", "Beats", 66, false,
@@ -1200,12 +1260,12 @@ public partial class MainForm
         // The header names the RULE, not just the column. "clean" is the Player's Book's own word
         // (Ch. IX: "Your first Strike in a turn is clean"), but a Keeper reading it cold has no way
         // to know that or what to look up — reported by the user, who asked what it meant.
-        C("NextStrike", "Next strike (MAP)", 104, true,
+        C("NextStrike", "Next strike (MAP)", 120, true,
             "The Multiple Attack Penalty — Player's Book Ch. IX. Your first Strike in a turn is "
             + "\"clean\" (no penalty); the second takes −5, the third −10. An Agile weapon softens "
             + "it to −4/−8. Begin turn resets it to clean.");
         C("Conditions", "Conditions", 106);
-        C("WorkedChips", "Worked", 114, true,
+        C("WorkedChips", "Worked", 108, true,
             "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
             + "creature's own, with the rounds left. Hover for who worked it and what it does; "
             + "right-click to end one.");
@@ -1214,6 +1274,12 @@ public partial class MainForm
         // no rule drawn between them the pair reads as the single field it is: "12 / 12".
         Figures(trkGrid, "Init", "BloodCur", "Defense", "Beats");
         trkGrid.Columns["BloodMax"].DefaultCellStyle.Padding = new Padding(1, 0, 4, 0);
+        // Centred, not ranged right with the other figures. "7 / 11" is ONE field wearing its own
+        // slash — the Blood pair opposite is two columns leaning together to look like one — and a
+        // self-contained field ranged right sits flush against the Mark boxes beside it. The Mark
+        // cell is centred for the same reason: its boxes are the content, so they want the middle.
+        foreach (var n in new[] { "NerveLine", "MarkPips" })
+            trkGrid.Columns[n].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
         // far-right Ledger button — posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
         trkGrid.Columns.Add(QuietButtonCol("Ledger", 60));
@@ -1229,20 +1295,34 @@ public partial class MainForm
             // of them smeared across the grid. (Checked by instrumenting both; they do not.)
             if (col == "ledgerBtn" && !TrkHasSheet(e.RowIndex))
             { e.PaintBackground(e.CellBounds, true); e.Handled = true; return; }
-            if (col != "BloodCur" || e.RowIndex >= tracker.Count) return;
+            bool drawn = col is "BloodCur" or "NerveLine" or "MarkPips";
+            if (!drawn || e.RowIndex >= tracker.Count) return;
 
             // The Blood column is the one number a Keeper reads a dozen times a round, and a bare
             // "17" says nothing about whether 17 is nearly dead. Behind the number goes a bar: how
-            // much is left, in a color that says how bad it is.
+            // much is left, in a color that says how bad it is. Nerve reads the same way and the
+            // Mark counts instead — see PaintMarkPips for why one is a bar and the other is boxes.
             var c = tracker[e.RowIndex];
             e.PaintBackground(e.CellBounds, true);
             var bar = e.CellBounds; bar.Inflate(-4, -5);
             if (bar.Width > 6 && bar.Height > 4)
             {
-                // Once they are on the ground the Blood bar is an empty box, which is the least
-                // urgent thing on the screen at the most urgent moment. The clock takes its place.
-                if (c.Dying || (c.Dead && c.DeathAt > 0)) PaintDeathClock(e.Graphics, bar, c.Bleed, c.DeathAt);
-                else if (c.BloodMax > 0) PaintBloodBar(e.Graphics, bar, c.BloodCur, c.BloodMax);
+                if (col == "BloodCur")
+                {
+                    // Once they are on the ground the Blood bar is an empty box, which is the least
+                    // urgent thing on the screen at the most urgent moment. The clock takes its place.
+                    if (c.Dying || (c.Dead && c.DeathAt > 0)) PaintDeathClock(e.Graphics, bar, c.Bleed, c.DeathAt);
+                    else if (c.BloodMax > 0) PaintBloodBar(e.Graphics, bar, c.BloodCur, c.BloodMax);
+                }
+                // Nothing at all on a creature or an ad-hoc row: the two cells are blank there, and
+                // a bar drawn behind a blank cell is a readout for a number nobody has.
+                else if (SoulOf(c) is PartyMember soul)
+                {
+                    // A soul at 0 Nerve gets no bar for the same reason a soul at 0 Blood gets no
+                    // bar: an empty box at the moment it matters most. The cell says "Broken".
+                    if (col == "NerveLine") { if (soul.NerveCur > 0) PaintBloodBar(e.Graphics, bar, soul.NerveCur, soul.NerveMax); }
+                    else if (soul.Mark > 0 && soul.Mark < Rules.MarkLost) PaintMarkPips(e.Graphics, bar, soul.Mark);
+                }
             }
             e.PaintContent(e.CellBounds);   // the number rides on top of its own bar
             e.Handled = true;
@@ -1303,6 +1383,35 @@ public partial class MainForm
             // Something worked on you is a fact about the fight, not a status you shrug off — it
             // reads in the ink the app already uses for the uncanny.
             if (col == "WorkedChips" && c.Worked is { Count: > 0 }) e.CellStyle.ForeColor = Verdigris;
+            // The soul's two numbers, fetched rather than bound. Blank on everything that has no
+            // soul behind it: a creature has no Nerve to lose and no Mark to take.
+            if (col == "NerveLine" || col == "MarkPips")
+            {
+                var soul = SoulOf(c);
+                if (soul == null) { e.Value = ""; e.FormattingApplied = true; }
+                else if (col == "NerveLine")
+                {
+                    // "Broken" rather than "0 / 11", and it is the same judgement the death clock
+                    // makes one column over: the state a Keeper has to ACT on gets the word, and
+                    // the arithmetic that led to it gets out of the way. A soul at 0 Nerve has
+                    // Broken (Ch. VII) and the fight has changed for them.
+                    bool broken = soul.NerveCur == 0;
+                    e.Value = broken ? "Broken" : $"{soul.NerveCur} / {soul.NerveMax}";
+                    if (broken) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = trkBold; }
+                    else if (!c.Dead && !c.Dying && !c.Down && !c.HasActed) e.CellStyle.ForeColor = Ink;
+                    e.FormattingApplied = true;
+                }
+                else
+                {
+                    // At the end of the track the boxes stop being a reading. Six of six is not
+                    // "nearly" anything — the character has passed into the Keeper's hands, and
+                    // that is a sentence, not a count.
+                    bool lost = soul.Mark >= Rules.MarkLost;
+                    e.Value = lost ? "Lost" : "";
+                    if (lost) { e.CellStyle.ForeColor = Blood; e.CellStyle.Font = trkBold; }
+                    e.FormattingApplied = true;
+                }
+            }
             // The other half of "12 / 12". A sign & spoor row has no Blood maximum to show — its
             // Blood cell is a spoor clock, not a number — so it gets no orphaned slash either.
             if (col == "BloodMax")
@@ -1331,6 +1440,24 @@ public partial class MainForm
             {
                 if (c.Worked is { Count: > 0 })
                     e.ToolTipText = string.Join("\n\n──────────\n\n", c.Worked.Select(w => w.Full));
+                return;
+            }
+            // The Mark cell draws boxes and prints no figure, so the figure has to be one hover
+            // away or the column is a picture of a number the Keeper cannot read back. Nerve
+            // carries the save that is about to be rolled against it: "how frightened is he" and
+            // "what does he roll" are one question at the table and were two screens apart.
+            if (col == "NerveLine" || col == "MarkPips")
+            {
+                if (SoulOf(c) is not PartyMember soul) return;
+                e.ToolTipText = col == "NerveLine"
+                    ? $"{soul.Name}: {soul.NerveCur} of {soul.NerveMax} Nerve"
+                        + (soul.NerveCur == 0 ? " — Broken.\n\n" : ".\n\n")
+                        + $"Will {(soul.Will >= 0 ? "+" : "")}{soul.Will} against the Dread DC. Nerve lost on a "
+                        + "failure is the horror's Tier; a critical failure doubles it."
+                    : $"{soul.Name}: Mark {soul.Mark} of {Rules.MarkLost}"
+                        + (soul.Mark >= Rules.MarkLost
+                            ? " — Lost. The character passes into the Keeper's hands."
+                            : soul.Taint > 0 ? $", Taint {soul.Taint}." : ".");
                 return;
             }
             // What the conditions on this row actually cost, worked out rather than recited. The

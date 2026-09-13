@@ -223,7 +223,7 @@ public class PartyMember : INotifyPropertyChanged
     public int NerveCur { get => _nerveCur; set { _nerveCur = Math.Clamp(value, 0, 999); On(); } }
     public int NerveMax { get => _nerveMax; set { _nerveMax = Math.Clamp(value, 1, 999); On(); } }
     public int Grit { get => _grit; set { _grit = Math.Clamp(value, 0, 9); On(); } }
-    public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, 6); On(); } }
+    public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, Rules.MarkLost); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
     // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
@@ -1206,6 +1206,15 @@ public static class Rules
     /// of the same thing fills one, and a filled clock is the night it finally arrives in the
     /// flesh — by which time the posse should be a Tier higher, or have a plan.</summary>
     public const int SpoorClockSegments = 4;
+
+    /// <summary>The end of the Mark track. Six steps along it and the soul passes into the
+    /// Keeper's hands — Ch. XII's own sentence, and the app prints it as "Lost".
+    ///
+    /// <para>Here because the six was written in three places and about to be written in a
+    /// fourth: <see cref="PartyMember.Mark"/>'s clamp, the Reference deck's Mark leaf, and the
+    /// Bargains ledger's "lost" entry. Three copies of a number is three chances to move two of
+    /// them.</para></summary>
+    public const int MarkLost = 6;
 
     /// Nerve loss ladder by Dread severity tier (I..V → 1, 1d4, 1d6, 1d10, 1d10)
     public static (string label, Func<int> roll) NerveLoss(int tier) => tier switch

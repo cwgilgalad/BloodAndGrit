@@ -9,7 +9,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.48 · Keeper's Book v2.32 · Bestiary v2.20 ·
-GritKeeper app v1.56.4 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.57.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -126,8 +126,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Keeper's Book (GM guide) | v2.32 | 134 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.20 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.7 | 33 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.7 | 33 | one inline SVG map (two panels), downloadable |
+| Module II — A Face Not His Own | v1.8 | 33 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.8 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -625,7 +625,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.56.4) — the C# desktop app
+## GritKeeper (v1.57.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
