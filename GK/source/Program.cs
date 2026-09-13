@@ -235,6 +235,15 @@ static class Program
                             && seated.Will == rolled.Will && seated.Level == rolled.Level
                             && seated.Calling == rolled.Calling && seated.Sheet != null,
                             "G7: a soul seated from the Posse tab carries the sheet's own numbers");
+
+                        // v1.57.0: Nerve and the Mark live on the SOUL and the Tracker binds the
+                        // BODY, so the two new columns are unbound and filled by hand from
+                        // SoulOf(). An unbound column that nothing fills is not a visible failure
+                        // — it is a quiet empty strip on the tab a Keeper watches all night — so
+                        // the cells are read back through the real formatter rather than trusted.
+                        var unseen = mf.TrackerShowsTheSoul();
+                        if (unseen != null) Line("       tracker: " + unseen);
+                        Chk(unseen == null, "GUI: the Tracker shows the soul's Nerve and Mark, and shows neither on a creature");
                     }
                 }
 

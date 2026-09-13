@@ -8,6 +8,56 @@ Desktop\Git repos.)
 
 ---
 
+- **Module II v1.8, Module III v1.8 — two stat blocks that had not been reprinted since
+  `creatures.json` moved (2026-09-12).**
+
+  The modules generate their stat blocks from `creatures.json` rather than carrying their own
+  copies, which is why the em-dash pass of 2026-09-12 changed them: the Skin-Walker's *"one thing
+  is always wrong: a shadow, a reflection…"* and the Drowned's equivalent took a colon in the
+  Bestiary, and the two modules that cite those creatures inherit it. Neither module was rebuilt in
+  that pass, so **v1.56.4 shipped two modules whose stat blocks disagreed by one mark with the
+  Bestiary they quote.** Caught by `audit_built_matches_committed.py`, which is exactly the drift
+  it exists to find: nothing about the modules' own sources changed, so nothing prompted a rebuild.
+
+  Two characters of printed text. The version bump is because they are printed text, and because a
+  generated artifact that no longer matches its generator is the state every one of these guards
+  was written to stop.
+
+- **GritKeeper v1.57.0 — Nerve and the Mark on the Tracker, and a check that measures
+  the headers (2026-09-12).**
+
+  In a game whose engine is dread, the Tracker showed Blood and nothing else the horror touches. A
+  Keeper wanting to know how frightened anybody was had to leave the fight for the Posse tab, and
+  the Mark — the whole cost of dealing with the dark, six steps to *Lost* — had no surface in the
+  app at all. Both are on the field now, as two columns beside Blood.
+
+  **They are unbound, and that is the point.** `NerveCur`, `NerveMax` and `Mark` live on
+  `PartyMember`, the soul; the Tracker binds `Combatant`, the body standing on the field. Nothing
+  was copied across, because a derived value stored on a save is a derived value applied twice —
+  the fault `Combatant.Load` was written to avoid. The cells are filled on the way to the screen
+  from `SoulOf()`, which already joins the two, and they are read-only: the Posse tab and the Dread
+  Check are where those numbers are allowed to move.
+
+  **One colour language, not two.** Nerve takes the Blood bar exactly — green, gold, red — so the
+  same glance reads both, and a soul at 0 reads **Broken** rather than an empty box at the moment
+  it matters most, which is the judgement the death clock already makes one column over. The Mark
+  counts instead of draining, so it is six boxes rather than a bar, inked the other way round:
+  slate while it is a fact, gold where the bargains start costing, red at five. At six the boxes
+  give up the cell to the word **Lost**. Creature rows carry neither.
+
+  **What the picture caught that the tests could not.** Fill-mode column weights are shares, so
+  seating two columns took width off the other eleven, and `Next strike (MAP)` came out needing
+  110px in a column that had 108 — passing the clipping check on its two pixels of slack. The
+  header could have been shortened; it says what MAP means because a Keeper asked. So two new
+  checks were written and both were proved by sabotage before being trusted:
+  `HeadersThatClip` measures every grid header against the width its column actually gets at the
+  size the app opens at, and `TrackerShowsTheSoul` reads the two new cells back through the real
+  formatter — because a column that is declared, weighted, painted and never filled passes every
+  other check in the file and is simply empty all night. The self-test is 43 checks.
+
+  `Rules.MarkLost` now carries the 6 that was written in three places and about to be written in a
+  fourth.
+
 - **Player's Book v2.48, Keeper's Book v2.32, Bestiary v2.20, GritKeeper v1.56.4 — the em-dash
   rate, brought down by moving punctuation and stopped where moving it would cost the voice
   (2026-09-12).**

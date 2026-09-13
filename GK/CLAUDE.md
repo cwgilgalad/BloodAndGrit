@@ -122,6 +122,10 @@ what each tab *is*, plus the decisions worth not re-deriving.
   and an empty-state hint explaining what the tab is for.
 - **Tracker** — initiative, rounds, damage/heal (two-way synced with Posse), conditions,
   double-click combat cards, flexible Sort ▾, ＋ Add, ＋ Condition ▾, New fight, Clear field.
+  **Nerve and the Mark ride beside Blood** (v1.57.0): read-only, unbound, drawn from the soul
+  behind the row — Nerve as a bar in Blood's own colours, the Mark as boxes counting to
+  `Rules.MarkLost`, **Broken** and **Lost** in place of the drawing at the two states that need
+  acting on. Blank on anything with no soul. See *The soul's numbers on the body's grid*.
   Several things here are load-bearing:
   - **The safe-table rule runs here.** Every route onto the field funnels through
     `AddCreatureToTracker`, which asks `Rules.SignOnly(tier, partyLevel)` first; a horror two or
@@ -774,6 +778,48 @@ and sizes the strip below it from its parts rather than from a second constant.
 
 **The rule for anything new:** a label whose text is composed from more than one piece is measured,
 never given a `Height`. `audit_ui.py`'s docstring carries it.
+
+## The soul's numbers on the body's grid (v1.57.0)
+
+The Tracker binds `Combatant` — what is standing on the field. `NerveCur`, `NerveMax` and `Mark`
+live on `PartyMember` — the soul. For fourteen months the tab that a Keeper watches all night
+therefore showed Blood and nothing else the horror touches, in a game whose engine is dread: to
+find out how frightened anybody was you left the fight and opened the Posse tab, and the Mark, the
+entire cost of dealing with the dark, had no surface in the app at all.
+
+**Do not fix this by putting the fields on `Combatant`.** That is the copy that gets saved, and a
+saved copy of a derived value is the fault `Combatant.Load` and `EffectiveDefense` exist to avoid:
+it reloads already applied and gets applied again. The two columns are **unbound** — no
+`DataPropertyName`, filled in `CellFormatting` from `SoulOf()`, which already joins the row to the
+soul — and **read-only**, because the Posse tab and the Dread Check are the authorities on those
+numbers and a second place to type one is a second authority for it.
+
+**The colour language is one language.** Nerve takes `PaintBloodBar` unchanged, so green/gold/red
+means the same thing in both columns. The Mark *counts up* to a fixed end rather than draining from
+a maximum, so it is boxes (`PaintPips`, shared with the spoor clock) rather than a bar, inked the
+other way round — slate, gold, red. Two cells give up their drawing for a word at the state a
+Keeper has to act on: **Broken** at 0 Nerve, **Lost** at `Rules.MarkLost`. That is the same
+judgement `DyingLine` makes in the Blood maximum column, and it is deliberate: an empty bar at the
+worst moment of the night is the least urgent thing on the screen.
+
+**Two checks came out of it, and both were proved by sabotage before being trusted.**
+
+`HeadersThatClip` — every Fill-mode weight is a *share*, so widening any column narrows all the
+others, and seating two new ones pushed `Next strike (MAP)` to 110px needed in a column that had
+108. It passed the clipping walk on the two pixels of slack that walk allows, which is not a margin.
+`WalkForClipping` had always stepped over a `DataGridView` on the grounds that a grid clips its
+columns on purpose — true of the columns, false of the header band, which is pinned to one line's
+height and cuts a wrapped label through the middle of its letters. The Posse tab's twenty weights
+were measured by hand in v1.38.0 after trading one clipped header for three, twice; this asks the
+machine, at the size the app opens at.
+
+`TrackerShowsTheSoul` — an unbound column that nothing fills passes every other check here. It
+clips nothing, hides nothing, and says what it is on hover; it is simply a blank strip, all night,
+on the one tab that matters. So the cells are read back through the real `CellFormatting` rather
+than the wiring being trusted, on a soul, on a soul at 0, and on a creature that must show neither.
+
+**The rule for anything new:** a column whose value is not bound is checked by reading it back, and
+a weight changed in a Fill-mode grid is re-measured by `--selftest` rather than reasoned about.
 
 ## Verification standard for this app
 

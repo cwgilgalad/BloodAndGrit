@@ -1180,6 +1180,15 @@ public partial class MainForm : Sheet
             // what a scroller is FOR. Same for a grid, which scrolls and clips columns on purpose.
             bool scrolls = c is RichTextBox or TextBoxBase or DataGridView or ListBox
                         || (c is ScrollableControl sc && sc.AutoScroll);
+            // ...and a header is not a column. The COLUMN may clip its content on purpose; the
+            // band of labels above it cannot, because it is pinned to one line's height and a
+            // label that does not fit wraps into a second line that is then cut through the
+            // middle of its letters. Every Fill-mode weight in the app is a share rather than a
+            // width, so widening any one column narrows all the others and can clip a header two
+            // tabs away from the change. The Posse tab traded one clipped header for three,
+            // twice, before its twenty weights were measured by hand (see BuildPosseTab). This
+            // asks the machine instead.
+            if (c is DataGridView grid) HeadersThatClip(grid, where, into);
             if (!scrolls && Clipped(c) is string why) into.Add($"{where} · {why}");
             WalkForClipping(c, where, into);
         }
@@ -1208,6 +1217,26 @@ public partial class MainForm : Sheet
         string what = c.Text.Replace("\r", " ").Replace("\n", " ").Trim();
         if (what.Length > 64) what = what.Substring(0, 61) + "…";
         return $"{c.GetType().Name} \"{what}\" needs {need.Height}px and has {have}px";
+    }
+
+    /// <summary>Every column header that cannot draw its own label in the width its column actually
+    /// got. Measured against the laid-out <see cref="DataGridViewColumn.Width"/>, so it answers
+    /// for the window the app opens at rather than for the weights somebody typed.</summary>
+    static void HeadersThatClip(DataGridView g, string where, List<string> into)
+    {
+        if (!g.IsHandleCreated || !g.ColumnHeadersVisible || g.Width <= 0) return;
+        foreach (DataGridViewColumn col in g.Columns)
+        {
+            if (!col.Visible || string.IsNullOrWhiteSpace(col.HeaderText)) continue;
+            var style = col.HeaderCell.InheritedStyle;
+            int have = col.Width - style.Padding.Horizontal - 4;   // 4: the cell's own rule and bearing
+            if (have <= 0) continue;
+            int need = TextRenderer.MeasureText(col.HeaderText, style.Font ?? g.Font,
+                            new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Width;
+            // Two pixels of slack, the same two Clipped allows and for the same reason.
+            if (need > have + 2)
+                into.Add($"{where} · header \"{col.HeaderText}\" needs {need}px and has {have}px");
+        }
     }
 
     /// <summary>Put the window on screen — far off it — for the duration of a measuring check,
@@ -1293,6 +1322,60 @@ public partial class MainForm : Sheet
     /// <para>Every state is put back afterward. The self-test runs against a real
     /// <see cref="AppState.Dir"/>, and a check that leaves somebody's table rearranged is a check
     /// they run once.</para></summary>
+    /// <summary>That the Tracker's two unbound columns actually carry the soul's numbers, and
+    /// carry nothing on a row that has no soul.
+    ///
+    /// <para>Written with the check above in mind. A column that is declared, weighted, painted and
+    /// never filled passes every test in this file: it clips nothing, it hides nothing, it says
+    /// what it is on hover. It is simply empty, all night, on the one tab the Keeper watches. So
+    /// this reads the cells back through <c>FormattedValue</c> — which runs the real CellFormatting
+    /// — rather than trusting that the handler was wired.</para></summary>
+    internal string TrackerShowsTheSoul()
+    {
+        var page = allTabs.FirstOrDefault(t => t.Text == "Tracker");
+        if (page == null) return "there is no Tracker tab";
+        RealizeTab(page);
+        if (trkGrid == null) return "the Tracker grid was never built";
+        var soul = SeatSoul(CharGen.Generate(3, false, "Gunhand"));
+        if (soul == null) return "no soul could be seated";
+        int wasField = tracker.Count;
+        try
+        {
+            soul.NerveMax = 11; soul.NerveCur = 7; soul.Mark = 3;
+            PartyToTracker();
+            int row = -1;
+            for (int i = 0; i < trkGrid.Rows.Count; i++)
+                if (trkGrid.Rows[i].DataBoundItem is Combatant c && SoulOf(c) == soul) { row = i; break; }
+            if (row < 0) return "the seated soul reached no tracker row";
+            string Cell(string name) => trkGrid.Rows[row].Cells[name].FormattedValue as string ?? "";
+            if (Cell("NerveLine") != "7 / 11")
+                return $"the Nerve cell reads \"{Cell("NerveLine")}\" for a soul on 7 of 11";
+            soul.NerveCur = 0;
+            if (Cell("NerveLine") != "Broken")
+                return $"a soul at 0 Nerve reads \"{Cell("NerveLine")}\" rather than Broken";
+            soul.Mark = Rules.MarkLost;
+            if (Cell("MarkPips") != "Lost")
+                return $"a soul at the end of the Mark reads \"{Cell("MarkPips")}\" rather than Lost";
+            // and nothing at all where there is no soul: a creature has no Nerve to lose.
+            var beast = Db.Creatures.FirstOrDefault();
+            if (beast != null)
+            {
+                AddCreatureToTracker(beast, 1, skipSafeTable: true);
+                int foe = trkGrid.Rows.Count - 1;
+                string n = trkGrid.Rows[foe].Cells["NerveLine"].FormattedValue as string ?? "";
+                string k = trkGrid.Rows[foe].Cells["MarkPips"].FormattedValue as string ?? "";
+                if (n.Length > 0 || k.Length > 0)
+                    return $"a creature row carries Nerve \"{n}\" and Mark \"{k}\"";
+            }
+            return null;
+        }
+        finally
+        {
+            while (tracker.Count > wasField) tracker.RemoveAt(tracker.Count - 1);
+            party.Remove(soul);
+        }
+    }
+
     internal List<string> AuditDrivenClipping()
     {
         var found = new List<string>();
