@@ -506,8 +506,6 @@ want; let it be available.* **The four-reading shape was deliberate and should n
 settled answer** — the box two paragraphs above it promises this book never settles whether there are
 six Patrons at all, and six numbered dossiers with d6 tables already strain that promise; a fifth
 certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for the same reason.
-Note also that **Ch. VII is doing two jobs** at 7,400 words — rewards-and-advancement procedure and
-Patron cosmology — and is the obvious candidate if this book is ever split again.
 
 **Ch. XIII Perdition Basin** is `CH13` in `build_keeper.py` (spliced into `BODY` before the Screen
 appendix), embeds `keeper_map_html()`, and carries anchor ids (`basin`, `basin-truth`,
@@ -664,7 +662,12 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 - ~~**A named sample territory with an SVG map**~~ — **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
   Book Appendix E; secrets-annotated Keeper map + full gazetteer in the Keeper's Book Ch. XIII).
-  See `perdition_map.py`. Could still grow into a thin fourth book if you want more territory.
+  See `perdition_map.py`. It will not become a fourth book (settled 2026-09-16). It is the main
+  example in every book instead: the county a new posse starts in, and one a campaign can stay in.
+- **Perdition Basin in every book.** Where a new posse starts and a place to keep playing, carried
+  through the Player's Book, the Keeper's Book, the Bestiary and the modules. In progress.
+- **A Book of Legends.** A separate book of the Territory's legends, drawing on all three core books.
+  In progress.
 - **Discord / online play** — proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
@@ -686,12 +689,6 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   an ampersand-mnemonic label bug (see Changelog), nothing else wrong. Still worth another
   look sometime at DPI scaling on a non-100%-scale display, since this pass was at whatever
   the laptop's default scale was.
-- **Illustrations** are currently removed from all three interiors by choice. If reintroduced
-  later, generate plates with an external AI tool using a fixed style-reference for
-  consistency, recompress to ~1200px / q80 before inlining, and consider re-enabling the
-  (currently stubbed) `plate()` function in the Keeper/Bestiary builds so those two can carry
-  plates too. Any reintroduction should be applied consistently across all three for the
-  cross-book continuity we established.
 
 ---
 
