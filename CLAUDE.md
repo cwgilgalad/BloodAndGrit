@@ -402,6 +402,14 @@ hand in the right order out of memory.
   apostrophe makes "don't … it's" read as a quoted span and *masks* genuine tells — the one failure
   mode worse than a false positive. Proper nouns that collide with corporate vocabulary
   (`Vital Breath`, `landscape-Letter`) are blanked before the soft-word count.
+  **Research signals (2026-09-16).** The audit also prints rates per thousand words for every file,
+  next to the same rates from two texts written without a model: the 5e SRD for rules prose and
+  *The Virginian* (1902) for western prose. The measures come from the 2025-26 detection research and
+  the sources are listed in `audits/ai_tells_lexicon.py`. They don't fail the gate; `--strict` fails
+  on them, and it's the bar the books are being rewritten to. The first run found the trouble is in
+  the rhythm: too many em dashes, almost no contractions, negative parallelism, and sentences built
+  like "kindness is the whole of the creed". An optional `voice-profile.local.json` beside this file
+  adds a column comparing each book with the author's own writing. It stays on this machine.
 
 ### One source of truth, and disagreement is a failing test
 
