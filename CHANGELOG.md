@@ -8,6 +8,28 @@ Desktop\Git repos.)
 
 ---
 
+- **The prose audit brought up to the 2026 research, and measured against people (2026-09-16).**
+
+  `audits/audit_ai_tells.py` fails on the same hard tells it did before. It now also prints research
+  signals for every file, per thousand words, next to the same numbers from two texts nobody wrote
+  with a model: the 5e SRD (208,164 words of rules) and Owen Wister's *The Virginian* (129,416 words
+  of western prose). The measures are lexical richness (arXiv:2606.04177), participial clauses and
+  nominalizations (Reinhart et al., PNAS 2025), the Antislop phrase list (ICLR 2026), the habits
+  StoryScope found in AI fiction (arXiv:2604.03136), and a list of Claude's own habits taken from
+  this repo. It reads all six books now, including the boxes and callouts the old extraction
+  skipped, and it leaves out stat blocks, tables and page furniture.
+
+  The first run found the trouble is in the rhythm. The Bestiary uses 12.2 em dashes per thousand
+  words where *The Virginian* uses 5.1, and the Player's Book almost never uses a contraction. The
+  three core books have 81 negative parallelisms between them, 175 of Claude's stock phrases and 21
+  sentences built like "kindness is the whole of the creed". The Keeper's Book also has two plain
+  mistakes: a line claiming "thirty years behind a screen" and one saying a table "was printed in the
+  Player's Book until 2026". None of it fails the gate yet. `--strict` fails on it, and that's the bar
+  for the rewrite that comes next.
+
+  Every new shape has a sentence that has to trip it and a control paragraph it has to leave alone.
+  The self-check was broken two ways to make sure it goes red when it should, and it did.
+
 - **Module II v1.8, Module III v1.8 — two stat blocks that had not been reprinted since
   `creatures.json` moved (2026-09-12).**
 

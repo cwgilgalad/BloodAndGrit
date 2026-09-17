@@ -29,13 +29,27 @@ Every pattern in HARD is proved by --selfcheck, which runs each one against a se
 trip it. A guard that has never been seen to fire is a guard nobody should trust: two of the ones
 here were written wrong the first time and looked exactly like the ones written right.
 
+RESEARCH SIGNALS (added 2026-09-16) — rates per thousand words, printed beside the same rates from
+writing done without a model: the 5e SRD for rules prose and The Virginian for western prose. They
+cover the 2025-26 findings the hard tells cannot: lexical richness, participial clauses and
+nominalizations, the Antislop phrase list, StoryScope's fiction habits, Claude's own tics, and a set
+of shapes (two-beat reveals, a clause echoing its own opening words, "the whole of it") that are
+fine once and a tell when they keep coming. Sources are in ai_tells_lexicon.py. They are reported
+on every run and only fail under --strict, which is the exit test for the voice pass.
+
 Usage:
     python audit_ai_tells.py                  # audit the tracked docs, exit 1 on any hard tell
     python audit_ai_tells.py FILE [FILE ...]  # audit specific files
     python audit_ai_tells.py --commits 60     # also audit the last N commit messages
-    python audit_ai_tells.py --books          # scan the three books as well
+    python audit_ai_tells.py --books          # scan the six books as well
+    python audit_ai_tells.py --strict         # also fail on research shapes and runaway rates
+    python audit_ai_tells.py --all            # list every research instance, not the first few
+    python audit_ai_tells.py --worklist F.tsv # write every research instance to a file
+    python audit_ai_tells.py --calibrate F    # print the research rates for any plain text file
     python audit_ai_tells.py --selfcheck      # prove every pattern still fires, and only on cue
 """
+import collections
+import json
 import re
 import subprocess
 import sys
@@ -49,6 +63,11 @@ if hasattr(sys.stdout, "reconfigure"):
 # what makes the move to audits/ a move and not a rewrite.
 ROOT = Path(__file__).resolve().parent.parent
 
+# The word lists live beside this file. The commit-msg hook loads this module by path, so the folder
+# is put on sys.path here rather than trusting the caller to have done it.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import ai_tells_lexicon as LEX  # noqa: E402
+
 # The prose a reader actually meets first. GK/CLAUDE.md joined the list in v1.29.2: it was split
 # out of the root CLAUDE.md on 2026-07-30 and carries ~24,000 characters of the same kind of prose,
 # so leaving it off would have quietly exempted a quarter of the project's documentation from the
@@ -59,7 +78,9 @@ DEFAULT_DOCS = ["README.md", "CLAUDE.md", "GK/CLAUDE.md", "CHANGELOG.md", "NOTIC
 # period-western register would confuse the scan; that was wrong, and it hid real findings — the
 # cadence tells are about SHAPE, not vocabulary, and shape does not care what century the diction
 # comes from. Sixteen negative-parallelism constructions were sitting in here unexamined.
-BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html"]
+BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
+         "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
+         "module-what-the-water-answers.html"]
 
 # ---- hard tells: these are worth failing over ----------------------------------------------------
 # Negative parallelism in its common shapes. The pattern is deliberately narrow: it needs the
@@ -334,7 +355,345 @@ def burstiness(lengths):
     return (var ** 0.5) / mean
 
 
-def audit(name, raw):
+# ---- research signals ----------------------------------------------------------------------------
+# Counted per thousand words and set beside BASELINES. Most of these are fine once; the rate is the
+# signal. Under --strict, any SHAPE not listed in audits/ai_tells_keep.txt fails, and so does any rate
+# in STRICT_RATES running at more than twice the higher human baseline.
+
+WORD = re.compile(r"[A-Za-z][A-Za-z'’-]*")
+CONTRACTION = re.compile(r"\b[A-Za-z]+(?:n['’]t|['’](?:re|ve|ll|d|m))\b"
+                         r"|\b(?:it|that|there|here|what|he|she|who|let|where|how)['’]s\b", re.I)
+NOMINALIZATION = re.compile(r"\b[a-z]{3,}(?:tion|sion|ment|ness|ity|ance|ence|ancy|ency)s?\b", re.I)
+PARTICIPLE = re.compile(r",\s+(?:[a-z]+ly\s+)?([a-z]{2,}ing)\b", re.I)
+TRICOLON = re.compile(r"(?<![,;]\s)(?<![\w'’-])[\w'’-]+(?:\s[\w'’-]+){0,2},\s[\w'’-]+(?:\s[\w'’-]+){0,2}"
+                      r",?\s(?:and|or)\s[\w'’-]+", re.I)
+
+# The negative-parallelism shapes the hard list does not fail on. "…, not two." and "no X, just Y"
+# have honest uses in rules text, so they count toward the rate and never fail alone.
+NEGPAR_HARD = [re.compile(p, re.I) for p, lab in HARD if lab.startswith("negative parallelism")]
+NEGPAR_SOFT = [re.compile(p, re.I) for p in (
+    r",\s+not\s+(?:a\s+|an\s+|the\s+)?[\w'’-]+(?:\s+[\w'’-]+){0,2}[.!?;]",
+    r"\bno\s+[\w'’-]+(?:\s+[\w'’-]+){0,3},\s+(?:just|only)\s+[\w'’-]+",
+    r"\bnot because\b[^.;!?]{2,80}\bbut because\b",
+    r"\bless (?:a|an|of an?) [\w'’-]+(?:\s+[\w'’-]+){0,2} than (?:a|an) [\w'’-]+",
+    r"\bnever\b[^.;!?]{2,40}[;,]\s+(?:always|only)\b",
+)]
+
+# Shapes that are worth a person's eye every time they appear.
+# "the whole of it" is often literal ("clears the whole of it", meaning all of the Mark). The habit
+# is the definition: "Scarcity is the whole of its power", "kindness is the whole of the creed".
+SHAPES = [
+    ("\"the whole of it\"", re.compile(r"\b(?:is|was|are|were|be)\s+(?:all\s+)?" + LEX.CLAUDE_REGISTER[0][2:],
+                                       re.I)),
+    ("invented authority", re.compile(
+        r"\b(?:\w+|\d+) years (?:behind (?:a|the) screen|(?:of|spent) (?:running|gming|game-?mastering|"
+        r"designing|playtesting))\b|\bas (?:a|an) (?:veteran|seasoned|experienced) "
+        r"(?:game ?master|gm|keeper|designer)\b", re.I)),
+    ("stated theme", re.compile("|".join(LEX.THEME_STATEMENT), re.I)),
+]
+# In a book set in 1885, a modern year or talk of earlier printings is the edit history showing.
+BOOK_SHAPES = [
+    ("edit history inside the book", re.compile(
+        r"\b(?:was|were) (?:printed|moved|carried|kept) in (?:the )?(?:player|keeper)['’]s book until\b"
+        r"|\b(?:until|since|as of|before|after) (?:199\d|20\d\d)\b"
+        r"|\bin (?:an|the) (?:earlier|previous|last) (?:version|edition|printing|release)\b", re.I)),
+]
+NAMED_CLOSER = re.compile(r"^(?:that|this|which)(?: is|['’]s) (?:the (?:point|tell|trick|job|lesson|"
+                          r"difference|whole of it)|what (?:it|they|he|she|this|that) (?:is|are) for)"
+                          r"[.!]?$", re.I)
+
+def _phrase_re(p):
+    return re.compile(r"(?<![\w'’-])" + re.escape(p) + r"(?![\w'’-])", re.I)
+
+SLOP_RES = [(p, _phrase_re(p)) for p in LEX.ANTISLOP]
+WIKI_RES = [(p, _phrase_re(p)) for p in LEX.WIKI_PHRASES]
+CLAUDE_RES = [(p, re.compile(p, re.I)) for p in LEX.CLAUDE_REGISTER]
+SMELL_RES = [re.compile(p, re.I) for p in LEX.SMELL]
+BODY_RES = [re.compile(p, re.I) for p in LEX.BODY_EMOTION]
+THEME_RES = [re.compile(p, re.I) for p in LEX.THEME_STATEMENT]
+NAME_RES = [(n, re.compile(r"(?<![\w'’-])" + re.escape(n) + r"(?![\w'’-])"))
+            for n in LEX.SLOP_NAMES_ANTISLOP + LEX.SLOP_NAMES_REPORTED]
+
+# Rates that can fail a --strict run, and the columns the report prints, in order.
+STRICT_RATES = ["negpar", "twobeat", "echo", "claude", "slop"]
+COLUMNS = [("negpar", "negp"), ("twobeat", "2bt"), ("closer", "clos%"), ("tricolon", "tri"),
+           ("echo", "echo"), ("claude", "cla"), ("slop", "slop"), ("wiki", "wiki"), ("smell", "smel"),
+           ("body", "body"), ("theme", "them"), ("ptcp", "ptcp"), ("nomin", "nomi"), ("contr", "cont"),
+           ("hapax", "hapx"), ("lexd", "lexd")]
+VOICE = [("dash", "dash"), ("semi", "semi"), ("colon", "coln"), ("paren", "parn"),
+         ("question", "ques"), ("contr", "cont"), ("mean_len", "slen"), ("burst", "brst"),
+         ("nomin", "nomi"), ("ptcp", "ptcp"), ("word_len", "wlen"), ("long", "long%")]
+
+# From `--calibrate` on 2026-09-16, over the two texts named at the foot of ai_tells_lexicon.py:
+# the 5e SRD (208,164 words of rules) and The Virginian (129,416 words of western prose).
+BASELINES = {
+    "srd5": {"negpar": 0.062, "twobeat": 0.029, "closer": 2.409, "tricolon": 4.194, "echo": 1.182,
+             "claude": 0.029, "slop": 0.355, "wiki": 0.038, "smell": 0.466, "body": 0.0, "theme": 0.0,
+             "ptcp": 2.959, "nomin": 32.345, "contr": 5.044, "hapax": 0.183, "lexd": 0.566,
+             "dash": 3.862, "semi": 0.538, "colon": 13.388, "paren": 16.468, "question": 0.062,
+             "mean_len": 10.759, "burst": 0.924, "word_len": 4.668, "long": 8.348},
+    "virginian": {"negpar": 0.108, "twobeat": 0.379, "closer": 6.694, "tricolon": 3.06, "echo": 0.34,
+                  "claude": 0.224, "slop": 0.039, "wiki": 0.008, "smell": 0.077, "body": 0.0,
+                  "theme": 0.0, "ptcp": 3.493, "nomin": 11.907, "contr": 15.5, "hapax": 0.306,
+                  "lexd": 0.443, "dash": 5.084, "semi": 5.656, "colon": 1.02, "paren": 0.348,
+                  "question": 6.738, "mean_len": 13.284, "burst": 0.761, "word_len": 4.257,
+                  "long": 5.575},
+}
+
+# An optional profile of the author's own informal writing, kept on the author's machine and out of
+# git. When it is present the report adds a column showing how far each book sits from it.
+VOICE_PROFILE = ROOT / "voice-profile.local.json"
+KEEP_FILE = Path(__file__).resolve().parent / "ai_tells_keep.txt"
+
+
+ABBREVIATIONS = re.compile(r"\b(?:Ch|ch|vs|pp?|No|no|St|Mt|Ft|Dr|Mr|Mrs|Jr|Sr|Co|etc|e\.g|i\.e|cf|approx)\.")
+
+
+def _sentences(text):
+    """Sentences, without splitting after "Ch." or "vs." or "e.g."."""
+    guarded = ABBREVIATIONS.sub(lambda m: m.group(0)[:-1] + "․", text)
+    return [s.strip().replace("․", ".") for s in SENT_SPLIT.split(guarded) if WORD.search(s)]
+
+
+def _nwords(s):
+    return len(WORD.findall(s))
+
+
+def _snip(text, start, end, pad=60):
+    return re.sub(r"\s+", " ", text[max(0, start - pad):end + pad]).strip()
+
+
+def echo_head(sentence):
+    """A clause, a coordinator, then that clause's opening words again: "evidence that it never
+    happened or evidence that it keeps happening". Returns the repeated words, or None."""
+    toks = [t.lower().strip("'’") for t in WORD.findall(sentence)]
+    for k, t in enumerate(toks):
+        if t not in ("or", "and", "but", "yet", "nor"):
+            continue
+        for n in (3, 2):
+            head = toks[k + 1:k + 1 + n]
+            # Single letters are dice and versions ("3d6 at 4th, 4d6 at 7th"), not words.
+            if len(head) < n or any(len(h) < 2 for h in head) or \
+                    all(h in LEX.HEAD_STOPS for h in head):
+                continue
+            for i in range(max(0, k - 14), k - n):
+                if toks[i:i + n] == head:
+                    return " ".join(head)
+    return None
+
+
+def two_beats(sents):
+    """Pairs of tiny sentences, the two-beat reveal: "Not worse. Quieter." / "Every time. No
+    exceptions." Returns each pair as one string."""
+    out = []
+    for i in range(len(sents) - 1):
+        a, b = sents[i], sents[i + 1]
+        if re.search(r"[\d=–]", a + b):          # rules and tables: "Score 8–9 gives –1."
+            continue
+        na, nb = _nwords(a), _nwords(b)
+        nots = a.lower().startswith("not ") or b.lower().startswith("not ")
+        # A pair of short sentences opening a paragraph is usually a label and its rule ("Failure.
+        # You fall short."). The reveal comes after something longer has been said.
+        after_long = i > 0 and _nwords(sents[i - 1]) >= 8
+        if (nots and na <= 4 and nb <= 4) or \
+                (after_long and na <= 3 and nb <= 3 and a.endswith(".") and b.endswith(".")):
+            out.append(f"{a} {b}")
+    return out
+
+
+def hapax_share(words, window=1000, step=500):
+    """Share of words used exactly once, averaged over 1,000-word windows so length does not decide
+    it. One of the lexical-richness measures in arXiv:2606.04177."""
+    if not words:
+        return None
+    if len(words) < window:
+        spans = [words]
+    else:
+        spans = [words[i:i + window] for i in range(0, len(words) - window + 1, step)]
+    shares = []
+    for span in spans:
+        once = sum(1 for n in collections.Counter(span).values() if n == 1)
+        shares.append(once / len(span))
+    return sum(shares) / len(shares)
+
+
+def doc_units(prose):
+    """A markdown-ish document as (where, paragraph) pairs, split on blank lines."""
+    out, pos = [], 0
+    for block in re.split(r"(\n[ \t]*\n)", prose):
+        if block.strip() and WORD.search(block):
+            out.append((f"L{prose.count(chr(10), 0, pos) + 1}", re.sub(r"\s+", " ", block).strip()))
+        pos += len(block)
+    return out
+
+
+# A tag, including one whose quoted attribute holds a ">" (the map download button's onclick does).
+TAG = re.compile(r"<[a-zA-Z/!][^>\"']*(?:\"[^\"]*\"[^>\"']*|'[^']*'[^>\"']*)*>")
+BLOCK_TAG = re.compile(r"</?(?:p|li|div|blockquote|section|ul|ol|dd|dt|dl|figure|figcaption|aside|"
+                       r"header|footer|br|hr)\b(?:[^>\"']|\"[^\"]*\"|'[^']*')*>", re.I)
+
+
+# Elements that are typography rather than prose: stat blocks, running heads, page numbers, the
+# "Found —" label and the dash before a witness's name. Their dashes are not the author's.
+NOT_PROSE_CLASSES = ["statblock", "runhead", "pg", "cf-tag", "src", "kn-tag", "cr-name", "ix-hd"]
+NOT_PROSE_CHAPTERS = ("", "Contents", "Index", "The Ledger")
+
+
+def _blank_classes(src, classes):
+    """Blank every element carrying one of `classes`, nested children and all, keeping offsets."""
+    opener = re.compile(r'<(div|span|p)\b[^>]*\bclass="(?:[^"]*\s)?(?:' + "|".join(map(re.escape, classes))
+                        + r')(?:\s[^"]*)?"[^>]*>', re.I)
+    spans = []
+    for m in opener.finditer(src):
+        if spans and m.start() < spans[-1][1]:
+            continue
+        depth = 1
+        for t in re.finditer(r"<(/?)" + m.group(1) + r"\b[^>]*>", src[m.end():], re.I):
+            depth += -1 if t.group(1) else 1
+            if depth == 0:
+                spans.append((m.start(), m.end() + t.end()))
+                break
+    parts, last = [], 0
+    for a, b in spans:
+        parts += [src[last:a], re.sub(r"[^\n]", " ", src[a:b])]
+        last = b
+    return "".join(parts) + src[last:]
+
+
+def book_units(path):
+    """A built book as (chapter :: section, block of prose) pairs.
+
+    Reads every block of text, boxes and callouts included, which tools/extract_rules.py does not
+    (it takes <p> and <li> only, and a Keeper's box is a <div>). Tables, maps, scripts, stat blocks
+    and the rest of NOT_PROSE_CLASSES are left out, and so are the chapters in NOT_PROSE_CHAPTERS."""
+    import html as H
+    src = _blank_classes(Path(path).read_text(encoding="utf-8"), NOT_PROSE_CLASSES)
+    heads = [(m.start(), 1, m.group(1)) for m in re.finditer(r'<h1 class="chapter"[^>]*>(.*?)</h1>', src, re.S)]
+    heads += [(m.start(), 2, m.group(1)) for m in re.finditer(r"<h2\b[^>]*>(.*?)</h2>", src, re.S)]
+    heads = sorted((pos, kind, re.sub(r"\s+", " ", H.unescape(TAG.sub(" ", t))).strip()) for pos, kind, t in heads)
+
+    clean = src
+    for pat in (r"<(script|style)\b.*?</\1>", r"<table\b.*?</table>", r"<svg\b.*?</svg>",
+                r"<(h[1-6])\b.*?</\1>"):
+        clean = re.sub(pat, _blank, clean, flags=re.S | re.I)
+    clean = BLOCK_TAG.sub(lambda m: "\n\n" + " " * (len(m.group(0)) - 2), clean)
+    clean = TAG.sub(_blank, clean)
+
+    out, chapter, section, hi = [], "", "", 0
+    for m in re.finditer(r"(?:[^\n]|\n(?![ \t]*\n))+", clean):
+        while hi < len(heads) and heads[hi][0] <= m.start():
+            _, kind, title = heads[hi]
+            chapter, section = (re.sub(r"^[IVXL]+\.\s*", "", title), "") if kind == 1 else (chapter, title)
+            hi += 1
+        text = re.sub(r"\s+", " ", H.unescape(m.group(0))).strip()
+        if not WORD.search(text) or chapter in NOT_PROSE_CHAPTERS:
+            continue
+        out.append((f"{chapter} :: {section}" if section else chapter, text))
+    return out
+
+
+def research(units, book=False):
+    """Every research signal for one document. `units` is a list of (where, paragraph)."""
+    words, lens, instances = [], [], []
+    c = collections.Counter()
+    names = collections.Counter()
+    shapes = SHAPES + (BOOK_SHAPES if book else [])
+    for where, text in units:
+        ws = [w.lower() for w in WORD.findall(text)]
+        if not ws:
+            continue
+        words += ws
+        sents = _sentences(text)
+        lens += [_nwords(s) for s in sents]
+
+        if len(sents) >= 3:
+            c["closer_eligible"] += 1
+            if _nwords(sents[-1]) <= 6 and _nwords(sents[-2]) >= 12:
+                c["closer"] += 1
+        for s in sents:
+            if NAMED_CLOSER.match(s):
+                instances.append(("named closer", where, s))
+            head = echo_head(s)
+            if head:
+                c["echo"] += 1
+                instances.append(("echo", where, f"[{head}] {s}"))
+        for pair in two_beats(sents):
+            c["twobeat"] += 1
+            instances.append(("two-beat reveal", where, pair))
+
+        for rx in NEGPAR_HARD + NEGPAR_SOFT:
+            for m in rx.finditer(text):
+                c["negpar"] += 1
+                instances.append(("negative parallelism", where, _snip(text, m.start(), m.end())))
+        for label, rx in shapes:
+            for m in rx.finditer(text):
+                instances.append((label, where, _snip(text, m.start(), m.end())))
+
+        for group, key in ((CLAUDE_RES, "claude"), (SLOP_RES, "slop"), (WIKI_RES, "wiki")):
+            for phrase, rx in group:
+                for m in rx.finditer(text):
+                    c[key] += 1
+                    if key != "wiki":
+                        instances.append((f"{key}: {m.group(0).lower()}", where, _snip(text, m.start(), m.end())))
+        c["smell"] += sum(len(rx.findall(text)) for rx in SMELL_RES)
+        c["body"] += sum(len(rx.findall(text)) for rx in BODY_RES)
+        c["theme"] += sum(len(rx.findall(text)) for rx in THEME_RES)
+        c["tricolon"] += len(TRICOLON.findall(text))
+        c["ptcp"] += sum(1 for m in PARTICIPLE.finditer(text) if m.group(1).lower() not in LEX.ING_NOUNS)
+        c["nomin"] += len(NOMINALIZATION.findall(text))
+        c["contr"] += len(CONTRACTION.findall(text))
+        c["dash"] += text.count("—") + text.count("--")
+        c["semi"] += text.count(";")
+        c["colon"] += text.count(":")
+        c["paren"] += text.count("(")
+        c["question"] += text.count("?")
+        for n, rx in NAME_RES:
+            m = rx.search(text)
+            if m:
+                names[n] += len(rx.findall(text))
+                instances.append((f"name: {n}", where, _snip(text, m.start(), m.end())))
+
+    nw = max(1, len(words))
+    per_k = lambda k: c[k] * 1000.0 / nw  # noqa: E731
+    rates = {k: per_k(k) for k in ("negpar", "twobeat", "tricolon", "echo", "claude", "slop", "wiki",
+                                   "smell", "body", "theme", "ptcp", "nomin", "contr", "dash", "semi",
+                                   "colon", "paren", "question")}
+    rates["closer"] = 100.0 * c["closer"] / c["closer_eligible"] if c["closer_eligible"] >= 20 else None
+    rates["hapax"] = hapax_share(words)
+    rates["lexd"] = sum(1 for w in words if w not in LEX.FUNCTION_WORDS) / nw if words else None
+    mean_len = sum(lens) / len(lens) if lens else None
+    rates["mean_len"] = mean_len
+    rates["burst"] = burstiness(lens)
+    rates["word_len"] = sum(len(w) for w in words) / nw if words else None
+    rates["long"] = 100.0 * sum(1 for w in words if len(w) >= 9) / nw if words else None
+    return {"words": len(words), "counts": dict(c), "rates": rates, "instances": instances,
+            "names": dict(names)}
+
+
+def flag(key, rates, counts):
+    """True when a rate runs at more than twice the higher human baseline, on at least three hits."""
+    rate = rates.get(key)
+    if rate is None or not BASELINES:
+        return False
+    base = max((b.get(key) or 0.0) for b in BASELINES.values())
+    hits = counts.get(key, 0)
+    return hits >= 3 and rate > max(2.0 * base, 0.25)
+
+
+def load_keep():
+    """audits/ai_tells_keep.txt: one kept instance per line, `file<TAB>fragment<TAB>why`. An author
+    may keep a device on purpose; the rate still counts it, the shape list stops asking."""
+    keep = []
+    if KEEP_FILE.is_file():
+        for line in KEEP_FILE.read_text(encoding="utf-8").splitlines():
+            if line.strip() and not line.startswith("#"):
+                parts = line.split("\t")
+                if len(parts) >= 2:
+                    keep.append((parts[0].strip(), parts[1].strip().lower()))
+    return keep
+
+
+def audit(name, raw, units=None, book=False):
     prose = strip_html(raw) if name.endswith(".html") else strip_markup(raw)
     lens = sentences(prose)
     b = burstiness(lens)
@@ -402,6 +761,7 @@ def audit(name, raw):
         "sentences": len(lens), "burst": b, "hard": hard, "quoted": quoted, "soft": soft,
         "words": sum(lens), "shortest": min(lens) if lens else 0, "longest": max(lens) if lens else 0,
         "emdash_per_1k": em_1k, "variety": variety, "openers": openers, "mattr": ttr,
+        "research": research(units if units is not None else doc_units(prose), book),
     }
 
 
@@ -483,19 +843,63 @@ def selfcheck():
         if re.search(pat, control, flags=re.I):
             print(f"  TRIGGERY  {lab} fires on ordinary prose")
             bad += 1
-    print(f"\n{len(labels)} hard pattern(s), {len(SELFCHECK)} case(s): "
+    # The research shapes: each must be found in its case, and none in the control.
+    for label, case in RESEARCH_CASES.items():
+        found = [lab for lab, _, _ in research([("case", case)], book=True)["instances"]]
+        if not any(lab.startswith(label) for lab in found):
+            print(f"  DEAD      research shape {label}\n            did not match: {case}")
+            bad += 1
+    control_hits = [lab for lab, _, _ in research([("control", control)], book=True)["instances"]]
+    for lab in control_hits:
+        print(f"  TRIGGERY  research shape {lab} fires on ordinary prose")
+        bad += 1
+    # The counters, on sentences whose right answer is known.
+    for text, key, want in COUNTER_CASES:
+        got = research([("case", text)])["counts"].get(key, 0)
+        if got != want:
+            print(f"  MISCOUNT  {key}: wanted {want}, got {got} in: {text}")
+            bad += 1
+
+    print(f"\n{len(labels)} hard pattern(s), {len(SELFCHECK)} case(s), {len(RESEARCH_CASES)} research "
+          f"shape(s), {len(COUNTER_CASES)} counter case(s): "
           + ("all fire on their case and none on the control." if not bad else f"{bad} problem(s)."))
     return 1 if bad else 0
+
+
+RESEARCH_CASES = {
+    "\"the whole of it\"": "Eating together is the whole of the worship.",
+    "invented authority": "Thirty years behind a screen teaches one thing about devils.",
+    "stated theme": "The lesson here is that greed always costs you in the end.",
+    "edit history inside the book": "This was printed in the Player's Book until 2026.",
+    "named closer": "Keep the dice hidden from the players at every table. That is the point.",
+    "two-beat reveal": "The town was quieter after the revival came through. Not worse. Quieter.",
+    "echo": "It is either evidence that it never happened or evidence that it keeps happening.",
+}
+
+COUNTER_CASES = [
+    ("I don't think it's wrong, and they won't mind.", "contr", 3),
+    ("Bring guns, horses, and whiskey to the fight.", "tricolon", 1),
+    ("Bring guns, horses, whiskey, and rope to the fight.", "tricolon", 0),
+    ("The posse rode on, leaving the town behind them.", "ptcp", 1),
+    ("He found the thing, nothing more than that.", "ptcp", 0),
+    ("The arrangement needed careful consideration.", "nomin", 2),
+]
 
 
 def main():
     # Walk the argv rather than filtering it: the value after --commits is a count, not a file, and
     # filtering only on a leading "--" swallowed it as a filename and audited nothing else.
     args, ncommits, books, i = [], 0, False, 1
+    worklist = profile_out = None
     while i < len(sys.argv):
         a = sys.argv[i]
         if a == "--commits":
             ncommits = int(sys.argv[i + 1]) if i + 1 < len(sys.argv) else 40
+            i += 2
+            continue
+        if a in ("--worklist", "--profile-out"):
+            value = sys.argv[i + 1] if i + 1 < len(sys.argv) else None
+            worklist, profile_out = (value, profile_out) if a == "--worklist" else (worklist, value)
             i += 2
             continue
         if a == "--books":
@@ -505,9 +909,12 @@ def main():
         if not a.startswith("--"):
             args.append(a)
         i += 1
+    strict, show_all = "--strict" in sys.argv, "--all" in sys.argv
 
     if "--selfcheck" in sys.argv:
         return selfcheck()
+    if "--calibrate" in sys.argv:
+        return calibrate(args, profile_out)
 
     targets = args or (DEFAULT_DOCS + (BOOKS if books else []))
     findings = 0
@@ -525,7 +932,9 @@ def main():
         if not p.is_file():
             print(f"{t:<22}  (not found)")
             continue
-        r = audit(t, p.read_text(encoding="utf-8-sig"))
+        is_book = t in BOOKS
+        r = audit(t, p.read_text(encoding="utf-8-sig"), units=book_units(p) if is_book else None,
+                  book=is_book)
         reports.append((t, r))
         bs = f"{r['burst']:.2f}" if r["burst"] is not None else "  -"
         rng = f"{r['shortest']}-{r['longest']}"
@@ -616,12 +1025,120 @@ def main():
     if not any(r["soft"] for _, r in reports + landed_msgs):
         print("\n  none.")
 
+    strict_failures = report_research(reports, landed_msgs, show_all, worklist)
+
     print()
     if findings:
         print(f"{findings} hard tell(s). Rewrite them in your own cadence — do not just delete the words.")
         return 1
+    if strict and strict_failures:
+        print(f"--strict: {strict_failures} research failure(s), listed above.")
+        return 1
     print("no hard tells: the prose reads as written rather than generated."
-          + (f"  ({quoted_total} in quoted book text, reported above and not counted.)" if quoted_total else ""))
+          + (f"  ({quoted_total} in quoted book text, reported above and not counted.)" if quoted_total else "")
+          + (f"  (--strict would fail on {strict_failures} research finding(s).)" if strict_failures and not strict else ""))
+    return 0
+
+
+# Labels whose every instance needs a person's decision under --strict. The rest count toward rates.
+STRICT_SHAPE_LABELS = ("\"the whole of it\"", "invented authority", "stated theme",
+                       "edit history inside the book", "named closer")
+
+
+def report_research(reports, landed_msgs, show_all=False, worklist=None):
+    """Print the research table, the shapes, the names and the voice comparison. Returns how many
+    things --strict would fail on (files only; commit messages that already landed cannot change)."""
+    keep = load_keep()
+    print("\n" + "=" * 78)
+    print("RESEARCH SIGNALS — per 1,000 words; clos% is a share of paragraphs; hapx and lexd are shares")
+    print("'!' = more than twice the higher human baseline, on three or more hits")
+    print("=" * 78)
+    print(f"{'':<27}" + "".join(f"{short:>6}" for _, short in COLUMNS))
+
+    def row(label, rates, counts=None):
+        cells = []
+        for key, _ in COLUMNS:
+            v = rates.get(key)
+            if v is None:
+                cells.append(f"{'-':>6}")
+                continue
+            text = f"{v:.2f}" if key in ("hapax", "lexd") else f"{v:.1f}"
+            mark = "!" if counts is not None and flag(key, rates, counts) else ""
+            cells.append(f"{text + mark:>6}")
+        print(f"{label[:27]:<27}" + "".join(cells))
+
+    for bname, brates in BASELINES.items():
+        row(f"(human) {bname}", brates)
+    for name, r in reports + landed_msgs:
+        row(name, r["research"]["rates"], r["research"]["counts"])
+
+    failures = 0
+    rows_out = []
+    for name, r in reports:
+        res = r["research"]
+        for key in STRICT_RATES:
+            if flag(key, res["rates"], res["counts"]):
+                failures += 1
+        by_label = collections.defaultdict(list)
+        for label, where, snip in res["instances"]:
+            rows_out.append((name, label, where, snip))
+            kept = any(f == name and frag in snip.lower() for f, frag in keep)
+            if label in STRICT_SHAPE_LABELS and not kept:
+                failures += 1
+            by_label[label].append((where, snip, kept))
+        if not by_label:
+            continue
+        print(f"\n{name}:")
+        shapes = {k: v for k, v in by_label.items() if not k.startswith(("claude:", "slop:", "name:"))}
+        for label, hits in sorted(shapes.items(), key=lambda kv: -len(kv[1])):
+            strict_mark = "  [strict]" if label in STRICT_SHAPE_LABELS else ""
+            print(f"  {label} ×{len(hits)}{strict_mark}")
+            for where, snip, kept in (hits if show_all else hits[:3]):
+                print(f"      {'(kept) ' if kept else ''}{where[:48]}: …{snip[:150]}…")
+        for prefix in ("claude:", "slop:", "name:"):
+            tally = collections.Counter(k[len(prefix):].strip() for k in by_label if k.startswith(prefix)
+                                        for _ in by_label[k])
+            if tally:
+                top = ", ".join(f"{w} ×{n}" for w, n in tally.most_common(12))
+                print(f"  {prefix[:-1]} phrases: {top}")
+
+    if VOICE_PROFILE.is_file():
+        author = json.loads(VOICE_PROFILE.read_text(encoding="utf-8")).get("rates", {})
+        print("\n" + "=" * 78)
+        print("VOICE — each book beside the author's own writing (local profile, never committed)")
+        print("=" * 78)
+        print(f"{'':<27}" + "".join(f"{short:>6}" for _, short in VOICE))
+        for label, rates in [("(author)", author)] + [(f"(human) {b}", v) for b, v in BASELINES.items()] + \
+                [(n, r["research"]["rates"]) for n, r in reports if n in BOOKS]:
+            print(f"{label[:27]:<27}" + "".join(
+                f"{'-':>6}" if rates.get(k) is None else f"{rates[k]:>6.1f}" for k, _ in VOICE))
+
+    if worklist:
+        with open(worklist, "w", encoding="utf-8") as fh:
+            fh.write("file\tlabel\twhere\tsnippet\n")
+            for rowv in rows_out:
+                fh.write("\t".join(str(x).replace("\t", " ") for x in rowv) + "\n")
+        print(f"\nwrote {len(rows_out)} research instance(s) to {worklist}")
+    return failures
+
+
+def calibrate(files, profile_out=None):
+    """Print the research rates for plain-text or markdown files. This is how BASELINES was filled,
+    and how an author's own profile is made. Project Gutenberg's header and licence are cut off."""
+    units = []
+    for f in files:
+        raw = Path(f).read_text(encoding="utf-8-sig", errors="replace")
+        body = re.search(r"\*\*\* ?START OF.*?\*\*\*(.*)\*\*\* ?END OF", raw, re.S)
+        if body:
+            raw = body.group(1)
+        units += doc_units(strip_markup(raw) if f.endswith(".md") else raw)
+    res = research(units)
+    rates = {k: (round(v, 3) if isinstance(v, float) else v) for k, v in res["rates"].items()}
+    summary = json.dumps({"words": res["words"], "rates": rates}, indent=1)
+    print(summary)
+    if profile_out:
+        Path(profile_out).write_text(summary, encoding="utf-8")
+        print(f"wrote {profile_out}")
     return 0
 
 
