@@ -260,7 +260,7 @@ static class Program
                 int wizards = 0, silent = 0;
                 foreach (var cal in CharGen.D.callings.Select(c => c.name))
                 {
-                    var (pages, untipped) = MainForm.BuildWizardStepsForSelfTest(cal, "The Outlaw", 9);
+                    var (pages, untipped, _) = MainForm.BuildWizardStepsForSelfTest(cal, "The Outlaw", 9);
                     wizards++;
                     // Held to the number the New Soul tab PRINTS, not to a floor. It printed
                     // "Eight steps" while the wizard had nine, and `>= 8` is exactly the
@@ -274,6 +274,23 @@ static class Program
                              + string.Join("; ", untipped));
                 }
                 Chk(silent == 0, $"GUI: every control on all {wizards} Callings' wizards says what it is");
+
+                // A player's own table picks the Dark Cultist's path by what they want and never
+                // reads who answered (Cole, 2026-09-19). Every word the realized steps show is
+                // collected (captions, list rows, detail panels, hover tips) and none of it may be a
+                // Patron's name. The Keeper's wizard is walked as the control: it has to show all
+                // six, or the walk is not reading what it claims to.
+                var veiled = CharGen.D.callings.First(c => c.subpath?.KeeperSide == true);
+                static string Bare(string n) => n.StartsWith("The ") ? n[4..] : n;
+                var (_, playerSilent, playerSaw) = MainForm.BuildWizardStepsForSelfTest(veiled.name, "The Outlaw", 9, forPlayer: true);
+                var (_, _, keeperSaw) = MainForm.BuildWizardStepsForSelfTest(veiled.name, "The Outlaw", 9);
+                var leaked = veiled.subpath.options.Select(o => Bare(o.name))
+                    .Where(n => playerSaw.Any(w => w.Contains(n))).ToList();
+                bool keeperSees = veiled.subpath.options.All(o => keeperSaw.Any(w => w.Contains(Bare(o.name))));
+                if (leaked.Count > 0) Line("       a player's wizard shows: " + string.Join(", ", leaked));
+                if (playerSilent.Count > 0) Line("       a player's wizard has silent controls: " + string.Join("; ", playerSilent));
+                Chk(leaked.Count == 0 && playerSilent.Count == 0 && keeperSees,
+                    $"GUI: a player's wizard offers the {veiled.name}'s wants and names no Patron; a Keeper's names all {veiled.subpath.options.Count}");
             }
             catch (Exception ux)
             {

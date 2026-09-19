@@ -48,13 +48,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.20 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.20)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.21 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.21)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.20</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.21</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.20 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.21 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
@@ -1035,7 +1035,7 @@ MEN = f"""<!-- IV -->
     lore=[
       "Behind every old thing that has lasted a while in a settled country there is a man with a desk. Somebody has to sign for the freight, because the freight comes at ten in the morning. Somebody has to hire, pay, evict, and be seen at church. The Day-Man is a living person in the full employ of something that cannot come out until dark, and the arrangement is old, formal, and in many cases perfectly voluntary.",
       "What he gets is usually money and always time: the promise of the turning, some year, when he has earned it. Some of them have been promised that for thirty years. He is not enthralled, hexed, ridden, or possessed, and every test the party knows will confirm it, which is precisely why he is dangerous. He hires the men who search the wrong hills. He is on the committee. He was very helpful to the party this morning, and he sent a boy with a note the moment they left."],
-    witness=("Mr. Prine has kept the Vance books nineteen years and never been short a cent. I would trust him with my daughter's inheritance. That is not a figure of speech; I have.",
+    witness=("Mr. Prine has kept the Bledsoe books nineteen years and never been short a cent. I would trust him with my daughter's inheritance. That is not a figure of speech; I have.",
              "the president of the Yarrow bank, deposition"),
     found="An office in town, a desk in the big house, the front pew, the freight platform at ten. He is easy to find and almost impossible to see.",
     keeper="The Day-Man is the reason a vampire arc has a middle. Without him the party's investigation runs straight at the monster; with him it runs at a helpful, respectable, entirely human obstacle who is three moves ahead because he has been reading their mail. Give him competence and give him charm, and let him be actually useful to them once or twice, early. His stat block is a formality (he is Tier II because a cornered man with a shotgun is dangerous and for no other reason) and the fight, if it happens, should feel like exactly what it is, which is shooting a bookkeeper. What you want is the interrogation, and the entry gives it a hard edge: he will not give up where the box is, and every hour they hold him is an hour his master is awake and informed. Play him as a man who made a bargain and has spent years making his peace with it. The best version of the scene is the one where he tries to recruit them, sincerely, with figures.")}

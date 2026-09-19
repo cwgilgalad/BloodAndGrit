@@ -384,11 +384,11 @@ foreach (var (table, floor) in new[]
     var gCal = CharGen.D.callings[0];
     var gOrg = CharGen.D.origins.First(o => !(gCal.group == "Faith" && o.notFaith));
     var spec = new CharGen.AssembleSpec
-    { Level = 1, Calling = gCal.name, Origin = gOrg.name, Rolled = true, Gender = "Two-Spirit", Name = "Wren Ashby" };
+    { Level = 1, Calling = gCal.name, Origin = gOrg.name, Rolled = true, Gender = "Two-Spirit", Name = "Birdie Ashby" };
     foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) spec.PreGiftScores[a] = 12;
     var built = CharGen.Assemble(spec);
     T("gender: a hand-built soul keeps the gender it was given", built.Gender == "Two-Spirit");
-    T("gender: and the name it was given", built.Name == "Wren Ashby");
+    T("gender: and the name it was given", built.Name == "Birdie Ashby");
     T("gender: and is still a legal sheet", CharGen.Validate(built).Count == 0);
 
     // The wizard's road with the gender left empty still yields a soul — the assembler rolls one
@@ -485,7 +485,7 @@ foreach (var (table, floor) in new[]
         ("a turn in progress", c => c.Acting = true),
         ("a turn already taken", c => c.HasActed = true),
         ("what just happened", c => c.Wound(-3)),
-        ("something working",  c => c.Work(new WorkedEffect { Name = "Wither", Kind = "Sign", Source = "Opal", RoundsLeft = 2 })),
+        ("something working",  c => c.Work(new WorkedEffect { Name = "Wither", Kind = "Sign", Source = "Nettie", RoundsLeft = 2 })),
     })
     {
         var one = C("Ruth", 12);
@@ -698,51 +698,51 @@ foreach (var (table, floor) in new[]
             var plain      = new CgWeapon { name = "Single-Action Revolver", dmg = "1d8", traits = "", kind = "gun" };
             // Defense 9 is his own off Appendix D, and it matters: EffectiveDefense is floored at 1,
             // so a test row left on Defense 0 cannot show a −2 at all.
-            Combatant Elias(int str) => new() { Name = "Brother Elias Crow", IsPC = true, Str = str,
+            Combatant Isaiah(int str) => new() { Name = "Brother Isaiah Dade", IsPC = true, Str = str,
                                                 BloodCur = 9, BloodMax = 9, Defense = 9, Beats = 3, MapStep = 1 };
             Combatant Dog() => new() { Name = "The Mad Dog", BloodCur = 10, BloodMax = 10, Defense = 13 };
 
             // Forced die 10: against Defense 13 a +2 is exactly the difference between 12 and 14,
             // so the Aim is measured by whether the blow lands rather than by reading a number back.
-            var aimed = Elias(9); aimed.Aimed = true;
+            var aimed = Isaiah(9); aimed.Aimed = true;
             var r1 = CombatFlow.StrikeAndApply(aimed, Dog(), plain, 1, null, 10);
             T("aim: the Beat spent to Aim is worth +2 on the Strike", r1.Res.Strike.Hit);
-            var hasty = Elias(9);
+            var hasty = Isaiah(9);
             var r2 = CombatFlow.StrikeAndApply(hasty, Dog(), plain, 1, null, 10);
             T("aim: and the same shot unaimed falls short", !r2.Res.Strike.Hit);
             T("aim: the Strike spends it, so the next one this turn is unaimed", !aimed.Aimed);
 
             // The Aim is spent hit or miss — the book buys one Strike with that Beat, not a turn.
-            var missed = Elias(9); missed.Aimed = true;
+            var missed = Isaiah(9); missed.Aimed = true;
             CombatFlow.StrikeAndApply(missed, Dog(), plain, -20, null, 1);
             T("aim: a missed Strike spends the Aim just the same", !missed.Aimed);
 
             // Kickback: -2 AND Off-Guard until their next turn, unless braced or STR 12+.
-            var hipfire = Elias(9);
+            var hipfire = Isaiah(9);
             CombatFlow.StrikeAndApply(hipfire, Dog(), scattergun, 4, null, 10);
             T("kickback: firing a Kickback weapon unbraced leaves them recoiling", hipfire.Recoiling);
             T("kickback: which is Off-Guard, and costs the Defense the book's Off-Guard costs",
                 hipfire.EffectiveDefense == hipfire.Defense + Rules.OffGuardDefense);
 
-            var braced = Elias(9); braced.Aimed = true;
+            var braced = Isaiah(9); braced.Aimed = true;
             CombatFlow.StrikeAndApply(braced, Dog(), scattergun, 4, null, 10);
             T("kickback: the Beat spent to brace lifts it", !braced.Recoiling);
 
-            var strong = Elias(IronCode.BraceStrength);
+            var strong = Isaiah(IronCode.BraceStrength);
             CombatFlow.StrikeAndApply(strong, Dog(), scattergun, 4, null, 10);
             T("kickback: and STR 12 is exempt outright, braced or not", !strong.Recoiling);
             T("kickback: one under that is not", IronCode.KickbackBites(
                 WeaponTraits.Parse(scattergun.traits), false, IronCode.BraceStrength - 1));
 
             // A soul cannot be doubly Off-Guard: the recoil adds nothing on top of the condition.
-            var already = Elias(9); already.Conditions = "Off-Guard";
+            var already = Isaiah(9); already.Conditions = "Off-Guard";
             int before = already.EffectiveDefense;
             CombatFlow.StrikeAndApply(already, Dog(), scattergun, 4, null, 10);
             T("kickback: recoil does not stack with an Off-Guard the Keeper already wrote",
                 already.Recoiling && already.EffectiveDefense == before);
 
             // "Until your next turn" is exactly that, and the hand-stepped round clears it too.
-            var lingering = Elias(9);
+            var lingering = Isaiah(9);
             CombatFlow.StrikeAndApply(lingering, Dog(), scattergun, 4, null, 10);
             Rules.NewRound(new List<Combatant> { lingering });
             T("kickback: a new round hands the turn back and the recoil is over", !lingering.Recoiling);
@@ -992,9 +992,9 @@ foreach (var (table, floor) in new[]
             }
 
             // Slowed and Stunned reach the Beats, which is the column nothing else touches.
-            var slowed = new Combatant { Name = "Opal", Conditions = "Slowed 1" };
+            var slowed = new Combatant { Name = "Nettie", Conditions = "Slowed 1" };
             T("conditions: Slowed 1 takes a Beat off the turn", slowed.BeatsThisTurn == 2);
-            var stunned = new Combatant { Name = "Opal", Conditions = "Stunned" };
+            var stunned = new Combatant { Name = "Nettie", Conditions = "Stunned" };
             T("conditions: Stunned takes the whole turn", stunned.BeatsThisTurn == 0);
 
             // Frightened scales with its number, and reaches every column at once.
@@ -1039,7 +1039,7 @@ foreach (var (table, floor) in new[]
         T("round: sign & spoor is not handed a turn", trace.Beats == 0);
 
         // Neither are the dead. A corpse showing three Beats reads as a row still waiting to go.
-        var gone = new Combatant { Name = "Addison", IsPC = true, BloodMax = 9, DeathAt = 10, Beats = 0, MapStep = 3 };
+        var gone = new Combatant { Name = "Frank", IsPC = true, BloodMax = 9, DeathAt = 10, Beats = 0, MapStep = 3 };
         gone.Wound(-30);                       // straight past −CON
         T("round: the dead are dead before the round turns", gone.Dead);
         Rules.NewRound(new List<Combatant> { gone });
@@ -1049,7 +1049,7 @@ foreach (var (table, floor) in new[]
         // "✦ The Stilling (3)" and went on printing 3 as the Sign ticked to 2 and to 1, because the
         // only thing that said the column had changed was an effect expiring — and that count is the
         // Keeper's one read on how long they have left.
-        var held = new Combatant { Name = "Opal", IsPC = true, BloodCur = 8, BloodMax = 8 };
+        var held = new Combatant { Name = "Nettie", IsPC = true, BloodCur = 8, BloodMax = 8 };
         held.Work(new WorkedEffect { Name = "The Stilling", Kind = "Sign", RoundsLeft = 3 });
         string chip3 = held.WorkedChips;
         T("chips: a counted working prints its count", chip3.Contains("(3)"));
@@ -1060,7 +1060,7 @@ foreach (var (table, floor) in new[]
         T("chips: an expired working leaves the column", held.WorkedChips == "");
 
         // A working with no round count must not be ticked into nothing by a rollover.
-        var scene = new Combatant { Name = "Elias", IsPC = true, BloodCur = 9, BloodMax = 9 };
+        var scene = new Combatant { Name = "Isaiah", IsPC = true, BloodCur = 9, BloodMax = 9 };
         scene.Work(new WorkedEffect { Name = "Witch-Sight", Kind = "Sign", RoundsLeft = -1,
                                       Ends = Rules.WorkEnds.Scene });
         scene.TickWorked(); scene.TickWorked();
@@ -1164,7 +1164,7 @@ foreach (var (table, floor) in new[]
         // is still owed to them — being knocked down and dragged up is not the same as having gone.
         var revive = new List<Combatant>
         {
-            new() { Name = "Opal", IsPC = true, Init = 18, BloodCur = 12, BloodMax = 12 },
+            new() { Name = "Nettie", IsPC = true, Init = 18, BloodCur = 12, BloodMax = 12 },
             new() { Name = "Doc",  IsPC = true, Init = 4,  BloodCur = 12, BloodMax = 12 },
         };
         revive[0].Wound(-12);
@@ -1172,7 +1172,7 @@ foreach (var (table, floor) in new[]
         revive[1].BeginTurn();
         revive[0].Wound(+5);                    // the Doc's whole turn, spent on the Padre
         T("revive: healed back before the round ended, the turn is still owed",
-            Rules.NextUp(revive)?.Name == "Opal");
+            Rules.NextUp(revive)?.Name == "Nettie");
         T("revive: so the round is not spent yet", !Rules.RoundSpent(revive));
 
         // Everyone still up goes down inside one round. The round must end rather than hunting for
@@ -1215,9 +1215,9 @@ foreach (var (table, floor) in new[]
             Rules.InTurnOrder(crowd.Where(c => c.Init == 12)).First().IsPC);
 
         // Worked effects across three rounds of a real loop, since the rollover now owns the tick.
-        var bearer = new Combatant { Name = "Elias", IsPC = true, Init = 11, BloodCur = 14, BloodMax = 14 };
-        bearer.Work(new WorkedEffect { Name = "Salt & Iron", Kind = "Sign", Source = "Opal", RoundsLeft = 2 });
-        bearer.Work(new WorkedEffect { Name = "The Long Watch", Kind = "Miracle", Source = "Elias", RoundsLeft = -1 });
+        var bearer = new Combatant { Name = "Isaiah", IsPC = true, Init = 11, BloodCur = 14, BloodMax = 14 };
+        bearer.Work(new WorkedEffect { Name = "Salt & Iron", Kind = "Sign", Source = "Nettie", RoundsLeft = 2 });
+        bearer.Work(new WorkedEffect { Name = "The Long Watch", Kind = "Miracle", Source = "Isaiah", RoundsLeft = -1 });
         var one = new List<Combatant> { bearer };
         Rules.NewRound(one);
         T("effects: a two-round sign survives the first rollover", bearer.Worked.Any(w => w.Name == "Salt & Iron"));
@@ -1250,7 +1250,7 @@ foreach (var (table, floor) in new[]
 
     // ---- the round rollover, out of the UI where a test can hold it ----
     var rollover = new Combatant { Name = "Ruth", BloodCur = 10, BloodMax = 10, Init = 12 };
-    rollover.Work(new WorkedEffect { Name = "Borrowed Breath", Kind = "Sign", Source = "Opal", RoundsLeft = 1 });
+    rollover.Work(new WorkedEffect { Name = "Borrowed Breath", Kind = "Sign", Source = "Nettie", RoundsLeft = 1 });
     rollover.BeginTurn();
     rollover.Wound(-3);
     var ended = Rules.NewRound(new List<Combatant> { rollover });
@@ -2583,10 +2583,10 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         for (int i = 0; i < 120; i++)
         {
             var sp = new CharGen.AssembleSpec
-            { Level = 1, Calling = cal2.name, Origin = org2.name, Name = "Wren Ashby", Gender = "Woman" };
+            { Level = 1, Calling = cal2.name, Origin = org2.name, Name = "Birdie Ashby", Gender = "Woman" };
             foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) sp.PreGiftScores[a] = 12;
             var b = CharGen.Assemble(sp);
-            if (b.Name != "Wren Ashby" || owning.Any(p => p.name == b.Look.People))
+            if (b.Name != "Birdie Ashby" || owning.Any(p => p.name == b.Look.People))
             { T("names: a soul given a name is never described as a people whose names come whole", false); break; }
         }
         T("names: a given name survives, and nothing is drawn that contradicts it", true);
@@ -2812,7 +2812,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     // -- combat state: identity survives a rename, Beats/MAP reset per turn (#2) --
     var soul = new PartyMember { Name = "Ruth" };
     var pcRow = new Combatant { IsPC = true, PcId = soul.Id, Name = "Ruth" };
-    soul.Name = "Ruth (the Kid) Calloway";                    // rename after they're on the tracker
+    soul.Name = "Mattie (the Kid) Lusk";                    // rename after they're on the tracker
     T("a PC row follows its soul by id across a rename", pcRow.IsSoul(soul));
     var twin = new PartyMember { Name = "Ruth" };             // a different soul, same original name
     T("a different soul with the same name does not match", !pcRow.IsSoul(twin));
@@ -2996,7 +2996,7 @@ T("the Witch's ledger admits she cannot shoot her way out",
 // A Calling's kit and an Origin's gear can GRANT a gun instead of selling one, and three lines do.
 // The outfit step read those lines only to suppress the purchase, so the soul ended up with the
 // rifle in Gear and NOTHING in WeaponsCarried: every Mountain Man ever generated, and anyone rolled
-// with the Veteran's service carbine — the printed pregen Addison Quill among them. The Strike
+// with the Veteran's service carbine — the printed pregen Frank Haskins among them. The Strike
 // dialog offered them no weapon, and every balance sweep this project has run had the Mountain Man
 // punching with his fists. Found by reading _combatlab's output, which is the only way it shows:
 // nothing asserted that a generated soul was armed.
@@ -3805,6 +3805,36 @@ if (Environment.GetEnvironmentVariable("GK_ORIGIN_PROBE") == "1")
     }
 var dc10 = CharGen.Generate(10, false, "Dark Cultist");
 T("Dark Cultist L10: patron named at 3rd among the six", CharGen.D.callings.First(c => c.name == "Dark Cultist").subpath.options.Any(o => o.name == dc10.Subpath));
+
+// The Dark Cultist's Devotions print Keeper-side since 2026-09-19: a player picks a want and the
+// Keeper says who answered. The sheet still stores the name, because Validate, FeaturesAt and the
+// tallies are keyed by it; what a player's own table SHOWS is the want (CharGen.PathLabel).
+var dvCalling = CharGen.D.callings.First(c => c.name == "Dark Cultist");
+var dvPaths = dvCalling.subpath;
+string dvBare(string n) => n.StartsWith("The ") ? n[4..] : n;
+T("Devotions: printed Keeper-side, and the only path that is",
+    dvPaths.KeeperSide && CharGen.D.callings.Count(c => c.subpath?.KeeperSide == true) == 1);
+T("Devotions: each carries a want, and no two the same",
+    dvPaths.options.All(o => !string.IsNullOrWhiteSpace(o.want))
+    && dvPaths.options.Select(o => o.want).Distinct().Count() == dvPaths.options.Count);
+T("Devotions: the wizard has the Player's Book's own sentence to show", !string.IsNullOrWhiteSpace(dvPaths.playerNote));
+foreach (var o in dvPaths.options)
+{
+    var dvSoul = CharGen.Generate(9, false, "Dark Cultist");
+    dvSoul.Subpath = o.name;
+    string dvMine = CharGen.Render(dvSoul, forPlayer: true), dvKeepers = CharGen.Render(dvSoul);
+    T($"Devotions: a player who asked '{o.want.TrimEnd('.')}' reads the want and no Patron",
+        dvMine.Contains(o.want.TrimEnd('.')) && dvPaths.options.All(x => !dvMine.Contains(dvBare(x.name))));
+    T($"Devotions: the Keeper's copy says {o.name} answered", dvKeepers.Contains(o.name));
+}
+var dvHexer = CharGen.Generate(3, false, "Hexer");
+T("paths: one the Player's Book prints reads the same at either table",
+    dvHexer.Subpath != null && CharGen.PathLabel(dvHexer, forPlayer: true) == dvHexer.Subpath
+    && CharGen.PathLabel(dvHexer, forPlayer: false) == dvHexer.Subpath);
+T("paths: a picker lists the wants for a player and the names for a Keeper",
+    CharGen.PathChoices(dvCalling, true).Select(p => p.Label).SequenceEqual(dvPaths.options.Select(o => o.want.TrimEnd('.')))
+    && CharGen.PathChoices(dvCalling, true).Select(p => p.Name).SequenceEqual(dvPaths.options.Select(o => o.name))
+    && CharGen.PathChoices(dvCalling, false).All(p => p.Label == p.Name));
 T("Nerve = RES + level (+Stone Nerve)", dc10.NerveMax == dc10.Scores["RES"] + 10 + (dc10.Edges.Contains("Stone Nerve") ? 20 : 0));
 var sheet10 = CharGen.Generate(10, false, "Marshal");
 T("L10 boosts at 5 and 10", sheet10.AbilityBoostLevels.SequenceEqual(new[] { 5, 10 }));
@@ -4833,7 +4863,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     }
     T("tally: exactly one in the whole book", declared == 1);
 
-    var hex = new PartyMember { Name = "Opal", Calling = "Hexer", Level = 9,
+    var hex = new PartyMember { Name = "Nettie", Calling = "Hexer", Level = 9,
                                 Sheet = CharGen.Generate(9, false, "Hexer") };
     hex.Sheet.Subpath = "The Pact-Sworn";
 

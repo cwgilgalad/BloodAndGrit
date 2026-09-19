@@ -73,7 +73,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("Copy sheet", (s, e) =>
         {
             if (lastSoul == null) { Nope("Make a soul first — there is no sheet to copy."); return; }
-            Clipboard.SetText(CharGen.Render(lastSoul));
+            Clipboard.SetText(CharGen.Render(lastSoul, PlayerTable));
             Log($"{lastSoul.Name}'s sheet copied to the clipboard.");
         }, 95, "Copy the sheet as plain text"));
         bar.Controls.Add(Btn("Save PDF…", (s, e) => SoulSavePdf(), 90, "Save the sheet as a printable PDF"));
@@ -114,6 +114,7 @@ public partial class MainForm
     void ShowSoul(CharacterSheet sheet)
     {
         lastSoul = sheet;
+        soulLedger.PlayerView = PlayerTable;
         soulLedger.ShowSheet(sheet, null, SheetWarnings(sheet));
         soulHint.Visible = false;
     }
@@ -165,7 +166,7 @@ public partial class MainForm
             File.WriteAllBytes(d.FileName, Pdf.TextSheet(
                 s.Name,
                 $"{s.Calling} · {s.Origin} — level {s.Level}" + (string.IsNullOrEmpty(s.Gender) ? "" : $" · {s.Gender.ToLowerInvariant()}"),
-                CharGen.Render(s)));
+                CharGen.Render(s, PlayerTable)));
             Log($"Sheet saved: {Path.GetFileName(d.FileName)}.");
         }
         catch (Exception ex)
@@ -413,8 +414,8 @@ public partial class MainForm
         var s = CharGen.Generate(Math.Clamp(p.Level, 1, Rules.MaxLevel), rolled: false, fixedCalling: p.Calling);
         s.Name = p.Name;
         // Keep the row's gender; where the row has none — every pre-v1.9.0 demo row — leave it
-        // blank rather than let the generator's coin-flip write one in. Ruth "Six-Finger"
-        // Calloway coming back from this as a Man is worse than her coming back unstated.
+        // blank rather than let the generator's coin-flip write one in. Mattie "Six-Finger"
+        // Lusk coming back from this as a Man is worse than her coming back unstated.
         s.Gender = p.Gender ?? "";
         p.Sheet = s;
         SyncMemberFromSheet(p);

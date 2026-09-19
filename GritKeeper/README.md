@@ -3,9 +3,9 @@
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
 **Blood & Grit** at the table. Built in C# (.NET 10 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
-(Player's Book v2.48 · Keeper's Book v2.32 · Bestiary v2.20).
+(Player's Book v2.49 · Keeper's Book v2.33 · Bestiary v2.21).
 
-**App version 1.57.0**
+**App version 1.58.0**
 
 ---
 

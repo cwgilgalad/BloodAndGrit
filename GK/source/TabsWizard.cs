@@ -9,7 +9,7 @@ public partial class MainForm
     // CharGen.Assemble + Validate like any other.
     void RunSoulWizard()
     {
-        using var wiz = new SoulWizard();
+        using var wiz = new SoulWizard(PlayerTable);
         if (wiz.ShowDialog(this) == DialogResult.OK && wiz.Result != null)
         {
             ShowSoul(wiz.Result);
@@ -24,12 +24,15 @@ public partial class MainForm
     /// <para>It also returns every control on those pages that carries no tooltip. The wizard's tips
     /// ARE its manual — a player meeting "Hedge Magic" has nothing else to go on — so a step added
     /// later with a bare ComboBox on it teaches nothing, and that silence is invisible at the table.
-    /// Counting them here makes it a failing check instead of a thing somebody notices.</para></summary>
-    internal static (int Pages, List<string> Untipped) BuildWizardStepsForSelfTest(string calling, string origin, int level)
+    /// Counting them here makes it a failing check instead of a thing somebody notices.</para>
+    /// <para><c>Shown</c> is every word those pages put in front of a reader, so the self-test can
+    /// ask what a player's wizard says as well as whether it explains itself.</para></summary>
+    internal static (int Pages, List<string> Untipped, List<string> Shown) BuildWizardStepsForSelfTest(
+        string calling, string origin, int level, bool forPlayer = false)
     {
-        using var wiz = new SoulWizard();
+        using var wiz = new SoulWizard(forPlayer);
         int pages = wiz.RealizeEveryStep(calling, origin, level);
-        return (pages, wiz.Untipped);
+        return (pages, wiz.Untipped, wiz.Words);
     }
 
     // Sheet, not Form: this is a full window with a caption bar, and it was one of two left wearing
@@ -88,8 +91,13 @@ public partial class MainForm
 
         (string title, Func<Control> build, Func<bool> collect, Func<bool> applicable)[] steps;
 
-        public SoulWizard()
+        // Built for a player's own table: a Keeper-side path is picked by the want the Player's
+        // Book offers, and nothing on any step says who answers it.
+        readonly bool forPlayer;
+
+        public SoulWizard(bool forPlayer = false)
         {
+            this.forPlayer = forPlayer;
             Text = "Build a soul — the wizard";
             Width = 780; Height = 680; MinimumSize = new Size(700, 560);
             StartPosition = FormStartPosition.CenterParent;
@@ -153,7 +161,23 @@ public partial class MainForm
         /// <summary>Controls on the realized steps that say nothing on hover, as "step · control".</summary>
         internal readonly List<string> Untipped = new();
 
-        void AuditStep(string title) => WalkForTips(host, title, Untipped);
+        /// <summary>Every word the realized steps show: each control's text, its hover tip, and the
+        /// rows of every list.</summary>
+        internal readonly List<string> Words = new();
+
+        void AuditStep(string title) { WalkForTips(host, title, Untipped); CollectShown(host); }
+
+        void CollectShown(Control root)
+        {
+            foreach (Control c in root.Controls)
+            {
+                if (!string.IsNullOrWhiteSpace(c.Text)) Words.Add(c.Text);
+                if (Tip.GetToolTip(c) is { Length: > 0 } tip) Words.Add(tip);
+                if (c is ComboBox cb) foreach (var o in cb.Items) Words.Add(o?.ToString() ?? "");
+                if (c is ListBox lb) foreach (var o in lb.Items) Words.Add(o?.ToString() ?? "");
+                CollectShown(c);
+            }
+        }
 
         void ShowStep(int i)
         {
@@ -404,7 +428,11 @@ public partial class MainForm
                     (c.signsKnownAt != null ? "Works the Signs.\n" : "") +
                     (c.bonusCombatEdgeAtOdd ? "Bonus combat Edge at every odd level.\n" : "") +
                     (c.startMark > 0 ? $"Begins at Mark {c.startMark}.\n" : "") +
-                    (c.subpath != null ? $"\nAt 3rd level, chooses among the {c.subpath.section}:\n  {string.Join("\n  ", c.subpath.options.Select(o => o.name))}" : "");
+                    (c.subpath == null ? "" :
+                        (forPlayer && c.subpath.KeeperSide
+                            ? "\nAt 3rd level, says what they want from the dark, and the Keeper says who answered:"
+                            : $"\nAt 3rd level, chooses among the {c.subpath.section}:")
+                        + "\n  " + string.Join("\n  ", CharGen.PathChoices(c, forPlayer).Select(p => p.Label)));
             };
             wCalList.SelectedItem = calName ?? (string)null;
             if (wCalList.SelectedIndex < 0) wCalList.SelectedIndex = 0;
@@ -824,6 +852,7 @@ public partial class MainForm
             || Cal?.choice != null;
 
         CheckedListBox wSignList; ComboBox wSubpath, wChoice; Label wSignCount;
+        List<(string Label, string Name)> pathChoices = new();   // wSubpath's rows, and the name each one stores
         Control BuildSigns()
         {
             var col = Column();
@@ -861,16 +890,27 @@ public partial class MainForm
             }
             if (level >= 3 && Cal?.subpath != null && Cal.subpath.options.Count > 0)
             {
-                col.Controls.Add(Cap($"The {Cal.subpath.section} (chosen at 3rd)"));
+                // At a player's table a Keeper-side path is picked the way the Player's Book offers
+                // it, by what they want, and the panel below prints that book's own sentence rather
+                // than each option's boon: moving through the list would otherwise read out every
+                // Patron's powers in turn.
+                bool veiled = forPlayer && Cal.subpath.KeeperSide;
+                pathChoices = CharGen.PathChoices(Cal, forPlayer);
+                col.Controls.Add(Cap(veiled ? "What they want from the dark (chosen at 3rd)"
+                                            : $"The {Cal.subpath.section} (chosen at 3rd)"));
                 wSubpath = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
-                foreach (var o in Cal.subpath.options) wSubpath.Items.Add(o.name);
-                Tipped(wSubpath, $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept — "
-                    + "the boon it grants is printed below as you move through the list.");
-                wSubpath.SelectedItem = subpathPick != null && wSubpath.Items.Contains(subpathPick) ? subpathPick : wSubpath.Items[0];
+                foreach (var p in pathChoices) wSubpath.Items.Add(p.Label);
+                Tipped(wSubpath, veiled
+                    ? $"At 3rd level the {Cal.name} says what they want from the dark. The Keeper says who answered, "
+                      + "what it grants and what it wants back."
+                    : $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept — "
+                      + "the boon it grants is printed below as you move through the list.");
+                wSubpath.SelectedIndex = Math.Max(0, pathChoices.FindIndex(p => p.Name == subpathPick));
                 var detail = new Label { AutoSize = true, MaximumSize = new Size(690, 0), ForeColor = Ink, Font = new Font("Segoe UI", 9f), Padding = new Padding(0, 4, 0, 0) };
-                wSubpath.SelectedIndexChanged += (s, e) =>
-                { detail.Text = Cal.subpath.options.FirstOrDefault(o => o.name == (string)wSubpath.SelectedItem)?.boon ?? ""; };
-                detail.Text = Cal.subpath.options.FirstOrDefault(o => o.name == (string)wSubpath.SelectedItem)?.boon ?? "";
+                string Says() => veiled ? Cal.subpath.playerNote ?? ""
+                    : Cal.subpath.options.First(o => o.name == pathChoices[wSubpath.SelectedIndex].Name).boon ?? "";
+                wSubpath.SelectedIndexChanged += (s, e) => detail.Text = Says();
+                detail.Text = Says();
                 col.Controls.Add(wSubpath);
                 col.Controls.Add(detail);
             }
@@ -906,7 +946,7 @@ public partial class MainForm
             if (wSignList != null)
                 signPicks = wSignList.CheckedItems.Cast<string>()
                     .Select(x => x.Substring(0, x.LastIndexOf(" ("))).ToHashSet();
-            subpathPick = wSubpath?.SelectedItem as string;
+            subpathPick = wSubpath == null ? null : pathChoices[wSubpath.SelectedIndex].Name;
             choicePick = wChoice?.SelectedItem as string;
             return true;
         }

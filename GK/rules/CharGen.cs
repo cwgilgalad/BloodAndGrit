@@ -132,8 +132,27 @@ public class CgPerk { public string name { get; set; } public string desc { get;
 /// Printed in the Player's Book under the Perk band; the two halves are held to that book by
 /// verify_rules.check_fight_ledger.</summary>
 public class CgFight { public string brings { get; set; } public string costs { get; set; } }
-public class CgSubOption { public string name { get; set; } public string boon { get; set; } }
-public class CgSubpath { public string section { get; set; } public List<CgSubOption> options { get; set; } = new(); }
+/// <summary>One 3rd-level path. <c>want</c> is set only on a path whose names are Keeper-side: it is
+/// what a player picks from instead of the name (see <see cref="CgSubpath.KeeperSide"/>).</summary>
+public class CgSubOption
+{
+    public string name { get; set; } public string boon { get; set; }
+    public string want { get; set; }
+}
+
+public class CgSubpath
+{
+    public string section { get; set; } public List<CgSubOption> options { get; set; } = new();
+    /// <summary>"keeper" when the book that prints these paths is the Keeper's Book. Only the Dark
+    /// Cultist's Devotions, since 2026-09-19: the Player's Book offers six wants and no names, and
+    /// the Keeper says who answered. Null means the Player's Book, like every other Calling.</summary>
+    public string printedIn { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore] public bool KeeperSide => printedIn == "keeper";
+    /// <summary>What the Player's Book tells a player about a Keeper-side path in place of its
+    /// boons, transcribed so the wizard can say the same thing; held to the book by
+    /// audits/verify_rules.py.</summary>
+    public string playerNote { get; set; }
+}
 
 public class CgCalling
 {
@@ -793,7 +812,7 @@ public static class CharGen
         // A granted gun stops the purchase below AND arms the soul. Until 2026-08-27 it only did
         // the first: every Mountain Man ever generated carried a Hawken in his gear and had an
         // EMPTY weapon list, and so did anyone rolled with the Veteran's service carbine — the
-        // printed pregen Addison Quill among them. The Strike dialog offered them nothing, and
+        // printed pregen Frank Haskins among them. The Strike dialog offered them nothing, and
         // every balance sweep this project has run had the Mountain Man punching with his fists.
         foreach (var line in cal.coin.kit.Concat(org.gear))
         {
@@ -1589,7 +1608,10 @@ public static class CharGen
     }
 
     // ============================================================ RENDER (Appendix D pattern)
-    public static string Render(CharacterSheet s)
+    /// <summary>The sheet as plain text. <paramref name="forPlayer"/> is for a player's own table,
+    /// where a Keeper-side path shows the want the player picked and never the name behind it
+    /// (<see cref="PathLabel"/>); a Keeper's copy names who answered.</summary>
+    public static string Render(CharacterSheet s, bool forPlayer = false)
     {
         var cal = D.callings.First(c => c.name == s.Calling);
         var org = D.origins.First(o => o.name == s.Origin);
@@ -1644,7 +1666,7 @@ public static class CharGen
         if (s.Subpath != null)
         {
             var opt = cal.subpath.options.First(o => o.name == s.Subpath);
-            sb.AppendLine($"   {cal.subpath.section}: {opt.name} — {FirstSentence(opt.boon)}");
+            sb.AppendLine($"   {cal.subpath.section}: {PathLabel(s, forPlayer)} — {FirstSentence(opt.boon)}");
         }
         // The familiar's own line replaces the bare "Familiar: a crow" the choice would print,
         // because the beast carries mechanics the other two choices do not.
@@ -2095,6 +2117,34 @@ public static class CharGen
         int cut = key?.IndexOf(": ", StringComparison.Ordinal) ?? -1;
         return cut > 0 ? key.Substring(cut + 2) : key;
     }
+
+    /// <summary>What a sheet should call its 3rd-level path for whoever is reading it. A Keeper sees
+    /// the name the sheet stores, and so does a player whose path the Player's Book prints. A player
+    /// with a Keeper-side path sees the want they picked, because that is all their book gives them:
+    /// a Dark Cultist asks the dark for something and the Keeper says who answered.
+    ///
+    /// <para>Display only, like <see cref="ShortFeatureName"/>. The sheet keeps the name, because
+    /// <c>Validate</c>, <c>FeaturesAt</c> and the Tracker's tallies are all keyed by it.</para></summary>
+    public static string PathLabel(CharacterSheet s, bool forPlayer)
+    {
+        if (s?.Subpath == null) return null;
+        var sub = D?.callings?.FirstOrDefault(c => c.name == s.Calling)?.subpath;
+        var opt = sub?.options.FirstOrDefault(o => o.name == s.Subpath);
+        return opt == null ? s.Subpath : Label(sub, opt, forPlayer);
+    }
+
+    /// <summary>A Calling's 3rd-level choices the way a picker should list them: what the reader
+    /// sees, and the name the sheet stores. The two differ only for a player on a Keeper-side
+    /// path.</summary>
+    public static List<(string Label, string Name)> PathChoices(CgCalling cal, bool forPlayer)
+        => cal?.subpath?.options.Select(o => (Label(cal.subpath, o, forPlayer), o.name)).ToList() ?? new();
+
+    // A Keeper-side path with no want is a data fault that the smoke suite and verify_rules.py both
+    // fail on. If one ever ships anyway, the player reads a placeholder, not the name.
+    static string Label(CgSubpath sub, CgSubOption o, bool forPlayer)
+        => !forPlayer || !sub.KeeperSide ? o.name
+         : string.IsNullOrWhiteSpace(o.want) ? "a want the book does not print"
+         : o.want.TrimEnd('.');
 
     // Worldly and Faith paths deepen at 10th and say "Mastery (10th):"; the three Callings of the
     // Old Dark deepen a level earlier and say "Greater (9th):". Both are the same seam.

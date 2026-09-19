@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.48 -->
+<!-- Blood & Grit — The Player's Book · Version 2.49 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.48)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.49)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.48</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.49</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.48 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.49 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -2629,15 +2629,16 @@ body{ background:#525659; }
   </div>
     <div class="box">
     <h4>Dark Cultist&rsquo;s Devotions</h4>
-    <p>At 3rd level, name the Patron you serve: one of the Patrons of the Old Dark on the following page. Your Devotion grants a boon at once and a greater boon at 9th level, as the thing below sinks its hooks the deeper.</p>
+    <p>At 3rd level, say what you want from the dark:</p>
     <ul class="dash">
-      <li><strong>The Cold Deep.</strong> Spend Devotion to drain warmth (Slowed, Drained, cold damage) and steady yourself against your end (reroll a failed Fortitude save to stop your bleeding; ignore fear). <em>Greater (9th):</em> once per session, open a sphere of annihilating cold that withers all within and shows each witness the indifferent end.</li>
-      <li><strong>The Devourer.</strong> Slaying or sacrificing heals you and grants Devotion; your Gifts favor claws and toughness; you regenerate while fed. <em>Greater (9th):</em> once per scene, swell into a thing of teeth — large, swift, regenerating — devouring what you bring down.</li>
-      <li><strong>The Long Trail.</strong> Spend Devotion to lay a withering death-touch (necrotic cold) and to sense the dying; you know who in your sight is marked to die soon, and may bid a freshly-slain foe rise and serve you a round. Your Gifts favor a deathless calm, an unerring eye for a mortal wound, and a body slow to quit. <em>Greater (9th):</em> once per session, pronounce a death sentence on one you can name (short of a true miracle the Long Trail comes for them before the arc is out) or, when you yourself fall, rise once at the next dusk, a little further down the trail than you were.</li>
-      <li><strong>The Red Sermon.</strong> Spend Devotion to borrow a face and a honeyed voice — charm or compel those who hear you, pass for someone trusted, and feed on a crowd's devotion to refill your pool. You gather a small flock that believes, and their belief is meat. Your Gifts favor a stolen face, a compelling word, and a hunger worn as warmth. <em>Greater (9th):</em> once per session, hollow a gathering — every soul who can hear you is gripped by compulsion or terror, and a little of each is fed to the thing you serve, leaving you flush with power and them diminished and yours.</li>
-      <li><strong>The Thing Beneath the Mountain.</strong> Spend Devotion to call on the deep stone — a crushing grip, a hide of grinding rock (DR and resistance), and tremor-sense through earth and floorboard. You see in the lightless dark, never lose your way underground, and the buried answers when you knock. Your Gifts favor stone flesh, a crushing strength, and the secrets of ore and vein. <em>Greater (9th):</em> once per session, wake the mountain a little — bring down a ceiling, split the ground, or clad yourself in living rock, huge and all but unkillable, for a few rounds.</li>
-      <li><strong>The Whisperer.</strong> Spend Devotion to pluck a secret from a mind or the air, and to whisper madness — confusion, fear, or a Dread Check. <em>Greater (9th):</em> once per session, speak the Unspeakable Word — unmake a mind, or wring one true and terrible answer from your Patron.</li>
+      <li><strong>Never to go hungry again.</strong></li>
+      <li><strong>To know what can&rsquo;t be known.</strong></li>
+      <li><strong>To stop hurting.</strong></li>
+      <li><strong>To cheat the grave.</strong></li>
+      <li><strong>To strike it rich.</strong></li>
+      <li><strong>To be loved by a crowd.</strong></li>
     </ul>
+    <p>Your Keeper tells you who answered and what it wants back. It grants you something at once and more at 9th level, as the thing below sinks its hooks the deeper. You&rsquo;ll learn its name when it decides you should.</p>
   </div>
 </section>
 <section class="page">
@@ -2959,66 +2960,67 @@ body{ background:#525659; }
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-patrons">The Patrons of the Old Dark</h2>
-  <p>The Old Dark is a depth rather than a god, and things move in that depth. Certain of them are old enough and
-  particular enough to be worth a name, and those are the <strong>Patrons</strong>: the powers a Hexer borrows from on
-  his Bargain, a Dark Cultist serves in her Devotion, and a False Prophet feeds through his Gospel without ever quite
-  learning whose plate he is filling. A Witch seldom deals with them at all. Her Craft is older and quieter and does not
-  need them.</p>
-  <p>Six of them have names that hold still long enough to be written down, and those six are the only part of all
-  that depth which has ever answered anybody. Everything else down there is weather. That is why the country uses the
-  one name for the two things and never notices it is doing it: a teamster who says <em>the Old Dark</em> in a saloon
-  means the six, because the six are the part that talks back, and a Hexer who says it means the deep the six came out
-  of, because that is where his loan is drawn from. Neither of them is wrong. Take the phrase to mean whichever fits,
-  and understand that it is one ancient and indifferent thing being described from two distances.</p>
+  <p>The Old Dark is a depth rather than a god, and things move in that depth. Some of them are old enough and
+  particular enough that the country has put names to them, and those are what people mean by a
+  <strong>Patron</strong>: the powers a Hexer borrows from on his Bargain, a Dark Cultist serves in her Devotion, and a
+  False Prophet feeds through his Gospel without ever quite learning whose plate he is filling. A Witch seldom deals
+  with them at all. Her Craft is older and quieter and doesn&rsquo;t need them.</p>
+  <p>How many there are depends on who you ask. Six is the usual count in a saloon, and the men who count six can
+  rarely agree on the sixth. Some hold that those are the only parts of that depth that have ever answered anybody and
+  the rest of it is weather. Some hold that the answering parts are one thing in different hats. Some hold that the
+  counting is a comfort people invented so the dark would hold still long enough to be talked about. A teamster who
+  says <em>the Old Dark</em> in a saloon means whatever talks back, and a Hexer who says it means the deep his loan is
+  drawn from, and neither of them is being careless.</p>
   <p>Nobody has written any of this down honestly. What follows is what the country says, which is a different thing:
-  six sets of stories, collected off men who were drunk, frightened, or lying, and set out here in the order they are
-  usually told. Your Keeper knows which parts are true. You are not going to find out by asking.</p>
+  six sets of stories, collected off men who were drunk, frightened, or lying, and set out in the order they&rsquo;re
+  usually told. Your Keeper knows which of it is true, if any of it is. You aren&rsquo;t going to find out by
+  asking.</p>
 
-  <h3>The Devourer</h3>
+  <h3>The Ellender Party</h3>
   <p>They tell it about the winter of the Ellender party, snowed in above the tree line with eleven souls and four days
-  of flour. Nine came down in the spring, fat and glossy and walking easy, and would not say what they ate. The story
-  has been told in a dozen counties with a dozen different names on it, which is either evidence that it never happened
-  or evidence that it keeps happening. Every telling agrees on the same two details: nobody ever went hungry again, and
-  nobody ever stopped eating.</p>
+  of flour. Nine came down in the spring, fat and glossy and walking easy, and wouldn&rsquo;t say what they ate.
+  It&rsquo;s been told in a dozen counties with a dozen different names on it, so either it never happened at all or it
+  keeps happening. Every telling agrees on the same two details: nobody ever went hungry again, and nobody ever stopped
+  eating.</p>
 
-  <h3>The Whisperer</h3>
-  <p>There is a version of this one in every town and it is always about somebody's uncle. The uncle woke one morning
-  knowing a thing he had no way to know, and it was right, and he made money off it. Then he woke knowing another. In
-  the tellings where the uncle is a figure of fun, he ends up in the territorial asylum shouting corrections at the
-  walls. In the tellings where he is a warning, he ends up perfectly calm and perfectly correct and no longer anybody's
-  uncle. The tellings where he is a figure of fun are considerably more common, and considerably newer.</p>
+  <h3>Somebody&rsquo;s Uncle</h3>
+  <p>There&rsquo;s a version of this one in every town and it&rsquo;s always about somebody&rsquo;s uncle. The uncle
+  woke one morning knowing a thing he had no way to know, and it was right, and he made money off it. Then he woke
+  knowing another. In the tellings where he&rsquo;s a figure of fun, he ends up in the territorial asylum shouting
+  corrections at the walls. In the tellings where he&rsquo;s a warning, he ends up perfectly calm and perfectly correct
+  and no longer anybody&rsquo;s uncle. The funny ones are more common, and newer.</p>
 
-  <h3>The Cold Deep</h3>
-  <p>Nobody tells a story about the Cold Deep. They tell you about a person. A widow who stopped wearing black and
-  stopped wearing anything else either; a man who buried a child in March and was seen in June and had nothing at all
-  behind his eyes; a deputy who walked into a burning house and out again and never once mentioned it. The country
-  notices this kind of quiet, and it does not have a word for it, so it borrows one from the weather.</p>
+  <h3>The Quiet Kind</h3>
+  <p>This one doesn&rsquo;t come with a story. It comes with a person. A widow who stopped wearing black and stopped
+  wearing anything else either; a man who buried a child in March and was seen in June with nothing at all behind his
+  eyes; a deputy who walked into a burning house and out again and never once mentioned it. The country notices that
+  kind of quiet, and it doesn&rsquo;t have a word for it, so it borrows one from the weather.</p>
 
-  <h3>The Long Trail</h3>
-  <p>Every road out here has a rider on it one ridge behind you, and every teamster who has ever been asked about him
-  says the same thing: he is not gaining. The stories divide sharply on what happens when he does. Half of them say
-  the dead come back and the other half say the dead come back <em>wrong</em>, and both halves are told by people who
-  claim to have seen it. There is a third kind of story, less often told, in which somebody who ought to have died
-  simply did not, and afterward could always tell you exactly when anybody in the room was going to.</p>
+  <h3>The Rider a Ridge Back</h3>
+  <p>Every road out here has a rider on it one ridge behind you, and every teamster who&rsquo;s ever been asked about
+  him says the same thing: he isn&rsquo;t gaining. The stories divide sharply on what happens when he does. Half of
+  them say the dead come back and the other half say the dead come back <em>wrong</em>, and both halves are told by
+  people who claim to have seen it. There&rsquo;s a third kind, told less often, where somebody who ought to have died
+  simply didn&rsquo;t, and afterward could always tell you exactly when anybody in the room was going to.</p>
 
-  <h3>The Thing Beneath the Mountain</h3>
-  <p>The Cornish miners will not work a bad vein and will not tell an American why. The Mexican crews have a different
-  set of names for the same thing and the same refusal. Ask any of them and you get a shrug and a change of subject;
-  ask a company man and you get a lecture about superstition and productivity. Two facts are not in dispute anywhere in
-  the Territories. Some seams pay better than they have any business paying. And the men who work them stop coming up
-  for air.</p>
+  <h3>The Bad Vein</h3>
+  <p>The Cornish miners won&rsquo;t work a bad vein and won&rsquo;t tell an American why. The Mexican crews have a
+  different set of names for the same thing and the same refusal. Ask any of them and you get a shrug and a change of
+  subject; ask a company man and you get a lecture about superstition and productivity. Two facts aren&rsquo;t in
+  dispute anywhere in the Territories. Some seams pay better than they have any business paying. And the men who work
+  them stop coming up for air.</p>
 
-  <h3>The Red Sermon</h3>
-  <p>This is the newest of the six and the one people are least willing to tell in front of a preacher. A revival comes
-  through, and it is a good one, and the drunks dry out and the fighting stops and the collection plate goes around
-  twice. Six months later the town is quieter than it was before the tent came. Not worse. Quieter. The story is always
-  told by somebody from the next county over, and it is never their own town, and if you ride to the town they name you
-  will find a perfectly ordinary place where nobody remembers a revival.</p>
+  <h3>The Good Revival</h3>
+  <p>This one&rsquo;s the newest of the six, and folks don&rsquo;t like telling it with a preacher in earshot. A
+  revival comes through, and it&rsquo;s a good one. The drunks dry out, the fighting stops, and the collection plate
+  goes around twice. Six months on, the town is quieter than it was before the tent went up, and nobody there will call
+  that worse. It&rsquo;s always told by somebody from the next county over, about some other town. Ride out to the town
+  they name and you&rsquo;ll find an ordinary place where nobody remembers a revival.</p>
 
-  <p class="note">There are other things told of out here that are none of the six and are spoken of in the same
-  breath as them: riders who keep turning up in the wrong century, houses that keep their own accounts, a woman down
-  in New Orleans that certain kinds of people go to hear. Ask around in the game. Your Keeper knows, and the finding
-  out is worth more to you than the reading would have been.</p>
+  <p class="note">There are other things told of out here that are none of the six and get talked about right
+  alongside them: riders who keep turning up in the wrong century, houses that keep their own accounts, a woman down
+  in New Orleans that certain kinds of people go to hear. Ask around in the game. Your Keeper knows, and finding out
+  is worth more than reading it here.</p>
 </section>
 
 <!-- ===================== VIII. SKILLS ===================== -->
@@ -4140,6 +4142,10 @@ body{ background:#525659; }
       <tr><td class="c">6</td><td>You are <strong>Lost</strong> — the dark finishes its work; the character becomes the Keeper's</td></tr>
     </tbody>
   </table>
+  <p><strong>What the dreams give.</strong> From Mark 2 on, once a session, you can go to sleep wanting to know
+  something about a person, a place or a thing you&rsquo;ve seen with your own eyes. Tell the Keeper what it is. You
+  wake knowing one true thing about it. The Keeper picks which true thing you get, and it&rsquo;s usually the one the
+  dark would think was worth knowing.</p>
 
   <h2 id="ix-returned">The Returned</h2>
   <p>Most who die stay dead. This is for the ones who did not, and for what it costs to be one of them
@@ -4952,7 +4958,7 @@ body{ background:#525659; }
   <div class="quote">
     &ldquo;There's a hundred ways to come apart out here, and the country will show you every one
     if you give it the season. Best you learn their names before they learn yours.&rdquo;
-    <span class="src">&mdash; Doc A. Mercer</span>
+    <span class="src">&mdash; Doc D. Kemp</span>
   </div>
   <table>
     <thead><tr><th>Condition</th><th>Effect</th></tr></thead>
@@ -5015,7 +5021,7 @@ body{ background:#525659; }
   it as a pattern. Any four of them make a sound posse; all six make a crowded and interesting one.</p>
 
   <div class="box">
-    <h4>Ruth &ldquo;Six-Finger&rdquo; Calloway &mdash; Gunhand &middot; the Outlaw</h4>
+    <h4>Mattie &ldquo;Six-Finger&rdquo; Lusk &mdash; Gunhand &middot; the Outlaw</h4>
     <p class="note">There is paper on her in two territories and a sixth finger of scar down her draw hand. She is faster than her reputation, which is saying something.</p>
     <p><strong>STR</strong> 13 (+1) &middot; <strong>DEX</strong> 16 (+3) &middot; <strong>CON</strong> 14 (+2) &middot; <strong>WIT</strong> 10 (+0) &middot; <strong>RES</strong> 12 (+1) &middot; <strong>PRE</strong> 9 (&minus;1)</p>
     <p><strong>Blood</strong> 12 &middot; <strong>Defense</strong> 13 &middot; <strong>Saves</strong> Fort +4, Ref +5, Will +1 &middot; <strong>Nerve</strong> 13 &middot; <strong>Grit</strong> 3</p>
@@ -5026,7 +5032,7 @@ body{ background:#525659; }
   </div>
 
   <div class="box">
-    <h4>Doc Aurelia Mercer &mdash; Sawbones &middot; the Fallen Gentry</h4>
+    <h4>Doc Delia Kemp &mdash; Sawbones &middot; the Fallen Gentry</h4>
     <p class="note">A surgeon's hands, a ruined family name, and a habit of talking to patients who have stopped listening. Politer than anyone this far west has a right to be.</p>
     <p><strong>STR</strong> 8 (&minus;1) &middot; <strong>DEX</strong> 12 (+1) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 16 (+3) &middot; <strong>RES</strong> 14 (+2) &middot; <strong>PRE</strong> 11 (+0)</p>
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 11 &middot; <strong>Saves</strong> Fort +3, Ref +1, Will +4 &middot; <strong>Nerve</strong> 15 &middot; <strong>Grit</strong> 3</p>
@@ -5037,7 +5043,7 @@ body{ background:#525659; }
   </div>
 
   <div class="box">
-    <h4>Brother Elias Crow &mdash; Preacher &middot; the Freed</h4>
+    <h4>Brother Isaiah Dade &mdash; Preacher &middot; the Freed</h4>
     <p class="note">Took his freedom, took the Word, and walked west preaching to whoever the country hadn't killed yet. His voice can fill a canyon, and has.</p>
     <p><strong>STR</strong> 10 (+0) &middot; <strong>DEX</strong> 8 (&minus;1) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 12 (+1) &middot; <strong>RES</strong> 15 (+2) &middot; <strong>PRE</strong> 16 (+3)</p>
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 9 &middot; <strong>Saves</strong> Fort +3, Ref &minus;1, Will +4 &middot; <strong>Nerve</strong> 16 &middot; <strong>Grit</strong> 3</p>
@@ -5059,7 +5065,7 @@ body{ background:#525659; }
   </div>
 
   <div class="box">
-    <h4>Addison Quill &mdash; Bounty Hunter &middot; the Veteran</h4>
+    <h4>Frank Haskins &mdash; Bounty Hunter &middot; the Veteran</h4>
     <p class="note">Rode with the cavalry, kept the carbine, and found that hunting men paid better than soldiering and asked fewer questions he couldn't answer.</p>
     <p><strong>STR</strong> 13 (+1) &middot; <strong>DEX</strong> 15 (+2) &middot; <strong>CON</strong> 11 (+0) &middot; <strong>WIT</strong> 14 (+2) &middot; <strong>RES</strong> 13 (+1) &middot; <strong>PRE</strong> 8 (&minus;1)</p>
     <p><strong>Blood</strong> 8 &middot; <strong>Defense</strong> 12 &middot; <strong>Saves</strong> Fort +0, Ref +4, Will +3 &middot; <strong>Nerve</strong> 14 &middot; <strong>Grit</strong> 3</p>
@@ -5070,7 +5076,7 @@ body{ background:#525659; }
   </div>
 
   <div class="box">
-    <h4>Opal Vance &mdash; Hexer &middot; the Homesteader</h4>
+    <h4>Nettie Swain &mdash; Hexer &middot; the Homesteader</h4>
     <p class="note">Buried a husband and three children under sod she broke herself, and one night the country offered her a different arrangement. She took it. She is still deciding what it took back.</p>
     <p><strong>STR</strong> 8 (&minus;1) &middot; <strong>DEX</strong> 10 (+0) &middot; <strong>CON</strong> 13 (+1) &middot; <strong>WIT</strong> 14 (+2) &middot; <strong>RES</strong> 16 (+3) &middot; <strong>PRE</strong> 13 (+1)</p>
     <p><strong>Blood</strong> 7 &middot; <strong>Defense</strong> 10 &middot; <strong>Saves</strong> Fort +1, Ref +0, Will +5 &middot; <strong>Nerve</strong> 17 &middot; <strong>Grit</strong> 3</p>
@@ -5332,7 +5338,7 @@ body{ background:#525659; }
     <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">187</span></li>
     <li><a href="#ix-s-debt">Debt Called In, the (Sign)</a><span class="pg">209</span></li>
     <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">209</span></li>
-    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">128</span></li>
+    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">127</span></li>
     <li><a href="#ix-reckoning">Defense</a><span class="pg">21</span></li>
     <li><a href="#ix-degrees">Degrees of success</a><span class="pg">12</span></li>
     <li><a href="#ix-demoralize">Demoralize</a><span class="pg">145</span></li>
@@ -5351,7 +5357,7 @@ body{ background:#525659; }
     <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">226</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">26</span></li>
-    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">124</span></li>
+    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">123</span></li>
     <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">135</span></li>
     <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">150</span></li>
     <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">160</span></li>

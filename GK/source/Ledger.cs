@@ -26,6 +26,12 @@ public sealed class LedgerView : Panel
         set { zoom = Math.Clamp(value, 0.7f, 2.2f); PerformLayoutPass(); Invalidate(); }
     }
 
+    /// <summary>Drawn for a player's own table: a Keeper-side path reads as the want the player
+    /// picked, never by name (<see cref="CharGen.PathLabel"/>). Hidden for the same reason as
+    /// <see cref="Zoom"/>: runtime state, nothing a designer would write out.</summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool PlayerView { get; set; }
+
     // book palette (matches the HTML ledger's CSS)
     static readonly Color Paper   = Color.FromArgb(247, 242, 228);
     static readonly Color FieldBg = Color.FromArgb(252, 250, 243);
@@ -131,7 +137,7 @@ public sealed class LedgerView : Panel
 
     // A value is drawn inside its box, never past it — trimmed with an ellipsis as the last
     // resort, so an over-long entry can't slide under the neighbouring box and look truncated
-    // by nothing (the Gender box used to paint over the tail of "Ruth "Six-Finger" Calloway").
+    // by nothing (the Gender box used to paint over the tail of "Mattie "Six-Finger" Lusk").
     static readonly StringFormat FitFmt = new(StringFormat.GenericDefault)
     { Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap, LineAlignment = StringAlignment.Center };
 
@@ -480,7 +486,7 @@ public sealed class LedgerView : Panel
                                      : $"  — {r.Left} of {r.Of} left, {r.Limit.Says(sheet)}";
                 }
                 foreach (var f in sheet.Features) lines.Add(("• " + f + Tally(f), false));
-                if (sheet.Subpath != null) lines.Add(("• Path: " + sheet.Subpath + Tally(sheet.Subpath), false));
+                if (sheet.Subpath != null) lines.Add(("• Path: " + CharGen.PathLabel(sheet, PlayerView) + Tally(sheet.Subpath), false));
                 var famLine = CharGen.FamiliarLine(sheet);
                 if (famLine != null) lines.Add(("• " + famLine, false));
                 else if (sheet.CallingChoice != null) lines.Add(("• " + sheet.CallingChoice, false));
