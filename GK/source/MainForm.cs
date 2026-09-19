@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.48", KeeperBookVer = "2.32", BestiaryVer = "2.20";
+    internal const string PlayerBookVer = "2.49", KeeperBookVer = "2.33", BestiaryVer = "2.21";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -318,6 +318,10 @@ public partial class MainForm : Sheet
     // just enters the result (the dice-and-books table). A player's own table rolls on the Dice tab.
     internal bool EngineRolls => Mode != RunMode.KeeperDice;
 
+    // True at a player's own table. What that player may read is what the Player's Book prints, so
+    // a Keeper-side path shows as the want they picked (CharGen.PathLabel) and never by name.
+    internal bool PlayerTable => Mode == RunMode.Player;
+
     // The tabs a given mode shows. A player gets their own three; a Keeper gets the whole board.
     static readonly string[] PlayerTabs = { "New Soul", "Dice", "Reference" };
     bool ShowsTab(string title) => Mode != RunMode.Player || Array.IndexOf(PlayerTabs, title) >= 0;
@@ -358,6 +362,9 @@ public partial class MainForm : Sheet
         // tab is built once and reused, so switching tables has to re-deal it. Only when it has
         // actually been opened: tabs are lazy, and building it here would defeat that.
         if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
+        // A sheet already on the New Soul tab was drawn for the other table. Redraw it for this one,
+        // or a Keeper who hands the laptop to a player leaves a Patron's name on the screen.
+        if (lastSoul != null && soulLedger != null) ShowSoul(lastSoul);
         if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
         Daybook.Note("mode", $"table set to {ModeLabel(mode)}");
@@ -3718,12 +3725,12 @@ public partial class MainForm : Sheet
             p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
             party.Add(p);
         }
-        Add("Ruth \"Six-Finger\" Calloway", "Woman", "Gunhand");
-        Add("Doc Aurelia Mercer",           "Woman", "Sawbones");
-        Add("Brother Elias Crow",           "Man",   "Preacher");
+        Add("Mattie \"Six-Finger\" Lusk",    "Woman", "Gunhand");
+        Add("Doc Delia Kemp",               "Woman", "Sawbones");
+        Add("Brother Isaiah Dade",          "Man",   "Preacher");
         Add("Anni Halvorsen",               "Woman", "Mountain Man");
-        Add("Addison Quill",                "Man",   "Bounty Hunter");
-        Add("Opal Vance",                   "Woman", "Hexer");
+        Add("Frank Haskins",                "Man",   "Bounty Hunter");
+        Add("Nettie Swain",                 "Woman", "Hexer");
         Rules.ReseedEntropy();   // restore entropy so play dice stay random
     }
 }

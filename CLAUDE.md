@@ -8,8 +8,8 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.48 · Keeper's Book v2.32 · Bestiary v2.20 ·
-GritKeeper app v1.57.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+**Current versions: Player's Book v2.49 · Keeper's Book v2.33 · Bestiary v2.21 ·
+GritKeeper app v1.58.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -122,9 +122,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.48 | 267 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.32 | 134 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.20 | 209 | none (182 creatures) |
+| The Player's Book | v2.49 | 267 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.33 | 136 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.21 | 209 | none (182 creatures) |
 | Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.8 | 33 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.8 | 33 | one inline SVG map (two panels), downloadable |
@@ -447,7 +447,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.48) — structure
+## The Player's Book (v2.49) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -472,12 +472,12 @@ as new monsters, and the game's invented dark is never pinned to a living religi
 ### Appendix D — "A Posse, Ready-Made" (six pregens)
 Six finished 1st-level characters, math-verified against the chargen rules (Honest Array
 15/14/13/12/10/8 + Origin gifts), each with the Four Questions pre-answered:
-- **Ruth "Six-Finger" Calloway** — Gunhand · the Outlaw
-- **Doc Aurelia Mercer** — Sawbones · the Fallen Gentry
-- **Brother Elias Crow** — Preacher · the Freed
+- **Mattie "Six-Finger" Lusk** — Gunhand · the Outlaw
+- **Doc Delia Kemp** — Sawbones · the Fallen Gentry
+- **Brother Isaiah Dade** — Preacher · the Freed
 - **Anni Halvorsen** — Mountain Man · the Scout
-- **Addison Quill** — Bounty Hunter · the Veteran
-- **Opal Vance** — **Hexer** · the Homesteader (begins at Mark 1 — fits the Hexer, who is
+- **Frank Haskins** — Bounty Hunter · the Veteran
+- **Nettie Swain** — **Hexer** · the Homesteader (begins at Mark 1 — fits the Hexer, who is
   always already touched; knows Signs *Borrowed Breath* and *Salt & Iron*; companion crow
   "Deuteronomy")
 
@@ -495,7 +495,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.32) — structure
+## The Keeper's Book (v2.33) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -510,7 +510,18 @@ the table's standing question with four readings rather than one.** The question
 that indifferent bargain with a Hexer at all — was raised by the *four things to hold to* box and left
 open. It is answered with **the wear**, **the debt**, **the tongue** and **the appetite nobody has
 named**, none confirmed, over one piece of stagecraft that holds under all four: *never let a Patron
-want; let it be available.* **The four-reading shape was deliberate and should not be collapsed into a
+want; let it be available.*
+
+**The Player's Book never names a Patron (Cole, 2026-09-19).** A Dark Cultist picks a *want* at 3rd
+level (six of them, printed in the Player's Book) and the Keeper says who answered. The six named
+Devotions and their boons live in the Keeper's Book under *What a Devotion Grants* (`patrons-devotions`),
+with a table pairing want, Patron and the Ch. VII story the player has instead. Those stories are headed
+by their own handles (the Ellender Party, Somebody's Uncle, the Quiet Kind, the Rider a Ridge Back, the
+Bad Vein, the Good Revival), and the count of six is hearsay on the player's side. In the data this is
+`"printedIn": "keeper"` on the Dark Cultist's subpath plus a `want` per option and a `playerNote`;
+`verify_rules.py::check_patron_silence` fails if a name comes back into the Player's Book, and the app
+shows a player's table the want through `CharGen.PathLabel`. The Book of Legends is player-side too and
+is held to the same line. **The four-reading shape was deliberate and should not be collapsed into a
 settled answer** — the box two paragraphs above it promises this book never settles whether there are
 six Patrons at all, and six numbered dossiers with d6 tables already strain that promise; a fifth
 certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for the same reason.
@@ -540,7 +551,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.20) — structure & conventions
+## The Bestiary (v2.21) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
@@ -631,7 +642,7 @@ to it — the one place this rule is written that the auditor does not read is n
 
 ---
 
-## GritKeeper (v1.57.0) — the C# desktop app
+## GritKeeper (v1.58.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working

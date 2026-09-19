@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.32 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.32)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.33 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.33)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.32</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.33</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.32 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.33 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -526,6 +526,13 @@ CH3 = f"""<!-- III -->
       <tr><td><strong>6</strong></td><td>The road's end. What stands up wearing their face answers to you now, not the player &mdash; and it knows everything the character knew, including the party's soft places.</td></tr>
     </tbody>
   </table>
+
+  <p><strong>The dream at Mark 2.</strong> This is the dark&rsquo;s first payment, and it ought to be worth having.
+  Once a session, a soul at Mark 2 or past it can sleep on a question about someone, somewhere or something they&rsquo;ve
+  seen, and they wake knowing one true thing about it (the Player&rsquo;s Book, Ch. XII). Answer honestly and keep it
+  small: where the water is, who in the room is afraid, what the thing in the cellar ate last. Give them the true thing
+  the dark would care about, which usually isn&rsquo;t what they asked and is sometimes more useful. A player who got a
+  good answer tonight is going to think about the next step.</p>
 
   <div class="keeper-note"><span class="kn-tag">A word of warning</span>Never hand a player the Mark as punishment for
   a bad roll. The Mark is for <em>choices</em>. A character cursed by a die is a victim; a character Marked by a
@@ -1029,20 +1036,21 @@ CH7 = f"""<!-- VII -->
   <p>The Player's Book tells a player that the Old Dark is a depth rather than a god: the deep strata
   of buried gods, drowned hungers and patient things that were ancient when the first peoples here
   were young, which does not love him and does not hate him, and which lends and is inherited and is
-  worshipped and always collects. Every word of that is true and it is the right amount for him to
-  have. What it leaves out is where the six Patrons sit inside it, and you cannot run this game
+  worshipped and always collects. It also tells him the country can't agree how many things down
+  there have ever answered anybody, and it leaves the argument open. That is the right amount for him
+  to have. What it leaves out is where the Patrons sit inside all of it, and you cannot run this game
   without knowing.</p>
   <p>The Old Dark is one thing. It is ancient, it is cosmic, and it is evil in the way a January is
   evil: without appetite for you in particular, and fatal all the same. It has no centre a man could
   ride to, no throne, no name of its own that anything has ever used, and no interest whatever in
   being understood. Under all of that, in the part that has never moved, it is simply deep.</p>
   <p>The <strong>six Patrons are the parts of it that took a shape and kept it</strong>. Old enough
-  and particular enough to be worth a name, settled enough to be recognised twice, and, crucially,
-  the only parts of the whole depth that have ever answered anybody. Everything else down there is
-  weather. So when a teamster in a saloon says the Old Dark he means the six, because the six are
-  the only part of it that has ever spoken; and when a Hexer says it he means the depth the six came
-  out of, because that is where his loan is drawn from. Both are right. The book uses the phrase
-  both ways on purpose, and your players will learn the difference the year they need it.</p>
+  and particular enough to be worth a name, settled enough to be recognised twice, and, so far as
+  anybody has ever managed to tell, the only parts of the whole depth that have answered anybody. The
+  rest of it behaves like weather. So when a teamster in a saloon says the Old Dark he means whatever
+  talks back, and when a Hexer says it he means the depth his loan is drawn from. Both are right. The
+  book uses the phrase both ways, and your players will learn the difference the year they need
+  it.</p>
   <div class="keeper-note"><span class="kn-tag">Four things to hold to</span><strong>They are not a
   pantheon.</strong> None of the six rules another, none owes another anything, and you should never
   let your players confirm that any two of them are aware of each other. <strong>They are not
@@ -1053,8 +1061,8 @@ CH7 = f"""<!-- VII -->
   a live question this book deliberately never settles. See the gatherings in the Rockies, below:
   one of the four readings there is that all six cults have spent a century dealing with one thing
   wearing six faces.</div>
-  <p>Which is the whole shape of it. One depth, six mouths, and a country sitting on top of the lot
-  of it wondering why the wells go bad.</p>
+  <p>One depth, six mouths anybody has ever heard from, and a country sitting on top of the lot of it
+  wondering why the wells go bad.</p>
   <p class="note">What follows is six dossiers, and every part of each one after the first paragraph is an offer
   rather than a fact. The ground a Patron holds, the shape of the people who serve it, the three signs and the d6 are
   there so a Keeper five minutes from the table has something to reach for. Use the ones that fit the county you have
@@ -1100,11 +1108,11 @@ CH7 = f"""<!-- VII -->
   Patron to have made a decision, you wrote a devil.</div>
 
   <h2 id="patrons-table">The Patrons at the Table</h2>
-  <p>The Player's Book names six Patrons (Ch. VII) and wisely tells no more than a drifter's rumor of each. Here is
-  the rest &mdash; how each one actually comes at a table of players, and when. Thirty years behind a screen teaches
-  one thing above all others about devils: an offer made on schedule is a mechanic, and an offer made at the exact
-  wrong moment is a memory the table keeps for years. A Patron never simply appears. Each waits at a different door,
-  and the players open every one of those doors themselves.</p>
+  <p>The Player's Book gives a player six sets of campfire stories (Ch. VII) and no names at all. Here is the rest:
+  how each one actually comes at a table of players, and when. Timing is most of it with devils. An offer that comes
+  right when everybody expects it just feels like a rule, but the same offer at the worst possible moment is what your
+  table will still be talking about years later. A Patron never simply appears. Each waits at a different door, and the players open every one of those doors
+  themselves.</p>
 
   <h3 id="patron-devourer">The Devourer, at the door of want</h3>
   <p>It comes when the body is failing: the snowed-in pass, the tainted well, the wound going bad three days'
@@ -1257,9 +1265,8 @@ CH7 = f"""<!-- VII -->
 
 
   <h2 id="patrons-terms">What Each One Offers, and What It Takes</h2>
-  <p>This was printed in the Player's Book until 2026, which was the wrong book for it. What a Patron trades in is the
-  one thing a Keeper needs at the table and a player is better off learning the hard way. The Player's Book now carries
-  the six as legends and nothing more.</p>
+  <p>A Keeper needs to know what each Patron trades in, and a player is better off learning it the hard way. The
+  Player's Book carries the six as stories and nothing else.</p>
   <table class="lvl">
     <thead><tr><th>Patron</th><th>It offers</th><th>It takes</th><th>Its sign</th></tr></thead>
     <tbody>
@@ -1288,6 +1295,34 @@ CH7 = f"""<!-- VII -->
       openly.</td><td>A revival that leaves a town emptier than it found it, and a kind face that is almost right.</td></tr>
     </tbody>
   </table>
+
+  <h2 id="patrons-devotions">What a Devotion Grants</h2>
+  <p>A Dark Cultist picks a Devotion at 3rd level, and what she picks is a <em>want</em>: the Player's Book gives her
+  six of those and no names. You decide who answered. Usually it is the obvious one, and the table is better served
+  when it is; save the mismatch for a campaign where a soul asked one thing and something else spoke up. Tell the
+  player what the Devotion does as soon as it is taken, because she has to be able to play it. Do not tell her the
+  name until the fiction gives it to her, and let her hear it first from somebody who is frightened of it. The stories
+  in Ch. VII are what she has instead, and the third column below is the story her Patron belongs to.</p>
+  <p>The boon lands at once. The greater boon lands at 9th, as the thing below sinks its hooks the deeper.</p>
+  <table class="lvl">
+    <thead><tr><th>She says she wants</th><th>Who answers</th><th>Told in Ch. VII as</th></tr></thead>
+    <tbody>
+      <tr><td>Never to go hungry again.</td><td><strong>The Devourer</strong></td><td>The Ellender Party</td></tr>
+      <tr><td>To know what can't be known.</td><td><strong>The Whisperer</strong></td><td>Somebody's Uncle</td></tr>
+      <tr><td>To stop hurting.</td><td><strong>The Cold Deep</strong></td><td>The Quiet Kind</td></tr>
+      <tr><td>To cheat the grave.</td><td><strong>The Long Trail</strong></td><td>The Rider a Ridge Back</td></tr>
+      <tr><td>To strike it rich.</td><td><strong>The Thing Beneath the Mountain</strong></td><td>The Bad Vein</td></tr>
+      <tr><td>To be loved by a crowd.</td><td><strong>The Red Sermon</strong></td><td>The Good Revival</td></tr>
+    </tbody>
+  </table>
+  <ul class="dash">
+    <li><strong>The Cold Deep.</strong> Spend Devotion to drain warmth (Slowed, Drained, cold damage) and steady yourself against your end (reroll a failed Fortitude save to stop your bleeding; ignore fear). <em>Greater (9th):</em> once per session, open a sphere of annihilating cold that withers all within and shows each witness the indifferent end.</li>
+    <li><strong>The Devourer.</strong> Slaying or sacrificing heals you and grants Devotion; your Gifts favor claws and toughness; you regenerate while fed. <em>Greater (9th):</em> once per scene, swell into a thing of teeth &mdash; large, swift, regenerating &mdash; devouring what you bring down.</li>
+    <li><strong>The Long Trail.</strong> Spend Devotion to lay a withering death-touch (necrotic cold) and to sense the dying; you know who in your sight is marked to die soon, and may bid a freshly-slain foe rise and serve you a round. Your Gifts favor a deathless calm, an unerring eye for a mortal wound, and a body slow to quit. <em>Greater (9th):</em> once per session, pronounce a death sentence on one you can name (short of a true miracle, death comes for them before the arc is out) or, when you yourself fall, rise once at the next dusk, a little further down the trail than you were.</li>
+    <li><strong>The Red Sermon.</strong> Spend Devotion to borrow a face and a honeyed voice &mdash; charm or compel those who hear you, pass for someone trusted, and feed on a crowd's devotion to refill your pool. You gather a small flock that believes, and their belief is meat. Your Gifts favor a stolen face, a compelling word, and a hunger worn as warmth. <em>Greater (9th):</em> once per session, hollow a gathering &mdash; every soul who can hear you is gripped by compulsion or terror, and a little of each is fed to the thing you serve, leaving you flush with power and them diminished and yours.</li>
+    <li><strong>The Thing Beneath the Mountain.</strong> Spend Devotion to call on the deep stone &mdash; a crushing grip, a hide of grinding rock (DR and resistance), and tremor-sense through earth and floorboard. You see in the lightless dark, never lose your way underground, and the buried answers when you knock. Your Gifts favor stone flesh, a crushing strength, and the secrets of ore and vein. <em>Greater (9th):</em> once per session, wake the mountain a little &mdash; bring down a ceiling, split the ground, or clad yourself in living rock, huge and all but unkillable, for a few rounds.</li>
+    <li><strong>The Whisperer.</strong> Spend Devotion to pluck a secret from a mind or the air, and to whisper madness &mdash; confusion, fear, or a Dread Check. <em>Greater (9th):</em> once per session, speak the Unspeakable Word &mdash; unmake a mind, or wring one true and terrible answer from your Patron.</li>
+  </ul>
 
   <h2 id="patrons-rockies">The Gatherings in the Rockies</h2>
   <p>Beginning about four years ago, word started coming down out of the high country about gatherings. A Devourer
@@ -1733,7 +1768,7 @@ APX = f"""<!-- APPENDIX -->
 
     <h3>The Mark (6 steps)</h3>
     <p>Grant for: breaking utterly (the rare roll), reaching for the Old Dark, surviving the deep dark changed. Never
-    for a bad roll. At 6, the dark owns them.</p>
+    for a bad roll. From Mark 2, one true dream a session. At 6, the dark owns them.</p>
 
     <h3>Tainted Ground</h3>
     <p>Save every 3 days (Fort, then Will). Soured DC 13 &middot; Blighted DC 16 &middot; Unhallowed DC 20. Fail =
@@ -1776,7 +1811,7 @@ APX = f"""<!-- APPENDIX -->
     <h3>d20 &mdash; A Name for Anyone</h3>
     <p>1 Amos &middot; 2 Cassius &middot; 3 Eb &middot; 4 Halloran &middot; 5 Jensen &middot; 6 Coyle &middot; 7 Ashby
     &middot; 8 Vane &middot; 9 Tuttle &middot; 10 Pell &middot; 11 Devereaux &middot; 12 Calla &middot; 13 Stroud
-    &middot; 14 Mercy &middot; 15 Obadiah &middot; 16 Sull &middot; 17 Wren &middot; 18 Hettie &middot; 19 Lafe
+    &middot; 14 Mercy &middot; 15 Obadiah &middot; 16 Sull &middot; 17 Birdie &middot; 18 Hettie &middot; 19 Lafe
     &middot; 20 the one they will not name</p>
 
     <h3>d20 &mdash; A Name for the Rest of the County</h3>

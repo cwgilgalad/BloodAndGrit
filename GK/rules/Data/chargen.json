@@ -5861,29 +5861,37 @@
       },
       "subpath": {
         "section": "Dark Cultist’s Devotions",
+        "printedIn": "keeper",
+        "playerNote": "Your Keeper tells you who answered and what it wants back. It grants you something at once and more at 9th level, as the thing below sinks its hooks the deeper. You'll learn its name when it decides you should.",
         "options": [
           {
             "name": "The Cold Deep",
+            "want": "To stop hurting.",
             "boon": "Spend Devotion to drain warmth (Slowed, Drained, cold damage) and steady yourself against your end (reroll a failed Fortitude save to stop your bleeding; ignore fear). Greater (9th): once per session, open a sphere of annihilating cold that withers all within and shows each witness the indifferent end."
           },
           {
             "name": "The Devourer",
+            "want": "Never to go hungry again.",
             "boon": "Slaying or sacrificing heals you and grants Devotion; your Gifts favor claws and toughness; you regenerate while fed. Greater (9th): once per scene, swell into a thing of teeth — large, swift, regenerating — devouring what you bring down."
           },
           {
             "name": "The Long Trail",
-            "boon": "Spend Devotion to lay a withering death-touch (necrotic cold) and to sense the dying; you know who in your sight is marked to die soon, and may bid a freshly-slain foe rise and serve you a round. Your Gifts favor a deathless calm, an unerring eye for a mortal wound, and a body slow to quit. Greater (9th): once per session, pronounce a death sentence on one you can name (short of a true miracle the Long Trail comes for them before the arc is out) or, when you yourself fall, rise once at the next dusk, a little further down the trail than you were."
+            "want": "To cheat the grave.",
+            "boon": "Spend Devotion to lay a withering death-touch (necrotic cold) and to sense the dying; you know who in your sight is marked to die soon, and may bid a freshly-slain foe rise and serve you a round. Your Gifts favor a deathless calm, an unerring eye for a mortal wound, and a body slow to quit. Greater (9th): once per session, pronounce a death sentence on one you can name (short of a true miracle, death comes for them before the arc is out) or, when you yourself fall, rise once at the next dusk, a little further down the trail than you were."
           },
           {
             "name": "The Red Sermon",
+            "want": "To be loved by a crowd.",
             "boon": "Spend Devotion to borrow a face and a honeyed voice — charm or compel those who hear you, pass for someone trusted, and feed on a crowd's devotion to refill your pool. You gather a small flock that believes, and their belief is meat. Your Gifts favor a stolen face, a compelling word, and a hunger worn as warmth. Greater (9th): once per session, hollow a gathering — every soul who can hear you is gripped by compulsion or terror, and a little of each is fed to the thing you serve, leaving you flush with power and them diminished and yours."
           },
           {
             "name": "The Thing Beneath the Mountain",
+            "want": "To strike it rich.",
             "boon": "Spend Devotion to call on the deep stone — a crushing grip, a hide of grinding rock (DR and resistance), and tremor-sense through earth and floorboard. You see in the lightless dark, never lose your way underground, and the buried answers when you knock. Your Gifts favor stone flesh, a crushing strength, and the secrets of ore and vein. Greater (9th): once per session, wake the mountain a little — bring down a ceiling, split the ground, or clad yourself in living rock, huge and all but unkillable, for a few rounds."
           },
           {
             "name": "The Whisperer",
+            "want": "To know what can't be known.",
             "boon": "Spend Devotion to pluck a secret from a mind or the air, and to whisper madness — confusion, fear, or a Dread Check. Greater (9th): once per session, speak the Unspeakable Word — unmake a mind, or wring one true and terrible answer from your Patron."
           }
         ]

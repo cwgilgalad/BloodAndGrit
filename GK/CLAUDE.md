@@ -588,6 +588,30 @@ last one because a track with an ending sitting on a Gunhand is not a small erro
 who did not volunteer, so Ch. XII says plainly that a Keeper may rule any Shape's feeding bloodless
 or off-screen and the rules lose nothing by it. Same standing line as the Ch. IV safety note.
 
+## A player's table sees what the Player's Book prints (v1.58.0)
+
+Since 2026-09-19 the Dark Cultist's Devotions are Keeper-side: the Player's Book offers six wants and
+no Patron names, and `chargen.json` marks the subpath `"printedIn": "keeper"` with a `want` per option
+and the book's own `playerNote`. The app had been listing the names and every boon to anyone in Player
+mode, through the New Soul wizard and the sheet. Four decisions worth not re-deriving:
+
+- **The sheet keeps the name.** `Validate`, `FeaturesAt`, `FeatureSpent` and the tallies are all keyed
+  by it, and a Keeper who wants a mismatch (a soul asked for one thing, something else answered) sets
+  it in Keeper mode. What changes is display only: `CharGen.PathLabel(sheet, forPlayer)` and
+  `PathChoices(calling, forPlayer)`, the same shape as `ShortFeatureName`.
+- **"Is this a player's table" is one property**, `MainForm.PlayerTable`, handed to what draws:
+  `SoulWizard(forPlayer)`, `LedgerView.PlayerView`, `CharGen.Render(sheet, forPlayer)` behind Copy
+  sheet and Save PDF. Nothing reads the mode from a static.
+- **A player picking a veiled path reads no boons.** Moving through the list would read out every
+  Patron's powers in turn, so the panel prints `playerNote` instead. Once taken, the sheet shows the
+  want and the boon's first sentence, which the Keeper's Book says the player gets straight away.
+- **`SetMode` redraws a sheet already on the New Soul tab**, or a Keeper who switches the table to
+  a player leaves a name on the screen.
+
+`--selftest` collects every word a player's Dark Cultist wizard shows (captions, list rows, detail
+panels, tooltips; `SoulWizard.Words`) and fails on any Patron name. The Keeper's wizard is walked as
+the control and has to show all six, or the walk isn't reading what it claims to. Proved by sabotage.
+
 ## Ch. IV's encounter ladder is one array (v1.44.0)
 
 `Rules.BudgetRungs` — mook 4, even foe 8, standout 16 — and `Rules.BudgetPerSoul` = 4. `Rules.Cost`

@@ -8,6 +8,57 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.58.0, Player's Book v2.49, Keeper's Book v2.33, Bestiary v2.21: the dark keeps its
+  names (2026-09-19).**
+
+  Cole's call on the Patrons: keep the Old Dark as mysterious as it can be, and let a player grasp
+  just enough to know how bad it is. The Player's Book used to list all six Patrons by name, with their
+  powers, in the Dark Cultist's 3rd-level Devotion. Now a Dark Cultist says what they want from the
+  dark (never to go hungry again, to know what can't be known, to stop hurting, to cheat the grave, to
+  strike it rich, to be loved by a crowd) and the Keeper says who answered. The six Devotions moved to
+  a new Keeper's Book section, *What a Devotion Grants*, with a table that pairs each want with its
+  Patron and with the Ch. VII story the player has instead. The stories kept their words and lost the
+  names over them, so they're headed the Ellender Party, Somebody's Uncle, the Quiet Kind, the Rider a
+  Ridge Back, the Bad Vein and the Good Revival. How many Patrons there are is saloon talk now.
+
+  The Keeper's Book says "so far as anybody has managed to tell" where it used to state the
+  cosmology flat, which is what the box beside it had promised all along. Two slips the prose audit
+  found are gone: "thirty years behind a screen", and a table that "was printed in the Player's Book
+  until 2026". The Long Trail's boon no longer names its own Patron, so a Keeper can read a Devotion
+  out loud the way the book tells them to.
+
+  **Mark 2 pays something now.** "Dreams that are not yours; you wake knowing things" was printed and
+  had no rule behind it anywhere. From Mark 2, once a session, a soul can sleep on a question about
+  something they've seen and wake knowing one true thing about it, and the Keeper picks which. It's
+  information and nothing else, so no fight moves and nothing in the Faith economy moves. The Keeper's
+  Book tells the Keeper to make it worth having, since it's the dark's first payment.
+
+  **The app follows the books.** A player's table sees exactly what the Player's Book prints: the New
+  Soul wizard lists the six wants and shows the book's own sentence where the boons were, and the
+  sheet, **Copy sheet** and **Save PDF** show the want. The sheet still stores the Patron's name,
+  because `Validate`, `FeaturesAt` and the Tracker's tallies are keyed by it. `CharGen.PathLabel` and
+  `PathChoices` decide what a reader sees, and a sheet already on screen redraws when the table
+  switches. The *Mark & the Taint* reference leaf said the Mark moves "never for a bad roll", which
+  left out the one roll that does (a 6 on the breaking table, which the Dread Checks have always
+  applied), and it named the three grades of tainted ground in words neither book uses. Both fixed.
+
+  **The pregens have plain names.** Cole's call, because some character names read like model-written
+  fiction to people who've seen a lot of it: Mattie "Six-Finger" Lusk, Doc Delia Kemp, Brother Isaiah
+  Dade, Frank Haskins and Nettie Swain, every history and nickname kept (the crow is still
+  Deuteronomy). Anni Halvorsen stays. Wren in the Keeper's name table is Birdie, and the Bestiary's
+  Vance books are the Bledsoe books. Two of the names Cole suggested were already taken, a Mrs. Pruitt
+  in the first Reckoning and a Rev. Amos Teague in the Example of Play, so they went elsewhere.
+
+  **What holds it.** `verify_rules.py` reads each 3rd-level path from the book that prints it, and
+  `check_patron_silence` fails if the Player's Book ever names a Patron again, drops a want, or stops
+  printing the sentence the app repeats (a name is matched without its article and with its
+  capitals, so Ch. IV's cattle can still come up the long trails out of Texas). The smoke suite checks
+  all six Devotions at both tables, and `--selftest` walks every word a player's wizard shows, with the
+  Keeper's wizard as the control. Both were proved by sabotage: breaking the label turned seven smoke
+  assertions red, and listing names on the Calling panel failed the self-test with all six named.
+  Self-test 44 (was 43), smoke 16,355, rules 1,729 cross-checks, consistency 93,276. Player's Book 267
+  pages, Keeper's Book 136 (two more, for the Devotions).
+
 - **The prose audit brought up to the 2026 research, and measured against people (2026-09-16).**
 
   `audits/audit_ai_tells.py` fails on the same hard tells it did before. It now also prints research

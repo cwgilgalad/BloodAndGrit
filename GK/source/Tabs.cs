@@ -5389,17 +5389,27 @@ public partial class MainForm
 
     void RefLeafMarkTaint(RichTextBox r)
     {
+        // Held to Ch. XII of the Player's Book. This leaf used to say the Mark moves "only when a soul
+        // CHOOSES the dark … never for a bad roll", which left out the one roll that does move it (a 6
+        // on the breaking table, which both Dread Checks in this file have always added through
+        // Horror.Break), and it named the three grades of tainted ground in words neither book uses.
         RH(r, "The Mark  (six steps)");
-        RT(r, "The Mark moves only when a soul CHOOSES the dark — a bargain, a rite, a heeding. Never for a bad roll, " +
-              "never for merely being wounded. At the sixth step, the country keeps what it was promised.");
+        RT(r, "The Mark moves when a soul reaches for the Old Dark (a bargain struck, a hex worked, a Rank 5 Sign), " +
+              "survives the deep dark changed, or breaks utterly: a 6 on the breaking table. Never as punishment for " +
+              "an ordinary bad roll, never for merely being wounded, and it never heals on its own. At the sixth step, " +
+              "the country keeps what it was promised.");
+        RT(r, "From Mark 2, once a session, sleep on a question about someone, somewhere or something you've seen, " +
+              "and wake knowing one true thing about it. The Keeper picks which.");
 
         RH(r, "The Taint of the Land  (four steps)");
-        RT(r, "For every three days on cursed ground: a Fortitude save (the body first), then Will once it reaches " +
-              "the mind. Wards ease it; sanctification or leaving sheds it.");
+        RT(r, "For every three days on tainted ground, a Taint save against the ground's DC: Fortitude while the " +
+              "stain is in the body, Will once it reaches the mind. Fail and it deepens a step, a critical failure two; " +
+              "a critical success sheds one. The Callings of the Old Dark feel no such toll. A ward, a charm or the " +
+              "right Provision eases the DC by 2, and only true sanctification sheds the taint for good.");
         RTbl(r, new[] { 16, 30 }, new[] { "The ground", "Save DC" },
-            new[] { "Uneasy ground",  "13" },
-            new[] { "Wronged ground", "16" },
-            new[] { "The old places", "20" });
+            new[] { "Soured",     "13" },
+            new[] { "Blighted",   "16" },
+            new[] { "Unhallowed", "20" });
     }
 
     void RefLeafSignsGrit(RichTextBox r)

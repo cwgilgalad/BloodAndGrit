@@ -292,17 +292,25 @@ def load_book_blurbs():
 BOLD_LI_RE = re.compile(r"<li\b[^>]*>\s*<strong>(.*?)</strong>(.*?)</li>", re.S)
 
 
-def load_book_boons():
-    """{bolded name: [the text that follows it]} -- a name can be printed more than once."""
-    text = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+def load_book_boons(book="blood-and-grit.html"):
+    """{bolded name: [the text that follows it]} -- a name can be printed more than once.
+
+    Takes a filename because not every 3rd-level path prints in the Player's Book any more. The
+    Dark Cultist's Devotions moved to the Keeper's Book on 2026-09-19: a player now picks what she
+    wants from the dark and the Keeper tells her who answered, so the Patron names and their boons
+    are Keeper-side. `printedIn` in chargen.json says which book to read."""
+    text = (ROOT / book).read_text(encoding="utf-8")
     out = {}
     for m in BOLD_LI_RE.finditer(text):
         out.setdefault(_tidy(TAG_RE.sub("", m.group(1))).rstrip("."), []).append(_prose(m.group(2)))
     return out
 
 
+BOOK_OF = {"player": "blood-and-grit.html", "keeper": "keeper-handbook.html"}
+
+
 def check_subpaths(problems):
-    book = load_book_boons()
+    books = {}
     data = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
     checks = 0
     for c in data["callings"]:
@@ -310,12 +318,14 @@ def check_subpaths(problems):
         if not sub:
             problems.append(f"{c['name']}: no 3rd-level path in the data")
             continue
+        where = BOOK_OF.get(sub.get("printedIn", "player"), BOOK_OF["player"])
+        book = books.setdefault(where, load_book_boons(where))
         for opt in sub.get("options", []):
             checks += 1
             said = _tidy(opt.get("boon") or "")
             printed = book.get(_tidy(opt["name"]).rstrip("."))
             if not printed:
-                problems.append(f"{c['name']} / {opt['name']}: the book prints no such path")
+                problems.append(f"{c['name']} / {opt['name']}: {where} prints no such path")
             elif said not in printed:
                 best = max(printed, key=lambda p: len(set(p.split()) & set(said.split())))
                 at = next((i for i in range(min(len(best), len(said))) if best[i] != said[i]),
@@ -326,6 +336,46 @@ def check_subpaths(problems):
                 problems.append(f"{c['name']} / {opt['name']}: {what} at character {at} "
                                 f"(book {len(best)} chars, data {len(said)}); "
                                 f"book: ...{best[at:at + 70]!r}")
+    return checks
+
+
+def check_patron_silence(problems):
+    """The Player's Book must not name a Patron, and must print the six wants instead.
+
+    Cole's call, 2026-09-19: the players' book keeps the dark unnamed. A Dark Cultist says what she
+    wants and the Keeper tells her who answered. Prose drifts back on its own, so this holds the
+    decision: every `want` in the data has to be printed in the Player's Book, and no Patron's name
+    may appear anywhere in it. A name is matched without its article, so "the Cold Deep" in running
+    prose is caught as surely as a bolded heading, and with its capitals, so the cattle in Ch. IV can
+    still come up the long trails out of Texas. The Keeper's Book and the Bestiary are Keeper-side
+    and unaffected."""
+    data = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+    player = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+    flat = _tidy(TAG_RE.sub(" ", player))
+    checks = 0
+    for c in data["callings"]:
+        sub = c.get("subpath") or {}
+        if sub.get("printedIn") != "keeper":
+            continue
+        checks += 1
+        note = _tidy(sub.get("playerNote") or "")
+        if not note:
+            problems.append(f"{c['name']}: no playerNote for the app to show in place of the boons")
+        elif note not in flat:
+            problems.append(f"{c['name']}: the playerNote the app shows is not what the Player's Book "
+                            f"prints ({note[:60]!r}...)")
+        for opt in sub.get("options", []):
+            checks += 2
+            want = _tidy(opt.get("want") or "")
+            if not want:
+                problems.append(f"{c['name']} / {opt['name']}: no want for the player to pick")
+            elif want not in flat:
+                problems.append(f"{c['name']}: the Player's Book does not offer the want "
+                                f"{want!r} that stands in for {opt['name']}")
+            bare = re.sub(r"^The ", "", _tidy(opt["name"]))
+            if re.search(rf"\b{re.escape(bare)}\b", flat):
+                problems.append(f"the Player's Book names {opt['name']}, which is Keeper-side now "
+                                f"(players pick a want; the Keeper says who answered)")
     return checks
 
 
@@ -1012,6 +1062,7 @@ def main():
     checks += check_arms(problems)
     checks += check_features(problems)
     checks += check_subpaths(problems)
+    checks += check_patron_silence(problems)
     checks += check_budget(problems)
     checks += check_origins(problems)
     checks += check_perks(problems)
