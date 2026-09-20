@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.49 · Keeper's Book v2.33 · Bestiary v2.21 ·
+**Current versions: Player's Book v2.50 · Keeper's Book v2.34 · Bestiary v2.22 ·
 GritKeeper app v1.58.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -122,12 +122,12 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.49 | 267 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.33 | 136 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.21 | 209 | none (182 creatures) |
-| Module I — The Salt at Coffin Wells | v1.6 | 32 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.8 | 33 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.8 | 33 | one inline SVG map (two panels), downloadable |
+| The Player's Book | v2.50 | 269 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.34 | 141 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.22 | 210 | none (182 creatures) |
+| Module I — The Salt at Coffin Wells | v1.7 | 33 | one inline SVG map, downloadable |
+| Module II — A Face Not His Own | v1.9 | 33 | one inline SVG map, downloadable |
+| Module III — What the Water Answers | v1.9 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -185,7 +185,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
-| **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). |
+| **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). **It also owns the seven places a rider can name** (2026-09-19): `RIDER_KNOWS` is the list and `rider_knows_html(here=None)` renders it, bolding the module's own town when `here` is given. The Player's Book fills `<!--BASIN_PLACES-->` with it and all three modules call it through `modules_common.basin()`, so four books print one list. The copies they used to carry drifted for weeks; `audit_consistency.py` check 8 now compares all four. |
 | `add_detail.py` | One-shot that already baked earlier additions into the builds. **Do not re-run.** |
 | ~~`add_index.py`~~ | Dead one-shot (baked the v2.9 Index into `player-src.html`, a file retired 2026-07-18). Still on disk, **git-ignored since 2026-07-29**, do not re-run. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
@@ -352,7 +352,7 @@ hand in the right order out of memory.
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
 - **The game plays the same way everywhere it is written down** — `python audits/audit_consistency.py`
   (2026-08-22). `verify_rules.py` guards the *player's* side; this guards the Keeper's, which is
-  where one number appears in the most places and where nothing held them together. 80,831
+  where one number appears in the most places and where nothing held them together. 94,223
   cross-checks: Threat by Tier and Sign & Spoor across the Bestiary, `Rules.TierRow`/`SpoorRow` and
   this file's own copies; `creatures.json` re-extracted and diffed against the built Bestiary (the
   app quoting last edition's stat block was previously catchable by nobody); the generated
@@ -363,6 +363,14 @@ hand in the right order out of memory.
   not is a failure on both sides. It found two real faults on its first run: `Enfeebled` inflicted
   by two creatures and defined nowhere, and the Witch's familiar printed with real mechanics and
   tracked in the app by one shared text box. Both are fixed.
+  **Check 8, one sample county (2026-09-19).** Perdition Basin is the main example in all six books
+  now, so six books can disagree about it, and they did: a silver camp that is a cattle town, four
+  days' ride that is one, a mission ruined fifty years that burned in 1811, padres a century back who
+  came in 1809, a keeper named Padre Ildefonso who is Esperanza Ríos, a railhead at Calvary Crossing
+  the railroad has not built, and a mission on the east wall that sits mid-basin. Each retired fact is
+  a pattern in `BASIN_RETIRED` with the replacement beside it, so a book that states one names what it
+  should have said; and the seven places in `perdition_map.RIDER_KNOWS` must read the same in all four
+  books that print the list.
 - **Every option the rules print is one some path can reach** — `python audits/audit_diversity.py`
   (2026-08-22). It asks whether the game is as *wide* as it claims, which is a different question
   from whether it is correct, and it draws a narrow line on purpose: **it fails only on dead
@@ -447,14 +455,21 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.49) — structure
+## The Player's Book (v2.50) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
 
-**Appendix E — The Country (v2.10)** is the in-world, secrets-free gazette of the sample county
+**Appendix E — The Country (v2.12)** is the in-world, secrets-free gazette of the sample county
 plus the clean player map, injected into the `<!--PERDITION_MAP-->` placeholder by
-`build_player.py`. **The Index (v2.9)** is ~200 entries, two-column, letter-grouped; every entry's
+`build_player.py`. Since v2.50 it is also where a new posse is pointed: Ch. III's ninth step sends
+a reader here, the appendix opens with *Riding In* (a d6 of reasons to be in the basin) and
+*Folks You'll Hear Of*, and closes with *Staying On*, which is what the county has for a posse that
+lives through its first few nights. The place list between them is generated from
+`perdition_map.RIDER_KNOWS` through the `<!--BASIN_PLACES-->` placeholder, so it cannot drift from
+the modules'. **Everything in Appendix E is player-safe by construction** — no nails, no ring,
+nothing about what is under the water. Those live in the Keeper's Book Ch. XIII and nowhere a
+player reads. **The Index (v2.9)** is ~200 entries, two-column, letter-grouped; every entry's
 page number is resolved live by the paginator like the TOC's, via anchor ids — `ix-*` on
 headings/list items/table rows across the whole book. The **detailed two-level Contents** (v2.10)
 is generated by `nav_tools.py`.
@@ -495,7 +510,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.33) — structure
+## The Keeper's Book (v2.34) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -529,9 +544,17 @@ certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for 
 **Ch. XIII Perdition Basin** is `CH13` in `build_keeper.py` (spliced into `BODY` before the Screen
 appendix), embeds `keeper_map_html()`, and carries anchor ids (`basin`, `basin-truth`,
 `basin-wells`, `basin-crossing`, `basin-coffin`, `basin-saltlick`, `basin-mission`, `basin-mesa`,
-`basin-homesteads`, `basin-hands`, `basin-running`) the Keeper index links to. Its spine — the
-padres' silver "nails" binding a Patron under the wells, now failing well by well — is deliberately
-the same as the Ch. XI Salt Valley seed.
+`basin-homesteads`, `basin-hands`, `basin-running`, `basin-keeping`) the Keeper index links to.
+Its spine — the padres' silver "nails" binding a Patron under the wells, now failing well by well —
+is deliberately the same as the Ch. XI Salt Valley seed.
+
+**`basin-keeping` (*Keeping the Basin*, v2.34) is the second year**, and it is what makes the county
+a campaign rather than a starter: the ring held (somebody walks it, once a season, across everybody's
+ground) or the ring broken (a smaller, meaner game about who gets the water), which Patron is under
+there (you decide, you never say), a tier ladder from 5th to 15th built on Bestiary entries at their
+real tiers, and a d12 of further nights. **Do not print which Patron it is.** The chapter's whole
+method is that the county's hand is unnamed, and naming it would also break the Ch. VII promise the
+book makes two chapters earlier.
 
 **Ch. XV Powers vs. Ch. XVI Legends** is the one distinction in this book that is easy to
 collapse and expensive to get wrong. A **Power** owns ground, wants something, and can be joined,
@@ -551,7 +574,7 @@ it's deliberately *not* in the dict — don't add it there or it'll double.)
 
 ---
 
-## The Bestiary (v2.21) — structure & conventions
+## The Bestiary (v2.22) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
@@ -562,7 +585,12 @@ Roll-by-Tier appendix keeps `id="index"` — the alphabetical index is a separat
 Creature chapters (each creature with lore + Found line + stat block + run-it guidance) plus three
 appendices — **The Roll, by Tier**, **The Grounds** (encounters by terrain — rollable tables + a
 villain picker, with the "safe-table rule"), and **Building Your Own Dead** (the from-scratch
-workshop + the Threat-by-Tier table). Chapter names and per-chapter counts are in the built book's
+workshop + the Threat-by-Tier table). The Grounds appendix ends with **`grounds-basin`**, *Perdition
+Basin, by Ground* (v2.22): each place in the sample county, the Grounds table it rolls on, and what
+the county adds on top of the roll. The Painted Mesa is in that table with **"no table"** in its
+middle column, and it stays that way — the people who live there are people, and this book makes no
+monsters out of them. Thirteen creatures the basin actually uses also carry one "In Perdition
+Basin…" line at the end of their Keeper note, which is the whole of this book's share of the county. Chapter names and per-chapter counts are in the built book's
 generated Contents; don't keep a second copy here, which is how the counts in this section came to
 disagree with each other.
 
@@ -683,8 +711,12 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   Book Appendix E; secrets-annotated Keeper map + full gazetteer in the Keeper's Book Ch. XIII).
   See `perdition_map.py`. It will not become a fourth book (settled 2026-09-16). It is the main
   example in every book instead: the county a new posse starts in, and one a campaign can stay in.
-- **Perdition Basin in every book.** Where a new posse starts and a place to keep playing, carried
-  through the Player's Book, the Keeper's Book, the Bestiary and the modules. In progress.
+- ~~**Perdition Basin in every book**~~ — **DONE (books v2.50/v2.34/v2.22, modules v1.7/v1.9/v1.9,
+  2026-09-19).** Where a new posse starts and a place to keep playing, carried through all six: the
+  Player's Book points a new character at it and tells a rider how to arrive and why to stay, the
+  Keeper's Book carries the second year in *Keeping the Basin* and works four other chapters'
+  examples on the county, the Bestiary gives thirteen creatures a place in it and rolls the whole
+  county out by Ground, and one list of places feeds the Player's Book and all three modules.
 - **A Book of Legends.** A separate book of the Territory's legends, drawing on all three core books.
   In progress.
 - **Discord / online play** — proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.

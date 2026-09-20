@@ -47,6 +47,48 @@ WELLS = [
 ]
 
 
+# ---- what any rider can tell you about each place (player-safe) ----
+# One list, read by the Player's Book (Appendix E) and by all three modules. It used to be two:
+# the modules' copy called Coffin Wells "a silver camp gone sour, four days south" and put the
+# mission "on the east wall", while both core books and this map have a cattle town 27 miles
+# south-west of the Crossing and the mission 15 miles east of it. Distances here agree with LOC at
+# 8 px to the mile. HTML entities, because both consumers drop these straight into markup.
+RIDER_KNOWS = [
+    ("Calvary Crossing",
+     "the county seat, where the Stage Road fords the river. A marshal, a bank, a doctor, a second "
+     "street, and the closest thing to safe: its well still runs sweet. Where you resupply, and where you "
+     "hear the county&rsquo;s talk."),
+    ("Coffin Wells",
+     "a shrinking cattle town a day south and west, named for its boot-hill and its wells both. Hard "
+     "luck lately; folks speak low of a fever out at the homesteads."),
+    ("Saltlick Station",
+     "a lonely stage relay a hard day north and east, the last roof for twenty miles when the weather "
+     "turns. A meal, a bed, and a bar across the door."),
+    ("Mission San Clavo",
+     "a broken adobe church east of Coffin Wells, burned in 1811 and a ruin ever since, and the oldest "
+     "thing the settlers built here. The old folks still cross themselves when they pass it."),
+    ("the Homesteads",
+     "strung along the failing river between the towns, one family to a bend, each of them one dry "
+     "season from leaving."),
+    ("the Painted Mesa",
+     "red rock in the south-east, the ground of the people who were in this country long before the "
+     "mission, and who know it better than any deed-holder. Ride there with your hat in your hand or "
+     "not at all."),
+    ("the Badlands",
+     "broken, waterless country to the south, where the river dies in the sand. People go in for "
+     "shortcuts and to not be found. Some manage both."),
+]
+
+
+def rider_knows_html(here=None):
+    """The list as markup. `here` marks one place as this book's own (the modules use it)."""
+    rows = "".join(
+        f"    <li><strong>{name}</strong> &mdash; {what}"
+        + (" <strong>&mdash; this module</strong>" if name == here else "") + "</li>\n"
+        for name, what in RIDER_KNOWS)
+    return f'<ul class="dash">\n{rows}  </ul>'
+
+
 def _label(x, y, text, size=15, font="'EB Garamond',Georgia,serif", color=INK,
            anchor="middle", weight="600", caps=False, italic=False, dy=0):
     style = (f"font-family:{font};font-size:{size}px;font-weight:{weight};"

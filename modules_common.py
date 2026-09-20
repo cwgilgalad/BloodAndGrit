@@ -321,21 +321,6 @@ def shell(*, foot, kicker, tiny_edition, tiny_blurb, colophon, version,
 # nights. This is the one description of the basin the three share; each passes its own place and
 # gets the other two named for it, so the order is stated in every copy and typed in none.
 
-BASIN_PLACES = [
-    ("Calvary Crossing", "the county seat, where the Stage Road fords the river. A marshal, a bank, "
-                         "a doctor, and the only well in the basin that still runs sweet."),
-    ("Coffin Wells", "a silver camp gone sour, four days south. The water turned first here, and the "
-                     "town has been arguing about why for a year."),
-    ("Saltlick Station", "a stage stop on the north road, forty miles from anywhere, with a "
-                         "station-keeper, a barn, and eight beds nobody wants."),
-    ("Mission San Clavo", "a ruin on the east wall, abandoned since 1809. The padres who built it "
-                          "dug a well, and then they stopped digging wells."),
-    ("The Painted Mesa", "rising red in the south-east, and the ground of the people who were here "
-                         "before the mission and told the padres what lay under the water."),
-    ("The Homesteads", "strung along the failing Calvary River, one family to a bend, each of them "
-                       "one dry season from leaving."),
-]
-
 BASIN_MODULES = [
     ("I", "The Salt at Coffin Wells", "1st", "Coffin Wells"),
     ("II", "A Face Not His Own", "3rd", "Saltlick Station"),
@@ -345,12 +330,7 @@ BASIN_MODULES = [
 
 def basin(here, *, this_module):
     """The shared Perdition Basin section. `here` is this module's place; `this_module` its numeral."""
-    from perdition_map import player_map_html
-
-    rows = ""
-    for name, what in BASIN_PLACES:
-        mark = ' <strong>&mdash; this module</strong>' if name == here else ""
-        rows += f"    <li><strong>{name}</strong> &mdash; {what}{mark}</li>\n"
+    from perdition_map import player_map_html, rider_knows_html
 
     seq = ""
     for num, title, lvl, place in BASIN_MODULES:
@@ -376,13 +356,14 @@ def basin(here, *, this_module):
   {player_map_html()}
 
   <h2 id="basin-places">What a Rider Knows</h2>
-  <ul>
-{rows}  </ul>
+  {rider_knows_html(here)}
 
   <h2 id="basin-three">The Three Nights</h2>
   <p>Each stands alone and each is a night at the table. Run in order they are a campaign: the same
   county, the same water, one town at a time, and by the third the posse has worked out what has
-  been wrong with the basin since 1809.</p>
+  been wrong with the basin since 1809. The Keeper&rsquo;s Book prints shorter tellings of the
+  first two (Ch. IX and X) with casts of their own. Run one telling or the other, and whichever
+  you run is what happened.</p>
   <table class="lvl">
     <thead><tr><th>Module</th><th>The night</th><th class="c">Level</th><th>Where</th></tr></thead>
     <tbody>

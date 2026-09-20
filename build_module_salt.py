@@ -10,7 +10,7 @@ from modules_common import (basin, night_costs, shell, splice, finish, report, r
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.6"
+VERSION = "1.7"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -250,7 +250,7 @@ HOOK = '''
   <p>Any reason that puts the posse in Coffin Wells at dusk will serve, and the module does not care
   which. Four that work:</p>
   <ul>
-    <li><strong>Cattle.</strong> They are driving forty head to the railhead at Calvary Crossing and
+    <li><strong>Cattle.</strong> They are driving forty head to Calvary Crossing, where the railroad&rsquo;s cattle buyer pays in coin, and
     Coffin Wells is the last water before the dry stretch.</li>
     <li><strong>Paper.</strong> One of them is carrying a dodger with a name on it, and the name was
     last seen here.</li>
