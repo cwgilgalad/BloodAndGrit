@@ -14,7 +14,7 @@ SRC string below after rendering -- do not hand-edit those numbers.)
 import base64, mimetypes, os, re, sys
 
 from nav_tools import add_detailed_toc
-from perdition_map import player_map_html
+from perdition_map import player_map_html, rider_knows_html
 
 OUT = "blood-and-grit.html"
 
@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.49 -->
+<!-- Blood & Grit — The Player's Book · Version 2.50 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.49)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.50)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.49</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.50</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.49 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.50 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -395,8 +395,8 @@ body{ background:#525659; }
     <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">248</span></li>
     <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">250</span></li>
     <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">255</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">259</span></li>
-    <li><a href="#index">Index</a><span class="pg">261</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">261</span></li>
+    <li><a href="#index">Index</a><span class="pg">263</span></li>
   </ul>
 </section>
 
@@ -624,6 +624,10 @@ body{ background:#525659; }
       <tr><td>9. The Compass</td><td>Set where this soul stands with the dark and the divine; both are reading.</td></tr>
     </tbody>
   </table>
+  <p class="note"><strong>Where you'll ride.</strong> Your Keeper may already have a country in mind. If not, this
+  book has one ready: <strong>Perdition Basin</strong> (Appendix E), a dry county with three towns, a ruined mission and
+  some wells that have lately gone sour. The six characters in Appendix D are already there, and each of them has a
+  reason to be.</p>
 
   <div class="box gold">
     <h3 id="ix-words">Words of the Country</h3>
@@ -4924,8 +4928,8 @@ body{ background:#525659; }
     <span class="src">&mdash; overheard at a Leadwater table</span>
   </div>
   <p class="note">Three players sit with their Keeper. <strong>Cassidy</strong> plays Reverend Amos Teague, a Preacher;
-  <strong>Lee</strong> plays the Drifter called Magpie; <strong>Sam</strong> plays Dr. Esther Vane, a Sawbones. They have
-  followed a child's screaming to a sod house on the flats at dusk.</p>
+  <strong>Lee</strong> plays the Drifter called Magpie; <strong>Sam</strong> plays Dr. Esther Mabry, a Sawbones. They have
+  followed a child's screaming to a sod house on the flats below Coffin Wells, in Perdition Basin, at dusk.</p>
 
   <p><strong>Keeper:</strong> The door hangs open. Inside it's black, and the screaming stopped the moment you dismounted.
   There's a smell — copper and wet wool. Magpie, you're first to the threshold. Give me a Notice check.</p>
@@ -5029,6 +5033,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Notice, Intimidate. <strong>Features:</strong> Deadly Aim (&minus;2 attack / +4 damage), Gunhand's Edge. <strong>Edges:</strong> Quick Draw, Steady Shot. <strong>Perk:</strong> Let Him Draw First.</p>
     <p><strong>Gear:</strong> revolver, 40 cartridges, knife, duster, a horse she didn't pay for, $9.</p>
     <p class="note"><strong>Lost:</strong> her gang, to a job gone wrong she didn't plan. <strong>Seen:</strong> the man she shot at Careless Creek stand back up. <strong>Vice:</strong> the cards. <strong>Moving:</strong> the paper on her, and whoever's carrying it this month.</p>
+    <p><strong>In the Basin:</strong> she came down the Stage Road because the paper on her doesn't reach this far yet. Marshal Coyle at the Crossing has seen her face somewhere and hasn't decided where.</p>
   </div>
 
   <div class="box">
@@ -5040,6 +5045,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Medicine, Lore (Occult), Notice, Deceive, Survival, Sleight, Insight, Lore (Frontier), Persuade. <strong>Features:</strong> Field Surgery, Anatomist. <strong>Edge:</strong> Frontier Medicine. <strong>Perk:</strong> Not On My Table.</p>
     <p><strong>Gear:</strong> surgeon's kit, laudanum, good coat, worn revolver, $14 and a letter of unpaid debt.</p>
     <p class="note"><strong>Lost:</strong> the name, the house, the inheritance: a scandal she will not discuss. <strong>Seen:</strong> a body on her table open its eyes, four hours dead. <strong>Vice:</strong> laudanum. <strong>Moving:</strong> the debt, and the man back east who holds it.</p>
+    <p><strong>In the Basin:</strong> Coffin Wells wrote east for a doctor when the fever started out at the homesteads, and hers was the only answer they got. The pay's poor. The debt doesn't care.</p>
   </div>
 
   <div class="box">
@@ -5051,6 +5057,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Persuade, Intimidate, Lore (Occult), Notice, Insight. <strong>Features:</strong> Conviction (pool 3), Sermon. <strong>Miracles known:</strong> The Steadying Word, Call to the Mourner's Bench (both Rank 1). <strong>Miracle DC</strong> 13. <strong>Edge:</strong> Iron Will. <strong>Perk:</strong> A Crowd Where You Stand.</p>
     <p><strong>Gear:</strong> Bible, salt, camp kit, the shotgun, $11 and a congregation's last collection.</p>
     <p class="note"><strong>Lost:</strong> his congregation, to a fire that did not behave like fire. <strong>Seen:</strong> what set it &mdash; and it saw him. <strong>Vice:</strong> pride in the Word. <strong>Moving:</strong> the thing that burned his church went west, and so, therefore, did he.</p>
+    <p><strong>In the Basin:</strong> the Methodists at Coffin Wells needed somebody to ride out to the homesteads where the fever is, and he took the work. He'd heard about the mission east of town that burned in 1811, and he wants to see what burns out here.</p>
   </div>
 
   <div class="box">
@@ -5062,6 +5069,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Survival, Notice, Athletics, Stealth, Animal Handling, Lore (Frontier), Medicine. <strong>Features:</strong> Hawken Rifle, Dead Aim 1d6, Hard Country. <strong>Edge:</strong> Tracker. <strong>Perk:</strong> Half a Wild Thing.</p>
     <p><strong>Gear:</strong> the Hawken, traps, pelts worth 2d6 &times; $10, a buffalo coat, a good knife, a better dog.</p>
     <p class="note"><strong>Lost:</strong> her trapping partner, to a winter that was not a winter. <strong>Seen:</strong> its tracks &mdash; man-shaped, and forty feet apart. <strong>Vice:</strong> solitude, and the flask that makes it bearable. <strong>Moving:</strong> she is hunting it. She does not say so.</p>
+    <p><strong>In the Basin:</strong> she lost the trail at the edge of the Badlands in the spring. A teamster at Saltlick Station says he's seen tracks like that since, and he won't say where unless he's drunk, and then he can't.</p>
   </div>
 
   <div class="box">
@@ -5073,6 +5081,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Notice, Stealth, Survival, Intimidate, Insight, Lore (Frontier), Athletics, Deceive. <strong>Features:</strong> Bushwhack 1d6, Quick Hands. <strong>Edge:</strong> Cold Read. <strong>Perk:</strong> Paper on Him.</p>
     <p><strong>Gear:</strong> carbine, irons, wanted papers, field glasses, $22 of the last bounty.</p>
     <p class="note"><strong>Lost:</strong> the certainty the war promised him. <strong>Seen:</strong> a man he'd buried collect his own bounty in the next county. <strong>Vice:</strong> violence, arrived at too easily. <strong>Moving:</strong> one name left on a private list, and it keeps moving west.</p>
+    <p><strong>In the Basin:</strong> the last name on his list was seen drawing wages from the railroad's survey office at Calvary Crossing. He's in no hurry. The survey pays guns too.</p>
   </div>
 
   <div class="box">
@@ -5084,6 +5093,7 @@ body{ background:#525659; }
     <p><strong>Trained:</strong> Lore (Occult), Medicine, Survival, Notice, Animal Handling, Deceive. <strong>Features:</strong> Witch-Sight, Signs, Marked. <strong>Signs known:</strong> Salt &amp; Iron, The Lender's Ear (both Rank 1: all a 1st-level soul may reach). <strong>Sign DC</strong> 13. <strong>Edge:</strong> Salt-Wise. <strong>Perk:</strong> Your Debts Are Public.</p>
     <p><strong>Gear:</strong> herb satchel, salt, iron nails, charm-makings, a crow named Deuteronomy, $6.</p>
     <p class="note"><strong>Lost:</strong> everything the sod could take, and then the man too. <strong>Seen:</strong> what answered the night she asked &mdash; she carries <strong>Mark 1</strong>, and knows it. <strong>Vice:</strong> the bargains; they keep working. <strong>Moving:</strong> paying it back before it comes to collect.</p>
+    <p><strong>In the Basin:</strong> she proved up a claim on the river below the Crossing, and the sod she broke is where the four of them are buried. Her well went sour this spring. She's the only one on her bend who wasn't surprised.</p>
   </div>
 
   <div class="quote"><p>&ldquo;Six strangers on one stage, and every one of them lying about why. Out here that is what we call a fair start.&rdquo;</p><p class="src">&mdash; overheard at the Wells Fargo office, Dry Season, 1885</p></div>
@@ -5111,26 +5121,48 @@ body{ background:#525659; }
 
   <h2 id="ix-basin-country">What a Rider Knows</h2>
   <p>A few days' ride takes you across the whole of it. The places you will hear named:</p>
-  <ul class="dash">
-    <li><strong>Calvary Crossing</strong> &mdash; the county seat, where the Stage Road fords the river. A marshal, a
-    bank, a doctor, a second street, and the closest thing to safe: its well still runs sweet. Where you resupply, and
-    where you hear the county's talk.</li>
-    <li><strong>Coffin Wells</strong> &mdash; a shrinking cattle town south and west, named for its boot-hill and its
-    wells both. Hard luck lately; folks speak low of a fever out at the homesteads.</li>
-    <li><strong>Saltlick Station</strong> &mdash; a lonely stage relay a hard day north and east, the last roof for
-    twenty miles when the weather turns. A meal, a bed, and a bar across the door.</li>
-    <li><strong>Mission San Clavo</strong> &mdash; a broken adobe church east of Coffin Wells, a ruin fifty years, and
-    the oldest thing the settlers built here. The old folks still cross themselves when they pass it.</li>
-    <li><strong>the Painted Mesa</strong> &mdash; red rock in the south-east, the ground of the people who were in this
-    country long before the mission, and who know it better than any deed-holder. Ride there with your hat in your hand
-    or not at all.</li>
-    <li><strong>the Badlands</strong> &mdash; broken, waterless country to the south, where the river dies in the sand.
-    People go in for shortcuts and to not be found. Some manage both.</li>
-  </ul>
+  <!--BASIN_PLACES-->
   <p>And everywhere between, the <strong>wells</strong>: hand-dug, ringed with stone, the whole reason a town or a
   homestead sits where it does. Water is the wealth of this country, and lately &mdash; the old-timers will tell you, if
   you stand them a drink &mdash; some of the wells have <em>gone sour</em>. The drought, they say. Most likely it is the
   drought.</p>
+
+  <h2 id="ix-basin-riding-in">Riding In</h2>
+  <p>Most posses come in on the Stage Road and see the Crossing first. If your Keeper hasn't said why you're here, roll
+  a d6 or pick one. It needn't be the same reason for everybody at the table.</p>
+  <table>
+    <thead><tr><th class="c">d6</th><th>What brought you to the basin</th></tr></thead>
+    <tbody>
+      <tr><td class="c">1</td><td>You signed on to drive forty head up to the Crossing, where the railroad's cattle buyer
+      pays in coin. Coffin Wells is the last water on the way.</td></tr>
+      <tr><td class="c">2</td><td>Letters from kin on a homestead down the river, and then, since April, no
+      letters.</td></tr>
+      <tr><td class="c">3</td><td>There's paper on you somewhere else, and the basin is a long way from anywhere.</td></tr>
+      <tr><td class="c">4</td><td>The railroad's survey office at the Crossing is hiring guns and chainmen, and it pays
+      on Saturdays.</td></tr>
+      <tr><td class="c">5</td><td>The coach broke an axle at Saltlick Station, and the next one's four days off.</td></tr>
+      <tr><td class="c">6</td><td>You're looking for somebody who came out here last year and stopped writing.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="ix-basin-folks">Folks You'll Hear Of</h2>
+  <p>Names come up in the basin the way weather does. These are the ones you'll hear inside a week:</p>
+  <ul class="dash">
+    <li><strong>Marshal T. Coyle</strong>, the county's marshal at Calvary Crossing. Fair, tired, short of deputies,
+    and not a man to hand a badge to a stranger.</li>
+    <li><strong>Adelia Cruz</strong>, who keeps the peace in Coffin Wells, such as it is. She's done more burying than
+    marshaling this summer.</li>
+    <li><strong>Josiah Vane</strong>, who runs the bank at Coffin Wells and stands a round for anybody new in
+    town.</li>
+    <li><strong>The survey office</strong> at the Crossing: the railroad's men, with their chains and their powder.
+    They'll tell you the line's coming through. They won't tell you where.</li>
+    <li><strong>El&iacute;as Cardoza</strong> and his family, who work the last homestead out past the mission and
+    don't come into town much.</li>
+    <li><strong>The Painted Mesa people</strong>, who were in the basin long before the mission and still are. Some trade
+    at the Crossing. Most would rather not.</li>
+    <li><strong>N. Ashby</strong>, a naturalist who rode the basin with a notebook for two seasons and mapped every
+    well in it. The map in this appendix came out of those notebooks.</li>
+  </ul>
 
   <h2 id="ix-basin-talk">What Folks Say</h2>
   <p>Ride the basin a while and you will hear all of this, some of it more than once:</p>
@@ -5138,13 +5170,30 @@ body{ background:#525659; }
     <li>&ldquo;Don't water your stock at the Coffin Wells trough. Don't matter why. Just don't.&rdquo;</li>
     <li>&ldquo;The Vane bank's buying up every homestead whose well's gone bad. Paying, too. You have to wonder what a
     man wants with dry land.&rdquo;</li>
-    <li>&ldquo;Old Padre out at San Clavo never left when the mission closed. Still out there. Folks that carry him
-    supplies say he's digging.&rdquo;</li>
+    <li>&ldquo;Somebody's lived out by San Clavo since before anybody can remember. My mother said it was a padre.
+    My aunt swears it's an old woman. Whoever it is walks out to every well in the county once a season, and nobody's
+    ever asked why.&rdquo;</li>
     <li>&ldquo;Railroad's coming through. That's what the powder-noise is, up in the north country. Progress, the man
     from the survey office calls it.&rdquo;</li>
     <li>&ldquo;My granddad rode for the Mesa people one winter. Said they've got a spring that never once went dry nor
     sour, and a reason they don't share the water. He wouldn't say the reason.&rdquo;</li>
+    <li>&ldquo;Five riders took the Coffin Wells payroll in '83. The marshal only ever counted four.&rdquo;</li>
+    <li>&ldquo;The children at the Crossing have a verse about the Pell place. Nobody taught it to them, and it's got
+    things in it that were never in the paper.&rdquo;</li>
+    <li>&ldquo;Met a gentleman on the Stage Road last month, dressed like somebody's great-grandfather. Asked after my
+    family by name, and got every one of them right but my wife.&rdquo;</li>
   </ul>
+  <h2 id="ix-basin-staying">Staying On</h2>
+  <p>A posse that lives through its first few nights here usually finds reasons to stay. There's work, for one thing.
+  The cattle buyer at the Crossing needs drovers, the stage line pays an outrider on the Saltlick road, the survey
+  office pays guns and chainmen, and the Badlands turn up a bounty often enough to keep a hunter in coffee. Land is
+  cheap along the river, cheaper every month the wells keep going sour, and the Vane bank will write a note on
+  anything.</p>
+  <p>The basin changes while you're in it, too. The railroad gets closer. A town that's doing fine in the spring can be
+  boarded up by fall. People you helped will remember you, and so will people you didn't. Your Keeper will tell you
+  the rest as you ride it: three towns, one ruin and the wells between them can hold a year of trouble, and more than
+  a year if you let them.</p>
+
   <p class="note">A place to start, and no more than that. Everything here is true as far as a rider knows it &mdash; which
   in this country is never quite far enough.</p>
 
@@ -5419,7 +5468,7 @@ body{ background:#525659; }
     <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">235</span></li>
     <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">190</span></li>
     <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">259</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">261</span></li>
     <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">230</span></li>
     <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">211</span></li>
     <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">241</span></li>
@@ -6251,6 +6300,8 @@ html = SRC
 
 # Drop the player-facing map of Perdition Basin into Appendix E.
 html = html.replace("<!--PERDITION_MAP-->", player_map_html())
+# the places any rider can name: one list, shared with the three modules
+html = html.replace("<!--BASIN_PLACES-->", rider_knows_html())
 
 # Grow the simple Contents into a generated two-level detailed Contents.
 html = add_detailed_toc(html)

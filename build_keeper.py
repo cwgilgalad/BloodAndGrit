@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.33 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.33)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.34 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.34)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.33</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.34</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.33 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.34 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -902,6 +902,9 @@ CH6 = f"""<!-- VI -->
   deepens a step; the four steps run from a souring sickness to a whisper that turns the soul onto the dark's errands.
   This is your tool for a haunted house that hurts to stay in even before the haunting starts. Wards, salt, and the
   right Provisions ease the DC; only true sanctification sheds it for good.</p>
+  <p>In Perdition Basin (Ch. XIII) the grades follow the wells. The ground around a broken well starts out soured and
+  is blighted by the end of a season. If the Mission spring goes, the whole south of the county is a Patron's own
+  ground, and the players will find out the week their Taint starts climbing on a ride that used to be safe.</p>
 
   <h2>The Wrong House</h2>
   <p>A haunted place should fight the players quietly: doors that won't stay shut, a cold that lamps don't touch, a
@@ -1494,7 +1497,7 @@ CH7 = f"""<!-- VII -->
     <li><strong>Working the leads.</strong> Downtime is when the players chase the campaign's slow questions &mdash;
     research the old mission, write to the city for records, lean on a contact. Reward the digging with real threads.
     Let them <em>prepare</em>, sometimes, so the night they're ready feels earned.</li>
-    <li><strong>The dark doesn't rest.</strong> While they heal and build, tick the campaign clock. The cult gains a
+    <li><strong>The dark doesn't rest.</strong> While they heal and build, tick the campaign clock. (In Perdition Basin, that's the season a nail falls.) The cult gains a
     town, the Marked man falls another step, the herald rides closer. Downtime that costs the players nothing on the
     far side makes the world feel safe; let the price of resting be a little ground given.</li>
   </ul>
@@ -1649,6 +1652,9 @@ CH8 = f"""<!-- VIII -->
   players actually do, rather than waiting in a box for its scene, is the difference between a living country and a
   diorama. Move them between sessions, off-screen, and let the players walk back into a town that changed while they
   were gone.</div>
+  <p>Perdition Basin's Three Hands (Ch. XIII) are this section worked out on one county: the money pulling the nails,
+  one old keeper walking the wells, and the people who were there first. Read them together and you'll see how little a
+  faction needs on the page to run all year.</p>
 </section>
 """
 
@@ -1662,13 +1668,15 @@ CH9 = f"""<!-- IX -->
   <p class="dropcap lead"><em>The Salt at Coffin Wells</em> is a one-session adventure for a fresh party of 1st-level
   characters. It is built to do the thing a first session most often fails to do: open as an honest western, turn the
   wrong note slowly, and teach Nerve, the Mark, and the gun all in one night &mdash; with every monster you need drawn
-  from the Bestiary so you never have to leave this book. Read it once; run it loose.</p>
+  from the Bestiary so you never have to leave this book. Read it once; run it loose. Module I tells this same
+  night at full length, with a bigger cast and a map of its own. Run one or the other, and whichever you run is what
+  happened at Coffin Wells.</p>
 
   <div class="box">
     <h4>The Truth (for the Keeper alone)</h4>
     <p>Coffin Wells is a dying cattle town. Six weeks ago its banker, <strong>Josiah Vane</strong>, ruined and
     desperate, dug up the wrong grave on the old mission ground east of town: the grave of something the
-    Spanish padres had staked and salted a century back. He meant to rob it of rumored silver. He woke a
+    Spanish padres had staked and salted back in 1809. He meant to rob it of rumored silver. He woke a
     <strong>Nightwalker</strong> instead, and struck a bargain to save his own neck: blood for the town, fed to it
     quietly, in trade for being spared and made rich.</p>
     <p>The "fever" taking the outlying homesteads is the Nightwalker
@@ -1680,7 +1688,7 @@ CH9 = f"""<!-- IX -->
   <h2>The Hook</h2>
   <p>Any reason that gets the party to Coffin Wells serves &mdash; a job driving cattle, a name on a wanted dodger, a
   letter from kin gone quiet, simple thirst at the end of a long ride. They arrive at dusk to a town with its
-  shutters already closed against the dark, and a marshal who wants them gone by morning.</p>
+  shutters already closed against the dark, and a town marshal, Adelia Cruz, who wants them gone by morning.</p>
 
   <h2>Act One &mdash; The Ordinary West</h2>
   <p>Let it be a real town for a scene. The saloon, the wary barkeep, the talk of "fever" out at the homesteads, the
@@ -1866,7 +1874,9 @@ CH10 = f"""<!-- X -->
   way out of, this is a locked-room of paranoia where the players cannot win by drawing first &mdash; the monster is
   already inside, already wearing a friend's face, and the only way out is to <strong>see</strong> the wrong thing
   before it sees its chance. Run it to teach a hard lesson: in this country, the gun is not always the answer, and
-  sometimes the most dangerous figure at the table is the one smiling back.</p>
+  sometimes the most dangerous figure at the table is the one smiling back. Module II tells this night at full
+  length with a cast of its own: there, the thing came in on the coach wearing a drummer, and it keeps two faces. Run
+  one or the other, and whichever you run is what happened at Saltlick.</p>
 
   <div class="box">
     <h4>The Truth (for the Keeper alone)</h4>
@@ -2015,7 +2025,7 @@ CH11 = f"""<!-- XI -->
   <div class="box">
     <h4>The Salt Valley &mdash; a Haunted County</h4>
     <p><strong>The frame:</strong> the players settle in Saltlick Valley, a hard ranching country ringed by old mission
-    ground. <strong>The throughline:</strong> a century ago the padres staked and salted a Patron's reaching hand into
+    ground. <strong>The throughline:</strong> in the mission days the padres staked and salted a Patron's reaching hand into
     the valley floor; the railroad's blasting has cracked the seal, and the dark is leaking back, one homestead at a
     time. <strong>The clock:</strong> each season the unhallowed ground spreads a ranch further, the dead get bolder,
     and the valley's folk turn on each other (the Drought-Bringer's despair, made political). <strong>The door:</strong>
@@ -2112,6 +2122,12 @@ CH12 = f"""<!-- XII -->
       <tr><td>12</td><td>The town is emptying; wagons leave weekly</td><td>The ones who leave are never heard from again, and the road east shows no tracks</td></tr>
     </tbody>
   </table>
+  <div class="keeper-note"><span class="kn-tag">Worked in the Basin</span>The posse turns off the Stage Road between
+  the Crossing and Saltlick looking for water, and you need a town by the next scene. Front 16, back 11: Furnace Rock.
+  It ails with a 2, the wells down to mud, and hides a 2, the one sweet well belonging to a man who prays to something
+  for it. Now hang it on the nearest well on the Keeper's map (Ch. XIII), which is Roadman's, still bound, and you know
+  two things the table doesn't. His well is sweet because Roadman's nail still holds. And the day it fails, he'll be the
+  first to find out what he's been praying to.</div>
 
   <h2>A Face in Four Rolls</h2>
   <p>A d20 for the given name, a d20 for the surname, a d12 for what they want, a d12 for their tell.</p>
@@ -2248,7 +2264,10 @@ CH13 = f"""<!-- XIII -->
   ground of both reckonings you already have: <em>The Salt at Coffin Wells</em> (Ch. IX) and <em>A Face Not His Own</em>
   (Ch. X). Run them here and they stop being two one-shots and become the first two nights of one story &mdash; the
   <em>Haunted County</em> of Ch. XI, drawn out and given a map. Take it whole, or strip it for parts and hang them on a
-  country of your own.</p>
+  country of your own. The three adventure modules are set here as well. The first two tell Ch. IX and X at full
+  length and the third goes down into the mission, and where a module names a family or a well this chapter doesn't,
+  take the module's word for it. When the Haunted Year is done, <em>Keeping the Basin</em> at the end of this chapter
+  is for the table that wants to stay.</p>
 
   {keeper_map_html()}
 
@@ -2257,16 +2276,20 @@ CH13 = f"""<!-- XIII -->
   and the scattered wells and springs that are the only sure water for a hard day's ride in any direction. That is the
   honest map, and it is the one your players will draw. Here is the one they will not: <strong>the water rises from
   something beneath, and the something is awake.</strong></p>
-  <p>A century ago the Franciscan padres of <strong>Mission San Clavo</strong> learned it &mdash; from the ground, from
+  <p>In 1809 the Franciscan padres of <strong>Mission San Clavo</strong> learned it &mdash; from the ground, from
   the dead that would not stay down, and last and least willingly from the <strong>Painted Mesa people</strong>, who had
   said as much for longer than the mission had stood and had not been heeded. What lay under the water was no devil the
-  padres had a rite to burn. It was a <strong>Patron</strong> (Player's Book Ch. VII) &mdash; one of the old reaching
+  padres had a rite to burn. It was a <strong>Patron</strong> (Ch. VII) &mdash; one of the old reaching
   hands of the Dark &mdash; and it was coming up through the wells the way damp comes up through a wall.</p>
   <p>They could not kill it. They did the next thing, and the harder one: they <strong>bound</strong> it. Blessed silver
-  driven as nails &mdash; <em>clavos</em> &mdash; into the mouth of every spring and well in the basin; salt packed around
-  each; a rite said over each; and the whole ring closed like a fence around the thing's reaching fingers. It held for a
-  hundred years. The basin got its quiet century: cattle, three towns, a stage road, a county seat.</p>
-  <p>Now the seal is coming apart, and for three plain reasons &mdash; all of them the players' kind of trouble:</p>
+  driven as nails, <em>clavos</em>, one at the waterline of each of the <strong>seven wells</strong> that ring the thing's
+  reaching fingers; salt packed around each; a rite said over each, and said again on a schedule, because a nail has to
+  be renewed by hand. The Painted spring they left alone. The Mesa people already had it in hand.</p>
+  <p>The mission burned in 1811 and the order went home. One man stayed to walk the circuit of seven wells with a hammer
+  and a prayer, and then one after him, and it held for better than seventy years. The basin got its quiet: cattle, three
+  towns, a stage road, a county seat.</p>
+  <p>Now the seal is coming apart. The first reason is that nobody has renewed it since April (see the Last Bell,
+  below). The other three are the players' kind of trouble:</p>
   <ul class="dash">
     <li><strong>Drought.</strong> The water table is dropping. Wells that were deep run shallow; nails driven into wet
     ground now sit in dust, and dry silver holds nothing.</li>
@@ -2287,8 +2310,9 @@ CH13 = f"""<!-- XIII -->
   <h2 id="basin-wells">A Reckoning of the Wells</h2>
   <p>The binding is a ring of wells and springs, and the Keeper's map shows the state of each: a plain ring, the nail
   holds; a broken ring, the binding is failing; a struck-through ring, the well is gone and something is already loose.
-  Restore the ring, or learn what it holds, before the last nail falls; that is the spine. Here is what each one
-  is, and what it lets up when it goes.</p>
+  Restore the ring, or learn what it holds, before the last nail falls; that is the spine. Seven of the eight carry
+  a padre's nail. The Painted spring carries something older. Here is what each one is, and what it lets up when it
+  goes.</p>
   <table>
     <thead><tr><th>The well</th><th>On the map</th><th>The truth beneath</th></tr></thead>
     <tbody>
@@ -2342,11 +2366,11 @@ CH13 = f"""<!-- XIII -->
   straight into the next town on your map: a recurring hand for the whole year, if you let it live.</p>
 
   <h3 id="basin-mission">Mission San Clavo &mdash; the ruined heart</h3>
-  <p>The oldest thing the settlers built, and a ruin for fifty years: a broken adobe church on the ground the padres
+  <p>The oldest thing the settlers built, and a ruin since it burned in 1811: a broken adobe church on the ground the padres
   chose because it sat over the Patron's reaching hand. The <strong>Mission spring</strong> rises in its cracked
   baptistry, and the master nail &mdash; the one that closes the whole ring &mdash; is driven into the altar stone. Come
   here and the campaign's true shape is on the walls: the padres' carvings, the record of the binding, and the warning
-  they left for whoever came after. It is also where the last keeper of the ring can be found.</p>
+  they left for whoever came after. The last keeper of the ring lived four miles from it.</p>
 
   <h3 id="basin-homesteads">The Homesteads &mdash; where it shows first</h3>
   <p>Scattered between the towns, the outlying homesteads are the county's nerve endings. A well goes bad out here weeks
@@ -2376,9 +2400,11 @@ CH13 = f"""<!-- XIII -->
     the hand pulling the nails &mdash; some for the silver, some to clear title to "sour" land, most too willful to hear
     what a nail was for. The human engine of the whole disaster, and the faction the players can actually punch.</li>
     <li><strong>The Last Bell of San Clavo: the ring's lone keeper.</strong> One old soul who knows the truth of
-    the nails and has been re-driving them alone for years, and is losing: <strong>Padre Ildefonso</strong>, or the
-    layfamily that kept the mission after the church forgot it. Undermanned, half-broken, and the players' one source for
-    the rite that closes a well. A quest-giver who is also a warning of where this ends.</li>
+    the nails and has walked the circuit re-driving them for thirty-one years, the last of a line of single keepers that
+    goes back to the fire of 1811: <strong>Esperanza R&iacute;os</strong>, eighty-one. Module III opens the summer after
+    she dies in her sleep without handing it on, and that's the harder county. Keep her alive if you'd rather the players
+    had somebody to learn the rite from: undermanned, half-broken, losing, and a quest-giver who is also a warning of
+    where this ends.</li>
     <li><strong>The Painted Mesa people: the ones who knew.</strong> Not a monolith and not a resource: a people
     with the oldest true knowledge of the thing under the water, their own reasons to want it kept down, and no debt to
     the settlers that would oblige them to fix the settlers' mess. Earn them, and they are the deepest well of truth in
@@ -2406,6 +2432,98 @@ CH13 = f"""<!-- XIII -->
   Answer that, and the country writes your next night for you &mdash; because a failing well is a place, a victim, a
   culprit, and a monster, all in one mark on a map. That is the whole trick of a Haunted County, and Perdition Basin is
   it, drawn out so you can see how.</div>
+  <h2 id="basin-keeping">Keeping the Basin</h2>
+  <p>The Haunted Year ends with the ring closed again or broken for good, and either way the county's still there in
+  the morning. A table that liked it can stay, and a lot of tables should. The second year is where a home county pays you
+  back: the players know the marshal's first name, they own something here, and the dark knows where they sleep.</p>
+
+  <h3>If the ring holds</h3>
+  <p>Somebody has to walk it. A nail doesn't stay driven on its own. The padres' whole arrangement depends on a keeper
+  renewing each one by hand, and the last keeper is dead or close to it, so the best engine this county has for a
+  second year is a player who picks up the hammer. Seven wells, once a season, on a circuit that crosses everybody's
+  ground. Every trip is a few days' riding with a well at the end of it, and by now every well is on somebody's land:
+  the Vane Interest wants the silver, the survey wants the right of way, the Mesa people want to know who taught you
+  the rite, and the thing under the water can wait longer than any of them.</p>
+  <p>A ring that holds also makes the basin worth having. Sweet water brings settlers, and settlers bring the rest of
+  the Territories with them. Kansas City money buys the notes on the new claims. The Golden Circle already owns two
+  parcels of the Painted Mesa's old ground and sends a man out to look at them (Ch. XV). The Agency sends an operative
+  to find out why the same few riders keep turning up wherever the dead get up. None of these people are the dark,
+  but they all make its work easier.</p>
+
+  <h3>If it breaks</h3>
+  <p>The Mission spring goes and the hand comes up. Over a season the south of the county turns to Unhallowed ground
+  (Ch. VI), a well at a time. Coffin Wells empties out. The Crossing boards its windows and holds on, because its well
+  is the last sweet water in the county, and the players are the people who stayed. It's a smaller, meaner campaign
+  than the first year: supply runs, getting families out, holding one town's well against whatever comes up the others,
+  and deciding who gets the water when there isn't enough of it. The cults come to a place like that the way flies
+  come to a wound. A Patron's own ground is a pilgrimage for the faithful of the Old Dark, and the gatherings in the
+  Rockies (Ch. VII) will send somebody down to look.</p>
+  <p>The door back doesn't close. Re-drive the master nail, or find the Mesa people's older working (<em>Running the
+  Basin</em>, above). A broken ring can be closed again, and it costs more for every season it's left open.</p>
+
+  <h3>What's under the water</h3>
+  <p>This chapter never says which Patron the padres pinned, and you should decide before the second year starts and
+  then never say it out loud either. The Cold Deep suits the water and the numbness out on the homesteads. The Devourer
+  suits the fever and the cattle. The Thing Beneath the Mountain suits the silver and the survey's powder. Whichever you
+  pick, it's what speaks up when a Dark Cultist inside the basin asks the dark for something, whatever they asked for.
+  <em>What a Devotion Grants</em> (Ch. VII) tells you to save that mismatch for the right campaign, and this is the
+  right campaign.</p>
+
+  <h3>Past 5th level</h3>
+  <p>Module III brings a posse to 5th level at the mission. The basin can carry them a long way past that, because
+  the ring will hold any Tier you hang on it:</p>
+  <table>
+    <thead><tr><th>Levels</th><th>What the basin has for them</th></tr></thead>
+    <tbody>
+      <tr><td><strong>5th&ndash;8th</strong></td><td>Whatever the broken wells let up gets bigger: the South well's
+      thing (roll the Old Dark, Bestiary Ch. VII), a Thing in the Well in a town that didn't know it had one, the Drowned
+      walking up the Calvary in a flood year. The Vane Interest stops hiring drunks and sends for the Regulators. The
+      Wills Outfit takes a survey payroll (Ch. XVI). Tiers III and IV.</td></tr>
+      <tr><td><strong>9th&ndash;12th</strong></td><td>The Powers come in earnest (Ch. XV), and the thing under the
+      water starts sending hands of its own: a Servant of the Deep Dark wherever a nail's been pulled, the Veinwork in
+      the survey's cut. The Parcel is being assembled on the Painted Mesa's ground, and a Long Table house that has kept
+      one basin family alive for three generations sends the Ninth Child to collect. Tiers IV to VI.</td></tr>
+      <tr><td><strong>13th&ndash;15th</strong></td><td>The Apex. The Gentleman on the Road is met on the Stage Road the week
+      before something changes. The Ledger of the Territory runs through the Vane bank's paper, and the Bestiary says
+      what starves it: a county that holds its own notes, which is a thing a posse that has owned this county for two
+      years can make happen. If the ring breaks this late, what comes up the Mission spring has no Blood to empty, only
+      a condition under which it stops. Write that condition before the night you need it. Tiers VII and
+      VIII.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>A Dozen More Nights</h3>
+  <p>When you need the next night and the map isn't telling you, roll a d12.</p>
+  <table>
+    <thead><tr><th>d12</th><th>Where</th><th>The night</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Roadman's well</td><td>The survey crew camps on it and their powder cracks the lining. By fall
+      there's something in the cut that the chainmen won't work beside.</td></tr>
+      <tr><td>2</td><td>the North seep</td><td>A homestead's children stop sleeping, and a verse about them turns up
+      in the mouths of children at the Crossing who've never met them (Ch. XVI).</td></tr>
+      <tr><td>3</td><td>Calvary Crossing</td><td>An Agency man takes a room at the hotel and asks after the posse by
+      name. He's polite, he's thorough, and he's got most of it wrong (Ch. XV).</td></tr>
+      <tr><td>4</td><td>Coffin Wells</td><td>The town meets to vote on selling out to the Vane bank. The deacon reads
+      the arrears first. Somebody in the hall bought the vote from something with a ledger under its arm.</td></tr>
+      <tr><td>5</td><td>Saltlick Station</td><td>Somebody rides in off the Stage Road at an hour when nobody should be
+      on it, in clothes nobody can place. He gives the posse one piece of good advice and takes nothing for it
+      (Ch. XVI).</td></tr>
+      <tr><td>6</td><td>the Badlands</td><td>Road agents hole up at the South well, and find what came up out of it
+      before anybody else does.</td></tr>
+      <tr><td>7</td><td>the Painted Mesa</td><td>Surveyors stake two parcels on Mesa ground for buyers they won't
+      name (Ch. XV). The Mesa people ask the posse to witness it, and to do nothing else.</td></tr>
+      <tr><td>8</td><td>the Homesteads</td><td>A boy comes home three days after the river took him. His mother
+      wants him hidden and asks the posse to help (the Returned, Player's Book Ch. XII).</td></tr>
+      <tr><td>9</td><td>Mission San Clavo</td><td>A woman from New Orleans comes to look at the ring and won't say who
+      sent her. She tends springs, she says, and she'll tend this one, for a price paid later (Ch. XV).</td></tr>
+      <tr><td>10</td><td>the Crossing well</td><td>Somebody tries to pull the one nail the county seat drinks on. If it
+      goes, the disaster's public.</td></tr>
+      <tr><td>11</td><td>the Calvary River</td><td>Spring flood. The Drowned come up out of the fords one night, and
+      the town that's lost the most people to the river has the most coming home.</td></tr>
+      <tr><td>12</td><td>the cattle pens</td><td>A drive comes in from the south with a Glutton on its trail, and the
+      railroad's buyer won't pay for a herd that's being eaten.</td></tr>
+    </tbody>
+  </table>
 </section>
 """
 
@@ -3054,9 +3172,9 @@ KEEP_INDEX = [
     ("The Badlands (Perdition Basin)", "basin-places"),
     ("The Three Hands (factions)", "basin-hands"),
     ("The Vane Interest (faction)", "basin-hands"), ("Josiah Vane (banker)", "basin-coffin"),
-    ("The Last Bell of San Clavo (faction)", "basin-hands"), ("Padre Ildefonso", "basin-hands"),
+    ("The Last Bell of San Clavo (faction)", "basin-hands"), ("Esperanza R&iacute;os", "basin-hands"),
     ("The Painted Mesa people (faction)", "basin-hands"), ("Marshal T. Coyle", "basin-crossing"),
-    ("Running Perdition Basin", "basin-running"),
+    ("Running Perdition Basin", "basin-running"), ("Keeping the Basin (the second year)", "basin-keeping"), ("Perdition Basin, past 5th level", "basin-keeping"), ("Perdition Basin, a d12 of further nights", "basin-keeping"),
     # --- XV. The Powers of the Territory ---
     ("The Powers of the Territory", "powers"),
     ("Redemption (the new Confederacy)", "powers-redemption"),

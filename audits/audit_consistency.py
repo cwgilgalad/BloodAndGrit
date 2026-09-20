@@ -32,6 +32,9 @@ What it holds together:
      should look like; check that the Tier III things look like it. Reported as spread, and
      failed only where a creature sits outside its own Tier's band by more than the neighbouring
      Tiers' width, since the book is explicit that the benchmarks are a starting point.
+  8. PERDITION BASIN — the county every book uses as its example must be one county. Retired
+     facts (a silver camp, a mission "a ruin fifty years", "Padre Ildefonso") may not come back,
+     and the list of what a rider knows reads the same in the Player's Book and all three modules.
 
 Usage:
     python audits/audit_consistency.py            # every check
@@ -580,6 +583,59 @@ def check_chapter_refs(dig):
            f"(Player's I–{max(spine)}, and each book's own)")
 
 
+# Perdition Basin is the example every book reaches for (2026-09-19), and until then it was told
+# four slightly different ways. The modules had Coffin Wells as "a silver camp gone sour, four days
+# south" and the mission "on the east wall"; both core books had a cattle town a day south-west and a
+# mission "a ruin fifty years"; the Keeper's Book bound the thing "a century ago" and gave the ring's
+# keeper as "Padre Ildefonso, or the layfamily", while Module III is built on 1809, the fire of 1811
+# and Esperanza Rios. Every one of those was written in good faith against a copy of the facts. The
+# place list is one source now (perdition_map.RIDER_KNOWS); this holds the rest.
+BASIN_RETIRED = [
+    (r"silver camp gone sour", "Coffin Wells is a cattle town"),
+    (r"four days south", "Coffin Wells is a day south and west of the Crossing, 27 miles on the map"),
+    (r"a ruin (?:for )?fifty years", "the mission burned in 1811 and has been a ruin since"),
+    (r"(?:a century (?:ago|back))[^.]{0,80}\bpadres\b|\bpadres\b[^.]{0,80}a century (?:ago|back)",
+     "the padres came in 1809"),
+    (r"Padre Ildefonso", "the ring's last keeper is Esperanza Ríos (Module III)"),
+    (r"railhead at Calvary Crossing", "the railroad is still surveying the basin"),
+    (r"San Clavo[^.]{0,60}on the east wall|on the east wall[^.]{0,60}San Clavo",
+     "the mission is 15 miles east of Coffin Wells, mid-basin"),
+]
+RIDER_LIST_IN = ["blood-and-grit.html", "module-salt-at-coffin-wells.html",
+                 "module-a-face-not-his-own.html", "module-what-the-water-answers.html"]
+
+
+def check_basin(dig):
+    print("\nPerdition Basin — one county, told the same way in every book")
+    import html as _html
+    from perdition_map import RIDER_KNOWS
+    bad = 0
+    for name, book in dig["books"].items():
+        text = "\n".join(t for _c, _s, t in X.all_text(book))
+        for pat, why in BASIN_RETIRED:
+            CHECKS[0] += 1
+            for m in re.finditer(pat, text, re.I):
+                bad += 1
+                fail(f"{name}: \"{m.group(0)[:70]}\" contradicts the basin ({why})")
+    for name in RIDER_LIST_IN:
+        book = dig["books"].get(name)
+        if book is None:
+            bad += 1
+            fail(f"{name} is not built, so its list of places cannot be checked")
+            continue
+        text = re.sub(r"\s+", " ", "\n".join(t for _c, _s, t in X.all_text(book)))
+        for place, blurb in RIDER_KNOWS:
+            CHECKS[0] += 1
+            said = re.sub(r"\s+", " ", _html.unescape(blurb))
+            if said not in text:
+                bad += 1
+                fail(f"{name}: what a rider knows about {place} is not the shared line "
+                     f"(perdition_map.RIDER_KNOWS)")
+    if not bad:
+        ok(f"no retired basin fact in any book ({len(BASIN_RETIRED)} watched), and the "
+           f"{len(RIDER_KNOWS)} places read the same in all {len(RIDER_LIST_IN)} books that list them")
+
+
 def check_app_book_parity(dig, core, chargen_src):
     print("\nApp and books — every feature one carries, the other carries too")
     prose = "\n".join(t for b in dig["books"].values() for _c, _s, t in X.all_text(b))
@@ -625,6 +681,7 @@ def main():
     check_shared_vocabulary(dig)
     check_no_accidental_repeats(dig)
     check_chapter_refs(dig)
+    check_basin(dig)
     check_app_book_parity(dig, core, (ROOT / "GK/rules/CharGen.cs").read_text(encoding="utf-8"))
 
     print()

@@ -8,6 +8,58 @@ Desktop\Git repos.)
 
 ---
 
+- **Player's Book v2.50, Keeper's Book v2.34, Bestiary v2.22, Modules I/II/III v1.7 / v1.9 / v1.9 ·
+  GritKeeper v1.58.0: Perdition Basin, in every book (2026-09-19).**
+
+  Cole dropped the idea of a fourth book about the basin and asked for something better instead: make
+  it the county the whole game uses for its examples, the place a new posse starts, and a place a
+  table can keep playing in for as long as it wants to. Until now it was one appendix in the Player's
+  Book, one chapter in the Keeper's, and a single sentence in fifty-five thousand words of Bestiary.
+
+  **The Player's Book sends you there.** Ch. III ends the nine steps by saying where you'll ride if
+  your Keeper hasn't already said. Appendix E gained *Riding In* (a d6 of reasons to be in the basin,
+  and they needn't match around the table), *Folks You'll Hear Of* (seven names a rider picks up in a
+  week, the marshal and the banker and the survey office among them), three more rumours, and
+  *Staying On*, which is the honest answer to what a posse does here after the first few nights. All
+  six pregens carry an **In the Basin** line now, so a table that picks up Appendix D is already in
+  the county with six reasons to be. The Example of Play happens on the flats below Coffin Wells.
+
+  **The Keeper's Book keeps it going.** *Keeping the Basin* is new in Ch. XIII and it's about the
+  second year: what the county is if the ring of nails holds (somebody has to walk it, once a season,
+  across everybody's ground), what it is if the ring breaks (a smaller, meaner campaign about who gets
+  the water), which Patron is actually under there and why you decide that and never say it, a tier
+  ladder that carries a posse from 5th to 15th on Bestiary entries at their real tiers, and a d12 of
+  further nights. Four other chapters now show their work on the basin: tainted ground follows the
+  wells (Ch. VI), the campaign clock ticks a nail loose (Ch. VII), the Three Hands are the faction
+  rules worked on one county (Ch. VIII), and Ch. XII rolls up a town and hangs it on the nearest well.
+
+  **The Bestiary uses it.** Thirteen creatures the basin actually has picked up one line each at the
+  end of their Keeper note, saying where in the county you'd meet one. The Grounds appendix ends with
+  *Perdition Basin, by Ground*: every place in the county, the table it rolls on, and what the county
+  adds on top of the roll. The Painted Mesa is in that table with "no table" in its middle column,
+  because people live there and nothing in this book comes out of it.
+
+  **One county, six books, one set of facts.** Reconciling them turned up seven disagreements worth
+  keeping fixed, so they're fixed and guarded rather than fixed and hoped over. Coffin Wells is a
+  cattle town and not a silver camp gone sour, a day south and west of the Crossing and not four days.
+  The padres came in 1809 and the mission burned in 1811, so it isn't "a ruin fifty years" or "padres
+  a century back". The ring's last keeper is Esperanza Ríos, from Module III, not Padre Ildefonso. The
+  railroad is still surveying and there is no railhead at Calvary Crossing yet, which is what Module I
+  now offers a drover. And the mission sits fifteen miles east of Coffin Wells, mid-basin, not on the
+  east wall. The seven places a rider can name come out of `RIDER_KNOWS` in `perdition_map.py` now, so
+  the Player's Book and all three modules print the same list from one source, and each module marks
+  its own town in it.
+
+  **What holds it.** `audit_consistency.py` grew an eighth check: no book may state any of those seven
+  retired facts, and the rider's list must read the same in all four books that print it. Proved by
+  sabotage twice, once on a retired fact and once on a place description, both restored. Rules 1,729
+  cross-checks and no drift; consistency 94,223 and no drift; smoke 16,356; self-test 44 of 44; build
+  clean with warnings as errors. The strict prose worklist came down from 751 findings to 748, and the
+  two the new prose added were rewritten before they could sit there. Pages: Player's Book 269,
+  Keeper's Book 141, Bestiary 210, and 33 apiece for the three modules.
+
+---
+
 - **GritKeeper v1.58.0, Player's Book v2.49, Keeper's Book v2.33, Bestiary v2.21: the dark keeps its
   names (2026-09-19).**
 
