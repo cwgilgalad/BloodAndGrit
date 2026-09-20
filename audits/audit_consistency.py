@@ -451,7 +451,8 @@ PARITY = [
 
 
 def check_shared_vocabulary(dig):
-    print("\nOne vocabulary — the six books, and the parent system's words that must not appear")
+    print(f"\nOne vocabulary — the {len(dig['books'])} books, and the parent system's words "
+          "that must not appear")
     hits, soft = 0, []
     for name, book in dig["books"].items():
         for ch, sec, para in X.all_text(book):
@@ -468,7 +469,7 @@ def check_shared_vocabulary(dig):
                 if re.search(r"\b" + re.escape(foreign) + r"\b", para):
                     soft.append((name, ch, foreign, ours, para))
     if not hits:
-        ok(f"{len(FOREIGN)} borrowed terms checked across all six books: none of them appears")
+        ok(f"{len(FOREIGN)} borrowed terms checked across all {len(dig['books'])} books: none of them appears")
     if soft:
         print(f"    note  {len(soft)} legitimate borrowing(s), reported and not failed — glosses "
               "for a reader arriving from another game:")
@@ -487,6 +488,25 @@ OK_TWICE = {
     # caption over the Threat-by-Tier table. A Keeper reads one or the other, rarely both.
     "A creature is a fair, hard fight for a party of twice its Tier in levels.",
 }
+
+
+# Abbreviations that end in a full stop and are not the end of a sentence. Splitting on the stop
+# alone chops "by Mr. Laidlaw, who was in liquor" into a fragment ending "by Mr.", and two reports
+# that differ after the name then read as the same sentence. Found 2026-09-19 by the Book of
+# Legends, which prints a marshal's report and the amended version of it and differs in the second
+# half of the opening line. The check was reporting a repeat that was not there and, worse, was
+# comparing fragments rather than sentences everywhere else in every book.
+_ABBR = (r"Mr|Mrs|Ms|Dr|Rev|Fr|Sr|Jr|St|Ch|No|Co|Capt|Lieut|Col|Gen|Sgt|Maj|Hon|Esq|Prof"
+         r"|Jan|Feb|Mch|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec"
+         r"|lb|oz|ft|yd|in|viz|inst|ult|approx|vol|fig|pp|cf")
+_PROTECT = re.compile(rf"\b({_ABBR})\.(?=\s)", re.I)
+_SENT = re.compile(r"(?<=[.!?])\s+")
+
+
+def sentences(text):
+    """Split prose into sentences without breaking at an abbreviation's full stop."""
+    guarded = _PROTECT.sub("\\1\x00", text)
+    return [s.replace("\x00", ".") for s in _SENT.split(guarded)]
 
 
 def check_no_accidental_repeats(dig):
@@ -512,7 +532,7 @@ def check_no_accidental_repeats(dig):
             for piece in (v if isinstance(v, list) else [v]):
                 if not isinstance(piece, str):
                     continue
-                for t in re.split(r"(?<=[.!?])\s+", piece):
+                for t in sentences(piece):
                     t = re.sub(r"\s+", " ", t).strip()
                     if len(t) >= 70:
                         # Indexed by the TAIL, because a module prints these under a run-in label
@@ -524,7 +544,7 @@ def check_no_accidental_repeats(dig):
     for name, book in dig["books"].items():
         counts = {}
         for ch, sec, para in X.all_text(book):
-            for s in re.split(r"(?<=[.!?])\s+", para):
+            for s in sentences(para):
                 s = re.sub(r"\s+", " ", s).strip()
                 # A stat line is data, not prose: two Callings legitimately share
                 # "Hit Die d10 · Trained Skills 4 + WIT · ...". The middot is this house's
@@ -540,7 +560,8 @@ def check_no_accidental_repeats(dig):
                 print(f"          {where[0]}")
                 print(f"          {where[1]}")
     if not found:
-        ok("no sentence of 70 characters or more appears exactly twice in any of the six books")
+        ok(f"no sentence of 70 characters or more appears exactly twice in any of the "
+           f"{len(dig['books'])} books")
 
 
 def check_chapter_refs(dig):
@@ -579,7 +600,7 @@ def check_chapter_refs(dig):
                     fail(f"{name} — {ch}: \"Chapter {m.group(2)}\" exists in neither this book "
                          f"(I–{max(own) if own else 0}) nor the Player's Book")
     if not bad:
-        ok(f"every Chapter reference in all six books resolves "
+        ok(f"every Chapter reference in all {len(dig['books'])} books resolves "
            f"(Player's I–{max(spine)}, and each book's own)")
 
 

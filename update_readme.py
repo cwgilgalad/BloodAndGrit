@@ -55,6 +55,9 @@ def current_versions() -> dict:
         "Player's Book": _find("build_player.py", r"The Player's Book · Version ([\d.]+)"),
         "Keeper's Book": _find("build_keeper.py", r"The Keeper's Book · Version ([\d.]+)"),
         "Bestiary": _find("build_bestiary.py", r"The Bestiary · Version ([\d.]+)"),
+        # The Legends builder stamps a VERSION constant rather than a cover line, the same
+        # shape the three module builders use.
+        "Book of Legends": _find("build_legends.py", r'VERSION = "([\d.]+)"'),
         # The csproj carries the app's number and nothing else does: MainForm.AppVersion reads it
         # back off the assembly. This used to read a hand-typed const in MainForm.cs, and when that
         # const was retired the pattern stopped matching — so the app quietly left the README's
@@ -103,6 +106,7 @@ TOKENS = [
     (rf"(Player's Book v){NUM}", "Player's Book"),
     (rf"(Keeper's Book v){NUM}", "Keeper's Book"),
     (rf"(Bestiary v){NUM}", "Bestiary"),
+    (rf"(Book of Legends v){NUM}", "Book of Legends"),
     (rf"(GritKeeper app v){NUM}", "GritKeeper"),
     (rf"(## GritKeeper \(v){NUM}", "GritKeeper"),
     (rf"(\*\*App version ){NUM}", "GritKeeper"),
@@ -110,9 +114,11 @@ TOKENS = [
     (rf"(\| The Player's Book \| v){NUM}", "Player's Book"),
     (rf"(\| The Keeper's Book \(GM guide\) \| v){NUM}", "Keeper's Book"),
     (rf"(\| The Bestiary \| v){NUM}", "Bestiary"),
+    (rf"(\| The Book of Legends \| v){NUM}", "Book of Legends"),
     (rf"(## The Player's Book \(v){NUM}", "Player's Book"),
     (rf"(## The Keeper's Book \(v){NUM}", "Keeper's Book"),
     (rf"(## The Bestiary \(v){NUM}", "Bestiary"),
+    (rf"(## The Book of Legends \(v){NUM}", "Book of Legends"),
 ]
 
 

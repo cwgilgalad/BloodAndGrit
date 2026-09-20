@@ -41,7 +41,7 @@ Usage:
     python audit_ai_tells.py                  # audit the tracked docs, exit 1 on any hard tell
     python audit_ai_tells.py FILE [FILE ...]  # audit specific files
     python audit_ai_tells.py --commits 60     # also audit the last N commit messages
-    python audit_ai_tells.py --books          # scan the six books as well
+    python audit_ai_tells.py --books          # scan the built books as well
     python audit_ai_tells.py --strict         # also fail on research shapes and runaway rates
     python audit_ai_tells.py --all            # list every research instance, not the first few
     python audit_ai_tells.py --worklist F.tsv # write every research instance to a file
@@ -78,7 +78,7 @@ DEFAULT_DOCS = ["README.md", "CLAUDE.md", "GK/CLAUDE.md", "CHANGELOG.md", "NOTIC
 # period-western register would confuse the scan; that was wrong, and it hid real findings — the
 # cadence tells are about SHAPE, not vocabulary, and shape does not care what century the diction
 # comes from. Sixteen negative-parallelism constructions were sitting in here unexamined.
-BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
+BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
          "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
          "module-what-the-water-answers.html"]
 

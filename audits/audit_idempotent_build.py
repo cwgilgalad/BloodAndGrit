@@ -44,6 +44,7 @@ BUILDERS = [
     "build_player.py",
     "build_keeper.py",
     "build_bestiary.py",
+    "build_legends.py",
     "module_maps.py",
     "build_module_salt.py",
     "build_module_face.py",

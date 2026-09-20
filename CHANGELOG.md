@@ -8,6 +8,60 @@ Desktop\Git repos.)
 
 ---
 
+- **The Book of Legends v1.0, a fourth book. Player's Book v2.51, Keeper's Book v2.35 ·
+  GritKeeper v1.58.0 (2026-09-19).**
+
+  Cole asked for a separate book of the Territory's legends, drawing on all three of the others, and
+  for it to be players' documents rather than a lore chapter. So it is papers. Ninety-eight of them
+  across thirteen chapters: letters, sworn testimony, coroner's returns, newspaper clippings, a
+  detective agency's closed file, a parish register, a mine's shift book, a bank's terms, an
+  undertaker's day-book, handbills, songs collected off children, a will, a resignation, and one
+  forgery the book prints on purpose and then takes apart.
+
+  **There are no rules in it and there is no answer in it.** A player may read the whole thing
+  without spoiling anything, because nothing in it is confirmed. Two accounts of one night disagree
+  and the book never says which is right. Chapter XII proves two famous stories frauds, one with a
+  signed confession from the man who was paid nine dollars a week to do it. Chapter XIII ends
+  mid-sentence on a torn page, under a two-line instruction from the man who gathered it: *print all
+  of it or none of it, and do not tidy the spelling. There is no ending. Do not supply one.*
+
+  The gatherer is N. Ashby, the naturalist the Player's Book already credits with the map of
+  Perdition Basin and the Bestiary already quotes. An unnamed editor prepared the papers after Ashby
+  stopped writing, and disagrees with him in square brackets, and is wrong at least once. Nobody in
+  this book is reliable, including the two people printing it.
+
+  **It never names a Patron.** It is player-side, so Cole's call from earlier today binds it:
+  `verify_rules.py::check_patron_silence` now reads the Book of Legends as well as the Player's
+  Book, and it was proved by sabotage the day it was written (one Patron's name dropped into a field
+  note failed the check by name and by book). The Keeper's Book Ch. XVI tells a Keeper what the
+  papers are for and what they cannot do, and the Player's Book Contents tells a reader the book
+  exists and that a good deal of it is wrong.
+
+  **What it measures.** The prose audit reads it beside the others: **0.4 em dashes per thousand
+  words** against 8 to 12 in the three older books and 1.4 in Cole's own writing, **8.5
+  contractions** against 0.3 when it was first drafted, burstiness **0.92** against 0.8 and 0.9 for
+  the two human baselines. The contraction spread is deliberate and is the whole method of the book:
+  an official return writes it out, a frightened woman writing to her sister does not, and the
+  variance between voices is the thing generated prose does not have.
+
+  **The repo grew a fourth book everywhere it counts them.** The digest, the prose scan, the render
+  and whitespace tiers, the version check, the idempotent-build check, the PDF pipeline, the books
+  bundle, `.gitattributes` and `update_readme.py` all carry it now, and every place that said "the
+  six books" either derives the count or says seven. The Legends builder patches the shell's
+  paginator so a document splits across a page boundary with its head repeated, the way a stat block
+  does, which is why a sixty-seven-page book of boxes has no stranded whitespace.
+
+  **One audit got better on the way past.** `audit_consistency.py`'s no-accidental-repeats check
+  split prose on any full stop, so "by Mr. Laidlaw, who was in liquor" ended a sentence at *Mr.* It
+  reported a duplicate in the Book of Legends that was not one, and, worse, it had been comparing
+  fragments rather than sentences in every book since it was written. It now guards fifty or so
+  abbreviations before splitting.
+
+  Pages: Player's Book 269, Keeper's Book 142, Bestiary 210, Book of Legends 67. Rules 1,741
+  cross-checks and no drift; consistency 105,889 and no drift; no hard prose tells in any book.
+
+---
+
 - **Player's Book v2.50, Keeper's Book v2.34, Bestiary v2.22, Modules I/II/III v1.7 / v1.9 / v1.9 ·
   GritKeeper v1.58.0: Perdition Basin, in every book (2026-09-19).**
 

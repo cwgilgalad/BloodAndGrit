@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print the six built documents to true 8.5x11 US-Letter PDFs.
+"""Print the seven built documents to true 8.5x11 US-Letter PDFs.
 
 Run this at step 5 of every ship, without being asked (Cole, 2026-08-27), and leave it alone
 between ships. The PDFs stopped being tracked on 2026-08-27 and are how README serves the
@@ -60,6 +60,7 @@ BOOKS = [
     ("blood-and-grit.html",   "Blood-and-Grit-Players-Book.pdf"),
     ("keeper-handbook.html",  "Blood-and-Grit-Keepers-Book.pdf"),
     ("bestiary.html",         "Blood-and-Grit-Bestiary.pdf"),
+    ("legends.html",          "Blood-and-Grit-Book-of-Legends.pdf"),
     # the three adventures, in module order rather than filename order
     ("module-salt-at-coffin-wells.html",  "Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf"),
     ("module-a-face-not-his-own.html",    "Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf"),

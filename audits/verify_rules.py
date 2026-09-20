@@ -348,10 +348,22 @@ def check_patron_silence(problems):
     may appear anywhere in it. A name is matched without its article, so "the Cold Deep" in running
     prose is caught as surely as a bolded heading, and with its capitals, so the cattle in Ch. IV can
     still come up the long trails out of Texas. The Keeper's Book and the Bestiary are Keeper-side
-    and unaffected."""
+    and unaffected.
+
+    THE BOOK OF LEGENDS IS HELD TO THE SAME LINE (2026-09-19). It is player-side, anybody at the
+    table may read it, and its whole method is that nothing in it settles. A Patron's name in it
+    would settle the largest thing in the game. Only the name half of this check applies there: the
+    wants and the playerNote are the Player's Book's job, and the Book of Legends prints no rules at
+    all. A book that is not built is skipped rather than failed, so a fresh clone that has only run
+    build_player.py still passes."""
     data = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
     player = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
     flat = _tidy(TAG_RE.sub(" ", player))
+    PLAYER_SIDE = [("the Player's Book", flat)]
+    legends = ROOT / "legends.html"
+    if legends.is_file():
+        PLAYER_SIDE.append(("the Book of Legends",
+                            _tidy(TAG_RE.sub(" ", legends.read_text(encoding="utf-8")))))
     checks = 0
     for c in data["callings"]:
         sub = c.get("subpath") or {}
@@ -373,9 +385,11 @@ def check_patron_silence(problems):
                 problems.append(f"{c['name']}: the Player's Book does not offer the want "
                                 f"{want!r} that stands in for {opt['name']}")
             bare = re.sub(r"^The ", "", _tidy(opt["name"]))
-            if re.search(rf"\b{re.escape(bare)}\b", flat):
-                problems.append(f"the Player's Book names {opt['name']}, which is Keeper-side now "
-                                f"(players pick a want; the Keeper says who answered)")
+            for where, text in PLAYER_SIDE:
+                checks += 1
+                if re.search(rf"\b{re.escape(bare)}\b", text):
+                    problems.append(f"{where} names {opt['name']}, which is Keeper-side now "
+                                    f"(players pick a want; the Keeper says who answered)")
     return checks
 
 

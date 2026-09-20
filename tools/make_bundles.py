@@ -31,9 +31,11 @@ BOOKS = {
     "blood-and-grit.html":                "build_player.py",
     "keeper-handbook.html":               "build_keeper.py",
     "bestiary.html":                      "build_bestiary.py",
+    "legends.html":                       "build_legends.py",
     "Blood-and-Grit-Players-Book.pdf":    "build_player.py",
     "Blood-and-Grit-Keepers-Book.pdf":    "build_keeper.py",
     "Blood-and-Grit-Bestiary.pdf":        "build_bestiary.py",
+    "Blood-and-Grit-Book-of-Legends.pdf": "build_legends.py",
     "LICENSE":                            None,
     "NOTICE":                             None,
 }

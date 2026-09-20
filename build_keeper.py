@@ -65,13 +65,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.34 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.34)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.35 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.35)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.34</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.35</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.34 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.35 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -2896,6 +2896,13 @@ CH16 = f"""<!-- XVI -->
   that your players will hear it long before they meet it, and may never meet it at all.</p>
   <p>Nothing in this chapter costs a thread. Run all three against any of the four Powers, or against none of them, or
   run one and nothing else, and let a year of play go by with your table arguing about it in the wagon.</p>
+  <p><strong>Your players have their own book of this.</strong> The Book of Legends is the Territory's papers as
+  anybody at the table may read them: letters, depositions, clippings, a detective agency's file, songs collected off
+  children. Two of the three legends below are in it, told by people who were there and who do not agree with each
+  other. Hand out a page whenever a player's character would have read it, been shown it, or been sold it. Nothing in
+  that book is confirmed, its gatherer was wrong in print more than once, and one of its documents is a forgery it
+  prints on purpose. It cannot give anything away, because it does not know anything. What it does is put the talk in
+  the players' hands in their own time instead of yours.</p>
   <div class="keeper-note"><span class="kn-tag">How to run any of the three</span><strong>They arrive as talk.</strong>
   Plant each one at least twice, weeks apart, in bar talk and in the mouths of people with no stake in it, before it
   appears in front of the party at all. A legend that turns up unheralded is only an encounter. <strong>Never confirm
