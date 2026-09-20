@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the six built books into one machine-readable digest — the materials as data.
+"""Convert the seven built books into one machine-readable digest — the materials as data.
 
 **Why this exists.** Every check in `audits/` that reads a book re-invents the same three hundred
 lines: find the chapters, find the headings under them, pull the tables into rows, strip the tags
@@ -35,6 +35,7 @@ BOOKS = [
     "blood-and-grit.html",
     "keeper-handbook.html",
     "bestiary.html",
+    "legends.html",
     "module-salt-at-coffin-wells.html",
     "module-a-face-not-his-own.html",
     "module-what-the-water-answers.html",

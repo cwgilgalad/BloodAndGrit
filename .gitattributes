@@ -36,6 +36,7 @@
 blood-and-grit.html   linguist-generated=true
 keeper-handbook.html  linguist-generated=true
 bestiary.html         linguist-generated=true
+legends.html          linguist-generated=true
 
 # The PDFs used to be marked linguist-generated here for the same reason. They were untracked on
 # 2026-08-27 and ship as Release assets instead, so git no longer carries a file for these rules to

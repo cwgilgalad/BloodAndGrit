@@ -129,7 +129,7 @@ _map_preview.html
 .package-aside/
 _base/
 
-# tools/extract_rules.py --out writes this: the six books as one JSON digest. Nothing in the repo
+# tools/extract_rules.py --out writes this: every built book as one JSON digest. Nothing in the repo
 # reads the file — the audits import digest() and hold it in memory — so a committed copy would be
 # a second, staler copy of books that are already tracked. Generated on demand, never versioned.
 rules-digest.json

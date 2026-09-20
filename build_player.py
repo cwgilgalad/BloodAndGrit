@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.50 -->
+<!-- Blood & Grit — The Player's Book · Version 2.51 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.50)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.51)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.50</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.51</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.50 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.51 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -374,7 +374,10 @@ body{ background:#525659; }
   <div class="divider"></div>
   <p class="note">This is the Player's Book. It holds everything a soul needs to make a character
   and keep them breathing: the dice, the callings, the guns, and the rules of fear. Secrets
-  meant for the one who runs the game are kept elsewhere, in the Keeper's Book, and are no business of yours.</p>
+  meant for the one who runs the game are kept elsewhere, in the Keeper's Book, and are no business of yours.
+  There is one other book you may read: <strong>the Book of Legends</strong>, which has no rules in it at all.
+  It is a bundle of papers out of the Territories, letters and depositions and clippings and songs, and
+  nothing in it is confirmed and a good deal of it is wrong. Read it for the country, not for the answers.</p>
   <ul class="toc">
     <li><a href="#country">I. The Country</a><span class="pg">8</span></li>
     <li><a href="#played">II. How the Game Is Played</a><span class="pg">11</span></li>
@@ -5195,7 +5198,8 @@ body{ background:#525659; }
   a year if you let them.</p>
 
   <p class="note">A place to start, and no more than that. Everything here is true as far as a rider knows it &mdash; which
-  in this country is never quite far enough.</p>
+  in this country is never quite far enough. If you want more of this sort of thing, the Book of Legends is a
+  hundred pages of it, gathered out of nine counties by somebody who never did settle any of it either.</p>
 
   <div class="narr">And that concludes the matter of the country. You came to these pages, most likely,
   for a game about the West &mdash; and you have one: the cattle and the coin are real, the winters are

@@ -93,7 +93,7 @@ CHECKS = [
      "every sheet numbered, every link an explicit page, every printed number honest"),
 ]
 
-BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
+BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
          "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
          "module-what-the-water-answers.html"]
 

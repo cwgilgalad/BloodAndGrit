@@ -8,7 +8,7 @@ touches — not a packaged snapshot. (Packaged snapshots go stale silently: the 
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.50 · Keeper's Book v2.34 · Bestiary v2.22 ·
+**Current versions: Player's Book v2.51 · Keeper's Book v2.35 · Bestiary v2.22 ·
 GritKeeper app v1.58.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -122,9 +122,10 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.50 | 269 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.34 | 141 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.51 | 269 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.35 | 141 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.22 | 210 | none (182 creatures) |
+| The Book of Legends | v1.0 | 67 | none (98 documents) |
 | Module I — The Salt at Coffin Wells | v1.7 | 33 | one inline SVG map, downloadable |
 | Module II — A Face Not His Own | v1.9 | 33 | one inline SVG map, downloadable |
 | Module III — What the Water Answers | v1.9 | 33 | one inline SVG map (two panels), downloadable |
@@ -182,6 +183,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book — edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64 — currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images — **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book — edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
+| **`build_legends.py`** | **The Book of Legends** — edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 98 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a forgery it prints on purpose) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles &mdash; where one document could be read as a confirmation, another nearby takes it back. |
 | **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -198,7 +200,7 @@ Each book's cheapest editable form is **bolded**.
 | **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audits/audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). Run on request — see `audits/README.md`. |
 | **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
 | **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python audits/verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. Run on request (default mode); `.githooks/pre-push` still runs it `--delivered`, warn-only, main only. Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
-| `make_pdf.py` | Prints all six to true 8.5×11 US-Letter PDFs, verifying each page count against the rendered sheet count. **Run it in step 5 of every ship** (2026-08-27); leave it alone between ships. |
+| `make_pdf.py` | Prints all seven to true 8.5×11 US-Letter PDFs, verifying each page count against the rendered sheet count. **Run it in step 5 of every ship** (2026-08-27); leave it alone between ships. |
 | `README.md` | Short workflow notes. |
 
 The per-book source files are interdependent (they need the shell + helper modules), so
@@ -217,6 +219,9 @@ python build_keeper.py                  # reads blood-and-grit.html → keeper-h
 
 # Bestiary → edit build_bestiary.py (creatures included), then:
 python build_bestiary.py                # reads blood-and-grit.html → bestiary.html
+
+# Book of Legends → edit build_legends.py, then:
+python build_legends.py                 # reads blood-and-grit.html → legends.html
 
 # PDFs of all three — ONLY when I explicitly ask:
 python make_pdf.py
@@ -358,13 +363,13 @@ hand in the right order out of memory.
   app quoting last edition's stat block was previously catchable by nobody); the generated
   Roll-by-Tier appendix; all 143 hand-written Grounds entries, name and Tier; every condition a
   creature inflicts defined in Appendix B; the printed benchmarks against the population they
-  describe; one shared vocabulary across all six books, with a soft tier for legitimate glosses;
+  describe; one shared vocabulary across every built book, with a soft tier for legitimate glosses;
   every chapter cross-reference; and **app↔book parity** — a feature one carries and the other does
   not is a failure on both sides. It found two real faults on its first run: `Enfeebled` inflicted
   by two creatures and defined nowhere, and the Witch's familiar printed with real mechanics and
   tracked in the app by one shared text box. Both are fixed.
-  **Check 8, one sample county (2026-09-19).** Perdition Basin is the main example in all six books
-  now, so six books can disagree about it, and they did: a silver camp that is a cattle town, four
+  **Check 8, one sample county (2026-09-19).** Perdition Basin is the main example in every book
+  now, so every book can disagree about it, and they did: a silver camp that is a cattle town, four
   days' ride that is one, a mission ruined fifty years that burned in 1811, padres a century back who
   came in 1809, a keeper named Padre Ildefonso who is Esperanza Ríos, a railhead at Calvary Crossing
   the railroad has not built, and a mission on the east wall that sits mid-basin. Each retired fact is
@@ -382,7 +387,7 @@ hand in the right order out of memory.
   designer's call, and a checker that guesses at it fires on good design once and is ignored after.
   Its first run found three dead options — `Acrobatics` wanted by no Calling, `Blinded` and
   `Stunned` defined and inflicted by nothing — all three now reachable.
-- **The books as data** — `python tools/extract_rules.py` turns all six built books into chapters →
+- **The books as data** — `python tools/extract_rules.py` turns every built book into chapters →
   sections → paragraphs → tables. Both audits above read it instead of re-inventing the same three
   hundred lines of HTML walking for a fourth time. `--out` writes the whole digest as JSON, which
   is the shape a bot, a search index or a VTT importer would want; that file is git-ignored, since
@@ -399,8 +404,8 @@ hand in the right order out of memory.
   per thousand words** (baseline 3.23 human / 10.62 GPT-4.1, Freeburg 2026), **punctuation variety**
   (the share of marks that are `; : ? ! ( )`), and **sentence-opener diversity**. The dash figure
   had two faults that cancelled into a plausible-looking column — it was per thousand *characters*,
-  and `strip_html` blanked `&mdash;` along with every other entity, which is how all six books
-  write theirs. Corrected, the three modules read 8.6 / 9.2 / 9.4 and **the three books read
+  and `strip_html` blanked `&mdash;` along with every other entity, which is how every book
+  writes theirs. Corrected, the three modules read 8.6 / 9.2 / 9.4 and **the three books read
   15.2 / 16.7 / 16.6, which is the one outstanding prose finding in the repo.**
   Three things about that script are worth not re-learning: its markup stripping is
   **length-preserving**, because collapsing spans made every reported line number fiction and sent
@@ -455,7 +460,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.50) — structure
+## The Player's Book (v2.51) — structure
 
 *(For the chapter and appendix list, read the built book's Contents — it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -510,7 +515,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.34) — structure
+## The Keeper's Book (v2.35) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -571,6 +576,36 @@ that test and not by subject matter.
 (via `_inject_quote`, which drops a `quote()` after each chapter's `<div class="divider">`).
 Every chapter + the Screen appendix now carries one. (Ch. V already has an inline quote, so
 it's deliberately *not* in the dict — don't add it there or it'll double.)
+
+---
+
+## The Book of Legends (v1.0) — structure & conventions
+
+Thirteen chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
+Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
+blocks, no page references into the other books. Read the built book's Contents for the chapter
+list, which is generated.
+
+**The conventions that make it work, and that a later session should keep:**
+
+- **Every document has its own voice.** A clerk, a bank, a freighter and a frightened woman do not
+  write alike, and the variance is the point: uniform prose is the thing the AI-cadence audit is
+  built to find, and a book of documents is the best defence against it the project has. The
+  measured result is the best in the set (0.4 em dashes per thousand words against the other books'
+  8&ndash;12, burstiness 0.9 against the two human baselines' 0.8 and 0.9).
+- **Contractions belong to the informal voices only.** Official returns write it out; letters,
+  field-books and spoken answers contract. That spread is deliberate and it is what took the book
+  from 0.3 contractions per thousand words to 8.5.
+- **Nothing is confirmed, and the editor says so on page one.** Chapter XII proves two stories
+  frauds, one of them with a signed confession. Chapter XIII ends mid-sentence on a torn page,
+  under an instruction from the gatherer not to supply an ending.
+- **No Patron is named.** `verify_rules.py::check_patron_silence` fails the build if one ever is,
+  and it was proved by sabotage the day the book was written.
+- **Nine counted things.** `98` documents, `49` provenance notes, `31` editor's notes: the builder
+  prints those counts and nothing else in the repo types them.
+- The document helpers (`paper`, `news`, `wire`, `depo`, `filedoc`, `bill`, `song`, `ledger`,
+  `field`) each generate one kind of paper. Add a kind by adding a helper and a CSS block, not by
+  hand-writing markup into a chapter.
 
 ---
 

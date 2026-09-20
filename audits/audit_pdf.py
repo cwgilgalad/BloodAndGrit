@@ -42,7 +42,7 @@ except ImportError:
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # (file, how many sheets at the front are front matter and carry no number)
-# The cover and the epigraph are front matter in all six. The Player's Book's Contents runs to five
+# The cover and the epigraph are front matter in every one of them. The Player's Book's Contents runs to five
 # sheets on top of that, and front matter is the one place a missing number is the design.
 PDFS = [
     ("Blood-and-Grit-Players-Book.pdf", 7),
@@ -94,7 +94,7 @@ def toc_rows_land_where_they_say(doc, frontmatter):
     `audit_pdf.py` had passed all 1,171 rows the day before, because the printed number and the
     link agreed with each other and were both wrong. The cause was a `re.S` in `nav_tools.py`
     that let the section-opener test walk past a chapter's whole front matter (49 rows across the
-    six books; see that file).
+    books; see that file).
 
     So this one never looks at a link. It reads the number printed on the row, finds the page the
     heading's own words are set on, and asks whether they are the same page.
