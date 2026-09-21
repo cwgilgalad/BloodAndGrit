@@ -196,7 +196,7 @@ TURN = '''
   <p>Down the right margin of every renewal leaf is a short column of figures that the earlier
   custodians copied forward without comment because the form had always had it. One or two a
   year. Seventy-five years. Under it, in the second hand, four words: <em>los que da el
-  agua</em> &mdash; those the water takes.</p>
+  agua</em>, those the water takes.</p>
 
   <p>Anyone who has spent a week in the Basin can check this. The drownings are real, they are
   recorded at the county seat, and there are always one or two, and there have been for as long
@@ -608,7 +608,7 @@ COST = '''
       ["The ones who drank first (Act One)", "What lives in the nave (Act Two)", "The thing at the bottom (Act Three)"]) + '''
 
   <p>Read the first two rows together, because they are the interesting pair. Both fights are Tier
-  II. In the second one the posse shoots half again as well &mdash; 61 per cent against 41 &mdash;
+  II. In the second one the posse shoots half again as well, 61 per cent against 41, 
   and clears it one time in eight where it cleared the first two times in three. Same tier, same
   party, better dice, far worse outcome.</p>
 

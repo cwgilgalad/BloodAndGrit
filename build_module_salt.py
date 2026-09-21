@@ -138,8 +138,8 @@ TRUTH = '''
   nights left in which a stake will still hold it.</p>
 
   ''' + clock("The Fourth Night", 4,
-              "Fill a segment each time the posse spends a scene on something other than the fever "
-              "&mdash; a night in the saloon, a day riding to the county seat, an afternoon on Vane's "
+              "Fill a segment each time the posse spends a scene on something other than the fever: "
+              "a night in the saloon, a day riding to the county seat, an afternoon on Vane's "
               "books. At four, the thing has fed enough that stake and salt no longer bind it, and "
               "the module's ending changes: see <a href=\"#after\">The Box</a>.") + '''
 
@@ -181,7 +181,7 @@ TURN = '''
 
   ''' + keeper(
       " Nobody in Coffin Wells has made this connection and several of them are one quiet hour "
-      "from making it. That is the pressure on this page. The town is not keeping a secret — it "
+      "from making it. That is the pressure on this page. The town is not keeping a secret. It "
       "has assembled a machine out of a hundred ordinary preferences and cannot see the shape of "
       "it, because no single part of it was ever a decision. Who the doctor rides to first. Whose "
       "water gets shared in a dry month. Which child gets the seat at the school. Vane feeds "
@@ -234,8 +234,8 @@ TURN = '''
   not.</p>
 
   ''' + keeper(
-      " Those two are the whole reward. Name them at the table — pick two of the people the posse "
-      "has been kind to — and let the table see that something moved. A town does not turn in a "
+      " Those two are the whole reward. Name them at the table, pick two of the people the posse "
+      "has been kind to, and let the table see that something moved. A town does not turn in a "
       "night. Two people out of forty is what a hard truth buys, and in this game that is a "
       "victory worth the ride.") + '''
 </section>
@@ -521,7 +521,7 @@ CAST = '''
   ''' + npc("Hannah Pell",
             "to be seen to before she stops being herself",
             "she is the only person in the module who will tell the posse the whole truth about the "
-            "fever unprompted &mdash; and the one thing she cannot get out is what she noticed at "
+            "fever unprompted, and the one thing she cannot get out is what she noticed at "
             "the supper, which comes sideways if they sit with her and do not push "
             "(<a href=\"#turn-routes\">Three Ways In</a>)",
             "It was not a fever and you know it was not. Say it, so I know somebody said it.") + '''

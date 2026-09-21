@@ -1178,7 +1178,7 @@ public static class Rules
         (14, 10, "A killed animal that was not eaten, and was not left the way a beast leaves one"),
         (16, 13, "A killed man, and the manner of it plain in what's left"),
         (18, 16, "A killed party, and one survivor who will not go back"),
-        (20, 20, "A place unmade — ground, weather, and the people in it, all wrong together"),
+        (20, 20, "A place unmade: ground, weather, and the people in it, all wrong together"),
     };
 
     /// <summary>The sign a creature of this Tier leaves: the Survival DC to read it, the Dread DC

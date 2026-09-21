@@ -177,7 +177,7 @@ TURN = '''
   not going east to bury him. She is going east because that is the direction the coach goes.</p>
 
   <p>Nine weeks before he died, something began wearing Peter Follett. She knew inside a
-  fortnight. She has never been able to say exactly how — the way a sister knows, and no more
+  fortnight. She has never been able to say exactly how. The way a sister knows, and no more
   than that. What she can say, and will not, is that those nine weeks were the best nine weeks of
   her brother&rsquo;s life and of hers. He did not drink. He came in at a decent hour. He asked
   her about her day and then he listened to the answer, which the man himself had never once
@@ -188,8 +188,8 @@ TURN = '''
 
   ''' + keeper(
       " Ada has told it nothing. She has never spoken to it, warned it, or handed it a name. What "
-      "she has done is watch — for four hours in that common room, longer than anyone, sharper "
-      "than anyone — and keep her mouth shut. Cal Mears is dead in part because a woman who saw "
+      "she has done is watch: for four hours in that common room, longer than anyone, sharper "
+      "than anyone, and keep her mouth shut. Cal Mears is dead in part because a woman who saw "
       "it happening had reasons of her own for letting the night run on. Play her as the "
       "module already plays her: the best witness in the building, unasked. Everything she says "
       "is true. She simply never says it first.",
@@ -227,7 +227,7 @@ TURN = '''
       "to turn it down out loud, one at a time, in front of each other.",
       "Do not make this easy") + '''
 
-  <p><strong>If a player takes it.</strong> Let them. They give it a name — someone who will not
+  <p><strong>If a player takes it.</strong> Let them. They give it a name: someone who will not
   be missed, which means the player has to think of one, which is the price and is meant to be
   felt. They gain the person back, in the shape it wore, for as long as they keep feeding it.
   Mark them one step and give them a standing thread. Do not roll for this and do not offer a
@@ -385,7 +385,7 @@ ACT2 = '''
   it is where the module wants them: one soul, one lamp, one frightened person, and a question.</p>
 
   <p>Everybody here will answer honestly. Six of them will say both Dell and Mears are at the station
-  tonight. Asked directly &mdash; <em>when did you last see the two of them together?</em> &mdash;
+  tonight. Asked directly, <em>when did you last see the two of them together?</em>: 
   every one of them will stop, and think, and not be able to say.</p>
 
   ''' + keeper(
@@ -437,8 +437,8 @@ ACT3 = '''
   and goes still in a way nothing alive goes still, and then it is not wearing anybody at all.</p>
 
   ''' + readaloud(
-    "It has been holding its shoulders like a man who is cold. It stops. It does not put them down "
-    "&mdash; it stops holding them, and they are not where a man&rsquo;s shoulders are. "
+    "It has been holding its shoulders like a man who is cold. It stops. It does not put them down. "
+    "It stops holding them, and they are not where a man&rsquo;s shoulders are. "
     "&ldquo;You counted,&rdquo; it says, in Cal Mears&rsquo;s voice, and it sounds pleased. "
     "&ldquo;Five towns and nobody counted.&rdquo;") + '''
 
@@ -469,8 +469,8 @@ ACT3 = '''
 
   ''' + keeper(
     "<p><strong>And the engine still says they will not win it by shooting.</strong> Twelve runs, "
-    "zero clears, every one of them broken off &mdash; see <a href='#cost'>What the Night "
-    "Costs</a>. The difference from module I is the reason. Module I's boss had no answer on the "
+    "zero clears, every one of them broken off (see <a href='#cost'>What the Night "
+    "Costs</a>). The difference from module I is the reason. Module I's boss had no answer on the "
     "field at all. This one is a fight the posse loses on the numbers by a little, and one "
     "prepared thing flips it. The "
     "mirror does not kill it. The mirror makes it hesitate, and hesitation is the whole margin.</p>") + '''
@@ -478,7 +478,7 @@ ACT3 = '''
   <h2 id="a3-privy">12. The Ash Line</h2>
   <p>Behind the privy is a barrel of stove ash and, in the barn, forty pounds of bone-meal bought for
   the stock. A line of the two mixed, laid across the yard, is the second half of the
-  creature&rsquo;s own answer &mdash; and it does not have to be a big line. It has to be between the
+  creature&rsquo;s own answer, and it does not have to be a big line. It has to be between the
   thing and the door it wants.</p>
 
   <p>Laying it is one action and anyone can take it. Crossing it is the one thing the Skin-Walker

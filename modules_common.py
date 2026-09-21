@@ -147,7 +147,7 @@ def statblock(name, note=None):
 
 
 def found(name):
-    """What the posse finds before they find the thing — the Bestiary's own `found` line."""
+    """What the posse finds before they find the thing, the Bestiary's own `found` line."""
     return f'<div class="cr-found"><span class="cf-tag">Sign of it.</span> {creature(name)["found"]}</div>'
 
 
@@ -179,7 +179,7 @@ def clock(name, segments, what):
 
 
 def npc(name, want, lever, line):
-    """Ch. VIII's NPC in three lines — a want, a lever, and a line they say. The Keeper's Book
+    """Ch. VIII's NPC in three lines: a want, a lever, and a line they say. The Keeper's Book
     builds every person this way, so a module that builds them any other way is a module the
     Keeper has to translate."""
     return (f'<div class="npc"><span class="np-name">{name}</span>'
@@ -193,7 +193,7 @@ def contents(entries):
     by walking each section's h2s.
 
     Two things here are load-bearing and both were learned by getting them wrong. The page span is
-    not decoration — `_TOC_ENTRY` keys on it, and a list written without one grows into a TOC of a
+    not decoration: `_TOC_ENTRY` keys on it, and a list written without one grows into a TOC of a
     single line. And the `<li>` must be bare: the entry pattern is `<li><a href=…`, so an `<li>`
     that helpfully carries `class="ch"` matches nothing. The classes are the grower's to add, since
     it is the one that knows which lines are chapters and which are the headings underneath them."""
@@ -238,7 +238,7 @@ MODULE_CSS = """
   .npc p{ margin:.2em 0; font-size:13.8px; line-height:1.34; }
   .npc .np-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--shade); font-weight:700; }
   .npc .np-line{ font-style:italic; color:var(--ink-soft); }
-  /* The playtest table — numbers the engine produced, printed as numbers. */
+  /* The playtest table, numbers the engine produced, printed as numbers. */
   table.playtest{ width:100%; border-collapse:collapse; margin:1em 0; font-size:13.2px; }
   table.playtest th{ background:var(--blood-d); color:#f2ead6; font-variant:small-caps; letter-spacing:.05em; padding:4px 7px; text-align:left; }
   table.playtest td{ border-bottom:1px solid var(--gold-d); padding:4px 7px; }

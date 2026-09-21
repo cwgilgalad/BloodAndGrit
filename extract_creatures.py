@@ -50,7 +50,7 @@ def parse(path):
         found = ""
         fm = re.search(r'<p class="cr-found">(.*?)</p>', block, re.S)
         if fm:
-            found = re.sub(r"^Found\s+—\s+", "", strip_tags(fm.group(1)))
+            found = re.sub(r"^Found\s+", "", strip_tags(fm.group(1)))
 
         witness = ""
         wm = re.search(r'<div class="quote">(.*?)<span class="src">(.*?)</span>', block, re.S)
