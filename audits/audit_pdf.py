@@ -51,6 +51,9 @@ PDFS = [
     ("Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf", 2),
     ("Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf", 2),
     ("Blood-and-Grit-Module-III-What-the-Water-Answers.pdf", 2),
+    # Cole, 2026-09-21: the Book of Legends ships as its own PDF as well. Cover and Contents are its
+    # front matter; confirm the count against the first printed copy.
+    ("Blood-and-Grit-Book-of-Legends.pdf", 2),
 ]
 
 # The page number is set with `letter-spacing:.3em`, so the text extractor hands back "1 2 1" for

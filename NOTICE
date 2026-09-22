@@ -1,4 +1,4 @@
-Blood & Grit — the game and the app
+Blood & Grit: the game and the app
 Copyright (c) 2026 Cole Williams
 
 Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0
@@ -11,18 +11,18 @@ THE SHORT VERSION
 
 You are free to:
 
-  SHARE    — copy and redistribute this work in any medium or format
-  ADAPT    — remix, transform, and build upon it
+  SHARE: copy and redistribute this work in any medium or format
+  ADAPT, remix, transform, and build upon it
 
 Under these terms:
 
-  ATTRIBUTION     — credit "Blood & Grit by Cole Williams", link to this
+  ATTRIBUTION: credit "Blood & Grit by Cole Williams", link to this
                     license, and say if you changed anything.
-  NONCOMMERCIAL   — you may NOT use it for commercial purposes. Play it, run it
+  NONCOMMERCIAL: you may NOT use it for commercial purposes. Play it, run it
                     at your table, study it, fork it, teach with it, write for
-                    it — but do not sell it, sell access to it, or build a
+                    it, but do not sell it, sell access to it, or build a
                     commercial product on it.
-  SHAREALIKE      — if you build on it, release your version under this same
+  SHAREALIKE: if you build on it, release your version under this same
                     license, so it stays as open as you found it.
 
 No additional restrictions: you may not apply legal terms or technological
@@ -36,14 +36,14 @@ WHAT THIS COVERS
 Everything in this repository, both halves of it:
 
   THE GAME
-    * The Player's Book, The Keeper's Book, and The Bestiary — text, tables,
-      stat blocks and layout, in every form they ship in: the built HTML, the
-      PDFs, and the prose embedded as strings inside build_player.py,
-      build_keeper.py and build_bestiary.py.
-    * assets/ — the cover emblem.
+    * The four books (The Player's Book, The Keeper's Book, The Bestiary and
+      The Book of Legends) and the three adventure modules, in every form they
+      ship in. That means the built HTML and the PDFs, and it means the prose
+      embedded as strings inside the build_*.py scripts.
+    * assets/, the cover emblem.
 
   THE SOFTWARE
-    * GK/ — GritKeeper: the C#/.NET rules library, the WinForms app, the test
+    * GK/, GritKeeper: the C#/.NET rules library, the WinForms app, the test
       suite, and the JSON data under GK/rules/Data/.
     * The Python build pipeline and verification tools (build_*.py,
       nav_tools.py, perdition_map.py, pag_patch.py, make_pdf.py,
@@ -72,9 +72,9 @@ A NOTE ON LINEAGE: Blood & Grit's resolution system is a d20 hybrid whose shape
 was informed by Pathfinder 2E -- four degrees of success, three saves, an
 ability-modifier spine. Game MECHANICS are not themselves copyrightable in the
 United States; only their particular expression is, and every word of expression
-here is original to this project. Nerve, the Mark, Taint, Grit as written here,
-the Iron Code, the Signs and Miracles, the 150 creatures and all of the setting
-are this game's own. No text from any other publisher's work is reproduced here,
+here is original to this project. Nerve and the Mark as written here are this
+game's own, and so are Taint and Grit. So is the Iron Code, and so are the Signs and Miracles, the 182
+creatures and every part of the setting. No text from any other publisher's work is reproduced here,
 and this project is not affiliated with, endorsed by, or derived from the content
 of any other publisher.
 
