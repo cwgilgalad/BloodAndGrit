@@ -92,7 +92,7 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 Not one of the Tier III fights above was ever cleared by shooting it — across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
 
-**The Hunger That Walks** — *putting it down:* Fire and iron put it down; faster, a true name and a held warmth may yet call the man back from it — once.
+**The Hunger That Walks** — *putting it down:* Fire and iron put it down; faster, a true name and a held warmth may yet call the man back from it, once.
 
 ---
 

@@ -26,20 +26,20 @@ W, H = 960, 620
 
 # ---- the shared coordinate model (label anchor points) ----
 LOC = {
-    "crossing": (500, 286),   # Calvary Crossing — county seat, at the river ford
-    "coffin":   (315, 405),   # Coffin Wells — dying cattle town (Adventure 1)
-    "saltlick": (782, 176),   # Saltlick Station — stage relay (Adventure 2)
-    "mission":  (430, 452),   # Mission San Clavo — the ruined cursed heart
+    "crossing": (500, 286),   # Calvary Crossing, county seat, at the river ford
+    "coffin":   (315, 405),   # Coffin Wells, dying cattle town (Adventure 1)
+    "saltlick": (782, 176),   # Saltlick Station, stage relay (Adventure 2)
+    "mission":  (430, 452),   # Mission San Clavo, the ruined cursed heart
     "homestead":(392, 346),   # the outlying homesteads (the feeding shows here first)
-    "mesa":     (720, 452),   # the Painted Mesa — the First Peoples' ground
+    "mesa":     (720, 452),   # the Painted Mesa: the First Peoples' ground
 }
 
 # wells / springs of the binding ring: (x, y, name, state)   state: bound|failing|broken
 WELLS = [
-    (315, 405, "Coffin Wells",   "broken"),   # the Nightwalker — Adventure 1
+    (315, 405, "Coffin Wells",   "broken"),   # the Nightwalker: Adventure 1
     (430, 452, "the Mission spring", "failing"),
     (500, 286, "Crossing well",  "bound"),
-    (782, 176, "Saltlick well",  "failing"),   # the Skin-Walker's ground — Adventure 2
+    (782, 176, "Saltlick well",  "failing"),   # the Skin-Walker's ground: Adventure 2
     (720, 452, "Painted spring", "bound"),
     (352, 150, "the North seep", "bound"),
     (636, 232, "Roadman's well", "bound"),
@@ -83,7 +83,7 @@ RIDER_KNOWS = [
 def rider_knows_html(here=None):
     """The list as markup. `here` marks one place as this book's own (the modules use it)."""
     rows = "".join(
-        f"    <li><strong>{name}</strong> &mdash; {what}"
+        f"    <li><strong>{name}</strong>: {what}"
         + (" <strong>&mdash; this module</strong>" if name == here else "") + "</li>\n"
         for name, what in RIDER_KNOWS)
     return f'<ul class="dash">\n{rows}  </ul>'
@@ -335,7 +335,7 @@ def player_map_html():
     ], "The Country")
     inner = _base() + legend
     return ('<figure class="map map-full">' + _svg(inner, "bg-map") +
-            '<figcaption>Perdition Basin &mdash; the honest country, as any soul who has '
+            '<figcaption>Perdition Basin: the honest country, as any soul who has '
             'ridden it could draw it in the dirt.</figcaption></figure>')
 
 
@@ -381,7 +381,7 @@ def keeper_map_html():
         over.append(mark(wx, wy))
 
     # what sleeps beneath the broken wells / the truths
-    over.append(_label(315, 372, "Nightwalker &mdash; risen", 11, color=BLOOD_D,
+    over.append(_label(315, 372, "Nightwalker, risen", 11, color=BLOOD_D,
                        weight="700", anchor="middle"))
     over.append(_label(560, 500, "the South well: gone", 11, color=BLOOD_D,
                        weight="700", anchor="middle"))
@@ -396,20 +396,20 @@ def keeper_map_html():
                 f'stroke-width="1.5"/><text x="{x}" y="{y+4}" text-anchor="middle" '
                 f'stroke="none" fill="{PAPER_L}" style="font-family:\'Playfair Display\','
                 f'serif;font-weight:700;font-size:12px">{n}</text>')
-    over.append(pin(282, 388, "1"))   # Coffin Wells — The Salt at Coffin Wells
-    over.append(pin(816, 148, "2"))   # Saltlick — A Face Not His Own
+    over.append(pin(282, 388, "1"))   # Coffin Wells: The Salt at Coffin Wells
+    over.append(pin(816, 148, "2"))   # Saltlick: A Face Not His Own
 
     legend = _legend([
         (bound_mark(0, 0), "well still <b>bound</b> (nail holds)"),
         (failing_mark(0, 0), "binding <b>failing</b>"),
-        (broken_mark(0, 0), "well <b>broken</b> &mdash; something woke"),
+        (broken_mark(0, 0), "well <b>broken</b> (something woke)"),
         (f'<path d="M-8 0 L8 0" stroke="{BLOOD_D}" stroke-width="1.4" '
          f'stroke-dasharray="1 6"/>', "the ring of nails (the padres&rsquo; seal)"),
         (pin(0, 0, "&#9679;"), "starter-adventure site"),
     ], "The Keeper's Country")
     inner = _base() + '<g>' + "".join(over) + '</g>' + legend
     return ('<figure class="map map-full">' + _svg(inner, "bg-map") +
-            '<figcaption>Perdition Basin &mdash; the same country with its wounds shown: '
+            '<figcaption>Perdition Basin: the same country with its wounds shown: '
             'the failing seal, and what each broken well let up.</figcaption></figure>')
 
 

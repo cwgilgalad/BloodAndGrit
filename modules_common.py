@@ -34,7 +34,7 @@ def creature(name):
     if c is None:
         import difflib
         near = difflib.get_close_matches(name, [x["name"] for x in creatures().values()], n=3, cutoff=0.4)
-        raise SystemExit(f"module cites '{name}', which the Bestiary does not have."
+        raise SystemExit(f"module cites '{name}', which the Bestiary doesn't have."
                          + (f" Did you mean: {', '.join(near)}?" if near else ""))
     return c
 
@@ -147,7 +147,7 @@ def statblock(name, note=None):
 
 
 def found(name):
-    """What the posse finds before they find the thing — the Bestiary's own `found` line."""
+    """What the posse finds before they find the thing, the Bestiary's own `found` line."""
     return f'<div class="cr-found"><span class="cf-tag">Sign of it.</span> {creature(name)["found"]}</div>'
 
 
@@ -179,7 +179,7 @@ def clock(name, segments, what):
 
 
 def npc(name, want, lever, line):
-    """Ch. VIII's NPC in three lines — a want, a lever, and a line they say. The Keeper's Book
+    """Ch. VIII's NPC in three lines: a want, a lever, and a line they say. The Keeper's Book
     builds every person this way, so a module that builds them any other way is a module the
     Keeper has to translate."""
     return (f'<div class="npc"><span class="np-name">{name}</span>'
@@ -193,7 +193,7 @@ def contents(entries):
     by walking each section's h2s.
 
     Two things here are load-bearing and both were learned by getting them wrong. The page span is
-    not decoration — `_TOC_ENTRY` keys on it, and a list written without one grows into a TOC of a
+    not decoration: `_TOC_ENTRY` keys on it, and a list written without one grows into a TOC of a
     single line. And the `<li>` must be bare: the entry pattern is `<li><a href=…`, so an `<li>`
     that helpfully carries `class="ch"` matches nothing. The classes are the grower's to add, since
     it is the one that knows which lines are chapters and which are the headings underneath them."""
@@ -238,7 +238,7 @@ MODULE_CSS = """
   .npc p{ margin:.2em 0; font-size:13.8px; line-height:1.34; }
   .npc .np-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--shade); font-weight:700; }
   .npc .np-line{ font-style:italic; color:var(--ink-soft); }
-  /* The playtest table — numbers the engine produced, printed as numbers. */
+  /* The playtest table, numbers the engine produced, printed as numbers. */
   table.playtest{ width:100%; border-collapse:collapse; margin:1em 0; font-size:13.2px; }
   table.playtest th{ background:var(--blood-d); color:#f2ead6; font-variant:small-caps; letter-spacing:.05em; padding:4px 7px; text-align:left; }
   table.playtest td{ border-bottom:1px solid var(--gold-d); padding:4px 7px; }
@@ -343,15 +343,15 @@ def basin(here, *, this_module):
   {runhead("The Basin")}
   <h1 class="chapter">Perdition Basin</h1>
   {quote("A bowl of grass and dust with a bad river through the middle of it, and every well in it "
-         "dug by somebody who did not ask first.",
+         "dug by somebody who didn't ask first.",
          "N. Ashby, the Keeper&rsquo;s Book")}
   <p>This module is set in <strong>Perdition Basin</strong>, the ready-made country of the
-  Keeper&rsquo;s Book (Ch. XIII), and so are the other two. It is a hard, dry county in the
+  Keeper&rsquo;s Book (Ch. XIII), and so are the other two. It's a hard, dry county in the
   territory: a bowl of grass and dust ringed by mesa and badland, its life strung along the failing
   Calvary River and the scattered wells that are the only sure water for a day&rsquo;s ride in any
-  direction. A few days&rsquo; ride crosses the whole of it.</p>
-  <p>You do not need the Keeper&rsquo;s Book to run this night. What that chapter adds is the reason
-  the wells are the way they are, and it is worth having before you run all three.</p>
+  direction. A few days&rsquo; ride takes you across it.</p>
+  <p>You don't need the Keeper&rsquo;s Book to run this night. What that chapter adds is the reason
+  the wells are the way they are, and it's worth having before you run all three.</p>
 
   {player_map_html()}
 
@@ -371,7 +371,7 @@ def basin(here, *, this_module):
   </table>
   {keeper("Souls who ride all three should be the same souls. The basin pays a table back for "
           "continuity more than most country does: the marshal at Calvary Crossing remembers them, "
-          "the water gets worse while they are away, and a homestead they saved in Module I is a "
+          "the water gets worse while they're away, and a homestead they saved in Module I is a "
           "place they can fall back to in Module III. If your table wants fresh characters each "
           "time, run them as three separate nights and let the basin be the only thing that "
           "carries over. It carries plenty.", "Running the three")}

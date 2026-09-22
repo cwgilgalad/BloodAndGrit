@@ -8,6 +8,50 @@ Desktop\Git repos.)
 
 ---
 
+- **The voice pass over the books. Player's Book v2.52, Keeper's Book v2.36, Bestiary v2.23, Book of
+  Legends v1.1, modules v1.8 / v1.10 / v1.10 · GritKeeper v1.58.0 (2026-09-20).**
+
+  Cole never types an em dash and he's named it twice now. The three older books ran 8 to 12 per
+  thousand words against his 1.4. They run 0.0 to 0.5 now (Player's 0.0, Keeper's 0.2, Bestiary 0.1,
+  Legends 0.4, the modules 0.4 to 0.5), and the gate is 2.0.
+
+  **How the dashes came out.** A script took 1,266 of them by rule: a pair became commas or brackets,
+  a dash before a list became a colon, a clause that could stand on its own got a full stop, and
+  anything else got a comma. Then every comma and colon it wrote was read in its own sentence, and
+  about 260 of them read wrong. Most were comma splices where the dash had been joining two clauses
+  ("Do not forbid it, charge for it"); the rest were a full stop that cut a description off from its
+  noun, two colons in one sentence (the Origins' "Boon: X: Y" is "Boon: X. Y" now), a mark that landed
+  after a line break so the page printed "western , give", and the dash in 'their Dread line is marked
+  "&mdash;"', which had turned into a comma. The labels whose headings kept their dash kept theirs, so
+  a module's Contents still matches its act headings.
+
+  **The habits the prose audit flags.** "X is the whole of Y" (twenty-two of them), "the lesson is"
+  (nine, all in the Bestiary's Keeper notes), quietly, genuinely, deliberately, on purpose, the shape
+  of, the rhetorical "X, not Y", and the two-beat fragment. About three hundred sentences were
+  rewritten by hand and rules text was left exactly as it stood; where a flagged phrase carries a
+  rule ("knocked senseless, not killed") it stays. The period documents in the Book of Legends keep
+  their fragments, because a surveyor's day-book is written that way. The strict audit finds nothing
+  left in any book. What it still lists is in the docs, which are the next pass.
+
+  **Contractions went where the voice is advice or lore, and nowhere near a rule.** Keeper's Book 3.5
+  to 12.9 per thousand words, Bestiary 5.7 to 11.4, the modules from under 1 to 15 to 18, the Player's
+  Book 1.6 to 3.6 (any paragraph that states a rule keeps every word of it). Cole writes 14.8. The
+  script works only inside the builders' string literals, skips read-aloud boxes and the Bestiary's
+  field-book lore, and refuses the spots where a contraction breaks the grammar: "what catches it is
+  the calendar" cannot become "what catches it's", and "each creature here is built" is not "here's".
+
+  **The app's data follows the books.** chargen.json and creatures.json are transcriptions, so both
+  were re-derived from the rebuilt pages, and the Compass names take the book's colon (nothing keys on
+  them). One slip on the way, caught by `verify_rules`: the resync treated a 3rd-level path's boon as
+  a substring when the audit compares it whole, so five paths went stale until the resync learned the
+  difference.
+
+  "Elara", a name readers have learned to connect with machine-written fiction, is Orpha Greer now.
+
+  Pages: Player's Book 268, Keeper's Book 141, Bestiary 210, Book of Legends 67, the modules 33
+  apiece. Rules 1,741 / 0, consistency 105,927 / 0, smoke 16,355 / 0, self-test 44/44, and
+  `verify_all --app` 12 of 13 before the commit (the thirteenth is "not committed yet").
+
 - **The Book of Legends v1.0, a fourth book. Player's Book v2.51, Keeper's Book v2.35 ·
   GritKeeper v1.58.0 (2026-09-19).**
 
