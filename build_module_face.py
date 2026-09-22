@@ -10,7 +10,7 @@ from modules_common import (basin, night_costs, shell, splice, finish, report, r
                             keeper, clock, npc, statblock, found, contents)
 from module_maps import map_html
 
-VERSION = "1.9"
+VERSION = "1.10"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -30,7 +30,7 @@ H = shell(
          '    so there was nobody at that station qualified to say."\n'
          '    <span class="src">— Marshal Adelia Cruz, on the Saltlick inquest</span>'),
         ('"Count them. Count them out loud, and count them again in an hour, and if the number\n'
-         '    is the same both times you have still learned nothing."\n'
+         '    is the same both times you&rsquo;ve still learned nothing."\n'
          '    <span class="src">— advice written inside a station-keeper\'s ledger, Saltlick</span>'),
     ],
 )
@@ -69,7 +69,7 @@ WHAT = '''
   of Perdition Basin. Three to four hours. Every creature in it is printed here in full, so the
   Bestiary can stay on the shelf.</p>
 
-  <p>It is a different animal from <em>The Salt at Coffin Wells</em> and it is meant to be. Module I
+  <p>It's a different animal from <em>The Salt at Coffin Wells</em> and it's meant to be. Module I
   was a night of things coming at the posse out of the dark. This is a night of things already
   inside, sitting at the same table, passing the salt. Nothing charges the door. The horror is that
   the posse has to decide, out loud, in front of everybody, which of eight frightened people is not
@@ -98,7 +98,7 @@ WHAT = '''
 
   ''' + keeper(
     "<p>Read the Eight before you read the acts. This module is a cast, a building, and a rule about "
-    "what the thing can and cannot do; the three acts are just the order those meet the posse in. A "
+    "what the thing can and can't do; the three acts are just the order those meet the posse in. A "
     "Keeper who knows the eight can improvise the whole night. A Keeper who has memorised the acts "
     "and not the people will be reading when they should be answering.</p>", "Before you run it") + '''
 </section>
@@ -117,9 +117,9 @@ TRUTH = '''
   Tuesday previous. What got off the coach had been wearing him for four days and had learned, in
   that time, that a man travelling alone is the easiest thing in the world to be.</p>
 
-  <p>It came south because it had used up the north. It is not hunting the posse and it is not
-  hunting the station. It is doing what it has done in five towns already: settling in, taking one
-  soul at a time, and leaving before the count gets noticed. Saltlick is a stop, not a destination.
+  <p>It came south because it had used up the north. It isn't hunting the posse and it's not
+  hunting the station. It's doing what it has done in five towns already: settling in, taking one
+  soul at a time, and leaving before the count gets noticed. Saltlick is only a stop.
   That is the coldest thing about it and the module should let the players work it out for
   themselves.</p>
 
@@ -133,13 +133,13 @@ TRUTH = '''
   Saltlick anybody has bothered to lock.</p>
 
   <h2 id="truth-tell">The Tell</h2>
-  <p>It has the face, the voice, the hands and the memories. What it does not have is the habit.
-  <strong>Neither Dell nor Mears is ever in the same room as the other.</strong> They are always just
+  <p>It has the face, the voice, the hands and the memories. What it doesn't have is the habit.
+  <strong>Neither Dell nor Mears is ever in the same room as the other.</strong> They're always just
   gone to the barn, just stepped out, just turned in. Six of the station&rsquo;s people will tell the
   posse both men are here tonight and not one of them has seen them together.</p>
 
   ''' + keeper(
-    "<p><strong>Do not withhold this and do not hand it over.</strong> Say, unprompted, that Dell has "
+    "<p><strong>Don't withhold this and don't hand it over.</strong> Say, unprompted, that Dell has "
     "just gone out to see to the team, whenever Mears is on stage. Say Mears is in the barn whenever "
     "Dell is. Say it four or five times across Act One in exactly that flat, ordinary way, and put "
     "nothing on it. The table will hear it eventually, and the moment somebody at the table says the "
@@ -162,8 +162,8 @@ TURN = '''
 <section class="page" id="turn">
   ''' + runhead("Mrs. Follett") + '''
   <h1 class="chapter">The Woman Going East</h1>
-  ''' + quote("He was nine weeks a better man than he was forty years. I have thought about that "
-              "every day since and I have not got to the bottom of it.",
+  ''' + quote("He was nine weeks a better man than he was forty years. I've thought about that "
+              "every day since and I haven't got to the bottom of it.",
               "Mrs. Ada Follett, if anyone ever asks her twice") + '''
 
   <p>Saltlick is a stop and not a destination, and the thing has run out of nothing here. It has
@@ -174,17 +174,17 @@ TURN = '''
   <h2 id="turn-kearney">What Happened at Kearney</h2>
   <p>Ada Follett is going east to bury a brother. Her brother died at Kearney in the spring, three
   towns back along the same line, and he was buried there in April by people who knew him. She is
-  not going east to bury him. She is going east because that is the direction the coach goes.</p>
+  not going east to bury him. She's going east because that's the direction the coach goes.</p>
 
   <p>Nine weeks before he died, something began wearing Peter Follett. She knew inside a
   fortnight. She has never been able to say exactly how. The way a sister knows, and no more
   than that. What she can say, and will not, is that those nine weeks were the best nine weeks of
-  her brother&rsquo;s life and of hers. He did not drink. He came in at a decent hour. He asked
+  her brother&rsquo;s life and of hers. He didn't drink. He came in at a decent hour. He asked
   her about her day and then he listened to the answer, which the man himself had never once
   done in forty years.</p>
 
   <p>She said nothing for seven weeks. She has had four months on coaches to work out what that
-  makes her, and she has not arrived anywhere.</p>
+  makes her, and she hasn't arrived anywhere.</p>
 
   ''' + keeper(
       " Ada has told it nothing. She has never spoken to it, warned it, or handed it a name. What "
@@ -222,20 +222,20 @@ TURN = '''
   ''' + keeper(
       " Every word of that is true and the Keeper must know it going in. It can do the thing it "
       "is offering. It will keep the bargain for as long as it is fed and it has kept longer ones. "
-      "Do not play it as a trick, do not have it sneer, and do not put a tell in the voice. The "
+      "Don't play it as a trick, don't have it sneer, and don't put a tell in the voice. The "
       "horror in this scene is that the offer is good, and that a table full of grown people has "
       "to turn it down out loud, one at a time, in front of each other.",
-      "Do not make this easy") + '''
+      "Don't make this easy") + '''
 
   <p><strong>If a player takes it.</strong> Let them. They give it a name: someone who will not
   be missed, which means the player has to think of one, which is the price and is meant to be
   felt. They gain the person back, in the shape it wore, for as long as they keep feeding it.
-  Mark them one step and give them a standing thread. Do not roll for this and do not offer a
+  Mark them one step and give them a standing thread. Don't roll for this and don't offer a
   save. A soul who says yes to that has said yes.</p>
 
   <p><strong>Ada will take it.</strong> She has been waiting four months to be asked. If the
   posse has been decent to her she may hesitate, and if one of them has actually spoken to her
-  about her brother she may not take it at all, and that is the largest thing a kindness has ever
+  about her brother she may not take it at all, and that's the largest thing a kindness has ever
   bought in this module. Play the hesitation honestly and let the dice stay in the cup.</p>
 </section>
 '''
@@ -251,26 +251,26 @@ HOOK = '''
     "Saltlick Station has a light in it and a barn with a roof, and the man on the step is waving "
     "you in with both arms like he has been waiting all day for somebody to be glad to see.") + '''
 
-  <p>They do not need a reason to be here. They need a reason not to leave, and the weather is it.
+  <p>They don't need a reason to be here. They need a reason not to leave, and the weather is it.
   The norther runs until first light and the module ends at first light, which is not a coincidence.</p>
 
   <h2 id="hook-why">Three Ways In</h2>
   <ul>
-    <li><strong>The weather.</strong> Simplest and best. They are on the north road, it turns, and
+    <li><strong>The weather.</strong> Simplest and best. They're on the north road, it turns, and
     Saltlick is the only roof in eleven miles.</li>
-    <li><strong>The coach.</strong> They are riding it, or escorting it, or waiting on it. It is due
+    <li><strong>The coach.</strong> They're riding it, or escorting it, or waiting on it. It's due
     at dawn and it will arrive on time, which matters; see
     <a href="#after-coach">the ride out</a>.</li>
     <li><strong>Following module I.</strong> The scrap of worked silver off Tom Pell&rsquo;s body has
     a mate. Marshal Cruz has heard of a traveller in patent remedies buying old church silver up and
-    down the north line and paying too much for it. That is a true rumour and a false lead: the thing
+    down the north line and paying too much for it. That's a true rumour and a false lead: the thing
     buys silver to know where it is.</li>
   </ul>
 
   ''' + npc("Ollie Gant, station keeper",
             "the coach to come on time and nothing else to happen ever again",
-            "he is proud of his station and will not have it called unclean",
-            "Eleven days without a word of trouble. You will want to not be the trouble.") + '''
+            "he's proud of his station and won't have it called unclean",
+            "Eleven days without a word of trouble. You'll want to not be the trouble.") + '''
 </section>
 '''
 
@@ -283,24 +283,24 @@ GROUND = '''
   number in the margin of the act it belongs to.</p>
 
   ''' + map_html(SLUG,
-                 "the whole of the night, four buildings and a yard, with the twelve keyed scenes "
+                 "the entire night, four buildings and a yard, with the twelve keyed scenes "
                  "pinned where they happen") + '''
 
   <h2 id="ground-shape">What the Shape of It Does</h2>
   <p>Saltlick is four buildings around a yard forty paces across, on a flat with no cover for a mile
-  in any direction. That geometry is doing three jobs and it is worth knowing which.</p>
+  in any direction. That geometry does three jobs, and here they are.</p>
   <ul>
-    <li><strong>Nobody can leave.</strong> The doors are not locked. It is dark, and blowing, and
-    there is nowhere to go. The players will test this. Let them, once, briefly, and
+    <li><strong>Nobody can leave.</strong> The doors aren't locked. It's dark, and blowing, and
+    there's nowhere to go. The players will test this. Let them, once, briefly, and
     let the country turn them around.</li>
     <li><strong>Everybody keeps crossing the yard.</strong> Which is how the posse can be told six
     times that both men are here and never see them together.</li>
-    <li><strong>The last act has an open field.</strong> Act Three is fought in the yard on purpose:
+    <li><strong>The last act has an open field.</strong> Act Three is fought in the yard for a reason:
     forty paces of nothing, at first light, with a line of ash across it.</li>
   </ul>
 
   ''' + keeper(
-    "<p>Hand the map to the table. There is nothing on it the posse cannot see from the step, and a "
+    "<p>Hand the map to the table. There's nothing on it the posse can't see from the step, and a "
     "table that can point at the ice house will use the ice house. The download beside it prints on "
     "one sheet.</p>") + '''
 </section>
@@ -315,15 +315,15 @@ ACT1 = '''
 
   <h2 id="a1-house">1. The Station House</h2>
   <p>Low, long, warm, and smelling of coffee and wet wool. Gant takes their coats and tells them the
-  rules of his house, which are: pay for what you eat, do not go in the ice house, and do not wake
+  rules of his house, which are: pay for what you eat, don't go in the ice house, and don't wake
   the passengers before five.</p>
 
-  <p>The ice house rule is the only one he means. He means it because there is a side of beef in
-  there he has been over-charging for, and he is embarrassed. He does not know what else is in there.</p>
+  <p>The ice house rule is the only one he means. He means it because there's a side of beef in
+  there he has been over-charging for, and he's embarrassed. He does not know what else is in there.</p>
 
   <h2 id="a1-common">2. The Common Room, and Eight Names</h2>
   <p>Introduce all eight here, quickly, in one pass, the way a room actually introduces itself. Full
-  entries under <a href="#cast">The Eight</a>. Do not slow down for them and do not let a player
+  entries under <a href="#cast">The Eight</a>. Don't slow down for them and don't let a player
   interview them one at a time yet; the room should feel crowded and cheerful and slightly
   too loud.</p>
 
@@ -334,14 +334,14 @@ ACT1 = '''
     "want feeding when they&rsquo;re in.&rdquo;") + '''
 
   ''' + keeper(
-    "<p>That is the first plant and it is deliberately worthless. Nobody should notice it. Say four "
+    "<p>That's the first plant, and it's meant to be worthless. Nobody should notice it. Say four "
     "more like it across this act, always about the same two men, always in somebody else's mouth, "
     "always while one of them is in the room.</p>") + '''
 
   <h2 id="a1-barn">3. The Barn</h2>
   <p>Warm, dark, full of the noise of animals not settling. The stalls are along the north wall and
-  the horses in the two nearest the door will not stand: they have been moved twice tonight
-  and they will be moved again.</p>
+  the horses in the two nearest the door won't stand: they've been moved twice tonight
+  and they'll be moved again.</p>
 
   <p>A Mountain Man or anyone with a hand for stock reads this in a moment: the horses are not
   spooked at the weather. They are spooked at a thing that keeps walking past them.</p>
@@ -359,7 +359,7 @@ ACT1 = '''
   closes before anyone can put a hand on it.</p>
 
   ''' + keeper(
-    "<p>One check, and it is on the wrongness rather than on anything seen. Nobody at this table has "
+    "<p>One check, and it's on the wrongness rather than on anything seen. Nobody at this table has "
     "seen a monster yet and the module is in no hurry for them to. Sleep is a Toll rather than a "
     "scene: a night in the cold with the doors barred costs each soul 2 Blood and nothing else.</p>") + '''
 </section>
@@ -382,15 +382,15 @@ ACT2 = '''
 
   <h2 id="a2-bunks">6. The Bunk Row</h2>
   <p>Six bunks, a curtain, and no privacy at all. This is where the posse can get people alone, and
-  it is where the module wants them: one soul, one lamp, one frightened person, and a question.</p>
+  it's where the module wants them: one soul, one lamp, one frightened person, and a question.</p>
 
   <p>Everybody here will answer honestly. Six of them will say both Dell and Mears are at the station
   tonight. Asked directly, <em>when did you last see the two of them together?</em>: 
   every one of them will stop, and think, and not be able to say.</p>
 
   ''' + keeper(
-    "<p><strong>This is the scene the module exists for. Do not rush it and do not help.</strong> If "
-    "nobody asks the question, they do not get the answer, and Act Three simply costs more. If "
+    "<p><strong>This is the scene the module exists for. Don't rush it and don't help.</strong> If "
+    "nobody asks the question, they don't get the answer, and Act Three simply costs more. If "
     "somebody does ask it, give them the pause and the honest, frightened, useless answer, and then "
     "let the table do the rest.</p>", "The hinge") + '''
 
@@ -399,7 +399,7 @@ ACT2 = '''
   sacking, are Amos Dell and Cal Mears: both of them, both intact, both wearing the clothes
   they were taken in, and neither of them marked anywhere a coat would not cover.</p>
 
-  <p><strong>Dread Check, DC 17, Will save.</strong> Tier II loss. Not for the bodies. For the arithmetic
+  <p><strong>Dread Check, DC 17, Will save.</strong> Tier II loss, and not for the bodies. It is for the arithmetic
   the posse does standing over them, which is that both of these men were at supper.</p>
 
   <h2 id="a2-tack">8. The Tack Room</h2>
@@ -415,9 +415,9 @@ ACT2 = '''
 
   ''' + keeper(
     "<p><strong>The engine says the posse wins this one</strong>: ten clears in twelve, in "
-    "about two rounds. That is by design. Act Two is the fight this module lets them have, so that "
+    "about two rounds. That's by design. Act Two is the fight this module lets them have, so that "
     "Act Three can be the one it does not. Let it be brutal and fast and let them win it.</p>"
-    "<p>If a player refuses to fire on a face they know, that is not a problem to solve. Let them "
+    "<p>If a player refuses to fire on a face they know, that isn't a problem to solve. Let them "
     "hold, let it cost them, and let another soul do it. Then remember which of them hesitated, "
     "because Act Three will ask again.</p>") + '''
 </section>
@@ -432,9 +432,9 @@ ACT3 = '''
 
   <h2 id="a3-tell">9. It Stops Pretending</h2>
   <p><strong>Dread Check, DC 18, Will save.</strong> Tier III loss. It happens when the last face
-  comes off, and the module is specific about how: it does not tear, and it does not melt. The man
+  comes off, and the module is specific about how: it doesn't tear, and it doesn't melt. The man
   standing in front of them simply stops doing the thousand small things a man does, all at once,
-  and goes still in a way nothing alive goes still, and then it is not wearing anybody at all.</p>
+  and goes still in a way nothing alive goes still, and then it isn't wearing anybody at all.</p>
 
   ''' + readaloud(
     "It has been holding its shoulders like a man who is cold. It stops. It does not put them down. "
@@ -450,15 +450,15 @@ ACT3 = '''
 
   ''' + keeper(
     "<p><strong>Everything a posse can do here is printed in the creature's own entry</strong> and "
-    "the entry is on the next page. It cannot abide its true reflection. It cannot cross a line of "
-    "ash and bone. A prayed-over or silver bullet wounds it past the borrowed skin. There is a "
+    "the entry is on the next page. It can't abide its true reflection. It can't cross a line of "
+    "ash and bone. A prayed-over or silver bullet wounds it past the borrowed skin. There's a "
     "mirror in the bunk row, there is a stove full of ash and a yard full of bone-meal for the "
-    "stock, and there is a Preacher. The module has been putting all three in front of them since "
+    "stock, and there's a Preacher. The module has been putting all three in front of them since "
     "Act One.</p>", "Say the three out loud if you have to") + '''
 
   <h2 id="a3-yard">11. The Yard at First Light</h2>
   <p>Forty paces of open ground, going gray at the east end. It comes across it without hurrying,
-  because it has done this in five towns and it has not yet met the one that counted in time.</p>
+  because it has done this in five towns and it hasn't yet met the one that counted in time.</p>
 
   ''' + found("The Skin-Walker") + '''
 
@@ -468,21 +468,21 @@ ACT3 = '''
   will seat it on the field without arguing.</p>
 
   ''' + keeper(
-    "<p><strong>And the engine still says they will not win it by shooting.</strong> Twelve runs, "
+    "<p><strong>And the engine still says they won't win it by shooting.</strong> Twelve runs, "
     "zero clears, every one of them broken off (see <a href='#cost'>What the Night "
     "Costs</a>). The difference from module I is the reason. Module I's boss had no answer on the "
     "field at all. This one is a fight the posse loses on the numbers by a little, and one "
     "prepared thing flips it. The "
-    "mirror does not kill it. The mirror makes it hesitate, and hesitation is the whole margin.</p>") + '''
+    "mirror doesn't kill it. The mirror makes it hesitate, and hesitation is the whole margin.</p>") + '''
 
   <h2 id="a3-privy">12. The Ash Line</h2>
   <p>Behind the privy is a barrel of stove ash and, in the barn, forty pounds of bone-meal bought for
   the stock. A line of the two mixed, laid across the yard, is the second half of the
-  creature&rsquo;s own answer, and it does not have to be a big line. It has to be between the
+  creature&rsquo;s own answer, and it doesn't have to be a big line. It has to be between the
   thing and the door it wants.</p>
 
   <p>Laying it is one action and anyone can take it. Crossing it is the one thing the Skin-Walker
-  cannot do, and the module is emphatic that a Keeper should honour that absolutely: no save, no
+  can't do, and the module is emphatic that a Keeper should honour that absolutely: no save, no
   roll, no exception. A rule the country obeys without a die is worth more to a table than any ten
   it negotiates.</p>
 
@@ -490,7 +490,7 @@ ACT3 = '''
   <p>The escape valve, and it is always available. The down coach makes Saltlick at first light,
   every day, and it makes it tonight. Six armed strangers and a shotgun messenger arriving in the
   middle of an open-field fight will end it, one way or the other. It costs the posse the ending. It
-  does not cost them the night.</p>
+  doesn't cost them the night.</p>
 </section>
 '''
 
@@ -500,7 +500,7 @@ CAST = '''
   ''' + runhead("The Eight") + '''
   <h1 class="chapter">The Eight</h1>
   <p class="note">A want, a lever, and a line, per the Keeper&rsquo;s Book Ch. VIII. Two of these
-  people are already gone; the entries do not say which, because the Keeper already knows and the
+  people are already gone; the entries don't say which, because the Keeper already knows and the
   page is easier to read at the table if it treats them all alike.</p>
 
   ''' + npc("Ollie Gant, station keeper",
@@ -510,32 +510,32 @@ CAST = '''
 
   ''' + npc("Amos Dell, traveller in patent remedies",
             "to be found agreeable and then forgotten",
-            "he is generous with his stock and nobody can name a thing he has sold",
-            "Take two of these for the cold. No, no charge. I have had a good month.") + '''
+            "he's generous with his stock and nobody can name a thing he has sold",
+            "Take two of these for the cold. No, no charge. I've had a good month.") + '''
 
   ''' + npc("Cal Mears, hostler",
             "the horses settled and the night over",
-            "he is the only man here the animals will not go near, and he has noticed",
-            "They have been like this since the weather turned. Stock know weather.") + '''
+            "he's the only man here the animals won't go near, and he has noticed",
+            "They've been like this since the weather turned. Stock know weather.") + '''
 
   ''' + npc("Mrs. Ada Follett, going east to bury a brother",
             "to get where she is going and not be spoken to kindly",
-            "she is the sharpest observer in the building and nobody has asked her anything &mdash; "
-            "and she is the reason the thing is still here on the eleventh day "
+            "she's the sharpest observer in the building and nobody has asked her anything &mdash; "
+            "and she's the reason the thing is still here on the eleventh day "
             "(<a href=\"#turn\">The Woman Going East</a>, which the Keeper should read before "
             "running her)",
-            "I have been watching that room for four hours, and I would not care to say what I have seen.") + '''
+            "I've been watching that room for four hours, and I wouldn't care to say what I have seen.") + '''
 
   ''' + npc("Wu Cheng-hsi, who cooks and keeps the accounts",
             "the coal money settled and the coach on time",
             "he keeps the station's ledger, and the ledger records who was fed and when",
-            "Eight at supper. Eight plates. I do not make a mistake with plates.") + '''
+            "Eight at supper. Eight plates. I don't make a mistake with plates.") + '''
 
   ''' + npc("Deputy Sam Orr, moving a prisoner east",
             "his prisoner delivered and no complications on the paper",
-            "he will not unchain the man for anything, which is either the safest thing in the "
+            "he won't unchain the man for anything, which is either the safest thing in the "
             "building or the cruellest",
-            "Whatever this is, it is not my business and he is not going anywhere.") + '''
+            "Whatever this is, it isn't my business and he isn't going anywhere.") + '''
 
   ''' + npc("Bill Teague, in irons, being moved for a hanging",
             "not to be in this building when whatever it is finishes",
@@ -545,12 +545,12 @@ CAST = '''
 
   ''' + npc("Tobe, the boy who does the boots, fourteen",
             "to be treated as one of the men",
-            "he goes everywhere, he is invisible, and he has been in the ice house twice",
+            "he goes everywhere, he's invisible, and he has been in the ice house twice",
             "There's a smell in there ain't beef. I said. Nobody wanted it said.") + '''
 
   ''' + keeper(
     "<p>Teague and Tobe are the two who hand the posse the answer, and both are people the West "
-    "trains a table to discount: a man in irons and a boy. That is the point and it is not "
+    "trains a table to discount: a man in irons and a boy. It's meant that way and it's not "
     "subtle. Play it straight and let the table find it.</p>") + '''
 </section>
 '''
@@ -578,7 +578,7 @@ DEAD = '''
     "<p><strong>On the safe-table rule, and why it is quiet this time.</strong> A Skin-Walker is "
     "Tier III and a 3rd-level posse is Tier 2 (one rung over, not two), so GritKeeper "
     "will seat this fight on the field without a word. Module I's Nightwalker was two rungs over and "
-    "the app argues about it. The rule has not changed; the posse has. That is worth pointing at, "
+    "the app argues about it. The rule hasn't changed; the posse has. That's worth pointing at, "
     "because a table that only ever meets the rule when it refuses something never learns what it is "
     "actually measuring.</p>", "Why the app is quiet this time") + '''
 </section>
@@ -610,10 +610,10 @@ COST = '''
   <p>That is a very particular shape and it is the shape this module was built for. The Act Two
   fight is a fight the posse wins. The Act Three fight is a fight the posse survives. Giving them
   back half their Blood between acts changed neither count, which is how you know the difference
-  between the two rows is not attrition.</p>
+  between the two rows isn't attrition.</p>
 
   ''' + keeper(
-    "<p><strong>Twenty per cent, against seventy-two.</strong> That is the Act Three row, whole. "
+    "<p><strong>Twenty per cent, against seventy-two.</strong> That's the Act Three row, whole. "
     "Four souls trading Strikes at rising MAP against Defense 17 land one blow in five, and it "
     "hits back nearly three times in four. A round and a half of that is the entire fight. Bring "
     "nothing to the yard, and the yard is a countdown.</p>"
@@ -624,18 +624,18 @@ COST = '''
 
   <h2 id="cost-compare">Against Module I</h2>
   <p>The same harness ran <em>The Salt at Coffin Wells</em> at 1st level and this at 3rd, and the two
-  Tier III fights failed differently. The Nightwalker was never beaten and never could be: it is two
+  Tier III fights failed differently. The Nightwalker was never beaten and never could be: it's two
   Tiers over the posse and the safe-table rule says so out loud. The Skin-Walker is one Tier over,
   the app seats it without complaint, and the engine never once cleared it;
   but every posse that reached the yard was a posse that only shot at it.</p>
 
-  <p><strong>Module I's lesson is that some things are not fights. This one's is narrower and
+  <p><strong>Module I's lesson is that some things aren't fights. This one's is narrower and
   harder: some things are fights you lose unless you did something first.</strong></p>
 
   <h2 id="cost-scaling">Scaling the Night</h2>
   <ul>
     <li><strong>A bigger or bolder posse.</strong> Three Possessed in the tack room instead of two.
-    Have it take Tobe in Act Two, so the posse is fighting a boy in Act Three. Do not add Blood to
+    Have it take Tobe in Act Two, so the posse is fighting a boy in Act Three. Don't add Blood to
     the Skin-Walker; take the mirror away instead.</li>
     <li><strong>A smaller or greener posse.</strong> One Possessed. Let Mrs. Follett say what she
     has seen without being asked. Have the ash barrel already standing open in the yard, where
@@ -654,13 +654,13 @@ AFTER = '''
   <p>However it ends, give it weight before anybody rolls anything else.</p>
 
   <h2 id="after-won">If they put it down</h2>
-  <p>Six people live who would not have. Two of them will not thank the posse, because two of them
+  <p>Six people live who would not have. Two of them won't thank the posse, because two of them
   watched a stranger shoot somebody they knew by name. Let Saltlick be grateful and unfriendly at the
   same time, which is how a place is when it has been saved from something it still does not believe
   in.</p>
 
   <h2 id="after-lost">If it walks away</h2>
-  <p>Or if the fourth segment filled and it did not need the face any more. Do not run this as a
+  <p>Or if the fourth segment filled and it did not need the face any more. Don't run this as a
   failure. It leaves wearing somebody, and the somebody is a person the posse spent a night with.
   Six towns now. It has learned that a posse can count, which makes it careful, which makes it
   slower and worse and further away.</p>
@@ -670,8 +670,8 @@ AFTER = '''
   decision the table makes in front of each other. If nobody thought to look at who boarded, say so
   plainly, once, three sessions from now.</p>
 
-  ''' + quote("A thing that can sit at your table can be beaten at your table. That is the only "
-              "comfort in it and it is a real one.",
+  ''' + quote("A thing that can sit at your table can be beaten at your table. That's the only "
+              "comfort in it and it's a real one.",
               "from a Keeper's ledger, quoted in the Keeper's Book") + '''
 
   <h2 id="after-ada">Who has a ticket</h2>
@@ -679,15 +679,15 @@ AFTER = '''
   calm, and she thanks whoever hands her up. Whether anything sits down beside her is the
   Keeper&rsquo;s to decide and the table&rsquo;s to notice.</p>
 
-  <p>If they turned it down and put it down, she goes east alone and she is not grateful, and the
+  <p>If they turned it down and put it down, she goes east alone and she isn't grateful, and the
   last thing she says to the posse is that they have no idea what they took off the table. If one
   of them sat with her and let her talk about Peter, she says something else, and it should be
   short, and it should be the warmest line anybody says in this module.</p>
 
   ''' + keeper(
       " Ada is the module&rsquo;s argument and she should never be punished for it. A woman who "
-      "watched her brother be happy for nine weeks and then had to bury him is not a monster and "
-      "is not a fool. Play her all the way to the coach with her dignity intact, and let the "
+      "watched her brother be happy for nine weeks and then had to bury him isn't a monster and "
+      "isn't a fool. Play her all the way to the coach with her dignity intact, and let the "
       "table sit with the fact that the most reasonable person in the building would have said "
       "yes.") + '''
 

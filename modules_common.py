@@ -34,7 +34,7 @@ def creature(name):
     if c is None:
         import difflib
         near = difflib.get_close_matches(name, [x["name"] for x in creatures().values()], n=3, cutoff=0.4)
-        raise SystemExit(f"module cites '{name}', which the Bestiary does not have."
+        raise SystemExit(f"module cites '{name}', which the Bestiary doesn't have."
                          + (f" Did you mean: {', '.join(near)}?" if near else ""))
     return c
 
@@ -343,15 +343,15 @@ def basin(here, *, this_module):
   {runhead("The Basin")}
   <h1 class="chapter">Perdition Basin</h1>
   {quote("A bowl of grass and dust with a bad river through the middle of it, and every well in it "
-         "dug by somebody who did not ask first.",
+         "dug by somebody who didn't ask first.",
          "N. Ashby, the Keeper&rsquo;s Book")}
   <p>This module is set in <strong>Perdition Basin</strong>, the ready-made country of the
-  Keeper&rsquo;s Book (Ch. XIII), and so are the other two. It is a hard, dry county in the
+  Keeper&rsquo;s Book (Ch. XIII), and so are the other two. It's a hard, dry county in the
   territory: a bowl of grass and dust ringed by mesa and badland, its life strung along the failing
   Calvary River and the scattered wells that are the only sure water for a day&rsquo;s ride in any
-  direction. A few days&rsquo; ride crosses the whole of it.</p>
-  <p>You do not need the Keeper&rsquo;s Book to run this night. What that chapter adds is the reason
-  the wells are the way they are, and it is worth having before you run all three.</p>
+  direction. A few days&rsquo; ride takes you across it.</p>
+  <p>You don't need the Keeper&rsquo;s Book to run this night. What that chapter adds is the reason
+  the wells are the way they are, and it's worth having before you run all three.</p>
 
   {player_map_html()}
 
@@ -371,7 +371,7 @@ def basin(here, *, this_module):
   </table>
   {keeper("Souls who ride all three should be the same souls. The basin pays a table back for "
           "continuity more than most country does: the marshal at Calvary Crossing remembers them, "
-          "the water gets worse while they are away, and a homestead they saved in Module I is a "
+          "the water gets worse while they're away, and a homestead they saved in Module I is a "
           "place they can fall back to in Module III. If your table wants fresh characters each "
           "time, run them as three separate nights and let the basin be the only thing that "
           "carries over. It carries plenty.", "Running the three")}

@@ -1,5 +1,5 @@
 {
-  "_source": "Transcribed from Blood & Grit Player's Book v2.45, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
+  "_source": "Transcribed from Blood & Grit Player's Book v2.52, Ch. III–IV, VIII–X, XIII–XIV. Attack is derived from attackRank (Practiced=level, Steady=level-1, Slight=max(0,level-2)); saves are strong=2+level/2 or weak=level/3. Regenerate when those chapters change (see CLAUDE.md).",
   "honestArray": [
     15,
     14,
@@ -1046,7 +1046,7 @@
       "list": "common",
       "rank": 5,
       "cost": "1 Beat · 5 Nerve and 1 Mark",
-      "desc": "Everything out here owes something to something. Name a creature you can see and call in what it owes, whether or not you are the one it owes it to. It takes 6d6 at once and is Frightened of you until the end of its next turn, and there is no save, because a debt is not an opinion. Backlash: you take a point of Mark for having reached that far into a ledger that was never yours, and that is the whole of the price."
+      "desc": "Everything out here owes something to something. Name a creature you can see and call in what it owes, whether or not you are the one it owes it to. It takes 6d6 at once and is Frightened of you until the end of its next turn, and there is no save, because a debt is not an opinion. Backlash: you take a point of Mark for having reached that far into a ledger that was never yours, and that's all it costs."
     },
     {
       "name": "The Long Night",
@@ -1179,7 +1179,7 @@
       "list": "craft",
       "rank": 5,
       "cost": "One hour · 5 Nerve",
-      "desc": "For one night a place is genuinely safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. Backlash: One night only, and the same roof will not answer twice in the same season. Choose the night with care."
+      "desc": "For one night a place is safe, really safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. Backlash: One night only, and the same roof will not answer twice in the same season. Choose the night with care."
     },
     {
       "name": "The Old Woman's Bargain",
@@ -1193,7 +1193,7 @@
       "list": "craft",
       "rank": 6,
       "cost": "One hour · 6 Nerve",
-      "desc": "Lay cold on a country and let it stay. For a season, the valley or the town you name is colder than it should be: crops fail slowly, the sick get sicker, the roads close early, and anything that was buried stays buried. The old women who can do this rarely explain why they have. Backlash: you feel the cold yourself for the whole of it, and no fire ever quite reaches you again."
+      "desc": "Lay cold on a country and let it stay. For a season, the valley or the town you name is colder than it should be: crops fail slowly, the sick get sicker, the roads close early, and anything that was buried stays buried. The old women who can do this rarely explain why they have. Backlash: you feel the cold yourself for as long as it lasts, and no fire ever quite reaches you again."
     },
     {
       "name": "The Turning of the Year",
@@ -1328,14 +1328,14 @@
       "list": "blessing",
       "rank": 8,
       "cost": "One minute · your whole pool of Faith",
-      "desc": "Most prayers are not answered. Ask, once, for a single thing, in your own words, aloud, in front of whoever is there, and it is granted, whatever it was. The dead one back. The fire out. The army turned. The sickness lifted off a county. The thing that has been coming, not coming. There is no save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and you will spend the rest of your life being careful about what you ask for, having found out that it works."
+      "desc": "Most prayers are not answered. Ask, once, for a single thing, in your own words, aloud, in front of whoever is there, and it is granted, whatever it was. The dead one back. The fire out. The army turned. The sickness lifted off a county. The thing that has been coming, stopped. There is no save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and you will spend the rest of your life being careful about what you ask for, having found out that it works."
     },
     {
       "name": "The Long Road Home",
       "list": "blessing",
       "rank": 8,
       "cost": "One hour · your whole pool of Faith",
-      "desc": "Take everyone home. Every soul who has been with you and is willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has ever called home, safely, together, however far it is and whatever holds them. Doors open. Distances shorten. The dead walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to travel anywhere the ordinary way without knowing exactly how much shorter it could have been."
+      "desc": "Take everyone home. Every soul who has been with you and is willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has ever called home, safely, together, however far it is and whatever holds them. Doors open and distances shorten, and the dead walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to travel anywhere the ordinary way without knowing exactly how much shorter it could have been."
     },
     {
       "name": "Salt the Threshold",
@@ -1384,7 +1384,7 @@
       "list": "consecration",
       "rank": 7,
       "cost": "One hour · 7 Faith",
-      "desc": "Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay buried and quiet. It ends only if the ground is broken deliberately by a living hand, which somebody will eventually get around to."
+      "desc": "Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay buried and quiet. It ends only if a living hand sets out to break the ground, which somebody will eventually get around to."
     },
     {
       "name": "Asperges Me",
@@ -1440,7 +1440,7 @@
       "list": "liturgy",
       "rank": 6,
       "cost": "One hour · 6 Faith",
-      "desc": "Sing the whole of it over a burying ground, a battlefield, a burned house, a mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means. Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them."
+      "desc": "Sing it through, start to finish, over a burying ground, a battlefield, a burned house, a mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means. Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them."
     },
     {
       "name": "Set the Bone",
@@ -1580,7 +1580,7 @@
       "list": "spirits",
       "rank": 3,
       "cost": "One minute · 3 Faith",
-      "desc": "Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel and grants the favor, not the command."
+      "desc": "Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel; it grants favors and takes no orders."
     },
     {
       "name": "The Spirit-Snare",
@@ -1636,7 +1636,7 @@
       "list": "vigil",
       "rank": 2,
       "cost": "1 Beat · 2 Faith",
-      "desc": "A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it."
+      "desc": "A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, which isn't much comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it."
     },
     {
       "name": "Nothing Comes In",
@@ -1657,7 +1657,7 @@
       "list": "vigil",
       "rank": 5,
       "cost": "1 Beat · 5 Faith",
-      "desc": "For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose."
+      "desc": "For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, and you chose it."
     },
     {
       "name": "The Ward Full of Beds",
@@ -2097,7 +2097,7 @@
         }
       ],
       "featureDescs": {
-        "Bushwhack": "Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. The ambush is the whole of the art: a bounty man forced to trade blows in the open with a cornered killer has already made his mistake.",
+        "Bushwhack": "Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. Everything rides on the ambush. A bounty man forced to trade blows in the open with a cornered killer has already made his mistake.",
         "Quick Hands": "Years of needing your iron (or your irons, the manacle kind) a half-second sooner than the other man. You draw, holster, reload, or snap on a cuff as part of another action rather than spending a Beat on it, and add +2 to the roll that decides who acts first. Lockpicks, knots, and a fugitive's hidden pockets answer to these hands as readily as a trigger does.",
         "Road Sense": "You have laid enough ambushes to know when you are walking into one. Gain +2 on Notice against traps, tails, and lying-in-wait, and you are never caught flat; you act in the first round of a fight even when surprise is called against you. The hunted set snares too.",
         "The Drop": "With a quarry dead to rights (your iron drawn, his not) you may Demoralize as a single Beat, and a man who yields comes along quiet, hands where you can see them. Against one who calls the bluff, your first Strike counts him as unaware. Dead or alive is his choosing; you are paid the same either way.",
@@ -2186,10 +2186,10 @@
     },
     {
       "name": "Drifter",
-      "blurb": "The Drifter belongs to no town and answers to no brand. Scout, tracker, horse-thief, bounty-man, or simply a soul who cannot stop moving: the Drifter survives by seeing first, striking once, and being elsewhere by dawn.",
+      "blurb": "The Drifter belongs to no town and answers to no brand. Scout, tracker, horse-thief, bounty-man, or simply a soul who can't stop moving: the Drifter survives by seeing first, striking once, and being elsewhere by dawn.",
       "perk": {
         "name": "No Name Sticks",
-        "desc": "You have used a dozen names and answered to all of them. What you did in one town follows you to the next only if a living soul carries it there on purpose, and every description of you is wrong in at least one particular that matters."
+        "desc": "You've used a dozen names and answered to all of them. What you did in one town follows you to the next only if some living soul goes out of their way to carry it there, and every description of you is wrong in at least one particular that matters."
       },
       "fight": {
         "brings": "Position. Sudden Strike pays whenever somebody else has the foe's attention, and Evasion means the blast that catches the posse often does not catch you.",
@@ -2440,7 +2440,7 @@
     },
     {
       "name": "Engineer",
-      "blurb": "Everyone else out here is trying to survive the country. You are trying to make it hold still long enough to build something on.",
+      "blurb": "Everyone else out here is trying to survive the country. You're trying to make it hold still long enough to build something on.",
       "perk": {
         "name": "Every Machine Answers",
         "desc": "A quarter hour with any built thing and you can say what it does, what is wrong with it, and what putting it right would take: a lock, a pump, a press, a rifle action, a stamp mill, a clock. Whether you can fix it today depends on what is in the wagon. Whether you understand it depends on nothing at all."
@@ -2619,7 +2619,7 @@
         "Jury-Rig": "Once per scene, put something back into service with wire, a strap, and language nobody should hear. A broken tool, a jammed action, a snapped trace, a door off its hinge: it works for the rest of the scene, and afterward it is broken again and rather worse.",
         "Cut the Charge": "You know what a blast wants to do and where it will go. You take half damage from any explosion, and so does any ally you had a moment to shout at. The shout is required. More of this trade is shouting than the recruiting posters admit.",
         "Field Expedient": "Given ten minutes, a few hands and whatever the ground offers, you throw up a work: a barricade, a footbridge, a sluice, a firing step, a hoist. It is ugly, it holds for the scene, and it changes what the ground is worth.",
-        "Overbuilt": "You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules something genuinely beyond their design was asked of them.",
+        "Overbuilt": "You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules they were asked for something well past what they were built to do.",
         "The Machine Age": "At 10th level the things you make outlast the making of them. Choose one of your contraptions: it costs no Ingenuity to work, it does not break, and it can be handed to somebody else and will work for them. You have crossed the line between a trick and a tool, and the century coming will be built out of what is on your side of it.",
         "Proving Ground": "You have finally got somewhere to test things before they are needed. Given a day and a place to work, you may rebuild any contraption into any other frame, and once per scene you may declare that a contraption you are working has been tuned for exactly this: it does not break on a natural 1, and its save DC rises by 2 against the specific thing you built the tuning for. You were up all night. It shows in the work and it shows in your face.",
         "The Standing Work": "Given four hours, a place and hands to help, you raise something that does not travel: a redoubt, a sluice, a spanned gap, a wall with a gate in it. It gives cover the Keeper rates as greater, holds against anything you can still shoot for a scene, and can be worked by anyone you have shown it to. It stays where you built it after you have gone, which is more than most men manage.",
@@ -3377,7 +3377,7 @@
       "featureDescs": {
         "Command": "As an action, bark an order. One ally within earshot may immediately take a single action (a shot, a move, a check) out of turn, gaining your PRE modifier as a bonus. Usable a number of times per scene equal to your PRE modifier (minimum 1).",
         "Reputation": "Your name carries. Add your level to checks to rally, deputize, requisition, or overawe, and choose at 1st level whether folk mostly fear you or trust you. Either opens doors; each closes others.",
-        "Hold the Line / Unflinching": "Allies within sight of you gain +1 on saves against fear and the uncanny, rising to +2 at 5th level, when you yourself become immune to being Frightened. Courage, it turns out, is contagious: the only blessing in this book that is.",
+        "Hold the Line / Unflinching": "Allies within sight of you gain +1 on saves against fear and the uncanny, rising to +2 at 5th level, when you yourself become immune to being Frightened. Courage is catching. It's the only blessing in this book that is.",
         "Last Stand": "Once per session, when an ally within sight would drop to 0 Blood, you may shout them upright: they remain conscious and acting until the end of the fight or until struck again. Some Marshals have held a doorway with five dead men still standing at their word.",
         "Deputize": "You can make a lawman out of a shopkeep. Over ten minutes, swear in up to your PRE modifier in willing souls, minimum two: for the next day they gain +2 on saves against fear, count as trained in one skill you name, and may take the Ready action on your word without spending a Beat. Sworn hands who die under your badge are on your account, and the town will keep that account whether you do or not.",
         "The Long Arm": "Word of you travels faster than you do. In any settlement inside a week's ride, you may send ahead: when you arrive, a thing you asked for has been done: a man held, a road watched, a room kept, a wire sent on. Once per session, and never a thing that takes courage from somebody who has none.",
@@ -3468,7 +3468,7 @@
       "blurb": "Some men went up into the high country to trap beaver and never entirely came back down. The Mountain Man lives where the maps give out (the peaks, the deep timber, the snowbound passes) trapping, hunting, and reading a wilderness that kills the unready in an afternoon.",
       "perk": {
         "name": "Half a Wild Thing",
-        "desc": "Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it does not bolt. Men cross the street, and the ones who do not cross the street are generally the sort you would rather had."
+        "desc": "Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it doesn't bolt. Men cross the street, and the ones who don't cross the street are generally the sort you would rather had."
       },
       "fight": {
         "brings": "Reach. The Hawken and Dead Aim between them put more on one distant shot than anything else a Worldly soul carries.",
@@ -3642,7 +3642,7 @@
       "featureDescs": {
         "Hawken Rifle": "The heavy plains rifle is your right arm. With a two-handed rifle you ignore the penalty at the first range increment, and the first reload each round costs no extra Beat. You keep your piece clean, charged, and to hand, and you do not miss the shots a lesser hand calls lucky.",
         "Dead Aim": "Spend a Beat to steady your rifle. This is the Aim action, and your next shot this turn deals the extra damage shown on a hit: 1d6 at 1st level, 2d6 at 5th, 3d6 once you are King of the High Country, and 4d6 at 11th. Patience, a good rest, and a held breath are worth more than any luck.",
-        "Hard Country": "The wilderness is your parlor. You are never lost in wild country, you ignore natural difficult terrain (scree, deadfall, brush, snow) and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger that would break other men, you simply endure.",
+        "Hard Country": "The wilderness is your parlor. You're never lost in wild country, you ignore natural difficult terrain (scree, deadfall, brush, snow) and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger that would break other men, you simply endure.",
         "Read Sign": "Gain +2 to Survival and Notice to track and to read what passed: how many, how long ago, and whether it walked on two legs or something else. You leave little trail of your own: the DC to track you rises by 2, and you know when you are being followed.",
         "Skinner": "Spend a Beat to study a beast or an unnatural thing (Survival or Lore: Occult) and learn one weakness or trait the Keeper will honor. Against animals and the wild things of the dark you deal +1 damage, and you may harvest a kill (hide, fat, claw, tooth, gland) for coin, for trade, or for the makings of a remedy or a ward.",
         "Iron Constitution": "The mountains have been trying to kill you for years and have not managed it. Gain a bonus against cold, heat, thirst, hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal a little faster than you have any right to.",
@@ -3730,7 +3730,7 @@
       "blurb": "The Prospector came west for the one honest promise the country ever made: that what lies in the ground belongs to whoever is fool enough to dig it out.",
       "perk": {
         "name": "Filed and Recorded",
-        "desc": "Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it is worth anything is a separate question. Being yours has started more shooting out here than gold ever did."
+        "desc": "Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it's worth anything is a separate question. Being yours has started more shooting out here than gold ever did."
       },
       "fight": {
         "brings": "Everything at once. Charges climb from 2d6 to 5d6, Demolitionist doubles the dice against the unliving, and a burst does not much care how many of them there are.",
@@ -3999,7 +3999,7 @@
       "blurb": "Sawbones is what the West called a doctor, after the saw in the bag, and the trade was as rough as the name.",
       "perk": {
         "name": "Not On My Table",
-        "desc": "A soul whose wounds you have dressed since the last full rest will not bleed out while you are conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
+        "desc": "A soul whose wounds you've dressed since the last full rest won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
       },
       "fight": {
         "brings": "The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.",
@@ -4529,7 +4529,7 @@
       "blurb": "Whether ordained, defrocked, or self-anointed, the Preacher carries the Word into a country that has plainly been abandoned by whatever wrote it, and keeps preaching anyway.",
       "perk": {
         "name": "A Crowd Where You Stand",
-        "desc": "Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They will listen. What they do about it afterward is between them and God, and it has gone both ways in living memory."
+        "desc": "Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They'll listen. What they do about it afterward is between them and God, and it has gone both ways in living memory."
       },
       "fight": {
         "brings": "Brimstone, which is Faith's own damage and wants no gun at all, and a Sermon that moves a room before the shooting starts.",
@@ -4803,7 +4803,7 @@
       "name": "Shaman",
       "blurb": "The Shaman of this book is a spirit-talker: someone who learned early that the country is crowded rather than empty, and who keeps a working peace with whatever crowds it.",
       "perk": {
-        "name": "They Tell You What Is Wrong",
+        "name": "They Tell You What's Wrong",
         "desc": "Look at any living thing and name what ails it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. The same neighbors tell you things while you sleep. Every night you bed down on open ground the Keeper owes you one true thing, an image or a warning or a name or a direction. It is never clear enough to act on cleanly and it has never once been wrong."
       },
       "fight": {
@@ -4982,10 +4982,10 @@
         "Soothe the Spirit": "Your gift mends more than meat. Restore Nerve as readily as Blood, lift fear from the frightened, and, uniquely, suppress the symptoms of the Mark for a scene, granting a Hexer, a Dark Cultist, or any haunted soul a few hours of true peace. You cannot lift the Mark itself. You can give the Marked a night's sleep, which they will remember as a kindness long after they have forgotten your name.",
         "The Wide Circle": "The spirits that answer you have started bringing others. Your Helping Spirits may be sent to any ally you can see rather than only to yourself, and once per scene you may ask the spirits of a place one question about what has happened there, which they answer honestly and rudely. Places where something bad was done answer loudest.",
         "Become the Mask": "Once per session you may give yourself wholly over to a great spirit for a scene, embodying its full power: a storm, a beast-king, an ancestor of terrible weight. While the spirit rides, you wield gifts far beyond a mortal's. But when it departs, make a Will save (DC the Keeper sets) or a little of it stays, and a little of you does not return. Wear the mask too often and the question stops being whether it comes off, and starts being who is wearing whom.",
-        "The Long Song": "You have learned to sing a thing all the way through rather than in pieces. Over an hour of singing, spend any amount of Breath: everything it would heal, it heals, and it lifts one disease, poison, or Affliction from every soul in the circle besides. It cannot be hurried and it cannot be sung twice in a day. A camp that has heard it sleeps without dreaming.",
+        "The Long Song": "You have learned to sing a thing all the way through rather than in pieces. Over an hour of singing, spend any amount of Breath: everything it would heal, it heals, and it lifts one disease, poison, or Affliction from every soul in the circle besides. It can't be hurried and it can't be sung twice in a day. A camp that has heard it sleeps without dreaming.",
         "Two Worlds at Once": "You have stopped having to cross over. You see and may act upon the spirit world and this one together: you always know what is present and unseen, you may Strike an incorporeal thing with a bare hand as though it were solid, and you may Spirit-Walk without leaving your body behind for anything to find. Holding both open is tiring, and you dream badly.",
         "Call Back the Name": "Once per session, over a night and a fire, you may call back a soul that has been gone as much as a day. Speak the name until the name answers, and the country answers with it: the river, the herd, the rock, and the dead of that ground all lean in and agree that this one comes back. The body must be present and need not be whole; what returns is whole, at half Blood, with everything it was. The price is fixed and is not paid by them. You give up a year of your own life, every point of Breath until the next dawn, and one thing you loved about the world, which the Keeper names and which does not come back. The country is owed as well, and it will name what it wants in its own time, and it will want something you would rather keep. Do it four times and you will be very old and very quiet.",
-        "A Note on the Name": "\"Shaman\" and \"Medicine Man\" both carry real and specific meaning, the first among peoples of northern Asia and the second in Native American traditions. This Calling is not a portrait of any nation's sacred healer, spirit-keeper, or ceremony; those, as Chapters IV and VI insist, stay off the character sheet. What is written here is a deliberately fictional, syncretic frontier figure, blending the spirit-talker, the herb-doctor, the granny-woman, the faith-healer and the bonesetter of many trail traditions. Tables are warmly encouraged to rename it to taste, and plenty have: the Spirit-Talker, the Healer, the Granny, the Bonesetter, the Yarb-Doctor. Play the mercy and the craft, and leave real ceremony alone."
+        "A Note on the Name": "\"Shaman\" and \"Medicine Man\" both carry real and specific meaning, the first among peoples of northern Asia and the second in Native American traditions. This Calling is not a portrait of any nation's sacred healer, spirit-keeper, or ceremony; those, as Chapters IV and VI insist, stay off the character sheet. What is written here is an invented, syncretic frontier figure, blending the spirit-talker, the herb-doctor, the granny-woman, the faith-healer and the bonesetter of many trail traditions. Tables are warmly encouraged to rename it to taste, and plenty have: the Spirit-Talker, the Healer, the Granny, the Bonesetter, the Yarb-Doctor. Play the mercy and the craft, and leave real ceremony alone."
       },
       "signsKnownAt": null,
       "subpath": {
@@ -5094,10 +5094,10 @@
     },
     {
       "name": "Sister",
-      "blurb": "Not every soul who serves does it from a pulpit. Your order sent you where the diocese would not go: the fever camp, the mining town with no doctor, the mission school at the end of a road nobody maintains.",
+      "blurb": "Not every soul who serves does it from a pulpit. Your order sent you where the diocese wouldn't go: the fever camp, the mining town with no doctor, the mission school at the end of a road nobody maintains.",
       "perk": {
         "name": "Nobody Turns Away a Sister",
-        "desc": "The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you will let you in first."
+        "desc": "The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you'll let you in first."
       },
       "fight": {
         "brings": "The Least of These, Hold the Lamp, and a doorway nobody gets through. You are what stands between the posse and the dark while they do the killing.",
@@ -5540,7 +5540,7 @@
         }
       ],
       "featureDescs": {
-        "The Hunt": "As a single Beat, name one creature you can see as your quarry. Against that quarry you gain +1 to hit and to all checks to find, track, and study it; you ignore any supernatural concealment it enjoys; and you may not be forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. The Hunt is the whole of the art: choose your prey, and never lose the trail.",
+        "The Hunt": "As a single Beat, name one creature you can see as your quarry. Against that quarry you gain +1 to hit and to all checks to find, track, and study it; you ignore any supernatural concealment it enjoys; and you may not be forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. It all comes down to the Hunt: choose your prey, and never lose the trail.",
         "Sanctified Iron": "Each dawn, anoint your weapons with salt, silver-wash, oil, and a muttered rite. Until next dawn they count as silver, cold iron, and blessed for the purpose of overcoming the uncanny's resistances, and deal +1 damage to the Marked and the unnatural. At 6th level, all three at once; before that, choose one each morning and guess well.",
         "Zeal": "You carry a cold and countable certainty: a pool of Zeal equal to your WIT modifier + half your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your Miracles (see The Work of Faith, in Chapter XIII), drawn from the Common Blessings and from the Consecrations: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, and 9th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.",
         "Steeled Nerve": "You have stared into too many open graves to flinch at one more. Gain +2 on all Dread Checks and saves against fear, and halve the Nerve you lose to your current quarry's kind. The horror is still there. You have simply made a profession of not looking away.",
@@ -5549,7 +5549,7 @@
         "Relentless": "When your quarry drops or flees, you do not relent: immediately Stride toward it for free, and your first Strike in pursuit ignores the Multiple Attack Penalty. A wounded thing that runs from a Witch Hunter is merely choosing where it dies.",
         "The Pyre": "At 10th level you are the bane of unclean things. Your Judgment recharges at the start of every scene, no longer only with each new quarry. And once per session, when you reduce an uncanny quarry to 0 Blood, you may perform the rites of ending (salt, fire, the severed name) and ensure it stays dead: it does not rise, reform, or return. Nothing the Keeper has prepared survives the Pyre. The cost is the man you have become to wield it.",
         "The Name Written Down": "You keep a book, and what goes in the book does not come out. Enter a creature's name and one true fact about it, and thereafter you always know whether it lives, you gain +2 on every roll against it, and it cannot conceal its nature from you by any means. You may carry as many names as your WIT modifier. Crossing one out is the only way to make room, and there are two ways to cross one out.",
-        "No Sanctuary": "A thing you are hunting has nowhere to be. It cannot heal, regenerate, reform or be aided while you are within a hundred feet of it, and any ward, threshold, holy ground or bound place that shelters it opens for you and closes behind you. What you have hunted onto consecrated ground stays on it.",
+        "No Sanctuary": "A thing you are hunting has nowhere to be. It can't heal, regenerate, reform or be aided while you're within a hundred feet of it, and any ward, threshold, holy ground or bound place that shelters it opens for you and closes behind you. What you have hunted onto consecrated ground stays on it.",
         "The Last Fire": "Once per session, light the fire you have been carrying since the beginning. For the rest of the scene you are wreathed in a cold white burning: you take no damage from any uncanny source, every Strike you land deals an additional 6d8 to unclean things, and anything reduced to 0 Blood in that light is ended outright: no rising, no reforming, no return, nothing left to salt. When it goes out you are at 1 Blood, all Zeal spent, and Fatigued until you have slept a full night somewhere with a roof. It is understood among your order that a man only gets so many of these, and that nobody has ever counted his own correctly."
       },
       "signsKnownAt": null,
@@ -5833,13 +5833,13 @@
       "featureDescs": {
         "Devotion": "You have a pool of Devotion, your patron's favor, equal to your RES modifier + half your level, refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark Communion. A Dark Cultist who lets devotion lapse finds the favor cold exactly when it is needed.",
         "Dark Communion": "You draw on the Common Signs and the Bargain (Chapter XIII), up to the highest Rank your level allows, paid in Devotion (or, when that runs dry, in Nerve and Blood), and you receive them as what they are to you: genuine gifts from the thing you serve. You begin knowing two Signs and learn another at each Sign learned.",
-        "The Glad Mark": "You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you walk it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the steps. And unlike any other Calling, a rising Mark repays you (see Gifts of the Patron). You are becoming something else on purpose, and calling it grace.",
+        "The Glad Mark": "You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you walk it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the steps. And unlike any other Calling, a rising Mark repays you (see Gifts of the Patron). You are choosing to become something else, and calling it grace.",
         "Sacrifice": "Devotion is best shown in blood. Spend your own Blood to empower a working at the Blood-Price rate, or offer a worthier sacrifice (a beast, a treasure, a life) to petition your patron for a boon beyond your level, which the Keeper adjudicates. Great gifts demand great offerings, and the patron always knows the difference between a sacrifice that costs you and one that does not.",
-        "Gifts of the Patron": "As the Mark claims you, the patron remakes you in its image. At Mark 2, 3, and 4, choose a Gift: unnatural resilience (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more the dark can pour through you.",
+        "Gifts of the Patron": "As the Mark claims you, the patron remakes you in its image. At Mark 2, 3, and 4, choose a Gift: unnatural toughness (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more the dark can pour through you.",
         "Rapture": "Once per scene, give yourself over to ecstatic communion: become immune to fear and pain (ignore Frightened, gain DR) and let your workings surge in power. While raptured you cannot retreat, and you cannot act against your patron's interest, for in that moment you have no interest of your own.",
         "Vessel": "Once per session you may invite your patron to descend fully into you for a scene. You become its herald upon the earth, wielding power no mortal should hold, and the Keeper plays you while it lasts, for it is no longer entirely your body. When the scene ends, make a Will save against a DC the Keeper sets. Fail, and a little more of you stays behind the veil; fail at high Mark, and you do not come back at all, but step willingly into the dark a finished thing. The most devoted Dark Cultist's last prayer is always answered, exactly as it was asked.",
         "The Patron's Ear": "It listens now without being called. Once per scene, ask a question of your Patron in your own head and receive an answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.",
-        "What Is Owed": "You have learned the shape of the ledger you are in. Once per scene, name a price and pay it (Blood, Nerve, a memory, a year, a companion's luck) and take back exactly what it was worth: damage undone, a save passed, a Sign worked for free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is more than most bargains offer.",
+        "What Is Owed": "You've learned how the ledger you're in is kept. Once per scene, name a price and pay it (Blood, Nerve, a memory, a year, a companion's luck) and take back exactly what it was worth: damage undone, a save passed, a Sign worked for free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is more than most bargains offer.",
         "The Patron Comes": "Once per session, you may open the way and let something through. It comes. For one scene the Patron is present in the world where you are standing (not summoned, not bound, not yours) and it does what it came to do, which will include the thing you wanted, and will not stop there. Say what you asked for and the Keeper says what arrives; the thing you asked for happens completely. Everything else that happens is the Keeper's. Your Mark rises by 1 permanently and cannot be reduced, every soul who witnessed it must save against fear at your Devotion DC or be Frightened for a day, and the place it stood in is never quite right again. You will do this more than once. That is the part they never believe when they are told."
       },
       "signsKnownAt": {
@@ -5957,7 +5957,7 @@
     },
     {
       "name": "False Prophet",
-      "blurb": "A False Prophet did not sign for power as a Hexer does, nor inherit it as a Witch does. They stumbled instead on a meaner trick: the dark will pay, and pay handsomely, for worship, and it does not greatly care where the worship is aimed.",
+      "blurb": "A False Prophet did not sign for power as a Hexer does, nor inherit it as a Witch does. They stumbled instead on a meaner trick: the dark will pay, and pay handsomely, for worship, and it doesn't greatly care where the worship is aimed.",
       "perk": {
         "name": "Whatever You Say You Are",
         "desc": "You arrive with papers, a history, and two or three people willing to swear to it: a bishop's letter, a discharge, a widow who remembers you fondly from somewhere she cannot quite place. It holds until somebody with a real reason to check actually checks, and most people go their whole lives without a real reason."
@@ -6136,7 +6136,7 @@
         "Honeyed Word": "Few resist a prophet. Gain +3 on Persuade and Deceive against crowds and the faithful, and once per scene issue a Command the devout obey as scripture (Will save to resist, at disadvantage for true believers).",
         "Visit the Cost": "This is the black heart of the Calling, and the thing that sets you apart from every other soul in this chapter. When a working would make you pay (a Backlash, a Blood price, an advance of the Mark) you may instead lay that cost upon a member of your flock: a believer takes the wound, the ruin, the creeping Mark, while you walk away clean and haloed. The dark does not care who bleeds, only that someone does. But each time you do it, the thing behind your gospel sinks its hooks a little deeper into the congregation, and into you.",
         "Feed the Dark": "Once per session, offer the massed devotion of a gathering up to your unseen patron. Refill your Tribute and gain a surge besides, and the dark grows fat, while your flock comes away hollowed, hungrier for you, and a little less themselves than they were. They will not know why. They will only know they need another sermon.",
-        "The Hollow Crown": "Once per session, for a single scene, you throw the doors wide and let the dark wear your gospel openly through you: tremendous power flows (great smitings, healings, terrors, commands) and the crowd will die at your asking, and some may. But you are no longer entirely the one preaching; the Keeper may put a word in your mouth and turn your hand, as the thing behind the curtain stretches into the room it has rented all this time. When the scene ends the Mark advances, and you understand the shape of the trick at last: you did not gather a flock for yourself. You baited a hook. You were the worm.",
+        "The Hollow Crown": "Once per session, for a single scene, you throw the doors wide and let the dark wear your gospel openly through you: tremendous power flows (great smitings, healings, terrors, commands) and the crowd will die at your asking, and some may. But you are no longer entirely the one preaching; the Keeper may put a word in your mouth and turn your hand, as the thing behind the curtain stretches into the room it has rented all this time. When the scene ends the Mark advances, and you finally see the trick for what it was: you did not gather a flock for yourself. You baited a hook. You were the worm.",
         "Three Debts: Hexer, Witch, False Prophet": "The Hexer borrows from the dark directly and is Marked from the first hour. The Witch inherits an older craft and pays in her own Nerve. The False Prophet does neither; they run a confidence game on the dark's behalf and arrange for the deceived to settle the account. The Hexer dreads the bill. The Witch budgets for it. The False Prophet mails it to a parishioner and passes the collection plate again.",
         "The Bigger Lie": "The small ones stopped working on you years ago; the enormous ones have never failed. Once per session, tell a lie so large that checking it is somebody else's job (an army behind you, a pardon in your pocket, a dead man alive, the whole town in on it) and until it is disproved by direct evidence, everyone who heard it acts as though it were so. The disproving is a scene of its own, and you should be elsewhere by then.",
         "Believers": "You have gathered enough of them that they have become a resource rather than an audience. You command a congregation of your PRE modifier × 5 souls, which travels with you or is left where it is useful. They will lie for you, work for you, take a beating for you and give you what they have. They will not knowingly die for you. Once per session, they turn out to be exactly where you needed somebody. What you spend them on is on your account.",
@@ -6164,15 +6164,15 @@
         "options": [
           {
             "name": "The Borrowed Saint",
-            "boon": "Healing and blessing wonders cost 1 less Tribute and run deeper; you read as genuinely holy to Witch-Sight and any test of faith. Greater (9th): once per session, stage a public miracle that binds every witness to you as devoted and floods your Tribute."
+            "boon": "Healing and blessing wonders cost 1 less Tribute and run deeper; you pass as holy to Witch-Sight and to any test of faith. Greater (9th): once per session, stage a public miracle that binds every witness to you as devoted and floods your Tribute."
           },
           {
             "name": "The Doomsayer",
-            "boon": "Fear and smiting wonders surge; once per scene pronounce a small judgment: a blight, a swarm, a sickness, a curse of ill luck. Greater (9th): once per session, prophesy and unleash a scene-wide calamity, its cost paid by the deceived flock."
+            "boon": "Fear and smiting wonders surge; once per scene pronounce a small judgment: a blight, a swarm, a sickness, a curse of ill luck. Greater (9th): once per session, prophesy and bring down a scene-wide calamity, its cost paid by the deceived flock."
           },
           {
             "name": "The Golden Calf",
-            "boon": "You and your faithful prosper. Conjure good fortune and draw a sourceless income wherever you preach. Greater (9th): once per session, seal a covenant of plenty over a town for the arc, while the dark quietly mortgages the deceived."
+            "boon": "You and your faithful prosper. Conjure good fortune and draw a sourceless income wherever you preach. Greater (9th): once per session, seal a covenant of plenty over a town for the arc, while the dark holds the mortgage on the deceived."
           }
         ]
       },
@@ -6238,7 +6238,7 @@
       "blurb": "Some did not wait for the dark to come to them. The Hexer (conjure-doctor, hedge-sorcerer, pact-sworn) has reached into the old country beneath the country and pulled something back.",
       "perk": {
         "name": "Your Debts Are Public",
-        "desc": "What you pay for the dark shows on the world around you. Lamps gutter. Milk turns. The dog will not come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this."
+        "desc": "What you pay for the dark shows on the world around you. Lamps gutter and the milk turns. The dog won't come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this."
       },
       "fight": {
         "brings": "The whole Old Dark ladder, earliest and deepest of anyone. Blood Price buys a working when the Nerve is gone.",
@@ -6418,7 +6418,7 @@
         "Working a Sign — the Short of It": "Declare the Sign and pay its Nerve (or Blood). If it forces a save, the target rolls against your Sign DC = 10 + half your level + your RES modifier. Backlash strikes on the listed trigger, most often a natural 1 on any roll the working requires, or a failed working. The deep truths a Sign reveals may also demand a Dread Check of their own. Knowing is never free; for a Hexer, it is merely cheaper at first.",
         "The Deeper Bargain": "You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its Nerve cost as damage that cannot be healed until you have slept. A Hexer who has learned this generally learns it in one particular night, and remembers that night for good.",
         "Adept (Second)": "Choose a second Sign you know. It too may be worked once per scene without spending Nerve. The consequence attached to it does not stop attaching.",
-        "The Long Debt": "Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have the Nerve, at any scale the fiction can hold: a Sign laid on a town, on a river, on a bloodline, on a night. It works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the Keeper takes something from the world you were standing in. A person. A place. A year of somebody's life who never asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly what it is worth and you are never the one paying."
+        "The Long Debt": "Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have the Nerve, at any scale the fiction can hold: a Sign laid on a town, on a river, on a bloodline, on a night. It works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the Keeper takes something from the world you were standing in: a person, a place, a year of somebody's life who never asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly what it is worth and you are never the one paying."
       },
       "signsKnownAt": {
         "1": 2,
@@ -6698,7 +6698,7 @@
         "Witch and Hexer — the Difference": "Both work Signs and pay in Nerve, but the Hexer's power is a loan (begins Marked, races the Mark) while the Witch's is inheritance (no starting Mark, advances it only through abuse). A Hexer can become a Witch's cautionary tale; a Witch can become a Hexer the day she reaches for something her line never taught her. Keep the distinction at the table; it is the whole tragedy of the chapter.",
         "The Second Familiar": "A second beast comes to you and stays. Bind it as you bound the first, from the table of familiars: you gain its boon as well, both may be abroad at once, and either may carry the Evil Eye for you at a distance you can walk in an hour. Two of them will not stay in the same room, and you will spend a surprising amount of your life managing that.",
         "The Deep Craft": "Your brews and hexes have stopped being small. A Brew you make lasts a season rather than a day and may be given away without weakening, and a Hex you lay may name a condition for its lifting rather than a duration: a spoken apology, a returned thing, a river crossed, a name said three times. Most who carry one never learn the condition, which is generally the point.",
-        "What the Old Ones Knew": "Once per session, do the thing the old women in the stories do. Change one thing that has already happened this session, as though it had gone otherwise: the shot missed, the door was locked, the letter never came, she was somewhere else that night. It is not an illusion and nobody remembers it the old way except you and anything older than you. The world simply is as you have said. What it costs is fixed: you age a year, the nearest living thing that trusts you dies quietly within the week, and one of your own memories goes into the gap to hold it open. You will not know which one is missing. You will only notice, sometimes, that there is a space where a name used to be."
+        "What the Old Ones Knew": "Once per session, do the thing the old women in the stories do. Change one thing that has already happened this session, as though it had gone otherwise: the shot missed, the door was locked, the letter never came, she was somewhere else that night. It is not an illusion and nobody remembers it the old way except you and anything older than you. The world simply is as you have said. What it costs is fixed: you age a year, the nearest living thing that trusts you dies in its sleep within the week, and one of your own memories goes into the gap to hold it open. You will not know which one is missing. You will only notice, sometimes, that there is a space where a name used to be."
       },
       "signsKnownAt": {
         "1": 2,

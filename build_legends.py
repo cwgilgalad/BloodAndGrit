@@ -29,7 +29,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.0"
+VERSION = "1.1"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -535,7 +535,7 @@ CH1 = chapter("basin", "I", "Papers of the Basin", "One county, and everything w
         "the marshal&rsquo;s report, which I have read. There is a cellar at the Pell place, and I "
         "have stood in it, and four people in this county know that and one of them is me.",
         "The teacher says they've had it about a year. Mrs. Pell died in the spring of &rsquo;82."]),
- ednote("Ashby&rsquo;s count is wrong here, in a way worth noting. The cellar is in the coroner&rsquo;s "
+ ednote("Ashby&rsquo;s count is wrong here, and it matters how. The cellar is in the coroner&rsquo;s "
         "return, which was public from the first, and anybody in the county who wanted to read it "
         "could have. What is not in the coroner&rsquo;s return, or anywhere else I can find, is the "
         "number seven"),
@@ -582,7 +582,7 @@ CH2 = chapter("dead", "II", "The Dead Do Not Stay Put",
               "Burials that did not take, and the paperwork they generated.",
               "II. The Dead Do Not Stay Put", "\n".join([
 
- """  <p>This is the largest chapter and the dullest, and I have kept it dull on purpose. Almost
+ """  <p>This is the largest chapter and the dullest, and I have kept it that way. Almost
   everything in it is official. Coroners, marshals, undertakers and church registers write about the
   dead all the time in the ordinary way of business, and the interesting thing about the papers
   below is not that they are hair-raising. It is that they are not. A clerk who has decided to
@@ -721,8 +721,8 @@ CH2 = chapter("dead", "II", "The Dead Do Not Stay Put",
      "Laidlaw with a spade. I have asked the county for lamps and for two men."),
      sign="T. Coyle, marshal"),
  ednote("The second report is a better report. It is shorter, it is clearer, it accounts for "
-        "everything, and a county commissioner reading it would have no questions. That is what it "
-        "is for. I would only note that the animal in it is destroyed with a spade after being shot "
+        "everything, and a county commissioner reading it would have no questions, which was the "
+        "idea. I would only note that the animal in it is destroyed with a spade after being shot "
         "four times, and that no one asked what kind"),
 ]))
 
@@ -1172,7 +1172,7 @@ CH6 = chapter("road", "VI", "Met on the Road",
         "asked separately"),
 
  '  <h2 id="ix-fifth">The Fifth Rider</h2>',
- gloss("Every poster says five. Every count says four. This is the whole of the legend and it has "
+ gloss("Every poster says five. Every count says four. That's all the legend is, and it has "
        "been going twenty-odd years, and the papers below are the ones Ashby thought were the least "
        "embroidered."),
  bill([("bl-3", "Territory of &mdash;&mdash;&mdash;&mdash;&mdash;"), ("bl-1", "$2,000 REWARD"),
@@ -1358,7 +1358,7 @@ CH8 = chapter("preaching", "VIII", "Preaching",
  """  <p>I want to be careful here and I will say why. There is more real religion in this country
   than there is anything else, and most of it is a tired man on a horse riding a circuit of two
   hundred miles for forty dollars a year. Nothing in this chapter is about that man, except the
-  letters in the middle of it, which are, and which I have put in on purpose so that the chapter is
+  letters in the middle of it, which are, and which I have put in so that the chapter is
   not only about the other kind.</p>
   <p>The other kind is rarer than the papers make it look. It leaves more paper because it sells
   tickets.</p>""",
@@ -1420,8 +1420,8 @@ CH8 = chapter("preaching", "VIII", "Preaching",
      "The circuit stands at nine appointments and I am keeping them all, though the Cardoza place "
      "is now twenty-two miles off the round and I am there once in six weeks instead of once in "
      "four, and I have told them so and they were gracious about it.",
-     "I have buried eleven this quarter and baptised four and married none, which is the shape of "
-     "the year out here.",
+     "I have buried eleven this quarter and baptised four and married none, which is how "
+     "the year goes out here.",
      "I need a horse. I am not going to dress it up. The mare is eleven and she has done six "
      "thousand miles on this circuit and she is finished, and I would rather ask you than borrow "
      "from the congregations, who have less than I have."),
@@ -1474,7 +1474,7 @@ CH8 = chapter("preaching", "VIII", "Preaching",
       ["A REFUSAL", "CHARITY THAT WILL NOT BE HELPED"],
       ["Local House Declines a Subscription of $4,000", None],
       ["A curious circumstance is reported from the north end of this city, where a house which "
-       "has for some years quietly sheltered women in distress has declined a subscription of "
+       "has for some years sheltered women in distress without publicity has declined a subscription of "
        "four thousand dollars raised on its behalf by a committee of gentlemen of the first "
        "standing.",
        "The lady who received the committee is said to have heard them out with perfect courtesy, "
@@ -1501,7 +1501,7 @@ CH9T = chapter("trades", "IX", "Them That Make a Living At It",
                "IX. The Trades", "\n".join([
 
  """  <p>Most of this book is written by people the country happened to. This chapter is the other
-  kind. Every paper in it was written by somebody who goes toward the thing on purpose, for money,
+  kind. Every paper in it was written by somebody who goes toward the thing by choice, for money,
   and who files a return about it afterwards, because that is what a trade is.</p>
   <p>They are the least frightened documents in the book and the hardest to read.</p>""",
 
@@ -1551,7 +1551,7 @@ CH9T = chapter("trades", "IX", "Them That Make a Living At It",
      "I am writing this down because I have nobody to tell and because if I say it out loud in "
      "this house I will have to explain it to my daughter.",
      "I asked for a thing in the spring of 1874 and I got it. I am not going to write what it was. "
-     "Anybody who has ever wanted anything that badly will know the shape of it, and anybody who "
+     "Anybody who has ever wanted anything that badly will know what it was like, and anybody who "
      "has not will read it as a confession and I am not confessing to anything. My girl was going "
      "to die and she did not die and she is twenty-two and she is downstairs.",
      "Here is what I have to say about it, which is the whole of what eleven years has taught me.",
@@ -1658,7 +1658,7 @@ CH9 = chapter("weather", "X", "Weather, and Things Taken for Weather",
   he is right, and he does not mean anything by it. Nine in ten of the stories in this chapter are
   about a norther, a hailstorm or a dry lightning strike, told by somebody who was frightened and is
   entitled to be.</p>
-  <p>I have kept the chapter short and put the tall ones in it deliberately, because a reader who
+  <p>I have kept the chapter short and put the tall ones in it for a reason, because a reader who
   has come this far in this book needs to be reminded what an ordinary lie sounds like.</p>""",
 
  '  <h2 id="ix-norther">The Norther of &rsquo;80</h2>',
@@ -1681,8 +1681,8 @@ CH9 = chapter("weather", "X", "Weather, and Things Taken for Weather",
  paper("Letter", "a woman at a section house, to her brother", p(
      "&hellip; and I will not write about the men because you knew them both.",
      "I will write about the sound because you asked me straight out and I would rather answer "
-     "you than have you hear it at second hand. Yes. There was a sound in it. It went on for the "
-     "whole of the second night and it stopped at first light exactly, not faded, stopped, the way "
+     "you than have you hear it at second hand. Yes. There was a sound in it. It went on all the "
+     "second night and it stopped at first light exactly, not faded, stopped, the way "
      "a man stops talking when somebody comes in.",
      "Arthur says it was the wind in the wire. There is a mile and a half of wire on that section "
      "and he is very likely right and he has said it every day since, which is more days than a "

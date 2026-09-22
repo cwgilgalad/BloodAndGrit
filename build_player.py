@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.51 -->
+<!-- Blood & Grit — The Player's Book · Version 2.52 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.51)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.52)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -342,7 +342,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.51</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.52</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -350,7 +350,7 @@ body{ background:#525659; }
 
 <!-- ===================== EPIGRAPH ===================== -->
 <!-- nonum: front matter. The cover is .title-page and excluded already; these two are the only
-     other sheets in any of the six books that a reader does not expect a number on. -->
+     other sheets in any of the six books that a reader doesn't expect a number on. -->
 <section class="page nonum">
   <div class="quote" style="margin-top:120px;">
     "We came west to be made new, and found instead that the country was older
@@ -363,7 +363,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.51 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.52 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -375,8 +375,8 @@ body{ background:#525659; }
   <p class="note">This is the Player's Book. It holds everything a soul needs to make a character
   and keep them breathing: the dice, the callings, the guns, and the rules of fear. Secrets
   meant for the one who runs the game are kept elsewhere, in the Keeper's Book, and are no business of yours.
-  There is one other book you may read: <strong>the Book of Legends</strong>, which has no rules in it at all.
-  It is a bundle of papers out of the Territories, letters and depositions and clippings and songs, and
+  There's one other book you may read: <strong>the Book of Legends</strong>, which has no rules in it at all.
+  It's a bundle of papers out of the Territories, letters and depositions and clippings and songs, and
   nothing in it is confirmed and a good deal of it is wrong. Read it for the country, not for the answers.</p>
   <ul class="toc">
     <li><a href="#country">I. The Country</a><span class="pg">8</span></li>
@@ -384,22 +384,22 @@ body{ background:#525659; }
     <li><a href="#character">III. Making a Character</a><span class="pg">17</span></li>
     <li><a href="#origins">IV. Origins &amp; the Peoples of the Frontier</a><span class="pg">25</span></li>
     <li><a href="#callings">V. Worldly Callings</a><span class="pg">40</span></li>
-    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">87</span></li>
-    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">117</span></li>
-    <li><a href="#skills">VIII. Skills</a><span class="pg">144</span></li>
-    <li><a href="#edges">IX. Edges</a><span class="pg">149</span></li>
-    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">158</span></li>
-    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">181</span></li>
-    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">192</span></li>
-    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">202</span></li>
-    <li><a href="#advancement">XIV. Advancement</a><span class="pg">240</span></li>
-    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">244</span></li>
-    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">246</span></li>
-    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">248</span></li>
-    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">250</span></li>
-    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">255</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">261</span></li>
-    <li><a href="#index">Index</a><span class="pg">263</span></li>
+    <li><a href="#faith">VI. Callings of Faith</a><span class="pg">86</span></li>
+    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">116</span></li>
+    <li><a href="#skills">VIII. Skills</a><span class="pg">143</span></li>
+    <li><a href="#edges">IX. Edges</a><span class="pg">148</span></li>
+    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">157</span></li>
+    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">180</span></li>
+    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">191</span></li>
+    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">201</span></li>
+    <li><a href="#advancement">XIV. Advancement</a><span class="pg">239</span></li>
+    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">243</span></li>
+    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">245</span></li>
+    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">247</span></li>
+    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">249</span></li>
+    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">254</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">260</span></li>
+    <li><a href="#index">Index</a><span class="pg">262</span></li>
   </ul>
 </section>
 
@@ -442,17 +442,17 @@ body{ background:#525659; }
   something true to grow from.</p>
 
   <h2 id="ix-truths">The Three Truths</h2>
-  <p>And here, before you go a page further, the truth the handbills leave out. They will tell you the
-  frontier is empty. They are wrong, and the wrongness of it is the whole of this game. Something already
+  <p>And here, before you go a page further, the truth the handbills leave out. They'll tell you the
+  frontier is empty. They're wrong, and the wrongness of it is the whole of this game. Something already
   holds the land between the last church and the first ocean. Call the country <em>occupied</em>, and know
   that the tenants were here a long while before the surveyors. The horror of this game is
   not that monsters exist. The horror is that the world was never arranged for your comfort, and has
   only now begun to show you so. Everything in this book grows from three plain ideas. Hold them in
   mind and the rest will follow.</p>
   <ul class="dash">
-    <li><strong>Knowing costs.</strong> The more you understand of what moves beneath the dust, the more it understands of you. Wisdom in this country is a wound that does not close.</li>
-    <li><strong>Survival is the victory.</strong> There is no saving the world here, no chosen one, no last battle that sets things right. There is only the next winter, the next town, the next morning you wake up still yourself.</li>
-    <li><strong>The land is old and indifferent.</strong> What hunts you does not hate you. You are weather to it, or weeds. This is worse than malice. Malice can be bargained with.</li>
+    <li><strong>Knowing costs.</strong> The more you understand of what moves beneath the dust, the more it understands of you. Wisdom in this country is a wound that doesn't close.</li>
+    <li><strong>Survival is the victory.</strong> There's no saving the world here, no chosen one, no last battle that sets things right. There's only the next winter, the next town, the next morning you wake up still yourself.</li>
+    <li><strong>The land is old and indifferent.</strong> What hunts you doesn't hate you. You're weather to it, or weeds. This is worse than malice. Malice can be bargained with.</li>
   </ul>
 
   <div class="quote">
@@ -502,8 +502,8 @@ body{ background:#525659; }
   add the relevant numbers, and compare the total to a target. Meet or beat the target and you succeed.</p>
   <p>The <strong>ability modifier</strong> comes from whichever of your six attributes best fits the task.
   <strong>Proficiency</strong> is the catch-all term for the training you bring. For a skill, it is your level plus a
-  proficiency bonus: +2 if you are <em>trained</em>, +4 <em>expert</em>, +6 <em>master</em>. None of that counts
-  until you are trained. For attacks it is your level, adjusted by your Calling's rank; for saves, your Calling's own
+  proficiency bonus: +2 if you are <em>trained</em>, +4 <em>expert</em>, +6 <em>master</em>, and an untrained
+  skill gets neither. For attacks it is your level, adjusted by your Calling's rank; for saves, your Calling's own
   progression. Both stand on your Calling's table in Chapter V, and both are reckoned in Chapter XIV. The
   <strong>Difficulty Class</strong> (DC) is the number to beat, set by the Keeper or by the Defense of whatever
   you are trying to harm.</p>
@@ -566,7 +566,7 @@ body{ background:#525659; }
   or a line that makes the whole table go quiet.</p>
 
   <div class="quote">
-    "The dice do not care for you. That is the only honest thing in the room.
+    "The dice do not care for you. That's the only honest thing in the room.
     Everything else at this table will lie to keep you breathing: including, in time, yourself."
     <span class="src">— attributed to a faro dealer in Leadwater, before the fire</span>
   </div>
@@ -608,7 +608,7 @@ body{ background:#525659; }
     and worth burying.&rdquo;
     <span class="src">&mdash; Eb Tuttle, trapper</span>
   </div>
-  <p class="dropcap lead">A character in this game is a person, not a hero. Build them to be wanted, haunted,
+  <p class="dropcap lead">A character in this game is a person first, and a hero only by accident. Build them to be wanted, haunted,
   indebted, or simply too poor to go home. The mechanics below give them flesh; the questions at the end give
   them a reason to ride out into the dark. Work down the list in order and you will have a finished character
   in the space of a single sitting.</p>
@@ -642,8 +642,8 @@ body{ background:#525659; }
       or none. It is a Calling in Chapter V, and it is the nearest thing this game has to a healer,
 which is to say the difference between a friend who is wounded and a friend who is buried.</li>
       <li><strong>Alienist</strong>: a doctor of the mind, from the years before anyone said
-      <em>psychiatrist</em>. A Sawbones takes the art at 5th level, and in a game with a Nerve track it
-      earns its keep by the second reckoning.</li>
+      <em>psychiatrist</em>. A Sawbones takes the art at 5th level, and in a game with a Nerve track you'll
+      be glad of one by the second reckoning.</li>
       <li><strong>Iron</strong>: a gun, generally a revolver. To <em>clear leather</em> is to get
       it out of the holster, and the one who does it faster usually lives.</li>
       <li><strong>Shootist</strong>: someone who fights with a gun for a living and is known by
@@ -722,8 +722,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   hooks, and as bait.</p>
   <ul class="dash">
     <li><strong>What did you lose?</strong> Everyone out here has lost something: land, kin, country, faith, a former self. Name it.</li>
-    <li><strong>What have you seen?</strong> You have already glimpsed something that does not belong. What was it, and have you told a living soul?</li>
-    <li><strong>What is your vice?</strong> Drink, the cards, laudanum, violence, the Word. It will comfort you and it will cost you.</li>
+    <li><strong>What have you seen?</strong> You've already glimpsed something that doesn't belong. What was it, and have you told a living soul?</li>
+    <li><strong>What's your vice?</strong> Drink, the cards, laudanum, violence, the Word. It will comfort you and it will cost you.</li>
     <li><strong>What keeps you moving?</strong> A debt, a grave to find, a person to reach, a sin to outrun. Survival needs a reason.</li>
   </ul>
 </section>
@@ -733,9 +733,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h2 id="ix-compass">Step 9 — The Compass</h2>
   <p>A soul, out here, is read two ways, and both the dark and the divine are reading. The first measure is your
   <strong>conscience</strong>: how you treat others, from open-handed mercy to plain cruelty. The second is your
-  <strong>conduct</strong>: how you hold to law, oath, and order, from the badge-keeper to the man who is a law unto
+  <strong>conduct</strong>: how you hold to law, oath, and order, from the badge-keeper to the man who's a law unto
   himself. Set against each other, these two measures make your <strong>Compass</strong>, what older books call
-  alignment, a rough fix on where a character stands. It is a description, not a leash; see the box below.</p>
+  alignment, a rough fix on where a character stands. It says where a character stands and can't make them stay there; see the box below.</p>
   <h3>The Two Axes</h3>
   <p><strong>Conscience runs Good &ndash; Neutral &ndash; Evil.</strong> The Good spend themselves for others; the Evil
   spend others for themselves; most folk fall between, decent enough until it costs them. <strong>Conduct runs Lawful
@@ -751,7 +751,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   </table>
   <ul class="dash">
     <li><strong>Lawful Good: the Marshal's Heart.</strong> Honor and mercy together; the badge that means what it says, and would sooner take a bullet than break faith.</li>
-    <li><strong>Neutral Good: the Good Samaritan.</strong> Does right by folk, badge or no, law or no; kindness is the whole of the creed.</li>
+    <li><strong>Neutral Good: the Good Samaritan.</strong> Does right by folk, badge or no, law or no; kindness is creed enough.</li>
     <li><strong>Chaotic Good: the Free Rider.</strong> Unfenced and good-hearted; helps as conscience bids and damns the regulations doing it.</li>
     <li><strong>Lawful Neutral: the Letter of the Law.</strong> Order above all: the judge, the company man, the soldier who follows orders he does not weigh.</li>
     <li><strong>True Neutral: the Survivor.</strong> Takes the world as it comes; few causes and fewer crusades; sees to their own and lets the rest ride.</li>
@@ -847,7 +847,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3 id="ix-o-laborer">The Laborer</h3>
   <p>You laid rail, dug shafts, or drove spikes for wages that vanished at the company store. Perhaps your tongue is
   not the one spoken here. Your hands are ruined and reliable. <strong>Gift:</strong> +1 STR and +1 CON. You are
-  trained in Repair, and treat any tool, however crude, as the right one for honest work. <strong>Boon:</strong> your ruined, reliable body shrugs off a hard day. Gain +2 on Fortitude saves against fatigue, strain, and the wearing cold, and you can labor or march long past where softer men fold. <strong>Burden:</strong> these hands were made for the spike and the shovel, not the needle; you take &minus;1 on checks of fine dexterity: sleight, lockwork, fuses, and the surgeon's delicate art.</p>
+  trained in Repair, and treat any tool, however crude, as the right one for honest work. <strong>Boon:</strong> your ruined, reliable body shrugs off a hard day. Gain +2 on Fortitude saves against fatigue, strain, and the wearing cold, and you can labor or march long past where softer men fold. <strong>Burden:</strong> these hands were made for the spike and the shovel and have no feel left for a needle; you take &minus;1 on checks of fine dexterity: sleight, lockwork, fuses, and the surgeon's delicate art.</p>
 
   <h3 id="ix-o-madam">The Madam</h3>
   <p>You ran a house, which is to say you ran a business: the books, the liquor, the peace, the doctor when a doctor was
@@ -858,7 +858,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   the habit stayed: gain +2 on checks to read what a person truly wants, and to hold a room without raising your voice,
   and once per session you may name one person of consequence in town and know a private truth about them.
   <strong>Burden:</strong> respectable folk will take your money and not your hand; you take &minus;2 on social checks
-  with the church-going and the office-holding, and a few of them work quietly to see you moved along.</p>
+  with the church-going and the office-holding, and a few of them are already working behind your back to see you moved along.</p>
 
   <h3 id="ix-o-news">The Newspaperman</h3>
   <p>You set type by lamplight, chased stories nobody thanked you for, and kept a drawer of the ones no editor would
@@ -945,8 +945,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     <p>If a player wishes to portray a character from one of these nations, the whole table owes the choice some care.
     A few plain rules of the road:</p>
     <ul class="dash">
-      <li><strong>Avoid the worn lies.</strong> No noble-savage, no bloodthirsty-savage, no vanishing-race elegy. These are propaganda, not character.</li>
-      <li><strong>Be specific, not generic.</strong> Choose a real nation and learn a little of its actual history, country, and circumstance in the 1880s. "Generic Indian" is a settler's invention; do not play it.</li>
+      <li><strong>Avoid the worn lies.</strong> No noble-savage, no bloodthirsty-savage, no vanishing-race elegy. Those came out of propaganda, and they don't belong at this table.</li>
+      <li><strong>Be specific.</strong> Choose a real nation and learn a little of its actual history, country, and circumstance in the 1880s. "Generic Indian" is a settler's invention; do not play it.</li>
       <li><strong>Honor lines and veils.</strong> Real massacres, removals, and the boarding schools are matters a table may choose to handle gravely, glancingly, or not at all. Decide together, and never for shock.</li>
       <li><strong>Sacred is not a mechanic.</strong> The Signs, the Mark, and the Old Rites of this book are the game's <em>invented</em> dark. Do not pin them to any real living religion, ceremony, or sacred object. If you want a faith-keeper, see the note in Chapter VI.</li>
       <li><strong>They are people first.</strong> Give them families, humor, grudges, hopes, and an inner life: not mystic set-dressing for someone else's story.</li>
@@ -976,9 +976,9 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h3>Playing a Mexican Character</h3>
     <p>The same courtesy owed any real people applies here. A few plain rules of the road:</p>
     <ul class="dash">
-      <li><strong>Avoid the worn lies.</strong> No bandit-buffoon, no sleeping peon, no hot-blooded caricature. These are dime-novel propaganda, not character.</li>
+      <li><strong>Avoid the worn lies.</strong> No bandit-buffoon, no sleeping peon, no hot-blooded caricature. The dime novels sold those by the million, and they were lies then too.</li>
       <li><strong>Be specific.</strong> A Tejano ranching family near San Antonio, a Californio whose grant was swallowed after statehood, a Nuevomexicano from a village older than the United States. These are different lives. Choose one and learn a little of it.</li>
-      <li><strong>Faith is a strength, not set-dressing.</strong> Catholic devotion, the saints, the Day of the Dead, the village <em>curandera</em>. These can anchor a character against the dark without being reduced to mysticism.</li>
+      <li><strong>Treat faith as a strength.</strong> Catholic devotion, the saints, the Day of the Dead, the village <em>curandera</em>. These can anchor a character against the dark without being reduced to mysticism.</li>
       <li><strong>Not a costume or an accent.</strong> Give them family, faith, pride, and an inner life. Spanish belongs in their mouth naturally, never as comic seasoning.</li>
       <li><strong>The injustice is real history.</strong> Stolen land grants, the lynchings, the slur "greaser," the color line. These happened. Use them with weight, by agreement, never for flavor.</li>
     </ul>
@@ -1013,7 +1013,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h3>Playing a Black Character</h3>
     <p>The same courtesy owed any real people applies here. A few plain rules of the road:</p>
     <ul class="dash">
-      <li><strong>Avoid the worn lies.</strong> No faithful retainer, no comic relief, no saintly sufferer, no character who exists to be endured against. These are minstrel-show inventions, not character.</li>
+      <li><strong>Avoid the worn lies.</strong> No faithful retainer, no comic relief, no saintly sufferer, no character who exists to be endured against. Those were made up for the minstrel stage, and they can stay there.</li>
       <li><strong>Be specific.</strong> An Exoduster homesteader proving up (working a claim the years the law required to earn its title) outside Nicodemus, a sergeant of the Tenth out of Fort Davis with fifteen years in, a trail hand on his sixth drive who is the best horseman in the outfit, a widow who owns the laundry and half the block. These are different lives. Choose one and learn a little of it.</li>
       <li><strong>Competence is the historical record.</strong> Where a Black character is the best hand, the best shot, or the best doctor in the scene, that is the ordinary case, and the table should play it as ordinary.</li>
       <li><strong>Community is the strength.</strong> The church, the lodge, the school built first, the town that holds together. These anchor a character against the dark, and they are somewhere to come back to.</li>
@@ -1025,7 +1025,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Mechanically, a Black character chooses any Origin and Calling. <strong>The Freed</strong> and <strong>The
   Veteran</strong> are the obvious roads and by no means the only ones. A great many were born free, and the
   frontier's Black Gunhands, Sawbones, Marshals, Preachers, and Prospectors are all a matter of record. Where they
-  came from, who they left, and what they are proving up on go into the four Questions, not into a stat.</p>
+  came from, who they left, and what they are proving up on are what the four Questions are for.</p>
 
   <h2 id="chinesefrontier">The Chinese on the Frontier</h2>
   <p>The hardest miles of the transcontinental railroad were built by Chinese labor, and the Central Pacific's own
@@ -1054,7 +1054,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <ul class="dash">
       <li><strong>Avoid the worn lies.</strong> No inscrutable mystic, no comic laundryman, no dispenser of ancient wisdom, no fortune-cookie speech, and no dialect played for laughs. These are stage inventions of the exclusion years, and they were built to justify it.</li>
       <li><strong>Be specific.</strong> Nearly all came from a handful of districts in <strong>Guangdong</strong>, most from Toisan and the Sze Yup counties, and speak Cantonese, not "Chinese." They have a village, a family, a surname that means something, and a remittance going home every quarter. Choose the particulars.</li>
-      <li><strong>Skill is a trade, not magic.</strong> The herbalist's medicine is medicine; the railroad man's blasting is engineering; the merchant's ledger is capital. Do not turn any of it into mysticism, and do not hang the game's invented dark on Buddhist or Taoist practice: the same rule the First Peoples' section sets, for the same reason.</li>
+      <li><strong>Skill is a trade.</strong> The herbalist's medicine is medicine; the railroad man's blasting is engineering; the merchant's ledger is capital. Do not turn any of it into mysticism, and do not hang the game's invented dark on Buddhist or Taoist practice: the same rule the First Peoples' section sets, for the same reason.</li>
       <li><strong>The associations are civil society.</strong> The <em>huiguan</em> is a bank, a court, a hiring hall, and a burial society at once. A character with standing in one has resources; a character who has crossed one has a problem that a gun will not solve.</li>
       <li><strong>The injustice is real history.</strong> The tax, the queue ordinances, the Exclusion Act, and the burnings all happened, and 1885 is the year of Rock Springs. Use them with weight, by agreement, never for flavor.</li>
     </ul>
@@ -1064,7 +1064,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Mechanically, a Chinese character chooses any Origin and Calling. <strong>The Laborer</strong> is the road most
   walked and is far from the only one: the <strong>Sawbones</strong> fits the herbalist tradition exactly, and the
   frontier's Chinese Prospectors, Gamblers, Drifters, and Bounty Hunters are all a matter of record. Their district,
-  their family across the water, and what the remittance is for go into the four Questions, not into a stat.</p>
+  their family across the water, and what the remittance is for belong in the four Questions.</p>
 
 </section>
 
@@ -1093,8 +1093,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   narrower and more brutal: what that Calling actually does in a round of shooting, and what it gives up to be
   the thing that does it. Both halves are true. The Marshal will not out-damage anybody in this book and the
   ledger says so plainly, because the Marshal spends its Calling on everyone else's turn and a player who
-  wanted to top a tally should be told before they roll, not after. Read the eighteen ledgers together and the
-  shape of a posse falls out of them: somebody has to end things, somebody has to keep the ending from
+  wanted to top a tally should hear it before they roll. Read the eighteen ledgers together and you can see
+  what a posse needs: somebody has to end things, somebody has to keep the ending from
   happening to you, and the good tables work out early which of them they are short of.</p>
   <p>This book groups the Callings by the well they draw from, across three chapters. The <strong>worldly Callings</strong>
   in this chapter, Gunhand, Drifter, Sawbones (the frontier's word for a doctor), Marshal, Prospector, Mountain Man,
@@ -1145,8 +1145,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   </table>
   <h4>Bushwhack</h4>
   <p>Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is
-  unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. The ambush is
-  the whole of the art: a bounty man forced to trade blows in the open with a cornered killer has already made his mistake.</p>
+  unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. Everything
+  rides on the ambush. A bounty man forced to trade blows in the open with a cornered killer has already made his mistake.</p>
   <h4>Quick Hands</h4>
   <p>Years of needing your iron (or your irons, the manacle kind) a half-second sooner than the other man. You draw,
   holster, reload, or snap on a cuff as part of another action rather than spending a Beat on it, and add +2 to the roll that
@@ -1190,7 +1190,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   goes on the wall of some office where men will read the name for fifty years. Write the wrong name and you will find
   that out the same way.</p>
 
-  <div class="quote">"Folks ask how I bring them in when faster men could not. I do not bring them in fast. I bring them in
+  <div class="quote">"Folks ask how I bring them in when faster men could not. I don't bring them in fast. I bring them in
     tired: a week of no fire, no sleep, no notion of where they are, until the open country has done my work for me and the
     iron is only the receipt."
     <span class="src">— attributed to the bounty man called Cole Renner, who always collected</span></div>
@@ -1210,9 +1210,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h2 id="ix-c-drifter">Drifter</h2>
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Save Reflex · Attack Steady</p>
   <p>The Drifter belongs to no town and answers to no brand. Scout, tracker, horse-thief, bounty-man, or simply a soul
-  who cannot stop moving: the Drifter survives by seeing first, striking once, and being elsewhere by dawn. They are the
+  who can't stop moving: the Drifter survives by seeing first, striking once, and being elsewhere by dawn. They're the
   party's eyes on the trail and its knife in the dark.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">No Name Sticks.</span> You have used a dozen names and answered to all of them. What you did in one town follows you to the next only if a living soul carries it there on purpose, and every description of you is wrong in at least one particular that matters.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">No Name Sticks.</span> You've used a dozen names and answered to all of them. What you did in one town follows you to the next only if some living soul goes out of their way to carry it there, and every description of you is wrong in at least one particular that matters.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>Position. Sudden Strike pays whenever somebody else has the foe&rsquo;s attention, and Evasion means the blast that catches the posse often does not catch you.</div>
     <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and no answer at all to a thing that has already seen you and is walking straight at you.</div>
@@ -1283,10 +1283,10 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>V. Worldly Callings</span></div>
   <h2 id="ix-c-engineer">Engineer</h2>
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Steady</p>
-  <p>Everyone else out here is trying to survive the country. You are trying to make it hold still long enough to build
+  <p>Everyone else out here is trying to survive the country. You're trying to make it hold still long enough to build
   something on. You came west with a transit or a powder licence or an apprenticeship you never finished, and what you
-  have since learned is that the frontier is not short of brave men and is desperately short of anyone who can make a
-  thing work twice. You are not a scholar. You are a tradesman with theory, which is worse for everybody who has to
+  have since learned is that the frontier isn't short of brave men and is desperately short of anyone who can make a
+  thing work twice. You aren't a scholar. You are a tradesman with theory, which is worse for everybody who has to
   argue with you.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Every Machine Answers.</span> A quarter hour with any built thing and you can say what it does, what is wrong with it, and what putting it right would take: a lock, a pump, a press, a rifle action, a stamp mill, a clock. Whether you can fix it today depends on what is in the wagon. Whether you understand it depends on nothing at all.</p>
   <div class="fight">
@@ -1341,7 +1341,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>Field Expedient</h4>
   <p>Given ten minutes, a few hands and whatever the ground offers, you throw up a work: a barricade, a footbridge, a sluice, a firing step, a hoist. It is ugly, it holds for the scene, and it changes what the ground is worth.</p>
   <h4>Overbuilt</h4>
-  <p>You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules something genuinely beyond their design was asked of them.</p>
+  <p>You have stopped building things that fail when it matters. Your contraptions and field works no longer break on a natural 1, and break at all only when the Keeper rules they were asked for something well past what they were built to do.</p>
   <h4>The Machine Age</h4>
   <p>At 10th level the things you make outlast the making of them. Choose one of your contraptions: it costs no Ingenuity to work, it does not break, and it can be handed to somebody else and will work for them. You have crossed the line between a trick and a tool, and the century coming will be built out of what is on your side of it.</p>
   <h4>Proving Ground</h4>
@@ -1481,7 +1481,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="statline">Hit Die d10 · Trained Skills 2 + WIT · Strong Saves Fortitude, Reflex · Attack Practiced</p>
   <p>Some folk are simply faster than the rest, and have made their peace with what that means. The Gunhand is the
   gunfighter, the shootist, the hired iron: a person who has reduced the question of survival to who clears leather
-  first. They are not brave so much as quick, and they know the difference even if no one else does. The Gunhand is built
+  first. They aren't brave so much as quick, and they know the difference even if no one else does. The Gunhand is built
   for the gun rules of Chapter XI; learn the Iron Code well.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Let Him Draw First.</span> Against a foe who has already drawn on you, you act first. No roll, no argument. There are men out here who have built an entire career on standing very still and waiting to be threatened.</p>
   <div class="fight">
@@ -1564,7 +1564,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h2 id="ix-c-marshal">Marshal</h2>
   <p class="statline">Hit Die d10 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Practiced</p>
   <p>Lawman, cavalry sergeant, wagon-boss, or self-appointed keeper of a town that never asked: the Marshal leads. Their
-  gift is not the fast draw but the steady one, the voice that keeps frightened people pointed the right way when everything
+  gift isn't the fast draw but the steady one, the voice that keeps frightened people pointed the right way when everything
   in them wants to run. A Marshal rarely dies alone.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Your Word Is the Record.</span> What you write down becomes the official account of it. A wire sent over your name is believed at the other end, a man you name as wanted is wanted, and a killing you rule justified stays ruled, in every town that recognizes any law at all. Being wrong on paper is a slower kind of trouble than being wrong in the street, and it takes longer to catch you.</p>
   <div class="fight">
@@ -1599,7 +1599,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   folk mostly fear you or trust you. Either opens doors; each closes others.</p>
   <h4>Hold the Line / Unflinching</h4>
   <p>Allies within sight of you gain +1 on saves against fear and the uncanny, rising to +2 at 5th level, when you yourself
-  become immune to being Frightened. Courage, it turns out, is contagious: the only blessing in this book that is.</p>
+  become immune to being Frightened. Courage is catching. It's the only blessing in this book that is.</p>
   <h4>Last Stand</h4>
   <p>Once per session, when an ally within sight would drop to 0 Blood, you may shout them upright: they remain conscious and
   acting until the end of the fight or until struck again. Some Marshals have held a doorway with five dead men still standing
@@ -1621,8 +1621,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   Whatever wanted in will still be out there at dawn, and it will know your face now, and where you sleep.</p>
 
   <div class="quote">
-    "I never asked to be followed. I only stood where the road forked and would not move,
-    and after a while there were people standing behind me. That is the whole of leadership.
+    "I never asked to be followed. I only stood where the road forked and wouldn't move,
+    and after a while there were people standing behind me. That's the whole of leadership.
     That, and never letting them see you reckon the odds."
     <span class="src">— from the deposition of a wagon-boss, Fort Reliance</span>
   </div>
@@ -1643,10 +1643,10 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="statline">Hit Die d10 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Practiced</p>
   <p>Some men went up into the high country to trap beaver and never entirely came back down. The Mountain Man lives where
   the maps give out (the peaks, the deep timber, the snowbound passes) trapping, hunting, and reading a wilderness that
-  kills the unready in an afternoon. He is hard as a hickory axe-handle, easy with a long rifle, and short on conversation,
+  kills the unready in an afternoon. He's hard as a hickory axe-handle, easy with a long rifle, and short on conversation,
   and he has seen things in the deep snow that he does not, as a rule, talk about. When something out of the dark comes down
-  out of the hills, he is often the only soul who already knows its name.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">Half a Wild Thing.</span> Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it does not bolt. Men cross the street, and the ones who do not cross the street are generally the sort you would rather had.</p>
+  out of the hills, he's often the only soul who already knows its name.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">Half a Wild Thing.</span> Horses stand for you. Dogs stop barking. Game looks at you a long moment before it bolts, and now and then it doesn't bolt. Men cross the street, and the ones who don't cross the street are generally the sort you would rather had.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>Reach. The Hawken and Dead Aim between them put more on one distant shot than anything else a Worldly soul carries.</div>
     <div class="pays"><span class="k">You pay</span>A slow gun and slower ground. Everything you are good at wants range, patience and open country, and a room takes all three away at once.</div>
@@ -1679,7 +1679,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Spend a Beat to steady your rifle. This is the <em>Aim</em> action, and your next shot this turn deals the extra
   damage shown on a hit: <strong>1d6</strong> at 1st level, <strong>2d6</strong> at 5th, <strong>3d6</strong> once you are King of the High Country, and <strong>4d6</strong> at 11th. Patience, a good rest, and a held breath are worth more than any luck.</p>
   <h4>Hard Country</h4>
-  <p>The wilderness is your parlor. You are never lost in wild country, you ignore natural difficult terrain (scree,
+  <p>The wilderness is your parlor. You're never lost in wild country, you ignore natural difficult terrain (scree,
   deadfall, brush, snow) and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger
   that would break other men, you simply endure.</p>
   <h4>Read Sign</h4>
@@ -1723,8 +1723,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   anything living. The mountain asks in return that you never bring the thing you are hunting into a town, and it will
   know.</p>
 
-  <div class="quote">"Folks down in the settlements think the wild is empty. I have wintered alone above the timberline with
-    the wind screaming for three months, and I will tell you it is the most crowded place I know. Something up there counts
+  <div class="quote">"Folks down in the settlements think the wild is empty. I've wintered alone above the timberline with
+    the wind screaming for three months, and I'll tell you it is the most crowded place I know. Something up there counts
     every man who comes. I just learned to count back."
     <span class="src">— Eli Six-Bears, trapper, who came down out of the Bitterroots one spring and would not say why</span></div>
 
@@ -1744,12 +1744,12 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Reflex · Attack Steady</p>
   <p>The Prospector came west for the one honest promise the country ever made: that what lies in the ground belongs to
   whoever is fool enough to dig it out. Part surveyor, part gambler, part blasting-man, they read rock and water and luck
-  the way others read scripture, and they have learned, the hard way, that some seams were sealed for a reason, and that
+  the way others read scripture, and they've learned, the hard way, that some seams were sealed for a reason, and that
   the deepest shafts open onto more than ore.</p>
-  <div class="quote">&ldquo;We followed the vein down past where the air goes wrong, and there he sat in his rusted Spanish iron, four hundred years dead and still holding the box like he meant to keep it. We took the gold. I have wished, every night since, that we had not.&rdquo;
+  <div class="quote">&ldquo;We followed the vein down past where the air goes wrong, and there he sat in his rusted Spanish iron, four hundred years dead and still holding the box like he meant to keep it. We took the gold. I've wished, every night since, that we had not.&rdquo;
     <span class="src">&mdash; J. Halloran, testimony given at the Widow&rsquo;s Comfort inquest</span></div>
 
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">Filed and Recorded.</span> Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it is worth anything is a separate question. Being yours has started more shooting out here than gold ever did.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">Filed and Recorded.</span> Any ground nobody has claimed, you can claim, and you know exactly how to make it stick: the stakes, the posted notice, the recorder's fee, the wording that survives a challenge in a territorial court. Whether it's worth anything is a separate question. Being yours has started more shooting out here than gold ever did.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>Everything at once. Charges climb from 2d6 to 5d6, Demolitionist doubles the dice against the unliving, and a burst does not much care how many of them there are.</div>
     <div class="pays"><span class="k">You pay</span>A count. Charges are prepared at dawn and they run out, and the fight that goes long finds you standing there holding a pick.</div>
@@ -1844,8 +1844,8 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "Folks say I struck it lucky. I struck it <em>deep</em>, is what I did, and lucky was getting back up the shaft.
-    There's a sound down there, past the silver. Patient, like water that learned to wait. I do not dig at night now.
-    I have all the money a man could want, and I sleep with the lamp lit."
+    There's a sound down there, past the silver. Patient, like water that learned to wait. I don't dig at night now.
+    I've all the money a man could want, and I sleep with the lamp lit."
     <span class="src">— J. Halloran, late of the Widow's Comfort claim, now of no fixed address</span>
   </div>
   
@@ -1865,9 +1865,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
   <p><em>Sawbones</em> is what the West called a doctor, after the saw in the bag, and the trade was as rough as the name.
   Surgeon, alienist, horse-doctor, or barber with a bone-saw, the Sawbones is the one who digs the bullet out by
-  lamplight and decides who is worth the laudanum. They know the body too well to romanticize it, and the mind too well to
-  trust it. In a country this lethal, they are worth their weight in silver.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">Not On My Table.</span> A soul whose wounds you have dressed since the last full rest will not bleed out while you are conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question.</p>
+  lamplight and decides who's worth the laudanum. They know the body too well to romanticize it, and the mind too well to
+  trust it. In a country this lethal, they're worth their weight in silver.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">Not On My Table.</span> A soul whose wounds you've dressed since the last full rest won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.</div>
     <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and a blade&rsquo;s reach. Your damage wants you close to a thing you would much rather be operating on afterward.</div>
@@ -1946,7 +1946,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="chapter-sub">For those who answer the dark with a louder Word.</p>
   <div class="divider"></div>
   <div class="quote">
-    "I have buried ninety-one and married eleven. Do not ask me which work I believe in. Ask me which one I would still do for nothing."
+    "I have buried ninety-one and married eleven. Don't ask me which work I believe in. Ask me which one I would still do for nothing."
     <span class="src">— Rev. A. Jensen</span>
   </div>
 
@@ -1970,7 +1970,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>A Note on Faiths Not Your Own</h4>
     <p>The faith-keepers of the First Peoples are <strong>not</strong> a Calling in this book and should never be reduced
     to one. Their ceremonies are living religion, not game mechanics, and they are not the "Old Rites" of Chapter XIII. The
-    <strong>Shaman</strong> presented here is a deliberately fictional, syncretic spirit-talker, drawn from the broad
+    <strong>Shaman</strong> presented here is an invented, syncretic spirit-talker, drawn from the broad
     frontier well of animist and folk belief, and likewise <em>not</em> a stand-in for any real nation's sacred practice. If
     a table wishes to portray such a figure, do so as a person of faith, with the care urged in Chapter IV, and leave the
     sacred specifics of any living tradition off the character sheet entirely.</p>
@@ -1983,7 +1983,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Where the Preacher improvises, the Padre inherits. Behind one tired man at a crumbling mission stands eighteen
   centuries of liturgy, an unbroken chain of ordination, and a Church that has been writing down what it learned about the
   dark since long before the dark followed the settlers west. The Padre's power is the power of the Rite, performed exactly,
-  whether or not the celebrant's own faith is steady. The words work. That is rather the point of them.</p>
+  whether or not the celebrant's own faith is steady. The words work. That's rather the point of them.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">The Church Owes You a Bed.</span> Every mission, chapel, rectory, and lay house that keeps the faith will take you in and yours with you: a roof, a meal, a horse if they can spare one, and the name of who to ask for in the next town. The Church has a long memory and longer ledgers, and one day somebody will present yours.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>The rite. Exorcism, holy water and the Church Militant reach what lead cannot, and the blessing list arms whoever among you is best with a gun.</div>
@@ -2062,7 +2062,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "The boy's father asked me did I believe, truly, that the words would hold the thing in his son.
-    I told him belief was his department. The Rite was mine, and the Rite does not require my opinion.
+    I told him belief was his department. The Rite was mine, and the Rite doesn't require my opinion.
     Then I opened the book, and we found out together which of us was right."
     <span class="src">— Fr. Ignacio Reyes, Mission San Crisanto</span>
   </div>
@@ -2084,7 +2084,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Whether ordained, defrocked, or self-anointed, the Preacher carries the Word into a country that has plainly been
   abandoned by whatever wrote it, and keeps preaching anyway. Their faith is a weapon and a wall. Whether any god hears them
   is a question the Preacher has stopped asking aloud.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">A Crowd Where You Stand.</span> Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They will listen. What they do about it afterward is between them and God, and it has gone both ways in living memory.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">A Crowd Where You Stand.</span> Anywhere with a dozen souls in it, you can raise a congregation in the time it takes to climb up on something. They'll listen. What they do about it afterward is between them and God, and it has gone both ways in living memory.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>Brimstone, which is Faith&rsquo;s own damage and wants no gun at all, and a Sermon that moves a room before the shooting starts.</div>
     <div class="pays"><span class="k">You pay</span>Conviction, spent. Brimstone is its own action rather than a rider on a shot, so the round you preach is a round you do not fire.</div>
@@ -2153,7 +2153,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "I have buried ninety souls and christened thirty, and I keep the arithmetic in the same book.
-    If the Lord reads it of an evening, He has not yet seen fit to remark upon the difference."
+    If the Lord reads it of an evening, He hasn't yet seen fit to remark upon the difference."
     <span class="src">— Rev. Amos Teague, his own ledger, water-stained</span>
   </div>
   
@@ -2181,11 +2181,11 @@ which is to say the difference between a friend who is wounded and a friend who 
   something in the world consents to close it, and a spirit-talker is a person who knows the words
   for asking. The same breath that borrows a wolf's shape for an hour will knit a broken rib, and
   out here that makes one soul the doctor, the tracker, and the thing in the treeline, depending on
-  the hour. Towns that have one do not ask which it is tonight. They send for it either way.</p>
+  the hour. Towns that have one don't ask which it is tonight. They send for it either way.</p>
   <p class="note">See the box below, and the boxes in Chapters IV and VI: this Shaman is a fictional,
   syncretic frontier archetype, not a portrait of any living nation's sacred role. Play the
   relationship and the respect; leave real ceremony off the sheet.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">They Tell You What Is Wrong.</span> Look at any living thing and name what ails it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. The same neighbors tell you things while you sleep. Every night you bed down on open ground the Keeper owes you one true thing, an image or a warning or a name or a direction. It is never clear enough to act on cleanly and it has never once been wrong.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">They Tell You What's Wrong.</span> Look at any living thing and name what ails it: the wound, the sickness, the poison, the hunger, the curse, or nothing at all, which is now and then the worse answer. The same neighbors tell you things while you sleep. Every night you bed down on open ground the Keeper owes you one true thing, an image or a warning or a name or a direction. It is never clear enough to act on cleanly and it has never once been wrong.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>Blood back, and the shape to go and collect it. Mending Hands puts a posse on its feet mid-scene at 2d8 a point, and Become the Mask changes what you are for the length of one.</div>
     <div class="pays"><span class="k">You pay</span>One well pays for all of it. Every scene asks whether the Breath goes into the wounded or into the wolf, and there is never enough for both twice.</div>
@@ -2273,7 +2273,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>The Long Song</h4>
   <p>You have learned to sing a thing all the way through rather than in pieces. Over an hour of
   singing, spend any amount of Breath: everything it would heal, it heals, and it lifts one disease,
-  poison, or Affliction from every soul in the circle besides. It cannot be hurried and it cannot be
+  poison, or Affliction from every soul in the circle besides. It can't be hurried and it can't be
   sung twice in a day. A camp that has heard it sleeps without dreaming.</p>
   <h4>Two Worlds at Once</h4>
   <p>You have stopped having to cross over. You see and may act upon the spirit world and this one
@@ -2293,13 +2293,13 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "He set my husband's leg and sang over it the better part of an hour, and the next week I saw him
-    walk into the treeline on two feet and come out of it on four. I have thought about that every
-    day since and I have not decided anything. The leg healed straight."
+    walk into the treeline on two feet and come out of it on four. I've thought about that every
+    day since and I haven't decided anything. The leg healed straight."
     <span class="src">&mdash; testimony taken at Two Forks, and entered without comment</span>
   </div>
 
   <div class="quote">
-    "My grandmother told me the spirits are not servants and not enemies. They are neighbors,
+    "My grandmother told me the spirits aren't servants and not enemies. They're neighbors,
     and a neighbor remembers everything: the borrowed cup, the kind word, the slight at the well.
     Treat them as you would the people whose land you cross. You are, after all, doing both at once."
     <span class="src">&mdash; recorded from a spirit-talker who asked to be named only as a friend of the river</span>
@@ -2310,7 +2310,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <p>"Shaman" and "Medicine Man" both carry real and specific meaning, the first among peoples of
     northern Asia and the second in Native American traditions. This Calling is <strong>not</strong> a
     portrait of any nation's sacred healer, spirit-keeper, or ceremony; those, as Chapters IV and VI
-    insist, stay off the character sheet. What is written here is a deliberately fictional, syncretic
+    insist, stay off the character sheet. What is written here is an invented, syncretic
     frontier figure, blending the spirit-talker, the herb-doctor, the granny-woman, the faith-healer
     and the bonesetter of many trail traditions. Tables are warmly encouraged to rename it to taste,
     and plenty have: the Spirit-Talker, the Healer, the Granny, the Bonesetter, the Yarb-Doctor.
@@ -2332,11 +2332,11 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="runhead"><span class="l">VI. Callings of Faith</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-sister">Sister</h2>
   <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Saves Fortitude, Will · Attack Steady</p>
-  <p>Not every soul who serves does it from a pulpit. Your order sent you where the diocese would not go: the fever camp,
+  <p>Not every soul who serves does it from a pulpit. Your order sent you where the diocese wouldn't go: the fever camp,
   the mining town with no doctor, the mission school at the end of a road nobody maintains. The Padre has authority and
   the Preacher has conviction. What you have is a habit of staying in the room, and the country has learned that this is
   the harder of the three to get rid of.</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">Nobody Turns Away a Sister.</span> The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you will let you in first.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">Nobody Turns Away a Sister.</span> The sick house, the jail, the barracks, the deathbed, the room upstairs where a girl is in trouble. Doors open for you that open for nobody else in the posse, and they open at once. Men who fully intend to shoot you'll let you in first.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>The Least of These, Hold the Lamp, and a doorway nobody gets through. You are what stands between the posse and the dark while they do the killing.</div>
     <div class="pays"><span class="k">You pay</span>The vigil was not written to win a fight and it does not. Three workings reach a round and none of them is damage.</div>
@@ -2403,7 +2403,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "We asked her to come away from the door. She said she would, directly, and did not.
-    I have thought about that answer for eleven years. She was not being brave at us.
+    I've thought about that answer for eleven years. She wasn't being brave at us.
     She simply had not finished."
     <span class="src">— Hollis Vane, on the night at the Calvary Crossing pest-house</span>
   </div>
@@ -2451,8 +2451,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>The Hunt</h4>
   <p>As a single Beat, name one creature you can see as your <strong>quarry</strong>. Against that quarry you gain +1 to
   hit and to all checks to find, track, and study it; you ignore any supernatural concealment it enjoys; and you may not be
-  forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. The Hunt is the whole of
-  the art: choose your prey, and never lose the trail.</p>
+  forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. It all comes down to
+  the Hunt: choose your prey, and never lose the trail.</p>
   <h4>Sanctified Iron</h4>
   <p>Each dawn, anoint your weapons with salt, silver-wash, oil, and a muttered rite. Until next dawn they count as
   <strong>silver, cold iron, and blessed</strong> for the purpose of overcoming the uncanny's resistances, and deal +1
@@ -2490,7 +2490,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   from you by any means. You may carry as many names as your WIT modifier. Crossing one out is the only way to make
   room, and there are two ways to cross one out.</p>
   <h4>No Sanctuary</h4>
-  <p>A thing you are hunting has nowhere to be. It cannot heal, regenerate, reform or be aided while you are within a
+  <p>A thing you are hunting has nowhere to be. It can't heal, regenerate, reform or be aided while you're within a
   hundred feet of it, and any ward, threshold, holy ground or bound place that shelters it opens for you and closes
   behind you. What you have hunted onto consecrated ground stays on it.</p>
   <h4>The Last Fire</h4>
@@ -2529,13 +2529,13 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="divider"></div>
   <div class="narr">You have come a fair way into this almanac, reader: through the honest chapters, the
   wages and the weather and the workaday iron. Notice, if you would, how naturally you turned this page.
-  That is how it happens out there, too: one door at a time, each opening easily off the last, until a
+  That's how it happens out there, too: one door at a time, each opening easily off the last, until a
   soul looks up from its reading and finds the light has changed. The pages from here forward concern
-  the things the handbills do not mention. It is not too late to close the book. It has never yet been
+  the things the handbills don't mention. It isn't too late to close the book. It has never yet been
   too late for anyone, at this particular page.</div>
-  <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one, the <strong>Old Dark</strong>: the deep strata of buried gods, drowned hungers, and patient things that were ancient when the first peoples were young. It does not love you and it does not hate you; it lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it is an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf, and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has simply fallen in love with one of the things below, and serves it gladly, body and soul.</p>
-  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to five, and you reach a new Rank at 1st, 3rd, 5th, 7th and 9th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the thing the others deal with. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th: the shape of the bargain, the craft, the lie, or the devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
-  <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried was not a wolf, and it was not Abner. Salt the grave. Do not mark it.&rdquo;
+  <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one, the <strong>Old Dark</strong>: the deep strata of buried gods, drowned hungers, and patient things that were ancient when the first peoples were young. It doesn't love you and it doesn't hate you; it lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it's an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf, and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has simply fallen in love with one of the things below, and serves it gladly, body and soul.</p>
+  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to five, and you reach a new Rank at 1st, 3rd, 5th, 7th and 9th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the thing the others deal with. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th. For the Hexer it is a bargain, for the Witch a craft, for the False Prophet a lie, and for the Dark Cultist a devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
+  <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried wasn't a wolf, and it wasn't Abner. Salt the grave. Don't mark it.&rdquo;
     <span class="src">&mdash; Marshal T. Coyle, on a matter he would not enter in the ledger</span></div>
 
 </section>
@@ -2583,8 +2583,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>The Glad Mark</h4>
   <p>You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you <em>walk</em>
   it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the
-  steps. And unlike any other Calling, a rising Mark <strong>repays</strong> you (see Gifts of the Patron). You are becoming
-  something else on purpose, and calling it grace.</p>
+  steps. And unlike any other Calling, a rising Mark <strong>repays</strong> you (see Gifts of the Patron). You are choosing
+  to become something else, and calling it grace.</p>
   <h4>Sacrifice</h4>
   <p>Devotion is best shown in blood. Spend your own Blood to empower a working at the Blood-Price rate, or offer a worthier
   sacrifice (a beast, a treasure, a life) to petition your patron for a boon beyond your level, which the Keeper
@@ -2592,7 +2592,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   you and one that does not.</p>
   <h4>Gifts of the Patron</h4>
   <p>As the Mark claims you, the patron remakes you in its image. At Mark 2, 3, and 4, choose a <strong>Gift</strong>:
-  unnatural resilience (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the
+  unnatural toughness (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the
   cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more
   the dark can pour through you.</p>
   <h4>Rapture</h4>
@@ -2610,7 +2610,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each
   answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.</p>
   <h4>What Is Owed</h4>
-  <p>You have learned the shape of the ledger you are in. Once per scene, name a price and pay it (Blood, Nerve, a memory,
+  <p>You've learned how the ledger you're in is kept. Once per scene, name a price and pay it (Blood, Nerve, a memory,
   a year, a companion's luck) and take back exactly what it was worth: damage undone, a save passed, a Sign worked for
   free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is
   more than most bargains offer.</p>
@@ -2649,7 +2649,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>VII. Callings of the Old Dark</span></div>
   <h2 id="ix-c-prophet">False Prophet</h2>
   <p>A False Prophet did not sign for power as a Hexer does, nor inherit it as a Witch does. They stumbled instead on a
-  meaner trick: the dark will pay, and pay handsomely, for <strong>worship</strong>, and it does not greatly care where
+  meaner trick: the dark will pay, and pay handsomely, for <strong>worship</strong>, and it doesn't greatly care where
   the worship is aimed. So the False Prophet raises a congregation that believes it prays to Heaven, skims the devotion off
   the top, and lets something out past the firelight drink the rest. The miracles are real. The gospel is a lie. And the
   bill, when at last it falls due, is mailed to the flock.</p>
@@ -2707,7 +2707,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   tremendous power flows (great smitings, healings, terrors, commands) and the crowd will die at your asking, and some may.
   But you are no longer entirely the one preaching; the Keeper may put a word in your mouth and turn your hand, as the thing
   behind the curtain stretches into the room it has rented all this time. When the scene ends the Mark advances, and you
-  understand the shape of the trick at last: you did not gather a flock for yourself. You baited a hook. You were the worm.</p>
+  finally see the trick for what it was: you did not gather a flock for yourself. You baited a hook. You were the worm.</p>
   <h4>The Bigger Lie</h4>
   <p>The small ones stopped working on you years ago; the enormous ones have never failed. Once per session, tell a lie so
   large that checking it is somebody else's job (an army behind you, a pardon in your pocket, a dead man alive, the
@@ -2736,8 +2736,8 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="quote">
     "He laid hands on my boy and the fever broke, and I thanked God on my knees in the mud.
-    My boy has not slept right since. Says a man with my preacher's face stands at the foot of the bed
-    and takes something small out of him, each night, with great tenderness. I have stopped going to the tent.
+    My boy hasn't slept right since. Says a man with my preacher's face stands at the foot of the bed
+    and takes something small out of him, each night, with great tenderness. I've stopped going to the tent.
     I find I am the only one in town who has."
     <span class="src">— testimony of a mother, recorded and sealed at Calvary Wells</span>
   </div>
@@ -2745,9 +2745,9 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>False Prophet&rsquo;s Gospels</h4>
     <p>At 3rd level, choose one. It grants a boon at once and a greater boon at 9th level: the deepening of the gospel.</p>
     <ul class="dash">
-      <li><strong>The Borrowed Saint.</strong> Healing and blessing wonders cost 1 less Tribute and run deeper; you read as genuinely holy to Witch-Sight and any test of faith. <em>Greater (9th):</em> once per session, stage a public miracle that binds every witness to you as devoted and floods your Tribute.</li>
-      <li><strong>The Doomsayer.</strong> Fear and smiting wonders surge; once per scene pronounce a small judgment: a blight, a swarm, a sickness, a curse of ill luck. <em>Greater (9th):</em> once per session, prophesy and unleash a scene-wide calamity, its cost paid by the deceived flock.</li>
-      <li><strong>The Golden Calf.</strong> You and your faithful prosper. Conjure good fortune and draw a sourceless income wherever you preach. <em>Greater (9th):</em> once per session, seal a covenant of plenty over a town for the arc, while the dark quietly mortgages the deceived.</li>
+      <li><strong>The Borrowed Saint.</strong> Healing and blessing wonders cost 1 less Tribute and run deeper; you pass as holy to Witch-Sight and to any test of faith. <em>Greater (9th):</em> once per session, stage a public miracle that binds every witness to you as devoted and floods your Tribute.</li>
+      <li><strong>The Doomsayer.</strong> Fear and smiting wonders surge; once per scene pronounce a small judgment: a blight, a swarm, a sickness, a curse of ill luck. <em>Greater (9th):</em> once per session, prophesy and bring down a scene-wide calamity, its cost paid by the deceived flock.</li>
+      <li><strong>The Golden Calf.</strong> You and your faithful prosper. Conjure good fortune and draw a sourceless income wherever you preach. <em>Greater (9th):</em> once per session, seal a covenant of plenty over a town for the arc, while the dark holds the mortgage on the deceived.</li>
     </ul>
   </div>
 </section>
@@ -2759,7 +2759,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   is borrowed, and the lender always collects. Every Hexer begins already touched (Mark 1), and every Hexer travels the
   Mark faster than the rest of the living. This is not a Calling for a soul that wishes to stay one.</p>
   <p class="statline">Hit Die d6 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
-  <p class="perk"><span class="lbl">Perk</span><span class="nm">Your Debts Are Public.</span> What you pay for the dark shows on the world around you. Lamps gutter. Milk turns. The dog will not come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this.</p>
+  <p class="perk"><span class="lbl">Perk</span><span class="nm">Your Debts Are Public.</span> What you pay for the dark shows on the world around you. Lamps gutter and the milk turns. The dog won't come into the room, and the priest's eye keeps coming back to you all through the sermon. Everyone in town knows what you are inside a week and not one of them can prove a word of it. You agreed to this.</p>
   <div class="fight">
     <div class="brings"><span class="k">In a fight</span>The whole Old Dark ladder, earliest and deepest of anyone. Blood Price buys a working when the Nerve is gone.</div>
     <div class="pays"><span class="k">You pay</span>The worst body in the book. A d6, a Slight attack, Backlash on everything, a Mark from the first day, and a price paid in your own Blood when the pool runs dry.</div>
@@ -2812,7 +2812,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have
   the Nerve, at any scale the fiction can hold: a Sign laid on a town, on a river, on a bloodline, on a night. It
   works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the
-  Keeper takes something from the world you were standing in. A person. A place. A year of somebody's life who never
+  Keeper takes something from the world you were standing in: a person, a place, a year of somebody's life who never
   asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly
   what it is worth and you are never the one paying.</p>
 
@@ -2912,7 +2912,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   session, as though it had gone otherwise: the shot missed, the door was locked, the letter never came, she was
   somewhere else that night. It is not an illusion and nobody remembers it the old way except you and anything older
   than you. The world simply is as you have said. What it costs is fixed: you age a year, the nearest living thing that
-  trusts you dies quietly within the week, and one of your own memories goes into the gap to hold it open. You will not
+  trusts you dies in its sleep within the week, and one of your own memories goes into the gap to hold it open. You will not
   know which one is missing. You will only notice, sometimes, that there is a space where a name used to be.</p>
 
   <div class="box gold">
@@ -2967,7 +2967,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>The Old Dark is a depth rather than a god, and things move in that depth. Some of them are old enough and
   particular enough that the country has put names to them, and those are what people mean by a
   <strong>Patron</strong>: the powers a Hexer borrows from on his Bargain, a Dark Cultist serves in her Devotion, and a
-  False Prophet feeds through his Gospel without ever quite learning whose plate he is filling. A Witch seldom deals
+  False Prophet feeds through his Gospel without ever quite learning whose plate he's filling. A Witch seldom deals
   with them at all. Her Craft is older and quieter and doesn&rsquo;t need them.</p>
   <p>How many there are depends on who you ask. Six is the usual count in a saloon, and the men who count six can
   rarely agree on the sixth. Some hold that those are the only parts of that depth that have ever answered anybody and
@@ -3033,7 +3033,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h1 class="chapter">VIII. Skills</h1>
   <p class="chapter-sub">The hundred small competencies between you and the grave.</p>
   <div class="divider"></div>
-  <p class="dropcap lead">Skills are the things you have learned to do on purpose. Each is tied to an ability and to a
+  <p class="dropcap lead">Skills are the things you've learned to do well enough to count on. Each is tied to an ability and to a
   <strong>proficiency rank</strong>: untrained, trained, expert, or master. Once you are trained, your check is a d20 +
   your proficiency (your level, plus +2 trained, +4 expert, or +6 master) + the keyed ability's modifier, against a
   Difficulty Class; while untrained, you roll ability alone. At creation you become trained in a number of skills set by
@@ -3075,7 +3075,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="box">
     <h4 id="ix-green-table">At the Green Table &mdash; Each Trade Its Own Tell</h4>
-    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (Men and women of faith are pointedly absent from this list; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack, not a class feature.</p>
+    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (Men and women of faith are pointedly absent from this list; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack and no more.</p>
     <ul class="dash">
       <li><strong>Bounty Hunter: Reading the Room.</strong> Gain +1 on Notice and Gamble checks to take the measure of a table, and you know at a glance which player is carrying the most iron, and which face matches the paper in your pocket.</li>
       <li><strong>Drifter: Stranger&rsquo;s Seat.</strong> No one here has played you before. Gain +1 on Gamble checks at any table where you are not known, and a foe gets no read on your tells the first hand.</li>
@@ -3085,7 +3085,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <li><strong>Mountain Man: Granite Face.</strong> Your weathered stillness gives nothing away: foes take &minus;1 to read your tells, and you ignore the first measure of drink or fatigue that would shake another&rsquo;s hand.</li>
       <li><strong>Prospector: Reads the Odds Like Ore.</strong> Gain +1 on Gamble checks in games of pure chance (faro, dice, chuck-a-luck) which you reckon as coldly as an assay.</li>
       <li><strong>Sawbones: The Body Doesn&rsquo;t Lie.</strong> Gain +1 on Gamble checks to read an opponent. You mark the racing pulse, the dry mouth, the sweat at the collar: the tells a man cannot will away.</li>
-      <li><strong>Dark Cultist: The Patron Smiles.</strong> Once per session, when you stake something real, your patron tilts a single card your way: roll one Gamble check twice and keep the better. A small grace, and never a free one.</li>
+      <li><strong>Dark Cultist: The Patron Smiles.</strong> Once per session, when you stake something real, your patron tilts a single card your way: roll one Gamble check twice and keep the better. It helps, and it's never free.</li>
       <li><strong>False Prophet: The Long Con.</strong> Gain +1 on Gamble checks to deceive at the table; you run a crooked game as smoothly as a crooked gospel, and the marks thank you for the fleecing.</li>
       <li><strong>Hexer: Borrowed Luck.</strong> Once per session, whisper to the Old Dark and reroll one Gamble check. The unpaid luck comes due later: a point of Nerve, or worse, at the Keeper&rsquo;s choosing.</li>
       <li><strong>Witch: A Charm in the Sleeve.</strong> Keep a small luck-charm worked beforehand; once per session it turns one losing hand into a winning one, until someone notices the brew on your breath.</li>
@@ -3093,7 +3093,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   </div>
 
   <div class="quote">
-    "There is no such thing as a useless skill out here. There is only the skill you did not have
+    "There is no such thing as a useless skill out here. There's only the skill you didn't have
     on the one night it would have mattered, and the small wooden marker they put up after."
     <span class="src">— from a primer for greenhorns, sold for a dollar, worth more</span>
   </div>
@@ -3240,7 +3240,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>Padre: Shepherd's Word.</strong> Spend a Beat to grant an ally who can hear you an immediate save, with your bonus, against a fear already gripping them.</li>
     <li><strong>Padre: The Parish Wide.</strong> (Cure of Souls, 11th) Your parish includes anyone who has ever taken shelter under your roof, and
       two of them turn up each session rather than one.</li>
-    <li><strong>Preacher: Hellfire Sermon.</strong> Your invocations against the unclean reach every foe who can hear your voice, not one alone.</li>
+    <li><strong>Preacher: Hellfire Sermon.</strong> Your invocations against the unclean reach every foe who can hear your voice.</li>
     <li><strong>Preacher: The Fire Catches.</strong> (The Camp Meeting, 11th) A camp meeting leaves behind a standing congregation: that town will
       answer a call from you once, later, however far away you are.</li>
     <li><strong>Shaman: Spirit-Spoken.</strong> Once per scene, put one yes-or-no question to the spirits about this land, its dead, or what passed here, and be answered true.</li>
@@ -3433,7 +3433,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <h2 id="ix-mounts">Mounts &amp; Tack</h2>
   <p>A horse is the line between a journey and a death. A man out here will go hungry a day before his
-  horse does, and he is right to. The mount you ride decides how far you go
+  horse does, and he's right to. The mount you ride decides how far you go
   in a day, what you can carry, and whether you outrun trouble or are run down by it.</p>
   <table>
     <thead><tr><th>Mount</th><th class="c">Speed</th><th class="c">Blood</th><th class="c">Def</th><th class="c">Carry</th><th class="c">Cost</th></tr></thead>
@@ -3498,7 +3498,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Wall / Punt Gun</td><td class="c">3d10</td><td class="c">80</td><td class="c">1</td><td class="c">slow</td><td>Scatter 20 ft, Kickback, Volley 20 ft</td><td class="c">$70</td></tr>
     </tbody>
   </table>
-  <p class="note">*Thrown explosives use the range as a throwing increment, not a shooting one. A Prospector ignores the
+  <p class="note">*Thrown explosives treat the listed range as a throwing increment. A Prospector ignores the
   scatter against themselves and may shape the burst (Chapter V).</p>
 
   <h2 id="ix-spec-rounds">Ammunition &amp; Specialty Rounds</h2>
@@ -3673,13 +3673,13 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman treat one
-  extra patient between rests. <strong>Iron vest.</strong> The tailored cousin of the scavenged plate in
+  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate in
   Chapter X: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
   against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
   through it. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
   Lore: Occult, or (at the Keeper's discretion, and at the usual risk) the working of a single Sign.
   <strong>Camera &amp; wet-plate kit.</strong> A long exposure and a steady hand make a portrait, and now and again the
-  plate holds what the eye refused: a figure at the window, a face in the smoke. The camera does not lie, which is exactly
+  plate holds what the eye refused: a figure at the window, a face in the smoke. The camera doesn't lie, and that's
   the trouble with it. <strong>Coffin, lead-lined.</strong> A body sealed in lead and buried proper does not rise. Usually.
   <strong>Pinkerton file on a name.</strong> Bought quiet from an agency man: aliases, known associates, last verified
   whereabouts. The Keeper answers three plain questions about the name; the fourth costs more than money.</p>
@@ -3748,7 +3748,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <h4 id="ix-rel-round">The Peacemaker's Last Round <span class="note">(Rare · artifact, one use)</span></h4>
   <p>A single cartridge of blessed silver, its casing scribed with a dying prayer. Fired at any Marked or uncanny thing, it
-  cannot miss and strikes as a critical hit, Fatal die and all. Then it is spent forever, and the gun that fired it never
+  can't miss and strikes as a critical hit, Fatal die and all. Then it is spent forever, and the gun that fired it never
   shoots quite true again, having known perfection once.</p>
 
   <h4 id="ix-rel-vial">Vial from the Weeping Spring <span class="note">(Rare · artifact)</span></h4>
@@ -3769,12 +3769,12 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4 id="ix-rel-rope">The Hanged Man's Rope <span class="note">(Rare · artifact · cursed)</span></h4>
   <p>A noose that never frays and never breaks, and binds even the uncanny fast where chain and iron fail. But it is heavy
   with the despair of all it has held; carry it long, and that weight settles into the bearer, draining hope and Nerve until
-  the rope begins to seem less a tool than a suggestion.</p>
+  the rope starts to look like advice.</p>
 
   <h4 id="ix-rel-cuirass">The Conquistador's Cuirass <span class="note">(Rare · artifact · cursed)</span></h4>
   <p>A blackened Spanish breastplate three centuries old. It turns even rifle balls (DR against firearms), an unheard-of
   protection, but it remembers the will of the man who died in it, and whispers in old Castilian, and covets the wearer.
-  Wear it through enough battles and the cuirass begins, quietly, to decide which of you is in command.</p>
+  Wear it through enough battles and the cuirass starts deciding which of you is in command.</p>
 
   <h4 id="ix-rel-star">The Iron Star <span class="note">(Rare · artifact · true relic)</span></h4>
   <p>The badge of a sheriff who never once broke his word or abandoned the helpless. Shown to a liar, it compels the truth;
@@ -3813,8 +3813,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="box gold">
     <h4>A Note on What Is Not Here</h4>
     <p>You will find no nation's nor any living faith's sacred objects laid out as loot in these pages: no medicine
-    bundles, no stolen ceremonial regalia, no holy thing of a people still praying with it. Such items are not treasure, and
-    a table reaching for that well should reach instead for the care urged in Chapter IV. There is no shortage of invented
+    bundles, no stolen ceremonial regalia, no holy thing of a people still praying with it. Such items aren't treasure, and
+    a table reaching for that well should reach instead for the care urged in Chapter IV. There's no shortage of invented
     relics in a haunted country. Make your own; the dark is generous with them.</p>
   </div>
 
@@ -3844,7 +3844,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <strong>initiative</strong>, a Notice check (or another skill the Keeper calls for, after the manner of Pathfinder 2E), and acts from highest to lowest. On your turn you have three
   <strong>Beats</strong>: the small, equal measures of what a person can do in those six seconds. Spend them in any
   order, and on any mix of the actions below. A second Strike in a turn is harder than the first; a third, harder still.
-  That is the whole of the Code, and the whole of why patient people outlive quick ones.</p>
+  That's the Iron Code, and it's why patient people outlive quick ones.</p>
 
   <table>
     <thead><tr><th>Action</th><th class="c">Beats</th><th>What It Does</th></tr></thead>
@@ -3912,7 +3912,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Patience is a weapon. Spend a Beat to <strong>Aim</strong> and your next Strike before your turn ends gains +2.
   A Kickback weapon (a shotgun, a buffalo rifle) punishes the hasty: fire it without bracing and you take –2 and stand
   Off-Guard until your next turn, unless your STR is 12 or better. Spending a Beat to <strong>brace</strong> (the same
-  action as Aim) plants your feet and lifts both penalties. A long gun fired from a galloping horse is a prayer, not a plan.</p>
+  action as Aim) plants your feet and lifts both penalties. Fire a long gun from a galloping horse and you're praying.</p>
 
   <div class="box gold">
     <h4 id="ix-aim-two">Two shots, or three?</h4>
@@ -3966,9 +3966,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   of, its true name, the man who called it, the thing it was promised and never got. Every one of them has one and the
   Keeper knows what it is. The shooting is still worth doing, because it buys the minutes somebody else needs to find
   the answer and reach it, and because a thing that is bleeding pays less attention to the person walking behind it.
-  But the shooting is not how it ends.</p>
+  But the shooting isn't how it ends.</p>
   <p>So when a fight is going badly in a way that feels arithmetical rather than unlucky, stop trying to win it. Ask
-  what the thing wants, what it will not cross, what it was before, and who in this county already knows. That is not
+  what the thing wants, what it won't cross, what it was before, and who in this county already knows. That's not
   the Keeper being merciful. It is the game working as designed.</p>
   <p id="ix-still-shoot">A few rules later in this book say <strong>a thing you can still shoot</strong>, and that is
   the line they mean: everything on the near side of it, which is most of what you will ever meet, and which lead and
@@ -3980,7 +3980,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <strong>Dying</strong> and bleeding, losing 1 Blood each round, until someone stabilizes you or you reach
   <strong>–CON</strong>, at which point you are dead, and out here dead is dead. A Fortitude save (DC 15) or a Medicine
   check (DC 15) can stop the bleeding; a point of Grit can keep you upright and acting one round more (Chapter II).</p>
-  <p id="ix-dr"><strong>Damage Reduction (DR)</strong> and <strong>resistance.</strong> Some armor, hides, and unnatural toughness grant <strong>Damage Reduction</strong>: subtract that number from the Blood lost to each qualifying hit, so <em>DR 2 vs blades</em> turns a six-Blood knife wound into four. DR never lowers a hit below zero, and a noted limit (<em>vs blades</em>, <em>vs nonmagical</em>) means it helps only against that source. A creature with <strong>resistance</strong> to a kind of harm (fire, lead, the merely mortal) treats it as steep DR against that source and may shrug such blows off almost wholly; overcoming a resistance, with silver or fire or a blessed weapon, is often the whole of the problem.</p>
+  <p id="ix-dr"><strong>Damage Reduction (DR)</strong> and <strong>resistance.</strong> Some armor, hides, and unnatural toughness grant <strong>Damage Reduction</strong>: subtract that number from the Blood lost to each qualifying hit, so <em>DR 2 vs blades</em> turns a six-Blood knife wound into four. DR never lowers a hit below zero, and a noted limit (<em>vs blades</em>, <em>vs nonmagical</em>) means it helps only against that source. A creature with <strong>resistance</strong> to a kind of harm (fire, lead, the merely mortal) treats it as steep DR against that source and may shrug such blows off almost wholly; overcoming a resistance, with silver or fire or a blessed weapon, is often most of the fight.</p>
 </section>
 
 <section class="page">
@@ -4058,7 +4058,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="box gold">
     <h4>The Mercy of Lethality</h4>
-    <p>A game where bullets are deadly is a game where players think before they draw. That is the point. Telegraph
+    <p>A game where bullets are deadly is a game where players think before they draw. Telegraph
     danger, let foes be talked down or fled, and make the rare gunfight matter. When a character does die, give the death
     its weight (a last word, a turn of silence) and let the table feel it before the next scene rides in.</p>
   </div>
@@ -4077,14 +4077,14 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="divider"></div>
   <div class="narr">Set down, for a moment, what you were told in the first chapter, and hear the rest of
   it. Something kept these plains before the buffalo, before the first peoples, before the word for
-  hunger had a mouth to say it. The settlers call the silence peace. It is not peace. It is patience, 
+  hunger had a mouth to say it. The settlers call the silence peace. It isn't peace. It is patience, 
   and this chapter is the accounting of what that patience does to the souls who finally hear it.</div>
   <p class="dropcap lead">This is the heart of the game. A body can be doctored; a mind, once it has seen too far past the
   edge of the ordinary world, does not mend so cleanly. <strong>Nerve</strong> measures how much horror your character can
   carry before something in them gives way. The <strong>Mark</strong> measures how much of them the dark has already
   claimed. Watch both. They are the truest hit points you have.</p>
-  <div class="quote">&ldquo;It stood over her the way weather stands over a valley: without face, without name, without any need of either. Elara screamed until she had no voice, and then she smiled, and that was worse. I have not slept a whole night since.&rdquo;
-    <span class="src">&mdash; from the sealed testimony concerning Mrs. Elara, Calvary Wells</span></div>
+  <div class="quote">&ldquo;It stood over her the way weather stands over a valley: without face, without name, without any need of either. Orpha screamed until she had no voice, and then she smiled, and that was worse. I haven't slept a whole night since.&rdquo;
+    <span class="src">&mdash; from the sealed testimony concerning Mrs. Orpha Greer, Calvary Wells</span></div>
 
 
   <h2 id="ix-nerve-pool">The Nerve Pool</h2>
@@ -4148,15 +4148,15 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p><strong>What the dreams give.</strong> From Mark 2 on, once a session, you can go to sleep wanting to know
   something about a person, a place or a thing you&rsquo;ve seen with your own eyes. Tell the Keeper what it is. You
   wake knowing one true thing about it. The Keeper picks which true thing you get, and it&rsquo;s usually the one the
-  dark would think was worth knowing.</p>
+  dark would most like you to know.</p>
 
   <h2 id="ix-returned">The Returned</h2>
   <p>Most who die stay dead. This is for the ones who did not, and for what it costs to be one of them
   at a fire where everybody else still breathes. A soul who <a href="#ix-o-wrong">Came Back Wrong</a>
-  is not a horror out of the Bestiary. You answer to your own name, you ride in the order, and your
+  isn't a horror out of the Bestiary. You answer to your own name, you ride in the order, and your
   friends know you. What sets you apart is that the ordinary mercies have stopped reaching you. Sleep
   mends nothing. A Sawbones lays hands on you and finds no pulse to work against. Whiskey goes down
-  cold. You mend by <em>wanting</em>, and the wanting is the whole of the problem.</p>
+  cold. You mend by <em>wanting</em>, and the wanting is the trouble.</p>
 
   <h3 id="ix-hunger">Hunger</h3>
   <p>A track of six steps that is yours alone. Nobody else at the table carries one. It is not the
@@ -4178,7 +4178,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p><strong>Mending.</strong> Spend a Beat and take <strong>one Hunger</strong> to knit what has been
   opened: recover <strong>1d6 Blood for every two levels you have</strong>, and never less than 1d6.
   This is the only way you heal. Not rest, not medicine, not a Miracle worked over you by somebody who
-  loves you. The arithmetic is worth saying plainly, because it is the whole of what this Origin is:
+  loves you. So
   the thing that keeps you standing is the same thing that is taking you away.</p>
 
   <p><strong>Feeding.</strong> Feeding takes your Hunger <strong>down by one</strong>. What feeds you
@@ -4191,8 +4191,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <ul class="dash">
     <li><strong>You have already seen it.</strong> +2 on Dread Checks. Very little out here is new to
     somebody who has been on the other side of it.</li>
-    <li><strong>The body's business is finished.</strong> Food, water, sleep and air are habits now, not
-    needs. Poison and disease find nothing in you to work on.</li>
+    <li><strong>The body's business is finished.</strong> Food, water, sleep and air are only habits
+    now. Poison and disease find nothing in you to work on.</li>
     <li><strong>At Hunger 3 and above you stop losing Nerve to Dread Checks altogether.</strong> Read
     that twice before you decide it is a gift. Nerve is the measure of a soul still able to be
     horrified, and a thing that cannot be horrified has lost its last honest warning system.</li>
@@ -4205,7 +4205,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     out, and the evening they work it out is worth playing.</li>
     <li><strong>The Old Dark knows its own.</strong> It notices you before it notices anybody standing
     next to you, which is a thing a posse can use exactly once.</li>
-    <li><strong>The living can tell.</strong> Not what, only that. &minus;1 on first impressions with
+    <li><strong>The living can tell.</strong> They can't say what, only that something is off. &minus;1 on first impressions with
     the breathing, and it gets no better as the Hunger climbs.</li>
   </ul>
 
@@ -4254,7 +4254,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h3 id="ix-safety">A Second Word on Safety</h3>
     <p>The horror in this game lives most in the mind: in dread, helplessness, and the dark turns a frightened character
     may take. Keep checking in with your table, honor every line and veil, and remember that no one's real unease is the
-    price of a good scare. The Mark is a story tool, not a trap; a player should always know roughly where their character
+    price of a good scare. The Mark is a story tool, so a player should always know roughly where their character
     stands on it, and have a fighting chance to step back.</p>
   </div>
 
@@ -4310,13 +4310,13 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3 id="ix-shed-taint">Shedding the Taint</h3>
   <ul class="dash">
     <li><strong>Distance.</strong> Leave the ground and the stain eases one step for every three days clear of it, but a Taint that reached the Claiming leaves its Marks behind regardless.</li>
-    <li><strong>Sanctuary and rite.</strong> A Padre's blessing, a Confession, true holy ground, or the Old Rites (Chapter XIII) can each lift a step, and full sanctification on the Compass (Chapter III) clears the whole of it.</li>
+    <li><strong>Sanctuary and rite.</strong> A Padre's blessing, a Confession, true holy ground, or the Old Rites (Chapter XIII) can each lift a step, and full sanctification on the Compass (Chapter III) clears it entirely.</li>
     <li><strong>The Marked ride easier.</strong> A soul already bearing the Mark eases its own Taint DC by 2 (the dark is slow to spoil what it half-owns) yet pays for that kinship in every other quarter.</li>
   </ul>
 
   <div class="box">
     <h3>For the Keeper</h3>
-    <p>Taint is a clock, not a coin-toss. Name the ground, set the DC, and let the players feel the days pressing on them.
+    <p>Taint works like a clock. Name the ground, set the DC, and let the players feel the days pressing on them.
     Tell them plainly when a place is tainted and roughly how deep their stain has run; the dread lives in the choice to
     stay, never in a hidden number. Use it to give cursed country real weight, and always leave a road back out: a church,
     a rite, a reason to ride for clean air before the land collects what it is owed.</p>
@@ -4392,11 +4392,11 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>The Common Signs</strong> are open to anyone who works Signs at all.</li>
     <li><strong>The Bargain</strong> belongs to the Hexer, the Dark Cultist, and the False Prophet: the ones who
     reached out and took, and who are still being invoiced.</li>
-    <li><strong>The Craft</strong> is the Witch's alone. It is older than the thing the Hexer bargains with, it was
+    <li><strong>The Craft</strong> is the Witch's alone. It's older than the thing the Hexer bargains with, it was
     handed down rather than sought, and it concerns itself with houses and weather and grudges more than with the
     deep dark.</li>
   </ul>
-  <p>A Hexer and a Witch sitting at the same table are not two of the same thing. She can ward the house he is standing
+  <p>A Hexer and a Witch sitting at the same table aren't two of the same thing. She can ward the house he's standing
   in and he cannot; he can open the ground under a thing she could only curse. Neither list is stronger. They want
   different nights.</p>
   <h2 id="ix-signs-common">The Common Signs</h2>
@@ -4436,7 +4436,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3 id="ix-s-longnight">The Long Night</h3>
   <p><em>Rank 5 · One minute · 5 Nerve and 1 Mark.</em> Hold a soul at the very edge of death until dawn. They do not worsen, do not wake, and cannot be killed by anything short of fire or the deliberate hand of something old. <strong>Backlash:</strong> Whatever was coming for them waits at the foot of the bed until sunrise, and it is patient, and it can be seen.</p>
   <h3 id="ix-s-debt">The Debt Called In</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Nerve and 1 Mark.</em> Everything out here owes something to something. Name a creature you can see and call in what it owes, whether or not you are the one it owes it to. It takes 6d6 at once and is Frightened of you until the end of its next turn, and there is no save, because a debt is not an opinion. Backlash: you take a point of Mark for having reached that far into a ledger that was never yours, and that is the whole of the price.</p>
+  <p><em>Rank 5 · 1 Beat · 5 Nerve and 1 Mark.</em> Everything out here owes something to something. Name a creature you can see and call in what it owes, whether or not you are the one it owes it to. It takes 6d6 at once and is Frightened of you until the end of its next turn, and there is no save, because a debt is not an opinion. Backlash: you take a point of Mark for having reached that far into a ledger that was never yours, and that's all it costs.</p>
   <h3 id="ix-s-unwrittenhou">The Unwritten Hour</h3>
   <p><em>Rank 6 · 1 Beat · 6 Nerve and 1 Mark.</em> Say that the last round did not happen, and it did not. Everything
   since your own last turn comes undone: the shot, the fall, the word spoken, the door opened. Everyone acts again from
@@ -4536,12 +4536,12 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3 id="ix-s-oldwomans">The Old Woman's Bargain</h3>
   <p><em>Rank 5 · One hour · 5 Nerve.</em> Trade a year of your own life for a working of any Rank you know, at no other cost, worked as though you were the greatest of your line. The year is taken from the far end. The bargain is struck at once, and what you bought is worked as any other. <strong>Backlash:</strong> None at the time. The Craft always collects at the far end, and it is never late.</p>
   <h3 id="ix-s-hearth">The Hearth Unbroken</h3>
-  <p><em>Rank 5 · One hour · 5 Nerve.</em> For one night a place is genuinely safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. <strong>Backlash:</strong> One night only, and the same roof will not answer twice in the same season. Choose the night with care.</p>
+  <p><em>Rank 5 · One hour · 5 Nerve.</em> For one night a place is safe, really safe. Nothing uncanny crosses, no Dread Check is called, and every soul under that roof wakes with full Nerve and Blood. <strong>Backlash:</strong> One night only, and the same roof will not answer twice in the same season. Choose the night with care.</p>
   <h3 id="ix-s-longwinter">The Long Winter</h3>
   <p><em>Rank 6 · One hour · 6 Nerve.</em> Lay cold on a country and let it stay. For a season, the valley or the town you
   name is colder than it should be: crops fail slowly, the sick get sicker, the roads close early, and anything that was
   buried stays buried. The old women who can do this rarely explain why they have. Backlash: you feel the cold yourself
-  for the whole of it, and no fire ever quite reaches you again.</p>
+  for as long as it lasts, and no fire ever quite reaches you again.</p>
   <h3 id="ix-s-turningofyea">The Turning of the Year</h3>
   <p><em>Rank 7 · One hour · 7 Nerve · Fortitude save.</em> Put years into a thing or take them out, permanently. A door rots off its hinges; a corpse is
   bones; a green field is a harvest; a wound is an old scar; a young man is old. A creature resists with a Fortitude
@@ -4638,7 +4638,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-answer">The Answer</h3>
   <p><em>Rank 8 · One minute · your whole pool of Faith.</em> Most prayers are not answered. Ask, once, for a single thing,
   in your own words, aloud, in front of whoever is there, and it is granted, whatever it was. The dead one back. The
-  fire out. The army turned. The sickness lifted off a county. The thing that has been coming, not coming. There is no
+  fire out. The army turned. The sickness lifted off a county. The thing that has been coming, stopped. There is no
   save, no roll and no limit but the one thing. Afterward your pool is empty until you have rested and given thanks, and
   you will spend the rest of your life being careful about what you ask for, having found out that it works.</p>
   <h3 id="ix-m-greaterlove">Greater Love</h3>
@@ -4650,7 +4650,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-longroadhome">The Long Road Home</h3>
   <p><em>Rank 8 · One hour · your whole pool of Faith.</em> Take everyone home. Every soul who has been with you and is
   willing, living or freshly dead or lost or held somewhere else, is brought at once to one place you name that any of you has
-  ever called home, safely, together, however far it is and whatever holds them. Doors open. Distances shorten. The dead
+  ever called home, safely, together, however far it is and whatever holds them. Doors open and distances shorten, and the dead
   walk in with the rest. It costs you the road: you may not use this again, and you will never afterward be able to
   travel anywhere the ordinary way without knowing exactly how much shorter it could have been.</p>
   <h2 id="ix-m-list-liturgy">The Liturgy</h2>
@@ -4670,7 +4670,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-tedeum">Te Deum</h3>
   <p><em>Rank 5 · One minute · 5 Faith · Will save.</em> The great hymn of thanksgiving, sung as a weapon. A lesser uncanny thing is banished outright; a greater one saves or is Frightened and Slowed the whole scene; and every soul who kneels and sings with you is eased of the Mark's symptoms for a day. Two thousand years are in the words.</p>
   <h3 id="ix-m-requiem">The Requiem</h3>
-  <p><em>Rank 6 · One hour · 6 Faith.</em> Sing the whole of it over a burying ground, a battlefield, a burned house, a
+  <p><em>Rank 6 · One hour · 6 Faith.</em> Sing it through, start to finish, over a burying ground, a battlefield, a burned house, a
   mine. Every restless dead thing in that place is laid to rest at once and cannot be raised from it again by any means.
   Those who can be told what happened to them are told. Those who cannot are simply let go, which is most of them.</p>
   <h2 id="ix-m-list-revival">The Revival</h2>
@@ -4705,7 +4705,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-pack">Set the Pack On</h3>
   <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
   <h3 id="ix-m-weather">Turn the Weather</h3>
-  <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel and grants the favor, not the command.</p>
+  <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel; it grants favors and takes no orders.</p>
   <h3 id="ix-m-snare">The Spirit-Snare</h3>
   <p><em>Rank 4 · 1 Beat · 4 Faith · Will save.</em> Draw the knot that holds a spirit or a restless dead thing fast. It saves or cannot leave the spot until dawn or until you loose it: able to speak, and to rage, and to bargain, but not to go.</p>
   <h3 id="ix-m-greatspirit">Call the Great Spirit</h3>
@@ -4753,10 +4753,10 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-groundmadeho">The Ground Made Holy</h3>
   <p><em>Rank 7 · One hour · 7 Faith.</em> Consecrate ground and mean it permanently. Nothing uncanny may enter, use, or
   draw strength from the bounded place ever again; the Marked feel the boundary from outside; the dead buried in it stay
-  buried and quiet. It ends only if the ground is broken deliberately by a living hand, which somebody will eventually
+  buried and quiet. It ends only if a living hand sets out to break the ground, which somebody will eventually
   get around to.</p>
   <h2 id="ix-m-list-vigil">The Vigil</h2>
-  <p>The Sister's alone: the work of sitting up with what should not be left alone. It wards, it watches, and it refuses to move, and there is almost nothing in it that will win a fight. That is not what it was written for.</p>
+  <p>The Sister's alone: the work of sitting up with what should not be left alone. It wards, it watches, and it refuses to move, and there's almost nothing in it that will win a fight. That is not what it was written for.</p>
   <h3 id="ix-m-handheld">Hand Held</h3>
   <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Take hold of a soul who has just failed a Dread Check and give them something to hold back. They reroll it at once, and keep the second result even if it is worse. Most take the second result gladly. The ones who do not are why you keep hold a moment longer than they want.</p>
   <h3 id="ix-m-watchkept">The Watch Kept</h3>
@@ -4764,13 +4764,13 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-cleanwater">Clean Water and Clean Cloth</h3>
   <p><em>Rank 1 · 1 Beat · 1 Faith.</em> Wash it, close it, bind it, and say the words you say. A soul you touch heals 1d8, stops bleeding, and will not take a fever from that wound on its own. Half of what your order knows is this one thing done ten thousand times, and the ones who lived will tell you it was the half that mattered.</p>
   <h3 id="ix-m-lampunquenched">The Lamp Unquenched</h3>
-  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, and that is the whole of the comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it.</p>
+  <p><em>Rank 2 · 1 Beat · 2 Faith.</em> A flame you have lit cannot be put out for the rest of the scene: not by wind, water, smothering, or anything that walks. Its light does not carry further than a lamp's, which isn't much comfort, but nothing that hates the light can approach within its circle without spending its whole turn to do it.</p>
   <h3 id="ix-m-nothingcomesin">Nothing Comes In</h3>
   <p><em>Rank 3 · One minute · 3 Faith · Will save.</em> Stand in a doorway, a gate, a stair-head, and refuse it. For a scene, anything uncanny that would cross must first make a Will save against your Miracle DC; on a failure it cannot cross at all this round and must spend its turn trying again. It can still reach through. It can still call. It cannot simply walk in, and a great many of them have never had to learn what to do about that.</p>
   <h3 id="ix-m-bodykeptwhole">The Body Kept Whole</h3>
   <p><em>Rank 4 · Ten minutes · 4 Faith.</em> Sit the night with a corpse and keep it. It will not rise, it cannot be raised, called, worn, or spoken through, and nothing may take from it what it carried in life. This holds until the body is buried or burned, and it holds against the thing that made it as surely as against any other. It is the oldest work your order does and the one nobody thanks you for.</p>
   <h3 id="ix-m-notbemoved">She Will Not Be Moved</h3>
-  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, on purpose.</p>
+  <p><em>Rank 5 · 1 Beat · 5 Faith.</em> For one scene you cannot be moved from where you stand: not shoved, dragged, teleported, banished, swallowed, possessed, charmed, or persuaded. You may still choose to walk, and choosing is the only thing that moves you. One soul you have hold of shares it while you keep hold. What this costs is that you are also standing exactly where everything can find you, for a whole scene, and you chose it.</p>
   <h3 id="ix-m-wardbeds">The Ward Full of Beds</h3>
   <p><em>Rank 6 · Ten minutes · 6 Faith.</em> Take a room and make it a ward: a church hall, a bunkhouse, a barn with the stalls knocked out. For a full day every soul laid down in it recovers 2d8 Blood an hour and takes a fresh save each hour against whatever is in them, and nothing uncanny may carry one of them out of it while you are on your feet. You do not sleep while it holds. Nobody has ever known you to.</p>
   <h3 id="ix-m-untilmorning">Until Morning</h3>
@@ -4909,9 +4909,9 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   whichever way keeps your people leaning forward.</p>
 
   <div class="quote">
-    "They call it getting older. Out here it is only getting <em>kept</em>: by luck, by friends, by the dark
-    deciding it is not done with you. Do not mistake survival for a reward. It is a stay of execution, and the
-    court does not adjourn."
+    "They call it getting older. Out here it's only getting <em>kept</em>: by luck, by friends, by the dark
+    deciding it isn't done with you. Don't mistake survival for a reward. It's a stay of execution, and the
+    court doesn't adjourn."
     <span class="src">— Rev. Amos Teague, a sermon preached to four graves and one mourner</span>
   </div>
 </section>
@@ -5105,7 +5105,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <p class="chapter-sub">Perdition Basin &mdash; a stretch of frontier to start your riding, drawn as a rider knows it.</p>
   <div class="divider"></div>
   <div class="quote">
-    "You may keep a country in your head or you may keep it on paper. Do both, then ride out, and you will learn in one afternoon that neither of them was the country."
+    "You may keep a country in your head or you may keep it on paper. Do both, then ride out, and you'll learn in one afternoon that neither of them was the country."
     <span class="src">— from the field-books of N. Ashby, naturalist</span>
   </div>
 
@@ -5119,9 +5119,9 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <!--PERDITION_MAP-->
 
   <h2 id="ix-basin-country">What a Rider Knows</h2>
-  <p>A few days' ride takes you across the whole of it. The places you will hear named:</p>
+  <p>A few days' ride takes you from one side of it to the other. The places you'll hear named:</p>
   <!--BASIN_PLACES-->
-  <p>And everywhere between, the <strong>wells</strong>: hand-dug, ringed with stone, the whole reason a town or a
+  <p>And everywhere between, the <strong>wells</strong>: hand-dug, ringed with stone, the reason any town or
   homestead sits where it does. Water is the wealth of this country, and lately (the old-timers will tell you, if
   you stand them a drink) some of the wells have <em>gone sour</em>. The drought, they say. Most likely it is the
   drought.</p>
@@ -5199,10 +5199,10 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
 
   <div class="narr">And that concludes the matter of the country. You came to these pages, most likely,
   for a game about the West, and you have one: the cattle and the coin are real, the winters are
-  honest, and the dice fall fair. But you have read this far, and so you know now what the first chapter
+  honest, and the dice fall fair. But you've read this far, and so you know now what the first chapter
   only whispered. The almanac is therefore offered, as the survey men say, for your
   consideration. Keep your fire lit. Keep your accounts square. And if some evening on the long grass you
-  find that the silence has a texture to it, you will not need this book to tell you what you have found.
+  find that the silence has a texture to it, you won't need this book to tell you what you have found.
   You will only need to decide, as every soul in these pages once decided, how much of yourself you are
   willing to trade to be believed.</div>
 </section>
@@ -5254,7 +5254,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <div class="sheet-row">
     <div class="field grow">
       <label>The Four Questions</label>
-      <p class="note" style="margin:.2rem 0 .4rem;">What did you lose? &middot; What keeps you moving? &middot; What is your vice? &middot; What have you seen?</p>
+      <p class="note" style="margin:.2rem 0 .4rem;">What did you lose? &middot; What keeps you moving? &middot; What's your vice? &middot; What have you seen?</p>
       <div class="bigblank" style="height:178px; margin-bottom:0;"></div>
     </div>
   </div>
@@ -5300,362 +5300,362 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <ul class="ix">
     <li class="ix-hd">A</li>
     <li><a href="#ix-abilities">Abilities, the six</a><span class="pg">19</span></li>
-    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">241</span></li>
-    <li><a href="#advancement">Advancement</a><span class="pg">240</span></li>
-    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">194</span></li>
-    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">145</span></li>
-    <li><a href="#ix-aim-two">Aim, two Strikes against three</a><span class="pg">184</span></li>
-    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">184</span></li>
+    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">240</span></li>
+    <li><a href="#advancement">Advancement</a><span class="pg">239</span></li>
+    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">193</span></li>
+    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">144</span></li>
+    <li><a href="#ix-aim-two">Aim, two Strikes against three</a><span class="pg">183</span></li>
+    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">183</span></li>
     <li><a href="#ix-alienist">Alienist (Sawbones)</a><span class="pg">84</span></li>
-    <li><a href="#ix-m-altarcall">Altar Call, the (Miracle)</a><span class="pg">228</span></li>
-    <li><a href="#ix-m-amen">Amen Corner, the (Miracle)</a><span class="pg">227</span></li>
-    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">168</span></li>
-    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">165</span></li>
-    <li><a href="#ix-m-anoint">Anoint the Iron (Miracle)</a><span class="pg">222</span></li>
-    <li><a href="#ix-answering">Answering a working (counter)</a><span class="pg">186</span></li>
-    <li><a href="#ix-armor">Armor</a><span class="pg">162</span></li>
-    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">177</span></li>
-    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">217</span></li>
-    <li><a href="#ix-m-asperges">Asperges Me (Miracle)</a><span class="pg">225</span></li>
+    <li><a href="#ix-m-altarcall">Altar Call, the (Miracle)</a><span class="pg">227</span></li>
+    <li><a href="#ix-m-amen">Amen Corner, the (Miracle)</a><span class="pg">226</span></li>
+    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">167</span></li>
+    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">164</span></li>
+    <li><a href="#ix-m-anoint">Anoint the Iron (Miracle)</a><span class="pg">221</span></li>
+    <li><a href="#ix-answering">Answering a working (counter)</a><span class="pg">185</span></li>
+    <li><a href="#ix-armor">Armor</a><span class="pg">161</span></li>
+    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">176</span></li>
+    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-m-asperges">Asperges Me (Miracle)</a><span class="pg">224</span></li>
     <li class="ix-hd">B</li>
-    <li><a href="#signs">Backlash</a><span class="pg">202</span></li>
+    <li><a href="#signs">Backlash</a><span class="pg">201</span></li>
     <li><a href="#ix-o-banker">Banker, the (Origin)</a><span class="pg">25</span></li>
-    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">211</span></li>
-    <li><a href="#ix-beats">Beats, the three</a><span class="pg">181</span></li>
-    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">213</span></li>
-    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">162</span></li>
-    <li><a href="#ix-wounds">Bleeding</a><span class="pg">187</span></li>
-    <li><a href="#ix-m-road">Blessing of the Road, the (Miracle)</a><span class="pg">221</span></li>
-    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">187</span></li>
-    <li><a href="#ix-m-bodykeptwhole">Body Kept Whole, The (Miracle)</a><span class="pg">236</span></li>
-    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">179</span></li>
-    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-m-beastgift">Borrow the Beast's Gift (Miracle)</a><span class="pg">229</span></li>
-    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">207</span></li>
-    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">210</span></li>
+    <li><a href="#ix-beats">Beats, the three</a><span class="pg">180</span></li>
+    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">161</span></li>
+    <li><a href="#ix-wounds">Bleeding</a><span class="pg">186</span></li>
+    <li><a href="#ix-m-road">Blessing of the Road, the (Miracle)</a><span class="pg">220</span></li>
+    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">186</span></li>
+    <li><a href="#ix-m-bodykeptwhole">Body Kept Whole, The (Miracle)</a><span class="pg">235</span></li>
+    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">178</span></li>
+    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-m-beastgift">Borrow the Beast's Gift (Miracle)</a><span class="pg">228</span></li>
+    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">206</span></li>
+    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">211</span></li>
     <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">41</span></li>
-    <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">233</span></li>
-    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">193</span></li>
-    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">232</span></li>
+    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">192</span></li>
+    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">215</span></li>
     <li class="ix-hd">C</li>
-    <li><a href="#ix-m-greatspirit">Call the Great Spirit (Miracle)</a><span class="pg">230</span></li>
-    <li><a href="#ix-m-mourner">Call to the Mourner's Bench (Miracle)</a><span class="pg">227</span></li>
-    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">213</span></li>
-    <li><a href="#faith">Callings of Faith</a><span class="pg">87</span></li>
-    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">117</span></li>
+    <li><a href="#ix-m-greatspirit">Call the Great Spirit (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-m-mourner">Call to the Mourner's Bench (Miracle)</a><span class="pg">226</span></li>
+    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">236</span></li>
+    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#faith">Callings of Faith</a><span class="pg">86</span></li>
+    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">116</span></li>
     <li><a href="#callings">Callings, worldly</a><span class="pg">40</span></li>
     <li><a href="#ix-o-wrong">Came Back Wrong (Origin)</a><span class="pg">31</span></li>
-    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">170</span></li>
-    <li><a href="#ix-m-campmeeting">Camp Meeting, the (Miracle)</a><span class="pg">228</span></li>
-    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">177</span></li>
-    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">169</span></li>
+    <li><a href="#ix-m-campmeeting">Camp Meeting, the (Miracle)</a><span class="pg">227</span></li>
+    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">176</span></li>
+    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">215</span></li>
     <li><a href="#character">Character creation</a><span class="pg">17</span></li>
-    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">189</span></li>
-    <li><a href="#ix-s-charged">Charged to Another Account (Sign)</a><span class="pg">212</span></li>
-    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">174</span></li>
+    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">188</span></li>
+    <li><a href="#ix-s-charged">Charged to Another Account (Sign)</a><span class="pg">211</span></li>
+    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">173</span></li>
     <li><a href="#ix-checks">Checks, saves &amp; opposed rolls</a><span class="pg">13</span></li>
-    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">176</span></li>
-    <li><a href="#ix-m-cleanwater">Clean Water and Clean Cloth (Miracle)</a><span class="pg">235</span></li>
-    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">169</span></li>
-    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">212</span></li>
-    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">206</span></li>
-    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-m-list-blessing">Common Blessings, the (Miracles)</a><span class="pg">221</span></li>
-    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">205</span></li>
+    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">175</span></li>
+    <li><a href="#ix-m-cleanwater">Clean Water and Clean Cloth (Miracle)</a><span class="pg">234</span></li>
+    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">168</span></li>
+    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">211</span></li>
+    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">205</span></li>
+    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-m-list-blessing">Common Blessings, the (Miracles)</a><span class="pg">220</span></li>
+    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">204</span></li>
     <li><a href="#ix-compass">Compass, the (alignment)</a><span class="pg">22</span></li>
-    <li><a href="#conditions">Conditions, table of</a><span class="pg">246</span></li>
-    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">178</span></li>
-    <li><a href="#ix-m-killground">Consecrate the Killing Ground (Miracle)</a><span class="pg">234</span></li>
-    <li><a href="#ix-m-list-consecration">Consecrations, the (Miracle list)</a><span class="pg">233</span></li>
+    <li><a href="#conditions">Conditions, table of</a><span class="pg">245</span></li>
+    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">177</span></li>
+    <li><a href="#ix-m-killground">Consecrate the Killing Ground (Miracle)</a><span class="pg">233</span></li>
+    <li><a href="#ix-m-list-consecration">Consecrations, the (Miracle list)</a><span class="pg">232</span></li>
     <li><a href="#ix-core-roll">Core roll, the</a><span class="pg">11</span></li>
-    <li><a href="#ix-m-covenant">Covenant, the (Miracle)</a><span class="pg">223</span></li>
-    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">183</span></li>
-    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">176</span></li>
-    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">214</span></li>
-    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#ix-m-covenant">Covenant, the (Miracle)</a><span class="pg">222</span></li>
+    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">182</span></li>
+    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">175</span></li>
+    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">213</span></li>
+    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">211</span></li>
     <li><a href="#ix-degrees">Critical success &amp; failure</a><span class="pg">12</span></li>
-    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">216</span></li>
-    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">215</span></li>
+    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">148</span></li>
     <li class="ix-hd">D</li>
-    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">187</span></li>
-    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">118</span></li>
-    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">150</span></li>
-    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">175</span></li>
-    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">152</span></li>
-    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">207</span></li>
-    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">187</span></li>
-    <li><a href="#ix-s-debt">Debt Called In, the (Sign)</a><span class="pg">209</span></li>
-    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">209</span></li>
-    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">127</span></li>
+    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">186</span></li>
+    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">117</span></li>
+    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">174</span></li>
+    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">151</span></li>
+    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">206</span></li>
+    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">186</span></li>
+    <li><a href="#ix-s-debt">Debt Called In, the (Sign)</a><span class="pg">208</span></li>
+    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">208</span></li>
+    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">126</span></li>
     <li><a href="#ix-reckoning">Defense</a><span class="pg">21</span></li>
     <li><a href="#ix-degrees">Degrees of success</a><span class="pg">12</span></li>
-    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">145</span></li>
+    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">144</span></li>
     <li><a href="#ix-difficulty">Difficulty Classes</a><span class="pg">12</span></li>
-    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">182</span></li>
-    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">193</span></li>
+    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">181</span></li>
+    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">192</span></li>
     <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">46</span></li>
     <li><a href="#ix-o-drover">Drover, the (Origin)</a><span class="pg">25</span></li>
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">26</span></li>
     <li class="ix-hd">E</li>
-    <li><a href="#edges">Edges</a><span class="pg">149</span></li>
-    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">154</span></li>
+    <li><a href="#edges">Edges</a><span class="pg">148</span></li>
+    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">153</span></li>
     <li><a href="#ix-c-engineer">Engineer (Calling)</a><span class="pg">50</span></li>
-    <li><a href="#play">Example of play</a><span class="pg">244</span></li>
-    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">240</span></li>
-    <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">226</span></li>
+    <li><a href="#play">Example of play</a><span class="pg">243</span></li>
+    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">239</span></li>
+    <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">225</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">26</span></li>
-    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">123</span></li>
-    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">135</span></li>
-    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">150</span></li>
-    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">160</span></li>
-    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">213</span></li>
-    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">179</span></li>
-    <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">232</span></li>
+    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">122</span></li>
+    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">134</span></li>
+    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">159</span></li>
+    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">178</span></li>
+    <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">231</span></li>
     <li><a href="#ix-ledger">Fight ledger, the (Callings)</a><span class="pg">40</span></li>
-    <li><a href="#ix-firearms">Firearms</a><span class="pg">160</span></li>
+    <li><a href="#ix-firearms">Firearms</a><span class="pg">159</span></li>
     <li><a href="#firstpeoples">First Peoples, the</a><span class="pg">32</span></li>
-    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-s-foul">Foul the Working (Sign)</a><span class="pg">206</span></li>
-    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">183</span></li>
+    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-s-foul">Foul the Working (Sign)</a><span class="pg">205</span></li>
+    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">182</span></li>
     <li><a href="#ix-questions">Four Questions, the</a><span class="pg">21</span></li>
     <li><a href="#ix-o-freed">Freed, the (Origin)</a><span class="pg">27</span></li>
-    <li><a href="#ix-frightened">Frightened</a><span class="pg">246</span></li>
-    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-frightened">Frightened</a><span class="pg">245</span></li>
+    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">151</span></li>
     <li class="ix-hd">G</li>
-    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">151</span></li>
     <li><a href="#ix-c-gambler">Gambler (Calling)</a><span class="pg">56</span></li>
-    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">175</span></li>
+    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">174</span></li>
     <li><a href="#ix-o-gambler">Gambler, the (Origin)</a><span class="pg">27</span></li>
-    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">146</span></li>
-    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">176</span></li>
-    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">158</span></li>
-    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">211</span></li>
-    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">215</span></li>
-    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">190</span></li>
+    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">145</span></li>
+    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">175</span></li>
+    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">157</span></li>
+    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">210</span></li>
+    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">214</span></li>
+    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">189</span></li>
     <li><a href="#ix-grit">Grit</a><span class="pg">14</span></li>
-    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">149</span></li>
     <li><a href="#ix-c-gunhand">Gunhand (Calling)</a><span class="pg">61</span></li>
     <li class="ix-hd">H</li>
-    <li><a href="#ix-m-handheld">Hand Held (Miracle)</a><span class="pg">235</span></li>
-    <li><a href="#ix-m-clasped">Hands Clasped (Miracle)</a><span class="pg">221</span></li>
-    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">178</span></li>
-    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">175</span></li>
-    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">164</span></li>
-    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">218</span></li>
-    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">153</span></li>
-    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">129</span></li>
-    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">206</span></li>
+    <li><a href="#ix-m-handheld">Hand Held (Miracle)</a><span class="pg">234</span></li>
+    <li><a href="#ix-m-clasped">Hands Clasped (Miracle)</a><span class="pg">220</span></li>
+    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">177</span></li>
+    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">174</span></li>
+    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">163</span></li>
+    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">217</span></li>
+    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">128</span></li>
+    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">205</span></li>
     <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">24</span></li>
     <li><a href="#ix-o-homesteader">Homesteader, the (Origin)</a><span class="pg">27</span></li>
-    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">166</span></li>
-    <li><a href="#ix-m-hour">Hour Is Not Yours, the (Miracle)</a><span class="pg">223</span></li>
-    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">212</span></li>
+    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">165</span></li>
+    <li><a href="#ix-m-hour">Hour Is Not Yours, the (Miracle)</a><span class="pg">222</span></li>
+    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">211</span></li>
     <li class="ix-hd">I</li>
-    <li><a href="#ix-beats">Initiative</a><span class="pg">181</span></li>
-    <li><a href="#ix-m-interdict">Interdict, the (Miracle)</a><span class="pg">226</span></li>
-    <li><a href="#conflict">Iron Code, the</a><span class="pg">181</span></li>
-    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">178</span></li>
-    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-beats">Initiative</a><span class="pg">180</span></li>
+    <li><a href="#ix-m-interdict">Interdict, the (Miracle)</a><span class="pg">225</span></li>
+    <li><a href="#conflict">Iron Code, the</a><span class="pg">180</span></li>
+    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">177</span></li>
+    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">151</span></li>
     <li class="ix-hd">K</li>
-    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">184</span></li>
-    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">215</span></li>
+    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">183</span></li>
+    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">214</span></li>
     <li class="ix-hd">L</li>
     <li><a href="#ix-o-laborer">Laborer, the (Origin)</a><span class="pg">28</span></li>
-    <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">235</span></li>
-    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">190</span></li>
-    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">261</span></li>
-    <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">230</span></li>
-    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">211</span></li>
-    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">241</span></li>
-    <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">232</span></li>
-    <li><a href="#ix-m-light">Light Unfailing, a (Miracle)</a><span class="pg">221</span></li>
-    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">205</span></li>
-    <li><a href="#ix-m-litany">Litany of the Saints, the (Miracle)</a><span class="pg">226</span></li>
-    <li><a href="#ix-m-weakness">Litany of Weakness, the (Miracle)</a><span class="pg">233</span></li>
-    <li><a href="#ix-m-list-liturgy">Liturgy, the (Miracle list)</a><span class="pg">225</span></li>
-    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">172</span></li>
-    <li><a href="#ix-m-longmercy">Long Mercy, the (Miracle)</a><span class="pg">232</span></li>
-    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">209</span></li>
-    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">207</span></li>
-    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">194</span></li>
+    <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">234</span></li>
+    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">189</span></li>
+    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">236</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">260</span></li>
+    <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">210</span></li>
+    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">240</span></li>
+    <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">231</span></li>
+    <li><a href="#ix-m-light">Light Unfailing, a (Miracle)</a><span class="pg">220</span></li>
+    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">204</span></li>
+    <li><a href="#ix-m-litany">Litany of the Saints, the (Miracle)</a><span class="pg">225</span></li>
+    <li><a href="#ix-m-weakness">Litany of Weakness, the (Miracle)</a><span class="pg">232</span></li>
+    <li><a href="#ix-m-list-liturgy">Liturgy, the (Miracle list)</a><span class="pg">224</span></li>
+    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">171</span></li>
+    <li><a href="#ix-m-longmercy">Long Mercy, the (Miracle)</a><span class="pg">231</span></li>
+    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">208</span></li>
+    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">206</span></li>
+    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">193</span></li>
     <li class="ix-hd">M</li>
     <li><a href="#ix-o-madam">Madam, the (Origin)</a><span class="pg">28</span></li>
-    <li><a href="#ix-mark">Mark, the</a><span class="pg">194</span></li>
+    <li><a href="#ix-mark">Mark, the</a><span class="pg">193</span></li>
     <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">66</span></li>
     <li><a href="#ix-time">Measures of time, the</a><span class="pg">15</span></li>
-    <li><a href="#ix-c-shaman">Medicine Man, see Shaman (Calling)</a><span class="pg">98</span></li>
-    <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">231</span></li>
-    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">179</span></li>
+    <li><a href="#ix-c-shaman">Medicine Man, see Shaman (Calling)</a><span class="pg">97</span></li>
+    <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">230</span></li>
+    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">178</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">34</span></li>
-    <li><a href="#ix-milestones">Milestones</a><span class="pg">243</span></li>
-    <li><a href="#ix-m-dc">Miracle DC</a><span class="pg">220</span></li>
-    <li><a href="#ix-m-lists">Miracle lists, the six</a><span class="pg">220</span></li>
-    <li><a href="#ix-m-miracle">Miracle Plain, the (Miracle)</a><span class="pg">223</span></li>
-    <li><a href="#miracles">Miracles</a><span class="pg">219</span></li>
-    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">160</span></li>
+    <li><a href="#ix-milestones">Milestones</a><span class="pg">242</span></li>
+    <li><a href="#ix-m-dc">Miracle DC</a><span class="pg">219</span></li>
+    <li><a href="#ix-m-lists">Miracle lists, the six</a><span class="pg">219</span></li>
+    <li><a href="#ix-m-miracle">Miracle Plain, the (Miracle)</a><span class="pg">222</span></li>
+    <li><a href="#miracles">Miracles</a><span class="pg">218</span></li>
+    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">159</span></li>
     <li><a href="#ix-modifiers">Modifiers</a><span class="pg">20</span></li>
-    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">167</span></li>
+    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">166</span></li>
     <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">69</span></li>
-    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">188</span></li>
-    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">165</span></li>
-    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">182</span></li>
+    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">187</span></li>
+    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">164</span></li>
+    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">181</span></li>
     <li class="ix-hd">N</li>
-    <li><a href="#ix-s-nail">Nail and the Name, the (Sign)</a><span class="pg">216</span></li>
-    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">208</span></li>
-    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">193</span></li>
-    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">198</span></li>
+    <li><a href="#ix-s-nail">Nail and the Name, the (Sign)</a><span class="pg">215</span></li>
+    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">207</span></li>
+    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">192</span></li>
+    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">197</span></li>
     <li><a href="#ix-o-news">Newspaperman, the (Origin)</a><span class="pg">29</span></li>
-    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">217</span></li>
-    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">190</span></li>
-    <li><a href="#ix-m-notwhile">Not While I Stand (Miracle)</a><span class="pg">222</span></li>
-    <li><a href="#ix-m-nothingcomesin">Nothing Comes In (Miracle)</a><span class="pg">236</span></li>
+    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">189</span></li>
+    <li><a href="#ix-m-notwhile">Not While I Stand (Miracle)</a><span class="pg">221</span></li>
+    <li><a href="#ix-m-nothingcomesin">Nothing Comes In (Miracle)</a><span class="pg">235</span></li>
     <li class="ix-hd">O</li>
-    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">184</span></li>
-    <li><a href="#ix-m-offering">Offering, the (Miracle)</a><span class="pg">229</span></li>
-    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">237</span></li>
-    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">218</span></li>
-    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">213</span></li>
+    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">183</span></li>
+    <li><a href="#ix-m-offering">Offering, the (Miracle)</a><span class="pg">228</span></li>
+    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">236</span></li>
+    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">217</span></li>
+    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">212</span></li>
     <li><a href="#ix-checks">Opposed rolls</a><span class="pg">13</span></li>
     <li><a href="#origins">Origins</a><span class="pg">25</span></li>
     <li><a href="#ix-o-outlaw">Outlaw, the (Origin)</a><span class="pg">29</span></li>
     <li class="ix-hd">P</li>
-    <li><a href="#ix-c-padre">Padre (Calling)</a><span class="pg">88</span></li>
-    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">178</span></li>
-    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-c-padre">Padre (Calling)</a><span class="pg">87</span></li>
+    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">177</span></li>
+    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">151</span></li>
     <li><a href="#ix-pf2e">Pathfinder Second Edition</a><span class="pg">11</span></li>
-    <li><a href="#ix-patrons">Patrons of the Old Dark, the</a><span class="pg">140</span></li>
-    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">177</span></li>
-    <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">228</span></li>
+    <li><a href="#ix-patrons">Patrons of the Old Dark, the</a><span class="pg">139</span></li>
+    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">176</span></li>
+    <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">227</span></li>
     <li><a href="#ix-perks">Perks of the Callings</a><span class="pg">40</span></li>
-    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">215</span></li>
-    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">250</span></li>
-    <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">231</span></li>
-    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">153</span></li>
-    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">150</span></li>
-    <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">93</span></li>
-    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">204</span></li>
+    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">214</span></li>
+    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">249</span></li>
+    <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">230</span></li>
+    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">92</span></li>
+    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">203</span></li>
     <li><a href="#ix-core-roll">Proficiency</a><span class="pg">11</span></li>
     <li><a href="#ix-c-prospector">Prospector (Calling)</a><span class="pg">75</span></li>
-    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">171</span></li>
-    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">164</span></li>
+    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">170</span></li>
+    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">163</span></li>
     <li class="ix-hd">Q</li>
-    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">150</span></li>
-    <li><a href="#quickref">Quick Reference</a><span class="pg">248</span></li>
+    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#quickref">Quick Reference</a><span class="pg">247</span></li>
     <li class="ix-hd">R</li>
     <li><a href="#ix-o-rail">Railroad Hand, the (Origin)</a><span class="pg">29</span></li>
-    <li><a href="#ix-m-rank">Rank of a Miracle</a><span class="pg">219</span></li>
-    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">203</span></li>
-    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">159</span></li>
-    <li><a href="#ix-reactions">Reactions</a><span class="pg">182</span></li>
-    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">223</span></li>
-    <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">234</span></li>
-    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">208</span></li>
-    <li><a href="#ix-reloading">Reloading</a><span class="pg">185</span></li>
-    <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">227</span></li>
-    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">211</span></li>
-    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">181</span></li>
+    <li><a href="#ix-m-rank">Rank of a Miracle</a><span class="pg">218</span></li>
+    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">202</span></li>
+    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">158</span></li>
+    <li><a href="#ix-reactions">Reactions</a><span class="pg">181</span></li>
+    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">236</span></li>
+    <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">222</span></li>
+    <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">233</span></li>
+    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">207</span></li>
+    <li><a href="#ix-reloading">Reloading</a><span class="pg">184</span></li>
+    <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">226</span></li>
+    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">210</span></li>
+    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">180</span></li>
     <li class="ix-hd">S</li>
-    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">188</span></li>
-    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-safety">Safety at the table</a><span class="pg">199</span></li>
-    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">177</span></li>
-    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">175</span></li>
-    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">205</span></li>
-    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">176</span></li>
-    <li><a href="#ix-m-saltline">Salt the Threshold (Miracle)</a><span class="pg">233</span></li>
-    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">153</span></li>
+    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">187</span></li>
+    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-safety">Safety at the table</a><span class="pg">198</span></li>
+    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">236</span></li>
+    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">176</span></li>
+    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">174</span></li>
+    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">204</span></li>
+    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">175</span></li>
+    <li><a href="#ix-m-saltline">Salt the Threshold (Miracle)</a><span class="pg">232</span></li>
+    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">152</span></li>
     <li><a href="#ix-holy">Sanctification</a><span class="pg">24</span></li>
     <li><a href="#ix-checks">Saves</a><span class="pg">13</span></li>
     <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">82</span></li>
     <li><a href="#ix-words">Sawbones (the word), <em>see</em> Words of the country</a><span class="pg">17</span></li>
     <li><a href="#ix-scores">Scores, generating the</a><span class="pg">20</span></li>
     <li><a href="#ix-o-scout">Scout, the (Origin)</a><span class="pg">30</span></li>
-    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">172</span></li>
-    <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">231</span></li>
-    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">230</span></li>
-    <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">98</span></li>
-    <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">236</span></li>
-    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">204</span></li>
-    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">204</span></li>
-    <li><a href="#ix-m-crossing">Sign of the Cross, the (Miracle)</a><span class="pg">226</span></li>
-    <li><a href="#signs">Signs</a><span class="pg">202</span></li>
-    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">238</span></li>
-    <li><a href="#ix-m-silverround">Silver the Round (Miracle)</a><span class="pg">233</span></li>
-    <li><a href="#ix-c-sister">Sister (Calling)</a><span class="pg">105</span></li>
-    <li><a href="#skills">Skills</a><span class="pg">144</span></li>
-    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">145</span></li>
-    <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">232</span></li>
-    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">186</span></li>
-    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">215</span></li>
+    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">171</span></li>
+    <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">230</span></li>
+    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">97</span></li>
+    <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">235</span></li>
+    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">203</span></li>
+    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">203</span></li>
+    <li><a href="#ix-m-crossing">Sign of the Cross, the (Miracle)</a><span class="pg">225</span></li>
+    <li><a href="#signs">Signs</a><span class="pg">201</span></li>
+    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">237</span></li>
+    <li><a href="#ix-m-silverround">Silver the Round (Miracle)</a><span class="pg">232</span></li>
+    <li><a href="#ix-c-sister">Sister (Calling)</a><span class="pg">104</span></li>
+    <li><a href="#skills">Skills</a><span class="pg">143</span></li>
+    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">144</span></li>
+    <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">231</span></li>
+    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">185</span></li>
+    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">214</span></li>
     <li><a href="#ix-reckoning">Speed</a><span class="pg">21</span></li>
-    <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">230</span></li>
-    <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">229</span></li>
-    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">146</span></li>
-    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">150</span></li>
-    <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">221</span></li>
-    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">206</span></li>
-    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">228</span></li>
+    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">145</span></li>
+    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">149</span></li>
+    <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">220</span></li>
+    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">205</span></li>
+    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">151</span></li>
     <li class="ix-hd">T</li>
-    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">199</span></li>
-    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">201</span></li>
+    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">198</span></li>
+    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">200</span></li>
     <li><a href="#ix-take-time">Take 10 / Take 20</a><span class="pg">13</span></li>
-    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">207</span></li>
-    <li><a href="#ix-m-tedeum">Te Deum (Miracle)</a><span class="pg">227</span></li>
-    <li><a href="#ix-m-testify">Testify (Miracle)</a><span class="pg">228</span></li>
+    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">206</span></li>
+    <li><a href="#ix-m-tedeum">Te Deum (Miracle)</a><span class="pg">226</span></li>
+    <li><a href="#ix-m-testify">Testify (Miracle)</a><span class="pg">227</span></li>
     <li><a href="#ix-truths">Three Truths, the</a><span class="pg">9</span></li>
-    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">149</span></li>
     <li><a href="#ix-tone">Tone, on</a><span class="pg">10</span></li>
-    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">164</span></li>
-    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">169</span></li>
-    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">153</span></li>
-    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">151</span></li>
-    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">153</span></li>
-    <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">230</span></li>
-    <li><a href="#ix-s-turning">Turning, the (Sign)</a><span class="pg">217</span></li>
-    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">163</span></li>
+    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">168</span></li>
+    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">150</span></li>
+    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-s-turning">Turning, the (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">149</span></li>
     <li class="ix-hd">U</li>
-    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">208</span></li>
-    <li><a href="#ix-m-named">Unclean Named, the (Miracle)</a><span class="pg">222</span></li>
-    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">173</span></li>
+    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">207</span></li>
+    <li><a href="#ix-m-named">Unclean Named, the (Miracle)</a><span class="pg">221</span></li>
+    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">172</span></li>
     <li><a href="#ix-o-undertaker">Undertaker, the (Origin)</a><span class="pg">30</span></li>
-    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">208</span></li>
-    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">238</span></li>
-    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">152</span></li>
-    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">146</span></li>
+    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">207</span></li>
+    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">237</span></li>
+    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">151</span></li>
+    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">145</span></li>
     <li class="ix-hd">V</li>
     <li><a href="#ix-o-veteran">Veteran, the (Origin)</a><span class="pg">31</span></li>
-    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">177</span></li>
-    <li><a href="#ix-m-list-vigil">Vigil, the (Miracle list)</a><span class="pg">234</span></li>
-    <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">223</span></li>
-    <li><a href="#ix-m-visitation">Visitation of the Sick (Miracle)</a><span class="pg">226</span></li>
-    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">170</span></li>
+    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">176</span></li>
+    <li><a href="#ix-m-list-vigil">Vigil, the (Miracle list)</a><span class="pg">233</span></li>
+    <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">222</span></li>
+    <li><a href="#ix-m-visitation">Visitation of the Sick (Miracle)</a><span class="pg">225</span></li>
+    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">169</span></li>
     <li class="ix-hd">W</li>
-    <li><a href="#ix-m-wardbeds">Ward Full of Beds, the (Miracle)</a><span class="pg">236</span></li>
-    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">208</span></li>
-    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">153</span></li>
-    <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">222</span></li>
-    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">237</span></li>
-    <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">235</span></li>
-    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">168</span></li>
-    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">160</span></li>
-    <li><a href="#ix-m-riverclose">What the River Closes (Miracle)</a><span class="pg">229</span></li>
-    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">217</span></li>
-    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">176</span></li>
-    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">133</span></li>
-    <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">111</span></li>
-    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">175</span></li>
-    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">205</span></li>
-    <li><a href="#ix-m-smallword">Word to the Small Spirits, a (Miracle)</a><span class="pg">229</span></li>
+    <li><a href="#ix-m-wardbeds">Ward Full of Beds, the (Miracle)</a><span class="pg">235</span></li>
+    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">207</span></li>
+    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">152</span></li>
+    <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">221</span></li>
+    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">236</span></li>
+    <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">234</span></li>
+    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">167</span></li>
+    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">159</span></li>
+    <li><a href="#ix-m-riverclose">What the River Closes (Miracle)</a><span class="pg">228</span></li>
+    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">216</span></li>
+    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">175</span></li>
+    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">132</span></li>
+    <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">110</span></li>
+    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">174</span></li>
+    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">204</span></li>
+    <li><a href="#ix-m-smallword">Word to the Small Spirits, a (Miracle)</a><span class="pg">228</span></li>
     <li><a href="#ix-words">Words of the country (glossary)</a><span class="pg">18</span></li>
-    <li><a href="#miracles">Work of Faith, The</a><span class="pg">219</span></li>
-    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">187</span></li>
+    <li><a href="#miracles">Work of Faith, The</a><span class="pg">218</span></li>
+    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">186</span></li>
     <li class="ix-hd">Y</li>
     <li><a href="#ix-1885">Year of 1885, the</a><span class="pg">9</span></li>
   </ul>
