@@ -2,7 +2,7 @@ namespace BloodAndGritKeeper;
 
 /// <summary>A running record of what the app just did, for the failure that never throws.
 ///
-/// <para>The two error paths in <c>Program.cs</c> answer "it stopped" — an exception with a stack,
+/// <para>The two error paths in <c>Program.cs</c> answer "it stopped": an exception with a stack,
 /// written to <c>startup-error.txt</c> or <c>BloodAndGrit-last-error.txt</c>. Neither answers the
 /// other kind of report, which is the one a table actually makes: <i>it gave my Padre the wrong
 /// Grace</i>, <i>that roll can't have been a 3</i>, <i>the tracker lost somebody</i>. Nothing threw,
@@ -10,8 +10,8 @@ namespace BloodAndGritKeeper;
 /// daybook is the missing half: the last few hundred things that happened, kept in memory, written
 /// out when there is a reason to.</para>
 ///
-/// <para><b>Inert until opened, on purpose.</b> The rules library is what the smoke rig fuzzes —
-/// <c>RollExprFull</c> and <c>Generate</c> run thousands of times per build — and a recorder that
+/// <para><b>Inert until opened, on purpose.</b> The rules library is what the smoke rig fuzzes
+/// (<c>RollExprFull</c> and <c>Generate</c> run thousands of times per build), and a recorder that
 /// is always on would build and discard a string on every one of them for nobody's benefit.
 /// <c>Program.cs</c> opens it at launch, so the app always records and the library stays silent
 /// unless told otherwise.</para>
@@ -21,8 +21,8 @@ namespace BloodAndGritKeeper;
 /// surfacing. The ring is capped, so a long evening cannot grow it without bound.</para></summary>
 public static class Daybook
 {
-    /// <summary>How many entries the daybook keeps. Sized for "what just happened" — the last few
-    /// minutes of a session at table pace — not for an audit trail. Four hundred lines is a couple
+    /// <summary>How many entries the daybook keeps. Sized for "what just happened", the last few
+    /// minutes of a session at table pace, not for an audit trail. Four hundred lines is a couple
     /// of pages of text and comfortably covers a fight.</summary>
     public const int Cap = 400;
 
@@ -39,7 +39,7 @@ public static class Daybook
     public static int Count { get { lock (Gate) return Ring.Count; } }
 
     /// <summary>Start recording. Pass a path to also append every entry to disk as it happens
-    /// (<c>--verbose</c>) — worth it when chasing something that takes the process down before
+    /// (<c>--verbose</c>), worth it when chasing something that takes the process down before
     /// anything gets a chance to write the ring out.</summary>
     public static void Open(string mirrorPath = null)
     {
@@ -64,7 +64,7 @@ public static class Daybook
     }
 
     /// <summary>Record one thing that happened. <paramref name="channel"/> is a short tag the eye
-    /// can scan a column of — <c>roll</c>, <c>session</c>, <c>mode</c>, <c>soul</c>, <c>error</c>.
+    /// can scan a column of: <c>roll</c>, <c>session</c>, <c>mode</c>, <c>soul</c>, <c>error</c>.
     /// Costs nothing when the daybook is closed, which is the common case in the rules library.</summary>
     public static void Note(string channel, string what)
     {
@@ -91,7 +91,7 @@ public static class Daybook
     }
 
     /// <summary>The daybook as text, oldest first, headed by what it holds. Says so plainly when
-    /// it is closed or empty — a report that reads as blank invites the reader to assume nothing
+    /// it is closed or empty: a report that reads as blank invites the reader to assume nothing
     /// happened, when the truth is that nobody was writing it down.</summary>
     public static string Dump()
     {
@@ -112,7 +112,7 @@ public static class Daybook
         return sb.ToString();
     }
 
-    /// <summary>Write the daybook to a file. Returns whether it landed — the caller decides what to
+    /// <summary>Write the daybook to a file. Returns whether it landed: the caller decides what to
     /// say about it, and every caller here has somewhere better to put a failure than a throw.</summary>
     public static bool Save(string path)
     {

@@ -12,7 +12,7 @@ public partial class MainForm : Sheet
     // no turn, and a row in the initiative order that can never act is a row the Keeper learns to
     // skip. See the Threads strip above the Tracker grid.
     readonly BindingList<Combatant> signs = new();
-    readonly BindingList<Ride> rides = new();          // the corral and the yard — see TabsRides.cs
+    readonly BindingList<Ride> rides = new();          // the corral and the yard. See TabsRides.cs
     readonly BindingList<EncounterPick> encounter = new();
     readonly BindingList<CampaignClock> clocks = new();
     TextBox notesBox;
@@ -20,7 +20,7 @@ public partial class MainForm : Sheet
     int roundValue = 1;
     /// <summary>The round. A property rather than a field because it is part of Snapshot(), and
     /// anything in the snapshot has to capture for undo by some route that does not depend on
-    /// five separate call sites each remembering — the round is moved by NextRound, by the
+    /// five separate call sites each remembering: the round is moved by NextRound, by the
     /// spinner, by New fight, by Clear the field and by a session load. It went uncaptured until
     /// v1.47.0, so advancing a round left the baseline stale and the next Undo of anything at all
     /// silently wound the fight back as well. suppressUndo covers the load path.</summary>
@@ -56,14 +56,14 @@ public partial class MainForm : Sheet
     public static readonly Color Verdigris = Color.FromArgb(60, 96, 84);
     // ---- the row grounds, and why they are separated by HUE and not by lightness (v1.38.0) ----
     // These four say who is who on the Tracker, and they could not carry it. PcRow was
-    // (232,241,224) and FoeRow (250,250,247) — a near-white — so the whole distinction rested on
+    // (232,241,224) and FoeRow (250,250,247), a near-white, so the whole distinction rested on
     // about nine points of luminance. Then Writable() lifted every editable cell 42% toward paper,
     // which put a posse row's Init, Blood, Beats and Conditions at (241,246,237): measurably CLOSER
     // to the foe colour (distance 14) than the posse colour was to it (distance 31). Four of a
     // posse row's ten columns were, to the eye, wearing the foe's ground.
     //
     // That is why the Keeper reported that a reordered field "screws up and makes encountered
-    // creatures look like posse members". Nothing was mis-decided — the colours simply could not be
+    // creatures look like posse members". Nothing was mis-decided: the colours simply could not be
     // told apart once the rows moved, and New fight followed by sending the encounter back moves
     // every row (each arrival re-rolls initiative).
     //
@@ -71,12 +71,12 @@ public partial class MainForm : Sheet
     // Lightening a pale colour drags it toward white and destroys a luminance difference; it leaves
     // a hue difference standing. Read them as R-vs-G: the posse's green sits G above R, the foe's
     // clay sits R above G, and no amount of lifting crosses that.
-    public static readonly Color PcRow   = Color.FromArgb(216, 232, 208);   // G>R by 16 — the posse
-    public static readonly Color FoeRow  = Color.FromArgb(247, 231, 219);   // R>G by 16 — a foe
-    /// <summary>The Witch's bound beast (Ch. VII) — on the posse's side and not one of them. Cast
+    public static readonly Color PcRow   = Color.FromArgb(216, 232, 208);   // G>R by 16: the posse
+    public static readonly Color FoeRow  = Color.FromArgb(247, 231, 219);   // R>G by 16: a foe
+    /// <summary>The Witch's bound beast (Ch. VII): on the posse's side and not one of them. Cast
     /// apart from both on the axis the other two share: the posse's green and a foe's clay are
     /// argued out in R against G and BOTH put blue lowest, so blue is the free direction and this
-    /// ground takes it — B above R by 26, where PcRow is B BELOW R by 8 and FoeRow by 28. Lifting
+    /// ground takes it: B above R by 26, where PcRow is B BELOW R by 8 and FoeRow by 28. Lifting
     /// it toward paper for an editable cell cannot cross that, which is the rule the six other
     /// grounds are held to.</summary>
     public static readonly Color FamiliarRow = Color.FromArgb(212, 224, 238);
@@ -87,11 +87,11 @@ public partial class MainForm : Sheet
     public static readonly Color DownRow = Color.FromArgb(228, 222, 214);
     /// <summary>On the ground with the count running (Ch. XI). The loudest ground in the app, and
     /// the only loud one: it marks the single most urgent thing that can be true at a table. First
-    /// drawn only a little deeper than DownRow, which put four near-identical pinks down one grid —
+    /// drawn only a little deeper than DownRow, which put four near-identical pinks down one grid:
     /// a soul four rounds from dead beside a bandit who was simply finished. Separated by
     /// LOUDNESS, not by shade: R>G by 66 against the down row's 6.</summary>
     public static readonly Color DyingRow = Color.FromArgb(232, 166, 158);
-    /// <summary>Dead. Ash, deliberately the one row ground with no cast at all — every other colour
+    /// <summary>Dead. Ash, deliberately the one row ground with no cast at all. Every other colour
     /// here means "look at this", and the whole point of this one is that there is nothing left to
     /// do. Darker than the down row so the two greys are told apart at a glance, because "senseless"
     /// and "gone" are the difference between a Keeper reaching for a Medicine check and not.</summary>
@@ -104,14 +104,14 @@ public partial class MainForm : Sheet
     // GoldDeep is the same hue carried far enough down to measure ~5:1. Use Gold for headings and
     // short labels, GoldDeep for anything that is a sentence.
     public static readonly Color GoldDeep = Color.FromArgb(122, 92, 34);
-    /// <summary>"Nothing is happening yet" ink — the idle turn line, spent turns, quiet asides. The
+    /// <summary>"Nothing is happening yet" ink. The idle turn line, spent turns, quiet asides. The
     /// old value (122,112,96) measured 4.0:1; this reads the same way and measures ~5.2:1.</summary>
     public static readonly Color Faint    = Color.FromArgb(104, 94, 78);
     /// <summary>The unselected tab's ground, and the rule under the strip. A tab bar where the
     /// selected tab is the same colour as the rest is a tab bar that does not answer "where am I".</summary>
     public static readonly Color TabRest  = Color.FromArgb(230, 222, 200);
 
-    /// <summary>Information that is neither emphasis nor prose — counters, shortcut hints, the
+    /// <summary>Information that is neither emphasis nor prose: counters, shortcut hints, the
     /// "150 shown" under a filter. Gold was doing this job AND carrying emphasis, so a heading and
     /// an aside arrived in the same colour and neither won. This is off the warm axis on purpose:
     /// it reads as apparatus rather than as something the frontier said. ~6.8:1 on Paper.</summary>
@@ -121,11 +121,11 @@ public partial class MainForm : Sheet
     /// edge. One value so a border never disagrees with the border beside it.</summary>
     public static readonly Color Rule     = Color.FromArgb(206, 194, 170);
 
-    // roll-log result colors — so a dice result jumps out from plain event lines
-    public static readonly Color RollCritGood = Color.FromArgb(150, 108, 0);   // critical success — rich gold
-    public static readonly Color RollCritBad  = Color.FromArgb(48, 12, 12);    // critical failure — near-black
+    // roll-log result colors, so a dice result jumps out from plain event lines
+    public static readonly Color RollCritGood = Color.FromArgb(150, 108, 0);   // critical success: rich gold
+    public static readonly Color RollCritBad  = Color.FromArgb(48, 12, 12);    // critical failure: near-black
     public static readonly Color RollGood     = Verdigris;                     // plain success
-    public static readonly Color RollBad      = Color.FromArgb(150, 70, 30);   // plain failure — rust
+    public static readonly Color RollBad      = Color.FromArgb(150, 70, 30);   // plain failure: rust
     public static readonly Color RollNeutral  = Color.FromArgb(52, 70, 120);   // a roll with no DC to judge it by
 
     // ---- universal undo/redo (snapshot-based over the shared game state) ----
@@ -145,7 +145,7 @@ public partial class MainForm : Sheet
     /// existed. One number, in the csproj, and nowhere else.</summary>
     internal static string AppVersion =>
         typeof(MainForm).Assembly.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{v.Build}" : "0.0.0";
-    // The book editions the app ships alongside — the C#-side copy of the numbers the Python builders
+    // The book editions the app ships alongside: the C#-side copy of the numbers the Python builders
     // stamp. Bump these in the same breath as a book version (they show in the status bar, and in
     // the About box). The instruction above was the whole of the control until 2026-08-20, and it
     // failed the way a written instruction always eventually does: the Player's Book went to v2.27
@@ -165,9 +165,9 @@ public partial class MainForm : Sheet
     {
         Mode = mode;
         MapInk.LoadKindColors(Prefs.Load().MarkerInk);   // the Keeper's standing marker colors
-        Text = "GritKeeper — Blood & Grit";
+        Text = "GritKeeper: Blood & Grit";
         if (AppIcon != null) Icon = AppIcon;      // the emblem, not the stock-Windows square
-        // Never open taller or wider than the screen actually is — on a 1366×768 laptop the
+        // Never open taller or wider than the screen actually is: on a 1366×768 laptop the
         // old fixed 1280×820 put the bottom row of buttons below the taskbar, unreachable.
         var work = Screen.PrimaryScreen.WorkingArea;
         Width = Math.Min(1280, work.Width);
@@ -184,7 +184,7 @@ public partial class MainForm : Sheet
         // Build the tab the Keeper is looking at; hand the other nine over as shells that
         // fill themselves the first time they're selected. Measured on this laptop, building
         // all ten up front cost 379 ms of a ~1,000 ms launch (Bestiary 91, Posse 71, Map 61,
-        // Dice 46, Reference 45, the rest small) — a third of the wait spent on nine tabs
+        // Dice 46, Reference 45, the rest small): a third of the wait spent on nine tabs
         // nobody was looking at yet. Deferred, that third comes off the launch and is paid
         // back a tab at a time, none of them over ~90 ms, which is under the threshold where
         // a click feels like it waited.
@@ -210,7 +210,7 @@ public partial class MainForm : Sheet
 
         // Esc ends the tour from the app side too, so it can be dismissed whichever of the two
         // windows has focus. A walkthrough you can only close from itself is a trap. This is the
-        // one binding left on KeyDown, because it is not a command — it is a way out, it takes no
+        // one binding left on KeyDown, because it is not a command. It is a way out, it takes no
         // modifier, and a bare Esc captured in ProcessCmdKey would be taken from every dialog and
         // every text box in the app before they ever saw it.
         KeyDown += (s, e) =>
@@ -224,14 +224,14 @@ public partial class MainForm : Sheet
         { ForeColor = Ink, ToolTipText = StatusLoadedText() };
         status.Items.Add(statusLoaded);
         // The last thing that happened, said where the Keeper is looking. Every action already
-        // answered in the roll log — but the roll log lives on the Dice tab, so from the Posse or
+        // answered in the roll log, but the roll log lives on the Dice tab, so from the Posse or
         // the Tracker a button that declined (nothing selected, no soul made yet) looked like a
         // button that did nothing at all. That's the "some buttons don't work" report.
         statusSay = new ToolStripStatusLabel("") { Spring = true, ForeColor = Ink, TextAlign = ContentAlignment.MiddleLeft };
         status.Items.Add(statusSay);
         // Undo and Redo used to live here, at the right end of this bar. They have moved to the
         // right end of the MENU bar (see BuildMenu), which keeps everything the old arrangement was
-        // for — reachable from any tab, at the end rather than through the middle of the status —
+        // for (reachable from any tab, at the end rather than through the middle of the status)
         // and gives the status bar back to status. A bar carrying app state, a version list, two
         // hints AND two buttons is four kinds of thing in one strip, and the two buttons were the
         // ones that did not belong: every other item on it is something the app is telling you.
@@ -239,7 +239,7 @@ public partial class MainForm : Sheet
         // The raised face and border they wear are kept exactly, and for the recorded reason: flat
         // text in a bar reads as a caption rather than as something you can press (user-reported).
         //
-        // Slate, not GoldDeep: this line is apparatus — keys and intervals — and gold is the colour
+        // Slate, not GoldDeep: this line is apparatus (keys and intervals), and gold is the colour
         // the app uses when the frontier is speaking. See the palette note on Slate.
         status.Items.Add(new ToolStripStatusLabel("Ctrl+1–0 tabs · F1 the five-minute lesson · auto-saves on exit + every 5 min")
         { ForeColor = Slate, ToolTipText = "Ctrl+1 to Ctrl+0 jump to a tab · F1 opens the five-minute lesson · the table auto-saves on exit and every five minutes" });
@@ -250,7 +250,7 @@ public partial class MainForm : Sheet
         //
         // EVERY field of Snapshot() must reach a capture by some route, and the reason is not
         // tidiness. Undo restores a whole snapshot, so a field that changes without capturing
-        // leaves undoBaseline behind the truth — and the NEXT captured action then pushes that
+        // leaves undoBaseline behind the truth, and the NEXT captured action then pushes that
         // stale baseline onto the stack. Press Undo and it reverts the uncaptured change as well
         // as the one you meant, silently, with no way back. Notes, the round and the encounter
         // level were all in the snapshot and captured by nothing until v1.47.0, so typing a note
@@ -263,7 +263,7 @@ public partial class MainForm : Sheet
         clocks.ListChanged += (s, e) => CaptureUndo();
         rides.ListChanged += (s, e) => CaptureUndo();
         // The markers were a plain List until v1.47.0, which left their capture to fourteen call
-        // sites each remembering to make it — the same shape as the three bugs above, waiting.
+        // sites each remembering to make it: the same shape as the three bugs above, waiting.
         // A drag still captures explicitly (it moves a marker rather than the list).
         mapMarkers.ListChanged += (s, e) => CaptureUndo();
 
@@ -275,12 +275,12 @@ public partial class MainForm : Sheet
 
         // The welcome, once the window is really up. Shown here rather than in the constructor
         // because the tour parks its callout beside actual controls and needs their real screen
-        // rectangles — before the form is shown there are none. Fires once per machine; the
+        // rectangles; before the form is shown there are none. Fires once per machine; the
         // answer, either way, is remembered in prefs.json.
         Shown += (s, e) => OfferTourOnFirstRun();
 
         // Complete the two-way Blood sync: a direct cell edit on the Posse grid must reach
-        // the Tracker the same way the Damage/Heal buttons do — and the encounter budget
+        // the Tracker the same way the Damage/Heal buttons do, and the encounter budget
         // depends on posse size, so it re-verdicts when souls come or go.
         party.ListChanged += (s, e) =>
         {
@@ -336,7 +336,7 @@ public partial class MainForm : Sheet
     }
 
     /// <summary>Bring a tab to the front by name, realizing it if this is its first visit. Returns
-    /// false when the current run mode doesn't show that tab at all — a player's view has no Map,
+    /// false when the current run mode doesn't show that tab at all: a player's view has no Map,
     /// and a feature that hands work across to one has to be able to find that out politely.</summary>
     internal bool ShowTab(string title)
     {
@@ -352,13 +352,13 @@ public partial class MainForm : Sheet
 
     /// <summary>Switch modes live from the menu: re-lay the tabs, refresh the status line, and record
     /// the choice so the next launch remembers it. The roll behavior follows <see cref="EngineRolls"/>
-    /// on the next Strike or Dread Check — no restart needed.</summary>
+    /// on the next Strike or Dread Check, no restart needed.</summary>
     internal void SetMode(RunMode mode)
     {
         if (mode == Mode) return;
         Mode = mode;
         ApplyModeTabs();
-        // The Reference deck is dealt per mode — the Keeper's leaves are not in a player's — and the
+        // The Reference deck is dealt per mode (the Keeper's leaves are not in a player's) and the
         // tab is built once and reused, so switching tables has to re-deal it. Only when it has
         // actually been opened: tabs are lazy, and building it here would defeat that.
         if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
@@ -378,7 +378,7 @@ public partial class MainForm : Sheet
     {
         using var f = new Sheet
         {
-            Text = "Blood & Grit — GritKeeper", Width = 560, Height = 470,
+            Text = "Blood & Grit: GritKeeper", Width = 560, Height = 470,
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterScreen,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = AppIcon != null, BackColor = Paper
         };
@@ -391,24 +391,24 @@ public partial class MainForm : Sheet
         {
             (RunMode.Player,       "I'm a Player",
                 "Build and run your own character, roll your dice, and look up the rules. The Keeper's tools stay put away."),
-            (RunMode.KeeperDice,   "Keeper — with dice & books",
+            (RunMode.KeeperDice,   "Keeper: with dice & books",
                 "You roll real dice and run from the books. GritKeeper is your referee and ledger: enter the die you rolled and it reads the degrees, the penalties, the damage, and keeps everyone's Blood and Nerve."),
-            (RunMode.KeeperEngine, "Keeper — on the engine",
-                "No dice on the table, no ledgers to keep. GritKeeper rolls it all — to-hit, damage, Dread — so the only thing anyone has to bring is the story."),
+            (RunMode.KeeperEngine, "Keeper: on the engine",
+                "No dice on the table, no ledgers to keep. GritKeeper rolls it all (to-hit, damage, Dread), so the only thing anyone has to bring is the story."),
         };
         int y = 56;
         var radios = new List<RadioButton>();
         foreach (var c in cards)
         {
             // UseMnemonic off, or the ampersand in "dice & books" is swallowed as a keyboard
-            // mnemonic and the mode reads "Keeper — with dice  books" (the same trap the Labels
+            // mnemonic and the mode reads "Keeper: with dice  books" (the same trap the Labels
             // hit back in v1.4).
             var rb = new RadioButton { Left = 24, Top = y, Width = 500, Height = 22, Text = c.head,
                 Font = new Font("Segoe UI Semibold", 10.5f), ForeColor = Ink, Checked = c.mode == current,
                 UseMnemonic = false };
             var mode = c.mode; rb.CheckedChanged += (s, e) => { if (rb.Checked) picked = mode; };
             f.Controls.Add(rb); radios.Add(rb);
-            // 44px held three lines and the longest blurb runs to four — it was cut mid-sentence.
+            // 44px held three lines and the longest blurb runs to four. It was cut mid-sentence.
             f.Controls.Add(new Label { Left = 44, Top = y + 24, Width = 480, Height = 58, Text = c.blurb,
                 ForeColor = Ink, UseMnemonic = false });
             y += 96;
@@ -418,7 +418,7 @@ public partial class MainForm : Sheet
         var remember = new CheckBox { Left = 24, Top = y + 2, Width = 300, Text = "Start here next time (skip this)", ForeColor = Ink };
         f.Controls.Add(remember);
         var ok = new Button { Text = "Sit down ▸", Left = 360, Top = y, Width = 160, Height = 32, DialogResult = DialogResult.OK };
-        // Enter and Esc both sit you down at the table that is selected — which is what closing it
+        // Enter and Esc both sit you down at the table that is selected, which is what closing it
         // from the title bar already did, since the pick is read off the radio regardless. Leaving
         // Esc unwired made the first window the app ever shows the one window that ignores it.
         f.Controls.Add(ok); f.AcceptButton = ok; f.CancelButton = ok;
@@ -427,14 +427,14 @@ public partial class MainForm : Sheet
         return (picked, remember.Checked);
     }
 
-    // Left/Right turn the Reference deck no matter which control holds focus — arrow
+    // Left/Right turn the Reference deck no matter which control holds focus: arrow
     // keys are normally eaten as focus-navigation before KeyDown ever sees them. The
     // Reference tab has no text inputs, so stealing them there costs nothing.
     /// <summary>One keyboard binding: the chord, the tab it belongs to, the sentence the Help
     /// window prints for it, and the thing it does.
     ///
     /// <para><see cref="Tab"/> is null for a binding that works anywhere. Otherwise it is a tab's
-    /// title, and the binding only fires while that tab is the one on show — which is what lets
+    /// title, and the binding only fires while that tab is the one on show, which is what lets
     /// Ctrl+D mean <em>damage this soul</em> on the Posse and <em>damage this row</em> on the
     /// Tracker without either one having to know about the other.</para></summary>
     internal sealed record KeyBinding(Keys Chord, string Tab, string Says, Action Do);
@@ -445,7 +445,7 @@ public partial class MainForm : Sheet
     ///
     /// <para>It is a list rather than a switch because two things read it: <see
     /// cref="ProcessCmdKey"/> runs it, and <c>ShowShortcuts</c> prints it. Those were separate
-    /// before — the handler in a lambda here, the help text hand-typed in <c>Menus.cs</c> — which
+    /// before (the handler in a lambda here, the help text hand-typed in <c>Menus.cs</c>) which
     /// is the same two-copies-of-a-fact shape as the <c>uses</c> column <see
     /// cref="CharGen.ReadLimit"/> refuses to have and the seven typed copies of the encounter
     /// ladder that <see cref="Rules.BudgetRungs"/> replaced. A shortcut list that is written twice
@@ -467,7 +467,7 @@ public partial class MainForm : Sheet
         K(Keys.Control | Keys.R, "Tracker", "Next round", NextRound);
         // The loop key: hand on the turn, and let the round follow. Space because it is the one a
         // hand already resting on the keyboard can find without looking down.
-        K(Keys.Control | Keys.Space, "Tracker", "Hand the turn on — the round follows by itself", NextTurn);
+        K(Keys.Control | Keys.Space, "Tracker", "Hand the turn on, the round follows by itself", NextTurn);
 
         K(Keys.Control | Keys.F, "Bestiary", "Jump to the search box",
             () => { beastSearch.Focus(); beastSearch.SelectAll(); });
@@ -486,7 +486,7 @@ public partial class MainForm : Sheet
     ///
     /// <para>These lived on the form's <c>KeyDown</c> until v1.49.0, which meant they fired only
     /// when nothing else wanted the key first. <c>ProcessCmdKey</c> is checked before any control
-    /// sees the keystroke, so a shortcut works no matter where focus is sitting — and focus on the
+    /// sees the keystroke, so a shortcut works no matter where focus is sitting, and focus on the
     /// Tracker is almost always the grid, which is the control most likely to swallow one. The
     /// Reference deck's arrows were moved here for exactly this reason in v1.38.0; the combat loop
     /// simply never followed, so the key a Keeper presses most was the one least sure to land.</para></summary>
@@ -509,7 +509,7 @@ public partial class MainForm : Sheet
 
     /// <summary>Ctrl+1…Ctrl+0 jump to a tab, counted off the tabs actually ON SHOW.
     ///
-    /// <para>It used to index <c>allTabs</c>' order blindly, and the run mode re-lays that list —
+    /// <para>It used to index <c>allTabs</c>' order blindly, and the run mode re-lays that list:
     /// <see cref="ApplyModeTabs"/> clears the strip and re-adds only what the mode shows, so a
     /// player's three-tab view had Ctrl+4 through Ctrl+0 pointing past the end. Seven shortcuts
     /// that quietly did nothing, in the mode least likely to have anyone nearby who knew why.
@@ -524,14 +524,14 @@ public partial class MainForm : Sheet
         int shown = tabsCtl?.TabPages.Count ?? 0;
         if (want >= shown)
         {
-            Nope($"No {Ordinal(want + 1)} tab in this view — it shows {shown}.");
+            Nope($"No {Ordinal(want + 1)} tab in this view. It shows {shown}.");
             return true;
         }
         tabsCtl.SelectedIndex = want;
         return true;
     }
 
-    /// <summary>A chord as a Keeper reads it — "Ctrl+Space", not "Control, Space". Built here
+    /// <summary>A chord as a Keeper reads it: "Ctrl+Space", not "Control, Space". Built here
     /// rather than taken from <c>KeysConverter</c>, which localises and would print the help
     /// window in one language and the menu strip's own shortcut column in another.</summary>
     internal static string Chord(Keys chord)
@@ -559,7 +559,7 @@ public partial class MainForm : Sheet
         Log("Blank row added to the posse.");
     }
 
-    /// <summary>Chapter III walked by hand, then seated. The same wizard the New Soul tab opens —
+    /// <summary>Chapter III walked by hand, then seated. The same wizard the New Soul tab opens,
     /// reached from the tab the table is actually run from.</summary>
     void AddSoulByHand()
     {
@@ -595,7 +595,7 @@ public partial class MainForm : Sheet
         var method = new ComboBox { Left = 150, Top = 128, Width = 240, DropDownStyle = ComboBoxStyle.DropDownList };
         method.Items.AddRange(new object[] { "Honest Array (15/14/13/12/10/8)", "Rolled (4d6 drop lowest)" });
         method.SelectedIndex = 0;
-        Tip.SetToolTip(method, "How the six ability scores are found — the fixed array, or dice");
+        Tip.SetToolTip(method, "How the six ability scores are found, the fixed array, or dice");
 
         // Raw Buttons carrying a DialogResult, the way every other dialog in the app does it
         // (see Tour.cs). The Btn helper is for handler-driven buttons, and audit_ui.py rightly
@@ -650,7 +650,7 @@ public partial class MainForm : Sheet
     // holding. The builders each make their own TabPage (and half of them stash it in a
     // field), so reparenting the children is less invasive than rewriting ten signatures.
     // AddRange preserves the array's order, and WinForms resolves docking by z-order, so
-    // the layout comes out identical to the eager build — including the SplitContainers,
+    // the layout comes out identical to the eager build, including the SplitContainers,
     // whose geometry the Split() helper still defers to the first SizeChanged.
     void RealizeTab(TabPage shell)
     {
@@ -667,18 +667,18 @@ public partial class MainForm : Sheet
         built.Controls.Clear();
         shell.Controls.AddRange(kids);
         // A tab is built long after the window it lives in has loaded, so Sheet's own pass has
-        // already been and gone by the time this content exists. Dress it here instead — this is
+        // already been and gone by the time this content exists. Dress it here instead. This is
         // the route every checkbox on the Map tab arrives by.
         DressControls(shell);
         shell.ResumeLayout(true);
         // ProcessCmdKey steers Left/Right to the Reference deck by comparing the selected
-        // tab against this field — it has to name the page actually in the TabControl.
+        // tab against this field. It has to name the page actually in the TabControl.
         if (ReferenceEquals(built, referencePage)) referencePage = shell;
         built.Dispose();
     }
 
     // ---------------------------------------------------------- shared helpers
-    /// <summary>The app is declining to act — nothing is selected, nothing has been made yet.
+    /// <summary>The app is declining to act. Nothing is selected, nothing has been made yet.
     /// Says so in red on the status bar as well as in the log, so the refusal is visible from
     /// whatever tab the button was pressed on.</summary>
     void Nope(string s) { Log(s); Say(s, Blood); }
@@ -690,7 +690,7 @@ public partial class MainForm : Sheet
         if (statusSay == null) return;          // logged before the shell was built
         statusSay.ForeColor = c;
         statusSay.Text = Amp(s);
-        statusSay.ToolTipText = s;              // a tooltip draws its text literally — no escaping
+        statusSay.ToolTipText = s;              // a tooltip draws its text literally: no escaping
     }
 
     /// <summary>Escape a run of prose for a control that reads "&amp;" as a keyboard mnemonic.
@@ -716,7 +716,7 @@ public partial class MainForm : Sheet
         resultSub.Text = sub;
     }
 
-    /// The color a four-degrees result is read in — shared with the roll log so one outcome is
+    /// The color a four-degrees result is read in, shared with the roll log so one outcome is
     /// never gold in one place and rust in another.
     static Color DegreeColor(string degree) => degree switch
     {
@@ -746,25 +746,25 @@ public partial class MainForm : Sheet
     // Color-codes dice-roll results in the log so they jump out from plain event lines:
     // a four-degrees outcome (CHECK/DREAD) is graded by its degree word, a bare die roll
     // (quick dice) by whether it landed on its max or min face, and any other roll
-    // (ROLL <expr>) gets a neutral "this is a roll" accent. Everything else — posse,
-    // tracker, session events — stays the plain ink color.
+    // (ROLL <expr>) gets a neutral "this is a roll" accent. Everything else (posse,
+    // tracker, session events) stays the plain ink color.
     static readonly System.Text.RegularExpressions.Regex DegreeRe =
         new(@"→ (CRITICAL SUCCESS|CRITICAL FAILURE|Success|Failure)\b");
     static readonly System.Text.RegularExpressions.Regex QuickDieRe =
         new(@"^\[\d\d:\d\d\] d(\d+) → (\d+)$");
     static readonly System.Text.RegularExpressions.Regex RollLineRe =
-        new(@"^\[\d\d:\d\d\] (ROLL |CHECK — |DREAD — )");
+        new(@"^\[\d\d:\d\d\] (ROLL |CHECK: |DREAD: )");
 
     /// <summary>A plain list, selecting in the app's own colours.
     ///
     /// <para>Windows selects in <c>#0078D4</c>. On a warm parchment ground that is the one colour in
-    /// the app belonging to no palette here, and the Bestiary — a full-height list of every creature
-    /// beside a page of prose — put a bright blue block in the middle of it every time a Keeper
+    /// the app belonging to no palette here, and the Bestiary, a full-height list of every creature
+    /// beside a page of prose, put a bright blue block in the middle of it every time a Keeper
     /// picked something. A grid already selects in Gold (<see cref="StyleGrid"/>); this makes the
     /// lists agree with the grids, so "the thing I chose" looks the same everywhere.</para>
     ///
     /// <para><c>OwnerDrawFixed</c> keeps the control's own item height, so nothing about the list's
-    /// density or scrolling changes — only the two colours and a few pixels of left bearing, which
+    /// density or scrolling changes: only the two colours and a few pixels of left bearing, which
     /// text pressed against a border has always wanted.</para></summary>
     static void StyleList(ListBox lb)
     {
@@ -787,7 +787,7 @@ public partial class MainForm : Sheet
     static void StyleRollLog(ListBox log)
     {
         // One bold variant, created once and kept for the log's lifetime. Never wrap
-        // e.Font in a using — that disposes the control's own Font out from under it.
+        // e.Font in a using: that disposes the control's own Font out from under it.
         var boldFont = new Font(log.Font, log.Font.Style | FontStyle.Bold);
         log.Disposed += (s, e) => boldFont.Dispose();
         log.DrawMode = DrawMode.OwnerDrawFixed;
@@ -820,7 +820,7 @@ public partial class MainForm : Sheet
                 else if (RollLineRe.IsMatch(text)) color = RollNeutral;
             }
             // Ground and selection painted here rather than by e.DrawBackground(), which fills with
-            // Windows' own selection blue — see StyleList for why that one colour cannot stay.
+            // Windows' own selection blue. See StyleList for why that one colour cannot stay.
             bool selected = (e.State & DrawItemState.Selected) != 0;
             using (var ground = new SolidBrush(selected ? Gold : log.BackColor))
                 e.Graphics.FillRectangle(ground, e.Bounds);
@@ -831,7 +831,7 @@ public partial class MainForm : Sheet
         };
     }
 
-    /// <summary>The ordinary button — the middle of three weights, and the one nearly every bar in
+    /// <summary>The ordinary button: the middle of three weights, and the one nearly every bar in
     /// the app is made of.
     ///
     /// <para>It was <c>FlatStyle.System</c>, which hands the painting to the Windows theme. That
@@ -876,13 +876,13 @@ public partial class MainForm : Sheet
         return b;
     }
 
-    /// <summary>Put the ordinary weight on a button — the face, the hairline, the two hover
+    /// <summary>Put the ordinary weight on a button: the face, the hairline, the two hover
     /// grounds, the focus ring and the width guard. <see cref="Btn"/> is this plus a handler and a
     /// tooltip, and <see cref="DressControls"/> is this applied to a button somebody built by hand.
     ///
     /// <para>It is factored out for the second caller's sake. The app has about forty-five buttons
-    /// built as a bare <c>new Button</c> — every dialog's OK and Cancel, the wizard's ◂ Back and
-    /// Next ▸, the map's ✕ Close — because a dialog button carries a <c>DialogResult</c> rather than
+    /// built as a bare <c>new Button</c> (every dialog's OK and Cancel, the wizard's ◂ Back and
+    /// Next ▸, the map's ✕ Close) because a dialog button carries a <c>DialogResult</c> rather than
     /// a handler and so never fitted <c>Btn</c>'s shape. They stayed system-themed through the
     /// release that flattened every toolbar, which left the app in the worst of both states: the
     /// tabs were the app's own and every window you opened off them was somebody else's.</para></summary>
@@ -903,13 +903,13 @@ public partial class MainForm : Sheet
     /// <summary>The focus ring every weight shares.
     ///
     /// <para>Drawn in Paint rather than by swapping the border colour, because PrimaryBtn and
-    /// DangerBtn set their own border AFTER <see cref="DressBtn"/> returns — the first blur would
+    /// DangerBtn set their own border AFTER <see cref="DressBtn"/> returns: the first blur would
     /// have reset a red-edged button to a hairline one. A ring drawn over the top belongs to no
     /// weight in particular and so cannot overwrite any of them.</para>
     ///
     /// <para>Its ink is chosen against the face it lands on, which is the whole reason this is one
     /// shared handler and not a lambda per weight: Ink on PrimaryBtn's Blood, or on a held-down
-    /// toggle's Gold, is a dark ring on a dark ground — a focus indicator that cannot be seen is
+    /// toggle's Gold, is a dark ring on a dark ground, and a focus indicator that cannot be seen is
     /// the same as none, and keyboard users are exactly who it is for.</para></summary>
     static void FocusRing(object sender, PaintEventArgs e)
     {
@@ -921,21 +921,21 @@ public partial class MainForm : Sheet
         e.Graphics.DrawRectangle(ring, 2, 2, b.Width - 5, b.Height - 5);
     }
 
-    /// Perceived brightness, the usual 299/587/114 weighting — green carries most of what an eye
+    /// Perceived brightness, the usual 299/587/114 weighting: green carries most of what an eye
     /// reads as "light", so a plain average calls Blood and Gold the same darkness and they are not.
     static bool IsDark(Color c) => c.R * 299 + c.G * 587 + c.B * 114 < 140_000;
 
     /// <summary>Never let a button be narrower than its own words.
     ///
     /// <para>Every width in this app was chosen by eye against <c>FlatStyle.System</c>, and the
-    /// themed button reserves less room for its text than a flat one does — so moving to the flat
-    /// weight clipped "Dread check — selected" to "Dread check —" on a bar that had looked right for
+    /// themed button reserves less room for its text than a flat one does, so moving to the flat
+    /// weight clipped "Dread check, selected" to "Dread check, " on a bar that had looked right for
     /// a year. Widths hand-fitted to a renderer are widths that break when the renderer changes,
     /// which is the same lesson the dialogs learned when fixed heights clipped their prose.</para>
     ///
     /// <para>Measured on FontChanged as well as now, because a button takes its real font from its
     /// parent AFTER it is built: constructed it is carrying <c>Control.DefaultFont</c> at 9pt, and
-    /// the form's own face is 9.5. It only ever grows — a bar of buttons that resized as their
+    /// the form's own face is 9.5. It only ever grows: a bar of buttons that resized as their
     /// captions changed would shuffle under the hand.</para></summary>
     static void FitLabel(ButtonBase b)
     {
@@ -956,17 +956,17 @@ public partial class MainForm : Sheet
     /// <para>This exists for the same reason <see cref="Sheet"/> does, and it is the same argument:
     /// a rule that every control must be built through a helper is a rule somebody breaks the first
     /// time a control does not fit the helper's shape, and nobody notices for a release or two. So
-    /// the frame is inherited and the ink is applied by a walk — the two ways of getting it right
+    /// the frame is inherited and the ink is applied by a walk: the two ways of getting it right
     /// that do not depend on remembering. Between them, a window opened in this app cannot come out
     /// wearing Windows' clothes unless it is deliberately built off <c>Form</c>.</para>
     ///
     /// <para><b>The predicate is also the guard against dressing twice.</b> Only a control still on
-    /// a system <c>FlatStyle</c> is touched, and dressing sets it to Flat — so a control that has
+    /// a system <c>FlatStyle</c> is touched, and dressing sets it to Flat, so a control that has
     /// already been through here, or through <see cref="Btn"/>, <see cref="DieBtn"/>,
     /// <see cref="PrimaryBtn"/> or <see cref="ToggleBtn"/>, is skipped and keeps its own face. That
     /// matters: PrimaryBtn's Blood and a die's colour would otherwise be flattened back to paper by
     /// the walk, which is a far worse bug than the one being fixed. It also means the walk can run
-    /// twice over one tree — a tab realized before its window loads — and cost nothing but the
+    /// twice over one tree (a tab realized before its window loads) and cost nothing but the
     /// visit, and that Paint and FontChanged never get a second subscriber.</para></summary>
     internal static void DressControls(Control root)
     {
@@ -975,7 +975,7 @@ public partial class MainForm : Sheet
             switch (c)
             {
                 // Appearance.Button on a CheckBox is ToggleBtn's shape, and it is always already
-                // Flat — the case is spelled out anyway so the intent survives someone building a
+                // Flat; the case is spelled out anyway so the intent survives someone building a
                 // toggle by hand: it is a button, and it takes the button's dressing.
                 case CheckBox { Appearance: Appearance.Button } t when t.FlatStyle != FlatStyle.Flat:
                     DressToggle(t); break;
@@ -991,8 +991,8 @@ public partial class MainForm : Sheet
     /// <summary>A checkbox or a radio, wearing the app's ink instead of the system accent.
     ///
     /// <para>Windows draws both glyphs in <c>#0078D4</c>. That is the one colour in this app that
-    /// belongs to no palette here — the same finding that took Windows' selection blue out of the
-    /// lists (<see cref="StyleList"/>) — and it had nine places left to sit: the run-mode chooser a
+    /// belongs to no palette here, the same finding that took Windows' selection blue out of the
+    /// lists (<see cref="StyleList"/>), and it had nine places left to sit: the run-mode chooser a
     /// Keeper meets before anything else, and the Map tab's row of overlay toggles, where the ticks
     /// are the brightest thing on a parchment survey.</para>
     ///
@@ -1030,17 +1030,17 @@ public partial class MainForm : Sheet
     }
 
     /// The three grounds an ordinary button stands on. Paper itself is the pane behind it, so the
-    /// face is lifted a shade off it — a button the same colour as its background is a label.
+    /// face is lifted a shade off it. A button the same colour as its background is a label.
     static readonly Color BtnFace  = Color.FromArgb(240, 233, 214);
     static readonly Color BtnHover = Color.FromArgb(232, 221, 189);
     static readonly Color BtnDown  = Color.FromArgb(219, 205, 168);
 
     /// <summary>The lightest of the three weights: a real action that should not compete. No face
     /// and no edge until the mouse is on it, so a bar of eight buttons can carry two or three
-    /// housekeeping verbs — Reset, Clear name, Fit — without them reading as loud as the work.
+    /// housekeeping verbs (Reset, Clear name, Fit) without them reading as loud as the work.
     ///
     /// <para>It keeps the full 32px target and the tooltip, so nothing about it is less reachable
-    /// than a normal button; only its ink is quieter. That distinction matters — quiet is a visual
+    /// than a normal button; only its ink is quieter. That distinction matters: quiet is a visual
     /// weight, and a control a hand cannot land on is a different problem entirely.</para></summary>
     static Button QuietBtn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
@@ -1052,13 +1052,13 @@ public partial class MainForm : Sheet
         return b;
     }
 
-    /// <summary>A button that stays down — the app's one idiom for "this is on", used by the
+    /// <summary>A button that stays down. The app's one idiom for "this is on", used by the
     /// Tracker's turn glass and the Map's ✥ Move things.
     ///
     /// <para>A CheckBox rather than a Button because the state is the point: it is readable at a
     /// glance, it reaches assistive tech as a toggle rather than as a push button, and it cannot
     /// drift out of step with what it controls the way a button whose caption is rewritten can.
-    /// Held down it wears Gold — the same colour a selected row wears, so "on" means one thing
+    /// Held down it wears Gold. The same colour a selected row wears, so "on" means one thing
     /// across the app.</para></summary>
     static CheckBox ToggleBtn(string text, int w, string tip)
     {
@@ -1075,14 +1075,14 @@ public partial class MainForm : Sheet
 
     /// <summary>Paint the tab strip ourselves, for one reason: under the Windows visual style the
     /// selected tab differs from the other nine by a couple of pixels of height and nothing else, so
-    /// the app's own answer to "which of the ten am I on" was almost invisible — the most basic
+    /// the app's own answer to "which of the ten am I on" was almost invisible, though it is the most basic
     /// piece of state a tabbed window has to show. Selected now stands on Paper under a thick Blood
     /// rule with its name in Blood; the rest sit back on a darker ground in plain Ink.
     ///
     /// <para>Owner-drawing a TabControl is honest but blunt: it hands us the tab RECTANGLES and
     /// keeps painting the strip's own background itself. Nothing here touches the pages, so a tab's
     /// contents are unaffected, and <c>TabDrawMode.OwnerDrawFixed</c> still lets the control size
-    /// each tab to its own text — the labels are ten different lengths.</para></summary>
+    /// each tab to its own text. The labels are ten different lengths.</para></summary>
     static void StyleTabs(TabControl tabs)
     {
         // NOT double-buffered, deliberately. Tried on 2026-08-28 for the same reason the grids
@@ -1099,12 +1099,12 @@ public partial class MainForm : Sheet
             var r = t.GetTabRect(e.Index);
             var g = e.Graphics;
 
-            // Brushes and pens off the shelf too (v1.39.0). This runs once per tab per paint — ten
-            // times a repaint, and a repaint comes on every hover, selection and resize — so three
+            // Brushes and pens off the shelf too (v1.39.0). This runs once per tab per paint (ten
+            // times a repaint, and a repaint comes on every hover, selection and resize) so three
             // GDI objects minted and disposed here is thirty allocations for a bar that never
             // changes colour. Same argument as the fonts, one rung down.
             g.FillRectangle(on ? PaperBrush : TabRestBrush, r);
-            // A 3px Blood rule along the top of the live tab — the accent that does the work. Drawn
+            // A 3px Blood rule along the top of the live tab: the accent that does the work. Drawn
             // inside the rect so it can't bleed onto its neighbours.
             if (on) g.FillRectangle(BloodBrush, r.X, r.Y, r.Width, 3);
             // Hairline separators, so ten tabs read as ten and not as one long bar.
@@ -1128,7 +1128,7 @@ public partial class MainForm : Sheet
     // coverage is checked rather than intended: --selftest walks every realized tab and every
     // wizard step and fails on anything interactive that says nothing on hover.
     //
-    // Written once and shared by both walkers on purpose — a wizard held to one standard and ten
+    // Written once and shared by both walkers on purpose: a wizard held to one standard and ten
     // tabs held to another is two standards, and the looser one wins by default.
 
     /// <summary>Note every control under <paramref name="root"/> that wants a tooltip and has none,
@@ -1139,7 +1139,7 @@ public partial class MainForm : Sheet
         {
             // Containers are walked THROUGH; anything that wants a tip is never walked INTO. A
             // NumericUpDown is a ContainerControl holding its own TextBox and spin buttons, and a
-            // DataGridView holds its editing controls and scrollbars — recursing would report
+            // DataGridView holds its editing controls and scrollbars; recursing would report
             // three or four findings for one silent control, none of them nameable.
             if (!WantsTip(c)) { WalkForTips(c, where, into); continue; }
             if (string.IsNullOrEmpty(Tip.GetToolTip(c)))
@@ -1149,8 +1149,8 @@ public partial class MainForm : Sheet
     }
 
     /// Everything a person clicks, ticks, types in, or picks from. ButtonBase rather than Button
-    /// so the Map tab's overlay checkboxes count. Prose labels are exempt — they ARE the
-    /// explanation — but a caption carrying a LIVE number is not prose, so those opt in with
+    /// so the Map tab's overlay checkboxes count. Prose labels are exempt (they ARE the
+    /// explanation) but a caption carrying a LIVE number is not prose, so those opt in with
     /// <c>Tag = "readout"</c>. RichTextBox is exempt for the same reason: the Bestiary and
     /// Reference panes are the reading, not a control over it.
     static bool WantsTip(Control c) =>
@@ -1174,7 +1174,7 @@ public partial class MainForm : Sheet
     /// in the repo passed the whole time. UI Automation reads a label's full string, so a driver
     /// that asks the app what it is showing is told all of it; <c>--selftest</c> asks about
     /// tooltips; <c>audit_ui.py</c> reads source. The app held the rule, stored the rule, and could
-    /// recite the rule — and showed it to nobody.</para>
+    /// recite the rule, and showed it to nobody.</para>
     ///
     /// <para>So this asks the one question none of those do, and it is the same question
     /// <c>measure_book.py</c> has asked of the books since the beginning: does what is in it fit
@@ -1246,19 +1246,19 @@ public partial class MainForm : Sheet
         }
     }
 
-    /// <summary>Put the window on screen — far off it — for the duration of a measuring check,
+    /// <summary>Put the window on screen (far off it) for the duration of a measuring check,
     /// and put everything back afterward.
     ///
     /// <para>This is the difference between a check and a decoration, and it was learned the
     /// expensive way. On a form that has never been shown, WinForms answers <c>Visible</c> with the
     /// EFFECTIVE visibility: the form is not visible, so every control on it says no. Every TabPage
     /// still reports its design-time 200x100 as well, because nothing has laid out. A clipping walk
-    /// over that measures precisely nothing and hands back a clean sheet — which is what the first
+    /// over that measures precisely nothing and hands back a clean sheet, which is what the first
     /// version of this check did, and it went on doing it with the original bug deliberately put
     /// back in.</para>
     ///
-    /// <para><see cref="TimeTabs"/> has carried the same warning since 2026-08-28 — <em>run against
-    /// a SHOWN form; an unshown one skips layout and paint and reports a flattering nothing</em> —
+    /// <para><see cref="TimeTabs"/> has carried the same warning since 2026-08-28 (<em>run against
+    /// a SHOWN form; an unshown one skips layout and paint and reports a flattering nothing</em>)
     /// and it turns out to apply to anything that measures, not only to anything that times.</para>
     ///
     /// <para>Off-screen rather than hidden, because hidden is the failure. -32000 is past every
@@ -1323,7 +1323,7 @@ public partial class MainForm : Sheet
     /// above sees every tab EMPTY, and the bug that motivated the whole check lived in a state an
     /// empty tab never reaches: the Encounter verdict is one line with nothing on the plan, and one
     /// line fits. Put the worst thing in the book on it at 5th level and it becomes three, two of
-    /// which rendered nothing at all from v1.51.0. Sabotaged on 2026-08-31 to be sure — with the
+    /// which rendered nothing at all from v1.51.0. Sabotaged on 2026-08-31 to be sure: with the
     /// fix taken back out, the realize-only walk still reported nothing wrong.</para>
     ///
     /// <para>Every state is put back afterward. The self-test runs against a real
@@ -1335,8 +1335,8 @@ public partial class MainForm : Sheet
     /// <para>Written with the check above in mind. A column that is declared, weighted, painted and
     /// never filled passes every test in this file: it clips nothing, it hides nothing, it says
     /// what it is on hover. It is simply empty, all night, on the one tab the Keeper watches. So
-    /// this reads the cells back through <c>FormattedValue</c> — which runs the real CellFormatting
-    /// — rather than trusting that the handler was wired.</para></summary>
+    /// this reads the cells back through <c>FormattedValue</c>, which runs the real CellFormatting,
+    /// rather than trusting that the handler was wired.</para></summary>
     internal string TrackerShowsTheSoul()
     {
         var page = allTabs.FirstOrDefault(t => t.Text == "Tracker");
@@ -1449,7 +1449,7 @@ public partial class MainForm : Sheet
     {
         var sb = new System.Text.StringBuilder();
         var sw = new System.Diagnostics.Stopwatch();
-        sb.AppendLine($"GritKeeper tab timing — v{typeof(MainForm).Assembly.GetName().Version}, {Mode} mode");
+        sb.AppendLine($"GritKeeper tab timing, v{typeof(MainForm).Assembly.GetName().Version}, {Mode} mode");
         sb.AppendLine();
 
         // -- first selection: the builder runs --
@@ -1503,8 +1503,8 @@ public partial class MainForm : Sheet
     // related actions (sort orders, rest scopes, conditions) without crowding the bar.
     // A "-" label becomes a separator. The menu lives as long as the button (closure-held).
     /// One font for every drop-down in the app, instead of a fresh one per menu. The pop-ups below
-    /// are built on each click by design — the lists they carry (who's in the posse, what's under
-    /// the cursor) must never be stale — so anything allocated per menu is allocated per click.
+    /// are built on each click by design: the lists they carry (who's in the posse, what's under
+    /// the cursor) must never be stale, so anything allocated per menu is allocated per click.
     static readonly Font MenuFont = new("Segoe UI", 9.5f);
     static readonly Font MenuFontBold = new("Segoe UI", 9.5f, FontStyle.Bold);
 
@@ -1528,7 +1528,7 @@ public partial class MainForm : Sheet
         foreach (var (label, onClick) in items)
         {
             if (label == "-") { menu.Items.Add(new ToolStripSeparator()); continue; }
-            // A null handler means the line is a group heading, not a choice — grey it out so it
+            // A null handler means the line is a group heading, not a choice; grey it out so it
             // doesn't read as a button that does nothing when clicked. Amp() because a menu item
             // DOES take "&" as a mnemonic, and these labels are prose.
             var mi = new ToolStripMenuItem(Amp(label)) { Enabled = onClick != null };
@@ -1541,7 +1541,7 @@ public partial class MainForm : Sheet
 
     // ---------------------------------------------------------- right-click on a list
     // Every list in the app answers a right-click with the things that can be done to the row
-    // under the cursor — the same operations as the buttons above it, no more and no less, so
+    // under the cursor: the same operations as the buttons above it, no more and no less, so
     // the menu can never quietly become a second, divergent set of features. The row is SELECTED
     // first, before the menu is built: that way each item can call the very same handler the
     // button calls ("the selected soul…"), and what the Keeper pointed at and what the app acts
@@ -1610,7 +1610,7 @@ public partial class MainForm : Sheet
     /// control's menu for free and a <see cref="RichTextBox"/> inherits nothing, so the eight places
     /// a Keeper most wants to copy out of were the eight where a right-click did nothing at all.</para>
     ///
-    /// <para>This does not breach the rule stated above <see cref="GridMenu{T}"/> — a menu offers the
+    /// <para>This does not breach the rule stated above <see cref="GridMenu{T}"/>: a menu offers the
     /// operations the buttons above it offer, and no more, so it can never quietly become a second
     /// set of features. Copy and select are not features; they are what a text control does. Anything
     /// passed as <paramref name="extra"/> must still be something a button on the same tab does.</para>
@@ -1638,7 +1638,7 @@ public partial class MainForm : Sheet
     }
 
     /// <summary>One menu line. Kept as a helper so every list's menu is built the same way and every
-    /// label goes through <see cref="Amp"/> — a menu item reads "&amp;" as a mnemonic, and these are
+    /// label goes through <see cref="Amp"/>. A menu item reads "&amp;" as a mnemonic, and these are
     /// creature names and prose, not accelerators.</summary>
     static ToolStripItem MI(ContextMenuStrip menu, string label, Action go, bool enabled = true)
     {
@@ -1661,11 +1661,11 @@ public partial class MainForm : Sheet
 
     // UseMnemonic off on both: a Label treats "&" as a keyboard mnemonic and swallows it, so
     // "dice & books" renders as "dice  books" and "The corral & the yard" loses its ampersand.
-    // Labels here are prose, never accelerators, so the trap has no upside — closing it in the
+    // Labels here are prose, never accelerators, so the trap has no upside, and closing it in the
     // helpers means no future caller has to remember (it has bitten this app three times now).
     /// <summary>A Panel that paints without flicker. A plain Panel can't be told to double-buffer
     /// from outside (the property is protected), and anything owner-drawn on one tears as the
-    /// window resizes — which is exactly when a docked bar gets repainted most.</summary>
+    /// window resizes, which is exactly when a docked bar gets repainted most.</summary>
     sealed class BufferedPanel : Panel
     {
         public BufferedPanel() { DoubleBuffered = true; ResizeRedraw = true; }
@@ -1674,11 +1674,11 @@ public partial class MainForm : Sheet
     // ---- weight on a toolbar ----
     // Four weights, all built on Btn and differing only in ink: QuietBtn (housekeeping), Btn (the
     // ordinary work), PrimaryBtn (the one action a bar exists for), DangerBtn (throws work away).
-    // They all inherit Btn's flat paper face, so each one below overrides colour and nothing else —
+    // They all inherit Btn's flat paper face, so each one below overrides colour and nothing else:
     // the focus ring, the hairline geometry and FitLabel are set once, in Btn, and stay agreed.
     // (Until v1.33.0 Btn was FlatStyle.System, which hands painting to the theme and silently
     // ignores BackColor and FlatAppearance; these two had to switch to Flat themselves to be
-    // coloured at all. Now that Btn is already Flat, that switch is inherited — the assignments are
+    // coloured at all. Now that Btn is already Flat, that switch is inherited. The assignments are
     // kept below only because a weight should state its own face rather than assume the base's.)
 
     /// <summary>The one action a bar exists for, painted so a hand finds it without reading. Use it
@@ -1691,12 +1691,12 @@ public partial class MainForm : Sheet
     }
 
     /// <summary>The Blood face on its own, split out of <see cref="PrimaryBtn"/> so a button built
-    /// by hand can wear it. Colour only — the geometry, the focus ring and the width guard come
+    /// by hand can wear it. Colour only: the geometry, the focus ring and the width guard come
     /// from <see cref="DressBtn"/>, which every route runs first.
     ///
     /// <para>The wizard is why this exists. Its three buttons are a bare <c>new Button</c> apiece
     /// (they carry a DialogResult and drive a step machine, so they never fitted the factory's
-    /// shape), which meant the walk gave all three the ordinary weight — and <c>Next ▸</c>, the
+    /// shape), which meant the walk gave all three the ordinary weight, and <c>Next ▸</c>, the
     /// action that drives nine steps, came out looking exactly like the <c>Cancel</c> sitting
     /// against it that throws all nine away.</para></summary>
     static void PrimaryFace(Button b)
@@ -1711,7 +1711,7 @@ public partial class MainForm : Sheet
         b.FlatAppearance.MouseOverBackColor = Color.FromArgb(150, 44, 40);
     }
 
-    /// <summary>An action that throws work away. It is not hidden and it is not shouted — it simply
+    /// <summary>An action that throws work away. It is not hidden and it is not shouted. It simply
     /// stops looking like the button beside it, so it is never pressed by muscle memory.</summary>
     static Button DangerBtn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
@@ -1720,7 +1720,7 @@ public partial class MainForm : Sheet
         return b;
     }
 
-    /// <summary>The pale-red face on its own — see <see cref="PrimaryFace"/> for why the faces are
+    /// <summary>The pale-red face on its own. See <see cref="PrimaryFace"/> for why the faces are
     /// separable from the factories that usually apply them.</summary>
     static void DangerFace(Button b)
     {
@@ -1737,7 +1737,7 @@ public partial class MainForm : Sheet
     ///
     /// <para>These are what a window built outside the factories reaches for. Dressing has to happen
     /// at construction rather than being left to <see cref="DressControls"/>, because the walk skips
-    /// anything already Flat — so a button that sets only its colours would be found still on a
+    /// anything already Flat, so a button that sets only its colours would be found still on a
     /// system FlatStyle and have those colours painted back over with the ordinary face.</para></summary>
     internal static void DressPrimary(Button b) { DressBtn(b); PrimaryFace(b); }
 
@@ -1745,15 +1745,15 @@ public partial class MainForm : Sheet
     internal static void DressDanger(Button b) { DressBtn(b); DangerFace(b); }
 
     /// <summary>The ground a cell you can type into stands on: the row's own colour, lifted toward
-    /// paper. Every row in these grids already carries meaning in its background — posse green, foe
-    /// clay, acting gold, down red — so "you may edit this" cannot be another flat colour without
+    /// paper. Every row in these grids already carries meaning in its background (posse green, foe
+    /// clay, acting gold, down red) so "you may edit this" cannot be another flat colour without
     /// destroying that. Lifting whatever colour the row already has keeps both readable at once, and
     /// it composes with a row colour added later without anyone remembering this exists.
     ///
     /// <para><b>28%, not 42% (v1.38.0).</b> The lift is a marker riding on a meaning, so it must
     /// never travel far enough to change the meaning. At 42% it did: a posse row's editable cells
     /// landed nearer the foe ground than the posse ground did. The pairing that keeps this honest is
-    /// the one in the palette above — the row colours differ by CAST, so a lift can wash a row out
+    /// the one in the palette above. The row colours differ by CAST, so a lift can wash a row out
     /// but can never repaint it as another kind of row. Anything added to that palette has to obey
     /// the same rule; a new ground that is merely a different brightness will fail here silently.
     /// </para></summary>
@@ -1786,7 +1786,7 @@ public partial class MainForm : Sheet
     ///
     /// A Font holds a native GDI handle, and two places were minting one per event on the hottest
     /// paths in the app: the Dice tab's result card made a fresh headline font on EVERY roll, and
-    /// the Bestiary's creature renderer made about thirty per creature — so arrowing down the list
+    /// the Bestiary's creature renderer made about thirty per creature, so arrowing down the list
     /// of 150 spends four and a half thousand handles in a few seconds. Nothing disposed them.
     /// The finalizer does get there eventually, which is why this never showed up in an hour of
     /// testing and is exactly the shape of thing that makes an app go strange at the end of a long
@@ -1794,7 +1794,7 @@ public partial class MainForm : Sheet
     ///
     /// A cache rather than a `using`, because these are drawn with over and over: the set of
     /// (family, size, style) triples the app uses is small and fixed, so it settles at a few dozen
-    /// fonts for the life of the process. Static and never emptied on purpose — a shelf that
+    /// fonts for the life of the process. Static and never emptied on purpose: a shelf that
     /// cleared itself would just re-mint the same fonts. UI thread only, like all of WinForms.</summary>
     static readonly Dictionary<(string, float, FontStyle), Font> faces = new();
 
@@ -1809,8 +1809,8 @@ public partial class MainForm : Sheet
     /// A brush is a native handle exactly as a font is, and the argument for keeping these is the
     /// argument above: the palette is fixed at compile time, the owner-drawn tab strip paints ten
     /// tabs on every hover, selection and resize, and minting three GDI objects per tab per paint is
-    /// thirty allocations a frame for colours that never change. Never disposed, deliberately —
-    /// they live as long as the process draws.</summary>
+    /// thirty allocations a frame for colours that never change. Never disposed, deliberately.
+    /// They live as long as the process draws.</summary>
     internal static readonly SolidBrush PaperBrush   = new(Paper);
     internal static readonly SolidBrush TabRestBrush = new(TabRest);
     internal static readonly SolidBrush BloodBrush   = new(Blood);
@@ -1834,7 +1834,7 @@ public partial class MainForm : Sheet
     /// becomes margin, instead of the line growing with the window.
     ///
     /// <para>A docked read-pane takes whatever width it is given, and on a wide screen the Bestiary's
-    /// lore ran about 130 characters to the line — roughly double what an eye tracks comfortably, and
+    /// lore ran about 130 characters to the line, roughly double what an eye tracks comfortably, and
     /// the reason a long entry felt like work. Typographers have converged on 45–75 characters for a
     /// century of setting books; this leaves a little more than that, because a stat line
     /// ("ATTACKS revolver +5 (1d8+2, range 60 ft)") should not be made to wrap for the sake of the
@@ -1872,7 +1872,7 @@ public partial class MainForm : Sheet
                     if (name != null)
                     { using var s = asm.GetManifestResourceStream(name); _emblem = Image.FromStream(s); }
                 }
-                catch { /* purely cosmetic — never let branding take the app down */ }
+                catch { /* purely cosmetic. Never let branding take the app down */ }
             }
             return _emblem;
         }
@@ -1913,15 +1913,15 @@ public partial class MainForm : Sheet
     /// Paints the emblem, ghost-faint, centered in whatever background space is left
     /// once real content is accounted for. usedHeight reports how far real content
     /// reaches; the emblem centers in the full free zone below it (not just the
-    /// bottom half), and scales with the pane's own size — bigger in a roomy window,
-    /// smaller in a tight one, gone entirely below a dignified minimum — so it never
+    /// bottom half), and scales with the pane's own size (bigger in a roomy window,
+    /// smaller in a tight one, gone entirely below a dignified minimum) so it never
     /// sits behind rows, text, or controls.
     ///
     /// <para>The three numbers below are the whole of how present the mark is, and they were
     /// set too shy: capped at three fifths of the pane and refusing to draw under 150px wide,
     /// it took a nearly empty pane in a nearly full-screen window to see the thing at all. They
     /// are now three quarters and 104. <b>The faintness is a separate dial and was deliberately
-    /// left alone</b> — <c>WmAttr</c>'s 0.15 alpha is what keeps this a watermark instead of a
+    /// left alone</b>: <c>WmAttr</c>'s 0.15 alpha is what keeps this a watermark instead of a
     /// picture, and every one of these hosts paints it behind live content.</para>
     /// </summary>
     static void Watermark(Control host, Func<int> usedHeight)
@@ -1966,7 +1966,7 @@ public partial class MainForm : Sheet
     /// </summary>
     /// <summary>
     /// <c>preferred</c> is where the splitter should actually sit, in pixels, measured from what is
-    /// in the panel — or null to fall back on <c>ratio</c>. A fraction of the window is the right
+    /// in the panel, or null to fall back on <c>ratio</c>. A fraction of the window is the right
     /// answer when both sides hold content that wants the room; it is the wrong answer for a
     /// fixed-width column of buttons, which wants exactly as much as it wants and leaves the rest as
     /// a gap. Evaluated inside the deferred handler, so it runs after the panel has been filled and
@@ -1988,7 +1988,7 @@ public partial class MainForm : Sheet
         {
             if (keeperMoved) { sc.SizeChanged -= Apply; return; }
             int span = o == Orientation.Vertical ? sc.Width : sc.Height;
-            if (span < 80) return;                              // not laid out yet — wait
+            if (span < 80) return;                              // not laid out yet: wait
             int p1 = Math.Min(p1Min, span * 2 / 5);             // shrink mins on small windows
             int p2 = Math.Min(p2Min, span * 2 / 5);
             int want = 0;
@@ -2001,15 +2001,15 @@ public partial class MainForm : Sheet
                 sc.Panel2MinSize = p2;
                 sc.SplitterDistance = Math.Clamp(want, p1, Math.Max(p1, span - p2));
             }
-            catch { return; }                                   // odd intermediate size — retry on next resize
+            catch { return; }                                   // odd intermediate size: retry on next resize
             finally { applying = false; }
-            // A ratio splitter is seated once and left alone — that is the long-standing behaviour of
+            // A ratio splitter is seated once and left alone. That is the long-standing behaviour of
             // the other three, and re-seating them on every resize would undo a Keeper's drag.
             //
             // A MEASURED one keeps listening, and that is the whole fix: this handler used to
             // unsubscribe on its first success, and for a lazily-realized tab the first SizeChanged
             // arrives at whatever intermediate width the control passes through on the way to being
-            // laid out. The Generators splitter was seated at 27% of about 2,700px and left there —
+            // laid out. The Generators splitter was seated at 27% of about 2,700px and left there:
             // 729px on a 1,264px tab, which is how a 230px column of buttons came to be given more
             // than half the window with five hundred pixels of nothing beside it.
             if (preferred == null) sc.SizeChanged -= Apply;
@@ -2020,7 +2020,7 @@ public partial class MainForm : Sheet
 
     /// <summary>How wide a scrolling column of controls actually wants to be: its widest child plus
     /// that child's margins, the panel's own padding, and room for the scrollbar it will grow. Used
-    /// to seat a splitter flush against a side menu instead of at a fraction of the window — the
+    /// to seat a splitter flush against a side menu instead of at a fraction of the window: the
     /// Generators tab's column is 230px of buttons and was being given a third of a 1280px window,
     /// leaving some seventy pixels of nothing between the buttons and the splitter.
     ///
@@ -2037,12 +2037,12 @@ public partial class MainForm : Sheet
 
     // ---- a soul's gender ----
     // The box has always accepted anything typed into it; nothing ever said so, so in practice it
-    // offered two choices. "Other…" is a prompt rather than a value — picking it clears the box and
-    // hands over the caret — and CleanGender makes sure the prompt can never be stored as an answer.
+    // offered two choices. "Other…" is a prompt rather than a value: picking it clears the box and
+    // hands over the caret, and CleanGender makes sure the prompt can never be stored as an answer.
     static readonly object[] GenderChoices = { "Woman", "Man", CharGen.GenderOther };
 
-    /// <summary>The gender picker, built the same way everywhere it appears — the wizard and the
-    /// hand-tweak sheet — so the three choices and the fact that you may write your own never drift
+    /// <summary>The gender picker, built the same way everywhere it appears (the wizard and the
+    /// hand-tweak sheet), so the three choices and the fact that you may write your own never drift
     /// apart between them.</summary>
     static ComboBox GenderBox(string current, int width = 110)
     {
@@ -2052,7 +2052,7 @@ public partial class MainForm : Sheet
             Text = CharGen.CleanGender(current), Margin = new Padding(3, 5, 3, 3)
         };
         box.Items.AddRange(GenderChoices);
-        Tip.SetToolTip(box, "Woman, Man, or write your own — this box takes any text. "
+        Tip.SetToolTip(box, "Woman, Man, or write your own. This box takes any text. "
             + "Woman and Man draw given names from their own lists; anything else draws from all of them.");
         box.SelectedIndexChanged += (s, e) =>
         {
@@ -2101,22 +2101,22 @@ public partial class MainForm : Sheet
         g.ColumnHeadersDefaultCellStyle.ForeColor = Paper;
         g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
         // A header whose column holds the current cell otherwise paints in Windows' own selection
-        // blue — the one colour in the app that belongs to no palette here, and it moves around the
+        // blue: the one colour in the app that belongs to no palette here, and it moves around the
         // header row as the selection does, which reads as a fault rather than a highlight.
         g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Blood;
         g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Paper;
         g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
         g.ColumnHeadersHeight = 30;
         // Header wrapping is left ON, and that is a decision rather than an oversight. This band
-        // cannot grow — the height is pinned above and resizing is off — so a header that takes a
+        // cannot grow (the height is pinned above and resizing is off) so a header that takes a
         // second line has that line cut through the middle of its letters, which is what the three
         // "/ max" columns were doing. Turning wrapping off fixes those three and costs every other
         // header in the app: measured against the same widths, "Blood" came back as "Bl…", "Nerve"
         // as "Ne…" and "Mark" as "M…", because the non-wrapping header reserves more room around
         // its text than the wrapping one does. The fix belongs in the one string that wraps, not in
-        // the setting that governs all eighteen — see MaxHead.
+        // the setting that governs all eighteen. See MaxHead.
         g.RowTemplate.Height = 28;
-        // Grid lines and the alternating stripe were both a shade off Paper — the stripe differed by
+        // Grid lines and the alternating stripe were both a shade off Paper: the stripe differed by
         // four points of blue, which on a warm ground is no difference at all. A grid whose rows do
         // not separate is a grid a Keeper reads the wrong row off mid-fight.
         g.GridColor = Color.FromArgb(198, 184, 152);
@@ -2129,21 +2129,21 @@ public partial class MainForm : Sheet
         // eye has to cross a line to get from a name to that name's Blood, and every line is drawn
         // with the same weight whether it separates two halves of one fact or two unrelated ones.
         // Rows are what a Keeper actually reads along, so rows keep their rules and the columns give
-        // theirs up. It also lets a pair of columns be set as ONE field — see the Tracker's
+        // theirs up. It also lets a pair of columns be set as ONE field. See the Tracker's
         // "12 / 12", which is two bound columns with nothing drawn between them.
         g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
         g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
         g.DefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
         // The header takes the same left and right bearing as the cells under it. Without it the
         // header text starts hard against the column rule while every value below it stands 4px
-        // clear, so a column reads as very slightly out of true all the way down — and with the
+        // clear, so a column reads as very slightly out of true all the way down, and with the
         // columns tightened to make room for "/ max" the capitals were touching the rule outright.
         g.ColumnHeadersDefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
     }
 
     /// <summary>The far-right button column, painted so it doesn't shout. A raised system button
     /// repeated once per row is a stack of grey blocks running down the edge of a warm page, and it
-    /// takes more of the eye than the ledger it opens — while the same sheet is already one
+    /// takes more of the eye than the ledger it opens, while the same sheet is already one
     /// double-click away on the row itself. Flat, on the row's own ground, in Slate: still plainly a
     /// button when looked at, and quiet when not.</summary>
     static DataGridViewButtonColumn QuietButtonCol(string text, int weight) => new()
@@ -2157,13 +2157,13 @@ public partial class MainForm : Sheet
         }
     };
 
-    /// <summary>The header over the second half of a current/max pair — "/ max", with a NON-BREAKING
+    /// <summary>The header over the second half of a current/max pair: "/ max", with a NON-BREAKING
     /// space in it.
     ///
     /// <para>An ordinary space is a place a header may wrap, and the header band is a fixed 30px
     /// that will not grow to hold a second line: on the Posse tab all three of these were rendering
     /// a lone slash with "max" sliced through the middle underneath it. The columns are also 58 now
-    /// rather than 45–50, so at any window width the app allows there is room for the text — but the
+    /// rather than 45–50, so at any window width the app allows there is room for the text, but the
     /// width is the comfort and this character is the guarantee. Too narrow, it now clips its own
     /// tail instead of cutting a line of letters in half, and a header that reads "/ m…" says
     /// "widen me" where the old one said "something is broken".</para>
@@ -2205,7 +2205,7 @@ public partial class MainForm : Sheet
         };
         // Bounds-checked: an edit that is still open when the list underneath is rebuilt (Undo,
         // Load session, New fight) ends against a row index that no longer exists, and clearing the
-        // error text on a row that has gone throws out of an event handler — which is a crash, not
+        // error text on a row that has gone throws out of an event handler, which is a crash, not
         // a caught error.
         g.CellEndEdit += (s, e) =>
         { if (e.RowIndex >= 0 && e.RowIndex < g.Rows.Count) g.Rows[e.RowIndex].ErrorText = ""; };
@@ -2235,13 +2235,13 @@ public partial class MainForm : Sheet
         // ---- these weights are measured, and the total is fixed at 1302 ----
         // Fill mode makes a weight a SHARE of the grid, not a width, so every point handed to one
         // column comes off the other nineteen. Widening the three "/ max" columns by eye cost about
-        // 2% everywhere else — enough that "Blood", "Nerve" and "Mark" started clipping too, and
+        // 2% everywhere else, enough that "Blood", "Nerve" and "Mark" started clipping too, and
         // because those three are right-aligned they clip on the LEFT: they came back as "3lood",
         // "Verve" and "Vlark", which reads as a font fault rather than as a narrow column. Guessing
         // traded one clipped header for three, twice.
         //
-        // So each was measured instead — TextRenderer.MeasureText on the header string in Segoe UI
-        // 9.5 Bold, plus the 8px of left and right bearing StyleGrid now sets — and turned into a
+        // So each was measured instead (TextRenderer.MeasureText on the header string in Segoe UI
+        // 9.5 Bold, plus the 8px of left and right bearing StyleGrid now sets) and turned into a
         // weight against the ~1252px the grid actually gets at the default window: Gender needed 63
         // and had 59, "/ max" needed 54, Mark and Taint needed 49 and had 48. The 12 points that
         // took were taken from Notes and Scars, the two columns whose CONTENT is always longer than
@@ -2257,7 +2257,7 @@ public partial class MainForm : Sheet
         Col("NerveCur", "Nerve", 55); Col("NerveMax", MaxHead, 54); Col("Grit", "Grit", 45);
         Col("PoolCur", "Pool", 46); Col("PoolMax", MaxHead, 54);
         Col("Mark", "Mark", 49); Col("Taint", "Taint", 49);
-        // Figures right, words left — and the three current/max pairs set as pairs. With the vertical
+        // Figures right, words left, and the three current/max pairs set as pairs. With the vertical
         // rules gone (StyleGrid), a right-aligned "12" against a left-aligned "12" under a header
         // reading "/ max" is one field wearing one slash, instead of two columns that happened to be
         // adjacent. The slash lives in the HEADER rather than in the cell because every column on
@@ -2273,7 +2273,7 @@ public partial class MainForm : Sheet
         // couple of characters off a string that already ends in an ellipsis.
         Col("ScarLine", "Scars", 106, ro: true);
         Col("Notes", "Notes", 122);
-        // far-right Ledger button — one click to the soul's character sheet
+        // far-right Ledger button: one click to the soul's character sheet
         posseGrid.Columns.Add(QuietButtonCol("Ledger", 60));
         posseGrid.CellContentClick += (s, e) =>
         {
@@ -2306,12 +2306,12 @@ public partial class MainForm : Sheet
             if (prop == "Notes") ExpandNotes(p);
             else ShowSoulCard(p);
         };
-        Tip.SetToolTip(posseGrid, "Double-click a soul to open their Ledger — double-click the Notes cell to read the whole note, " +
+        Tip.SetToolTip(posseGrid, "Double-click a soul to open their Ledger, double-click the Notes cell to read the whole note, " +
             "right-click for everything that can be done to them");
 
         // Everything the bar above can do to one soul, on the soul itself. The row is selected by
         // GridMenu before this runs, so each line calls the very same handler the button does.
-        // The Scars cell is terse on purpose — a count and the names. The whole of each one, with
+        // The Scars cell is terse on purpose: a count and the names. The whole of each one, with
         // how it happened and when, hangs off the hover rather than off a wider column.
         posseGrid.CellToolTipTextNeeded += (s, e) =>
         {
@@ -2336,13 +2336,13 @@ public partial class MainForm : Sheet
             MI(menu, "Open the Ledger", () => ShowSoulCard(p));
             MI(menu, "Read and edit the note…", () => ExpandNotes(p));
             // A look belongs to the character record, so a soul typed straight into the grid has
-            // nowhere to keep one. Said plainly rather than silently missing — the same shape the
+            // nowhere to keep one. Said plainly rather than silently missing: the same shape the
             // Level up line already uses for the same reason.
-            MI(menu, p.Sheet != null ? "Draw a new look…" : "Draw a new look — needs a New Soul sheet",
+            MI(menu, p.Sheet != null ? "Draw a new look…" : "Draw a new look, needs a New Soul sheet",
                 () => DrawLookFor(p.Sheet, () => { CaptureUndo(); RefreshSoulCard(p); posseGrid?.Refresh(); }), p.Sheet != null);
             MISep(menu);
             // The two things the game says are permanent. Written here by hand for anything the
-            // engine did not produce — an old wound the character arrived with, a scar from a
+            // engine did not produce: an old wound the character arrived with, a scar from a
             // scene that was played out rather than rolled.
             MI(menu, "Write down a Lasting Injury…", () => RecordScar(p, "Injury", ""));
             MI(menu, "Write down an Affliction…", () => RecordScar(p, "Affliction", ""));
@@ -2355,26 +2355,26 @@ public partial class MainForm : Sheet
                     var item = new ToolStripMenuItem(Amp($"Healed / let go: {mark.Mark} {mark.Name}")) { ToolTipText = mark.Full };
                     item.Click += (s, e) =>
                     {
-                        // A Lasting Injury CAN be got rid of — "a Sawbones, time, and sometimes a
-                        // graveyard" — so there has to be a way to strike one off. Asked about
+                        // A Lasting Injury CAN be got rid of ("a Sawbones, time, and sometimes a
+                        // graveyard") so there has to be a way to strike one off. Asked about
                         // first, because the whole point of the ledger is that it does not slip.
                         if (!Confirm($"Strike {mark.Name} off {p.Name}'s ledger? It is meant to last.")) return;
                         p.Scars.Remove(mark); CaptureUndo(); posseGrid?.Refresh();
-                        Log($"{p.Name} is clear of it — {mark.Name}.");
+                        Log($"{p.Name} is clear of it, {mark.Name}.");
                     };
                     scars.DropDownItems.Add(item);
                 }
                 menu.Items.Add(scars);
             }
             // Putting a sheet BACK. Each of the three could be added and none could be taken away
-            // wholesale — see StartClean. Grouped rather than three top-level lines, because this is
+            // wholesale. See StartClean. Grouped rather than three top-level lines, because this is
             // the destructive corner of the menu and it should read as one.
             var trkRow = tracker.FirstOrDefault(t => t.IsSoul(p));
             int scarN = p.Scars?.Count ?? 0;
             bool hasLook = p.Sheet?.Look is { Any: true };
             bool hasCond = !string.IsNullOrWhiteSpace(trkRow?.Conditions);
             var clean = new ToolStripMenuItem("Start them clean…")
-            { Enabled = scarN > 0 || hasLook || hasCond, ToolTipText = "Put the sheet back — strike the scars, drop the look, lift the conditions" };
+            { Enabled = scarN > 0 || hasLook || hasCond, ToolTipText = "Put the sheet back: strike the scars, drop the look, lift the conditions" };
             void CleanItem(string label, bool on, bool sc, bool lk, bool cd)
             {
                 var it = new ToolStripMenuItem(Amp(label), null, (s2, e2) => StartClean(p, sc, lk, cd)) { Enabled = on };
@@ -2383,25 +2383,25 @@ public partial class MainForm : Sheet
             CleanItem(scarN > 0 ? $"Strike off what they carry  ({scarN})" : "Nothing carried", scarN > 0, true, false, false);
             CleanItem(hasLook ? "Clear their look" : "No look drawn", hasLook, false, true, false);
             CleanItem(hasCond ? $"Lift their conditions  ({trkRow.Conditions})"
-                              : trkRow == null ? "Conditions — not on the field" : "No conditions on them",
+                              : trkRow == null ? "Conditions, not on the field" : "No conditions on them",
                       hasCond, false, false, true);
             clean.DropDownItems.Add(new ToolStripSeparator());
-            CleanItem("All three — a clean sheet", clean.Enabled, true, true, true);
+            CleanItem("All three, a clean sheet", clean.Enabled, true, true, true);
             menu.Items.Add(clean);
             MISep(menu);
             MI(menu, $"Damage {adjAmount.Value}", () => AdjustPC(-1));
             MI(menu, $"Heal {adjAmount.Value}", () => AdjustPC(+1));
-            MI(menu, p.Grit > 0 ? $"Spend Grit  ({p.Grit} left)" : "Spend Grit — none left", () => SpendGrit(p), p.Grit > 0);
+            MI(menu, p.Grit > 0 ? $"Spend Grit  ({p.Grit} left)" : "Spend Grit, none left", () => SpendGrit(p), p.Grit > 0);
             MISep(menu);
-            MI(menu, $"Dread check  (DC {dreadDc.Value} — {dreadLadder.Text})", () => DreadCheckPC(p));
-            var steady = new ToolStripMenuItem("Steady — give Nerve back");
+            MI(menu, $"Dread check  (DC {dreadDc.Value}, {dreadLadder.Text})", () => DreadCheckPC(p));
+            var steady = new ToolStripMenuItem("Steady. Give Nerve back");
             steady.DropDownItems.Add("Confession, spoken plainly  (1d6)", null, (s, e) => Steady(false, "1d6", "makes confession"));
             steady.DropDownItems.Add("A night unmolested, in real safety  (1d6)", null, (s, e) => Steady(false, "1d6", "sleeps a night in real safety"));
-            steady.DropDownItems.Add("Whiskey  (1d4 — and it courts a vice)", null, (s, e) => Steady(false, "1d4", "takes to the bottle"));
+            steady.DropDownItems.Add("Whiskey  (1d4, and it courts a vice)", null, (s, e) => Steady(false, "1d4", "takes to the bottle"));
             steady.DropDownItems.Add("A week of true peace  (all of it)", null, (s, e) => Steady(false, null, "takes a week of true peace"));
             steady.DropDownItems.Add("Steady by hand…", null, (s, e) => SteadyByHand(false));
             menu.Items.Add(steady);
-            MI(menu, "Long rest — Blood and Nerve to full", () => RestSoul(p));
+            MI(menu, "Long rest, Blood and Nerve to full", () => RestSoul(p));
             MISep(menu);
             MI(menu, p.Mark < 6 ? $"Mark +1  (step {p.Mark} of 6)" : "Mark is full at 6", () => AdvanceMark(p), p.Mark < 6);
             MI(menu, p.Taint < 4 ? $"Taint +1  ({p.Taint} of 4)" : "Taint is full at 4", () => DeepenTaint(p), p.Taint < 4);
@@ -2443,7 +2443,7 @@ public partial class MainForm : Sheet
         // G7, 2026-08-28. This was one button that added a blank row, on the tab a Keeper runs the
         // table from, with no way to reach any of the three things that can actually make a soul.
         bar.Controls.Add(MenuBtn("＋ Add soul ▾", 110,
-            "Put a soul in the posse — built by hand, rolled, taken off the New Soul tab, or blank",
+            "Put a soul in the posse: built by hand, rolled, taken off the New Soul tab, or blank",
             ("Build one by hand…  (every choice yours)", (s, e) => AddSoulByHand()),
             ("Roll one…  (pick level and Calling)", (s, e) => AddSoulRolled()),
             ("-", null),
@@ -2477,7 +2477,7 @@ public partial class MainForm : Sheet
         bar.Controls.Add(Lbl("Dread DC:"));
         dreadDc = new NumericUpDown { Minimum = 1, Maximum = 40, Value = 13, Width = 55, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(dreadDc, "The number a soul's Will save must beat to hold their Nerve. Every horror "
-            + "prints its own Dread DC in the Bestiary — copy it in here. The Tier beside it decides how "
+            + "prints its own Dread DC in the Bestiary. Copy it in here. The Tier beside it decides how "
             + "much Nerve a failed save costs, not how hard the save is.");
         bar.Controls.Add(dreadDc);
         // What the DC costs, derived rather than typed beside it. This was a second spinner the
@@ -2489,7 +2489,7 @@ public partial class MainForm : Sheet
             AutoSize = true, ForeColor = GoldDeep, Padding = new Padding(4, 7, 6, 0),
             Tag = "readout"                                     // a live number: it must say what it is
         };
-        Tip.SetToolTip(dreadLadder, "What a failed save costs at this DC — Ch. XII's ladder, read off the DC "
+        Tip.SetToolTip(dreadLadder, "What a failed save costs at this DC: Ch. XII's ladder, read off the DC "
             + "itself: 10 → 1 · 13 → 1d4 · 16 → 1d6 · 20 → 1d10 · 25 → 1d10 and a lasting Affliction. "
             + "A critical failure loses the same Nerve and adds Frightened 1.");
         void ShowLadder()
@@ -2500,30 +2500,30 @@ public partial class MainForm : Sheet
         dreadDc.ValueChanged += (s, e) => ShowLadder();
         ShowLadder();
         bar.Controls.Add(dreadLadder);
-        bar.Controls.Add(Btn("Dread check — selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
-        bar.Controls.Add(Btn("Dread check — whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
+        bar.Controls.Add(Btn("Dread check, selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
+        bar.Controls.Add(Btn("Dread check, whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
 
         // Dread takes Nerve; something has to give it back. Until now the only ways were a long
-        // rest or a new session — both of which do more than steady a soul, and neither of which
+        // rest or a new session: both of which do more than steady a soul, and neither of which
         // is named for Nerve, so a Keeper who had just spent it had nowhere obvious to go. These
         // are the Player's Book remedies (Ch. XII, "Recovering Nerve") in the order it prints them.
-        bar.Controls.Add(MenuBtn("Steady ▾", 92, "Give Nerve back — the book's remedies, or straight to full",
-            ("— The selected soul —", null),
+        bar.Controls.Add(MenuBtn("Steady ▾", 92, "Give Nerve back, the book's remedies, or straight to full",
+            ("The selected soul:", null),
             ("Confession, spoken plainly  (1d6)", (s, e) => Steady(false, "1d6", "makes confession")),
             ("A night unmolested, in real safety  (1d6)", (s, e) => Steady(false, "1d6", "sleeps a night in real safety")),
-            ("Whiskey  (1d4 — and it courts a vice)", (s, e) => Steady(false, "1d4", "takes to the bottle")),
+            ("Whiskey  (1d4, and it courts a vice)", (s, e) => Steady(false, "1d4", "takes to the bottle")),
             ("A week of true peace  (all of it)", (s, e) => Steady(false, null, "takes a week of true peace")),
             ("Steady by hand…", (s, e) => SteadyByHand(false)),
             ("-", null),
-            ("— The whole posse —", null),
+            ("The whole posse:", null),
             ("Confession, spoken plainly  (1d6 each)", (s, e) => Steady(true, "1d6", "makes confession")),
             ("A night unmolested, in real safety  (1d6 each)", (s, e) => Steady(true, "1d6", "sleeps a night in real safety")),
-            ("Whiskey  (1d4 each — and it courts a vice)", (s, e) => Steady(true, "1d4", "takes to the bottle")),
+            ("Whiskey  (1d4 each, and it courts a vice)", (s, e) => Steady(true, "1d4", "takes to the bottle")),
             ("A week of true peace  (all of it)", (s, e) => Steady(true, null, "takes a week of true peace")),
             ("Steady by hand…", (s, e) => SteadyByHand(true))));
 
-        // A new session is the boundary the book rations fourteen features by — Last Stand,
-        // Miracle Worker, Hands of Life, the one great thing a Calling may do in a night — and
+        // A new session is the boundary the book rations fourteen features by (Last Stand,
+        // Miracle Worker, Hands of Life, the one great thing a Calling may do in a night) and
         // until v1.42.0 nothing in the app handed any of them back, because nothing counted them
         // in the first place. This button already meant "the last night is over"; now it says so
         // to the feature ledger too.
@@ -2535,24 +2535,24 @@ public partial class MainForm : Sheet
         bar.Controls.Add(Btn("New session", (s, e) =>
         {
             if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, refreshes the faith "
-                       + "pool, and hands back every once-a-session feature. Blood is not healed — "
+                       + "pool, and hands back every once-a-session feature. Blood is not healed: "
                        + "that is what Rest is for.")) return;
             // Grit is "three per soul, refreshed each session" (Ch. XIII) and Nerve comes back with
             // safety. The faith pool "refreshes with the dawn" (Ch. VI), and a new session opens on
-            // a new day — leaving it out meant a Padre sat down to every session with an empty pool
+            // a new day, leaving it out meant a Padre sat down to every session with an empty pool
             // while the Gunhand beside them got full Nerve, and the only way to fix it was a long
             // rest they had not earned. Blood is deliberately untouched: wounds carry.
             foreach (var p in party) { p.NerveCur = p.NerveMax; p.Grit = 3; p.PoolCur = p.PoolMax; }
             int faithful = party.Count(p => p.PoolMax > 0);
             int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
             RefreshCalling();
-            Log("New session — Nerve refilled and Grit reset to 3 for the whole posse"
+            Log("New session, Nerve refilled and Grit reset to 3 for the whole posse"
                 + (faithful > 0 ? $", and the faith pool refreshed for {faithful} of them." : ".")
                 + (given > 0 ? " " + given + (given == 1 ? " rationed feature comes" : " rationed features come") + " back with it." : ""));
         }, 100, "Refill Nerve, reset Grit, refresh the faith pool, and hand back every once-a-session feature"));
-        bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest — restore Blood and Nerve to full",
-            ("Whole posse — heal to full", (s, e) => RestPosse()),
-            ("Selected soul — heal to full", (s, e) => RestSoul(SelectedPC()))));
+        bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest, restore Blood and Nerve to full",
+            ("Whole posse, heal to full", (s, e) => RestPosse()),
+            ("Selected soul, heal to full", (s, e) => RestSoul(SelectedPC()))));
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("Send posse → Tracker", (s, e) => PartyToTracker(), 155, "Put the whole posse onto the combat tracker"));
         bar.Controls.Add(DangerBtn("Clear posse", (s, e) =>
@@ -2560,10 +2560,10 @@ public partial class MainForm : Sheet
             if (party.Count == 0) { Log("The posse is already empty."); return; }
             if (!Confirm($"Clear the whole posse? Removes all {party.Count} soul(s) for a fresh start.")) return;
             party.Clear();
-            Log("The posse is cleared — a fresh start.");
+            Log("The posse is cleared, a fresh start.");
         }, 100, "Remove every soul and start fresh"));
 
-        // The posse above, what they ride below — one deferred split, never geometry at
+        // The posse above, what they ride below. One deferred split, never geometry at
         // construction time (the SplitContainer landmine).
         var split = Split(Orientation.Horizontal, 180, 150, 0.62);
         split.Panel1.Controls.Add(posseGrid);
@@ -2597,7 +2597,7 @@ public partial class MainForm : Sheet
     {
         using var f = new Sheet
         {
-            Width = 520, Height = 380, Text = $"Notes — {p.Name}",
+            Width = 520, Height = 380, Text = $"Notes, {p.Name}",
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false,
             ShowIcon = false, BackColor = Paper, MinimumSize = new Size(340, 240)
         };
@@ -2634,11 +2634,11 @@ public partial class MainForm : Sheet
         if (p == null) { Nope(NoSoulPicked); return; }
         int v = (int)adjAmount.Value;
         p.BloodCur = Math.Clamp(p.BloodCur + sign * v, 0, p.BloodMax);
-        Log($"{p.Name} {(sign < 0 ? "takes" : "recovers")} {v} Blood → {p.BloodCur}/{p.BloodMax}" + (p.BloodCur == 0 ? "  — DOWN." : ""));
+        Log($"{p.Name} {(sign < 0 ? "takes" : "recovers")} {v} Blood → {p.BloodCur}/{p.BloodMax}" + (p.BloodCur == 0 ? ", DOWN." : ""));
         MirrorToTracker(p);
     }
 
-    // The same rule, resolved the same way, whichever tab you are standing on — see ResolveDread
+    // The same rule, resolved the same way, whichever tab you are standing on. See ResolveDread
     // in Tabs.cs for what this used to do differently and why that was wrong. The Tracker's Dread
     // dialog has always asked a dice-and-books table for the die it rolled; this one rolled its own
     // regardless, so a Keeper running from the physical books got the engine's d20 here and their
@@ -2651,7 +2651,7 @@ public partial class MainForm : Sheet
     {
         if (p == null) { Nope(NoSoulPicked); return; }
         int dc = (int)dreadDc.Value;
-        ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc} — what did the d20 come up?"));
+        ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc}, what did the d20 come up?"));
     }
 
     // A long rest heals the body and steadies the mind: Blood and Nerve back to full.
@@ -2664,7 +2664,7 @@ public partial class MainForm : Sheet
         posseGrid?.Refresh();
         int gave = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Dawn));
         RefreshCalling();
-        Log("The posse takes a long rest — Blood, Nerve, and the day's pool restored to full."
+        Log("The posse takes a long rest: Blood, Nerve, and the day's pool restored to full."
             + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
     }
 
@@ -2675,20 +2675,20 @@ public partial class MainForm : Sheet
         MirrorToTracker(p); posseGrid?.Refresh();
         int gave = CharGen.RefreshFeatures(p, FeatureCadence.Dawn);
         RefreshCalling();
-        Log($"{p.Name} rests — Blood, Nerve, and pool restored to full."
+        Log($"{p.Name} rests: Blood, Nerve, and pool restored to full."
             + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
     }
 
     // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
-    // on the bar and the lines in the row's right-click menu are literally the same code — a menu
+    // on the bar and the lines in the row's right-click menu are literally the same code. A menu
     // that reimplements what a button does is a menu that will one day disagree with it.
     /// <summary>What anything acting on a picked soul says when nobody is picked. The three Posse
-    /// buttons below act on <see cref="SelectedPC"/>, and an empty table — or a click that landed
-    /// between rows — hands them null; each returned in silence, which from the far side of the
+    /// buttons below act on <see cref="SelectedPC"/>, and an empty table, or a click that landed
+    /// between rows, hands them null; each returned in silence, which from the far side of the
     /// table is the same thing as a dead button, and all three were caught by the same sweep as the
     /// Tracker's New fight. The sentence was already the app's, written out longhand at eight other
     /// guards, so the fix was to say what they say rather than invent a ninth wording for one
-    /// refusal — a Keeper who learns a message should not have to learn it twice.</summary>
+    /// refusal. A Keeper who learns a message should not have to learn it twice.</summary>
     const string NoSoulPicked = "Select a soul first.";
 
     void SpendGrit(PartyMember p)
@@ -2702,7 +2702,7 @@ public partial class MainForm : Sheet
     {
         if (p == null) { Nope(NoSoulPicked); return; }
         p.Mark = Math.Min(6, p.Mark + 1);
-        Log($"{p.Name}'s Mark advances to step {p.Mark} of 6." + (p.Mark >= 6 ? "  THE MARK IS FULL — the country collects." : ""));
+        Log($"{p.Name}'s Mark advances to step {p.Mark} of 6." + (p.Mark >= 6 ? "  THE MARK IS FULL: the country collects." : ""));
     }
 
     void DeepenTaint(PartyMember p)
@@ -2714,7 +2714,7 @@ public partial class MainForm : Sheet
 
     /// <summary>Give Nerve back. <paramref name="expr"/> is the remedy's die (rolled fresh per soul,
     /// the way the table reads) or null for "all of it". Nothing here touches Blood, the Mark, or
-    /// the Taint — steadying a soul is not healing one, and the book is careful about the difference.</summary>
+    /// the Taint, steadying a soul is not healing one, and the book is careful about the difference.</summary>
     void Steady(bool wholePosse, string expr, string doing)
     {
         var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
@@ -2725,7 +2725,7 @@ public partial class MainForm : Sheet
         // than once a soul: "a week of true peace" is one remedy applied to everybody, and six
         // dialogs in a row for one line of the book is how a Keeper learns to use the other mode.
         int? forced = expr == null ? null
-            : AskDie($"The {expr} for {(wholePosse ? "the posse" : who[0].Name)} {doing} — what did it come up?");
+            : AskDie($"The {expr} for {(wholePosse ? "the posse" : who[0].Name)} {doing}, what did it come up?");
 
         foreach (var p in who)
         {
@@ -2734,8 +2734,8 @@ public partial class MainForm : Sheet
             else p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (forced ?? Rules.RollExpr(expr).total));
             int back = p.NerveCur - before;
             Log(back == 0
-                ? $"{p.Name} {doing} — Nerve already steady at {p.NerveCur}/{p.NerveMax}."
-                : $"{p.Name} {doing} — +{back} Nerve → {p.NerveCur}/{p.NerveMax}.");
+                ? $"{p.Name} {doing}, Nerve already steady at {p.NerveCur}/{p.NerveMax}."
+                : $"{p.Name} {doing}, +{back} Nerve → {p.NerveCur}/{p.NerveMax}.");
         }
         posseGrid?.Refresh();
         // No CaptureUndo here: party is a BindingList of INotifyPropertyChanged souls, so setting
@@ -2743,7 +2743,7 @@ public partial class MainForm : Sheet
         // into one step. Same reason RestPosse/RestSoul don't call it either.
     }
 
-    /// <summary>The escape hatch for a remedy the book doesn't print — a Sawbones' reason, a sermon,
+    /// <summary>The escape hatch for a remedy the book doesn't print: a Sawbones' reason, a sermon,
     /// a grim joke. The Keeper says how much steadiness it was worth.</summary>
     void SteadyByHand(bool wholePosse)
     {
@@ -2758,7 +2758,7 @@ public partial class MainForm : Sheet
         {
             int before = p.NerveCur;
             p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + amt);
-            Log($"{p.Name} steadies — +{p.NerveCur - before} Nerve → {p.NerveCur}/{p.NerveMax}.");
+            Log($"{p.Name} steadies, +{p.NerveCur - before} Nerve → {p.NerveCur}/{p.NerveMax}.");
         }
         posseGrid?.Refresh();
     }
@@ -2766,12 +2766,12 @@ public partial class MainForm : Sheet
     void PartyToTracker()
     {
         int added = party.Count(p => AddSoulToTracker(p, quiet: true));
-        // "Sent 0 soul(s) to the tracker" is what this said when the posse was ALREADY on the field —
-        // the commonest case of all, since the button is pressed twice as often as a fight starts.
+        // "Sent 0 soul(s) to the tracker" is what this said when the posse was ALREADY on the field.
+        // The commonest case of all, since the button is pressed twice as often as a fight starts.
         // A zero beside the word "Sent" reads as a failure. Say which of the three things happened.
         Log(added > 0 ? $"Sent {added} soul{(added == 1 ? "" : "s")} to the tracker."
-            : party.Count == 0 ? "No posse to send — add souls on this tab first."
-            : $"Every soul is already on the field — all {party.Count} of them.");
+            : party.Count == 0 ? "No posse to send. Add souls on this tab first."
+            : $"Every soul is already on the field, all {party.Count} of them.");
     }
 
     /// <summary>Put one soul on the field, unless they're already standing on it. Answers whether a
@@ -2799,8 +2799,8 @@ public partial class MainForm : Sheet
     /// <summary>Put a Witch's bound beast on the field as a row of its own.
     ///
     /// <para>Until v1.48.0 the familiar was three fields on a character sheet and nothing else,
-    /// which meant the one moment Ch. VII actually legislates — "should it die, you are Sickened
-    /// until you can bind another" — could not happen in the app at all. A thing that cannot be
+    /// which meant the one moment Ch. VII actually legislates ("should it die, you are Sickened
+    /// until you can bind another") could not happen in the app at all. A thing that cannot be
     /// hurt cannot die, and a thing that cannot die cannot be the reason for anything. It takes
     /// initiative like everything else on the field, because it scouts and spies and delivers a
     /// touch-range Sign, and all three of those happen on somebody's turn.</para></summary>
@@ -2819,13 +2819,13 @@ public partial class MainForm : Sheet
         {
             Name = CharGen.FamiliarFieldName(p.Name, sheet.FamiliarKind), FamiliarOf = p.Id,
             BloodCur = blood, BloodMax = blood, Defense = Rules.FamiliarDefenseFor(sheet),
-            // It rolls the Witch's own Notice — it is her eyes, and the boon it grants her is
+            // It rolls the Witch's own Notice. It is her eyes, and the boon it grants her is
             // already inside that number when the beast is a crow.
             Init = ArrivalInit(sheet),
             // DeathAt stays 0, as it does for every creature: the dying rule is the posse's, and a
             // small beast at 0 Blood is not a patient with a count running. See FamiliarFell.
         });
-        if (!quiet) Log($"{p.Name}'s {sheet.FamiliarKind} takes the field — {blood} Blood, Defense "
+        if (!quiet) Log($"{p.Name}'s {sheet.FamiliarKind} takes the field, {blood} Blood, Defense "
                       + $"{Rules.FamiliarDefenseFor(sheet)}"
                       + (CharGen.FamiliarBound(sheet) ? ", clever and hardy with the Familiar-Bound." : "."));
         return true;
@@ -2850,15 +2850,15 @@ public partial class MainForm : Sheet
             int wasBlood = c.BloodCur;
             c.BloodCur = p.BloodCur; c.BloodMax = p.BloodMax;
             // Damage typed on the POSSE tab reaches the field through here and nowhere else, so the
-            // fall has to be noticed here too — otherwise a soul knocked to 0 with the Posse tab's
+            // fall has to be noticed here too, otherwise a soul knocked to 0 with the Posse tab's
             // spinner would be dying with nobody told and no Grit offered, while the identical
             // number typed on the Tracker asked. One rule, both doors.
             //
             // The mirror sets BloodCur straight rather than through Wound, which is right: this is
             // a restatement of a number the Posse tab already clamped, not a fresh wound. It means
-            // Bleed does not move here, which is also right — a soul knocked to zero starts at −0.
+            // Bleed does not move here, which is also right. A soul knocked to zero starts at −0.
             // Only FRESH harm reopens a wound that was staunched. The mirror runs on every posse
-            // edit — a rename, a note, a point of Grit — and a version of this that cleared Stable
+            // edit (a rename, a note, a point of Grit) and a version of this that cleared Stable
             // whenever the row was down would quietly un-stabilise a soul because somebody typed in
             // their Notes field.
             if (c.BloodCur < wasBlood && c.Down) c.Stable = false;
@@ -2872,7 +2872,7 @@ public partial class MainForm : Sheet
     TextBox exprBox;
     NumericUpDown exprQty;
 
-    // Every die wears its own color — buttons and the tumbling tray alike — so the
+    // Every die wears its own color, buttons and the tumbling tray alike, so the
     // Keeper can tell a d8 from a d12 across the table without reading the tag.
     static (Color face, Color text) DieCol(int sides) => sides switch
     {
@@ -2889,7 +2889,7 @@ public partial class MainForm : Sheet
     static Color Darken(Color c, double f = 0.72)
         => Color.FromArgb((int)(c.R * f), (int)(c.G * f), (int)(c.B * f));
 
-    // a die button in its die's color (FlatStyle.Flat — the System style ignores BackColor)
+    // a die button in its die's color (FlatStyle.Flat, the System style ignores BackColor)
     static Button DieBtn(string text, int sides, EventHandler onClick, int w, string tip = null)
     {
         var (face, fore) = DieCol(sides);
@@ -2919,7 +2919,7 @@ public partial class MainForm : Sheet
     const int DiceTicks = 14;                 // ~half a second of tumble at 40 ms
     const int DiceShownMax = 8;               // a 100-die roll shows 8 and says so
 
-    // paint runs ~25×/second during a tumble — keep the fonts, don't mint GDI handles per frame
+    // paint runs ~25×/second during a tumble. Keep the fonts, don't mint GDI handles per frame
     static readonly Font DieNumFont  = new("Consolas", 15f, FontStyle.Bold);
     static readonly Font DieTagFont  = new("Segoe UI", 7.5f);
     static readonly Font DieHintFont = new("Segoe UI", 9.5f, FontStyle.Italic);
@@ -2965,7 +2965,7 @@ public partial class MainForm : Sheet
             using var face = new SolidBrush(faceCol);
             g.FillPath(face, path);
             // the faces carry the die colors now, so the verdicts ring in metal instead:
-            // best face a bright gold, a 1 near-black — both read on every face color
+            // best face a bright gold, a 1 near-black, both read on every face color
             Color edge = !diceTray.Settled ? Gold
                        : show == sides ? Color.FromArgb(255, 208, 74)     // best face
                        : show == 1 && sides >= 6 ? Color.FromArgb(28, 20, 14)   // worst face
@@ -2973,7 +2973,7 @@ public partial class MainForm : Sheet
             bool loud = diceTray.Settled && (show == sides || (show == 1 && sides >= 6));
             using var pen = new Pen(edge, loud ? 3f : 1.6f);
             g.DrawPath(pen, path);
-            // The face the solid is built out of, scored inside the outline — it is what tells a
+            // The face the solid is built out of, scored inside the outline. It is what tells a
             // d12 from a d100, which share a ten-sided edge.
             if (DieFace(sides, rect) is PointF[] inner)
             {
@@ -2982,7 +2982,7 @@ public partial class MainForm : Sheet
             }
             TextRenderer.DrawText(g, show.ToString(), DieNumFont, DieTextRect(sides, rect), textCol,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
-            // Under the die, in the die's own ink darkened to carry on paper — the white text colour
+            // Under the die, in the die's own ink darkened to carry on paper: the white text colour
             // that reads on a red d20 is invisible out here. A pale face has to be taken down
             // further than a dark one or the d10's name washes out against the tray: one fixed
             // factor is a contrast ratio that changes with the hue, which is not a standard.
@@ -2998,7 +2998,7 @@ public partial class MainForm : Sheet
 
     // ---- the shape a die actually is (v1.39.0) ----
     // Every die in the tray used to be the same rounded square, so the tray told a Keeper the colour
-    // of the die and nothing else — and colour alone is the one channel that fails for the ~8% of
+    // of the die and nothing else, and colour alone is the one channel that fails for the ~8% of
     // men who cannot separate the d4's green from the d20's red. A d4 that is a triangle and a d20
     // that is a hexagon are legible before they are read, and they are legible to everybody.
     //
@@ -3020,14 +3020,14 @@ public partial class MainForm : Sheet
         return pts;
     }
 
-    /// <summary>The outline of a die of this many sides, or null for one the tray has no solid for —
+    /// <summary>The outline of a die of this many sides, or null for one the tray has no solid for:
     /// <see cref="Rules.RollExprFull"/> admits any dN up to d1000, so the rounded square stays as the
     /// answer for a d7 or a d30 rather than the paint throwing at the table.</summary>
     static PointF[] DieOutline(int sides, RectangleF r) => sides switch
     {
         4   => Regular(3, r, -90),           // the pyramid, point up
         8   => Regular(4, r, -90),           // two pyramids base to base: a rhombus, edge-on
-        10  => Kite(r),                      // the trapezohedron's kite — widest above the middle
+        10  => Kite(r),                      // the trapezohedron's kite, widest above the middle
         12  => Regular(10, r, -90),          // a dodecahedron face-on reads as a ten-sided outline
         20  => Regular(6, r, -90),           // an icosahedron face-on reads as a hexagon
         100 => Regular(10, r, -90 + 18),     // the same ten sides, turned, so it is not a d12's twin
@@ -3058,7 +3058,7 @@ public partial class MainForm : Sheet
     }
 
     /// <summary>Where the number can be set without falling off the shape. A triangle has no room at
-    /// its apex and a kite none at either point, so the figure sits where the ink actually is —
+    /// its apex and a kite none at either point, so the figure sits where the ink actually is,
     /// centring in the bounding box would hang a "4" over the empty corner of a d4.</summary>
     static Rectangle DieTextRect(int sides, Rectangle r) => sides switch
     {
@@ -3101,7 +3101,7 @@ public partial class MainForm : Sheet
         left.Controls.Add(Lbl("e.g.  2d6+3   ·   d20   ·   1d8+1d6+2"));
         var exprRow = new FlowLayoutPanel { AutoSize = true };
         exprBox = new TextBox { Width = 250, Text = "1d20", Font = new Font("Consolas", 11f) };
-        Tip.SetToolTip(exprBox, "What to roll, written out — NdS for N dice of S sides, plus or minus a "
+        Tip.SetToolTip(exprBox, "What to roll, written out: NdS for N dice of S sides, plus or minus a "
             + "modifier. 2d6+3 · d20 · 1d8+1d6+2. Several kinds of die in one expression are fine; each "
             + "one is rolled and shown separately in the tray.\nType it, or build it on the keypad below "
             + "without touching the keyboard. Enter rolls it.");
@@ -3112,17 +3112,17 @@ public partial class MainForm : Sheet
 
         // build the expression by button: dice stack (d6 → 2d6 → 3d6), the × spinner
         // adds several at once (× 4 then +d6 → 4d6), digits and ＋/− make the
-        // modifier — no typing needed at the table
+        // modifier, no typing needed at the table
         var dicePad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(470, 0) };
         dicePad.Controls.Add(Lbl("×"));
         exprQty = new NumericUpDown { Minimum = 1, Maximum = 99, Value = 1, Width = 46, Margin = new Padding(0, 6, 4, 3) };
-        Tip.SetToolTip(exprQty, "How many dice each +d button adds — set 4 and click +d6 for 4d6");
+        Tip.SetToolTip(exprQty, "How many dice each +d button adds. Set 4 and click +d6 for 4d6");
         dicePad.Controls.Add(exprQty);
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
         {
             int sides = d;
             dicePad.Controls.Add(DieBtn("+d" + sides, sides, (s, e) => ExprAddDie(sides), sides == 100 ? 64 : 54,
-                $"Add ×-many d{sides} to the expression — click again for more"));
+                $"Add ×-many d{sides} to the expression. Click again for more"));
         }
         left.Controls.Add(dicePad);
         var opsPad = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
@@ -3139,7 +3139,7 @@ public partial class MainForm : Sheet
         opsPad.Controls.Add(Btn("C", (s, e) => { exprBox.Clear(); ExprFocusEnd(); }, 40, "Clear the expression"));
         left.Controls.Add(opsPad);
 
-        left.Controls.Add(Heading("Quick dice — roll one now"));
+        left.Controls.Add(Heading("Quick dice. Roll one now"));
         var quick = new FlowLayoutPanel { AutoSize = true, MaximumSize = new Size(430, 0) };
         foreach (int d in new[] { 4, 6, 8, 10, 12, 20, 100 })
             quick.Controls.Add(DieBtn("d" + d, d, (s, e) =>
@@ -3147,14 +3147,14 @@ public partial class MainForm : Sheet
                 int r = Rules.Rng.Next(1, d + 1);
                 AnimateDice(new() { (d, r, 1) });
                 Log($"d{d} → {r}");
-                ShowResult(r.ToString(), $"one d{d}" + (r == d ? " — the best face" : r == 1 ? " — a one" : ""),
+                ShowResult(r.ToString(), $"one d{d}" + (r == d ? ", the best face" : r == 1 ? ", a one" : ""),
                     r == d ? RollCritGood : r == 1 ? RollCritBad : RollNeutral);
             }, 54, $"Roll one d{d} now"));
         left.Controls.Add(quick);
 
-        left.Controls.Add(Heading("The d20 check — four degrees"));
+        left.Controls.Add(Heading("The d20 check, four degrees"));
         var modBox = new NumericUpDown { Minimum = -20, Maximum = 40, Value = 4, Width = 60 };
-        Tip.SetToolTip(modBox, "What the roller adds to the d20 — their ability modifier, plus their whole "
+        Tip.SetToolTip(modBox, "What the roller adds to the d20, their ability modifier, plus their whole "
             + "level if they are trained in the skill. Set it negative for a penalty.");
         var dcBox = new NumericUpDown { Minimum = 1, Maximum = 50, Value = 13, Width = 60 };
         Tip.SetToolTip(dcBox, "The number to beat. The Keeper sets it: 10 easy · 13 ordinary · 16 hard · "
@@ -3167,7 +3167,7 @@ public partial class MainForm : Sheet
             int die = Rules.Rng.Next(1, 21);
             var (_, deg, det) = Rules.FourDegrees(die, (int)modBox.Value, (int)dcBox.Value);
             AnimateDice(new() { (20, die, 1) });
-            Log($"CHECK — {det} → {deg}");
+            Log($"CHECK: {det} → {deg}");
             ShowResult(deg, det, DegreeColor(deg));
         }, 84, "Roll a d20 against the DC and read the four degrees"));
         left.Controls.Add(checkRow);
@@ -3189,7 +3189,7 @@ public partial class MainForm : Sheet
         var logHead = new Label { Text = "  Roll & event log", UseMnemonic = false, Dock = DockStyle.Top, Height = 26, Font = new Font("Segoe UI", 10f, FontStyle.Bold), ForeColor = Blood, TextAlign = ContentAlignment.MiddleLeft };
 
         // The last roll, said loud. The log is the record and the tray shows the dice, but the
-        // one thing a Keeper actually wants — what did it come to, and did it beat the DC — was
+        // one thing a Keeper actually wants (what did it come to, and did it beat the DC) was
         // a line of 9pt monospace among four hundred others (user-reported). It now gets its own
         // card at the top of the pane, in the same colors the log grades by.
         resultCard = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Color.FromArgb(252, 249, 240), Padding = new Padding(12, 6, 12, 6) };
@@ -3202,7 +3202,7 @@ public partial class MainForm : Sheet
             using var p = new Pen(Color.FromArgb(196, 181, 148), 1f);
             e.Graphics.DrawLine(p, 0, resultCard.Height - 1, resultCard.Width, resultCard.Height - 1);
         };
-        ShowResult("—", "Roll something and the result lands here.", Ink);
+        ShowResult("·", "Roll something and the result lands here.", Ink);
 
         diceTray = new DiceTray { Dock = DockStyle.Top, Height = 84, BackColor = Color.FromArgb(243, 237, 221) };
         diceTray.Paint += PaintDiceTray;
@@ -3223,7 +3223,7 @@ public partial class MainForm : Sheet
         // this very press adds would be missing from what went to the clipboard.
         logBar.Controls.Add(Btn("Copy log", (s, e) =>
         {
-            if (rollLog.Items.Count == 0) { Nope("The log is empty — nothing to copy."); return; }
+            if (rollLog.Items.Count == 0) { Nope("The log is empty, nothing to copy."); return; }
             int n = rollLog.Items.Count;
             Clipboard.SetText(string.Join(Environment.NewLine, rollLog.Items.Cast<object>()));
             Log($"{n} log line(s) copied to the clipboard.");
@@ -3233,10 +3233,10 @@ public partial class MainForm : Sheet
             if (rollLog.Items.Count == 0) { Nope("The log is already empty."); return; }
             if (Confirm($"Clear all {rollLog.Items.Count} log line(s)? This can't be undone."))
             { rollLog.Items.Clear(); logLines.Clear(); }
-        }, 90, "Wipe the log — the rolls themselves are already spent"));
+        }, 90, "Wipe the log. The rolls themselves are already spent"));
         Tip.SetToolTip(rollLog, "Right-click a line to copy it, or the whole log");
 
-        // A log line isn't a thing that can be acted on so much as one the Keeper wants OUT — into
+        // A log line isn't a thing that can be acted on so much as one the Keeper wants OUT, into
         // a chat window, into notes. The menu is exactly the two Copy paths plus the Clear the bar
         // below already offers, so no reader has to hunt for the button.
         ListMenu<string>(rollLog, (menu, line) =>
@@ -3290,8 +3290,8 @@ public partial class MainForm : Sheet
         var (t, br, dice) = Rules.RollExprFull(exprBox.Text);
         if (br == "could not parse" || br == "empty")
         {
-            Nope($"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3.");
-            ShowResult("?", $"Couldn't read \"{exprBox.Text}\" — try something like 2d6+3.", Blood);
+            Nope($"Couldn't read \"{exprBox.Text}\", try something like 2d6+3.");
+            ShowResult("?", $"Couldn't read \"{exprBox.Text}\", try something like 2d6+3.", Blood);
             return;
         }
         AnimateDice(dice);
@@ -3319,17 +3319,17 @@ public partial class MainForm : Sheet
     };
 
     // Write the session WHOLE or not at all. WriteAllText truncates the file and then fills
-    // it, so anything that interrupts the write — the five-minute timer firing as the machine
+    // it, so anything that interrupts the write, the five-minute timer firing as the machine
     // sleeps, a kill, a power cut, and above all Crash(), which calls this while the process
-    // is already coming apart — leaves a half-written session.json on disk. TryAutoLoad can't
+    // is already coming apart, leaves a half-written session.json on disk. TryAutoLoad can't
     // parse that, and its fallback is SeedDemo(), so a torn write doesn't merely lose the last
     // few minutes: it silently replaces the Keeper's whole table with the demo posse. Staging
     // to a sibling file and moving it over is a single filesystem operation on NTFS, so the
     // old session survives intact until the new one is complete on disk.
     ///
     /// <para>Swallowing the failure was right and being SILENT about it was not. A session.json
-    /// that has been unwritable since March — a sync client holding the file, a folder gone
-    /// read-only, a disk that filled — looks from the table exactly like one saving perfectly
+    /// that has been unwritable since March (a sync client holding the file, a folder gone
+    /// read-only, a disk that filled) looks from the table exactly like one saving perfectly
     /// every five minutes, and File ▸ Save session said "Session saved." on top of it. The write
     /// still never blocks anything; it just says so, once per new reason, and says so again when
     /// it comes back.</para>
@@ -3345,7 +3345,7 @@ public partial class MainForm : Sheet
             if (saveFailure != null)
             {
                 saveFailure = null;
-                Announce("The session is saving again — the last write reached the disk.", Verdigris);
+                Announce("The session is saving again, the last write reached the disk.", Verdigris);
             }
             Daybook.Note("session", $"saved {party.Count} souls, {tracker.Count} on the field, "
                                     + $"{signs.Count} on the trail → {Path.GetFileName(SavePath)}");
@@ -3353,13 +3353,13 @@ public partial class MainForm : Sheet
         }
         catch (Exception ex)
         {
-            Daybook.Note("session", "SAVE FAILED — " + ex.Message);
+            Daybook.Note("session", "SAVE FAILED: " + ex.Message);
             // Once per distinct reason: the five-minute timer must not turn one stuck file into a
             // log full of the same line.
             if (saveFailure != ex.Message)
             {
                 saveFailure = ex.Message;
-                Announce($"THE SESSION IS NOT SAVING — {SavePath}: {ex.Message}. "
+                Announce($"THE SESSION IS NOT SAVING. {SavePath}: {ex.Message}. "
                        + "Use File ▸ Save session as… to put it somewhere that will take it.", Blood);
             }
             return false;
@@ -3370,7 +3370,7 @@ public partial class MainForm : Sheet
     /// changed reason is announced afresh and a stuck one is announced once.
     string saveFailure;
 
-    /// <summary>Say something from a path that may be running while the window is closing — the
+    /// <summary>Say something from a path that may be running while the window is closing: the
     /// autosave on exit, and Crash()'s emergency save, both call in here. Logging into a form that
     /// is being torn down is how a report about one failure becomes a second one.</summary>
     void Announce(string line, Color c)
@@ -3379,7 +3379,7 @@ public partial class MainForm : Sheet
         Say(line, c);
     }
 
-    // Replace the whole table with a saved session — the shared road for the startup
+    // Replace the whole table with a saved session: the shared road for the startup
     // auto-load and File → Load session.
     void ApplySession(GameSession s)
     {
@@ -3409,14 +3409,14 @@ public partial class MainForm : Sheet
                 partyLevelHint = Math.Clamp(s.PartyLevelHint, 1, Rules.MaxLevel);
                 if (encLevel != null) encLevel.Value = partyLevelHint;
             }
-            // A fight in progress survives a restart — and the threads on the trail with it. Traces
+            // A fight in progress survives a restart, and the threads on the trail with it. Traces
             // saved before Signs existed still sit in Tracker; they come out here rather than being
             // left to draw a dead row in the initiative order forever.
             foreach (var c in s.Tracker ?? new())
                 if (c.IsSign) signs.Add(c); else tracker.Add(c);
             foreach (var c in s.Signs ?? new()) { c.IsSign = true; signs.Add(c); }
             // Every session written before v1.38.0 has DeathAt 0 on every row, which would mean the
-            // dying rule silently does not run for a fight already in progress — a Keeper who
+            // dying rule silently does not run for a fight already in progress: a Keeper who
             // updated mid-campaign would find souls sitting at 0 Blood forever and no sign of why.
             // Backfilled the same way PcId is, and only ever UP from zero: a Keeper who has set a
             // threshold by hand keeps it, and a creature is left alone, because the rule is the
@@ -3474,7 +3474,7 @@ public partial class MainForm : Sheet
         RefreshUndoRedoButtons();
     }
 
-    // Ctrl+Z pressed while typing belongs to the text field, not the table — the menu
+    // Ctrl+Z pressed while typing belongs to the text field, not the table: the menu
     // shortcut would otherwise intercept it before the field's native undo ever fires.
     Control DeepActive()
     {
@@ -3541,13 +3541,13 @@ public partial class MainForm : Sheet
         if (redoStatusBtn != null) redoStatusBtn.Enabled = redoStack.Count > 0;
     }
 
-    /// <summary>Undo coverage audit — run by the self-test, one probe per field of the session.
+    /// <summary>Undo coverage audit. Run by the self-test, one probe per field of the session.
     ///
     /// <para>The engine is snapshot-based, so the whole of its correctness rests on ONE invariant:
     /// once a user-visible change has settled, <c>undoBaseline</c> equals the current snapshot.
     /// A field that breaks it is not merely un-undoable, which would be the harmless failure. The
     /// next captured action pushes that STALE baseline onto the stack, so the Keeper's next Undo
-    /// silently reverts the uncaptured change as well as the one they meant to undo — Undo eats
+    /// silently reverts the uncaptured change as well as the one they meant to undo: Undo eats
     /// work nobody asked it to touch, and there is no message and no way back.</para>
     ///
     /// <para>Each probe changes one field the way the app changes it and asks that one question.
@@ -3596,8 +3596,8 @@ public partial class MainForm : Sheet
                 else partyLevelHint = partyLevelHint >= Rules.MaxLevel ? 1 : partyLevelHint + 1;
             });
 
-            // A soul's three side-stores — the ration, the reckoning, and the whole character
-            // sheet — are in Snapshot() and are mutated through their own objects rather than
+            // A soul's three side-stores (the ration, the reckoning, and the whole character
+            // sheet) are in Snapshot() and are mutated through their own objects rather than
             // through a bound property, so none of them fires party.ListChanged by itself. Each is
             // probed through the REAL mutator, never by poking the dictionary: a probe that writes
             // the field directly proves only that the probe works, which is how the map markers
@@ -3645,7 +3645,7 @@ public partial class MainForm : Sheet
 
             // And the other half of the ask: that a captured step actually goes back and forward
             // again. Undo restores a whole GameSession, so a round trip that does not land on the
-            // same bytes means some field survives the restore — the failure that looks like undo
+            // same bytes means some field survives the restore: the failure that looks like undo
             // "half working" at the table.
             Settle();
             string before = JsonSerializer.Serialize(Snapshot());
@@ -3674,7 +3674,7 @@ public partial class MainForm : Sheet
             if (s == null) { SeedDemo(); return; }
             // LOAD FIRST, then decide whether anything needs seeding. The old order asked
             // "is the party empty?" and, if it was, seeded the demo posse and never called
-            // ApplySession at all — so a session whose posse the Keeper had cleared came back
+            // ApplySession at all, so a session whose posse the Keeper had cleared came back
             // next launch with its ledger, its clocks, its rides, its map markers and its
             // tracker all gone, and autosaved that loss over the file on the way out. An empty
             // posse is a legitimate table (an all-NPC night, a party wiped and not yet
@@ -3685,7 +3685,7 @@ public partial class MainForm : Sheet
         catch (Exception ex)
         {
             // An unreadable session used to be swallowed and papered over with the demo
-            // posse, which then autosaved on exit — the Keeper's table quietly gone for
+            // posse, which then autosaved on exit, the Keeper's table quietly gone for
             // good. Set the bad file aside under a name nothing else writes, and say so.
             string kept = Path.Combine(AppState.Dir, "session-unreadable.json");
             try { File.Move(SavePath, kept, overwrite: true); } catch { kept = SavePath; }
@@ -3694,17 +3694,17 @@ public partial class MainForm : Sheet
                 "\r\n\r\nThe file has been set aside as\r\n" + kept +
                 "\r\nso nothing is lost, and the table starts from the ready-made posse. " +
                 "If the file looks salvageable, File → Load session will take it back.",
-                "Blood & Grit — GritKeeper", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                "Blood & Grit: GritKeeper", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             if (party.Count == 0) SeedDemo();
         }
     }
 
     void SeedDemo()
     {
-        // The ready-made posse from Appendix D, so the app is useful on first launch — now
+        // The ready-made posse from Appendix D, so the app is useful on first launch: now
         // seeded as full, rules-legal character sheets (Ledger, Signs, gear and all), not bare
         // rows. A fixed seed makes the first-launch posse identical for everyone; ReseedEntropy
-        // afterward hands play back its unpredictable dice. Generate() (not Assemble — that
+        // afterward hands play back its unpredictable dice. Generate() (not Assemble; that
         // throws on a null Origin) with a fixed Calling, then the pregen's own name and gender.
         Rules.Reseed(0x5EEDA117);
         void Add(string name, string gender, string calling)

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""audit_ui.py — the static wiring audit for GritKeeper's toolbars.
+"""audit_ui.py: the static wiring audit for GritKeeper's toolbars.
 
 Reads GK/source/*.cs and checks every button the app builds through the shared helpers:
 
-  * it has a handler (a Btn with a null handler is a button that does nothing when pressed —
+  * it has a handler (a Btn with a null handler is a button that does nothing when pressed;
     only MenuBtn is allowed one, since it wires its own drop-down),
   * it has a tooltip (the app's own convention; a bare label with no tip is the odd one out),
   * MenuBtn's items each carry a handler,
-  * it is at least 24px on its narrow side (WCAG 2.5.8 Target Size (Minimum), AA — Microsoft's
+  * it is at least 24px on its narrow side (WCAG 2.5.8 Target Size (Minimum), AA; Microsoft's
     own Windows control guidance lands on ~23px, so 24 is the floor both agree on),
   * a multi-line status label is measured rather than given a constant Height (the Encounter
     verdict carried Height = 26 and silently rendered NOTHING of its second line for three
     releases; UI Automation could read the string, so every check that could see it passed),
   * a destructive button is recoverable: it either confirms first or edits an undo-backed list,
-  * and the reverse — a button that empties a list the Keeper built by hand wears the warning
+  * and the reverse, a button that empties a list the Keeper built by hand wears the warning
     face rather than the ordinary one. Six did not, across four tabs, until a critic's pass
     with screenshots found them by eye on 2026-08-30; this rule found a seventh on its first run.
 
@@ -23,7 +23,7 @@ Plus two checks on the things around the buttons:
   * no two items in one menu claim the same Alt access key.
 
 It also reports the button count per file, so a tab that has quietly grown a second toolbar
-is visible. This is the cheap check the project has leaned on before — it has caught orphaned
+is visible. This is the cheap check the project has leaned on before. It has caught orphaned
 controls that compile fine and do nothing.
 
     python audit_ui.py            # report, exit 1 on any finding
@@ -43,7 +43,7 @@ if hasattr(sys.stdout, "reconfigure"):
 SRC = Path(__file__).resolve().parent.parent / "GK" / "source"
 
 # helper -> (min args, handler arg index or None, tooltip arg index, width arg index)
-# PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs) — same signature, and
+# PrimaryBtn and DangerBtn are Btn with a different face (MainForm.cs): same signature, and
 # their CALL SITES deserve the same audit as any other button. They were missing here, so five
 # of the tracker's buttons were never checked at all.
 #   Btn/PrimaryBtn/DangerBtn/QuietBtn(text, onClick, w = 120, tip = null)
@@ -51,14 +51,14 @@ SRC = Path(__file__).resolve().parent.parent / "GK" / "source"
 #   ToggleBtn(text, w, tip)
 #   DieBtn(text, sides, onClick, w, tip = null)
 #
-# TourBtn is the tour callout's own weight (Tour.cs) — Btn at 88×28. It is listed for the same
+# TourBtn is the tour callout's own weight (Tour.cs): Btn at 88×28. It is listed for the same
 # reason, and it is the case that shows why the list has to be kept: the tour's three buttons were
 # built from a bare `new Button` and so were invisible here for eleven releases, which is exactly
 # how they stayed FlatStyle.System through the release that flattened every other bar in the app.
 #
 # QuietBtn and ToggleBtn joined in v1.33.0 with the three button weights, and the reason they are
 # here is the reason PrimaryBtn and DangerBtn are: a helper the audit does not know about is a set
-# of buttons nobody checks. The tell was the count — 131 down to 126 with only three buttons
+# of buttons nobody checks. The tell was the count: 131 down to 126 with only three buttons
 # actually removed. ToggleBtn wires no handler of its own (its caller subscribes to CheckedChanged,
 # which is the state changing rather than a press), so it is listed with MenuBtn's None.
 HELPERS = {
@@ -73,7 +73,7 @@ HELPERS = {
 }
 
 # The parameter names the wrappers forward under. A call whose arguments ARE these names is one
-# helper handing off to another inside its own definition, not a button on a bar — it has no
+# helper handing off to another inside its own definition, not a button on a bar. It has no
 # literal tooltip because it is passing along whatever its caller gave it. Reported as two
 # findings for two releases (MainForm.cs:672 and :688, PrimaryBtn and DangerBtn calling Btn),
 # which is exactly how a cheap audit teaches people to ignore it.
@@ -145,7 +145,7 @@ def dialogs(text):
     single method, one per method. A window that is never `ShowDialog`n is a pop-out (a
     creature card, a soul's Ledger, the tour's callout) and is deliberately not audited.
 
-    `Sheet` is the app's own Form subclass — it carries the themed title bar (see Chrome.cs) and
+    `Sheet` is the app's own Form subclass. It carries the themed title bar (see Chrome.cs) and
     every window in the app is built from it. `Form` is still matched here on purpose: a plain
     Form is a window that slipped the theme, and it should keep being audited for its Esc route
     rather than quietly dropping out of the count the moment someone writes the wrong base.
@@ -182,8 +182,8 @@ def mnemonics(label):
 
 # The smallest a clickable target may be. WCAG 2.5.8 (Target Size, Minimum, AA) sets 24x24 CSS px
 # and Microsoft's own Windows control guidance lands in the same place at ~23px, so 24 is the floor
-# both agree on. Nothing in the app is under it today — the narrowest are the 34px dice-keypad keys
-# — which makes this a REGRESSION guard rather than a backlog: it exists so the next cramped
+# both agree on. Nothing in the app is under it today (the narrowest are the 34px dice-keypad keys),
+# which makes this a REGRESSION guard rather than a backlog: it exists so the next cramped
 # toolbar is caught while it is being written.
 MIN_TARGET_PX = 24
 
@@ -202,19 +202,19 @@ EMPTIES_THE_TABLE = r"\b(party|tracker|encounter|clocks|rides|mapMarkers|beasts)
 # The check above proves a button HAS a handler. This one asks the next question, which is the one
 # a Keeper actually asks: when the handler declines, does anything on screen say so? A guard that
 # returns without a word is, from the far side of the table, identical to a button wired to
-# nothing — and that is not a hypothetical. The Tracker's New fight was reported by the user as
+# nothing, and that is not a hypothetical. The Tracker's New fight was reported by the user as
 # "never works": it asked whether there were foes, sign or worked effects, found none because the
 # last foe had already been taken off by hand, and returned. Sweeping the class found sixteen more,
 # among them Copy log and Copy output, which said nothing whether they worked or not.
 #
-# What counts as speaking: Nope (the app's own refusal — status bar in Blood, plus the log), Log,
+# What counts as speaking: Nope (the app's own refusal: status bar in Blood, plus the log), Log,
 # Say, Announce, ShowResult, or a Confirm/MessageBox the Keeper answered themselves.
 SPEAKS = r"\b(Nope|Log|Say|Announce|ShowResult|Confirm|MessageBox)\s*\("
 
 # ...and a guard that defers to a method which speaks for itself is not silent either. `if
 # (p.Sheet == null && !BackfillSheet(p, owner)) return;` reads as a bare refusal and is the
 # opposite: BackfillSheet explains that the row has no sheet, or offers to draw one up and takes
-# No for an answer. Judging the line alone convicted it — and would convict every future guard
+# No for an answer. Judging the line alone convicted it, and would convict every future guard
 # written the same honest way, which is the failure mode that teaches people to stop running the
 # audit. So the question asked of a called method is the same one asked of the line: does it speak?
 SPEAKING_CACHE = {}
@@ -231,7 +231,7 @@ def speaks_for_itself(line, alltext):
 
 # A guard on one of these is structural, not a refusal: tabs are realized lazily, so half the app
 # checks whether its own controls exist yet before touching them. Those returns are unreachable
-# from a press — the button cannot exist before the bar it sits on — and demanding they speak would
+# from a press (the button cannot exist before the bar it sits on) and demanding they speak would
 # put "the tab is not built" on the status bar. Field names are read out of the source rather than
 # listed, so a new control is exempt the day it is declared.
 CONTROL_TYPES = (r"(?:Button|CheckBox|ComboBox|Label|TextBox|RichTextBox|NumericUpDown|DataGridView"
@@ -255,7 +255,7 @@ ABSENCE = re.compile(
 # WinForms hands a TextBox the native edit control's Cut/Copy/Paste menu and hands a RichTextBox
 # nothing at all. The asymmetry is invisible while writing the code and total at the table: on
 # 2026-09-02 all EIGHT read-only RichTextBoxes in the app ignored a right-click, among them the
-# stat block, the generator output and the Reference leaf — the three surfaces a Keeper most wants
+# stat block, the generator output and the Reference leaf. The three surfaces a Keeper most wants
 # to copy out of. Every list and grid in the app had answered a right-click for a year.
 #
 # So: a read-only RichTextBox is wired to ReadingMenu within six lines of being built. Six lines
@@ -296,8 +296,8 @@ def control_fields(alltext):
 
 # Asking a control where it is hung is structural, the same as asking whether it exists yet:
 # `var home = mapHost.Parent;` is null only before the tab is realized, which a press cannot
-# reach. The DATA hanging off a control is a different question — `mapPanel.Model == null` means
-# no survey has been rolled, and that is exactly the refusal a Keeper needs told to them — so this
+# reach. The DATA hanging off a control is a different question (`mapPanel.Model == null` means
+# no survey has been rolled, and that is exactly the refusal a Keeper needs told to them) so this
 # turns on the property, never on the control it is read from.
 STRUCTURAL = re.compile(r"\.(?:Parent|TopLevelControl|FindForm\(\)|ParentForm|Owner)\b")
 
@@ -307,8 +307,8 @@ def silent_refusals(handler, controls, alltext):
     out = []
     for raw in handler.splitlines():
         line = raw.strip()
-        # A bare `return;` abandons the press. `return something;` is a helper computing a value —
-        # MarkerNote() answering "" for a map with no markers is an answer, not a refusal — and
+        # A bare `return;` abandons the press. `return something;` is a helper computing a value:
+        # MarkerNote() answering "" for a map with no markers is an answer, not a refusal, and
         # asking it to speak would put a status line on every string the app assembles.
         if "if" not in line or not re.search(r"\b(?:return|continue)\s*;", line):
             continue
@@ -319,7 +319,7 @@ def silent_refusals(handler, controls, alltext):
         root = subject.split(".")[0].rstrip("()")
         if root in controls or root in {"s", "e", "sender", "args", "this"}:
             continue
-        # The subject may be a local standing in for one — `home` is `mapHost.Parent` a line up.
+        # The subject may be a local standing in for one: `home` is `mapHost.Parent` a line up.
         if STRUCTURAL.search(line) or re.search(
                 r"\b(?:var|Control|Form)\s+" + re.escape(root) + r"\s*=\s*[\w.]*" + STRUCTURAL.pattern,
                 handler):
@@ -339,7 +339,7 @@ def main():
     for path in sorted(SRC.glob("*.cs")):
         text = path.read_text(encoding="utf-8-sig")
         # the helpers' own definitions are declarations, not calls
-        # ToggleBtn returns a CheckBox rather than a Button — it is a switch, not a press — so the
+        # ToggleBtn returns a CheckBox rather than a Button (it is a switch, not a press) so the
         # return type is matched loosely here. Pinning it to `Button` would have let ToggleBtn's own
         # definition be counted as a call site and reported for having no literal tooltip.
         text = re.sub(r"static\s+(?:Button|CheckBox)\s+"
@@ -370,37 +370,41 @@ def main():
                     counts[path.name] -= 1
                     continue
                 if len(args) < minargs:
-                    findings.append(f"{where}  {helper}({label}) — only {len(args)} argument(s)")
+                    findings.append(f"{where}  {helper}({label}): only {len(args)} argument(s)")
                     continue
                 if hidx is not None and args[hidx].strip() == "null":
-                    findings.append(f"{where}  {helper}({label}) — no handler: pressing it does nothing")
+                    findings.append(f"{where}  {helper}({label}): no handler, so pressing it does nothing")
                 if len(args) <= tidx or not args[tidx].lstrip().startswith(('"', '$"')):
-                    findings.append(f"{where}  {helper}({label}) — no tooltip")
+                    findings.append(f"{where}  {helper}({label}): no tooltip")
                 if helper == "MenuBtn":
                     for item in args[3:]:
                         if item.lstrip().startswith('("-"'):
                             continue                     # a separator, which carries no handler by design
-                        # A group heading, written "— Mounts —" / "— The whole posse —". MenuBtn
-                        # renders a null handler as a DISABLED item, so these can't read as a dead
-                        # button; only a heading may take the exemption, and it must look like one.
-                        if re.match(r'\(\s*"—[^"]*—"', item.lstrip()):
+                        # A group heading, written with a trailing colon: ("Mounts:", null),
+                        # ("The whole posse:", null). MenuBtn renders a null handler as a DISABLED
+                        # item, so these can't read as a dead button; only a heading may take the
+                        # exemption, and it must look like one. (It was bracketed in em dashes until
+                        # v1.58.0, when the dash came out of the app's own words; a colon is what a
+                        # greyed line reads as anyway, and it costs the rule nothing: the exemption
+                        # only fires on an item that has no handler in the first place.)
+                        if re.match(r'\(\s*\$?"[^"]*:"\s*,\s*null\s*\)', item.lstrip()):
                             continue
                         if re.search(r",\s*null\s*\)\s*$", item):
-                            findings.append(f"{where}  MenuBtn({label}) — a menu item with no handler")
+                            findings.append(f"{where}  MenuBtn({label}): a menu item with no handler")
 
                 # ---- the target has to be big enough to hit ----
                 if len(args) > widx and re.fullmatch(r"\d+", args[widx].strip()):
                     w = int(args[widx])
                     if w < MIN_TARGET_PX:
-                        findings.append(f"{where}  {helper}({label}) — {w}px wide, under the "
+                        findings.append(f"{where}  {helper}({label}): {w}px wide, under the "
                                         f"{MIN_TARGET_PX}px minimum target size")
 
                 # ---- a destructive button has to be recoverable ----
                 # The one class of button where a misfire can't be taken back by looking at it.
                 # Two routes count, and only two: a Confirm() prompt, or an edit to one of the
                 # six bound lists, which `ListChanged += CaptureUndo` puts on the Universal Undo
-                # stack for free (MainForm.cs:229-234). An undoable action does NOT need a prompt
-                # — putting one on every one of them is the surest way to train a Keeper to
+                # stack for free (MainForm.cs:229-234). An undoable action does NOT need a prompt:
+                # putting one on every one of them is the surest way to train a Keeper to
                 # dismiss prompts unread mid-fight, which is how the prompt that MATTERS gets
                 # clicked through. A handler with neither route is the finding.
                 if helper == "DangerBtn" and hidx < len(args):
@@ -408,7 +412,7 @@ def main():
                     for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
                         reach += body_of(alltext, callee)
                     if not (re.search(r"\bConfirm\(", reach) or re.search(UNDO_BACKED, reach)):
-                        findings.append(f"{where}  DangerBtn({label}) — destructive, but the "
+                        findings.append(f"{where}  DangerBtn({label}): destructive, but the "
                                         "handler neither confirms nor touches an undo-backed list")
 
                 # ---- and the reverse: a plain button that empties the table ----
@@ -423,7 +427,7 @@ def main():
                     for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
                         reach += body_of(alltext, callee)
                     if re.search(EMPTIES_THE_TABLE, reach):
-                        findings.append(f"{where}  Btn({label}) — empties a list the Keeper built "
+                        findings.append(f"{where}  Btn({label}): empties a list the Keeper built "
                                         "by hand and wears the ordinary face; use DangerBtn")
 
                 # ---- and it may not refuse in silence ----
@@ -435,7 +439,7 @@ def main():
                     for callee in re.findall(r"\b([A-Z]\w+)\s*\(", reach):
                         reach += body_of(alltext, callee)
                     for line in silent_refusals(reach, controls, alltext):
-                        findings.append(f"{where}  {helper}({label}) — refuses in silence: "
+                        findings.append(f"{where}  {helper}({label}): refuses in silence. "
                                         f"`{line}` stops the work and says nothing")
 
 
@@ -444,12 +448,12 @@ def main():
             rtbcount += 1
             if not wired:
                 findings.append(f"{path.name}:{line}  the read-only RichTextBox built as `{name}` "
-                                "has no ReadingMenu — a right-click on it does nothing at all")
+                                "has no ReadingMenu. A right-click on it does nothing at all")
 
         # ---- modal dialogs must answer Esc ----
         # Windows-wide, Esc dismisses a dialog. Wiring AcceptButton and leaving CancelButton unset
         # compiles, looks finished, and produces a modal that ignores the one key everybody presses
-        # first — which reads as a hung window rather than as a firm question. Four had drifted that
+        # first, which reads as a hung window rather than as a firm question. Four had drifted that
         # way by v1.28.0, two of them the Strike and Dread dialogs a Keeper opens most in a fight.
         # Where cancelling makes no sense, point CancelButton at the commit button: Esc should still
         # close the thing, and doing what the title-bar ✕ already does is honest.
@@ -457,14 +461,14 @@ def main():
             dlgcount += 1
             if not re.search(r"\b" + name + r"\.CancelButton\s*=", body):
                 findings.append(f"{path.name}:{line}  the dialog built as `{name}` sets no "
-                                "CancelButton — Esc does nothing in it")
+                                "CancelButton. Esc does nothing in it")
 
     # ---- the menu bar's access keys have to be unique within their menu ----
     # Alt+F then S for Save. Two items in one drop-down claiming the same letter is neither a
     # compile error nor a crash: Windows quietly demotes the key from "jump and activate" to
     # "cycle between the matches", so a shortcut somebody learned stops working and nothing says
-    # why. Uniqueness is only required WITHIN one menu — &Save under File and &Show me around
-    # under Help never meet — so the check groups by the menu each item is added to, and the
+    # why. Uniqueness is only required WITHIN one menu: &Save under File and &Show me around
+    # under Help never meet, so the check groups by the menu each item is added to, and the
     # top-level bar is a group of its own.
     menus = sources.get("Menus.cs", "")
     mnemcount = 0
@@ -481,7 +485,7 @@ def main():
         named = {m.group(1): m.group(2) for m in re.finditer(
             r'(?:var\s+)?(\w+)\s*=\s*(?:new\s+ToolStripMenuItem|Item)\(\s*"([^"]*)"', menus)}
 
-        # A local function that adds to one menu — `void ModeItem(string text, RunMode m)` puts
+        # A local function that adds to one menu: `void ModeItem(string text, RunMode m)` puts
         # its argument under Table. Its call sites carry the labels, so resolve the function to
         # the menu it feeds and credit each call to that menu.
         adders = {}
@@ -515,12 +519,12 @@ def main():
             if len(hits) > 1:
                 which = ", ".join(f"{lbl!r}" + (f" (line {ln})" if ln else "") for ln, lbl in hits)
                 findings.append(f"Menus.cs  {owner}: Alt+{key.upper()} is claimed by "
-                                f"{len(hits)} items — {which}")
+                                f"{len(hits)} items: {which}")
 
     # ---- the keyboard is one table, and the help window may not re-type it ----
     # A shortcut a Keeper cannot rely on is worse than one that does not exist, and there are two
-    # ways to get one. It can COLLIDE — two bindings claiming the same chord in the same scope, of
-    # which exactly one will ever fire and it is whichever the loop meets first. Or it can DRIFT —
+    # ways to get one. It can COLLIDE: two bindings claiming the same chord in the same scope, of
+    # which exactly one will ever fire and it is whichever the loop meets first. Or it can DRIFT,
     # the help window promising a key the handler does not bind, which is what happened here: the
     # chords lived in a lambda in MainForm.cs and again, hand-typed, in ShowShortcuts. Same shape
     # as the seven typed copies of the encounter ladder Rules.BudgetRungs replaced.
@@ -536,13 +540,13 @@ def main():
     seen = {}
     for chord, scope, says, line in bindings:
         if not says.strip():
-            findings.append(f"MainForm.cs:{line}  the binding for {chord} says nothing — "
+            findings.append(f"MainForm.cs:{line}  the binding for {chord} says nothing, so "
                             "the shortcuts window has no sentence to print for it")
         # An app-wide chord is live on every tab, so it collides with a tab-scoped one too.
         for other in {scope, None} if scope else {s for _, s, _, _ in bindings}:
             if (chord, other) in seen:
                 findings.append(f"MainForm.cs:{line}  {chord} is claimed twice in the same scope "
-                                f"({other or 'anywhere'}) — line {seen[(chord, other)]} wins and "
+                                f"({other or 'anywhere'}): line {seen[(chord, other)]} wins and "
                                 "this one never fires")
         seen[(chord, scope)] = line
 
@@ -553,7 +557,7 @@ def main():
         if typed in owned:
             line = sources["Menus.cs"].count("\n", 0, m.start()) + 1
             findings.append(f"Menus.cs:{line}  the shortcuts window hand-types {m.group(1)}, which "
-                            "MainForm's key table already owns — render it instead, or the two drift")
+                            "MainForm's key table already owns, render it instead, or the two drift")
 
     if not quiet:
         print("buttons per file")

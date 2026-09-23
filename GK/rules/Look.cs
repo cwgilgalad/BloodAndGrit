@@ -6,7 +6,7 @@ namespace BloodAndGritKeeper;
 // ============================================================ WHAT A SOUL LOOKS LIKE
 // The seventh headless file, and the first one that is not the books' rules. Chapter III makes a
 // person out of numbers and the Four Questions and then stops, because a book is right to leave a
-// face to the table — and a Keeper who needs one NOW, with five people waiting, is not helped by
+// face to the table, and a Keeper who needs one NOW, with five people waiting, is not helped by
 // being left to it. So the app draws one.
 //
 // Nothing in here is worth a point. It touches no number, gates nothing, and is hand-editable
@@ -17,7 +17,7 @@ namespace BloodAndGritKeeper;
 // The draws are CONDITIONED rather than shuffled, which is the whole craft of it. Complexion, hair
 // and eyes come out of one people's own lists; every garment comes out of ONE style's wardrobe,
 // and the style is drawn against the Calling. Six independent lists would give you a Norwegian
-// wearing a queue and a charro jacket over mining boots — technically random, and instantly
+// wearing a queue and a charro jacket over mining boots, technically random, and instantly
 // recognisable as a machine talking.
 
 /// <summary>One row of Data/appearance.json's peoples list. Weighted, because the frontier was
@@ -30,7 +30,7 @@ public class LkPeople
     public List<string> complexions { get; set; } = new();
     public List<string> hair { get; set; } = new();
     public List<string> eyes { get; set; } = new();
-    /// <summary>The stem of a chargen.json whole-name pool this people's names come out of —
+    /// <summary>The stem of a chargen.json whole-name pool this people's names come out of:
     /// "fullNames" reaches fullNamesMen / fullNamesWomen. Set on the ONE people whose names do
     /// not decompose into a given name and a surname that can be mixed with anybody else's.
     ///
@@ -79,8 +79,8 @@ public class LookData
 /// them. Plain auto-properties so the whole of it rides in session.json with the rest of the
 /// sheet, and every field is free text so a player who has their own idea can simply type it.
 ///
-/// Every field may legitimately be empty — an old save has none of them, and a Keeper is allowed
-/// to clear any of them — so nothing here may assume a value is present. <see cref="Any"/> is the
+/// Every field may legitimately be empty (an old save has none of them, and a Keeper is allowed
+/// to clear any of them) so nothing here may assume a value is present. <see cref="Any"/> is the
 /// one question worth asking before showing it.</summary>
 public class SoulLook
 {
@@ -93,14 +93,14 @@ public class SoulLook
     public string Hair { get; set; } = "";
     public string Eyes { get; set; } = "";
     public string Face { get; set; } = "";
-    /// <summary>What the country has already taken off them — a scar, a brand, two missing
+    /// <summary>What the country has already taken off them: a scar, a brand, two missing
     /// fingers. Not a Lasting Injury: those are earned at the table and live on the soul's Scars.
     /// This is what they walked in with.</summary>
     public string Marks { get; set; } = "";
     public string Bearing { get; set; } = "";
     public string Voice { get; set; } = "";
 
-    /// <summary>The name of the whole way of dressing — "vaquero", "circuit black" — that the
+    /// <summary>The name of the whole way of dressing ("vaquero", "circuit black") that the
     /// five garments below were drawn out of.</summary>
     public string Style { get; set; } = "";
     public string Hat { get; set; } = "";
@@ -114,7 +114,7 @@ public class SoulLook
     public string Detail { get; set; } = "";
 
     /// <summary>Whether there is anything here at all. A soul made before this existed, or one
-    /// whose look has been cleared by hand, has nothing to show and should be shown nothing —
+    /// whose look has been cleared by hand, has nothing to show and should be shown nothing:
     /// an empty box headed APPEARANCE reads as a bug in the sheet.</summary>
     [JsonIgnore]
     public bool Any => !string.IsNullOrWhiteSpace(People) || !string.IsNullOrWhiteSpace(Face)
@@ -134,7 +134,7 @@ public class SoulLook
     /// <summary>What they are wearing, in the order you would see it.</summary>
     [JsonIgnore] public string DressLine => Join(Hat, Coat, Shirt, Legs, Boots, Wear);
 
-    /// <summary>One sentence for a tooltip, a log line, or a grid cell — the least a Keeper needs
+    /// <summary>One sentence for a tooltip, a log line, or a grid cell. The least a Keeper needs
     /// to describe somebody who has just walked in.</summary>
     [JsonIgnore]
     public string AtAGlance
@@ -171,7 +171,7 @@ public static class Look
     /// weight is zero or missing, so a hand-edited data file can't produce an empty result.</summary>
     /// <param name="keepsOwnNames">Exclude the peoples whose names come whole out of their own
     /// pool. Passed by the redraw-a-look routes, which change a description on a soul who already
-    /// HAS a name and so cannot honour one — see <see cref="Roll"/>.</param>
+    /// HAS a name and so cannot honour one. See <see cref="Roll"/>.</param>
     public static LkPeople People(bool keepsOwnNames = true)
     {
         var ps = D?.peoples;
@@ -193,7 +193,7 @@ public static class Look
     /// Preacher in a dead man's cavalry coat, which is the interesting one.</summary>
     public const int StyleTruePercent = 80;
 
-    /// <summary>The way this Calling dresses — usually. An unknown or empty Calling draws from
+    /// <summary>The way this Calling dresses, usually. An unknown or empty Calling draws from
     /// the whole wardrobe, which is also what an NPC with no Calling should get.</summary>
     public static LkStyle StyleFor(string calling)
     {
@@ -213,19 +213,19 @@ public static class Look
         return all[Rules.Rng.Next(all.Count)];
     }
 
-    /// <summary>How often a soul carries a mark the country already put on them. Two in five —
+    /// <summary>How often a soul carries a mark the country already put on them. Two in five,
     /// enough that a posse has one or two, rare enough that it still means something.</summary>
     public const int MarkedPercent = 40;
 
     /// <summary>Roll a whole look.</summary>
     /// <param name="gender">The soul's own word for it. Only one thing reads it: whether to draw
-    /// facial hair, which is offered for "Man" and left alone otherwise — the frontier's own
+    /// facial hair, which is offered for "Man" and left alone otherwise, the frontier's own
     /// convention, not a rule about anybody, and every field is editable by hand precisely so the
     /// convention can be ignored.</param>
     /// <param name="calling">What they do for a living, which is most of what they wear.</param>
     /// <param name="nameIsFixed">True when this is a REDRAW over a soul who already has a name.
     /// A name and a people are one decision (see <see cref="CharGen.FullName"/>), and a redraw is
-    /// only allowed half of it — so it leaves out the peoples whose names come whole rather than
+    /// only allowed half of it, so it leaves out the peoples whose names come whole rather than
     /// handing back a description the soul's own name contradicts. Making a soul, and the wizard,
     /// draw both together and pass false.</param>
     public static SoulLook Roll(string gender, string calling = null, bool nameIsFixed = false)
@@ -270,7 +270,7 @@ public static class Look
             look.Shirt = Pick(style.shirts);
             look.Legs = Pick(style.legs);
             look.Boots = Pick(style.boots);
-            // The style's own extra and the file's shared detail are two different things — the
+            // The style's own extra and the file's shared detail are two different things: the
             // extra belongs to the outfit (a reata, a carbide lamp), the detail belongs to the
             // person (a tintype kept face-down). A soul gets one of each.
             string extra = Pick(style.extras);

@@ -4,13 +4,13 @@ namespace BloodAndGritKeeper;
 /// from the upper bulb into the lower one across the length of a posse's turn, with a falling
 /// stream and a heap that grows where it lands.
 ///
-/// <para>All state lives on the <see cref="TurnClock"/> it is pointed at — this control owns no
+/// <para>All state lives on the <see cref="TurnClock"/> it is pointed at. This control owns no
 /// countdown of its own and starts no timer. The Tracker feeds the clock and calls
 /// <see cref="Control.Invalidate()"/>; that keeps the rule (how long is a turn, how much is left) in the
 /// rules library where the smoke rig can reach it, and keeps this file to ink.</para>
 ///
 /// <para>Written double-buffered and antialiased because the glass is all diagonals. It draws no
-/// text at all, deliberately — the m:ss face is a Label beside it, so the drawn-text landmines
+/// text at all, deliberately. The m:ss face is a Label beside it, so the drawn-text landmines
 /// recorded in CLAUDE.md (grid-fit eating word spaces, Georgia's descending figures, DrawString
 /// with no width) simply do not apply here.</para></summary>
 internal sealed class HourglassView : Control
@@ -37,7 +37,7 @@ internal sealed class HourglassView : Control
     }
 
     /// <summary>Move the falling sand on one frame. Separate from the clock's own Tick so a PAUSED
-    /// glass stops moving — sand that keeps pouring while the turn is held is a lie about the
+    /// glass stops moving: sand that keeps pouring while the turn is held is a lie about the
     /// state, and the one thing a status display must never be.</summary>
     public void Advance()
     {
@@ -73,12 +73,12 @@ internal sealed class HourglassView : Control
         //
         // Both bulbs are laid out from ONE number: how far out from the neck the sand still to
         // fall reaches, as a fraction of a bulb's height. Each bulb is a triangle on the neck, so
-        // AREA — which is what the eye actually reads as "how much is left" — goes as the square
+        // AREA (which is what the eye actually reads as "how much is left") goes as the square
         // of that distance; taking the square root of the sand remaining is what makes the level
         // drop look linear in time.
         double spent = clock.Spent;
         float scale = (float)Math.Sqrt(Math.Clamp(1 - spent, 0, 1));
-        // The half-width of the glass wall at that distance from the neck — the SAME number in
+        // The half-width of the glass wall at that distance from the neck: the SAME number in
         // both bulbs, which is the whole trick. The surface of the upper band and the surface of
         // the lower heap are two cuts across the glass at equal distances from the waist, so they
         // are equally wide, and the two areas sum to a constant: sand is conserved, and the eye
@@ -99,7 +99,7 @@ internal sealed class HourglassView : Control
             // Lower bulb: the heap it lands in, growing up off the floor.
             //
             // This is the half that was wrong. It took its top edge's width from its own height
-            // above the floor — the wall measured from the wrong end — so the wider the heap grew
+            // above the floor, the wall measured from the wrong end, so the wider the heap grew
             // the narrower it drew its surface. At a glass nearly through, that put the heap's
             // corners at the widest part of the bulb while its surface sat up at the narrow neck:
             // the sand painted a rectangle across the whole lower half, and the drawn glass came
@@ -116,7 +116,7 @@ internal sealed class HourglassView : Control
         if (clock.Running && spent > 0.001 && spent < 0.999)
         {
             using var grain = new SolidBrush(sand);
-            // From just under the neck to just above the heap's surface — off the same heapTop the
+            // From just under the neck to just above the heap's surface: off the same heapTop the
             // heap is drawn to, so the stream always lands ON the sand rather than in it or short of it.
             float fallTop = neckY + 1, fallBot = heapTop - 1;
             if (fallBot > fallTop)

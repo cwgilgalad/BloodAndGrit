@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — What the Water Answers", module III, on the shared engine.
+# Build "Blood & Grit: What the Water Answers", module III, on the shared engine.
 # Reads blood-and-grit.html (run build_player.py first), writes module-what-the-water-answers.html.
 #
-# Keeper's Book Ch. XIII gives Perdition Basin its spine — the padres' silver nails binding a thing
-# under the wells, failing one well at a time — and then stops at the mission door. Both earlier
+# Keeper's Book Ch. XIII gives Perdition Basin its spine (the padres' silver nails binding a thing
+# under the wells, failing one well at a time) and then stops at the mission door. Both earlier
 # modules end within sight of San Clavo and neither goes in. This one goes in, and then goes under.
 # Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,

@@ -2,23 +2,23 @@
 """Every name in the modules, and whether any two of them are the same name.
 
 Written on 2026-08-09 for a fault that shipped: Modules I and III went out as *The Salt at Coffin
-Wells* and *The Reckoning of the Wells*. (III is *What the Water Answers* now — this script is why.)
-Nothing checked it, because nothing was looking — every other
+Wells* and *The Reckoning of the Wells*. (III is *What the Water Answers* now; this script is why.)
+Nothing checked it, because nothing was looking. Every other
 auditor in this repo reads ONE artifact and asks whether it is sound. This one reads all three and
 asks whether they are distinct, which is a question no single-file check can be asked.
 
 It reports two kinds of clash, and they are not equally bad.
 
   A TITLE clash is the loud one. Two adventures that share a distinctive word in their titles read
-  as a series when they are not one, and two that share a SHAPE — "The <abstract> <prep> <place>" —
+  as a series when they are not one, and two that share a SHAPE ("The <abstract> <prep> <place>")
   read as the same title twice even when every word differs. That second one is why this checks
   grammar and not just vocabulary: widening the word lists alone would have produced "The Ashes at
   Gallows Fork" beside "The Judgment of the Hollow", which is the identical fault in a better coat.
 
-  A BODY clash is the quiet one — an NPC, a town or a landmark named in two modules. Some of these
+  A BODY clash is the quiet one: an NPC, a town or a landmark named in two modules. Some of these
   are deliberate (the Basin is one country and its landmarks recur on purpose), so the shared-name
-  list is reported for a human to read rather than failed on. Only a name a module INTRODUCES —
-  a person in its cast, the place on its own map — is held to be exclusive.
+  list is reported for a human to read rather than failed on. Only a name a module INTRODUCES
+(a person in its cast, the place on its own map) is held to be exclusive.
 
 Exit code 1 on any hard clash. Run it before cutting a modules release.
 """
@@ -51,12 +51,12 @@ ADVENTURE = re.compile(
 H2 = re.compile(r"^##\s+(.+?)\s*$", re.M)
 
 # The docs a stranger reads first. A module filename written into either of them is a claim about
-# a file on disk, and a retitled module silently makes it false — README.md pointed at
+# a file on disk, and a retitled module silently makes it false: README.md pointed at
 # `module-the-reckoning-of-the-wells.html` for a week after that name was retired.
 DOCS = ["README.md", "CLAUDE.md", "audits/README.md"]
 MODULE_FILE = re.compile(r"module-[a-z0-9-]+\.html")
 
-# Words that carry no identity. Two titles sharing one have not collided — "the" is not what makes
+# Words that carry no identity. Two titles sharing one have not collided: "the" is not what makes
 # "The Long Debt" and "The Cold Water" different titles. Mirrors Namer.Bland in GK/rules/Names.cs;
 # the two lists answer the same question on either side of the language boundary.
 BLAND = {
@@ -66,8 +66,8 @@ BLAND = {
     "be", "been", "has", "have", "had", "will", "would", "can", "could", "may", "might",
 }
 
-# The game's own vocabulary. These are SUPPOSED to recur in every module — a module that never says
-# "Keeper" or "Grit" is not a Blood & Grit module — so they are not evidence of a clash.
+# The game's own vocabulary. These are SUPPOSED to recur in every module: a module that never says
+# "Keeper" or "Grit" is not a Blood & Grit module, so they are not evidence of a clash.
 GAME_TERMS = {
     "Keeper", "Keepers", "Grit", "Blood", "Nerve", "Mark", "Taint", "Dread", "Sign", "Signs",
     "Miracle", "Miracles", "Tier", "Defense", "Beat", "Beats", "Iron", "Code", "Calling",
@@ -85,11 +85,11 @@ GAME_TERMS = {
     "Not", "No", "Yes", "All", "Any", "Some", "Each", "Every", "Both", "Either", "Neither",
     # Stat-block and furniture vocabulary. Every creature entry says Attacks / Saves / Special /
     # Speed, every map carries a Download control, every cast entry has a Wants and a Lever. These
-    # are the SHAPE of a module, so of course all three share them — that is conformance, not a
+    # are the SHAPE of a module, so of course all three share them. That is conformance, not a
     # clash, and leaving them in buries the sixteen real names under nineteen false ones.
     "Attacks", "Saves", "Special", "Speed", "Check", "Costs", "Download", "Ref", "Version",
     "Strikes", "Tiers", "Wants", "Lever", "Alone", "Line", "Say", "Says", "Read", "Ready",
-    # Callings and creature names — the books' own nouns, shared by design.
+    # Callings and creature names: the books' own nouns, shared by design.
     "Gunhand", "Preacher", "Drifter", "Outlaw", "Scout", "Gambler", "Prospector", "Rancher",
     "Teamster", "Padre", "Nightwalker", "Mountain", "Lion", "Drowned", "Possessed", "Hunger",
     "Walks", "Skin", "Walker", "Plague", "Dead",
@@ -107,7 +107,7 @@ PARA = re.compile(r"<p\b[^>]*>(.*?)</p>", re.S | re.I)
 
 
 def prose_of(path):
-    """Running prose only — the contents of <p>, and nothing else.
+    """Running prose only: the contents of <p>, and nothing else.
 
     This is load-bearing, not tidiness. The first version of this script read the whole document
     and reported 85 shared "names", of which about six were names: the rest were headings, table
@@ -150,7 +150,7 @@ def shape_of(title):
 
     "The Salt at Coffin Wells" and "The Reckoning of the Wells" both reduce to "the _ <prep> the _",
     which is the collision a vocabulary check cannot see. Prepositions are folded together on
-    purpose — at/of/in/on differ in meaning and not in cadence, and cadence is what makes two
+    purpose: at/of/in/on differ in meaning and not in cadence, and cadence is what makes two
     titles sound like one.
     """
     out = []
@@ -172,7 +172,7 @@ def proper_nouns(text):
 
     Sentence-openers are the hard part: "The banker dug" starts with a capital and names nobody.
     A word is only counted when it appears capitalised at least once in a position that is NOT
-    after a full stop — which is what actually distinguishes a name from a first word.
+    after a full stop, which is what actually distinguishes a name from a first word.
     """
     mid = set()
     for sent in re.split(r"(?<=[.!?])\s+", text):
@@ -234,7 +234,7 @@ def main():
     if both:
         for w, v in both.items():
             print(f"  shared   {w:<22} {', '.join(v)}")
-        print(f"\n  {len(both)} shared — read them. A recurring landmark is the Basin being one")
+        print(f"\n  {len(both)} shared: read them. A recurring landmark is the Basin being one")
         print("  country; a recurring PERSON or TOWN is two modules using one name.")
     else:
         print("  ok       no proper noun appears in two modules")
@@ -246,7 +246,7 @@ def main():
     # and so the dead title went out in the same download as the module that no longer had it.
     # Every check in this repo looked straight past it: the auditors above read the BUILT modules
     # and names.json, the smoke suite reads the rules library, and nothing at all reads the
-    # harness. A name written down twice needs a check that reads both copies — the same shape as
+    # harness. A name written down twice needs a check that reads both copies: the same shape as
     # the arms table, and as the version cascade.
     print("\nThe playtest harness")
     adv_path = HERE / HARNESS
@@ -275,7 +275,7 @@ def main():
 
     play_path = HERE / PLAYTEST
     if not play_path.exists():
-        print(f"  MISSING  {PLAYTEST} — regenerate it: dotnet run --project GK/playtest -- --out PLAYTEST.md")
+        print(f"  MISSING  {PLAYTEST}; regenerate it: dotnet run --project GK/playtest -- --out PLAYTEST.md")
         hard += 1
     else:
         # The harness only writes this file when it is given --out, so a run that looks like it
@@ -309,7 +309,7 @@ def main():
         print(f"  ok       {cited} filename(s) across {len(DOCS)} docs, all of them real")
 
     # ---- the stock's own record of what has been spent ----
-    # GK/rules/Data/names.json carries a "spent" list — the words already on published work, which
+    # GK/rules/Data/names.json carries a "spent" list: the words already on published work, which
     # Namer refuses on first draw. It is only useful if it is TRUE, and nothing else would notice it
     # going stale: a module retitled here without the list being updated leaves the generator free
     # to hand out the very word that was just retired. So the two are checked against each other.

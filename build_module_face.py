@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — A Face Not His Own", module II, on the shared engine.
+# Build "Blood & Grit: A Face Not His Own", module II, on the shared engine.
 # Reads blood-and-grit.html (run build_player.py first), writes module-a-face-not-his-own.html.
 #
 # The Keeper's Book names this adventure at Saltlick Station and gives it a paragraph. This is that
 # paragraph keyed: eight souls under one roof, a tell that a posse in a hurry will shoot past, and
-# a Tier III thing the safe-table rule does NOT refuse — which makes it the opposite lesson from
+# a Tier III thing the safe-table rule does NOT refuse, which makes it the opposite lesson from
 # module I. Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents)

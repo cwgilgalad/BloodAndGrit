@@ -3,13 +3,13 @@
 #
 # The failure this exists for: v1.32.0 was written, verified, merged and entered in the CHANGELOG
 # as a shipped release, and the exe behind the desktop shortcut stayed on v1.31.0 for a day and a
-# half. CI cannot see that — GritKeeper/app/GritKeeper.exe is git-ignored, being a 163 MB signed
-# binary — so the only place the check can live is the machine that does the packaging.
+# half. CI cannot see that (GritKeeper/app/GritKeeper.exe is git-ignored, being a 163 MB signed
+# binary), so the only place the check can live is the machine that does the packaging.
 #
 # Two deliberate limits:
 #
 #   * It NEVER blocks. A push is how work gets off this laptop, and a half-finished release is a
-#     perfectly good reason to push. It prints and gets out of the way — the same rule pre-commit
+#     perfectly good reason to push. It prints and gets out of the way, the same rule pre-commit
 #     follows. The gate that does fail is in CI, on the tag, once a version stops being the newest.
 #   * It only speaks up when MAIN is being pushed. A session/* branch is work in progress by
 #     definition: the version gets bumped early and the packaging happens at the end, so warning

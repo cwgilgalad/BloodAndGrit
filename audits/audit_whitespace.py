@@ -5,10 +5,10 @@ page (the split candidate).
 
 Gaps are split into two piles, because the raw list is mostly noise. A page that
 ends short because the NEXT page opens a chapter, an appendix, or the index is
-doing exactly what the design asks — chapters start on a fresh page, and the
+doing exactly what the design asks: chapters start on a fresh page, and the
 trailing gap is the cost of that rule, not a defect. Those are reported as
-"by design" and excluded from the count that matters. What is left — a page that
-ends short in the middle of running text — is the reclaimable whitespace.
+"by design" and excluded from the count that matters. What is left, a page that
+ends short in the middle of running text, is the reclaimable whitespace.
 
 Usage: python audit_whitespace.py <book.html> [gap-px-threshold, default 140]
 """

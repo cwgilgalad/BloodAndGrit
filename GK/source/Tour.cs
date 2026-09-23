@@ -5,7 +5,7 @@ namespace BloodAndGritKeeper;
 // ============================================================ THE GUIDED TOUR
 //
 // A walkthrough that points at the real thing. Every step names a control the app actually built,
-// brings its tab to the front, and floats a callout beside it with a little pointer aimed at it —
+// brings its tab to the front, and floats a callout beside it with a little pointer aimed at it,
 // so what is being described and what is on screen are never two different objects.
 //
 // Three rules it keeps, all learned from tours that are worse than nothing:
@@ -14,7 +14,7 @@ namespace BloodAndGritKeeper;
 //      decline, the decline is remembered (Prefs.ToldTheTour), and it never asks again. Help ▸
 //      Show me around brings it back for anyone who changes their mind.
 //   2. It is MODELESS and it does not trap you. The callout is a floating owned window, not a
-//      modal — the app underneath stays live, so a Keeper can poke the thing being described
+//      modal. The app underneath stays live, so a Keeper can poke the thing being described
 //      while it is being described. Esc, the ✕, and Finish all end it at once.
 //   3. It follows the MODE. A player's table has three tabs, so a player's tour has the steps
 //      that belong to those three and no others. Being walked through a Bestiary you cannot open
@@ -61,7 +61,7 @@ public partial class MainForm
         {
             Left = 20, Top = 54, Width = 464, Height = 92, ForeColor = Ink,
             Text = "There is a lot in here, and none of it is worth hunting for. I can walk you "
-                 + "round the whole app — a few lines at each thing, pointing at the real button, "
+                 + "round the whole app: a few lines at each thing, pointing at the real button, "
                  + "with the app still live underneath so you can try it as we go.\n\n"
                  + "It takes about three minutes. Esc stops it anywhere."
         };
@@ -83,7 +83,7 @@ public partial class MainForm
         Prefs.Save(prefs);
 
         if (answer == DialogResult.Yes) StartTour();
-        else Log("Tour skipped — Help ▸ Show me around brings it back.");
+        else Log("Tour skipped. Help ▸ Show me around brings it back.");
     }
 
     /// <summary>The stops, in the order a night actually goes: sit the posse down, learn to roll,
@@ -91,42 +91,42 @@ public partial class MainForm
     /// this mode shows are used.</summary>
     List<TourStop> TourStops() => new()
     {
-        // Tab is null so this one survives every mode — the opening stop is the orientation, and a
+        // Tab is null so this one survives every mode: the opening stop is the orientation, and a
         // player's tour losing it (because it was pinned to a tab a player has not got) would open
         // on "Roll anything" with nothing to say where they are. The count and the shortcut line
         // are read off the tabs actually on show, for the same reason.
         new(null, () => tabsCtl, Mode == RunMode.Player ? "Your side of the table" : "The tabs, left to right",
             Mode == RunMode.Player
               ? $"You have {tabsCtl.TabPages.Count} tabs: make and run your own character, roll your own "
-                + "dice, and look up any rule. The Keeper's side of the app is put away — you can bring "
+                + "dice, and look up any rule. The Keeper's side of the app is put away. You can bring "
                 + "it back any time from the Table menu if you end up running the game yourself.\n\n"
                 + $"Ctrl+1 to Ctrl+{tabsCtl.TabPages.Count} jump straight to them."
               : "The bar across the top is the whole app, and it runs roughly in the order a night "
-                + "does — seat the posse, roll the dice, look up a horror, weigh the fight, run it, "
+                + "does: seat the posse, roll the dice, look up a horror, weigh the fight, run it, "
                 + "and keep the record. Ctrl+1 to Ctrl+0 jump straight to any of them."),
 
         new("Posse", () => posseGrid, "The posse sheet",
             "Every soul at the table, with Blood, Defense, saves, Nerve, Grit, the Mark and the "
             + "Taint. Click straight into a cell to edit it. Double-click a soul to open their "
-            + "Ledger — the book's own character sheet — in its own window, and right-click any "
+            + "Ledger, the book's own character sheet, in its own window, and right-click any "
             + "row for everything that can be done to them.\n\nThe six ready-made souls from "
             + "Appendix D are already seated, so you can play tonight without making anybody."),
 
         new("Dice", () => exprBox, "Roll anything",
-            "Type an expression — 2d6+3, or 1d8+1d6+2 — and press Enter. Or punch it in with the "
+            "Type an expression (2d6+3, or 1d8+1d6+2) and press Enter. Or punch it in with the "
             + "keypad below: each +d button stacks that die, the digits build the modifier. The "
             + "dice tumble in the tray and land on the true result, and everything the app rolls "
             + "anywhere lands in the log on the right."),
 
         new("Bestiary", () => beastList, $"All {Db.Creatures.Count} creatures, word for word",
-            "Taken straight out of the Bestiary — lore, stat block, witness quotes and all. Search "
+            "Taken straight out of the Bestiary: lore, stat block, witness quotes and all. Search "
             + "by name, filter by Tier or chapter. Double-click one to pop it out into its own "
             + "window so several horrors can sit side by side, and send it to the Encounter or "
             + "straight onto the Tracker from here."),
 
         new("Encounter", () => encPick, "Weigh the fight before you run it",
-            "Pick creatures here — each line shows its Tier, which is what the whole cost is "
-            + "reckoned from — and the bar at the bottom says whether what you have built is fair, "
+            "Pick creatures here. Each line shows its Tier, which is what the whole cost is "
+            + "reckoned from, and the bar at the bottom says whether what you have built is fair, "
             + "mean, or a massacre against your posse's level. The book's own budget: "
             + $"{Rules.BudgetPerSoul} points a soul, and the rungs it buys are "
             + string.Join(", ", Rules.BudgetRungs.Select(g => $"{g.Name.ToLowerInvariant()} {g.Cost}"))
@@ -134,8 +134,8 @@ public partial class MainForm
             + "Tracker and run it."),
 
         new("Tracker", () => trkGrid, "The fight itself",
-            "Initiative, Blood, conditions, and whose turn it is. Rows are colour-coded — green "
-            + "for the posse, rust for foes, gold for whoever is up, red for the downed — and the "
+            "Initiative, Blood, conditions, and whose turn it is. Rows are colour-coded, green "
+            + "for the posse, rust for foes, gold for whoever is up, red for the downed, and the "
             + "ones who have already gone this round are faded, so what is left to do is something "
             + "you see rather than something you remember.\n\nThe columns marked ✎ are the ones "
             + "you can type into."),
@@ -143,14 +143,14 @@ public partial class MainForm
         new("Tracker", () => trkGrid, "One button, over and over",
             "▶ Next turn is the loop. It hands the turn to whoever is up next by initiative, "
             + "carries the selection with it, and rolls the round over by itself when the field "
-            + "has all gone — so you never advance a counter by hand.\n\nStrike, Dread and ✦ Work "
+            + "has all gone, so you never advance a counter by hand.\n\nStrike, Dread and ✦ Work "
             + "then act on whoever is up. Strike runs the whole Iron Code: to-hit, the four "
             + "degrees, the multiple-attack penalty, the Fatal die, and damage after armour."),
 
         new("Tracker", () => trkGrid, "Signs, Miracles, and what a creature is",
             "✦ Work reads the printed rule and does what it says: who it lands on (yourself, one "
             + "creature, a companion, everything within ten feet, or a place that is nobody at "
-            + "all), how long it holds, and the dice it rolls — and it can roll and apply them "
+            + "all), how long it holds, and the dice it rolls, and it can roll and apply them "
             + "for you. Every Sign's Backlash gets its own line, in red, because that is the half "
             + "you need when it goes wrong.\n\nWhat is working on somebody shows as chips in the "
             + "Worked column. Hover one for the whole of it."),
@@ -172,7 +172,7 @@ public partial class MainForm
             + "steps. 🧭 Wizard… walks you through every choice yourself, each list filtered to "
             + "what the book actually allows. Either way the sheet is re-derived and checked "
             + "against the rules before you ever see it, and ✎ Tweak lets you change anything "
-            + "after — the Ledger notes it was hand-tweaked rather than arguing with you."),
+            + "after. The Ledger notes it was hand-tweaked rather than arguing with you."),
 
         new("Reference", () => referencePage, "The rules at your elbow",
             "A Keeper's screen you turn with ◀ ▶ or the Left and Right arrow keys: the four "
@@ -181,20 +181,20 @@ public partial class MainForm
             + "tables.\n\nWhen a ruling is needed and the book is across the room, it is here."),
 
         new("Session", () => clockPanel, "Keep the record",
-            "Notes for the night — Stamp the date starts each session's entry — and threads with "
+            "Notes for the night (Stamp the date starts each session's entry) and threads with "
             + "clocks beside them. A thread is trouble on its way: name it, give it four, six or "
             + "eight segments, and tick it forward when the world moves toward it. When the last "
             + "segment fills, it comes due."),
 
         new(null, () => null, "That is the whole of it",
             "The table auto-saves beside the app on exit and every five minutes, and reloads when "
-            + "you come back — you never have to think about it.\n\nEverything else is one hover "
+            + "you come back. You never have to think about it.\n\nEverything else is one hover "
             + "away: every button carries a tooltip, and every list has a right-click menu. F1 "
             + "opens the five-minute lesson, and Help ▸ Show me around runs this again.\n\nGo on, "
             + "then. Something is out there."),
     };
 
-    /// <summary>Run the tour from the top. Safe to call twice — an open one is closed first, so
+    /// <summary>Run the tour from the top. Safe to call twice: an open one is closed first, so
     /// Help ▸ Show me around during a tour restarts it rather than stacking two callouts.</summary>
     internal void StartTour()
     {
@@ -203,13 +203,13 @@ public partial class MainForm
         if (stops.Count == 0) return;
         tourWindow = new TourCallout(this, stops);
         tourWindow.Show(this);
-        Log($"Showing you around — {stops.Count} stops. Esc ends it.");
+        Log($"Showing you around, {stops.Count} stops. Esc ends it.");
     }
 }
 
 /// <summary>The floating callout. Owned by the main window so it rides above it and closes with
 /// it, borderless so it reads as a speech bubble rather than another dialog, and deliberately NOT
-/// modal — the whole point is that the app stays usable while it is talking about it.</summary>
+/// modal: the whole point is that the app stays usable while it is talking about it.</summary>
 // Sheet rather than Form even though this one is borderless and so has no caption to colour: what
 // it is really joining is the contents pass, so a control added to the callout later cannot arrive
 // wearing the system theme. Chrome's DWM calls on a borderless window are a no-op, which is the
@@ -253,11 +253,11 @@ sealed class TourCallout : Sheet
         back = TourBtn("◀ Back", (s, e) => Go(at - 1), 88, "The stop before this one");
         next = TourBtn("Next ▶", (s, e) => Go(at + 1), 88, "The next stop on the tour");
         done = TourBtn("Finish", (s, e) => Close(), 88,
-            "Close the tour — Help ▸ Take the tour brings it back whenever you want it");
+            "Close the tour. Help ▸ Take the tour brings it back whenever you want it");
         Controls.AddRange(new Control[] { titleLbl, bodyLbl, countLbl, back, next, done });
 
         // Esc anywhere in the callout ends it. The host also wires Esc, so it works whichever of
-        // the two windows has focus — a tour you cannot dismiss from the app you are using is a trap.
+        // the two windows has focus. A tour you cannot dismiss from the app you are using is a trap.
         KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) Close(); };
         Go(0);
     }
@@ -270,7 +270,7 @@ sealed class TourCallout : Sheet
     /// <para>They were the last <c>FlatStyle.System</c> controls left after v1.33.0 dressed every
     /// bar in the app, and they were the worst place to leave them: this bubble is a borderless
     /// patch of Paper with nothing else on it, so three grey-blue Win32 blocks had no surrounding
-    /// chrome to blend into — and it is the FIRST thing a new Keeper sees, since the tour offers
+    /// chrome to blend into, and it is the FIRST thing a new Keeper sees, since the tour offers
     /// itself on first run. The app's introduction to itself was the one window that did not look
     /// like the app.</para>
     ///
@@ -278,7 +278,7 @@ sealed class TourCallout : Sheet
     /// a second place that paints a button is a second place for the palette to drift. It also puts
     /// these three inside <c>audit_ui.py</c>'s count, which is why they now carry tooltips.</para>
     ///
-    /// <para>The parameter list is <c>Btn</c>'s exactly — <c>(text, onClick, w, tip)</c> — and that
+    /// <para>The parameter list is <c>Btn</c>'s exactly (<c>(text, onClick, w, tip)</c>), and that
     /// is not decoration. The audit exempts a wrapper from its literal-tooltip rule only when every
     /// argument it passes down is a forwarded parameter, so a helper that hard-codes its width
     /// reads to it as a real button site with no caption to check. Matching the signature is what
@@ -294,7 +294,7 @@ sealed class TourCallout : Sheet
 
     // Room reserved on whichever edge the pointer lives, so the triangle is drawn INSIDE the form.
     // A borderless form clips to its own bounds, so a pointer drawn past the edge simply is not
-    // there — which is how the first cut had an arrow nobody could see.
+    // there, which is how the first cut had an arrow nobody could see.
     const int Beak = 13;
 
     void Go(int i)
@@ -305,7 +305,7 @@ sealed class TourCallout : Sheet
         if (stop.Tab != null) host.ShowTab(stop.Tab);
 
         // Where it will sit decides how much room the beak needs at the top, which decides where
-        // the text starts — so the placement is worked out first and the layout follows it.
+        // the text starts, so the placement is worked out first and the layout follows it.
         Place(stop.Target?.Invoke());
 
         int top = Pad + (beakUp ? Beak : 0);
@@ -340,12 +340,12 @@ sealed class TourCallout : Sheet
 
     /// <summary>Park the callout beside what it is talking about, without covering it and without
     /// walking off the screen. Below the control if there is room under it, above if not, pinned
-    /// inside the working area either way — a callout half off the edge of the monitor describes
+    /// inside the working area either way: a callout half off the edge of the monitor describes
     /// its control perfectly and cannot be read.
     ///
     /// A control that fills most of the window (the tab control itself, a docked grid) gets no
     /// beak and sits low and centred instead. Pointing at something that big says nothing, and
-    /// aiming at its edge shoved the callout into the corner of the screen — which is exactly what
+    /// aiming at its edge shoved the callout into the corner of the screen, which is exactly what
     /// the first version did on the very first stop.</summary>
     void Place(Control target)
     {
@@ -388,7 +388,7 @@ sealed class TourCallout : Sheet
         if (!hasBeak) return;
         // A solid arrowhead in the strip reserved on whichever edge faces the control. Drawn as a
         // filled mark rather than as a bubble's tail, because a borderless form clips to its own
-        // bounds — a tail has nowhere to protrude to, and the attempt just yields a shape sitting
+        // bounds. A tail has nowhere to protrude to, and the attempt just yields a shape sitting
         // oddly on the border.
         using var head = new SolidBrush(MainForm.Blood);
         var tri = beakUp

@@ -14,7 +14,7 @@ have been prints:
 
 * **Every link in every book was a NAMED destination.** Chromium emits `/Dest (anchor-id)` for each
   `href="#id"`, and following that means walking the document's `/Names` tree. PyMuPDF does it.
-  Acrobat does it. Plenty of readers, phone viewers above all, do not — so the link is present, the
+  Acrobat does it. Plenty of readers, phone viewers above all, do not, so the link is present, the
   tap does nothing, and the file is technically correct the whole time. That is the shape of the
   report, and it is why it seemed to break on every change: it had always been that way.
 
@@ -51,6 +51,9 @@ PDFS = [
     ("Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf", 2),
     ("Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf", 2),
     ("Blood-and-Grit-Module-III-What-the-Water-Answers.pdf", 2),
+    # Cole, 2026-09-21: the Book of Legends ships as its own PDF as well. Cover and Contents are its
+    # front matter; confirm the count against the first printed copy.
+    ("Blood-and-Grit-Book-of-Legends.pdf", 2),
 ]
 
 # The page number is set with `letter-spacing:.3em`, so the text extractor hands back "1 2 1" for
@@ -175,7 +178,7 @@ def audit(path, frontmatter):
     if unnumbered:
         bad.append(f"{len(unnumbered)} sheet(s) carry no page number: {unnumbered[:12]}")
     if named:
-        bad.append(f"{named} link(s) are named destinations rather than pages — "
+        bad.append(f"{named} link(s) are named destinations rather than pages, and "
                    "many readers will not follow them")
     if not doc.get_toc():
         bad.append("no outline: a reader has no way to jump between chapters")

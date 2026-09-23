@@ -1,38 +1,38 @@
 #!/usr/bin/env python3
-"""audit_consistency.py — does the game play the same way in every place it is written down?
+"""audit_consistency.py: does the game play the same way in every place it is written down?
 
 `verify_rules.py` already guards the PLAYER's side: the Calling tables, the arms table,
 the feature prose, the 3rd-level paths, and Ch. IV's encounter budget. That leaves the Keeper's
 side, which is where the same number appears in the most places and where nothing has ever held
 them together. Two tables in particular are printed in the Bestiary, restated in `CLAUDE.md`, and
-compiled into the app as arrays — and until this file existed, editing any one of the three and
+compiled into the app as arrays, and until this file existed, editing any one of the three and
 not the others produced a clean build, a green audit run, and a Keeper reading one number off the
 page while the app on the table showed another.
 
 What it holds together:
 
-  1. THREAT BY TIER — the Bestiary's benchmark table, `Rules.TierRow`, and `CLAUDE.md`'s copy.
+  1. THREAT BY TIER: the Bestiary's benchmark table, `Rules.TierRow`, and `CLAUDE.md`'s copy.
      Defense, Attack, Blood, both saves, damage die and Dread DC, five Tiers, three sites.
-  2. SIGN & SPOOR — the Bestiary's Grounds table against `Rules.SpoorRow`. This one carries the
+  2. SIGN & SPOOR: the Bestiary's Grounds table against `Rules.SpoorRow`. This one carries the
      safe-table rule, which is the promise that a horror too big for the posse arrives as a trace
      rather than as a fight, so it is the last table in the book that should be allowed to drift.
-  3. THE BESTIARY AND ITS OWN DATA — `creatures.json` re-extracted from the built book and diffed
+  3. THE BESTIARY AND ITS OWN DATA: `creatures.json` re-extracted from the built book and diffed
      against the committed file. The app reads the JSON and nothing re-extracts it automatically,
      so a Bestiary edit shipped without running `extract_creatures.py` leaves the app quoting the
      previous edition's stat block. Nothing caught that before this.
-  4. THE ROLL, BY TIER — the generated appendix against the creature data it is generated from.
+  4. THE ROLL, BY TIER: the generated appendix against the creature data it is generated from.
      It cannot drift while the book is freshly built; it drifts the moment the book is not.
-  5. THE GROUNDS — every creature named in the eleven terrain tables must exist, and the Tier in
+  5. THE GROUNDS: every creature named in the eleven terrain tables must exist, and the Tier in
      parentheses beside it must be that creature's actual Tier. 143 entries, hand-written, each
      one an invitation to mistype a name or misremember a Tier.
-  6. CONDITIONS — every condition a creature inflicts must be defined in the Player's Book
+  6. CONDITIONS: every condition a creature inflicts must be defined in the Player's Book
      Appendix B. A stat block that inflicts something the glossary never names is a rule the
      table cannot look up.
-  7. THE BENCHMARKS AGAINST THE POPULATION — the printed Tier row says what a Tier III thing
+  7. THE BENCHMARKS AGAINST THE POPULATION: the printed Tier row says what a Tier III thing
      should look like; check that the Tier III things look like it. Reported as spread, and
      failed only where a creature sits outside its own Tier's band by more than the neighbouring
      Tiers' width, since the book is explicit that the benchmarks are a starting point.
-  8. PERDITION BASIN — the county every book uses as its example must be one county. Retired
+  8. PERDITION BASIN: the county every book uses as its example must be one county. Retired
      facts (a silver camp, a mission "a ruin fifty years", "Padre Ildefonso") may not come back,
      and the list of what a rider knows reads the same in the Player's Book and all three modules.
 
@@ -100,7 +100,7 @@ def cs_tuples(src, decl):
     """The rows of a C# array-of-tuples initialiser, as lists of raw fields.
 
     Deliberately a text parse and not a build-and-reflect. This audit has to run in a tree with no
-    .NET SDK — that is the whole reason `audits/` is Python — and `Rules.TierRow` is a literal with
+    .NET SDK (that is the whole reason `audits/` is Python) and `Rules.TierRow` is a literal with
     no arithmetic in it, so reading it is honest. It would stop being honest the day somebody
     computes a row, which is what the assert below is for."""
     i = src.find(decl)
@@ -146,7 +146,7 @@ def claude_md_table(text, header_first_cell):
 
 
 def check_threat_by_tier(dig, core, claude):
-    print("\nThreat by Tier — the Bestiary, Rules.TierRow, and CLAUDE.md")
+    print("\nThreat by Tier: the Bestiary, Rules.TierRow, and CLAUDE.md")
     tb = bestiary_table(dig, "Building Your Own Dead", "Tier")
     rows_cs = cs_tuples(core, "TierRow =")
     _hdr, rows_md = claude_md_table(claude, "Tier")
@@ -188,7 +188,7 @@ def check_threat_by_tier(dig, core, claude):
 
 
 def check_spoor(dig, core):
-    print("\nSign & spoor — the Bestiary's Grounds table and Rules.SpoorRow")
+    print("\nSign & spoor: the Bestiary's Grounds table and Rules.SpoorRow")
     tb = bestiary_table(dig, "Sign & Spoor", "Tier of the thing")
     rows_cs = cs_tuples(core, "SpoorRow =")
     if tb is None or rows_cs is None:
@@ -218,7 +218,7 @@ def check_creatures_current(creatures):
     fresh = extract_creatures.parse(str(ROOT / "bestiary.html"))
     CHECKS[0] += 1
     if len(fresh) != len(creatures):
-        fail(f"the built book holds {len(fresh)} creatures, the JSON holds {len(creatures)} — "
+        fail(f"the built book holds {len(fresh)} creatures, the JSON holds {len(creatures)}: "
              "run `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`")
         return
     drift = []
@@ -231,7 +231,7 @@ def check_creatures_current(creatures):
         seen = {}
         for name, k in drift:
             seen.setdefault(name, []).append(k)
-        fail(f"{len(drift)} field(s) across {len(seen)} creature(s) differ from the built book — "
+        fail(f"{len(drift)} field(s) across {len(seen)} creature(s) differ from the built book: "
              "creatures.json is stale, re-extract it")
         for name, ks in list(seen.items())[:8]:
             print(f"          {name}: {', '.join(ks)}")
@@ -240,7 +240,7 @@ def check_creatures_current(creatures):
 
 
 def check_roll_by_tier(dig, creatures):
-    print("\nThe Roll, by Tier — the generated appendix against the creature data")
+    print("\nThe Roll, by Tier: the generated appendix against the creature data")
     tb = bestiary_table(dig, "The Roll, by Tier", "Tier")
     if tb is None:
         fail("the appendix table could not be read")
@@ -268,7 +268,7 @@ def check_roll_by_tier(dig, creatures):
 
 
 def check_grounds(dig, creatures):
-    print("\nThe Grounds — every creature named in the terrain tables")
+    print("\nThe Grounds: every creature named in the terrain tables")
     by_name = {c["name"]: c for c in creatures}
     unknown, mistier, total = [], [], 0
     for _ch, sec, tb in X.all_tables(dig["books"]["bestiary.html"]):
@@ -293,13 +293,13 @@ def check_grounds(dig, creatures):
     for sec, cell in unknown[:8]:
         fail(f"{sec}: \"{cell}\" names no creature in the Bestiary")
     for sec, cell, t in mistier[:8]:
-        fail(f"{sec}: \"{cell}\" — that creature is Tier {t}")
+        fail(f"{sec}: \"{cell}\" is Tier {t}, not the Tier this table gives it")
     if not (unknown or mistier):
         ok(f"{total} table entries: every name real, every Tier the creature's own")
 
 
 def check_conditions(dig, creatures):
-    print("\nConditions — every one a creature inflicts is defined in Appendix B")
+    print("\nConditions: every one a creature inflicts is defined in Appendix B")
     defined = []
     for _ch, _sec, tb in X.all_tables(dig["books"]["blood-and-grit.html"]):
         if tb["headers"][:1] == ["Condition"]:
@@ -309,7 +309,7 @@ def check_conditions(dig, creatures):
         return
     # A condition is named in Title Case in a stat block, which is what makes this findable at all.
     # The vocabulary is closed and small, so the scan looks for the DEFINED names plus a short list
-    # of near-misses — a stat block reading "Staggered" or "Confused" is inventing a condition, and
+    # of near-misses: a stat block reading "Staggered" or "Confused" is inventing a condition, and
     # that is the finding. Free prose elsewhere in the book is not scanned: the glossary governs
     # stat blocks, and a lore paragraph may say "blinded by the dust" without meaning the rule.
     known = {d.split()[0] for d in defined}
@@ -415,7 +415,7 @@ FOREIGN = {
 # "Nerve and the Mark are the truest hit points in this game" is a deliberate figure, and
 # "Wisdom in this country is a wound that does not close" is simply the English word. A checker
 # that fires on good prose gets ignored, and then it is not a checker. What stays hard above is
-# the set with no honest English or metaphorical use at all — nobody writes "Armor Class 17" by
+# the set with no honest English or metaphorical use at all. Nobody writes "Armor Class 17" by
 # accident in a sentence that means anything else.
 FOREIGN_SOFT = {"hit points": "Blood", "Hit Points": "Blood", "saving throw": "save",
                 "sanity": "Nerve", "experience points": "levels"}
@@ -423,7 +423,7 @@ FOREIGN_SOFT = {"hit points": "Blood", "Hit Points": "Blood", "saving throw": "s
 # Features the app models and the books describe, held to each other by name. A row is a promise
 # that BOTH sides carry the thing: the book states the rule, the app tracks the state. When the
 # audit reports one side missing, the fix is to build the missing half rather than to delete the
-# row — a rule printed in a book the app cannot run is a rule the Keeper does by hand at a table
+# row. A rule printed in a book the app cannot run is a rule the Keeper does by hand at a table
 # where everything else is done for them, and app state the books never explain is a number nobody
 # can check. Add a row the day a feature lands on either side.
 PARITY = [
@@ -442,7 +442,7 @@ PARITY = [
     ("the Familiar-Bound's spirit-carry", r"carries your spirit to a new dawn",
      r"\bpublic bool FamiliarCarried\b"),
     # Added 2026-08-31. The first is G2's finding: Ch. IV makes two corrections to the encounter
-    # budget and the app carried one of them. The other two are B6b's — a rule that lived only in
+    # budget and the app carried one of them. The other two are B6b's: a rule that lived only in
     # a C# switch statement until the book printed the table it decides from.
     ("Ch. IV's dearer pricing", r"price a fight one rung", r"\bPriceDearerFrom\b"),
     ("the table of familiars", r"from the table of familiars", r"\bCgFamiliar\b"),
@@ -451,7 +451,7 @@ PARITY = [
 
 
 def check_shared_vocabulary(dig):
-    print(f"\nOne vocabulary — the {len(dig['books'])} books, and the parent system's words "
+    print(f"\nOne vocabulary: the {len(dig['books'])} books, and the parent system's words "
           "that must not appear")
     hits, soft = 0, []
     for name, book in dig["books"].items():
@@ -460,7 +460,7 @@ def check_shared_vocabulary(dig):
                 CHECKS[0] += 1
                 if re.search(r"\b" + re.escape(foreign) + r"\b", para, re.I):
                     hits += 1
-                    where = f"{name} — {ch}" + (f" / {sec}" if sec else "")
+                    where = f"{name}, {ch}" + (f" / {sec}" if sec else "")
                     fail(f"{where}: \"{foreign}\" should be \"{ours}\"")
                     idx = para.lower().find(foreign.lower())
                     print(f"          …{para[max(0, idx - 60):idx + 60]}…")
@@ -471,11 +471,11 @@ def check_shared_vocabulary(dig):
     if not hits:
         ok(f"{len(FOREIGN)} borrowed terms checked across all {len(dig['books'])} books: none of them appears")
     if soft:
-        print(f"    note  {len(soft)} legitimate borrowing(s), reported and not failed — glosses "
+        print(f"    note  {len(soft)} legitimate borrowing(s), reported and not failed, glosses "
               "for a reader arriving from another game:")
         for name, ch, foreign, ours, para in soft:
             idx = para.find(foreign)
-            print(f"          {name} — {ch}: \"{foreign}\" ({ours})")
+            print(f"          {name}, {ch}: \"{foreign}\" ({ours})")
             print(f"            …{para[max(0, idx - 55):idx + 55]}…")
 
 
@@ -521,7 +521,7 @@ def check_no_accidental_repeats(dig):
     plate 15 times, the Signs ladder 5, the safety line 3. Creature furniture is cut first, because
     a module prints a creature's Found line in its roster and again in its stat block on purpose.
     """
-    print("\nNo accidental repeats — a sentence printed twice in one book is a copy, not a refrain")
+    print("\nNo accidental repeats: a sentence printed twice in one book is a copy, not a refrain")
     # Creature text repeats BY DESIGN. A module prints a stat block generated from creatures.json in
     # its roster and again where the fight happens, so the same Found line and the same Putting It
     # Down land in two sections on purpose. Rather than guess at markup, ask the source: anything
@@ -556,7 +556,7 @@ def check_no_accidental_repeats(dig):
             CHECKS[0] += 1
             if len(where) == 2:
                 found += 1
-                fail(f"{name}: printed twice — \"{s[:96]}…\"")
+                fail(f"{name}: printed twice, \"{s[:96]}…\"")
                 print(f"          {where[0]}")
                 print(f"          {where[1]}")
     if not found:
@@ -565,7 +565,7 @@ def check_no_accidental_repeats(dig):
 
 
 def check_chapter_refs(dig):
-    print("\nCross-references — every chapter a book points at is a chapter that exists")
+    print("\nCross-references: every chapter a book points at is a chapter that exists")
     have = {}
     for name, book in dig["books"].items():
         have[name] = {c["roman"] for c in book["chapters"] if c["roman"]}
@@ -590,14 +590,14 @@ def check_chapter_refs(dig):
                     # it said which book: resolve against that one and nothing else
                     if n not in have.get(named, set()):
                         bad += 1
-                        fail(f"{name} — {ch}: \"{m.group(1)}'s Book Chapter {m.group(2)}\" is not a "
+                        fail(f"{name}, {ch}: \"{m.group(1)}'s Book Chapter {m.group(2)}\" is not a "
                              f"chapter of {named}")
                     continue
                 # A bare reference resolves against the book it is in, or against the Player's
                 # Book, which is the shared spine every other book is built on and cites by default.
                 if n not in own and n not in spine:
                     bad += 1
-                    fail(f"{name} — {ch}: \"Chapter {m.group(2)}\" exists in neither this book "
+                    fail(f"{name}, {ch}: \"Chapter {m.group(2)}\" exists in neither this book "
                          f"(I–{max(own) if own else 0}) nor the Player's Book")
     if not bad:
         ok(f"every Chapter reference in all {len(dig['books'])} books resolves "
@@ -627,7 +627,7 @@ RIDER_LIST_IN = ["blood-and-grit.html", "module-salt-at-coffin-wells.html",
 
 
 def check_basin(dig):
-    print("\nPerdition Basin — one county, told the same way in every book")
+    print("\nPerdition Basin: one county, told the same way in every book")
     import html as _html
     from perdition_map import RIDER_KNOWS
     bad = 0
@@ -658,7 +658,7 @@ def check_basin(dig):
 
 
 def check_app_book_parity(dig, core, chargen_src):
-    print("\nApp and books — every feature one carries, the other carries too")
+    print("\nApp and books: every feature one carries, the other carries too")
     prose = "\n".join(t for b in dig["books"].values() for _c, _s, t in X.all_text(b))
     app = core + "\n" + chargen_src
     gaps = 0
@@ -668,10 +668,10 @@ def check_app_book_parity(dig, core, chargen_src):
         in_app = bool(re.search(app_pat, app))
         if in_book and not in_app:
             gaps += 1
-            fail(f"{label}: the books state the rule, the app tracks nothing — build it in the app")
+            fail(f"{label}: the books state the rule, the app tracks nothing; build it in the app")
         elif in_app and not in_book:
             gaps += 1
-            fail(f"{label}: the app tracks it, no book explains it — write it into the book")
+            fail(f"{label}: the app tracks it, no book explains it; write it into the book")
     if not gaps:
         ok(f"{len(PARITY)} feature(s): each one both printed in a book and tracked by the app")
 

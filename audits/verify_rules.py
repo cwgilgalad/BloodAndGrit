@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""The book↔data drift guard — the last seam in the single-source discipline.
+"""The book↔data drift guard: the last seam in the single-source discipline.
 
 The rest of the chain is already self-checking: the GritKeeper app reads every number from
 `GK/rules/Data/chargen.json`, and `CharGen.Validate` re-derives each one from the formula, so
 the data and the app can never quietly disagree (the smoke suite fails first). The one seam left
-to a human hand is the *printed book* — the Player's Book prints eighteen Calling tables that I
+to a human hand is the *printed book*: the Player's Book prints eighteen Calling tables that I
 transcribe into chargen.json. This checks that transcription automatically: it parses the built
 `blood-and-grit.html`, reads each Calling's statline rank and its ten rows of attack and saves,
 and asserts the book agrees with the data AND both agree with the one spine formula (Ch. XIV):
@@ -444,7 +444,7 @@ CS_RUNG     = re.compile(r'new\("([^"]+)",\s*"[^"]*",\s*(\d+)\)')
 
 
 def load_app_budget(problems):
-    """The app's ladder, off Rules.BudgetRungs — the one array everything in the app prices from."""
+    """The app's ladder, off Rules.BudgetRungs: the one array everything in the app prices from."""
     src = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
     per = CS_PER_SOUL.search(src)
     block = CS_RUNGS.search(src)
@@ -539,7 +539,7 @@ def check_budget(problems):
             continue                      # GritKeeper/ is generated; a clean tree may not have it
         m = re.search(r"mook (\d+)[,·\s]+even foe (\d+)[,·\s]+standout (\d+)", text, re.I)
         if not m:
-            problems.append(f"{path}: states no encounter ladder (or reworded) — it named one "
+            problems.append(f"{path}: states no encounter ladder (or reworded); it named one "
                             "before, so a silent disappearance is the same drift by another route")
         else:
             got = tuple(int(g) for g in m.groups())
@@ -748,7 +748,7 @@ def check_arithmetic_stops(problems):
         checks += 1
         text = _flat(book)
         if where not in text:
-            problems.append(f"{book}: does not carry {where!r} — the Tier {roman} rule is unsaid here")
+            problems.append(f"{book}: does not carry {where!r}: the Tier {roman} rule is unsaid here")
             continue
         if names_tier and f"Tier <strong>{roman}</strong>" not in text and f"Tier {roman}" not in text:
             problems.append(f"{book}: states the rule but never names Tier {roman}, "
@@ -773,7 +773,7 @@ def check_price_dearer(problems):
     src = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
     m, body = CS_DEARER_N.search(src), CS_DEARER_S.search(src)
     if not m or not body:
-        problems.append("Core.cs: no PriceDearerFrom / DearerNote — Ch. IV's second correction "
+        problems.append("Core.cs: no PriceDearerFrom / DearerNote, Ch. IV's second correction "
                         "to the budget is not in the app")
         return 0
     level = int(m.group(1))
@@ -786,7 +786,7 @@ def check_price_dearer(problems):
         problems.append(f"keeper-handbook.html: does not say \"from {ordinal} level on\", which is "
                         f"what Core.cs's PriceDearerFrom is set to")
     if "one rung dearer" not in book:
-        problems.append("keeper-handbook.html: no longer prices a fight \"one rung dearer\" — "
+        problems.append("keeper-handbook.html: no longer prices a fight \"one rung dearer\": "
                         "the app is quoting a rule the book has stopped making")
 
     # And the app's own sentence has to be the book's, not a paraphrase of it. This is the half
@@ -796,7 +796,7 @@ def check_price_dearer(problems):
     said = body.group(1)
     for phrase in ("one rung dearer than the table says", "pleasantly surprised"):
         if phrase not in said:
-            problems.append(f"Core.cs: DearerNote does not say {phrase!r} — the app is "
+            problems.append(f"Core.cs: DearerNote does not say {phrase!r}: the app is "
                             "paraphrasing Ch. IV rather than quoting it")
 
     # A note, never an adjustment: the printed ladder is on the same screen as the spend.

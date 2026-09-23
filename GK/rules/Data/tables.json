@@ -46,7 +46,7 @@
  "townAils": [
   "The mine is played out and the men aren't leaving",
   "Drought; the wells are down to mud",
-  "The railroad is coming through \u2014 or past",
+  "The railroad is coming through, or past",
   "Stock dying; wolves blamed",
   "A feud between the two big families",
   "The church burned last spring",
@@ -54,7 +54,7 @@
   "The marshal is a drunk or a coward",
   "Nobody will ride the north road after dark",
   "A revival tent has half the town in it every night",
-  "Children have gone missing \u2014 two this season",
+  "Children have gone missing, two this season",
   "The town is emptying; wagons leave weekly"
  ],
  "townSecret": [
@@ -172,7 +172,7 @@
  "npcWant": [
   "Money, plainly and now",
   "To leave this town and can't",
-  "Their child back \u2014 from debt, drink, or the dark",
+  "Their child back: from debt, drink, or the dark",
   "Revenge dressed up as justice",
   "To confess something to anyone safe",
   "Protection, and won't say from what",
@@ -181,10 +181,10 @@
   "To sell you something you shouldn't buy",
   "Company; they are desperately lonely",
   "To keep a promise made to the dead",
-  "What the dark promised them \u2014 almost paid off now"
+  "What the dark promised them, almost paid off now"
  ],
  "npcTell": [
-  "Counts things \u2014 coins, exits, your party",
+  "Counts things: coins, exits, your party",
   "Always faces the door",
   "Wears something of the child's, worried smooth",
   "Smiles only when someone else is hurting",
@@ -207,12 +207,12 @@
   "A whole wagon train wintered at the pass and never came down",
   "The Vane girl came back from the river three days after she drowned",
   "There's a gunfighter in the territory can't be killed; ask at the faro table",
-  "Cattle on the north range born wrong this spring \u2014 every one",
+  "Cattle on the north range born wrong this spring, every one",
   "The Army's buying salt by the wagonload and won't say why",
   "A woman weeps along the creek at night; don't answer her",
   "Doc's been ordering twice the laudanum for half the patients",
   "The bounty on the Sorrel Gang doubled; the last posse's horses came home alone",
-  "Something's been opening graves \u2014 from underneath",
+  "Something's been opening graves, from underneath",
   "There's a door in the mesa the old people painted shut",
   "The railroad man buys land nobody'd want at prices nobody'd refuse",
   "The marshal burned a bundle of letters the night the judge died",
@@ -220,16 +220,16 @@
   "It's quiet lately. Too quiet. Even the coyotes have moved on."
  ],
  "trailDay": [
-  "Weather turning \u2014 a wall of it, hours off",
+  "Weather turning, a wall of it, hours off",
   "Tracks crossing yours: shod horses, moving fast, one bleeding",
   "Buzzards, a mile off, patient",
   "A homestead: door open, table set, nobody",
-  "Fence line cut \u2014 from the outside",
+  "Fence line cut, from the outside",
   "A stranger afoot, no water, won't say from where",
   "Fresh grave by the trail, marker turned face-down",
-  "Good water, good grass \u2014 and old bones in the reeds",
+  "Good water, good grass, and old bones in the reeds",
   "A drummer's wagon, wares half-price, seller in a hurry",
-  "Smoke ahead \u2014 too much for a campfire, too little for a town",
+  "Smoke ahead, too much for a campfire, too little for a town",
   "The shortcut everyone knows about; nobody's used it in a year",
   "A rider pacing you on the far ridge all afternoon"
  ],
@@ -249,15 +249,15 @@
  ],
  "plunder": [
   "$2d20 in mixed coin, some of it minted nowhere you know",
-  "A good horse, saddled, patient, waiting \u2014 branded to a dead man's outfit",
+  "A good horse, saddled, patient, waiting, branded to a dead man's outfit",
   "A fine revolver with eleven notches and a name scratched out",
   "Letters home, unsent, that explain everything if read in order",
   "A doctor's bag, complete, monogrammed, one instrument missing",
   "A claim deed, legal and current, to ground the locals won't name",
   "A silver crucifix, heavy, bent nearly double by hand",
-  "Tintypes of strangers \u2014 and on a second look, one of a party member",
+  "Tintypes of strangers, and on a second look, one of a party member",
   "A journal, sane for forty pages, then diagrams",
-  "Trade goods: powder, salt, coffee \u2014 worth $30 to the right town, questions to the wrong one",
+  "Trade goods: powder, salt, coffee, worth $30 to the right town, questions to the wrong one",
   "A child's doll, new, dry, forty miles from anywhere",
   "A key of black iron, cold in any weather; you'll know the lock when you see it"
  ],
@@ -290,20 +290,20 @@
    "Road Agents (I\u2013II)",
    "The Dust Devil (II)",
    "The Hexed Beast (I\u2013II)",
-   "The Mourner (II) \u2014 an omen",
+   "The Mourner (II): an omen",
    "The Pale Wolf (II)",
    "The Skinned Stallion (II)",
    "The Ghost Cat (II)",
    "The Whistler (III)",
    "The Restless Herd (II)",
-   "The Faceless Rider (IV) \u2014 ruin follows",
-   "The Bitten (I) \u2014 and he knows it",
+   "The Faceless Rider (IV): ruin follows",
+   "The Bitten (I), and he knows it",
    "The Hitchhiker (I)",
-   "The Black Dog (II) \u2014 an omen, and it comes back",
+   "The Black Dog (II): an omen, and it comes back",
    "The Field-Hand (II)",
    "The Moon-Sick (II)",
-   "The Fiddler at the Dance (III) \u2014 a barn, a Saturday",
-   "The Midnight Line (III) \u2014 the old grade",
+   "The Fiddler at the Dance (III): a barn, a Saturday",
+   "The Midnight Line (III): the old grade",
    "The Stitched Man (III)"
   ],
   "Rivers, Lakes & Swamps": [
@@ -317,7 +317,7 @@
    "The Bull Gator (a living beast)",
    "The Horned Serpent (III)",
    "The Old Man of the Swamp (a living beast)",
-   "The Plat-Eye (II) \u2014 the levee road",
+   "The Plat-Eye (II): the levee road",
    "The Loup-Garou (III)"
   ],
   "Towns, Homesteads & Haunted Houses": [
@@ -333,14 +333,14 @@
    "The Nightwalker (III)",
    "The Dollmaker's Children (II)",
    "The House That Hungers (IV)",
-   "The Blood-Thin (I) \u2014 in the cellar",
+   "The Blood-Thin (I): in the cellar",
    "The Answering Voice (II)",
    "The Boo Hag (II)",
-   "The Coffin-Rider (II) \u2014 the freight shed",
-   "The Tintype (II) \u2014 on the mantel",
+   "The Coffin-Rider (II): the freight shed",
+   "The Tintype (II): on the mantel",
    "The Fetch (III)",
-   "The Wake (III) \u2014 the house is lit",
-   "The Old Blood (IV) \u2014 it holds the paper"
+   "The Wake (III): the house is lit",
+   "The Old Blood (IV): it holds the paper"
   ],
   "Graveyards & Battlefields": [
    "The Risen (I)",
@@ -354,7 +354,7 @@
    "The Hangman's Echo (II)",
    "The Scalp-Taker's Ghost (III)",
    "The Grave-Eater (II)",
-   "The Wasting Kin (II) \u2014 the family plot"
+   "The Wasting Kin (II): the family plot"
   ],
   "Mines & Under the Earth": [
    "The Mummied Prospector (I)",
@@ -365,7 +365,7 @@
    "The Devourer's Tongue (IV)",
    "The Grave-Wight (III)",
    "The Stone Giant (IV)",
-   "The Tommyknocker (I) \u2014 mind your manners",
+   "The Tommyknocker (I): mind your manners",
    "The Brood (III)"
   ],
   "Winter & the High Country": [
@@ -405,18 +405,18 @@
    "The Unmade (V)"
   ],
   "The Hand Behind It": [
-   "The Hexer (II) \u2014 hired, and in over his head",
-   "The Hanging Judge (III) \u2014 the law itself, dead and wrong",
-   "The Resurrectionist (II) \u2014 a trade in the dead",
-   "The Bruja (III) \u2014 the night roads are hers",
-   "The Witch (II\u2013III) \u2014 an old slight, patiently repaid",
-   "The Deathless Gun (III) \u2014 a bargain still being spent",
-   "The Mesmerist (III) \u2014 other people's hands",
-   "The Tallyman (III) \u2014 a debt come due",
+   "The Hexer (II): hired, and in over his head",
+   "The Hanging Judge (III): the law itself, dead and wrong",
+   "The Resurrectionist (II): a trade in the dead",
+   "The Bruja (III): the night roads are hers",
+   "The Witch (II\u2013III), an old slight, patiently repaid",
+   "The Deathless Gun (III): a bargain still being spent",
+   "The Mesmerist (III): other people's hands",
+   "The Tallyman (III): a debt come due",
    "Dark Cultist & the Hollow Prophet (II\u2013III)",
-   "The Crossroads Man (IV) \u2014 somebody dealt, and lost",
-   "The Day-Man (II) \u2014 he keeps the books",
-   "The Old Blood (IV) \u2014 every note in the county"
+   "The Crossroads Man (IV): somebody dealt, and lost",
+   "The Day-Man (II): he keeps the books",
+   "The Old Blood (IV): every note in the county"
   ],
   "The Ordinary Country": [
    "The Rustlers (I)",
@@ -427,32 +427,32 @@
    "The Saloon Brawl (I)",
    "The Tinhorn (I)",
    "The Claim-Jumpers (I)",
-   "The Turkey Buzzard (I) \u2014 go and look",
+   "The Turkey Buzzard (I): go and look",
    "The Skunk (I)",
-   "The Hornet Swarm (I) \u2014 and the horses",
+   "The Hornet Swarm (I), and the horses",
    "The Peccary Band (I)",
-   "The Elk Bull (II) \u2014 in the rut",
+   "The Elk Bull (II): in the rut",
    "The Horse Thieves (II)",
    "The Lynch Mob (II)",
    "The Norther (II)",
    "The Prairie Fire (II)",
    "The Hired Gun (II)",
    "The River Crossing (III)",
-   "The Stock-Killer Wolf (III) \u2014 a whole season's work"
+   "The Stock-Killer Wolf (III): a whole season's work"
   ],
   "The Lamplit City": [
-   "The Saloon Brawl (I) \u2014 and a stove",
+   "The Saloon Brawl (I), and a stove",
    "The Bonepicker (I)",
-   "The Hired Gun (II) \u2014 an agency now",
-   "The Resurrectionist (II) \u2014 with a price list",
-   "The Lynch Mob (II) \u2014 a whole ward of it",
-   "Dark Cultist & the Hollow Prophet (II) \u2014 chartered",
-   "The Possessed (II) \u2014 with standing",
-   "The Mesmerist (III) \u2014 a subscription hall",
-   "The Skin-Walker (III) \u2014 a new face each month",
+   "The Hired Gun (II): an agency now",
+   "The Resurrectionist (II): with a price list",
+   "The Lynch Mob (II): a whole ward of it",
+   "Dark Cultist & the Hollow Prophet (II): chartered",
+   "The Possessed (II): with standing",
+   "The Mesmerist (III): a subscription hall",
+   "The Skin-Walker (III): a new face each month",
    "The Nightwalker (III)",
-   "The Tallyman (III) \u2014 he holds the paper",
-   "The Thing in the Well (III) \u2014 the waterworks"
+   "The Tallyman (III): he holds the paper",
+   "The Thing in the Well (III): the waterworks"
   ]
  },
  "cityWrongNote": [

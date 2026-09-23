@@ -2,11 +2,11 @@ using System.Text;
 
 namespace BloodAndGritKeeper;
 
-// A tiny from-scratch PDF writer — no packages, nothing for the Keeper to install.
+// A tiny from-scratch PDF writer: no packages, nothing for the Keeper to install.
 // Two products: a Letter-portrait text sheet (the New Soul export) and a Letter-
 // landscape vector page (the map export, drawn from the same primitives as the
 // screen and the SVG). Everything here is plain PDF 1.4: numbered objects, an
-// xref table, uncompressed content streams — every byte is Latin-1, so offsets
+// xref table, uncompressed content streams. Every byte is Latin-1, so offsets
 // can be counted as characters.
 public static class Pdf
 {
@@ -151,7 +151,7 @@ public static class Pdf
                  .Append($"{N(margin)} {N(y)} Td ({Esc(line)}) Tj ET\n");
             }
             c.Append($"BT /F4 8 Tf {Rgb("#8a7a5c")} rg {N(margin)} {N(margin - 18)} Td ")
-             .Append($"({Esc($"GritKeeper — Blood & Grit  ·  page {p + 1} of {pages.Count}")}) Tj ET\n");
+             .Append($"({Esc($"GritKeeper: Blood & Grit  ·  page {p + 1} of {pages.Count}")}) Tj ET\n");
 
             objs.Add(Stream(c.ToString()));
             objs.Add($"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {N(pw)} {N(ph)}] " +
@@ -164,8 +164,8 @@ public static class Pdf
 
     // ---------------------------------------------------------- the map page
     // One landscape Letter page, the map's primitives replayed as PDF vector
-    // operators — the same model the screen and the SVG render, so all three match.
-    /// <paramref name="overlay"/> is replayed last, over the finished survey — the Keeper's tactical
+    // operators: the same model the screen and the SVG render, so all three match.
+    /// <paramref name="overlay"/> is replayed last, over the finished survey: the Keeper's tactical
     /// markers, when the Map tab was asked to include them. Null means the map alone.
     public static byte[] MapPdf(MapModel m, IEnumerable<Prim> overlay = null)
     {
@@ -175,7 +175,7 @@ public static class Pdf
         double X(double x) => ox + x * s;
         double Y(double y) => ph - oy - y * s;
 
-        // Walked twice below — once to collect the alphas, once to draw — so it has to be a list,
+        // Walked twice below (once to collect the alphas, once to draw) so it has to be a list,
         // not a lazy Concat that would re-enumerate into a different set of ExtGState indices.
         var prims = overlay == null ? m.P : m.P.Concat(overlay).ToList();
 

@@ -95,7 +95,7 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
     {
         var (strikes, riders) = CreatureAttack.Parse(c.attacks);
         // A creature either has parseable Strikes, or its line is pure riders (an intangible hazard,
-        // a phenomenon) — never a parser crash, never a half-parsed clause.
+        // a phenomenon). Never a parser crash, never a half-parsed clause.
         if (strikes.Count == 0) { noStrikeCreatures++; }
         totalStrikes += strikes.Count;
         foreach (var a in strikes)
@@ -147,7 +147,7 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
     var (fa, _, fc) = CombatMenu.For(foe);
     T("a foe draws its own attacks, not the posse's", fc != null && fa != null && fa.Count >= 1);
 
-    // a posse soul NEVER fights as a creature — even if a stale Ref rode in on an old session
+    // a posse soul NEVER fights as a creature, even if a stale Ref rode in on an old session
     var soul = new Combatant { Name = "Ruth", IsPC = true, Ref = badgerName };
     T("a PC is never classed as a creature (even with a stray Ref)", !CombatMenu.IsCreature(soul));
     var (sa, sr, sc) = CombatMenu.For(soul);
@@ -208,7 +208,7 @@ foreach (var (ground, list) in Db.Terrain)
                   .Select(e => System.Text.RegularExpressions.Regex.Match(e, @"^(.*?)(\s*\(|$)").Groups[1].Value.Trim()));
     var unreachable = Db.Creatures.Select(c => c.name).Where(n => !onTables.Contains(n)).ToList();
     T($"every creature is reachable from some terrain table, bar the {heldBack.Count} held back"
-      + (unreachable.Except(heldBack).Any() ? " — " + string.Join(", ", unreachable.Except(heldBack)) : ""),
+      + (unreachable.Except(heldBack).Any() ? ": " + string.Join(", ", unreachable.Except(heldBack)) : ""),
       !unreachable.Except(heldBack).Any());
     // and an exception that stops being an exception is a stale list, which is its own fault
     T("nothing on the held-back list has quietly reappeared on a table",
@@ -216,7 +216,7 @@ foreach (var (ground, list) in Db.Terrain)
 }
 
 // The generators the Keeper actually presses. A re-extraction of tables.json that lands without
-// tables_extra.json would still boot and still roll — just thinly, and silently. Hold the floor.
+// tables_extra.json would still boot and still roll, just thinly, and silently. Hold the floor.
 foreach (var (table, floor) in new[]
 {
     ("townFront", 40), ("townBack", 40), ("townAils", 28), ("townSecret", 28),
@@ -229,7 +229,7 @@ foreach (var (table, floor) in new[]
 // ---- The safe-table rule: sign and spoor ----
 {
     T("spoor: a row for every Tier", Rules.SpoorRow.Length == 5);
-    // The DCs climb with the Tier, and the Dread cost is one rung below meeting the thing —
+    // The DCs climb with the Tier, and the Dread cost is one rung below meeting the thing,
     // which is the whole claim the books make about this rule, so hold them to it.
     for (int i = 1; i < Rules.SpoorRow.Length; i++)
     {
@@ -238,7 +238,7 @@ foreach (var (table, floor) in new[]
         T($"spoor: Tier {Rules.Roman(i + 1)} costs no less Nerve than {Rules.Roman(i)}",
             Rules.SpoorRow[i].dreadDc >= Rules.SpoorRow[i - 1].dreadDc);
     }
-    T("spoor: a Tier I trace costs nothing — out here a cougar kills a calf", Rules.SpoorRow[0].dreadDc == 0);
+    T("spoor: a Tier I trace costs nothing, out here a cougar kills a calf", Rules.SpoorRow[0].dreadDc == 0);
     // "one rung below the thing itself": the sign of a Tier N horror costs what MEETING a
     // Tier N-1 horror costs. Tier II's 10 is the bottom of Tier I's "— / 10–13" band.
     for (int i = 1; i < Rules.SpoorRow.Length; i++)
@@ -251,7 +251,7 @@ foreach (var (table, floor) in new[]
     T("spoor: and none of them is blank",
         Enumerable.Range(0, 4).All(d => !string.IsNullOrWhiteSpace(Rules.SpoorRead(d))));
     T("spoor: the thread is a four-segment clock", Rules.SpoorClockSegments == 4);
-    // The rule only fires where Rules.Cost says it does — two or more Tiers over the posse.
+    // The rule only fires where Rules.Cost says it does: two or more Tiers over the posse.
     T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
     T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
 
@@ -304,7 +304,7 @@ foreach (var (table, floor) in new[]
     // ---- a sign on the field: the Combatant half ----
     {
         var sign = new Combatant { Name = "Sign of the Wendigo", Ref = "The Wendigo", IsSign = true };
-        T("sign: a trace with no Blood is not 'Down' — it was never up", !sign.Down);
+        T("sign: a trace with no Blood is not 'Down'. It was never up", !sign.Down);
         T("sign: a trace has no next Strike", sign.NextStrike == "—");
         T("sign: an empty clock draws all empty", sign.SignClock == new string('▯', Rules.SpoorClockSegments));
         T("sign: a fresh trace is not full", !sign.SignFull);
@@ -361,13 +361,13 @@ foreach (var (table, floor) in new[]
     if (womenWhole.Count > 0 && menWhole.Count > 0)
     {
         // Over 600 draws at a 12% whole-name rate, a custom gender should reach BOTH pools.
-        // (An undescribed soul — no look passed — keeps those old odds; see FullName.)
+        // (An undescribed soul, no look passed, keeps those old odds; see FullName.)
         var custom = new List<string>();
         for (int i = 0; i < 1200; i++) custom.Add(CharGen.FullName("Nonbinary"));
         T("gender: a custom gender reaches the women's whole-name pool", custom.Any(womenWhole.Contains));
         T("gender: and the men's", custom.Any(menWhole.Contains));
 
-        // The two named ones stay exclusive — the fix must not blur them together.
+        // The two named ones stay exclusive. The fix must not blur them together.
         var asWoman = new List<string>();
         for (int i = 0; i < 1200; i++) asWoman.Add(CharGen.FullName("Woman"));
         T("gender: a woman never draws a man's whole name", !asWoman.Any(n => menWhole.Contains(n) && !womenWhole.Contains(n)));
@@ -379,7 +379,7 @@ foreach (var (table, floor) in new[]
     T("gender: Woman and Man come through untouched",
         CharGen.CleanGender("Woman") == "Woman" && CharGen.CleanGender("Man") == "Man");
 
-    // A hand-built soul keeps whatever gender it was given, all the way onto the sheet — the road
+    // A hand-built soul keeps whatever gender it was given, all the way onto the sheet. The road
     // the wizard walks. Calling and Origin come from the data so this never fails on a renamed one.
     var gCal = CharGen.D.callings[0];
     var gOrg = CharGen.D.origins.First(o => !(gCal.group == "Faith" && o.notFaith));
@@ -391,7 +391,7 @@ foreach (var (table, floor) in new[]
     T("gender: and the name it was given", built.Name == "Birdie Ashby");
     T("gender: and is still a legal sheet", CharGen.Validate(built).Count == 0);
 
-    // The wizard's road with the gender left empty still yields a soul — the assembler rolls one
+    // The wizard's road with the gender left empty still yields a soul: the assembler rolls one
     // rather than shipping a blank, which is what it has always done for an unanswered step.
     var blank = new CharGen.AssembleSpec { Level = 1, Calling = gCal.name, Origin = gOrg.name, Rolled = true };
     foreach (var a in new[] { "STR", "DEX", "CON", "WIT", "RES", "PRE" }) blank.PreGiftScores[a] = 12;
@@ -432,7 +432,7 @@ foreach (var (table, floor) in new[]
     T("turn: an all-down field is not a spent round", !Rules.RoundSpent(allDown));
     T("turn: an empty field is not one either", !Rules.RoundSpent(new List<Combatant>()));
 
-    // A trace never takes a turn — it is not on the field to take one.
+    // A trace never takes a turn. It is not on the field to take one.
     var withSign = new List<Combatant> { C("Ruth", 12), new() { Name = "Sign of it", IsSign = true, Init = 99 } };
     T("turn: a trace is never up, whatever its initiative", Rules.NextUp(withSign).Name == "Ruth");
     withSign[0].BeginTurn();
@@ -442,7 +442,7 @@ foreach (var (table, floor) in new[]
     // Regression, 2026-07-27: "New fight" was written before Worked effects and the sign strip
     // existed and never learned about either, so a Keeper pressed it and the previous fight's
     // Signs and Miracles walked into the next one. It read as a dead button. Blood is the one
-    // thing that MUST survive — wounds carry between fights; Rest is what heals them.
+    // thing that MUST survive: wounds carry between fights; Rest is what heals them.
     var survivor = C("Ruth", 12);
     survivor.Conditions = "Bleeding, Prone";
     survivor.Beats = 0; survivor.MapStep = 4; survivor.Acting = true; survivor.HasActed = true;
@@ -458,9 +458,9 @@ foreach (var (table, floor) in new[]
     T("new fight: nobody is mid-turn", !survivor.Acting && !survivor.HasActed);
     T("new fight: everyone is back in the order", Rules.CanAct(survivor));
     T("new fight: the map step resets", survivor.MapStep == 1);
-    T("new fight: nothing is still working — the whole point of the fix", survivor.Worked.Count == 0);
+    T("new fight: nothing is still working, the whole point of the fix", survivor.Worked.Count == 0);
     T("new fight: an effect with no duration ends too, not just the timed one", !survivor.Worked.Any(w => w.RoundsLeft == -1));
-    T("new fight: but Blood carries over — wounds are not healed by a new fight", survivor.BloodCur == bloodAfterFight);
+    T("new fight: but Blood carries over, wounds are not healed by a new fight", survivor.BloodCur == bloodAfterFight);
     bool nullFieldOk = true;
     try { Rules.ResetForNewFight(null); } catch { nullFieldOk = false; }
     T("new fight: a null field is survivable", nullFieldOk);
@@ -471,7 +471,7 @@ foreach (var (table, floor) in new[]
     // clears six more things than that. Take the last foe off by hand and the button answered
     // "nothing to clear" over a posse still Frightened, out of Beats and mid-turn. So the guard
     // is now the reset's own inventory, and every field the reset touches is proved to be one
-    // the residue test SEES — add a seventh field to ResetForNewFight without adding it here and
+    // the residue test SEES. Add a seventh field to ResetForNewFight without adding it here and
     // one of these fails.
     T("residue: a soul who never fought carries nothing", !Rules.FightResidue(C("Clean", 10)));
     T("residue: a null combatant carries nothing", !Rules.FightResidue(null));
@@ -531,7 +531,7 @@ foreach (var (table, floor) in new[]
     // disagreed for as long as they did. Rules.NewRound is the rollover the Tracker now calls, so
     // a whole fight can be played here: every round, the turns must come out in exactly the order
     // the grid would be showing, everybody able to act must act once, and nobody twice.
-    // Is every turn taken in the order the grid showed? Not "the same list" — somebody cut down
+    // Is every turn taken in the order the grid showed? Not "the same list". Somebody cut down
     // mid-round never gets their turn, which is the rule working. What must hold is that nobody
     // jumps the queue: the turns that DID happen came in the displayed order.
     bool InShownOrder(List<string> taken, List<string> shown)
@@ -583,7 +583,7 @@ foreach (var (table, floor) in new[]
         T($"fight {fight}: it ended in somebody winning rather than running forever", guard < 100);
         T($"fight {fight}: it took more than one round", round > 1);
 
-        // A late arrival takes its seat by initiative, not the bottom of the list — the second half
+        // A late arrival takes its seat by initiative, not the bottom of the list: the second half
         // of the same fault: ArrivalInit rolls a real number and the grid used to append anyway.
         var latecomer = new Combatant { Name = "The Thing at the Door", BloodCur = 25, BloodMax = 25,
                                         Init = posse.Max(c => c.Init) + 1 };
@@ -594,7 +594,7 @@ foreach (var (table, floor) in new[]
 
     // ---- every working says how long it lasts (v1.39.0) ----
     // Twenty-one of the eighty printed no duration at all, and the reader could not tell a book that
-    // had DECIDED a thing resolves at once from a book that had simply not said — both came out as
+    // had DECIDED a thing resolves at once from a book that had simply not said. Both came out as
     // "until something ends it", which was true of neither. Ch. VI and Ch. XIII now say which, and
     // this is the half of that agreement the app keeps.
     {
@@ -610,7 +610,7 @@ foreach (var (table, floor) in new[]
         {
             string t = w.Effect.ToLowerInvariant();
             // "night" is in this list because The Hearth Unbroken opens "For one night a place is
-            // genuinely safe" — the book's own way of writing until dawn, and the reader has always
+            // genuinely safe": the book's own way of writing until dawn, and the reader has always
             // known it. A checklist that omits a phrasing the code handles reports a fault in the
             // checklist as a fault in the book.
             bool saysWhen = t.Contains("until") || t.Contains("scene") || t.Contains("dawn")
@@ -625,7 +625,7 @@ foreach (var (table, floor) in new[]
             return !saysWhen && w.Damage.Length == 0 && w.Heal.Length == 0 && w.Nerve.Length == 0;
         }).ToList();
         T($"durations: no working is silent about how long it lasts"
-    + (mute.Count > 0 ? " — " + string.Join(", ", mute.Select(w => w.Name)) : ""), mute.Count == 0);
+    + (mute.Count > 0 ? ": " + string.Join(", ", mute.Select(w => w.Name)) : ""), mute.Count == 0);
 
         Rules.Working W(string n) => workings.First(w => w.Name == n);
         T("durations: a question put to the dark is over when it is answered",
@@ -644,7 +644,7 @@ foreach (var (table, floor) in new[]
             new WorkedEffect { Ends = Rules.WorkEnds.Month, RoundsLeft = -1 }.Duration == "a month");
 
         // The regression this block exists for. Borrowed Breath heals 2d8 and says the worker's own
-        // Blood "does not come back until you rest" — a clause about the WORKER, not about how long
+        // Blood "does not come back until you rest": a clause about the WORKER, not about how long
         // the healing rides on anybody. A duration reader that anchors on a bare "until you …"
         // turns a heal that resolves on the spot into an effect sitting on the target until somebody
         // ends it by hand, and it does it to a working nobody edited.
@@ -657,7 +657,7 @@ foreach (var (table, floor) in new[]
     // ---- a new round hands the turn back (v1.39.0) ----
     // The fault this is here to stop: NewRound cleared who had acted and did NOT give the Beats or
     // the MAP step back. BeginTurn was the only thing that did, and it only runs when a row is
-    // stepped through ▶ Next turn — so a round stepped by hand, or rolled over with somebody who
+    // stepped through ▶ Next turn, so a round stepped by hand, or rolled over with somebody who
     // never got an explicit turn, left that row on Beats 0 and MapStep 4. MapStep 4 is a standing
     // −10 on every Strike it makes for the rest of the fight, and a Keeper reported it as the posse
     // being unable to hit anything. It was true: a level-1 Gunhand at +4 against Defense 13 fell
@@ -685,12 +685,12 @@ foreach (var (table, floor) in new[]
         T("round: a new round makes the first Strike clean again", spent.MapStep == 1);
         T("round: which is to say the next Strike carries no MAP",
             IronCode.MapPenalty(spent.MapStep, false) == 0);
-        T("round: the foe is handed its turn back too — this was never the posse's rule alone",
+        T("round: the foe is handed its turn back too. This was never the posse's rule alone",
             mark.Beats == 3 && mark.MapStep == 1);
 
         // ---- Aim, brace and the Kickback weapon (Ch. XI, "Aiming and Bracing") ----
         // Three rules that only read as one: the Beat buys +2 on ONE Strike, the same Beat is what
-        // braces a shotgun, and the strong never needed it. Driven at the Keeper's path again —
+        // braces a shotgun, and the strong never needed it. Driven at the Keeper's path again;
         // nothing below leans on BeginTurn to tidy up after it.
         {
             var scattergun = new CgWeapon { name = "Double-Barrel Shotgun", dmg = "2d8",
@@ -712,7 +712,7 @@ foreach (var (table, floor) in new[]
             T("aim: and the same shot unaimed falls short", !r2.Res.Strike.Hit);
             T("aim: the Strike spends it, so the next one this turn is unaimed", !aimed.Aimed);
 
-            // The Aim is spent hit or miss — the book buys one Strike with that Beat, not a turn.
+            // The Aim is spent hit or miss. The book buys one Strike with that Beat, not a turn.
             var missed = Isaiah(9); missed.Aimed = true;
             CombatFlow.StrikeAndApply(missed, Dog(), plain, -20, null, 1);
             T("aim: a missed Strike spends the Aim just the same", !missed.Aimed);
@@ -810,13 +810,13 @@ foreach (var (table, floor) in new[]
             T("volley: and outside it is not",
                 !IronCode.Reckon(new IronCode.Shot { Distance = 200 }, buff).Parts.Any(p => p.Contains("Volley")));
 
-            // Nothing said about the ground means nothing charged — this is what keeps the playtest
+            // Nothing said about the ground means nothing charged. This is what keeps the playtest
             // numbers and the smoke fights where they were.
             T("circumstance: a caller who says nothing about the ground is charged nothing",
                 IronCode.Reckon(null, sar).Total == 0 && IronCode.Reckon(IronCode.Shot.Plain, buff).Total == 0);
 
             // Off-Guard and Aim are paid elsewhere; charging them here would charge them twice.
-            T("circumstance: Off-Guard is not charged here — the Burden already pays it",
+            T("circumstance: Off-Guard is not charged here. The Burden already pays it",
                 !IronCode.Reckon(IronCode.Shot.Plain, sar).Parts.Any(p => p.Contains("Off-Guard")));
 
             // Scatter: on a hit it splashes; on a miss inside the first increment the target wears it.
@@ -966,7 +966,7 @@ foreach (var (table, floor) in new[]
         }
 
         // ---- every Appendix B condition reaches the fight ----
-        // Not "is in the switch" — REACHES it. The table has fifteen rows and the app answered for
+        // Not "is in the switch": REACHES it. The table has fifteen rows and the app answered for
         // all fifteen while two of them did nothing a fight could feel: Fatigued's "cannot Aim" had
         // no Aim to refuse, and Prone's "+4 to others' ranged against you" has an attacker in it and
         // so could never be a number on the bearer's own Burden. Both are asserted below, from the
@@ -1005,7 +1005,7 @@ foreach (var (table, floor) in new[]
             // Sickened is the only one that reaches the DAMAGE, and it is easy to lose.
             T("conditions: Sickened takes its −2 off the damage as well", Rules.ConditionBurden("Sickened", 1).Damage == -2);
 
-            // Fatigued's "cannot Aim" — a sentence in a cell until there was an Aim to refuse.
+            // Fatigued's "cannot Aim": a sentence in a cell until there was an Aim to refuse.
             // Blood on the row, or she reads as Down and is refused for that instead.
             var tired = new Combatant { Name = "Anni", Conditions = "Fatigued", Beats = 3,
                                         BloodCur = 12, BloodMax = 12 };
@@ -1047,7 +1047,7 @@ foreach (var (table, floor) in new[]
 
         // The chip has to move when the COUNT moves, not only when something runs out. It printed
         // "✦ The Stilling (3)" and went on printing 3 as the Sign ticked to 2 and to 1, because the
-        // only thing that said the column had changed was an effect expiring — and that count is the
+        // only thing that said the column had changed was an effect expiring, and that count is the
         // Keeper's one read on how long they have left.
         var held = new Combatant { Name = "Nettie", IsPC = true, BloodCur = 8, BloodMax = 8 };
         held.Work(new WorkedEffect { Name = "The Stilling", Kind = "Sign", RoundsLeft = 3 });
@@ -1093,7 +1093,7 @@ foreach (var (table, floor) in new[]
             Rules.ReadConditions("Sickened").Damage == -2);
         // Prone counts its −4 to melee and REFUSES to count the +4 everyone shooting at them gets,
         // because that one depends on what the attacker is holding and the row does not know. What
-        // it must not do is drop it silently — a number the reader cannot carry has to become words.
+        // it must not do is drop it silently: a number the reader cannot carry has to become words.
         var prone = Rules.ReadConditions("Prone");
         T("burden: Prone counts the half of its line that is unconditional", prone.Strike == -4);
         T("burden: and says the half it cannot count rather than dropping it",
@@ -1104,7 +1104,7 @@ foreach (var (table, floor) in new[]
         lit.Conditions = "Frightened 2, Off-Guard";
         T("burden: Defense falls by what is on them", lit.EffectiveDefense == 8);
         T("burden: and the column shows the arithmetic, not just the total", lit.DefenseLine == "12 → 8");
-        T("burden: the STORED Defense never moved — this is derived, not applied", lit.Defense == 12);
+        T("burden: the STORED Defense never moved. This is derived, not applied", lit.Defense == 12);
         // The fault this shape exists to prevent: an earlier sketch applied the modifier on Work and
         // took it off on Unwork, so a session saved mid-Sign reloaded with the penalty baked into
         // Defense AND the working still on the row, and it landed twice. Reading it twice must be
@@ -1161,7 +1161,7 @@ foreach (var (table, floor) in new[]
         T("solo: and the round spends after them", Rules.RoundSpent(solo));
 
         // Downed mid-round and healed back before the round ends. They have not acted, so the turn
-        // is still owed to them — being knocked down and dragged up is not the same as having gone.
+        // is still owed to them: being knocked down and dragged up is not the same as having gone.
         var revive = new List<Combatant>
         {
             new() { Name = "Nettie", IsPC = true, Init = 18, BloodCur = 12, BloodMax = 12 },
@@ -1191,7 +1191,7 @@ foreach (var (table, floor) in new[]
             !Rules.RoundSpent(wipe));
 
         // The Keeper corrects an initiative mid-fight. The order must follow the number, both for
-        // the turn and for the grid — this is the hand-edit path that used to leave them disagreeing.
+        // the turn and for the grid. This is the hand-edit path that used to leave them disagreeing.
         var edited = new List<Combatant>
         {
             new() { Name = "Silas",  IsPC = true, Init = 7,  BloodCur = 10, BloodMax = 10 },
@@ -1229,7 +1229,7 @@ foreach (var (table, floor) in new[]
             bearer.Worked.Any(w => w.Name == "The Long Watch"));
 
         // Something arrives mid-round, after souls above it have already gone. It has not acted, so
-        // it acts this round — the door opens and the thing comes through it now, not next round.
+        // it acts this round. The door opens and the thing comes through it now, not next round.
         var mid = new List<Combatant>
         {
             new() { Name = "Ruth", IsPC = true, Init = 17, BloodCur = 10, BloodMax = 10 },
@@ -1263,7 +1263,7 @@ foreach (var (table, floor) in new[]
     try { Rules.NewRound(null); } catch { nullRoundOk = false; }
     T("round: a null field is survivable", nullRoundOk);
 
-    // HasActed rides along in a saved session — a fight reloaded mid-round resumes mid-round.
+    // HasActed rides along in a saved session: a fight reloaded mid-round resumes mid-round.
     var saved = System.Text.Json.JsonSerializer.Deserialize<Combatant>(
         System.Text.Json.JsonSerializer.Serialize(field[2]));
     T("turn: who has gone survives save and load", saved.HasActed == field[2].HasActed);
@@ -1271,7 +1271,7 @@ foreach (var (table, floor) in new[]
     // ---- initiative is a Notice check (Player's Book Ch. XI) ----
     // The tracker rolled a bare d20 for everyone until v1.29.0 while the app's own Reference deck
     // printed the rule. Two things have to hold: the die is still a d20, and the bonus is really
-    // added — and the floor at 1 has to hold, or a negative bonus mints a "0" that the tracker
+    // added, and the floor at 1 has to hold, or a negative bonus mints a "0" that the tracker
     // reads as "has not rolled yet".
     bool initInBand = true, initFloored = true, initMoved = false;
     for (int i = 0; i < 4000; i++)
@@ -1290,7 +1290,7 @@ foreach (var (table, floor) in new[]
     var scout = CharGen.Generate(6, false, "Mountain Man");
     T("initiative: the bonus is exactly the sheet's Notice bonus",
         CharGen.InitiativeBonus(scout) == CharGen.SkillBonus(scout, "Notice"));
-    T("initiative: no sheet, no bonus — a creature rolls the plain die",
+    T("initiative: no sheet, no bonus, a creature rolls the plain die",
         CharGen.InitiativeBonus(null) == 0);
 }
 
@@ -1332,14 +1332,14 @@ foreach (var (table, floor) in new[]
     nearly.Start(); nearly.Tick(9_999);
     T("glass: a millisecond left still reads 0:01", nearly.Face == "0:01" && !nearly.Expired);
 
-    // Start on a spent glass turns it over rather than doing nothing — otherwise the button is dead
+    // Start on a spent glass turns it over rather than doing nothing; otherwise the button is dead
     // exactly when a Keeper reaches for it.
     var again = new TurnClock { PresetSeconds = 5 };
     again.Start(); again.Tick(5_000);
     again.Start();
     T("glass: starting a spent glass fills it again", again.Running && !again.Expired && again.Spent == 0);
 
-    // Changing the house rule mid-session must not cut the running turn short — but must take
+    // Changing the house rule mid-session must not cut the running turn short, but must take
     // effect on a glass nobody is using.
     var live = new TurnClock { PresetSeconds = 300 };
     live.Start(); live.Tick(10_000);
@@ -1357,7 +1357,7 @@ foreach (var (table, floor) in new[]
     static bool Reset(TurnClock c) { c.Start(); c.Tick(1000); c.Reset(); return !c.Running && c.Spent == 0; }
 
     // Every preset the menu offers must spell out as something a person would say out loud, and the
-    // default has to be one of them — a default missing from its own list is a default nobody can
+    // default has to be one of them: a default missing from its own list is a default nobody can
     // get back to after changing it.
     T("glass: six presets are offered", TurnClock.Presets.Length == 6);
     T("glass: the default is one of the presets", TurnClock.Presets.Contains(TurnClock.DefaultSeconds));
@@ -1378,7 +1378,7 @@ foreach (var (table, floor) in new[]
 
 // ---- Nerve-loss ladder ----
 // ---- reading a working: what a Sign, a Miracle or a creature's power actually DOES ----
-// The old model held one shape — a target and a round count — and eighty hand-written workings do
+// The old model held one shape (a target and a round count), and eighty hand-written workings do
 // not have one shape. These assertions are the guard on the reader that pulls the real shapes out
 // of the printed text. Named workings are checked by hand where the answer is known for certain;
 // everything else is held to a floor, so a re-transcription of either chapter that quietly stops
@@ -1391,16 +1391,16 @@ foreach (var (table, floor) in new[]
 
     T("working: every Sign and Miracle is read", all.Count == 122);
 
-    // Backlash is the Signs' half of the bargain and the Miracles' absence of one — the two
+    // Backlash is the Signs' half of the bargain and the Miracles' absence of one: the two
     // chapters saying, structurally, that faith does not bite back. It was buried mid-paragraph.
     T("working: all forty-four Signs carry a Backlash", signs.All(w => w.HasBacklash));
-    T("working: no Miracle does — faith does not bite back", mirs.All(w => !w.HasBacklash));
+    T("working: no Miracle does, faith does not bite back", mirs.All(w => !w.HasBacklash));
     T("working: a Backlash is lifted clear of the effect text",
         !W("Witch-Sight").Effect.Contains("Backlash", StringComparison.OrdinalIgnoreCase)
         && W("Witch-Sight").Backlash.Length > 0);
     T("working: a Backlash printed as 'None' still keeps its words",
         W("Salt & Iron").HasBacklash && W("Salt & Iron").Backlash.Contains("kindest"));
-    T("working: but it is not a warning — it does not bite", !W("Salt & Iron").BacklashBites);
+    T("working: but it is not a warning. It does not bite", !W("Salt & Iron").BacklashBites);
     // Four print "Backlash: None" and then say something about why. The rest cost the worker
     // something, and those are the ones the app should warn about.
     T("fifty-two of the fifty-six Signs actually bite", signs.Count(w => w.BacklashBites) == 52);
@@ -1453,7 +1453,7 @@ foreach (var (table, floor) in new[]
     T("working: Borrowed Breath is worked on a companion", W("Borrowed Breath").Shape == Rules.WorkShape.Ally);
     T("working: The Crimson Word picks one creature", W("The Crimson Word").Shape == Rules.WorkShape.OneCreature);
 
-    // An area is a radius in feet, not "everyone on the field" — the book's areas catch friends.
+    // An area is a radius in feet, not "everyone on the field": the book's areas catch friends.
     T("working: Salt & Iron reaches ten feet",
         W("Salt & Iron").Shape == Rules.WorkShape.Area && W("Salt & Iron").AreaFeet == 10);
     T("working: The Grasping Dark reaches twenty", W("The Grasping Dark").AreaFeet == 20);
@@ -1497,13 +1497,13 @@ foreach (var (table, floor) in new[]
     T("working: every duration the two chapters print is represented",
         all.Select(w => w.Ends).Distinct().Count() >= 6);
 
-    // "A round per two levels" is arithmetic the app exists to do — a chip saying "a round per
+    // "A round per two levels" is arithmetic the app exists to do. A chip saying "a round per
     // two levels" would be handing it straight back to the Keeper.
     var stillL6 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
         CharGen.D.signs.First(s => s.name == "The Stilling").desc, 6);
     var stillL10 = Rules.ReadWorking("The Stilling", "Sign", 2, "1 Beat · 2 Nerve · Will save",
         CharGen.D.signs.First(s => s.name == "The Stilling").desc, 10);
-    T("working: The Stilling scales with the worker — 3 rounds at 6th",
+    T("working: The Stilling scales with the worker, 3 rounds at 6th",
         stillL6.Ends == Rules.WorkEnds.Rounds && stillL6.Rounds == 3);
     T("working: and 5 rounds at 10th", stillL10.Rounds == 5);
     T("working: it never scales below one round",
@@ -1514,7 +1514,7 @@ foreach (var (table, floor) in new[]
     T("working: at least twenty workings ask for one", all.Count(w => w.HasSave) >= 20);
 
     // A creature's power is a standing TRAIT, not something worked on anybody. Every Bestiary
-    // special line is written that way and not one carries a die, a save, or a radius — so the
+    // special line is written that way and not one carries a die, a save, or a radius, so the
     // dialog must stop asking who it is being worked on and for how long. Counted against the
     // roster rather than a typed number: the claim is that EVERY creature has one, and a literal
     // here would have to be edited every time the Bestiary grows, which is how it goes stale.
@@ -1528,7 +1528,7 @@ foreach (var (table, floor) in new[]
     T("working: and every one is still named", powers.All(w => w.Name.Length > 0));
 
     // A working saved before the shapes and durations existed carries a round count and nothing
-    // else. It must still tick, and it must still read as a round count — the first cut of this
+    // else. It must still tick, and it must still read as a round count: the first cut of this
     // gated the tick on Ends as well, which would have frozen every effect in every session
     // anybody had already saved.
     var oldSave = System.Text.Json.JsonSerializer.Deserialize<WorkedEffect>(
@@ -1588,7 +1588,7 @@ foreach (var (table, floor) in new[]
     var older = System.Text.Json.JsonSerializer.Deserialize<PartyMember>("{\"Name\":\"Ruth\"}");
     T("scars: a soul saved before them loads with none, not a null", older.Scars is { Count: 0 });
 
-    // The Afflictions are the Keeper's Book's own d10, transcribed — not a list the app made up.
+    // The Afflictions are the Keeper's Book's own d10, transcribed, not a list the app made up.
     T("affliction: the d10 table has ten entries", Rules.Afflictions.Length == 10);
     T("affliction: in the book's order",
         Rules.Afflictions[0].name == "The Shakes" && Rules.Afflictions[9].name == "The Hollow");
@@ -1644,7 +1644,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     // Ch. IV names FOUR fights and prices each as a multiple of the budget: half is easy, the
     // budget is standard ("the party should win bloodied"), half again over is hard, double is
     // deadly. Nothing else is a band. Until v1.41.0 the app had five of its own invention and
-    // called the exact budget "a fair, hard fight" — the book's word for 1.5x.
+    // called the exact budget "a fair, hard fight", the book's word for 1.5x.
     T("budget: nothing costed is Empty",     Rules.BudgetBand(0, 24) == Rules.Weight.Empty);
     T("budget: half is Easy",                Rules.BudgetBand(12, 24) == Rules.Weight.Easy);
     T("budget: the budget is Standard",      Rules.BudgetBand(24, 24) == Rules.Weight.Standard);
@@ -1652,7 +1652,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("budget: double is Deadly",            Rules.BudgetBand(48, 24) == Rules.Weight.Deadly);
     T("budget: past double is Beyond",       Rules.BudgetBand(60, 24) == Rules.Weight.Beyond);
 
-    // The boundaries fall at the MIDPOINTS between the named multiples — 3/4, 5/4, 7/4, 9/4 — so a
+    // The boundaries fall at the MIDPOINTS between the named multiples (3/4, 5/4, 7/4, 9/4) so a
     // spend belongs to whichever of the four it is nearest.
     T("budget: 3/4 of budget is still Easy", Rules.BudgetBand(18, 24) == Rules.Weight.Easy);
     T("budget: a point past 3/4 is Standard",Rules.BudgetBand(19, 24) == Rules.Weight.Standard);
@@ -1668,9 +1668,9 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     {
         int b = 4 * souls;
         if (Rules.BudgetBand(b, b) != Rules.Weight.Standard)
-            { T($"budget: {souls} souls — the budget must be Standard", false); goto doneBudget; }
+            { T($"budget: {souls} souls, the budget must be Standard", false); goto doneBudget; }
         if (Rules.BudgetBand(b * 2, b) != Rules.Weight.Deadly)
-            { T($"budget: {souls} souls — double must be Deadly", false); goto doneBudget; }
+            { T($"budget: {souls} souls, double must be Deadly", false); goto doneBudget; }
     }
     T("budget: the same fraction reads the same band at every party size", true);
 
@@ -1730,7 +1730,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 {
     // Ch. IV rounds half the party's level TOWARD danger, so a posse at an odd level is matched
     // against the Tier the Bestiary reserves for the level above them. Both books are right and
-    // they are not the same night — measured on the engine, one rung of level is worth about a
+    // they are not the same night: measured on the engine, one rung of level is worth about a
     // whole creature at every Tier. The app used to print "Even foe" for both and mean two things.
     T("junior: level 1 is the junior half of Tier I",  Rules.JuniorForTier(1));
     T("junior: level 2 is not",                        !Rules.JuniorForTier(2));
@@ -1755,15 +1755,15 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 
 // ---- A Calling that works nothing works nothing at TENTH level either ----
 {
-    // The Work dialog's commonest state is an empty list — four of the six pregens work nothing,
-    // correctly — and it showed that as a bare "— something else —" over nothing, which reads from
+    // The Work dialog's commonest state is an empty list (four of the six pregens work nothing,
+    // correctly) and it showed that as a bare "(something else)" over nothing, which reads from
     // the far side of the table as the app having lost the soul's Signs. This is what lets it say
     // WHICH empty: the Calling works none, or this soul has not learned one yet.
     T("works-nothing: a Gunhand works nothing",     CharGen.CallingWorksNothing("Gunhand"));
     T("works-nothing: a Sawbones works nothing",    CharGen.CallingWorksNothing("Sawbones"));
     T("works-nothing: a Preacher works Miracles",   !CharGen.CallingWorksNothing("Preacher"));
     T("works-nothing: a Hexer works Signs",         !CharGen.CallingWorksNothing("Hexer"));
-    // An unknown Calling says nothing rather than guessing — a wrong sentence is worse than none.
+    // An unknown Calling says nothing rather than guessing: a wrong sentence is worse than none.
     T("works-nothing: an unknown Calling is not claimed", !CharGen.CallingWorksNothing("Riverboat Gambler"));
 
     // The claim is about the CALLING and must hold at every level it can reach, or the dialog would
@@ -1784,7 +1784,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 
 // ---- Recovering Nerve (the Posse tab's Steady menu) ----
 {
-    // NerveCur clamps to 0..999, NOT to NerveMax — so anything handing Nerve back has to clamp
+    // NerveCur clamps to 0..999, NOT to NerveMax, so anything handing Nerve back has to clamp
     // itself. This is the assumption Steady()/SteadyByHand() are written on; if it ever changes,
     // this test is the thing that says so.
     var n = new PartyMember { NerveMax = 10, NerveCur = 2 };
@@ -1916,7 +1916,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 }
 
 // ---- Dying, bleeding, and death (Player's Book Ch. XI) ----
-// "At 0 Blood you fall, Dying and bleeding — losing 1 Blood each round — until someone stabilizes
+// "At 0 Blood you fall, Dying and bleeding, losing 1 Blood each round, until someone stabilizes
 // you or you reach –CON, at which point you are dead." Printed on the Reference deck since v1.4 and
 // implemented nowhere until v1.38.0, so every one of these is a first assertion.
 {
@@ -1976,16 +1976,16 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     var bled = Soul(10, 12);
     bled.Wound(-10);
     Rules.BleedOut(new[] { bled }); Rules.BleedOut(new[] { bled });
-    var missed = Rules.Stabilize(bled, 0, forcedDie: 2);     // 2 vs DC 15 — a critical failure
+    var missed = Rules.Stabilize(bled, 0, forcedDie: 2);     // 2 vs DC 15: a critical failure
     T("dying: a failed check leaves them bleeding", !missed.Stopped && !bled.Stable && bled.Dying);
-    var ok2 = Rules.Stabilize(bled, 0, forcedDie: 16);        // 16 vs DC 15 — a plain success
+    var ok2 = Rules.Stabilize(bled, 0, forcedDie: 16);        // 16 vs DC 15: a plain success
     T("dying: a success stops the bleeding",   ok2.Stopped && bled.Stable && !bled.Dying);
     T("dying: stable is not awake",            bled.BloodCur == 0 && bled.Down);
     T("dying: and the row says stable",        bled.DyingLine == "stable");
     T("dying: a stable body stops losing Blood", Rules.BleedOut(new[] { bled }).Count == 0 && bled.Bleed == 2);
     var crit = Soul(10, 12);
     crit.Wound(-10);
-    var woke = Rules.Stabilize(crit, 10, forcedDie: 20);      // beats DC 15 by 10 — critical success
+    var woke = Rules.Stabilize(crit, 10, forcedDie: 20);      // beats DC 15 by 10: critical success
     T("dying: a critical success brings them round", woke.Woke && crit.BloodCur == 1 && !crit.Down);
     T("dying: and clears the count with them", crit.Bleed == 0 && !crit.Stable);
 
@@ -2043,7 +2043,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("dying: nor heal the body",                    stillDying.BloodCur == 0 && stillDying.DeathAt == 12);
     T("dying: but the Grit round is over",           !stillDying.Upright);
 
-    // Standing on Grit is turn state, so New fight has to count it as something to clear — the
+    // Standing on Grit is turn state, so New fight has to count it as something to clear: the
     // paired guard that stopped New fight answering "nothing to clear" over a spent posse.
     var stillUp = Soul(5, 12);
     stillUp.Wound(-5);
@@ -2095,7 +2095,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("ink: the book's color is still the book's",  MapInk.BookColor("posse") == MapInk.Verdigris);
     T("ink: kind lookup ignores case",              MapInk.KindColor("POSSE") == moss);
 
-    // Only decisions are kept — setting a kind back to the book's own color is not a decision,
+    // Only decisions are kept: setting a kind back to the book's own color is not a decision,
     // so prefs.json must not grow a line recording that nothing changed.
     T("ink: a changed kind is recorded",            MapInk.KindColors().Count == 1);
     MapInk.SetKindColor("posse", MapInk.Verdigris);
@@ -2145,7 +2145,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     {
         new() { Label = "Jed",   Kind = "posse",    X = 100, Y = 100 },
         new() { Label = "Mose",  Kind = "npc",      X = 200, Y = 150 },
-        new() { Label = "",      Kind = "creature", X = 300, Y = 200 },   // unnamed — dot only
+        new() { Label = "",      Kind = "creature", X = 300, Y = 200 },   // unnamed: dot only
     };
     var ink = MapGen.MarkerPrims(crew, map.W, map.H);
     T("marker export: a named marker is a dot, a backing, and a name; an unnamed one just a dot",
@@ -2229,7 +2229,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     while (common < fair.P.Count && common < blizzard.P.Count
            && MapGen.ToSvg(new MapModel { P = new List<Prim> { fair.P[common] } })
               == MapGen.ToSvg(new MapModel { P = new List<Prim> { blizzard.P[common] } })) common++;
-    // The whole country, then the sky, then the frame and the cartouche over both — so the
+    // The whole country, then the sky, then the frame and the cartouche over both, so the
     // identical prefix is the great bulk of a fair-day map, and everything after it is furniture.
     T("weather: and the survey's ink runs identical right up to the sky",
         common > 60 && common > fair.P.Count * 0.7);
@@ -2258,15 +2258,15 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 // ---- Landforms: the country has hills, ridges, timber and whole ranges in it ----
 {
     // Every ground draws its own furniture and offers its own named places. A landmark named
-    // The Divide has to be drawn as a range, which means the symbol behind it has to exist —
-    // a name with no case in Sym() is a label floating over blank paper.
+    // The Divide has to be drawn as a range, which means the symbol behind it has to exist.
+    // A name with no case in Sym() is a label floating over blank paper.
     foreach (var terrain in MapGen.Terrains)
     {
         var m = MapGen.Generate(new MapSpec { Terrain = terrain, Seed = 991, Landmarks = 12 });
         T($"land: {terrain} draws something", m.P.Count > 60);
         T($"land: {terrain} names its places", m.Landmarks.Count > 0);
         foreach (var lm in m.Landmarks)
-            T($"land: {terrain} — “{lm.Name}” has ink of its own", lm.PrimCount >= 1);
+            T($"land: {terrain}, “{lm.Name}” has ink of its own", lm.PrimCount >= 1);
     }
 
     // The high country and the badlands must not read as the same county.
@@ -2292,7 +2292,7 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
 // ---- Water is measured to the river's CHANNEL, not to its vertices ----
 {
     // A long straight reach whose two ends are 1000px apart. A spot at its midpoint is squarely in
-    // the water, but it is 500px from the nearest VERTEX — the old test called it dry.
+    // the water, but it is 500px from the nearest VERTEX: the old test called it dry.
     var straight = new MapModel { RiverPts = new float[] { 0, 0, 1000, 0 }, RiverHalf = 16, W = 1000, H = 600 };
     T("water: mid-channel on a long reach is wet", MapGen.OnWater(straight, 500, 0, 1));
     T("water: mid-channel clearance is negative",  MapGen.WaterClearance(straight, 500, 0) < 0);
@@ -2376,7 +2376,7 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
     T("untouched: so is an encounter being costed", new GameSession { EncounterCreatures = { "The Risen" } }.IsUntouched == false);
     T("untouched: whitespace in the ledger is not writing", new GameSession { Notes = "   \r\n " }.IsUntouched);
     // The shape the bug actually took: a posse cleared, everything else still there.
-    var nightOff = new GameSession { Notes = "Tuesday — nobody but NPCs", Clocks = { new CampaignClock { Name = "The ring of nails" } } };
+    var nightOff = new GameSession { Notes = "Tuesday, nobody but NPCs", Clocks = { new CampaignClock { Name = "The ring of nails" } } };
     T("untouched: an all-NPC night with an empty posse is NOT an empty session", nightOff.IsUntouched == false);
     T("untouched: and it survives a save and load", System.Text.Json.JsonSerializer
         .Deserialize<GameSession>(System.Text.Json.JsonSerializer.Serialize(nightOff)).IsUntouched == false);
@@ -2403,7 +2403,7 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
         (R(false,false) == Roaming) && (R(true,false) != Roaming) && (R(false,true) != Roaming) && (R(true,true) != Roaming));
     T("state: the marker filename is the one the docs and package.ps1 name", AppState.PortableMarker == "portable.txt");
 
-    // The live folder must be usable and must exist — a Keeper whose profile is locked down
+    // The live folder must be usable and must exist: a Keeper whose profile is locked down
     // should still get an app that runs, which is why Dir falls back rather than throwing.
     var live = AppState.Dir;
     T("state: the resolved folder is a real, created directory",
@@ -2415,7 +2415,7 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
 CharGen.Load();
 var cg = CharGen.D;
 
-// The flavor pools — a soul's vice, what they lost, what they've seen, what moves them, and the
+// The flavor pools: a soul's vice, what they lost, what they've seen, what moves them, and the
 // gendered given names. A pool that thinned out still generates perfectly valid souls; they just
 // come out the same souls over a long campaign, which is the failure nobody notices.
 foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28), ("moving", 28),
@@ -2494,7 +2494,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     }
     T("look: 200 rolls are complete, coherently dressed and coherently coloured", true);
 
-    // The Calling steers the wardrobe without owning it — a Preacher usually preaches in black,
+    // The Calling steers the wardrobe without owning it: a Preacher usually preaches in black,
     // and once in a while turns up in somebody's cavalry coat. Both halves are asserted, because
     // a bug in either direction (never steering, or never straying) reads as working.
     {
@@ -2509,7 +2509,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     }
 
     // Whiskers are offered to one gender and not drawn for the others. This is a convention of the
-    // period's own descriptions, not a rule about anybody — which is why every field is editable —
+    // period's own descriptions, not a rule about anybody, which is why every field is editable,
     // but the draw must at least be consistent with itself.
     {
         var whisk = new HashSet<string>(L.facialHair);
@@ -2606,7 +2606,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
 // It prefills the Survival bonus for every sign & spoor reading, so a wrong answer here is a
 // wrong DC check at the table, silently, every time.
 {
-    T("skills: Survival is a real skill keyed to RES — the Read Sign dialog asks for it by name",
+    T("skills: Survival is a real skill keyed to RES. The Read Sign dialog asks for it by name",
         cg.skills.Any(k => k.name == "Survival" && k.ability == "RES"));
 
     var sheet = new CharacterSheet { Level = 5, Scores = new() { ["RES"] = 16, ["STR"] = 8, ["WIT"] = 10 } };
@@ -2617,7 +2617,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         T($"skillBonus: {name} is the modifier, the level, and the rank", CharGen.SkillBonus(sheet, "Survival") == want);
     }
 
-    // Keyed to the ability the DATA names, not to a second list inside SkillBonus — the whole
+    // Keyed to the ability the DATA names, not to a second list inside SkillBonus. The whole
     // reason the method reads the definition rather than carrying its own table.
     foreach (var k in cg.skills)
     {
@@ -2733,7 +2733,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         T("worked: a creature's power wears its own mark", creaturePower.Mark == "◈");
     }
 
-    // Effects survive a session round-trip — an effect lost on save is a rule the table forgets.
+    // Effects survive a session round-trip: an effect lost on save is a rule the table forgets.
     {
         var c2 = new Combatant { Name = "Silas" };
         c2.Work(new WorkedEffect { Name = "Witch-Sight", Kind = "Sign", Rank = 1, Source = "Hexer", RoundsLeft = 4, Cost = "Free · 1 Nerve" });
@@ -2791,7 +2791,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     var dr = new[] { new DrEntry(2, "blades"), new DrEntry(1, "small shot") };
     T("DR vs blades reduces a blade hit", IronCode.ApplyDR(6, "blades", dr) == 4);
     T("DR vs blades does NOT reduce a ball hit", IronCode.ApplyDR(6, "ball", dr) == 6);
-    T("DR does not stack — best line applies",
+    T("DR does not stack, best line applies",
         IronCode.ApplyDR(6, "blades", new[] { new DrEntry(2, "blades"), new DrEntry(3, "all") }) == 3);
     T("DR never lowers a hit below zero", IronCode.ApplyDR(1, "blades", new[] { new DrEntry(5, "blades") }) == 0);
 
@@ -2880,11 +2880,11 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
 // ============================================================ BALANCE, SIMULATED (#4)
 // Run the actual Iron Code engine to answer the question a playtest can only guess at:
 // can a level-appropriate soul still threaten a level-appropriate foe at every level?
-// This is the property Step 1 restored — casters' attack had drifted so far behind monster
+// This is the property Step 1 restored: casters' attack had drifted so far behind monster
 // Defense that their hit rate fell as they advanced. Turn that into a failing test, not a hunch.
 {
     // to-hit ability held at a fixed +3 so the sim isolates the CALLING's attack progression
-    // (the attack rank) from stat luck — the rank curve is exactly what broke and was fixed.
+    // (the attack rank) from stat luck: the rank curve is exactly what broke and was fixed.
     const int AtkAbility = 3;
     int TierDefFor(int level) => Rules.TierRow[Math.Max(1, (level + 1) / 2) - 1].def;
     double HitRate(int toHit, int def, int n)
@@ -2895,7 +2895,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         return (double)hits / n;
     }
 
-    Console.WriteLine("balance — hit rate vs a tier-appropriate foe (attack rank + " + AtkAbility + " to-hit):");
+    Console.WriteLine("balance, hit rate vs a tier-appropriate foe (attack rank + " + AtkAbility + " to-hit):");
     bool floorHeld = true, martialBandHeld = true;
     foreach (var c in cg.callings.OrderBy(x => x.attackRank).ThenBy(x => x.name))
     {
@@ -2916,7 +2916,7 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
     T("martial (Practiced) callings hold a 45–80% hit band across levels", martialBandHeld);
 
     // Step 1's structural invariant: every attack rank climbs +1 per level, so the distance
-    // between the best gun Calling and the worst caster is fixed — it never widens with level.
+    // between the best gun Calling and the worst caster is fixed. It never widens with level.
     bool gapConstant = true;
     for (int L = 2; L <= 10; L++)
         if (CharGen.AttackFor("Practiced", L) - CharGen.AttackFor("Slight", L) != 2) gapConstant = false;
@@ -2932,7 +2932,7 @@ T("16 origins", cg.origins.Count == 16);
 // ---- the Perks (v1.50.0) ----------------------------------------------------------------------
 // One per Calling, printed above its level table and typed here so the picker can sell a Calling
 // the way the page does. verify_rules.py holds the two word for word; these hold the shape the app
-// relies on — that every Calling has one, that no two share a name, and that a Perk is always-on,
+// relies on. That every Calling has one, that no two share a name, and that a Perk is always-on,
 // which is what keeps it off the Tracker's rationed strip.
 T("every Calling carries a Perk", cg.callings.All(c => c.perk != null
     && !string.IsNullOrWhiteSpace(c.perk.name) && !string.IsNullOrWhiteSpace(c.perk.desc)));
@@ -2942,7 +2942,7 @@ T("Perk names are unique across the eighteen",
     cg.callings.Select(c => c.perk?.name).Distinct().Count() == cg.callings.Count);
 T("no Perk repeats the name of one of its Calling's own features", cg.callings.All(c =>
     c.perk?.name == null || !c.rows.SelectMany(r => r.features).Contains(c.perk.name)));
-T("no Perk is rationed or tallied — it would want a card nothing can spend", cg.callings.All(c =>
+T("no Perk is rationed or tallied. It would want a card nothing can spend", cg.callings.All(c =>
     c.perk?.desc == null
     || (!CharGen.ReadLimit(c.perk.desc).Any && !CharGen.ReadTally(c.perk.desc).Any)));
 
@@ -2984,7 +2984,7 @@ T("the Witch's ledger admits she cannot shoot her way out",
             .All(n => frames.Contains(n, StringComparison.Ordinal)));
     T("at least three of the frames reach a round",
         frames.Contains("1d10") && frames.Contains("hard cover") && frames.Contains("Prone"));
-    T("a frame works in somebody else's hands — the Engineer's whole column",
+    T("a frame works in somebody else's hands, the Engineer's whole column",
         (eng.featureDescs.TryGetValue("The Contraption", out var con) ? con : "")
             .Contains("may work it instead of you", StringComparison.Ordinal));
     T("Powder & Fuse now gives the Engineer something to set",
@@ -2996,7 +2996,7 @@ T("the Witch's ledger admits she cannot shoot her way out",
 // A Calling's kit and an Origin's gear can GRANT a gun instead of selling one, and three lines do.
 // The outfit step read those lines only to suppress the purchase, so the soul ended up with the
 // rifle in Gear and NOTHING in WeaponsCarried: every Mountain Man ever generated, and anyone rolled
-// with the Veteran's service carbine — the printed pregen Frank Haskins among them. The Strike
+// with the Veteran's service carbine, the printed pregen Frank Haskins among them. The Strike
 // dialog offered them no weapon, and every balance sweep this project has run had the Mountain Man
 // punching with his fists. Found by reading _combatlab's output, which is the only way it shows:
 // nothing asserted that a generated soul was armed.
@@ -3062,7 +3062,7 @@ T("the Craft is the Witch's alone", cg.callings
 // ---- the Witch's familiar (v1.45.0) -----------------------------------------------------------
 // The books give the bound beast a standing +2, a touch-range delivery, shared senses and a
 // Sickened when it dies; until v1.45.0 the app held the kind inside the shared CallingChoice
-// string and none of the rest. These hold the three fields to the one fact they describe — the
+// string and none of the rest. These hold the three fields to the one fact they describe: the
 // failure mode being a sheet whose familiar and whose bonus name two different animals.
 {
     var witch = cg.callings.First(c => c.name == "Witch");
@@ -3158,7 +3158,7 @@ T("the Craft is the Witch's alone", cg.callings
             { Calling = "Witch", Level = 9, Subpath = "The Familiar-Bound" }));
     }
 
-    // The beast's own Blood — the app's default for a creature the book leaves to the table.
+    // The beast's own Blood. The app's default for a creature the book leaves to the table.
     // What is held here is the SHAPE of it: always smaller than hers, always at least the floor,
     // and always larger once she has taken the Craft that makes it hardy.
     {
@@ -3619,7 +3619,7 @@ foreach (var c in cg.callings)
         {
             var sheet = CharGen.Generate(lvl, rolled, c.name);
             var v = CharGen.Validate(sheet);
-            T($"conformant: {c.name} L{lvl} {(rolled ? "rolled" : "array")}" + (v.Count > 0 ? " — " + v[0] : ""), v.Count == 0);
+            T($"conformant: {c.name} L{lvl} {(rolled ? "rolled" : "array")}" + (v.Count > 0 ? ": " + v[0] : ""), v.Count == 0);
         }
 
 // ---- and a fully random sweep ----
@@ -3639,7 +3639,7 @@ T("every calling has an armor preference, all names resolving",
         && ap.EnumerateArray().All(n => cg.armor.Any(a => a.name == n.GetString()))));
 {
     // Armor is bought last, out of what the coin leaves, so this is a distribution not a
-    // guarantee — but "precious little armor" must not turn out to mean "none, ever."
+    // guarantee, but "precious little armor" must not turn out to mean "none, ever."
     var wearing = new Dictionary<string, int>();
     int dressed = 0, n = 400;
     for (int i = 0; i < n; i++)
@@ -3654,7 +3654,7 @@ T("every calling has an armor preference, all names resolving",
             sheet.DrBlades == row.drBlades && sheet.DrShot == row.drShot && sheet.Gear.Contains(row.gear));
     }
     // printed, not just asserted: whoever next changes a price wants to see what it did
-    Console.WriteLine($"armor worn: {dressed}/{n} souls dressed — "
+    Console.WriteLine($"armor worn: {dressed}/{n} souls dressed: "
         + string.Join(", ", wearing.OrderByDescending(k => k.Value).Select(k => $"{k.Key} {k.Value}")));
     T($"generated souls buy armor ({dressed}/{n} dressed)", dressed > n / 4);
     T("iron plate stays rare (it costs $60)",
@@ -3724,7 +3724,7 @@ foreach (var og in CharGen.D.origins)
             && !string.IsNullOrWhiteSpace(x.hunger) && !string.IsNullOrWhiteSpace(x.feeding)
             && !string.IsNullOrWhiteSpace(x.gift)));
     // Mending is 1d6 per two levels and never less than one, so a 1st-level soul is not handed a
-    // heal of zero dice — the failure mode a bare level/2 has at exactly the level most souls are.
+    // heal of zero dice. The failure mode a bare level/2 has at exactly the level most souls are.
     T("mend never rolls zero dice", Enumerable.Range(1, 10).All(l => CharGen.MendDice(l) >= 1));
     T("mend is 1d6 per two levels", CharGen.MendDice(2) == 1 && CharGen.MendDice(10) == 5);
 
@@ -3746,7 +3746,7 @@ foreach (var og in CharGen.D.origins)
     CharGen.Feed(ret, 99);
     T("feeding cannot go below quiet", ret.Hunger == 0);
 
-    // A boundary must never hand a Hunger back — the same guard the Hexer's Debts and the Witch's
+    // A boundary must never hand a Hunger back: the same guard the Hexer's Debts and the Witch's
     // rite carry, and for the same reason: a track that eases overnight says the cost was nothing.
     var boundary = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
     CharGen.TakeHunger(boundary, 2);
@@ -3754,7 +3754,7 @@ foreach (var og in CharGen.D.origins)
     CharGen.RefreshFeatures(pm, FeatureCadence.Session);
     T("no boundary hands a Hunger back", boundary.Hunger == 2);
 
-    // What the grave gave has to REACH A ROLL, or it is a decoration on a sheet — the v1.48.0
+    // What the grave gave has to REACH A ROLL, or it is a decoration on a sheet: the v1.48.0
     // lesson, run on a second subsystem.
     var living = CharGen.Generate(3, false, null, "The Scout");
     T("the Returned get +2 on Dread and the living get nothing",
@@ -3878,10 +3878,10 @@ foreach (var c in cg.callings)
         for (int i = 0; i < 6; i++) spec.PreGiftScores[c.keyAbilities[i]] = pool[i];
         var sheet = CharGen.Assemble(spec);
         var v = CharGen.Validate(sheet);
-        T($"assemble conformant: {c.name} L{lvl}" + (v.Count > 0 ? " — " + v[0] : ""), v.Count == 0);
+        T($"assemble conformant: {c.name} L{lvl}" + (v.Count > 0 ? ": " + v[0] : ""), v.Count == 0);
     }
 
-// specs with explicit (sometimes illegal) choices — illegal picks must be re-drawn, never shipped
+// specs with explicit (sometimes illegal) choices: illegal picks must be re-drawn, never shipped
 for (int i = 0; i < 100; i++)
 {
     var c = cg.callings[Rules.Rng.Next(cg.callings.Count)];
@@ -3923,7 +3923,7 @@ for (int i = 0; i < 100; i++)
         int held = sheet.Gear.Count(g => g == cheap.Key);
         T($"buy × {qty}: {qty} of \"{cheap.Key}\" reach the sheet (held {held})", held >= qty);
         var v = CharGen.Validate(sheet);
-        T($"buy × {qty}: sheet stays conformant" + (v.Count > 0 ? " — " + v[0] : ""), v.Count == 0);
+        T($"buy × {qty}: sheet stays conformant" + (v.Count > 0 ? ": " + v[0] : ""), v.Count == 0);
         T($"buy × {qty}: the tally says so", CharGen.Tally(sheet.Gear).Any(l => qty == 1 ? l == cheap.Key : l == $"{cheap.Key} × {held}"));
     }
 
@@ -3934,7 +3934,7 @@ for (int i = 0; i < 100; i++)
     aspec.BuyGear.Add(suit.gear); aspec.BuyGear.Add(suit.gear);
     var ash = CharGen.Assemble(aspec);
     var av = CharGen.Validate(ash);
-    T("buy × 2 armor: still conformant" + (av.Count > 0 ? " — " + av[0] : ""), av.Count == 0);
+    T("buy × 2 armor: still conformant" + (av.Count > 0 ? ": " + av[0] : ""), av.Count == 0);
     T("buy × 2 armor: DR does not stack", ash.DrBlades == suit.drBlades && ash.DrShot == suit.drShot);
 }
 
@@ -3958,7 +3958,7 @@ foreach (var c in cg.callings)
             T($"levelup preview: {c.name} → L{target}", grants.NewLevel == target && !grants.AtCeiling);
             s = CharGen.LevelUp(before, new CharGen.LevelUpChoices());
             var lv = CharGen.Validate(s);
-            T($"levelup conformant: {c.name} {(rolled ? "rolled" : "array")} → L{target}" + (lv.Count > 0 ? " — " + lv[0] : ""), lv.Count == 0);
+            T($"levelup conformant: {c.name} {(rolled ? "rolled" : "array")} → L{target}" + (lv.Count > 0 ? ": " + lv[0] : ""), lv.Count == 0);
             T($"levelup increments to L{target}: {c.name}", s.Level == target);
             T($"levelup adds one Blood roll: {c.name} → L{target}", s.BloodRolls.Count == preBlood + 1);
             // the levels below are byte-stable: prior Blood rolls / edges / signs are an unchanged prefix
@@ -3968,7 +3968,7 @@ foreach (var c in cg.callings)
         }
         var capped = CharGen.LevelUp(s, new CharGen.LevelUpChoices());
         var capLv = CharGen.Validate(capped);
-        T($"levelup ceiling no-op: {c.name}" + (capLv.Count > 0 ? " — " + capLv[0] : ""),
+        T($"levelup ceiling no-op: {c.name}" + (capLv.Count > 0 ? ": " + capLv[0] : ""),
             capped.Level == Rules.MaxLevel && capLv.Count == 0);
         T($"levelup preview at ceiling: {c.name}", CharGen.PreviewLevelUp(s).AtCeiling);
     }
@@ -4022,7 +4022,7 @@ foreach (var c in cg.callings)
     T("Hexer leveled to 10 conformant", CharGen.Validate(s).Count == 0);
 }
 
-// the sheet now rides inside PartyMember through session.json — prove the round-trip
+// the sheet now rides inside PartyMember through session.json: prove the round-trip
 var soulSess = new GameSession();
 var carried = CharGen.Generate(3, false, "Gunhand");
 soulSess.Party.Add(new PartyMember { Name = carried.Name, Sheet = carried });
@@ -4104,7 +4104,7 @@ foreach (var terrain in MapGen.Terrains)
 
     // Print two so a human can judge whether it reads like the books rather than like a form.
     Console.WriteLine();
-    Console.WriteLine("sample adventures —");
+    Console.WriteLine("sample adventures:");
     for (int i = 0; i < 2; i++)
     {
         foreach (var line in Db.RollAdventure(6).Sheet().Split('\n'))
@@ -4116,7 +4116,7 @@ foreach (var terrain in MapGen.Terrains)
 // ---- the naming stock and Namer (2026-08-09) ----
 // Written for a fault that shipped: Modules I and III went out as "The Salt at Coffin Wells" and
 // "The Reckoning of the Wells". Two separate defences are asserted here because they fail
-// separately — BREADTH across seeds, MEMORY within one.
+// separately: BREADTH across seeds, MEMORY within one.
 {
     var stock = Names.Data;
 
@@ -4145,7 +4145,7 @@ foreach (var terrain in MapGen.Terrains)
         T($"names: form '{f.Id}' fills every slot", !filled.Contains('{') && filled.Length > 3);
     }
 
-    // Determinism. Same seed, same names — this is the whole reason the class exists, and it is
+    // Determinism. Same seed, same names. This is the whole reason the class exists, and it is
     // what makes a rolled adventure something a Keeper can come back to.
     string Twelve(int seed)
     {
@@ -4177,7 +4177,7 @@ foreach (var terrain in MapGen.Terrains)
     // One survey names a town, a cartouche and every landmark. What the namer DRAWS may not echo.
     //
     // Scoped to drawn words on purpose. The first cut of this asserted that no word repeated
-    // anywhere on the sheet and failed on seed 5150 — because the open range offers "Line Camp"
+    // anywhere on the sheet and failed on seed 5150, because the open range offers "Line Camp"
     // and "Cold Camp", and "Signal Hill" beside "Boot Hill". Those are hand-authored landmark
     // nouns that share a generic word the way real country does, and a surveyor drawing two camps
     // has not made a mistake. The Namer's promise is about what it hands out, not about the
@@ -4185,7 +4185,7 @@ foreach (var terrain in MapGen.Terrains)
     // A second cut failed too, and taught the rest of the lesson: a word being IN a draw pool does
     // not mean the namer drew it. "Hanging Tree" and "Burned Homestead" are authored nouns that
     // happen to contain LmAdj words; "Well" is an authored noun and also a TownSecond word. Only
-    // provenance settles it, so the assertions below are scoped to text the namer alone can emit —
+    // provenance settles it, so the assertions below are scoped to text the namer alone can emit:
     // the cartouche against the town, and the owner surnames, which appear in no authored noun.
     {
         bool titleEchoesTown = false, ownerTwice = false;
@@ -4205,7 +4205,7 @@ foreach (var terrain in MapGen.Terrains)
         T("names: no two landmarks on a sheet share an owner (60 surveys)", !ownerTwice);
     }
 
-    // A seeded adventure is reproducible whole — words AND monster AND clock.
+    // A seeded adventure is reproducible whole: words AND monster AND clock.
     {
         var a1 = Db.RollAdventure(6, 777);
         var a2 = Db.RollAdventure(6, 777);
@@ -4216,7 +4216,7 @@ foreach (var terrain in MapGen.Terrains)
         T("adventure: an unseeded roll still reports a usable seed", Db.RollAdventure(6).Seed != 0);
 
         // The town comes off the book's own Ch. XII tables and is reserved into the namer, so the
-        // title cannot echo it — "The Salt at Coffin Wells" beside "the Wells" is the shipped fault.
+        // title cannot echo it: "The Salt at Coffin Wells" beside "the Wells" is the shipped fault.
         bool titleEchoesTown = false;
         for (int s = 1; s <= 200; s++)
         {
@@ -4243,7 +4243,7 @@ foreach (var terrain in MapGen.Terrains)
         MapGen.SettingTerrains.Contains("The Trail & the Open Range")
         && MapGen.SettingTerrains.Contains("Desert & the Badlands"));
 
-    // Every setting must actually draw a named settlement at county scale — that IS the feature.
+    // Every setting must actually draw a named settlement at county scale. That IS the feature.
     int county = Array.IndexOf(MapGen.Scales, "A county (a day's ride)");
     T("setting terrains: the county scale still exists to set them in", county >= 0);
     foreach (var ground in MapGen.SettingTerrains)
@@ -4293,7 +4293,7 @@ foreach (var terrain in MapGen.Terrains)
 
 // ---- Trail Maps: a city on a river reads as ONE course, not blue scraps between roofs ----
 // The reported bug: in a ward, building blocks stamped over the water, and structures landed in
-// it. The fix leaves the waterway open and redraws the water ON TOP of the block layer — so the
+// it. The fix leaves the waterway open and redraws the water ON TOP of the block layer, so the
 // last water ink must sit above the last block, and a lake must carve blocks out of the ward.
 {
     // a ward block is a 4-point rectangle (8 floats); the 5-point church roof shares the fill but isn't one
@@ -4328,12 +4328,12 @@ foreach (var terrain in MapGen.Terrains)
     T("a lake carves blocks out of the ward", wet < dry);
 
     // scattered city works are labeled ("works", "depot", "pens", "chapel", "landing"), so it is
-    // plain what each mark is — the second reported symptom.
+    // plain what each mark is (the second reported symptom).
     var caps = new HashSet<string> { "works", "depot", "pens", "chapel", "landing" };
     var cityMap = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Landmarks = 6 });
     T("city works carry captions", cityMap.P.Any(p => p.Kind == PrimKind.Text && caps.Contains(p.Text)));
 
-    // and no named landmark is planted in the river — structures keep out of the water now
+    // and no named landmark is planted in the river: structures keep out of the water now
     var riverVerts = cityMap.P.Where(IsWater).SelectMany(p =>
     {
         var v = new List<(float x, float y)>();
@@ -4423,7 +4423,7 @@ foreach (var terrain in MapGen.Terrains)
 
 // ---- Trail Maps: a town is never seated in the water, and it can be picked up ----
 // (A settlement drawn on the river inked its streets straight through the channel and the two
-// layers argued — you couldn't tell a roof from a bank. The seat is now walked onto dry ground
+// layers argued; you couldn't tell a roof from a bank. The seat is now walked onto dry ground
 // before anything is drawn, and the Keeper can still move it by hand.)
 {
     int seated = 0, checkedMaps = 0;
@@ -4442,7 +4442,7 @@ foreach (var terrain in MapGen.Terrains)
     T("every town across the water settings stands on dry ground", allDry && checkedMaps > 300);
     T("the seating rule actually fired on some of them", seated > 0);
 
-    // a town clear of the water is left exactly where the survey put it — old maps don't shift
+    // a town clear of the water is left exactly where the survey put it: old maps don't shift
     var dryMap = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Water = 1, Landmarks = 4 });
     T("a town on dry ground is not moved at all", dryMap.Town != null && !dryMap.TownSeated);
 
@@ -4488,10 +4488,10 @@ foreach (var terrain in MapGen.Terrains)
     var plain = MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 4242, Water = 3, Landmarks = 6 });
     T("a city ward draws a key", keyed.P.Any(p => p.Kind == PrimKind.Text && p.Text == "THE KEY"));
     T("open country draws no key", !plain.P.Any(p => p.Kind == PrimKind.Text && p.Text == "THE KEY"));
-    T("a city has no movable town — the ward IS the map", keyed.Town == null);
+    T("a city has no movable town. The ward IS the map", keyed.Town == null);
 }
 
-// ---- Trail Maps: overlays are VIEWS — toggling one must not reshuffle the map ----
+// ---- Trail Maps: overlays are VIEWS; toggling one must not reshuffle the map ----
 // (One shared rng stream used to mean checking Rail regenerated a different
 // countryside; per-feature streams make every checkbox pure ink on/ink off.)
 {
@@ -4551,10 +4551,10 @@ foreach (var terrain in MapGen.Terrains)
         MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 909, Secrets = false }).Secrets.Count == 0);
 }
 
-// the text-sheet PDF (the New Soul export) — structural checks + samples for external validation
+// the text-sheet PDF (the New Soul export): structural checks + samples for external validation
 {
     var soulPdfSheet = CharGen.Generate(5, false, "Gunhand");
-    var sheetPdf = Pdf.TextSheet(soulPdfSheet.Name, "Gunhand — test", CharGen.Render(soulPdfSheet));
+    var sheetPdf = Pdf.TextSheet(soulPdfSheet.Name, "Gunhand, test", CharGen.Render(soulPdfSheet));
     string head = System.Text.Encoding.Latin1.GetString(sheetPdf, 0, 8);
     T("sheet PDF structural", head.StartsWith("%PDF-1.4") && sheetPdf.Length > 1500);
     string outDir = Path.Combine(Path.GetTempPath(), "gritkeeper-smoke");
@@ -4562,10 +4562,10 @@ foreach (var terrain in MapGen.Terrains)
     File.WriteAllBytes(Path.Combine(outDir, "sample-map.pdf"),
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[0], Scale = 2, Seed = 42, Secrets = true })));
     File.WriteAllBytes(Path.Combine(outDir, "sample-sheet.pdf"), sheetPdf);
-    // a river map as SVG — eyeball that waterways end AT the neatline, not past it
+    // a river map as SVG: eyeball that waterways end AT the neatline, not past it
     File.WriteAllText(Path.Combine(outDir, "sample-river.svg"),
         MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[1], Scale = 2, Seed = 4242, Water = 3, Rail = true })));
-    // city wards WITH water — eyeball that the river/lake reads as one open course through the
+    // city wards WITH water: eyeball that the river/lake reads as one open course through the
     // blocks (the reported bug), and that the scattered works are labeled
     File.WriteAllText(Path.Combine(outDir, "sample-city-river.svg"),
         MapGen.ToSvg(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Rail = true, Landmarks = 6 })));
@@ -4575,7 +4575,7 @@ foreach (var terrain in MapGen.Terrains)
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 4242, Water = 3, Rail = true, Landmarks = 6 })));
     File.WriteAllBytes(Path.Combine(outDir, "sample-city-lake.pdf"),
         Pdf.MapPdf(MapGen.Generate(new MapSpec { Terrain = MapGen.Terrains[8], Scale = 4, Seed = 313, Water = 4, Landmarks = 6 })));
-    // one sheet per sky and one per ground — the weather washes and the new landforms are
+    // one sheet per sky and one per ground: the weather washes and the new landforms are
     // asserted above, but they also have to be looked at
     WeatherSheets.Write(Path.Combine(outDir, "weather"));
     Console.WriteLine($"sample PDFs → {outDir}");
@@ -4583,7 +4583,7 @@ foreach (var terrain in MapGen.Terrains)
 
 // ---- The daybook: what the app did, for the failure that never throws ----
 // Held to the end of the run on purpose. It is the one thing here with process-wide state, and
-// every sweep above calls the paths it listens to — so it opens, proves itself, and closes again
+// every sweep above calls the paths it listens to, so it opens, proves itself, and closes again
 // with nothing left behind.
 T("daybook: closed until somebody opens it", !Daybook.On && Daybook.Count == 0);
 Rules.RollExpr("2d6+3");
@@ -4610,7 +4610,7 @@ T("daybook: the oldest went and the newest stayed",
 string dbPath = Path.Combine(Path.GetTempPath(), "gritkeeper-daybook-smoke.txt");
 T("daybook: writes itself out",
     Daybook.Save(dbPath) && File.ReadAllText(dbPath).Contains($"entry {Daybook.Cap + 49}"));
-// A diagnostic that throws is worse than no diagnostic — an impossible path must come back false,
+// A diagnostic that throws is worse than no diagnostic. An impossible path must come back false,
 // not come back as the exception the Keeper was trying to report.
 T("daybook: an unwritable path fails soft",
     !Daybook.Save(Path.Combine(dbPath, "no", "such", "place.txt")));
@@ -4623,7 +4623,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
 // ---- what a Calling's features let you do, and how often (v1.42.0) ----
 // The limit is READ OUT OF THE BOOK'S SENTENCE, never typed beside it, so these tests are really
 // two questions: does the reader understand the sentences the book uses today, and has the book
-// started using a sentence it does not understand? The second is the one that bites — a new
+// started using a sentence it does not understand? The second is the one that bites: a new
 // Calling written with "no more than twice in a scene" would sail past a reader that only knows
 // "twice per scene", and the feature would quietly become unlimited at every table.
 {
@@ -4741,14 +4741,14 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("a chosen path is named",     duelist.Any(f => f.Name == "Games of the Gambler: The Duelist"));
     var chosen = duelist.First(f => f.Name == "Games of the Gambler: The Duelist");
     T("the 3rd-level boon stops at the mastery", !chosen.Desc.Contains("Mastery (10th)"));
-    var mast = duelist.First(f => f.Name.EndsWith("— greater"));
+    var mast = duelist.First(f => f.Name.EndsWith(" (greater)"));
     T("the mastery half is the mastery",  mast.Desc.StartsWith("Mastery (10th)"));
     T("and carries its own limit",        mast.Limit.Cadence == FeatureCadence.Scene);
     T("an Old Dark path deepens at 9th",
-      CharGen.FeaturesAt("Witch", 10, "The Familiar-Bound").First(f => f.Name.EndsWith("— greater"))
+      CharGen.FeaturesAt("Witch", 10, "The Familiar-Bound").First(f => f.Name.EndsWith(" (greater)"))
              .Desc.StartsWith("Greater (9th)"));
     T("a 9th-level path is not offered at 8th",
-      !CharGen.FeaturesAt("Witch", 8, "The Familiar-Bound").Any(f => f.Name.EndsWith("— greater")));
+      !CharGen.FeaturesAt("Witch", 8, "The Familiar-Bound").Any(f => f.Name.EndsWith(" (greater)")));
 
     // The Dark Cultist prints Devotion twice: the pool at 1st, the path at 3rd. Both must survive,
     // and the pool must keep its own rules rather than inheriting the path's list of options.
@@ -4756,7 +4756,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("the pool keeps its own name",  cultist.Any(f => f.Name == "Devotion"));
     T("and its own rules",            cultist.First(f => f.Name == "Devotion").Desc.Contains("pool"));
     T("the path is the path",         cultist.Any(f => f.Name == "Dark Cultist’s Devotions: The Whisperer"));
-    T("and deepens at 9th",           cultist.Any(f => f.Name.EndsWith("— greater")));
+    T("and deepens at 9th",           cultist.Any(f => f.Name.EndsWith(" (greater)")));
 
     // --- the level table's names reconcile with the prose's headings ---
     foreach (var cal in callings)
@@ -4822,7 +4822,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("and null is empty, not a throw",     CharGen.LedgerFor(null).Count == 0);
     T("null refuses with a sentence",       CharGen.WhyNotFeature(null, "Last Stand") != null);
 
-    // What is spent rides along in the save file — the property is public, so the session's
+    // What is spent rides along in the save file. The property is public, so the session's
     // serializer carries it without being told twice.
     soul.FeatureSpent["Last Stand"] = 1;
     var round = System.Text.Json.JsonSerializer.Deserialize<PartyMember>(
@@ -4836,7 +4836,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
 // app being generous with a debt the Patron has not forgiven.
 {
     var pact = CharGen.FeaturesAt("Hexer", 9, "The Pact-Sworn")
-                      .First(f => f.Name.Contains("Pact-Sworn") && !f.Name.EndsWith("— greater"));
+                      .First(f => f.Name.Contains("Pact-Sworn") && !f.Name.EndsWith(" (greater)"));
     var t = CharGen.ReadTally(pact.Desc);
     T("tally: the Pact-Sworn keeps one",        t.Any);
     T("tally: it counts Debts",                 t.Noun == "Debt");
@@ -4899,7 +4899,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("tally: a feature nobody has moves nothing", CharGen.TakeTally(hex, "The Conjurer").Owed == 0);
 
     // A Hexer who has chosen a different bargain owes nothing, and one who has chosen none owes
-    // nothing either — the strip must not offer a debt to somebody who cannot take one.
+    // nothing either. The strip must not offer a debt to somebody who cannot take one.
     var conjurer = new PartyMember { Name = "Ida", Calling = "Hexer", Level = 9,
                                      Sheet = CharGen.Generate(9, false, "Hexer") };
     conjurer.Sheet.Subpath = "The Conjurer";
@@ -4917,7 +4917,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     string longKey = rows[0].Name;
     T("short name: the section is dropped",  CharGen.ShortFeatureName(longKey) == "The Pact-Sworn");
     T("short name: the greater one differs",
-        CharGen.ShortFeatureName(longKey) != CharGen.ShortFeatureName(longKey + " — greater"));
+        CharGen.ShortFeatureName(longKey) != CharGen.ShortFeatureName(longKey + " (greater)"));
     T("short name: a plain feature is untouched",
         CharGen.ShortFeatureName("Last Stand") == "Last Stand");
     T("short name: null and empty survive",

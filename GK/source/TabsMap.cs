@@ -4,7 +4,7 @@ using System.Text;
 namespace BloodAndGritKeeper;
 
 /// <summary>How a rolled settlement is put on the map. A place is two different maps depending on
-/// which question the table is asking. <see cref="Itself"/> is the map you walk — streets, blocks,
+/// which question the table is asking. <see cref="Itself"/> is the map you walk: streets, blocks,
 /// the depot, the doors you can kick in. <see cref="InItsCountry"/> is the map you ride, where the
 /// whole settlement shrinks to one mark and what matters is the ground around it: how far the next
 /// water is, what the posse has to cross, where a thing could be waiting.</summary>
@@ -24,13 +24,13 @@ public partial class MainForm
     MapModel curMap;
     bool mapBusy;
 
-    // Tactical markers — session state, not part of the seeded map (a map redraw or a
+    // Tactical markers: session state, not part of the seeded map (a map redraw or a
     // new seed keeps everyone standing where the Keeper put them).
     readonly BindingList<MapMarker> mapMarkers = new();
     MapMarker dragMarker;
     bool dragMoved;
 
-    // Landmark editing — "the survey drew the Hanging Tree there, but I want it HERE."
+    // Landmark editing: "the survey drew the Hanging Tree there, but I want it HERE."
     // Custom placements are kept by landmark name and re-applied whenever the same
     // seed regenerates (toggling the hour or the Keeper's layer rebuilds the model);
     // a genuinely new map clears them. lmDragIdx is the landmark under the mouse.
@@ -44,7 +44,7 @@ public partial class MainForm
     // The Keeper's-layer marks move the same way; keyed by index, not text, because
     // two secrets on one map can carry the same line.
     int secDragIdx = -1;
-    // The scattered furniture — every tree, rock and reed bed — grabbable since 2026-08-30.
+    // The scattered furniture (every tree, rock and reed bed) grabbable since 2026-08-30.
     int scatDragIdx = -1;
     bool scatDragMoved;
     readonly Dictionary<int, (float x, float y)> scatEdits = new();
@@ -52,12 +52,12 @@ public partial class MainForm
     bool secDragMoved;
     readonly Dictionary<int, (float x, float y)> secEdits = new();
 
-    // The settlement moves by the same hand. There's only ever one, so it needs no key —
+    // The settlement moves by the same hand. There's only ever one, so it needs no key:
     // just where the Keeper put it, held for as long as the map number holds.
     bool townDrag, townDragMoved;
     (float x, float y)? townEdit;
 
-    // View state — zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
+    // View state: zoom is 1 (fit-to-panel) up to 8×; pan only applies while zoomed.
     // Wheel to zoom at the cursor, drag empty ground to pan, Fit to come home.
     float mapZoom = 1f;
     PointF mapPan = PointF.Empty;
@@ -86,12 +86,12 @@ public partial class MainForm
 
     /// <summary>What every Map-tab button says when there is no survey to work on yet. It names the
     /// button by the label the Keeper can actually see. Three guards below already carried this
-    /// sentence longhand and all three ended it "press Survey first" — and there is no Survey
+    /// sentence longhand and all three ended it "press Survey first", and there is no Survey
     /// button on this tab, nor has there been one; the control that draws a survey is 🎲 New map.
     /// A refusal that sends somebody looking for a control that was never there is a worse failure
     /// than the silent ones this release went after, because it is confidently wrong instead of
     /// merely quiet. One sentence, one place, naming one real button.</summary>
-    const string NoSurvey = "No survey on the table yet — press 🎲 New map first.";
+    const string NoSurvey = "No survey on the table yet. Press 🎲 New map first.";
 
     void MapZoomAt(Point anchor, float factor)
     {
@@ -129,9 +129,9 @@ public partial class MainForm
         var page = new TabPage("Map") { BackColor = Paper };
 
         // Three rows, grouped by intent, so nothing hunts for a home when the bar wraps:
-        //   1. the survey — everything that decides WHAT the map is
-        //   2. show / zoom — how you VIEW it (overlays never change the map, only its ink)
-        //   3. at the table / export — what you DO with it
+        //   1. the survey: everything that decides WHAT the map is
+        //   2. show / zoom: how you VIEW it (overlays never change the map, only its ink)
+        //   3. at the table / export: what you DO with it
         var barBg = Color.FromArgb(243, 237, 221);
         FlowLayoutPanel Row(int padTop, int padBottom) => new()
         { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, padTop, 8, padBottom), BackColor = barBg };
@@ -159,16 +159,16 @@ public partial class MainForm
 
         // ---- row 1: the survey ----
         rowGen.Controls.Add(Lbl("Ground:"));
-        mapGround = Combo(rowGen, MapGen.Terrains, 0, 192, "The kind of country — the Bestiary's Grounds");
+        mapGround = Combo(rowGen, MapGen.Terrains, 0, 192, "The kind of country, the Bestiary's Grounds");
         rowGen.Controls.Add(Lbl(" Scale:"));
         mapScale = Combo(rowGen, MapGen.Scales, 2, 156, "From a single gunfight up to weeks of trail");
         rowGen.Controls.Add(Lbl(" Hour:"));
-        mapTime = Combo(rowGen, MapGen.Times, 1, 100, "The hour sets the light — night maps come with stars and a moon");
+        mapTime = Combo(rowGen, MapGen.Times, 1, 100, "The hour sets the light, night maps come with stars and a moon");
         rowGen.Controls.Add(Lbl(" Water:"));
-        mapWater = Combo(rowGen, MapGen.Waters, 0, 118, "Force a creek, river, or lake — or let the terrain decide");
+        mapWater = Combo(rowGen, MapGen.Waters, 0, 118, "Force a creek, river, or lake, or let the terrain decide");
         rowGen.Controls.Add(Lbl(" Weather:"));
         mapSky = Combo(rowGen, MapGen.Weathers, 0, 124,
-            "The sky over the survey — fair, overcast, rain, fog, blowing dust, snow, a blizzard. "
+            "The sky over the survey: fair, overcast, rain, fog, blowing dust, snow, a blizzard. "
             + "Left on “As the sky wills” the country picks what it would actually get: the high "
             + "country gets snow, the badlands get heat and sand.");
         // A FlowLayoutPanel wraps where it runs out of room, and it will happily leave a label at
@@ -183,22 +183,22 @@ public partial class MainForm
         rowGen.Controls.Add(Lbl(" Furniture:"));
         mapDensity = Combo(rowGen, MapGen.Densities, 0, 150,
             "How thickly the survey scatters trees, rock, brush and the rest. It changes how much "
-            + "is drawn, never what kind — for that, use Growth beside it.");
+            + "is drawn, never what kind, for that, use Growth beside it.");
         rowGen.Controls.Add(Lbl(" Landmarks:"));
         mapLm = new NumericUpDown { Minimum = 0, Maximum = 12, Value = 5, Width = 48, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(mapLm, "How many named places the survey marks");
         rowGen.Controls.Add(mapLm);
         rowGen.Controls.Add(Lbl(" Seed:"));
         mapSeed = new NumericUpDown { Minimum = 0, Maximum = 999999, Value = 0, Width = 74, Margin = new Padding(3, 6, 3, 3) };
-        Tip.SetToolTip(mapSeed, "The map's number — the same seed and settings always draw the same map");
+        Tip.SetToolTip(mapSeed, "The map's number. The same seed and settings always draw the same map");
         rowGen.Controls.Add(mapSeed);
         rowGen.Controls.Add(Btn("🎲 New map", (s, e) => MapDraw(true), 92, "Draw a fresh map on a new seed (Ctrl+G)"));
         rowGen.SetFlowBreak(rowGen.Controls[rowGen.Controls.Count - 1], true);
-        // A place the Keeper has already named — usually rolled on the Generators tab and sent
+        // A place the Keeper has already named, usually rolled on the Generators tab and sent
         // over. Empty means the survey names it, which is what it did before this box existed.
         rowGen.Controls.Add(Lbl("Name:"));
         mapName = new TextBox { Width = 210, Margin = new Padding(3, 6, 3, 3) };
-        Tip.SetToolTip(mapName, "Name this place yourself — the town's name on a county map, the ward's on a city map. "
+        Tip.SetToolTip(mapName, "Name this place yourself: the town's name on a county map, the ward's on a city map. "
             + "Leave it empty and the survey names it. Roll a town or a city on the Generators tab and press "
             + "“→ Map” to fill this in.");
         // Redraw when the Keeper is DONE typing, not per keystroke: every redraw writes a line to
@@ -217,45 +217,45 @@ public partial class MainForm
         // ---- row 2: what's shown, and how close ----
         rowView.Controls.Add(Lbl("Show:"));
         mapTrail = Check(rowView, "Trail", true, "A trail or wagon road across the country");
-        mapRail = Check(rowView, "Rail", false, "A rail line — straight as money");
+        mapRail = Check(rowView, "Rail", false, "A rail line, straight as money");
         mapTown = Check(rowView, "Settlement", true, "A named town or camp on the trail");
-        mapGrid = Check(rowView, "Grid", false, "Overlay squares — a battle map's grid (on by default at gunfight scale)");
-        mapSecrets = Check(rowView, "Keeper's layer", false, "The secrets, in red — leave off before showing players. Exports include whatever is checked.");
+        mapGrid = Check(rowView, "Grid", false, "Overlay squares: a battle map's grid (on by default at gunfight scale)");
+        mapSecrets = Check(rowView, "Keeper's layer", false, "The secrets, in red. Leave off before showing players. Exports include whatever is checked.");
         rowView.Controls.Add(Sep());
         rowView.Controls.Add(Lbl("Zoom:"));
         rowView.Controls.Add(Btn("🔍＋", (s, e) => MapZoomBtn(1.4f), 46,
-            "Zoom in — or roll the mouse wheel over the map"));
+            "Zoom in, or roll the mouse wheel over the map"));
         rowView.Controls.Add(Btn("🔍−", (s, e) => MapZoomBtn(1 / 1.4f), 46,
             "Zoom out"));
         rowView.Controls.Add(QuietBtn("Fit", (s, e) => { mapZoom = 1f; mapPan = PointF.Empty; mapPanel.Invalidate(); }, 46,
             "Fit the whole survey back in the window"));
         rowView.Controls.Add(Btn("◈ Full screen", (s, e) => MapFullScreen(), 108,
-            "Throw the map across the whole screen, with every control on this bar still on it — "
+            "Throw the map across the whole screen, with every control on this bar still on it: "
             + "or just double-click the map. Esc, F11 or ✕ brings it back."));
 
         // ---- row 3: at the table, then out the door ----
-        // The old label just read "✥ Landmarks", which named a thing rather than an action — you
+        // The old label just read "✥ Landmarks", which named a thing rather than an action. You
         // had to already know that pressing it let you move anything (user-reported). It now says
         // what it does, and stays saying it while it's held down.
         lmEditBtn = ToggleBtn("✥ Move things", 118,
             "Press to pick things up. While it's down, drag the town, any named landmark, " +
-            "or a red Keeper's-layer mark to a better spot — right-click one to put it back where the survey " +
+            "or a red Keeper's-layer mark to a better spot, right-click one to put it back where the survey " +
             "drew it. Placements hold for this map number, and exports carry them.");
         lmEditBtn.CheckedChanged += (s, e) =>
         {
             lmEditMode = lmEditBtn.Checked;
-            lmEditBtn.Text = lmEditMode ? "✥ Moving — on" : "✥ Move things";
+            lmEditBtn.Text = lmEditMode ? "✥ Moving, on" : "✥ Move things";
             if (!lmEditMode) { lmDragIdx = -1; secDragIdx = -1; scatDragIdx = -1; townDrag = false; }
             mapPanel.Invalidate();
             if (lmEditMode) Log("Moving is on: drag the town, a landmark, or a red secret. Right-click one to put it back.");
         };
         rowWork.Controls.Add(lmEditBtn);
         rowWork.Controls.Add(Btn("＋ Marker ▾", (s, e) => ShowMarkerMenu((Button)s), 100,
-            "Place a marker — a posse soul, an NPC, or a creature — then drag it into position"));
+            "Place a marker (a posse soul, an NPC, or a creature) then drag it into position"));
         rowWork.Controls.Add(Btn("Tracker → Map", (s, e) => TrackerToMap(), 110,
-            "Drop everyone on the Tracker onto the map — posse west, trouble east"));
+            "Drop everyone on the Tracker onto the map, posse west, trouble east"));
         rowWork.Controls.Add(Btn("Marker colors ▾", (s, e) => ShowKindInkMenu((Button)s), 112,
-            "Choose the ink for each kind of marker — and remember it. A single marker can also take " +
+            "Choose the ink for each kind of marker, and remember it. A single marker can also take " +
             "a color of its own: right-click it on the map."));
         rowWork.Controls.Add(DangerBtn("Clear markers", (s, e) =>
         {
@@ -267,17 +267,17 @@ public partial class MainForm
         rowWork.Controls.Add(Sep());
         rowWork.Controls.Add(Lbl("Export:"));
         // Markers are the table's business, not the survey's, so a saved map leaves them off unless
-        // the Keeper says otherwise — a map for the players shouldn't show them where the ambush is.
+        // the Keeper says otherwise: a map for the players shouldn't show them where the ambush is.
         // The checkbox is here, beside the save buttons, because that's the moment the question comes up.
         mapMarkOut = new CheckBox
         { Text = "with markers", AutoSize = true, Margin = new Padding(2, 7, 6, 3), ForeColor = Ink, UseMnemonic = false };
-        Tip.SetToolTip(mapMarkOut, "Off, a saved SVG or PDF is the survey alone — the markers stay on screen. " +
+        Tip.SetToolTip(mapMarkOut, "Off, a saved SVG or PDF is the survey alone, the markers stay on screen. " +
             "On, they're drawn onto the file too, in the colors shown here.");
         rowWork.Controls.Add(mapMarkOut);
         rowWork.Controls.Add(Btn("Save SVG…", (s, e) => MapSaveSvg(), 95,
-            "Save the map as a scalable SVG file — exactly as shown, checked overlays included"));
+            "Save the map as a scalable SVG file, exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Save PDF…", (s, e) => MapSavePdf(), 95,
-            "Save the map as a one-page landscape PDF — exactly as shown, checked overlays included"));
+            "Save the map as a one-page landscape PDF, exactly as shown, checked overlays included"));
         rowWork.Controls.Add(Btn("Copy SVG", (s, e) =>
         {
             if (curMap == null) { Nope(NoSurvey); return; }
@@ -313,7 +313,7 @@ public partial class MainForm
             MapDraw(false);
         };
 
-        // The whole drafting table — three bars and the map — lives in ONE host panel so that going
+        // The whole drafting table (three bars and the map) lives in ONE host panel so that going
         // full screen can move the real thing rather than build a second copy of it. A full-screen
         // view with its own rebuilt bar would be eleven combo boxes and twenty buttons written
         // twice, and the day the two disagree is the day a Keeper draws a map they cannot reproduce.
@@ -334,7 +334,7 @@ public partial class MainForm
     Panel mapHost;
     bool mapFull;
 
-    /// <summary>Send the map away to a second window and bring it back, without showing anything —
+    /// <summary>Send the map away to a second window and bring it back, without showing anything:
     /// the reparenting half of <see cref="MapFullScreen"/> with the modal taken out, so
     /// <c>--selftest</c> can prove the Map tab survives the round trip. Hands back true when the
     /// host is home again with all four of its children.
@@ -361,7 +361,7 @@ public partial class MainForm
     /// <summary>Show the map across the whole screen, carrying its own controls with it.
     ///
     /// The host panel is REPARENTED into a borderless window and handed back afterwards, so
-    /// everything available while the map is in its tab is available here — the same ground, scale,
+    /// everything available while the map is in its tab is available here: the same ground, scale,
     /// hour and weather boxes, the same overlay checks, the same markers, the same exports, and the
     /// same objects behind them. Nothing here is a copy that could fall out of step.
     ///
@@ -377,7 +377,7 @@ public partial class MainForm
 
         using var f = new Sheet
         {
-            Text = "The Trail Maps drafting table — full screen",
+            Text = "The Trail Maps drafting table, full screen",
             FormBorderStyle = FormBorderStyle.None, StartPosition = FormStartPosition.Manual,
             ShowInTaskbar = false, BackColor = Paper, KeyPreview = true,
             Bounds = Screen.FromControl(this).Bounds
@@ -394,7 +394,7 @@ public partial class MainForm
             Text = "✕  Close  (Esc)", Width = 132, Height = 30, Margin = new Padding(3),
             DialogResult = DialogResult.Cancel
         };
-        Tip.SetToolTip(close, "Put the map back on its tab — Esc and F11 do the same");
+        Tip.SetToolTip(close, "Put the map back on its tab. Esc and F11 do the same");
         strip.Controls.Add(close);
         var says = new Label
         {
@@ -409,7 +409,7 @@ public partial class MainForm
 
         // Pan is a pixel offset against the panel that was on screen when it was dragged, so it
         // means nothing once the panel is four times the size. Zoom is a magnification and travels
-        // fine, so it is kept and only the pan is dropped — the view re-centres at the same scale.
+        // fine, so it is kept and only the pan is dropped: the view re-centres at the same scale.
         void Rehome(Control to)
         {
             home.SuspendLayout(); to.SuspendLayout();
@@ -428,16 +428,16 @@ public partial class MainForm
             // until the app is restarted, and a Keeper with no way of knowing their survey is
             // still parented to a window that went away.
             // Host first, strip second. Docking resolves from the highest index down, so the strip
-            // takes the top edge and the host fills whatever is left — the same order the tabs use.
+            // takes the top edge and the host fills whatever is left, the same order the tabs use.
             Rehome(f);
             f.Controls.Add(strip);
-            Log("The map is full screen — Esc, F11 or ✕ brings it back.");
+            Log("The map is full screen. Esc, F11 or ✕ brings it back.");
             f.ShowDialog(this);
         }
         finally
         {
             // Unconditional: `using` disposes the window on the way out, and a host still parented
-            // to it would be disposed WITH it — the Map tab would come back permanently empty.
+            // to it would be disposed WITH it, and the Map tab would come back permanently empty.
             Rehome(home);
             mapFull = false;
         }
@@ -462,20 +462,20 @@ public partial class MainForm
     /// <summary>Draw a survey of a place the Keeper has already rolled up on the Generators tab.
     ///
     /// Both scales are offered for both kinds of settlement, which is the point: before v1.25.0 a
-    /// city could ONLY be drawn as a ward, so there was no way to ask "and what is around it?" —
+    /// city could ONLY be drawn as a ward, so there was no way to ask "and what is around it?",
     /// the one question a posse riding toward a city actually has. Now either can be surveyed as
     /// itself or set down in open country, and the country can be rolled or named.</summary>
     /// <param name="placeName">The rolled-up place's name, as the Generators tab left it.</param>
-    /// <param name="city">True for a city, false for a town — the two roll up differently.</param>
+    /// <param name="city">True for a city, false for a town: the two roll up differently.</param>
     /// <param name="view">Survey the place itself, or set it down in open country.</param>
-    /// <param name="terrain">The ground to set it in. Null rolls one — "surprise me" being most
-    /// of what a generator is for. Ignored unless the view is <see cref="PlaceView.InItsCountry"/>.</param>
+    /// <param name="terrain">The ground to set it in. Null rolls one ("surprise me" being most
+    /// of what a generator is for). Ignored unless the view is <see cref="PlaceView.InItsCountry"/>.</param>
     internal void SendPlaceToMap(string placeName, bool city, PlaceView view = PlaceView.Itself, string terrain = null)
     {
         if (string.IsNullOrWhiteSpace(placeName)) { Nope("Roll a town or a city first."); return; }
-        // Realizes the tab if this is its first visit — and says so plainly if this table is being
+        // Realizes the tab if this is its first visit, and says so plainly if this table is being
         // run in a player's view, where there is no Map tab to send anything to.
-        if (!ShowTab("Map") || mapName == null) { Nope("The Map is a Keeper's tab — switch tables under the Table menu."); return; }
+        if (!ShowTab("Map") || mapName == null) { Nope("The Map is a Keeper's tab, switch tables under the Table menu."); return; }
 
         mapBusy = true;
         mapName.Text = placeName.Trim();
@@ -484,7 +484,7 @@ public partial class MainForm
         if (view == PlaceView.InItsCountry)
         {
             // One mark on open ground, a day's ride across. The settlement is still drawn (mapTown
-            // below) — it is simply no longer the whole sheet.
+            // below). It is simply no longer the whole sheet.
             ground = terrain ?? MapGen.SettingTerrains[Rules.Rng.Next(MapGen.SettingTerrains.Length)];
             mapScale.SelectedIndex = Array.IndexOf(MapGen.Scales, "A county (a day's ride)");
             mapGrid.Checked = false;
@@ -508,9 +508,9 @@ public partial class MainForm
         MapDraw(true);                         // a new place is a new survey, not a relabelled old one
 
         string what = view == PlaceView.InItsCountry
-            ? $"{mapName.Text} and the country around it — {ground.ToLowerInvariant()}"
+            ? $"{mapName.Text} and the country around it, {ground.ToLowerInvariant()}"
             : city ? $"The ward of {mapName.Text}" : $"The town of {mapName.Text}";
-        Log($"{what} — surveyed as map N° {(int)mapSeed.Value}.");
+        Log($"{what}, surveyed as map N° {(int)mapSeed.Value}.");
     }
 
     /// <summary>The survey as it stands, for a snapshot. Read off the CONTROLS when the Map tab
@@ -529,7 +529,7 @@ public partial class MainForm
     }
 
     /// <summary>Put a stored survey back on the Map tab and redraw it. A no-op until the tab has
-    /// been built — BuildMapTab calls this at the end of its own construction, so a survey loaded
+    /// been built: BuildMapTab calls this at the end of its own construction, so a survey loaded
     /// before the Keeper ever opened the Map is drawn the moment they do.</summary>
     void ApplySurvey()
     {
@@ -578,7 +578,7 @@ public partial class MainForm
         int seed = (int)mapSeed.Value;
         if (seed != lmEditSeed)
         { lmEdits.Clear(); secEdits.Clear(); scatEdits.Clear(); scatGone.Clear(); townEdit = null; lmEditSeed = seed; }
-        else                                              // same survey, rebuilt (hour, layer…) — hold the Keeper's placements
+        else                                              // same survey, rebuilt (hour, layer…): hold the Keeper's placements
         {
             for (int i = 0; i < curMap.Landmarks.Count; i++)
                 if (lmEdits.TryGetValue(curMap.Landmarks[i].Name, out var at))
@@ -601,18 +601,18 @@ public partial class MainForm
         mapBusy = false;
         // The survey rides in the snapshot, so drawing one is an undoable act like any other edit
         // to the table. Suppressed during ApplySession, which is where the restoring call comes
-        // from — CaptureUndo returns early while suppressUndo is up.
+        // from; CaptureUndo returns early while suppressUndo is up.
         surveyState = CurrentSurvey();
         CaptureUndo();
         if (quiet) return;
-        // Name the sky as well as the map — when the Keeper leaves it on "as the sky wills", the
+        // Name the sky as well as the map: when the Keeper leaves it on "as the sky wills", the
         // country rolls its own, and they're owed the answer without squinting at the cartouche.
-        Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value} — {MapGen.WeatherLine(Array.IndexOf(MapGen.Weathers, curMap.Weather))}.");
+        Log($"Map drawn: {curMap.Title}, N° {(int)mapSeed.Value}, {MapGen.WeatherLine(Array.IndexOf(MapGen.Weathers, curMap.Weather))}.");
         // Say it plainly when the survey wanted the town in the river and it was seated on the
-        // bank instead — otherwise a map number that used to draw a town in the water quietly
+        // bank instead; otherwise a map number that used to draw a town in the water quietly
         // draws it somewhere else, and that reads like a bug.
         if (curMap.TownSeated && curMap.Town != null)
-            Log($"{curMap.Town.Name} was seated on the bank — the survey had it standing in the water.");
+            Log($"{curMap.Town.Name} was seated on the bank. The survey had it standing in the water.");
     }
 
     /// <summary>The markers as export ink, or null for "the survey alone". Null rather than an empty
@@ -624,13 +624,13 @@ public partial class MainForm
 
     /// <summary>What to say about the markers when a file is written. A map that quietly comes out
     /// without the markers the Keeper spent ten minutes arranging is a map they'll assume is broken,
-    /// so the log says which way it went — and, when they're left off, where the switch is.</summary>
+    /// so the log says which way it went, and, when they're left off, where the switch is.</summary>
     string MarkerNote()
     {
         if (mapMarkers.Count == 0) return "";
         return mapMarkOut != null && mapMarkOut.Checked
-            ? $" — {mapMarkers.Count} marker(s) drawn on it"
-            : $" — the survey alone; {mapMarkers.Count} marker(s) stayed on screen (tick “with markers” to include them)";
+            ? $", {mapMarkers.Count} marker(s) drawn on it"
+            : $", the survey alone; {mapMarkers.Count} marker(s) stayed on screen (tick “with markers” to include them)";
     }
 
     static string MapSlug(string title) =>
@@ -752,7 +752,7 @@ public partial class MainForm
                 scatDragIdx = HitScatter(e.Location);
                 if (scatDragIdx >= 0) { mapPanel.Invalidate(); return; }
             }
-            if (mapZoom > 1f)                       // empty ground while zoomed — pan the view
+            if (mapZoom > 1f)                       // empty ground while zoomed: pan the view
             {
                 mapPanning = true;
                 mapPanLast = e.Location;
@@ -812,7 +812,7 @@ public partial class MainForm
             }
             if (townDrag && m.Town != null)
             {
-                // a town needs more elbow room than a single mark — it carries its street and its name
+                // a town needs more elbow room than a single mark. It carries its street and its name
                 float reach = MapGen.TownReach(mapScale.SelectedIndex);
                 float nx = Math.Clamp((e.X - ox) / sc, reach * 0.4f + 24, m.W - reach * 0.4f - 24);
                 float ny = Math.Clamp((e.Y - oy) / sc, 40, m.H - 72);
@@ -821,7 +821,7 @@ public partial class MainForm
                 mapPanel.Invalidate();
                 return;
             }
-            // nothing in hand — show what's grabbable under the cursor
+            // nothing in hand: show what's grabbable under the cursor
             mapPanel.Cursor = HitMarker(e.Location) != null
                 || (lmEditMode && (HitLandmark(e.Location) >= 0 || HitSecret(e.Location) >= 0 || HitTown(e.Location)))
                 ? Cursors.Hand : Cursors.Default;
@@ -840,7 +840,7 @@ public partial class MainForm
                         string n = AskLine("Rename the marker", mk.Label);
                         if (!string.IsNullOrWhiteSpace(n)) { mk.Label = n.Trim(); CaptureUndo(); mapPanel.Invalidate(); }
                     });
-                    menu.Items.Add(InkMenu($"Color — {MapInk.NameOf(MapInk.Of(mk))}", MapInk.Of(mk),
+                    menu.Items.Add(InkMenu($"Color, {MapInk.NameOf(MapInk.Of(mk))}", MapInk.Of(mk),
                         mk.Argb == MapInk.Unset ? null : $"Back to the {mk.Kind} color",
                         argb =>
                         {
@@ -1033,7 +1033,7 @@ public partial class MainForm
         };
     }
 
-    // The town is grabbed anywhere in its seat — a broad target, since it's a broad thing.
+    // The town is grabbed anywhere in its seat: a broad target, since it's a broad thing.
     bool HitTown(Point p)
     {
         var m = mapPanel.Model;
@@ -1095,8 +1095,8 @@ public partial class MainForm
         return -1;
     }
 
-    // While landmark editing is on, every named landmark wears a dashed gold ring —
-    // the grab handle — and the one in hand rings solid. Off, the map stays clean.
+    // While landmark editing is on, every named landmark wears a dashed gold ring
+    // (the grab handle), and the one in hand rings solid. Off, the map stays clean.
     void DrawLandmarkHandles(Graphics g, MapModel m, Rectangle dest)
     {
         if (!lmEditMode) return;
@@ -1111,7 +1111,7 @@ public partial class MainForm
         using (var edge = new Pen(Gold, 1.4f))
         using (var ink = new SolidBrush(Ink))
         {
-            string hint = "Moving is on — drag the town, a landmark, a red secret, or any tree or rock. "
+            string hint = "Moving is on: drag the town, a landmark, a red secret, or any tree or rock. "
                         + "Right-click one to put it back or take it off.";
             var sz = g.MeasureString(hint, f);
             float bw = sz.Width + 22, bx = dest.X + (dest.Width - bw) / 2, by = dest.Y + 6;
@@ -1154,7 +1154,7 @@ public partial class MainForm
         }
     }
 
-    // A landmark is grabbed by its symbol — generous 16px screen radius, topmost wins.
+    // A landmark is grabbed by its symbol: generous 16px screen radius, topmost wins.
     int HitLandmark(Point p)
     {
         var m = mapPanel.Model;
@@ -1245,7 +1245,7 @@ public partial class MainForm
         menu.Show(mapPanel, where);
     }
 
-    /// Where a point on the panel lands in map-model space — the inverse of MapXform, which is what
+    /// Where a point on the panel lands in map-model space: the inverse of MapXform, which is what
     /// every hit test here already does by hand.
     PointF? ModelPointAt(Point p)
     {
@@ -1257,7 +1257,7 @@ public partial class MainForm
 
     // ---------------------------------------------------------- marker ink
     // Four riders all drawn the same verdigris are four dots the table argues about. A marker
-    // can take its own color, and a whole kind can be re-inked for good — the first travels in
+    // can take its own color, and a whole kind can be re-inked for good: the first travels in
     // the session file with the marker, the second in prefs.json with the Keeper.
 
     // Swatches live as long as the app does. The menus below are rebuilt on every right-click
@@ -1279,7 +1279,7 @@ public partial class MainForm
     }
 
     /// <summary>The ink choices as a submenu: the palette with the current color ticked, a mixer for
-    /// anything else, and — when <paramref name="backLabel"/> is given — the way back to the default.
+    /// anything else, and, when <paramref name="backLabel"/> is given, the way back to the default.
     /// <paramref name="pick"/> receives the chosen ARGB, or <see cref="MapInk.Unset"/> for "back".</summary>
     ToolStripMenuItem InkMenu(string head, int current, string backLabel, Action<int> pick)
     {
@@ -1302,7 +1302,7 @@ public partial class MainForm
     }
 
     /// <summary>Re-ink a whole kind at once, and keep it. Markers that have taken a color of their
-    /// own are left alone — a soul the Keeper singled out shouldn't lose that to a sweep.</summary>
+    /// own are left alone: a soul the Keeper singled out shouldn't lose that to a sweep.</summary>
     void ShowKindInkMenu(Button host)
     {
         var menu = PopupMenu();
@@ -1310,7 +1310,7 @@ public partial class MainForm
         {
             string k = kind;
             int cur = MapInk.KindColor(k);
-            menu.Items.Add(InkMenu($"{said} — {MapInk.NameOf(cur)}", cur,
+            menu.Items.Add(InkMenu($"{said}, {MapInk.NameOf(cur)}", cur,
                 cur == MapInk.BookColor(k) ? null : "Back to the book's color",
                 argb =>
                 {
@@ -1340,7 +1340,7 @@ public partial class MainForm
 
     /// <summary>Put a marker on the sheet.</summary>
     /// <param name="label">What it is called on the map.</param>
-    /// <param name="kind">"posse", "npc" or "creature" — which sets its ink.</param>
+    /// <param name="kind">"posse", "npc" or "creature": which sets its ink.</param>
     /// <param name="at">Where to put it, in map-model space. Null cascades from the centre of the
     /// current view, which is right for the toolbar button and wrong for a right-click: a Keeper who
     /// points at a spot and asks for a marker means THAT spot.</param>
@@ -1398,10 +1398,10 @@ public partial class MainForm
         Column(foes, m.W * 0.82f);
         CaptureUndo();
         mapPanel.Invalidate();
-        Log($"{incoming.Count} marker(s) take the field — posse west, trouble east. Drag them into position.");
+        Log($"{incoming.Count} marker(s) take the field, posse west, trouble east. Drag them into position.");
     }
 
-    // A one-line ask — small, centered on the app, Enter accepts, Esc cancels.
+    // A one-line ask: small, centered on the app, Enter accepts, Esc cancels.
     string AskLine(string title, string initial)
     {
         using var dlg = new Sheet
@@ -1420,7 +1420,7 @@ public partial class MainForm
     }
 
     // ---------------------------------------------------------- GDI replay
-    // The on-screen renderer for the primitive list — the same drawing the SVG and
+    // The on-screen renderer for the primitive list: the same drawing the SVG and
     // PDF exports make, scaled to fit whatever room the panel has.
     void DrawModel(Graphics g, MapModel m, Rectangle dest)
     {

@@ -23,7 +23,7 @@ public partial class MainForm
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false
         };
         StyleGrid(ridesGrid);
-        // Name = prop, which the corral did without until v1.33.0 — with no name a column cannot be
+        // Name = prop, which the corral did without until v1.33.0: with no name a column cannot be
         // reached as g.Columns["BloodCur"], and that is the only way Figures() finds the ones to set
         // right. It is why this grid kept its figures ragged while the Posse's were squared up.
         void Col(string prop, string head, int weight, bool ro = false)
@@ -34,7 +34,7 @@ public partial class MainForm
         // MaxHead and not "/Max": this grid sits directly under the Posse's on the same tab, close
         // enough that the two are read in one glance, and they were wearing two spellings of the
         // same header. Sharing the constant also means the corral cannot pick up the wrap-and-clip
-        // the Posse tab just got rid of — see MaxHead for the non-breaking space that prevents it.
+        // the Posse tab just got rid of. See MaxHead for the non-breaking space that prevents it.
         Col("BloodCur", "Blood", 52); Col("BloodMax", MaxHead, 58); Col("Defense", "Def", 42);
         Col("Speed", "Speed", 140, ro: true); Col("Capacity", "Carries", 55); Col("Notes", "Notes", 210);
         Figures(ridesGrid, "BloodCur", "Defense", "Capacity");
@@ -63,9 +63,9 @@ public partial class MainForm
         // The bar's actions, on the ride itself.
         GridMenu<Ride>(ridesGrid, (menu, r) =>
         {
-            MIHead(menu, $"{r.Name} — {r.Type}");
+            MIHead(menu, $"{r.Name}, {r.Type}");
             MI(menu, "Rename…", () => RenameRide(r));
-            MI(menu, r.Rider is { Length: > 0 } ? $"Rider — {r.Rider}" : "Assign a rider…",
+            MI(menu, r.Rider is { Length: > 0 } ? $"Rider, {r.Rider}" : "Assign a rider…",
                 () => ShowRiderMenu(ridesGrid, ridesGrid.PointToClient(Cursor.Position)));
             MISep(menu);
             MI(menu, $"Hurt {rideAmount.Value}", () => AdjustRide(-1), r.BloodCur > 0);
@@ -85,10 +85,10 @@ public partial class MainForm
         var vehicles = Db.Rides.Where(r => r.kind != "mount")
             .Select(r => (r.name, (EventHandler)((s, e) => AddRide(r.name)))).ToList();
         var items = new List<(string, EventHandler)>();
-        items.Add(("— Mounts —", null));
+        items.Add(("Mounts:", null));
         items.AddRange(mounts);
         items.Add(("-", null));
-        items.Add(("— Vehicles —", null));
+        items.Add(("Vehicles:", null));
         items.AddRange(vehicles);
         bar.Controls.Add(MenuBtn("＋ Add a ride ▾", 120, "Put a mount or a vehicle in the posse's keeping", items.ToArray()));
 
@@ -96,7 +96,7 @@ public partial class MainForm
         {
             if (SelectedRide() is not Ride r) { Nope("Select a ride first."); return; }
             RenameRide(r);
-        }, 88, "Give it a name — a horse the table knows by name is a horse the table will miss"));
+        }, 88, "Give it a name. A horse the table knows by name is a horse the table will miss"));
 
         bar.Controls.Add(Btn("Assign rider ▾", (s, e) =>
         {
@@ -109,13 +109,13 @@ public partial class MainForm
         Tip.SetToolTip(rideAmount, "How much Blood the next button takes or gives back");
         bar.Controls.Add(rideAmount);
         bar.Controls.Add(Btn("− Hurt", (s, e) => AdjustRide(-1), 70, "Take that much Blood off the selected ride"));
-        bar.Controls.Add(Btn("＋ Mend", (s, e) => AdjustRide(+1), 74, "Give it back — a night's rest, a wheelwright, a farrier"));
+        bar.Controls.Add(Btn("＋ Mend", (s, e) => AdjustRide(+1), 74, "Give it back: a night's rest, a wheelwright, a farrier"));
 
         bar.Controls.Add(Btn("→ Tracker", (s, e) =>
         {
             if (SelectedRide() is not Ride r) { Nope("Select a ride first."); return; }
             RideToTracker(r);
-        }, 92, "Put it on the combat tracker — it can be shot at like anything else"));
+        }, 92, "Put it on the combat tracker. It can be shot at like anything else"));
 
         bar.Controls.Add(DangerBtn("✕ Remove", (s, e) =>
         {
@@ -144,7 +144,7 @@ public partial class MainForm
                  + "A ride carries the water and takes the first shot out of the dark, so it can be\n"
                  + "hurt, mended, named, and sent to the Tracker like anything else that bleeds."
         };
-        // Added in the Tracker's exact order — content, then the bar, then the hint brought to the
+        // Added in the Tracker's exact order: content, then the bar, then the hint brought to the
         // front. Docking is resolved last-added-first, so the bar keeps its band and the hint fills
         // only what is left; BringToFront is what puts it over the grid rather than under it.
         host.Controls.Add(ridesGrid);
@@ -164,7 +164,7 @@ public partial class MainForm
         var r = Db.MakeRide(type);
         r.Name = Db.FreeRideName(rides.Select(x => x.Name), r.Name);
         rides.Add(r);
-        Log($"{r.Name} joins the outfit — Blood {r.BloodCur}/{r.BloodMax}, Def {r.Defense}, carries {r.Capacity}.");
+        Log($"{r.Name} joins the outfit. Blood {r.BloodCur}/{r.BloodMax}, Def {r.Defense}, carries {r.Capacity}.");
     }
 
     void RenameRide(Ride r)
@@ -193,11 +193,11 @@ public partial class MainForm
         int v = (int)rideAmount.Value;
         r.BloodCur = Math.Clamp(r.BloodCur + sign * v, 0, r.BloodMax);
         Log($"{r.Name} {(sign < 0 ? "takes" : "recovers")} {v} → {r.BloodCur}/{r.BloodMax}"
-            + (r.BloodCur == 0 ? (r.IsMount ? "  — DOWN." : "  — WRECKED.") : ""));
+            + (r.BloodCur == 0 ? (r.IsMount ? ", DOWN." : ", WRECKED.") : ""));
         ridesGrid.Refresh();
     }
 
-    // Riders come from the posse, so the list can't go stale — plus a way to unhitch. Anchored to
+    // Riders come from the posse, so the list can't go stale, and there is a way to unhitch. Anchored to
     // whatever asked for it: the bar's button, or the grid at the point of a right-click.
     void ShowRiderMenu(Control anchor, Point at)
     {
@@ -212,7 +212,7 @@ public partial class MainForm
             { r.Rider = soul.Name; CaptureUndo(); ridesGrid.Refresh(); Log($"{soul.Name} takes {r.Name}."); });
         }
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Nobody — put it up", null, (s, e) =>
+        menu.Items.Add("Nobody. Put it up", null, (s, e) =>
         { r.Rider = ""; CaptureUndo(); ridesGrid.Refresh(); Log($"{r.Name} is put up."); });
         menu.Show(anchor, at);   // PopupMenu() lets it go when it closes
     }

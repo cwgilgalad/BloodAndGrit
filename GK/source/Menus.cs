@@ -21,7 +21,7 @@ public partial class MainForm
         var menu = new MenuStrip { BackColor = Paper, Font = new Font("Segoe UI", 9.5f), Padding = new Padding(8, 4, 0, 4) };
 
         var file = new ToolStripMenuItem("&File");
-        // Only says it saved if it saved — AutoSave now reports, and it has its own loud say about
+        // Only says it saved if it saved: AutoSave now reports, and it has its own loud say about
         // why when it did not.
         file.DropDownItems.Add(Item("&Save session", (s, e) => { if (AutoSave()) Log("Session saved."); }, Keys.Control | Keys.S));
         file.DropDownItems.Add(Item("Save session &as…", (s, e) => SaveSessionAs(), Keys.Control | Keys.Shift | Keys.S));
@@ -39,8 +39,8 @@ public partial class MainForm
         menu.Items.Add(edit);
 
         // The same two, as buttons at the right end of this bar. They are here rather than on a tab
-        // for the reason they always were — an undo a Keeper can only reach from one tab is an undo
-        // they will not reach mid-fight — and here rather than in the status bar because a status
+        // for the reason they always were (an undo a Keeper can only reach from one tab is an undo
+        // they will not reach mid-fight) and here rather than in the status bar because a status
         // bar should carry status. This one is a toolbar, which is what they are.
         //
         // Added Redo FIRST: right-aligned items stack from the right edge in the order they are
@@ -49,7 +49,7 @@ public partial class MainForm
         // (A MenuStrip does honour ToolStripItemAlignment.Right; a StatusStrip lays out on a table
         // and ignores it, which is why the old arrangement could not use it.)
         redoStatusBtn = UndoRedoBtn("⟳ Redo", "Redo the last undone change (Ctrl+Y)", Redo);
-        undoStatusBtn = UndoRedoBtn("⟲ Undo", "Undo the last change — the posse, the corral, the tracker, "
+        undoStatusBtn = UndoRedoBtn("⟲ Undo", "Undo the last change: the posse, the corral, the tracker, "
             + "the encounter, the threads (Ctrl+Z)", Undo);
         menu.Items.Add(redoStatusBtn);
         menu.Items.Add(undoStatusBtn);
@@ -62,7 +62,7 @@ public partial class MainForm
             view.DropDownItems.Add(Item(tabs.TabPages[i].Text,
                 (s, e) => tabs.SelectedIndex = idx, shortcutText: $"Ctrl+{(i + 1) % 10}"));
         }
-        // Show/hide belongs on a menu called View — which is where the glass was NOT, and the only
+        // Show/hide belongs on a menu called View, which is where the glass was NOT, and the only
         // menu it was on is called Table. Same one method underneath as the Table entry and the
         // Tracker's own button, so three routes cannot come to three different answers.
         if (ShowsTab("Tracker"))
@@ -75,7 +75,7 @@ public partial class MainForm
         }
         menu.Items.Add(view);
 
-        // Switch how the table is run without leaving the app — a checkmark on the mode in force.
+        // Switch how the table is run without leaving the app: a checkmark on the mode in force.
         var table = new ToolStripMenuItem("&Table");
         void ModeItem(string text, RunMode m)
         {
@@ -84,11 +84,11 @@ public partial class MainForm
             table.DropDownItems.Add(it);
         }
         ModeItem("&Player's table", RunMode.Player);
-        ModeItem("Keeper — &dice && books", RunMode.KeeperDice);
-        ModeItem("Keeper — on the &engine", RunMode.KeeperEngine);
+        ModeItem("Keeper: &dice && books", RunMode.KeeperDice);
+        ModeItem("Keeper: on the &engine", RunMode.KeeperEngine);
 
         // The turn glass is a house rule about how this table plays, so it belongs on the Table
-        // menu and not only on the Tracker's own bar — it is the kind of thing settled before
+        // menu and not only on the Tracker's own bar. It is the kind of thing settled before
         // anyone sits down, by someone who has not opened the Tracker yet. It appears on the two
         // Keeper tables because the Tracker does; a player's table has no field to time.
         if (ShowsTab("Tracker"))
@@ -100,7 +100,7 @@ public partial class MainForm
             table.DropDownItems.Add(glass);
             var howLong = new ToolStripMenuItem("How long is a &turn…");
             howLong.Click += (s, e) => AskTurnLength();
-            howLong.ToolTipText = "Set how long a posse's turn runs — five minutes unless you say otherwise";
+            howLong.ToolTipText = "Set how long a posse's turn runs, five minutes unless you say otherwise";
             table.DropDownItems.Add(howLong);
         }
         menu.Items.Add(table);
@@ -112,11 +112,11 @@ public partial class MainForm
         help.DropDownItems.Add(Item("Show me a&round", (s, e) => StartTour()));
         help.DropDownItems.Add(new ToolStripSeparator());
         // The other half of "send me the error file". When something goes wrong and nothing crashes,
-        // there is no error file — this is how the last few hundred things the app did leave the
+        // there is no error file. This is how the last few hundred things the app did leave the
         // machine. Under Help because that is where a person looks when they want to report
         // something, not under File where it would read as part of the session.
         var daybookItem = Item("Save a &diagnostic log…", (s, e) => SaveDaybook());
-        daybookItem.ToolTipText = "Write out what the app has been doing — send it along with a report "
+        daybookItem.ToolTipText = "Write out what the app has been doing. Send it along with a report "
                                 + "of anything that came out wrong";
         help.DropDownItems.Add(daybookItem);
         help.DropDownItems.Add(new ToolStripSeparator());
@@ -127,7 +127,7 @@ public partial class MainForm
         return menu;
     }
 
-    // Rebuild the menu bar in place — after a live mode switch, so the View list matches the tabs now
+    // Rebuild the menu bar in place: after a live mode switch, so the View list matches the tabs now
     // on show and the Table checkmark tracks the mode. Cheap, and keeps the menu the single source.
     void RebuildMenu()
     {
@@ -176,7 +176,7 @@ public partial class MainForm
         if (Daybook.Save(d.FileName))
             Log($"Diagnostic log written to {Path.GetFileName(d.FileName)} ({Daybook.Count} entries).");
         else
-            MessageBox.Show("Couldn't write the log there. Try somewhere else — your Desktop, say.",
+            MessageBox.Show("Couldn't write the log there. Try somewhere else, your Desktop, say.",
                 "Blood & Grit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
@@ -200,7 +200,7 @@ public partial class MainForm
                 "Blood & Grit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
-        if (!Confirm("Load this session? The whole table — posse, tracker, encounter, threads, ledger — " +
+        if (!Confirm("Load this session? The whole table (posse, tracker, encounter, threads, ledger)" +
                      "is replaced.\n\n(The table as it stands now is kept as session-backup.json beside the app.)"))
             return;
         try
@@ -208,14 +208,14 @@ public partial class MainForm
             File.WriteAllText(Path.Combine(AppState.Dir, "session-backup.json"),
                 JsonSerializer.Serialize(Snapshot(), new JsonSerializerOptions { WriteIndented = true }));
         }
-        catch { /* the backup is best-effort — never block a load over it */ }
+        catch { /* the backup is best-effort. Never block a load over it */ }
         ApplySession(s);
         AutoSave();
         Log($"Session loaded from {Path.GetFileName(d.FileName)}.");
     }
 
     // ---------------------------------------------------------- help windows
-    // Modeless and reused, like the creature cards — read the lesson beside the live table.
+    // Modeless and reused, like the creature cards. Read the lesson beside the live table.
     Form lessonWin, shortcutsWin;
 
     static Form HelpWindow(ref Form slot, string title, int w, int h)
@@ -248,7 +248,7 @@ public partial class MainForm
 
         H("GritKeeper, in five minutes");
         // The count is READ, not typed, and the shortcut sentence follows it. It said "ten tabs …
-        // Ctrl+0 to the tenth" to everybody, including a player's table, which shows three — so a
+        // Ctrl+0 to the tenth" to everybody, including a player's table, which shows three, so a
         // player was told about seven tabs they do not have and seven shortcuts that do nothing.
         // Same lesson as the Keeper's screen leaf count: a number in prose has to be derived.
         int shown = tabsCtl?.TabPages.Count ?? allTabs.Count;
@@ -258,26 +258,26 @@ public partial class MainForm
         I($"Everything a Keeper reaches for mid-scene, in {spelled} tab{(shown == 1 ? "" : "s")}. "
           + (shown >= 10 ? "Ctrl+1 through Ctrl+9 jump straight to them, Ctrl+0 to the tenth. "
                          : $"Ctrl+1 through Ctrl+{shown} jump straight to them. ")
-          + "Nothing here invents rules — every number, table, and creature is taken "
+          + "Nothing here invents rules. Every number, table, and creature is taken "
           + "word-for-word from the books.");
 
         H("1 · Seat the posse  (Posse)");
-        T("The party sheet. Add each soul's Blood, Defense, saves, Nerve, Grit, Mark, and Taint — or click straight " +
+        T("The party sheet. Add each soul's Blood, Defense, saves, Nerve, Grit, Mark, and Taint, or click straight " +
           "into a cell to edit it. The buttons along the top do the bookkeeping: Damage and Heal apply the Amount " +
           "spinner to the selected soul, Spend Grit counts it down, and Dread check rolls a Will save against the DC " +
           "you set, taking the Nerve loss by the horror's Tier automatically. \"New session\" refills Nerve and " +
           "resets Grit to 3; Rest ▾ is the long rest; ▲ ▼ put the posse in whatever order you ride in. " +
-          "Double-click a soul to open their Ledger — the book's own character sheet — in its own window; " +
+          "Double-click a soul to open their Ledger, the book's own character sheet, in its own window; " +
           "double-click the Notes cell to read and edit the whole note. On first run the six ready-made souls from " +
-          "Appendix D are already seated — clear them out whenever your own posse is ready.");
+          "Appendix D are already seated. Clear them out whenever your own posse is ready.");
 
         H("2 · Roll anything  (Dice)");
-        T("Type an expression — 2d6+3, 1d8+1d6+2 — and press Enter, or punch it in with the buttons: the +d buttons " +
+        T("Type an expression (2d6+3, 1d8+1d6+2) and press Enter, or punch it in with the buttons: the +d buttons " +
           "add dice (click one twice and it stacks: d6, 2d6, 3d6), the digits and ＋/− build the modifier. The dice " +
-          "tumble in the tray and land on the true results — every die wears its color (green d4, blue d6, orange d8, " +
+          "tumble in the tray and land on the true results. Every die wears its color (green d4, blue d6, orange d8, " +
           "white d10, yellow d12, red d20, purple d100), best faces ring gold and a 1 rings black. Below that, the " +
-          "d20 checker rolls a full four-degrees check against a DC. Everything the app rolls — here or on any " +
-          "other tab — lands in the log on the right, so the whole night is on the record. The log belongs to " +
+          "d20 checker rolls a full four-degrees check against a DC. Everything the app rolls, here or on any " +
+          "other tab, lands in the log on the right, so the whole night is on the record. The log belongs to " +
           "the sitting, though: it is not part of the saved session and starts clean next launch, so Copy log " +
           "is how you keep one.");
 
@@ -287,15 +287,15 @@ public partial class MainForm
         int horrors = Db.Creatures.Count;
         int plain = Db.Creatures.Count(c => c.chapter is "Beasts of the Living World" or "Hard Men & Hard Country");
         T($"All {horrors} creatures from the book, word for word. Search by name or haunt, filter by tier or chapter. " +
-          "Double-click a creature (or hit ⧉ Pop out) to open it in its own window — open several side by side and " +
+          "Double-click a creature (or hit ⧉ Pop out) to open it in its own window. Open several side by side and " +
           "size the text to the light in the room. From here one click sends a creature to the Encounter builder or " +
-          $"drops N copies straight onto the Tracker. {plain} of the {horrors} are the mundane half — " +
+          $"drops N copies straight onto the Tracker. {plain} of the {horrors} are the mundane half: " +
           "the two chapters Beasts of the Living World and Hard Men & Hard Country, which cost no Nerve and never " +
           "move the Mark. Filter to those for the slow-burn weeks before anything gets up that shouldn't.");
 
         H("4 · Weigh the fight  (Encounter)");
         T("The book's Long Odds math, live. Add creatures, set the party's level, and the bar at the bottom says " +
-          "plainly whether the fight is fair, mean, or a massacre — the budget is " + Rules.BudgetPerSoul +
+          "plainly whether the fight is fair, mean, or a massacre. The budget is " + Rules.BudgetPerSoul +
           " points per soul seated on the " +
           "Posse tab. When a horror stands two or more Tiers over the posse, the safe-table rule flags it in red: " +
           "it arrives as sign and spoor, not in the flesh. Happy with the odds? Send all → Tracker.");
@@ -303,27 +303,27 @@ public partial class MainForm
         H("5 · Run the fight  (Tracker)");
         T("Roll initiative for the whole field with one click, step the rounds, deal damage with the Amt spinner, " +
           "and tag conditions from Appendix B with ＋ Condition ▾. Posse rows stay green, foes cream, the fallen red. " +
-          "Blood is synced two ways with the Posse sheet — hurt a soul here and the party sheet knows, and the other " +
+          "Blood is synced two ways with the Posse sheet, hurt a soul here and the party sheet knows, and the other " +
           "way around. \"New fight\" clears the foes and keeps the posse; double-click any foe to open its stat block.");
 
         H("6 · When the trail runs dry  (Generators)");
         T("Every rollable table from The Country in Your Pocket: a town in three rolls, a CITY in four (its quarter, " +
-          "who really runs it, its wrong note, and work for a country posse — Keeper's Book Ch. XIV), a face in four, " +
-          "rumors, trail events, plunder, omens — and the Grounds tables, an encounter for any terrain with the " +
+          "who really runs it, its wrong note, and work for a country posse: Keeper's Book Ch. XIV), a face in four, " +
+          "rumors, trail events, plunder, omens, and the Grounds tables, an encounter for any terrain with the " +
           "safe-table rule applied automatically. Two grounds are new: The Ordinary Country, for the sessions before " +
           "the horror, and The Lamplit City. One click, and the country answers.");
 
         H("7 · Survey the country  (Map)");
-        T("A drafting table for frontier maps. Set the ground — including The Lamplit City — and the scale (a single " +
+        T("A drafting table for frontier maps. Set the ground, including The Lamplit City, and the scale (a single " +
           "gunfight, a homestead, a county, a territory, or a city ward of streets and blocks), " +
           "the hour, and the water; tick a trail, a rail line, a settlement, a grid; and 🎲 New map (Ctrl+G) draws a " +
-          "named survey — the same seed and settings always draw the same map, so note the number and you can have " +
+          "named survey. The same seed and settings always draw the same map, so note the number and you can have " +
           "it back. The Keeper's layer adds the secrets in red; leave it off before showing players. Save as SVG or " +
           "a one-page PDF, or copy the SVG straight to the clipboard.");
 
         H("8 · Deal a new soul  (New Soul)");
         T("A complete character at any level 1–10, displayed on the book's own Ledger sheet. 🎲 Make a soul rolls " +
-          "the whole character strictly by Chapter III's eight steps — pin the Calling or Origin if you have one in " +
+          "the whole character strictly by Chapter III's eight steps, pin the Calling or Origin if you have one in " +
           "mind. 🧭 Wizard… walks you through every choice yourself: abilities, skills, Edges, Signs, coin and all, " +
           "each list filtered to what the book allows. Either way the sheet is cross-checked against the rules " +
           "before it reaches you, and ✎ Tweak lets you hand-adjust anything after (the Ledger notes the sheet was " +
@@ -333,7 +333,7 @@ public partial class MainForm
         // Both the count and the contents follow the table. A player's deck leaves out the two
         // Keeper's-Book leaves, and prose that listed them anyway would send a player hunting the
         // deck for something that is deliberately not in it.
-        T($"A Keeper's screen in {RefLeafCountFor(Mode)} leaves — the four degrees, the DC ladder, the Iron Code, wounds, " +
+        T($"A Keeper's screen in {RefLeafCountFor(Mode)} leaves: the four degrees, the DC ladder, the Iron Code, wounds, " +
           "every condition, Nerve and Dread, the Mark and the Taint, Signs and Grit, Miracles, " +
           (Mode == RunMode.Player ? "" : "the Long Odds and the safe-table rule, running in town, ") +
           "and the book's own arms, goods, and skills tables. Turn the deck " +
@@ -341,20 +341,20 @@ public partial class MainForm
           "the room, it's here.");
 
         H("10 · Keep the record  (Session)");
-        T("The Keeper's ledger for notes — Stamp the date starts each session's entry — and threads with clocks " +
+        T("The Keeper's ledger for notes (Stamp the date starts each session's entry) and threads with clocks " +
           "beside it. A thread is trouble on its way: name it, give it 4, 6, or 8 segments, and tick ＋ when the " +
           "world moves toward it. When the last segment fills, it comes due.");
 
-        H("Saving — you mostly don't have to think about it");
+        H("Saving. You mostly don't have to think about it");
         T("The whole table auto-saves beside the app on exit and every five minutes, and reloads when you return. " +
           "File → Save session (Ctrl+S) saves that same file on demand. Save session as… writes the table to a file " +
-          "of your choosing — end-of-campaign archives, or a second campaign — and Load session… brings one back " +
+          "of your choosing (end-of-campaign archives, or a second campaign) and Load session… brings one back " +
           "(the table you're replacing is kept as session-backup.json, just in case).");
 
         H("The habit that makes it sing");
         T("Before the game: seat the posse, weigh the night's fight on the Encounter tab, set a thread or two. " +
           "During: run everything from the Tracker and the Dice tab, and let the log remember for you. " +
-          "After: stamp the date, write three lines in the ledger, tick the clocks. That's the whole craft — " +
+          "After: stamp the date, write three lines in the ledger, tick the clocks. That's the whole craft: " +
           "the rest is nerve.");
 
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
@@ -419,7 +419,7 @@ public partial class MainForm
         M("  Left / Right      Turn the deck (or click ◀ ▶)");
         M("");
         H("Everything else");
-        M("  Hover a button — every one of them carries a tooltip (audit_ui.py holds them to it).");
+        M("  Hover a button. Every one of them carries a tooltip (audit_ui.py holds them to it).");
         M("  Grid headers and the columns you may type in carry one too.");
 
         rtf.SelectionStart = 0; rtf.ScrollToCaret();
@@ -476,13 +476,13 @@ public partial class MainForm
     /// and no .NET install; a window that refuses to go below 1040x640; and a folder it can WRITE
     /// to, because the session, the preferences and the crash report all land beside the exe.
     ///
-    /// Every line here is a promise. Nothing goes on this list that the app cannot do — the app
+    /// Every line here is a promise. Nothing goes on this list that the app cannot do: the app
     /// spent two releases telling people they could play on a phone.</summary>
     void ShowRequirements()
     {
         using var f = new Sheet
         {
-            Width = 560, Height = 520, Text = "GritKeeper — what it needs",
+            Width = 560, Height = 520, Text = "GritKeeper: what it needs",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
         };
@@ -506,7 +506,7 @@ public partial class MainForm
         L("System",   "Windows 10 (version 1607) or Windows 11, 64-bit");
         L("Processor", "Any x64 processor");
         L("Memory",   "2 GB RAM");
-        L("Disk",     "250 MB free — the app is one ~112 MB file, and");
+        L("Disk",     "250 MB free. The app is one ~112 MB file, and");
         L("",         "it unpacks nothing: it runs from where you put it");
         L("Display",  "1280 × 720. The window will not go below 1040 × 640");
         L("Input",    "Keyboard and mouse");
@@ -516,14 +516,14 @@ public partial class MainForm
 
         H("Recommended");
         L("Memory",   "4 GB RAM");
-        L("Display",  "1920 × 1080 — the tracker and the Ledger both");
+        L("Display",  "1920 × 1080, the tracker and the Ledger both");
         L("",         "breathe better with the room");
         L("Printing", "Any printer, for the PDFs it writes (character");
         L("",         "sheets and trail maps). Not required to play");
         rtf.AppendText("\n");
 
         H("One thing that matters");
-        N("  Put the folder somewhere you can write to — your Desktop, your Documents,");
+        N("  Put the folder somewhere you can write to: your Desktop, your Documents,");
         N("  a USB stick. GritKeeper saves the table beside its own exe (session.json,");
         N("  prefs.json), so a read-only place like Program Files will not hold your game.");
         rtf.AppendText("\n");
@@ -531,19 +531,19 @@ public partial class MainForm
         H("What it is not");
         N("  A Windows desktop program, and only that. It does not run on macOS, Linux,");
         N("  a phone or a tablet, there is no browser version, and it does not connect");
-        N("  players over a network — one machine at the table, usually the Keeper's.");
-        N("  (The three books are PDFs. Those open on anything, phone included — it is");
+        N("  players over a network: one machine at the table, usually the Keeper's.");
+        N("  (The three books are PDFs. Those open on anything, phone included; it is");
         N("  the app that is Windows-only, not the game.)");
         rtf.AppendText("\n");
 
         // A Linux build is INTENDED, not shipped. Worded as a plan and nothing more, because this
-        // screen exists to stop the app claiming what it cannot do — the standing rule is that no
+        // screen exists to stop the app claiming what it cannot do: the standing rule is that no
         // promise is made to a player or Keeper that the current build cannot keep. "Planned" is a
         // statement about intent, which is honest; a date or a "coming soon" would not be.
         H("Planned, not here yet");
         N("  A Linux package is intended. The game's rules already build and run as a");
         N("  plain .NET library with no Windows dependency, which is the hard half of");
-        N("  that job — but the window you are looking at is Windows Forms, and until");
+        N("  that job, but the window you are looking at is Windows Forms, and until");
         N("  there is something to download, treat this as an intention and not a date.");
 
         var ok = new Button { Text = "Ride on", Left = 232, Top = 440, Width = 88, DialogResult = DialogResult.OK };

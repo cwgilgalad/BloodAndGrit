@@ -1,10 +1,9 @@
 # Blood & Grit — Project Handoff & Preferences
 
 Import this file into the project so a fresh chat can pick up exactly where we left off.
-For onboarding a fresh Project, hand over **the current loose files from the repo** — the
+For onboarding a fresh Project, hand over **the current loose files from the repo**: the
 builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shared modules
-(`nav_tools.py`, `perdition_map.py`, `pag_patch.py`), `assets/`, and whatever else the task
-touches — not a packaged snapshot. (Packaged snapshots go stale silently: the old
+(`nav_tools.py`, `perdition_map.py`, `pag_patch.py`), `assets/`, and whatever else the task touches. Never work from a packaged snapshot. (Packaged snapshots go stale silently: the old
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
@@ -14,47 +13,46 @@ crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
 [`GK/CLAUDE.md`](GK/CLAUDE.md).** `GK/rules/BloodAndGrit.Rules.csproj` is a plain `net10.0` class
-library — no WinForms — holding the eight headless files and the six `Data/*.json`; `GK/source` is
-the WinForms app on top of it, and `GK/smoke` tests the library. Everything else about the app —
-the source-tree layout, the ten tabs, every landmine, the release loop, and the reasoning behind
-them — is in `GK/CLAUDE.md`, which loads whenever work touches anything under `GK/`. That is where
+library, no WinForms, holding the eight headless files and the six `Data/*.json`; `GK/source` is
+the WinForms app on top of it, and `GK/smoke` tests the library. Everything else about the app (the source-tree layout, the ten tabs, every landmine, the release loop, and the reasoning behind
+them) is in `GK/CLAUDE.md`, which loads whenever work touches anything under `GK/`. That is where
 it belongs: a session editing a book should not have to carry twenty thousand characters of C# to
 do it. (Moved there 2026-08-03; the split itself dates from 2026-07-30.)
 
 What stays here is the handful of rules that bind the app to the books:
 
 **Standing rule (2026-07-18): the GritKeeper app is synced in the same session as any
-book change that touches it** — status-bar/README version strings every time the books bump,
+book change that touches it**, status-bar/README version strings every time the books bump,
 `Data/creatures.json` re-extracted whenever Bestiary creature content changes (extractor
-lives in the repo as `extract_creatures.py` — verify with a diff against the previous JSON),
+lives in the repo as `extract_creatures.py`; verify with a diff against the previous JSON),
 and the Reference tab whenever a rule it quotes changes. Then build, smoke, publish,
 **re-mirror `GritKeeper/`**, and rezip. The loop and its landmines are in `GK/CLAUDE.md`;
 the one that costs a release is that **bumping the version is the start of shipping, not the
-end** — the desktop shortcut runs `GritKeeper\app\GritKeeper.exe`, which only `package.ps1`
+end**. The desktop shortcut runs `GritKeeper\app\GritKeeper.exe`, which only `package.ps1`
 ever writes, so a build in `bin\` changes nothing anybody can see.
 
 **Counts that appear in prose must be derived, not typed (v1.20.1).** The app told Keepers its
-reference screen held eleven leaves for two releases while it held thirteen — the count is now
+reference screen held eleven leaves for two releases while it held thirteen. The count is now
 `RefLeafTitles.Length` and every mention interpolates it. Apply the same shape to any other number
 the prose quotes, in the books as much as in the app.
 
 **Sign & spoor, the safe-table rule, and the eighteen Callings' tables are the standing examples
-of one-source-generated-outward** — the discipline is written up under *One source of truth* below,
+of one-source-generated-outward**. The discipline is written up under *One source of truth* below,
 and each mechanism is documented in `GK/CLAUDE.md`.
 
 *(Build architecture as of 2026-07-18: **one builder per book, content inside the
-builder** — `build_player.py` carries the whole Player's Book HTML as its embedded
+builder**, `build_player.py` carries the whole Player's Book HTML as its embedded
 `SRC` string (the old `player-src.html` is retired), `build_bestiary.py` absorbed
 `bestiary_extra.py`, and the Keeper/Bestiary builders read `blood-and-grit.html`
 directly (no more manual `cp` step). The conversion was verified byte-identical for
 all three books. The multi-pass feathering paginator lives in the Player `SRC`'s
 script block, and `pag_patch.py` detects it and no-ops.)*
-*(Keep this doc updated with every change — see CHANGELOG.md.)*
+*(Keep this doc updated with every change. See CHANGELOG.md.)*
 
 This project has two halves: **the three companion books** (HTML/CSS/JS, built by Python
 scripts) and **GritKeeper** (a C#/.NET 10 WinForms desktop app for running the game
-at the table). They're independent deliverables — different source trees, different build
-tools — documented in their own sections below.
+at the table). They're independent deliverables (different source trees, different build
+tools) documented in their own sections below.
 
 ---
 
@@ -62,14 +60,14 @@ tools — documented in their own sections below.
 
 - **I work primarily in Claude Code CLI with PowerShell on the Windows laptop now** (updated
   2026-07-13; this project began phone-first). **Responsive design is still a priority:**
-  deliverables must render well on a phone — keep the mobile checks in every verification
+  deliverables must render well on a phone. Keep the mobile checks in every verification
   pass (page parity, zero true-scale clip, zero h-scroll at natural zoom) and keep artifacts
   reasonably small.
 - **I direct in plain words** ("add a Tier-III creature called X," "rewrite the Afflictions
   intro," "cut the Pursuit section," "move that plate," "tighten the whitespace"). You do the
   whole loop: edit the source → rebuild → re-measure the contents page numbers → verify →
   hand back the files. Don't make me do the fiddly parts.
-- **Keep the rich book design.** Never convert these to plain markdown — that throws away the
+- **Keep the rich book design.** Never convert these to plain markdown. That throws away the
   layout, covers, stat-block styling, and paginator. The look is the point.
 - **Default to the cheapest-to-version form.** Edit lean text sources + external image assets
   + build scripts. The big self-contained HTML and the PDFs are generated artifacts, never
@@ -78,7 +76,7 @@ tools — documented in their own sections below.
 - **PDFs: reprinted as part of every ship, and left alone in between (settled 2026-08-27).**
   Cole's words were *"keep up on that please"*, said the moment the six PDFs on the Release
   turned out to be four book versions behind. Do not run the pipeline as a side effect of an
-  ordinary book edit — nothing outside this laptop reads a PDF until a release is cut, so
+  ordinary book edit. Nothing outside this laptop reads a PDF until a release is cut, so
   reprinting on every intermediate commit is waste. **Do run it in step 5 of every ship, without
   being asked**, and check each page count against the rendered sheet count.
   **What changed, and why this is not the old flip-flop repeating:** until 2026-08-27 the PDFs
@@ -86,30 +84,30 @@ tools — documented in their own sections below.
   disagreed with an HTML file anybody could open. Untracking them made the Release asset the only
   way a stranger reads a book, because README's six "Read" links now point at
   `/releases/latest/download/*.pdf`. A stale PDF is a stale front page. The lean sources and the self-contained HTML are the deliverable; the PDFs are
-  an extra, never a replacement. The recipe is under *"Save to PDF" — my standing preference*
-  below, which has always said this. **This bullet used to say the opposite** — that the CLI
-  should regenerate them automatically (a note from 2026-07-22) — so the doc gave a fresh
+  an extra, never a replacement. The recipe is under *"Save to PDF": my standing preference*
+  below, which has always said this. **This bullet used to say the opposite**, that the CLI
+  should regenerate them automatically (a note from 2026-07-22), so the doc gave a fresh
   session two different answers depending on which half it read first. I settled it in favour
   of the section below on 2026-08-03 and the bullet was never corrected, so it went on
   contradicting the answer for another two and a half weeks. Rewritten 2026-08-20, after it
   sent a session looking for the tiebreak a second time.
 - **Keep this handoff doc current.** When I make changes, update the version table, the
   Changelog, and any affected section so a fresh chat is never working from stale facts.
-- **Work on session branches, merge on success — every edit, no exceptions.** Before making
+- **Work on session branches, merge on success, every edit, no exceptions.** Before making
   any change in a session (code, books, docs, scripts), create
   `session/<yyyy-mm-dd>-<short-topic>` and work there. **A session branch now lives only on
-  this laptop until it is merged** — the 30-minute autosync task that used to back it up to
+  this laptop until it is merged**: the 30-minute autosync task that used to back it up to
   GitHub is gone (2026-08-10), because pushing half-written work is what made CI report on
   states nobody had claimed were finished. When the session's changes are verified
-  (build 0/0, smoke suite green, books measure clean — or, for doc edits, simply read back
+  (build 0/0, smoke suite green, books measure clean, or, for doc edits, simply read back
   correct), merge into `main` with `--no-ff` and delete the branch (local + origin). If the
-  changes go bad, abandon the branch — `main` stays clean.
+  changes go bad, abandon the branch, `main` stays clean.
 - **The GritKeeper app now builds natively on this Windows laptop** (verified
   2026-07-18, and re-verified on the net10.0 move 2026-08-23: SDK 10.0.400 is installed and is
-  what builds the app now — SDK 9.0.317 is also present and no longer used by anything, and there
+  what builds the app now, SDK 9.0.317 is also present and no longer used by anything, and there
   is no .NET 8 SDK on this machine at all; `dotnet build` / `dotnet publish` / the smoke suite
   all run locally, and the WinForms window can actually be launched here). The old
-  "built and tested blind on Linux" caveat is history — but the SplitContainer landmine
+  "built and tested blind on Linux" caveat is history, but the SplitContainer landmine
   note in the app section still applies. If a crash does slip through, the app writes
   `startup-error.txt` beside the exe.
 
@@ -117,7 +115,7 @@ tools — documented in their own sections below.
 
 ## The project
 
-**Blood & Grit** — a western-horror tabletop RPG (Pathfinder-2E-derived d20 hybrid).
+**Blood & Grit**: a western-horror tabletop RPG (Pathfinder-2E-derived d20 hybrid).
 Three companion books share one HTML engine (cover + client-side paginator + print CSS):
 
 | Book | Version | Pages† | Images |
@@ -126,26 +124,25 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Keeper's Book (GM guide) | v2.36 | 141 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.23 | 210 | none (182 creatures) |
 | The Book of Legends | v1.0 | 67 | none (98 documents) |
-| Module I — The Salt at Coffin Wells | v1.7 | 33 | one inline SVG map, downloadable |
-| Module II — A Face Not His Own | v1.9 | 33 | one inline SVG map, downloadable |
-| Module III — What the Water Answers | v1.9 | 33 | one inline SVG map (two panels), downloadable |
+| Module I: The Salt at Coffin Wells | v1.7 | 33 | one inline SVG map, downloadable |
+| Module II: A Face Not His Own | v1.9 | 33 | one inline SVG map, downloadable |
+| Module III: What the Water Answers | v1.9 | 33 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
 Player's since v2.9; the Keeper's and Bestiary's new in v2.2/v2.2). Both navigation aids resolve
 every page number live via the paginator, exactly like the original TOC. New in this pass: a
-worked sample county, **Perdition Basin** (`perdition_map.py` draws its two-layer SVG map — a
-clean player map and a secrets-annotated Keeper map — from one shared coordinate model).
+worked sample county, **Perdition Basin** (`perdition_map.py` draws its two-layer SVG map, a
+clean player map and a secrets-annotated Keeper map, from one shared coordinate model).
 
 † Page counts as rendered on the user's Windows laptop (Edge/Chromium, July 2026). **Pagination
 is environment-dependent:** the Linux/cloud environment that measured earlier counts (163/73/130)
-paginates 1–2 pages tighter than Windows because font metrics differ per platform. This is not a
-bug — the books self-paginate and self-number at render time (all TOC/index `span.pg` numbers are
+paginates 1–2 pages tighter than Windows because font metrics differ per platform. This is expected: the books self-paginate and self-number at render time (all TOC/index `span.pg` numbers are
 resolved live by the paginator), so readers always see correct numbers. The *static* numbers baked
 into the source are a no-JS fallback only; the pre-index chapter statics still carry the Linux
 baseline, while the Index entries carry Windows-measured values.
 
-Covers form a triad — **gold** (Player) / **oxblood** (Keeper) / **verdigris** (Bestiary) —
+Covers form a triad, **gold** (Player) / **oxblood** (Keeper) / **verdigris** (Bestiary), 
 all sharing the **steer-skull-and-crossed-rifles emblem** and the subtitle "A Roleplaying
 Game of the Haunted Frontier." The Player's Book is the shell: the other two are built by
 cloning it and splicing in their own content.
@@ -153,9 +150,8 @@ cloning it and splicing in their own content.
 ### Current design state (the old doc was wrong on all of this)
 - **All three book interiors are illustration-free.** The Player's Book's 18 plates were
   removed for visual continuity across the set (the Keeper and Bestiary never had plates).
-  **The plate images are not in this repo** — `assets/` holds `img20.png` (the
-  cover emblem) and nothing else, and git has never tracked anything else there. Restoring
-  plates means generating new artwork, not recovering old files. (Corrected 2026-07-26; this
+  **The plate images are not in this repo**, `assets/` holds `img20.png` (the
+  cover emblem) and nothing else, and git has never tracked anything else there. Restoring plates would mean generating new artwork; there are no old files to recover. (Corrected 2026-07-26; this
   doc claimed for weeks that img02–img19 were sitting in `assets/` waiting.)
 - **Cover emblem** = `assets/img20.png` (940×485, ~67 KB): gold rifles + bone-white steer
   skull, transparent background **and** transparent rifle-lever holes so the cover ground
@@ -165,7 +161,7 @@ cloning it and splicing in their own content.
 - **Cover subtitle** ("A Roleplaying Game of the Haunted Frontier") is styled to match the
   top kicker line: EB Garamond, small-caps, bold, upright, 24px.
 - **The parchment paper texture is GONE.** Pages use a flat warm `--paper` color plus a
-  subtle radial-vignette gradient — no tiled background image. The old texture, `img01.png`,
+  subtle radial-vignette gradient, no tiled background image. The old texture, `img01.png`,
   is no longer referenced anywhere; it still sits in `assets/` but is unused and can be
   deleted.
 - Because the Player's Book no longer inlines 18 plates, its self-contained HTML is now
@@ -180,26 +176,26 @@ Each book's cheapest editable form is **bolded**.
 
 | File | Role |
 |---|---|
-| **`build_player.py`** | Player's Book — edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64 — currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
-| `assets/` | The images — **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
-| **`build_keeper.py`** | Keeper's Book — edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends** — edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 98 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a forgery it prints on purpose) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles &mdash; where one document could be read as a confirmation, another nearby takes it back. |
-| **`build_bestiary.py`** | Bestiary — edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
+| **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
+| `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
+| **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 98 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. |
+| **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
 | **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). **It also owns the seven places a rider can name** (2026-09-19): `RIDER_KNOWS` is the list and `rider_knows_html(here=None)` renders it, bolding the module's own town when `here` is given. The Player's Book fills `<!--BASIN_PLACES-->` with it and all three modules call it through `modules_common.basin()`, so four books print one list. The copies they used to carry drifted for weeks; `audit_consistency.py` check 8 now compares all four. |
 | `add_detail.py` | One-shot that already baked earlier additions into the builds. **Do not re-run.** |
 | ~~`add_index.py`~~ | Dead one-shot (baked the v2.9 Index into `player-src.html`, a file retired 2026-07-18). Still on disk, **git-ignored since 2026-07-29**, do not re-run. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
-| **`measure_book.py`** | **General verification tool** — `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
-| `audit_whitespace.py` | **Whitespace audit** (2026-07-18) — `python audits/audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
-| `extract_creatures.py` | **App data extractor** (2026-07-18) — `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
-| **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_water.py`** | **The three adventure modules** (2026-08-09) — modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)` — a module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each *What the Night Costs* table is generated the same way, by `night_costs(adventure, labels)` reading `PLAYTEST.md`: a module supplies its row labels, and every count and rate on the page comes out of the harness. A fight fewer than `THIN_SAMPLE` posses reached is daggered and footnoted, because a percentage off one fight looks exactly like a percentage off twelve. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
-| **`module_maps.py`** | **The three module maps** (2026-08-09), drawn from one coordinate model apiece, same discipline as `perdition_map.py`. `map_html(slug, caption)` returns the inline SVG plus a download control that serializes the drawing already on the page (so it works offline, off a thumb drive); `python module_maps.py` writes the three standalone `map-<slug>.svg`. Every feature carries `data-scene`, the anchor of the scene it belongs to — that pairing is what `audit_maps.py` reads. |
-| **`audit_names.py`** | **Cross-module name clash check** (2026-08-09) — `python audits/audit_names.py`. Reads all three modules and asks the question no single-file auditor can be asked: are they *distinct*? Hard-fails on a distinctive word shared between two titles or a shared title **grammar**; lists shared proper nouns for a human to judge; cross-checks `GK/rules/Data/names.json`'s `spent` list against the shipped titles. Since 2026-08-16 it also reads the **playtest harness** — every adventure in `GK/playtest/Adventures.cs` must carry a slug naming a shipped module file and that module's own title, and `PLAYTEST.md` must have a section per module under those titles. It also holds `README.md`, this file and `audits/README.md` to their own claims: every `module-*.html` they name must be a file a builder writes. Its `BLAND` set mirrors `Namer.Bland` — the same question on either side of the language boundary. Run on request — see `audits/README.md`. |
-| **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09) — `python audits/audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). Run on request — see `audits/README.md`. |
-| **`GK/playtest`** | **The adventure harness** (2026-08-09) — a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
-| **`verify_release.py`** | **Release-drift check** (2026-08-02) — `python audits/verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` — the exe the desktop shortcut runs — carries the source's version. Run on request (default mode); `.githooks/pre-push` still runs it `--delivered`, warn-only, main only. Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
+| **`measure_book.py`** | **General verification tool**, `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
+| `audit_whitespace.py` | **Whitespace audit** (2026-07-18), `python audits/audit_whitespace.py <built-file.html> [gap-px]`. Renders a book and lists every page whose bottom gap exceeds the threshold (default 140px), with the block that moved to the next page. Interpretation guide: gaps before a chapter/appendix start are deliberate page breaks; small gaps before a heading are orphan control; only mid-flow gaps are candidates for splitting work. |
+| `extract_creatures.py` | **App data extractor** (2026-07-18), `python extract_creatures.py bestiary.html GK/rules/Data/creatures.json`. Re-extracts the Keeper's Table app's creature data from the built Bestiary (balanced-div walk over `.creature` blocks, tags stripped, entities decoded). Run whenever Bestiary creature content changes; sanity-check with a diff against the previous JSON before shipping. |
+| **`build_module_salt.py`** / **`build_module_face.py`** / **`build_module_water.py`** | **The three adventure modules** (2026-08-09): modules I, II and III, one builder each. They read `blood-and-grit.html` like the Keeper's and Bestiary builders do, but the shell transform they share lives in **`modules_common.py`** rather than being copied three times: three modules are not one-of-a-kind books, so the transform is a module the way `nav_tools.py` is. Stat blocks are **generated from `GK/rules/Data/creatures.json`** by `statblock(name)`. A module can never cite a creature the Bestiary does not have, and a name that does not resolve raises with a suggestion. Each *What the Night Costs* table is generated the same way, by `night_costs(adventure, labels)` reading `PLAYTEST.md`: a module supplies its row labels, and every count and rate on the page comes out of the harness. A fight fewer than `THIN_SAMPLE` posses reached is daggered and footnoted, because a percentage off one fight looks exactly like a percentage off twelve. Each `contents([...])` list must **not** carry an Index line: `build_index()` appends its own, anchored `#bookindex`. |
+| **`module_maps.py`** | **The three module maps** (2026-08-09), drawn from one coordinate model apiece, same discipline as `perdition_map.py`. `map_html(slug, caption)` returns the inline SVG plus a download control that serializes the drawing already on the page (so it works offline, off a thumb drive); `python module_maps.py` writes the three standalone `map-<slug>.svg`. Every feature carries `data-scene`, the anchor of the scene it belongs to. That pairing is what `audit_maps.py` reads. |
+| **`audit_names.py`** | **Cross-module name clash check** (2026-08-09), `python audits/audit_names.py`. Reads all three modules and asks the question no single-file auditor can be asked: are they *distinct*? Hard-fails on a distinctive word shared between two titles or a shared title **grammar**; lists shared proper nouns for a human to judge; cross-checks `GK/rules/Data/names.json`'s `spent` list against the shipped titles. Since 2026-08-16 it also reads the **playtest harness**: every adventure in `GK/playtest/Adventures.cs` must carry a slug naming a shipped module file and that module's own title, and `PLAYTEST.md` must have a section per module under those titles. It also holds `README.md`, this file and `audits/README.md` to their own claims: every `module-*.html` they name must be a file a builder writes. Its `BLAND` set mirrors `Namer.Bland`: the same question on either side of the language boundary. Run on request. See `audits/README.md`. |
+| **`audit_maps.py`** | **Map ↔ module cross-check** (2026-08-09), `python audits/audit_maps.py`. Two auditors in one file. *Engineer:* every feature's anchor resolves to a real id in the built book, every numbered pin matches a numbered scene heading, each feature's pins include its own scene, and the standalone `.svg` is byte-for-byte the drawing the book carries. *Cartographer:* scale bar, north arrow, legend, everything inside the viewBox, and no two labels overlapping (anchor-aware). Run on request. See `audits/README.md`. |
+| **`GK/playtest`** | **The adventure harness** (2026-08-09): a fourth consumer of `BloodAndGrit.Rules`, alongside the app and the smoke suite. `Adventures.cs` declares the three adventures as data naming Bestiary creatures; `Program.cs` plays every act on the real rules, 12 posses per adventure, cold and tended, base seed `20260809`, and writes `PLAYTEST.md`. The numbers on each module's *What the Night Costs* page come from here and nowhere else. A creature name that does not resolve **fails the run** rather than substituting something plausible. |
+| **`verify_release.py`** | **Release-drift check** (2026-08-02), `python audits/verify_release.py [--delivered]`. Asserts one version everywhere (csproj ↔ CHANGELOG's newest entry ↔ README ↔ CLAUDE.md's two) and that every GritKeeper version in the CHANGELOG **except the newest** has a `gritkeeper-vX.Y.Z` tag, so a version that stops being the one in progress must have actually been released. `--delivered` adds the check that only works locally: that `GritKeeper/app/GritKeeper.exe` (the exe the desktop shortcut runs) carries the source's version. Run on request (default mode); `.githooks/pre-push` still runs it `--delivered`, warn-only, main only. Born from v1.32.0, which was merged and changelogged as shipped and never published, leaving the Keeper's desktop two releases behind while every other check passed. |
 | `make_pdf.py` | Prints all seven to true 8.5×11 US-Letter PDFs, verifying each page count against the rendered sheet count. **Run it in step 5 of every ship** (2026-08-27); leave it alone between ships. |
 | `README.md` | Short workflow notes. |
 
@@ -235,17 +231,16 @@ version on the cover**, and **update this doc's version table + Changelog.**
 `build_keeper.py` and `build_bestiary.py` splice each book's own cover onto the Player shell
 by **string-replacing the Player's version strings** with their own, and `modules_common.py` does
 the same for all three modules. **Since 2026-08-20 the Player's half of those match strings is
-read off the shell** — `_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H)` —
+read off the shell**, `_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H)`, 
 so bumping the Player's Book no longer cascades anywhere. Bump it in `build_player.py` and stop.
 
-**Since 2026-08-19 the swap asserts.** A match that no longer matches used to be a silent no-op —
-`if a in H: H = H.replace(a, b, 1)` — and that is the whole mechanism of the failure described
+**Since 2026-08-19 the swap asserts.** A match that no longer matches used to be a silent no-op, `if a in H: H = H.replace(a, b, 1)`, and that is the whole mechanism of the failure described
 below, which happened twice. All three splices now assert the string was there, so a missed
 cascade stops the build with the string it could not find instead of shipping a book wearing
 somebody else's name.
 
-**Until 2026-08-20 a Player's Book bump had to be repeated by hand in all FOUR places** — the two
-book builders and `modules_common.py` — or the Keeper/Bestiary/module covers would silently keep
+**Until 2026-08-20 a Player's Book bump had to be repeated by hand in all FOUR places**: the two
+book builders and `modules_common.py`, or the Keeper/Bestiary/module covers would silently keep
 the Player's version. That history is kept below because it is the reason the number is derived
 now rather than typed. There is no sed line any more; there is nothing left to keep in step.
 
@@ -253,7 +248,7 @@ now rather than typed. There is no sed line any more; there is nothing left to k
 what the paragraph above predicts.** The v2.26 bump updated the two book builders, the modules' match
 strings went on hunting for "Version 2.25" in a shell that no longer had it, the replacement found
 nothing, and all three modules built with *"The Player's Book (Revised &amp; Expanded · v2.26)"* on
-the cover and in the title bar. They measured clean — parity, zero clip, zero h-scroll — because
+the cover and in the title bar. They measured clean (parity, zero clip, zero h-scroll) because
 they were perfectly good books, just not their own. Nothing in the repo checks that a book's cover
 says the book's own name, which is why this is written down here instead. The trap is that the
 transform **moved**: it was copied into each module builder until 2026-08-09, when it became
@@ -262,18 +257,17 @@ cascade list moves with it.
 
 **And it happened again on 2026-08-19, with this note sitting right here.** The v2.27 bump patched
 `build_player.py`, `build_keeper.py` and `build_bestiary.py` and not `modules_common.py`, and all
-three modules rebuilt as *"The Player's Book (Revised &amp; Expanded · v2.27)"* — caught only
+three modules rebuilt as *"The Player's Book (Revised &amp; Expanded · v2.27)"*, caught only
 because `git diff` on a module was read before committing. A warning that has failed twice is not a
 control, which is why the swap now asserts rather than trusting anybody to have read this
 paragraph. Deriving it was the third answer, and the only one that does not depend on somebody
 reading this section.
 
 Bumping only the Keeper or only the Bestiary was always cascade-free (their version strings sit
-only on the *right* side of the tuples; bump them in their own build script). **What none of this
-caught was a book disagreeing with itself:** the v2.13 → v2.14 bump patched three of the Keeper's
+only on the *right* side of the tuples; bump them in their own build script). **What all of this missed was a book disagreeing with itself:** the v2.13 → v2.14 bump patched three of the Keeper's
 Book's four version strings and left the colophon on the epigraph page saying v2.13, which then
 went out in `books-v1.2`. `audits/verify_release.py` now reads every built book and module back
-and requires each to show exactly one version — the one its own builder stamps.
+and requires each to show exactly one version, the one its own builder stamps.
 
 ---
 
@@ -289,7 +283,7 @@ PyMuPDF: page count == sheet count, page size 612×792pt.
 Output names (written beside the sources in the project folder):
 `Blood-and-Grit-Players-Book.pdf` · `Blood-and-Grit-Keepers-Book.pdf` · `Blood-and-Grit-Bestiary.pdf`
 
-*(`make_pdf.py` was rewritten for the Windows toolchain on 2026-07-12 — Playwright driving
+*(`make_pdf.py` was rewritten for the Windows toolchain on 2026-07-12, Playwright driving
 system Edge, PyMuPDF verification built in: page count == rendered sheet count, 612×792 pt.
 Regenerating overwrites the three PDFs in place.)*
 
@@ -299,12 +293,12 @@ Regenerating overwrites the three PDFs in place.)*
 
 **The checks live in [`audits/`](audits/README.md), one file each, and they are run when
 somebody asks for them** (2026-08-10). They used to be loose in the repo root and to run
-as a single CI job called `books` on every push — including pushes of session branches,
+as a single CI job called `books` on every push, including pushes of session branches,
 which a scheduled task made every 30 minutes. Two problems, neither of them the checks:
 the job ran against work that was half-written by definition, and eight checks under one
 name meant any one failing read as "the books are broken" while the job was also auditing
 the C# UI, the release tags and the repo's own prose. `audits/README.md` says what each
-one checks and what it costs. Only the app job — build, ~12,000 assertions, self-test —
+one checks and what it costs. Only the app job (build, ~12,000 assertions, self-test) 
 still runs automatically, and only on `main` and pull requests.
 
 **One entry point runs them: `python audits/verify_all.py`.** It shells out to the files in
@@ -316,30 +310,28 @@ judgement cannot be a pass/fail gate. Written 2026-08-22, after a release walk r
 hand in the right order out of memory.
 
 
-- **Page parity** — desktop and mobile must paginate to the same page count.
-- **No clipping at true scale** — desktop clip 0; on mobile, force `zoom:1 !important` on
-  every `.page` element (setting the `--book-zoom` CSS var does *not* work — effective zoom
+- **Page parity**: desktop and mobile must paginate to the same page count.
+- **No clipping at true scale**: desktop clip 0; on mobile, force `zoom:1 !important` on
+  every `.page` element (setting the `--book-zoom` CSS var does *not* work, effective zoom
   stays ~0.458) to confirm the true-scale clip is 0. The 1–10px "clips" seen at fractional
   zoom are just rounding.
-- **No horizontal scroll on mobile** — check at *natural* zoom (should be 0). Note: a test
-  that forces `zoom:1` will report ~426px h-scroll; that's an artifact of the forced scale,
-  not real overflow. Confirm h-scroll at natural zoom.
+- **No horizontal scroll on mobile**: check at *natural* zoom (should be 0). Note: a test
+  that forces `zoom:1` will report ~426px h-scroll; that's an artifact of the forced scale, so confirm h-scroll at natural zoom.
 - **Whitespace near the floor** (Bestiary now ~106px mean); remaining big gaps should only be
   intentional chapter/section openers.
 - **Contents page numbers** re-measured against the rendered sheets and patched.
-- **JS valid** — extract the `<script>` and run `node --check`.
-- **Idempotent build** — rebuilding twice yields byte-identical output (`md5sum`).
-- **No rules drift** — `python audits/verify_rules.py` parses the built Player's Book and checks its
-  eighteen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and —
-  since 2026-08-19 — every word of feature prose and every 3rd-level path the app repeats back to a
+- **JS valid**: extract the `<script>` and run `node --check`.
+- **Idempotent build**: rebuilding twice yields byte-identical output (`md5sum`).
+- **No rules drift**: `python audits/verify_rules.py` parses the built Player's Book and checks its
+  eighteen Calling tables against `chargen.json` and the spine formula, the Ch. X arms table, and, since 2026-08-19, every word of feature prose and every 3rd-level path the app repeats back to a
   player. Since 2026-08-22 it also holds Ch. IV's encounter ladder against the Bestiary's
   statement of it and against `Rules.BudgetRungs`, which is three sites that had no guard at all
   and drifted for six days (988 cross-checks).
-- **No two modules have the same name** — `python audits/audit_names.py`. The only auditor here that reads
+- **No two modules have the same name**: `python audits/audit_names.py`. The only auditor here that reads
   more than one artifact, and it exists because of what that gap cost: every other check asks
   whether ONE book is sound, so nothing could be asked whether two books are *distinct*, and
   *The Salt at Coffin Wells* shipped alongside *The Reckoning of the Wells* in modules-v1.0. It
-  fails on a distinctive word shared between two titles **and on a shared title grammar** — the two
+  fails on a distinctive word shared between two titles **and on a shared title grammar**: the two
   collided on the word *Wells* and on the shape `The <abstract> <prep> <place>`, and fixing only the
   vocabulary would have produced "The Ashes at Gallows Fork" beside "The Judgment of the Hollow".
   Shared proper nouns are listed rather than failed on (18 today, all deliberate cross-references).
@@ -348,14 +340,14 @@ hand in the right order out of memory.
   harness** as well: the retired title survived in `GK/playtest/Adventures.cs` for six days after the
   rename and rode into `PLAYTEST.md`, which ships inside the modules zip, because no auditor read
   that file. A slug must name a shipped module file, a title must match that module's own, and
-  `PLAYTEST.md` must have a section per module under those titles — which also catches the harness's
+  `PLAYTEST.md` must have a section per module under those titles, which also catches the harness's
   own trap, that it writes the file only when given `--out`. The same pass holds this file, `README.md`
   and `audits/README.md` to their own claims: a `module-*.html` named in any of them must be a file a
   builder writes, which caught `README.md` offering strangers a path that never existed.
-  Run on request — see `audits/README.md`.
-- **Every map agrees with its module** — `python audits/audit_maps.py`. Anchors, pin numbers, the
+  Run on request. See `audits/README.md`.
+- **Every map agrees with its module**: `python audits/audit_maps.py`. Anchors, pin numbers, the
   downloadable file, and the cartography (scale, north, legend, frame, label collisions).
-- **The game plays the same way everywhere it is written down** — `python audits/audit_consistency.py`
+- **The game plays the same way everywhere it is written down**: `python audits/audit_consistency.py`
   (2026-08-22). `verify_rules.py` guards the *player's* side; this guards the Keeper's, which is
   where one number appears in the most places and where nothing held them together. 94,223
   cross-checks: Threat by Tier and Sign & Spoor across the Bestiary, `Rules.TierRow`/`SpoorRow` and
@@ -364,7 +356,7 @@ hand in the right order out of memory.
   Roll-by-Tier appendix; all 143 hand-written Grounds entries, name and Tier; every condition a
   creature inflicts defined in Appendix B; the printed benchmarks against the population they
   describe; one shared vocabulary across every built book, with a soft tier for legitimate glosses;
-  every chapter cross-reference; and **app↔book parity** — a feature one carries and the other does
+  every chapter cross-reference; and **app↔book parity**. A feature one carries and the other does
   not is a failure on both sides. It found two real faults on its first run: `Enfeebled` inflicted
   by two creatures and defined nowhere, and the Witch's familiar printed with real mechanics and
   tracked in the app by one shared text box. Both are fixed.
@@ -376,43 +368,51 @@ hand in the right order out of memory.
   a pattern in `BASIN_RETIRED` with the replacement beside it, so a book that states one names what it
   should have said; and the seven places in `perdition_map.RIDER_KNOWS` must read the same in all four
   books that print the list.
-- **Every option the rules print is one some path can reach** — `python audits/audit_diversity.py`
+- **Every option the rules print is one some path can reach**: `python audits/audit_diversity.py`
   (2026-08-22). It asks whether the game is as *wide* as it claims, which is a different question
-  from whether it is correct, and it draws a narrow line on purpose: **it fails only on dead
-  surface** — a skill no Calling wants and no Origin grants, a condition nothing inflicts, a power
+  from whether it is correct, and it draws a narrow line by design: **it fails only on dead
+  surface**. A skill no Calling wants and no Origin grants, a condition nothing inflicts, a power
   list that stops short of rank 5, an ability no Origin raises, a Calling with no Edge of its own.
   Everything else it measures is *printed and never counted*: the Bestiary's Tier×chapter grid, the
   Dread spread, the thirteen ways a thing can be put down and how lopsidedly they are used, and
   what share of the Bestiary the Grounds tables can actually roll into. "Enough variety" is a
   designer's call, and a checker that guesses at it fires on good design once and is ignored after.
-  Its first run found three dead options — `Acrobatics` wanted by no Calling, `Blinded` and
-  `Stunned` defined and inflicted by nothing — all three now reachable.
-- **The books as data** — `python tools/extract_rules.py` turns every built book into chapters →
+  Its first run found three dead options (`Acrobatics` wanted by no Calling, `Blinded` and
+  `Stunned` defined and inflicted by nothing), all three now reachable.
+- **The books as data**: `python tools/extract_rules.py` turns every built book into chapters →
   sections → paragraphs → tables. Both audits above read it instead of re-inventing the same three
   hundred lines of HTML walking for a fourth time. `--out` writes the whole digest as JSON, which
   is the shape a bot, a search index or a VTT importer would want; that file is git-ignored, since
   nothing in the repo reads it and a committed copy would be a staler second copy of the books.
-- **The prose reads as written** — `python audits/audit_ai_tells.py --commits 40`. The books have had this
+- **The prose sounds written**: `python audits/audit_ai_tells.py --commits 40`. The books have had this
   standard from the start; as of 2026-07-29 the **repository's own docs** are held to it too, because
   the README and this file are what a reader meets first. Two signals: **burstiness** (sd/mean of
-  sentence length; 0.55+ human-like, under 0.45 is the tell) and a scan for generated cadences,
+  sentence length; 0.55+ human-like, under 0.45 is the warning sign) and a scan for generated cadences,
   **negative parallelism** above all. Measured 2026-08-22: README 0.85 · CLAUDE.md 0.69 ·
   GK/CLAUDE.md 0.63 · CHANGELOG 0.71 · commit messages 0.67, zero hard tells. `GK/CLAUDE.md` joined the scanned set in
-  v1.29.2 — it was split out of this file on 2026-07-30 and would otherwise have exempted a quarter
+  v1.29.2. It was split out of this file on 2026-07-30 and would otherwise have exempted a quarter
   of the project's documentation from the standard the rest of it is held to.
   Three further measures joined the scan on 2026-08-09, from the 2026 stylometry work: **em dashes
   per thousand words** (baseline 3.23 human / 10.62 GPT-4.1, Freeburg 2026), **punctuation variety**
   (the share of marks that are `; : ? ! ( )`), and **sentence-opener diversity**. The dash figure
-  had two faults that cancelled into a plausible-looking column — it was per thousand *characters*,
+  had two faults that cancelled into a plausible-looking column. It was per thousand *characters*,
   and `strip_html` blanked `&mdash;` along with every other entity, which is how every book
-  writes theirs. Corrected, the three modules read 8.6 / 9.2 / 9.4 and **the three books read
-  15.2 / 16.7 / 16.6, which is the one outstanding prose finding in the repo.**
+  writes theirs. Corrected, it read 15.2 / 16.7 / 16.6 for the books and 8.6 / 9.2 / 9.4 for the
+  modules, and that was the repo's outstanding prose finding until the voice pass of 2026-09-20.
+  **The column counts PROSE only, as of 2026-09-22.** It read the whole stripped file until then,
+  so the cover rule (drawn out of em dashes), a stat block's empty field ("Defense —", "Ref —") and
+  the attribution line before a witness's name all landed in it. The Bestiary showed 2.6 on five
+  dashes of prose and 212 of typography, which meant the figure in the table and the figure the
+  books were being rewritten to were two different measurements, and the table is the one anybody
+  reads. It counts `book_units()` now, the same text the research signals read, with a `typo`
+  column beside it saying how many it set aside. The books read 0.0 / 0.2 / 0.1, the Book of
+  Legends 0.4, the modules 0.4 / 0.5 / 0.4. The gate is 2.0.
   Three things about that script are worth not re-learning: its markup stripping is
   **length-preserving**, because collapsing spans made every reported line number fiction and sent
   you to rewrite innocent prose; **quoted** spans are reported apart and never fail, since both real
   hits were the books' own rules text quoted back into a changelog and rewriting either would
   falsify the record; and the quote pattern takes **double quotes only**, because admitting the
-  apostrophe makes "don't … it's" read as a quoted span and *masks* genuine tells — the one failure
+  apostrophe makes "don't … it's" read as a quoted span and *masks* genuine tells, the one failure
   mode worse than a false positive. Proper nouns that collide with corporate vocabulary
   (`Vital Breath`, `landscape-Letter`) are blanked before the soft-word count.
   **Research signals (2026-09-16).** The audit also prints rates per thousand words for every file,
@@ -421,16 +421,16 @@ hand in the right order out of memory.
   the sources are listed in `audits/ai_tells_lexicon.py`. They don't fail the gate; `--strict` fails
   on them, and it's the bar the books are being rewritten to. The first run found the trouble is in
   the rhythm: too many em dashes, almost no contractions, negative parallelism, and sentences built
-  like "kindness is the whole of the creed". An optional `voice-profile.local.json` beside this file
+  like a kindness that is "the whole of" some creed. An optional `voice-profile.local.json` beside this file
   adds a column comparing each book with the author's own writing. It stays on this machine.
 
 ### One source of truth, and disagreement is a failing test
 
 The standing discipline behind the numbers: **each rule is encoded once, both the book and the
-app are generated/checked from it, and any disagreement fails a build.** Concretely — the attack
+app are generated/checked from it, and any disagreement fails a build.** Concretely: the attack
 spine (rank → level) and the save formulas live in Ch. XIV; `chargen.json` transcribes them and
 carries each Calling's `attackRank`; `CharGen.Validate` re-derives every row from
-`AttackFor`/`StrongSave`/`WeakSave` (so data↔app can't drift — the smoke suite fails first); and
+`AttackFor`/`StrongSave`/`WeakSave` (so data↔app can't drift; the smoke suite fails first); and
 `audits/verify_rules.py` checks the *printed book* against the data and the formula (so book↔data can't
 drift). The same shape governs armor (`ArmorFrom`, folded into `ReckonNumbers`), the Signs and
 Miracles (`SignsFor`/`MiraclesFor` gated by the shared `RankAt`), the faith/sign pool
@@ -446,8 +446,8 @@ The eleven steps for cutting a release live in exactly one file, and this is not
 [`.claude/commands/ship.md`](.claude/commands/ship.md) carries the sequence: gate, version,
 changelog, docs, merge, artifact, notes, tag, retire the superseded page, restore `Latest`,
 regenerate the index. What stays here is the rules and the reasons behind them. Why only the
-current release keeps its page, what the version cascade does, which landmine cost which release
-— each step over there names the section over here that holds its reason, rather than copying it.
+current release keeps its page, what the version cascade does, which landmine cost which release,
+each step over there names the section over here that holds its reason, rather than copying it.
 
 The split matters. Two copies of a runbook drift, and the one a session acts on is whichever it
 opened first, which is how the version cascade failed twice with a warning paragraph sitting
@@ -462,25 +462,25 @@ Read `/ship` as the order to do them in.
 
 ## The Player's Book (v2.52) — structure
 
-*(For the chapter and appendix list, read the built book's Contents — it is generated, so this
+*(For the chapter and appendix list, read the built book's Contents; it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
 
-**Appendix E — The Country (v2.12)** is the in-world, secrets-free gazette of the sample county
+**Appendix E. The Country (v2.12)** is the in-world, secrets-free gazette of the sample county
 plus the clean player map, injected into the `<!--PERDITION_MAP-->` placeholder by
 `build_player.py`. Since v2.50 it is also where a new posse is pointed: Ch. III's ninth step sends
 a reader here, the appendix opens with *Riding In* (a d6 of reasons to be in the basin) and
 *Folks You'll Hear Of*, and closes with *Staying On*, which is what the county has for a posse that
 lives through its first few nights. The place list between them is generated from
 `perdition_map.RIDER_KNOWS` through the `<!--BASIN_PLACES-->` placeholder, so it cannot drift from
-the modules'. **Everything in Appendix E is player-safe by construction** — no nails, no ring,
+the modules'. **Everything in Appendix E is player-safe by construction**. No nails, no ring,
 nothing about what is under the water. Those live in the Keeper's Book Ch. XIII and nowhere a
 player reads. **The Index (v2.9)** is ~200 entries, two-column, letter-grouped; every entry's
-page number is resolved live by the paginator like the TOC's, via anchor ids — `ix-*` on
+page number is resolved live by the paginator like the TOC's, via anchor ids, `ix-*` on
 headings/list items/table rows across the whole book. The **detailed two-level Contents** (v2.10)
 is generated by `nav_tools.py`.
 
 **Ch. IV's "Peoples of the Frontier" sections.** After the Origins the chapter carries a
-run of long-form sections on the real peoples of the West, each in the same shape — two
+run of long-form sections on the real peoples of the West, each in the same shape: two
 history paragraphs, a boxed *Playing a … Character* with five rules of the road, then a
 "mechanically, any Origin and Calling" closer. **The First Peoples** and **The Mexican
 Frontier** date from earlier versions; **Black Westerners** and **The Chinese on the
@@ -492,12 +492,12 @@ as new monsters, and the game's invented dark is never pinned to a living religi
 ### Appendix D — "A Posse, Ready-Made" (six pregens)
 Six finished 1st-level characters, math-verified against the chargen rules (Honest Array
 15/14/13/12/10/8 + Origin gifts), each with the Four Questions pre-answered:
-- **Mattie "Six-Finger" Lusk** — Gunhand · the Outlaw
-- **Doc Delia Kemp** — Sawbones · the Fallen Gentry
-- **Brother Isaiah Dade** — Preacher · the Freed
-- **Anni Halvorsen** — Mountain Man · the Scout
-- **Frank Haskins** — Bounty Hunter · the Veteran
-- **Nettie Swain** — **Hexer** · the Homesteader (begins at Mark 1 — fits the Hexer, who is
+- **Mattie "Six-Finger" Lusk**: Gunhand · the Outlaw
+- **Doc Delia Kemp**: Sawbones · the Fallen Gentry
+- **Brother Isaiah Dade**: Preacher · the Freed
+- **Anni Halvorsen**: Mountain Man · the Scout
+- **Frank Haskins**: Bounty Hunter · the Veteran
+- **Nettie Swain**: **Hexer** · the Homesteader (begins at Mark 1, fits the Hexer, who is
   always already touched; knows Signs *Borrowed Breath* and *Salt & Iron*; companion crow
   "Deuteronomy")
 
@@ -506,10 +506,10 @@ Character), IX (Edges), A (Example of Play), and B (Conditions).
 
 ### Plates
 **Removed** (18 of them) for design continuity with the other two books. If restoring later:
-the artwork would have to be generated fresh — it is not in `assets/` and never
+the artwork would have to be generated fresh. It is not in `assets/` and never
 was. **Placement bug to avoid if you re-add
 any:** inserting a `<figure>` *before* a `<section class="page" id=X>` opener drops it
-between sections where the paginator silently discards it — figures must go *inside* a
+between sections where the paginator silently discards it, figures must go *inside* a
 section (before the preceding `</section>`, or before an inner `<h2>`). Always re-count
 rendered `figure.plate img` after moving/adding plates.
 
@@ -517,17 +517,17 @@ rendered `figure.plate img` after moving/adding plates.
 
 ## The Keeper's Book (v2.36) — structure
 
-Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index — read the built book's
+Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
 Basin** realizes the Ch. XI "Salt Valley" Haunted-County seed and is the home ground of both
-starter adventures, so the three move together; the **Index** is `id="bookindex"`, deliberately
+starter adventures, so the three move together; the **Index** is `id="bookindex"`,
 distinct from the Bestiary-style `id="index"`; and **XV and XVI are not two halves of one
-chapter** — see below. The **detailed two-level Contents** is generated by
+chapter**. See below. The **detailed two-level Contents** is generated by
 `nav_tools.py`.
 
 **Ch. VII holds the Patron cosmology, and *Why It Answers at All* (`patrons-why`, v2.31) answers
-the table's standing question with four readings rather than one.** The question — why would a thing
-that indifferent bargain with a Hexer at all — was raised by the *four things to hold to* box and left
+the table's standing question with four readings rather than one.** The question, why would a thing
+that indifferent bargain with a Hexer at all, was raised by the *four things to hold to* box and left
 open. It is answered with **the wear**, **the debt**, **the tongue** and **the appetite nobody has
 named**, none confirmed, over one piece of stagecraft that holds under all four: *never let a Patron
 want; let it be available.*
@@ -542,7 +542,7 @@ Bad Vein, the Good Revival), and the count of six is hearsay on the player's sid
 `verify_rules.py::check_patron_silence` fails if a name comes back into the Player's Book, and the app
 shows a player's table the want through `CharGen.PathLabel`. The Book of Legends is player-side too and
 is held to the same line. **The four-reading shape was deliberate and should not be collapsed into a
-settled answer** — the box two paragraphs above it promises this book never settles whether there are
+settled answer**: the box two paragraphs above it promises this book never settles whether there are
 six Patrons at all, and six numbered dossiers with d6 tables already strain that promise; a fifth
 certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for the same reason.
 
@@ -550,8 +550,8 @@ certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for 
 appendix), embeds `keeper_map_html()`, and carries anchor ids (`basin`, `basin-truth`,
 `basin-wells`, `basin-crossing`, `basin-coffin`, `basin-saltlick`, `basin-mission`, `basin-mesa`,
 `basin-homesteads`, `basin-hands`, `basin-running`, `basin-keeping`) the Keeper index links to.
-Its spine — the padres' silver "nails" binding a Patron under the wells, now failing well by well —
-is deliberately the same as the Ch. XI Salt Valley seed.
+Its spine (the padres' silver "nails" binding a Patron under the wells, now failing well by well) 
+is the same as the Ch. XI Salt Valley seed.
 
 **`basin-keeping` (*Keeping the Basin*, v2.34) is the second year**, and it is what makes the county
 a campaign rather than a starter: the ring held (somebody walks it, once a season, across everybody's
@@ -563,19 +563,18 @@ book makes two chapters earlier.
 
 **Ch. XV Powers vs. Ch. XVI Legends** is the one distinction in this book that is easy to
 collapse and expensive to get wrong. A **Power** owns ground, wants something, and can be joined,
-bought or fought — Redemption and the Golden Circle, the Dread Mother, the Pinkertons, Kansas City
-money. A **legend** has none of that: no capital, no seats, no files, nobody to negotiate with. It
+bought or fought: Redemption and the Golden Circle, the Dread Mother, the Pinkertons, Kansas City
+money. A **legend** has no capital, no seats, no files, and nobody to negotiate with. It
 is a story the country tells about itself. That is why the Mad Spaniard moved out of XV in v2.30
 (he holds no ground and wants nothing) and why the Gatherings in the Rockies moved out to **Ch.
-VII** (they are cosmology — VII was already citing XV for its own biggest question, which was the
-tell). XV is `CH15`, XVI is `CH16`, and the legends carry `legends`, `legends-spaniard`,
+VII** (they are cosmology, VII was already citing XV for its own biggest question, which was the giveaway). XV is `CH15`, XVI is `CH16`, and the legends carry `legends`, `legends-spaniard`,
 `legends-outfit`, `legends-song`. If a seventh Power or a fourth legend is ever added, sort it by
 that test and not by subject matter.
 
 **Chapter epigraphs** are injected by the `_chq` dict at the bottom of `build_keeper.py`
 (via `_inject_quote`, which drops a `quote()` after each chapter's `<div class="divider">`).
 Every chapter + the Screen appendix now carries one. (Ch. V already has an inline quote, so
-it's deliberately *not* in the dict — don't add it there or it'll double.)
+it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
@@ -591,8 +590,11 @@ list, which is generated.
 - **Every document has its own voice.** A clerk, a bank, a freighter and a frightened woman do not
   write alike, and the variance is the point: uniform prose is the thing the AI-cadence audit is
   built to find, and a book of documents is the best defence against it the project has. The
-  measured result is the best in the set (0.4 em dashes per thousand words against the other books'
-  8&ndash;12, burstiness 0.9 against the two human baselines' 0.8 and 0.9).
+  measured result was the best in the set on the day it was written (0.4 em dashes per thousand
+  words against the other books' 8&ndash;12, burstiness 0.9 against the two human baselines' 0.8
+  and 0.9). The voice pass took the other three down to 0.0&ndash;0.2 the next day, so Legends is
+  the highest of the four now; what the documents still hold on their own is the burstiness, and
+  no pass can manufacture that.
 - **Contractions belong to the informal voices only.** Official returns write it out; letters,
   field-books and spoken answers contract. That spread is deliberate and it is what took the book
   from 0.3 contractions per thousand words to 8.5.
@@ -614,16 +616,16 @@ list, which is generated.
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
 so it can never drift) plus ~19 curated chapter/concept entries. Note the long-standing
-Roll-by-Tier appendix keeps `id="index"` — the alphabetical index is a separate `id="bookindex"`.
+Roll-by-Tier appendix keeps `id="index"`: the alphabetical index is a separate `id="bookindex"`.
 
 
 Creature chapters (each creature with lore + Found line + stat block + run-it guidance) plus three
-appendices — **The Roll, by Tier**, **The Grounds** (encounters by terrain — rollable tables + a
+appendices: **The Roll, by Tier**, **The Grounds** (encounters by terrain, rollable tables + a
 villain picker, with the "safe-table rule"), and **Building Your Own Dead** (the from-scratch
 workshop + the Threat-by-Tier table). The Grounds appendix ends with **`grounds-basin`**, *Perdition
 Basin, by Ground* (v2.22): each place in the sample county, the Grounds table it rolls on, and what
 the county adds on top of the roll. The Painted Mesa is in that table with **"no table"** in its
-middle column, and it stays that way — the people who live there are people, and this book makes no
+middle column, and it stays that way: the people who live there are people, and this book makes no
 monsters out of them. Thirteen creatures the basin actually uses also carry one "In Perdition
 Basin…" line at the end of their Keeper note, which is the whole of this book's share of the county. Chapter names and per-chapter counts are in the built book's
 generated Contents; don't keep a second copy here, which is how the counts in this section came to
@@ -631,7 +633,7 @@ disagree with each other.
 
 **The design line the chapter list won't show you: Beasts of the Living World and Hard Men & Hard
 Country are the mundane half, and they cost no Nerve and never move the Mark.** They exist so a
-Keeper can run a slow burn before anything gets up that shouldn't — ordinary men (rustlers, a lynch
+Keeper can run a slow burn before anything gets up that shouldn't: ordinary men (rustlers, a lynch
 mob, a hired gun, the Regulators) and hard country (bad water, a norther, a river crossing, a
 blizzard). Keep that rule for any new natural animals or ordinary men.
 
@@ -645,21 +647,21 @@ blizzard). Keep that rule for any new natural animals or ordinary men.
 - Every creature section is **sorted by tier ascending, then name ascending** (leading
   "The/A/An" ignored; a creature's tier = the first roman numeral in its header; range
   creatures sort at their lower tier). Done at build time by `sort_sections()`.
-- **`sort_sections()` asserts on any non-creature content *between* creatures** — so a stray
+- **`sort_sections()` asserts on any non-creature content *between* creatures**, so a stray
   quote or note inserted mid-section will break the build. Content is only safe in a
   section's prefix (before the first creature), its suffix (after the last), or *inside* a
   creature block.
 - The **"The Roll, by Tier" appendix is generated** from the actual stat blocks by
-  `gen_appendix()` — so it can't drift. All 150 are always indexed; the dual flock/prophet
+  `gen_appendix()`, so it can't drift. All 150 are always indexed; the dual flock/prophet
   entry is listed in both its tiers. (The Grounds and Building-Your-Own-Dead appendices sit
   *outside* the sorter/generator scope, so they're safe to hand-author.)
-- **Ordinary beasts** (Section VIII) cost **no Nerve and never move the Mark** — Dread line
+- **Ordinary beasts** (Section VIII) cost **no Nerve and never move the Mark**. Dread line
   reads "—", no "How to Play It" note; their field-guide lore + Found line come from
   `LIVING_LORE` in `bestiary_extra.py`. Keep that rule for any new natural animals.
 - **Two per-creature wrappers:** `sb(...)` builds a bare stat block; `creature(...)` wraps
   lore + optional witness quote + Found + `sb(...)` + optional keeper note into one sortable
   `<div class="creature">` unit. `creature()` signature:
-  `creature(stat_html, lore, found, keeper, kn_tag="How to Play It", witness=None)` — pass
+  `creature(stat_html, lore, found, keeper, kn_tag="How to Play It", witness=None)`. Pass
   `witness=(text, source)` to seed an in-voice witness quote between the lore and the Found
   line (used on the Risen, Nightwalker, Skin-Walker, Thunderbird, Wendigo). Because the quote
   lives inside the creature div, it travels with the creature through sorting.
@@ -677,7 +679,7 @@ blizzard). Keep that rule for any new natural animals or ordinary men.
   save vs the Dread DC). **The Mark** = a 6-step corruption track. **Taint** = cursed-ground
   clock.
 
-(`sb()`'s signature lives in `build_bestiary.py` — read it there rather than from a copy here.)
+(`sb()`'s signature lives in `build_bestiary.py`; read it there rather than from a copy here.)
 
 **Threat-by-Tier benchmarks** (a creature's Tier is a fair, hard fight for a party of **twice
 its Tier in levels**):
@@ -694,29 +696,29 @@ its Tier in levels**):
 | VIII | 32 | +29 | — | +31 / +20 | 5d10+15 | 30 |
 
 *(VI-VIII added in B6, 2026-08-30, to meet Rank 8 at 15th level. The Blood column stops at VII
-on purpose: no table has ever emptied a Tier VIII thing and a number there would be a promise
+by design: no table has ever emptied a Tier VIII thing and a number there would be a promise
 the arithmetic cannot keep. What one has instead of hit points is a condition under which it
 stops, printed under its own *Putting It Down*.)*
 
 **Encounter budget:** 4 points/PC; an even foe = 8, a mook = 4, a standout = 16.
 (Repriced off the harness in v1.44.0, from the printed 1 · 4 · 8. `Rules.BudgetRungs` is the
 ladder and `audits/verify_rules.py::check_budget` holds both books, the app and **this line**
-to it — the one place this rule is written that the auditor does not read is nowhere.)
+to it: the one place this rule is written that the auditor does not read is nowhere.)
 
 ---
 
 ## GritKeeper (v1.58.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
-Forms**. Not part of the HTML book pipeline — separate source tree, separate build. The working
+Forms**. Not part of the HTML book pipeline, separate source tree, separate build. The working
 tree is **`GK/`** (three projects since v1.28.0: `GK/rules` the headless library, `GK/source` the
 WinForms app, `GK/smoke` the logic tests); **`GritKeeper/` is the generated deliverable, never
-source.** A Linux package is **planned**, with no date — the engine half already runs there.
+source.** A Linux package is **planned**, with no date. The engine half already runs there.
 
-**The app's own detail lives in [`GK/CLAUDE.md`](GK/CLAUDE.md)** — source-tree layout and which
+**The app's own detail lives in [`GK/CLAUDE.md`](GK/CLAUDE.md)**: source-tree layout and which
 tree a change belongs in, the ten tabs, the file table, build & run, the verification standard,
 and the drawn-text landmine. That file loads automatically whenever work touches anything under
-`GK/`, which is exactly when any of it applies. It was split out on 2026-07-30: ~35,000 characters
+`GK/`, which is when any of it applies. It was split out on 2026-07-30: ~35,000 characters
 of app detail were loading into every session, including the ones that never opened a `.cs` file.
 
 Two things stay here, because both can ruin a release before you ever open the app's source:
@@ -727,13 +729,13 @@ Two things stay here, because both can ruin a release before you ever open the a
   happily sign and ship the **previous version's exe**. This happened during the v1.18.0 release
   and was caught only on the version check.
 - **Never give a `SplitContainer` geometry at construction time.** Setting `SplitterDistance` or
-  either `PanelNMinSize` before the control is docked and laid out throws on a real Windows render
-  — it compiles clean and passes headless tests, so it reaches the user. Always build splitters
+  either `PanelNMinSize` before the control is docked and laid out throws on a real Windows render.
+  It compiles clean and passes headless tests, so it reaches the user. Always build splitters
   through the `Split(orientation, p1Min, p2Min, ratio)` helper in `MainForm.cs`, which defers
   geometry to a one-shot `SizeChanged`.
 
 And the standing sync rule: **the app is synced in the same session as any book change that
-touches it** — status-bar and `GK/source/README.md` version strings every time the books bump,
+touches it**, status-bar and `GK/source/README.md` version strings every time the books bump,
 `Data/creatures.json` re-extracted (`extract_creatures.py`, diffed against the previous JSON)
 whenever Bestiary creature content changes, and the Reference tab whenever a rule it quotes
 changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
@@ -741,12 +743,12 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 ## Roadmap / open threads (not yet built)
 
-- ~~**A named sample territory with an SVG map**~~ — **DONE (v2.10/v2.2):** Perdition Basin, a
+- ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
   Book Appendix E; secrets-annotated Keeper map + full gazetteer in the Keeper's Book Ch. XIII).
   See `perdition_map.py`. It will not become a fourth book (settled 2026-09-16). It is the main
   example in every book instead: the county a new posse starts in, and one a campaign can stay in.
-- ~~**Perdition Basin in every book**~~ — **DONE (books v2.50/v2.34/v2.22, modules v1.7/v1.9/v1.9,
+- ~~**Perdition Basin in every book**~~: **DONE (books v2.50/v2.34/v2.22, modules v1.7/v1.9/v1.9,
   2026-09-19).** Where a new posse starts and a place to keep playing, carried through all six: the
   Player's Book points a new character at it and tells a rider how to arrive and why to stay, the
   Keeper's Book carries the second year in *Keeping the Basin* and works four other chapters'
@@ -754,7 +756,7 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   county out by Ground, and one list of places feeds the Player's Book and all three modules.
 - **A Book of Legends.** A separate book of the Territory's legends, drawing on all three core books.
   In progress.
-- **Discord / online play** — proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
+- **Discord / online play**: proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
   LAN-hosted responsive page served by the app itself or Discord-as-state-surface → a full VTT
@@ -766,12 +768,12 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   (fine for one table, a hazard for two), and webhook URLs / bot tokens are bearer credentials
   that belong in `prefs.json`, never `session.json`.
 - A one-sheet **"teach it in ten minutes"** player handout.
-- ~~**Higher-level play support**~~ — **DONE (v1.53.0–v1.56.0, books v1.8–v1.11).** The whole
+- ~~**Higher-level play support**~~, **DONE (v1.53.0–v1.56.0, books v1.8–v1.11).** The whole
   fifteen-level program: every Calling carries rows 1–15 with a named capstone, Signs and Miracles
   reach Rank 8, creatures reach Tier VIII, and the spine formulas were met rather than capped
-  (rank = Tier = (level+1)/2). Struck 2026-09-06 — it had been open here since long after it shipped.
+  (rank = Tier = (level+1)/2). Struck 2026-09-06. It had been open here since long after it shipped.
 - **The Keeper's Table** got its first full visual pass on 2026-07-09 (Claude Code CLI
-  running natively on the user's Windows laptop, all 8 tabs screenshotted) — found and fixed
+  running natively on the user's Windows laptop, all 8 tabs screenshotted), found and fixed
   an ampersand-mnemonic label bug (see Changelog), nothing else wrong. Still worth another
   look sometime at DPI scaling on a non-100%-scale display, since this pass was at whatever
   the laptop's default scale was.
@@ -787,33 +789,34 @@ change them all:
   merged into `main` with `--no-ff` when verified, then the branch is deleted. Never rewrite
   history on `main`.
 - **`CHANGELOG.md`** (separate file, newest first) is the version record. Any commit that
-  changes content or behavior adds an entry — and bumps the affected component's version — in
+  changes content or behavior adds an entry, and bumps the affected component's version, in
   the same commit. References to "the Changelog" elsewhere in this doc mean `CHANGELOG.md`.
 - Version bumps are **tagged** `component-vX.Y[.Z]` at the commit that ships them.
 - **The Releases page carries the current release of each component and nothing else
   (settled 2026-08-19).** Three components ship out of this repo and each has its own line of tags
   and its own Release: `gritkeeper-vX.Y.Z` (`GritKeeper.zip`), `books-vX.Y`
-  (`BloodAndGrit-Books.zip` — the three HTML books and their PDFs), and `modules-vX.Y`
-  (`BloodAndGrit-Modules.zip` — the three module books, their PDFs, the three map SVGs, and
+  (`BloodAndGrit-Books.zip`, the three HTML books and their PDFs), and `modules-vX.Y`
+  (`BloodAndGrit-Modules.zip`, the three module books, their PDFs, the three map SVGs, and
   `PLAYTEST.md`). The zips exist because **GitHub serves raw `.html` as plain text**, so without one
   there is no way for a stranger to actually get a book in a click. **When a component ships, delete
   the Release page the new one supersedes.** The tag stays put, so `git checkout <tag>` still gets
-  that tree exactly as it shipped, and `RELEASES.md` — generated from the GitHub API by
-  `tools/release_index.py` — is the index that keeps every version findable. *(This bullet said the
+  that tree exactly as it shipped, and `RELEASES.md`, generated from the GitHub API by
+  `tools/release_index.py`, is the index that keeps every version findable. *(This bullet said the
   opposite until 2026-08-20: every tag gets a Release and every Release carries a download, a rule
   made on 2026-08-09 when the books and modules had no Release at all and `gritkeeper-v1.34.0` had a
   tag with no page. It held for ten days. On 2026-08-19 thirty-four release pages carrying 1.9 GB of
   zips nobody downloads were deleted, the history moved to `RELEASES.md`, and this bullet was not
-  corrected — so the doc and the repo disagreed until somebody read both.)*
-- **One Release page carries the whole game, as of 2026-08-27.** It holds nine assets: the three
-  zips and the six PDFs loose beside them. A ship tags whatever component moved, creates the new
-  page with **all nine attached including the parts that did not change**, and deletes the page it
+  corrected, so the doc and the repo disagreed until somebody read both.)*
+- **One Release page carries the whole game, as of 2026-08-27.** It holds ten assets: the three
+  zips and the seven PDFs loose beside them (the Book of Legends joined as its own PDF on Cole's
+  word, 2026-09-21). A ship tags whatever component moved, creates the new
+  page with **all ten attached including the parts that did not change**, and deletes the page it
   supersedes. *(This replaced three per-component pages and the step that went with them: GitHub
   gives `Latest` to whatever was published most recently, and `README.md` aims its download button
   at `/releases/latest`, so a books release used to redirect everyone who came for the app to a zip
   of PDFs until `gh release edit gritkeeper-vX.Y.Z --latest` was run afterwards. It was forgotten
   on 2026-08-09 and no check would have caught it. With one page there is no flag to move.)*
-- **`books-` and `modules-` are bundle versions, not book versions.** Each book keeps its own
+- **`books-` and `modules-` are bundle versions.** Each book keeps its own
   number and moves on its own schedule, so there is no single figure to put on the tag; the Release
   notes table is the authority on what is inside, and `CHANGELOG.md` is the authority on when it
   changed. Do not try to make the bundle number track any one book's.
@@ -823,36 +826,36 @@ change them all:
   **`update_readme.py`** from the build-script version strings and the app csproj. It works two
   ways: `README.md`'s *current editions* line and *latest change* note live in an `AUTO:editions`
   block regenerated wholesale, and **every other claim is patched in place inside an anchored span**
-  listed in the script's `CLAIMS` — this file's two (the header paragraph and the
+  listed in the script's `CLAIMS`, this file's two (the header paragraph and the
   `## GritKeeper (vX)` heading) and both app READMEs (`GK/source/README.md` and the delivered
   `GritKeeper/README.md`). The tracked **`.githooks/pre-commit`** hook runs it and re-stages all
   four on every commit (never blocks a commit). Enable once per clone:
   `git config core.hooksPath .githooks`. Don't hand-edit inside the AUTO markers, and **add a site
   to `CLAIMS` the moment a new one is written**. *(2026-08-08: this grew from README-only after
-  `GritKeeper/README.md` — the README inside the delivered zip, the first thing a stranger reads —
+  `GritKeeper/README.md` (the README inside the delivered zip, the first thing a stranger reads) 
   was found on v1.10.1 while the app was on v1.33.0. Nothing wrote it and nothing checked it, which
-  is all it takes.)* The anchoring is load-bearing: this file also says "as of Bestiary v2.0" in a
-  sentence about the paginator, and that is history, not a claim.
+  is all it takes.)* The anchoring matters: this file also says "as of Bestiary v2.0" in a
+  sentence about the paginator, and that sentence records history; it claims nothing about today.
 - **`.githooks/pre-push` tells you when the packaged app is behind the source**, running
   `verify_release.py --delivered` and printing the three commands that fix it. It **never blocks**,
-  and it only speaks up when **`main`** is being pushed — a `session/*` branch is work in progress,
+  and it only speaks up when **`main`** is being pushed. A `session/*` branch is work in progress,
   where the version is bumped early and the packaging happens at the end, so warning there would
   have fired on every autosync push for hours back when those existed. Same enable step as `pre-commit` (`core.hooksPath`), which
-  means **an unhooked clone gets no warning** — the gate that always runs is the tag check in CI.
+  means **an unhooked clone gets no warning**: the gate that always runs is the tag check in CI.
 - **Nothing runs on a timer (2026-08-10).** The `<folder> AutoSync` scheduled task,
   `autosync.ps1` and `register_autosync_task.ps1` are deleted from every repo. That task
   committed **and pushed** the checked-out branch every 30 minutes, so CI ran against work that
   was half-written by definition and the red X it returned was reporting on a state nobody had
   claimed was done. Syncing happens at the one moment the work is declared finished: a tracked
   **`.githooks/post-merge`** hook that pushes when, and only when, a merge lands on `main`. It
-  no-ops on any other branch and in any repo with no `origin` — which is why HRHS Scripts,
-  local-only by design, deliberately does not carry one at all.
+  no-ops on any other branch and in any repo with no `origin`, which is why HRHS Scripts,
+  local-only by design, does not carry one at all.
 - **A merge that had CONFLICTS needs its own hook (2026-08-12).** `post-merge` covers the clean
-  case and only the clean case — git's own documentation says it "is not executed if the merge
+  case and only the clean case: git's own documentation says it "is not executed if the merge
   failed due to conflicts", and finishing that merge by hand with `git commit` does not run it
   either, because that is a commit and not a merge. So the guarantee "a merge to main reaches
   GitHub" was silently skipping the merges most worth backing up: the ones somebody sat and
-  resolved. A tracked **`.githooks/post-commit`** closes it — after any commit, if the commit just
+  resolved. A tracked **`.githooks/post-commit`** closes it: after any commit, if the commit just
   made is a merge commit (two or more parents) and the branch is `main`, it pushes. The two cases
   are disjoint, so nothing double-pushes: a clean `git merge` writes its own commit and runs
   post-merge, while post-commit runs for `git commit`. Sandbox-proved on four cases: clean merge
@@ -861,20 +864,19 @@ change them all:
 
 - **The ship loop ends with the tag push.** `--follow-tags` in the hook carries tags that
   already exist, and a tag is normally created *after* the merge, so: merge, tag, then
-  `git push --follow-tags origin main`. **Since 2026-07-29 the pair — and `.claude/` — are git-IGNORED in all three
+  `git push --follow-tags origin main`. **Since 2026-07-29 the pair, and `.claude/`, are git-IGNORED in all three
   repos** (BloodAndGrit, TideWatch, DebForge), with one hole cut in that on 2026-08-22:
   `.claude/commands/ship.md` is tracked here, because a release runbook is part of how the
   deliverables get built. They are still on disk, still byte-identical,
   and still run; they are simply not published, because they describe this laptop rather than
   any of the software. "Identical in every repo" therefore holds of the files AND of what is
   tracked. Verify with `Get-FileHash` across the three before editing either one.
-- **Untrack on `main`, never on a session branch.** See the landmine below: `git rm --cached` on a
-  branch reads as harmless and turns into a real working-tree delete at merge time. TideWatch and
+- **Untrack on `main`, never on a session branch.** See the landmine below: `git rm --cached` on a branch looks harmless and turns into a real working-tree delete at merge time. TideWatch and
   DebForge were done directly on `main` for exactly this reason.
 
 ### What GitHub carries (BloodAndGrit — standing rule, 2026-07-29)
 
-**Only the three books, GritKeeper, and the files that build or check them** — *"on GitHub, only
+**Only the three books, GritKeeper, and the files that build or check them**: *"on GitHub, only
 the files necessary to support the three game books and GritKeeper should remain."* Applied
 2026-07-29 by `git rm --cached` + `.gitignore`, so every file stayed on disk and every one is
 recoverable from history.
@@ -884,33 +886,33 @@ recoverable from history.
 | The 6 PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's six "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. **Purged from the history on 2026-08-28** with `filter-branch`, which took the pack from 98.8 MB to 4.0 MB and a fresh clone to 4.7 MB; all 319 commits and 92 tags survived, and a full mirror was kept at `Desktop\Git\_BloodAndGrit-prepurge-backup.git`. |
 | The 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
 | `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
-| `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting — the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
-| `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones — the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
+| `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting: the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
+| `CLAUDE.md`, `CHANGELOG.md`, `README.md`, `.gitignore`, `.githooks/pre-commit` | **keep** | CLAUDE.md is what makes the books buildable by anyone who clones: the version cascade, the SplitContainer landmine and the re-mirror rule are written down nowhere else. |
 | `DESIGN-online-play.md`, `editorial-denials.md` | **untracked** | Process, not product: an unbuilt proposal and a log of declined edits. The proposal's substance is summarized in the roadmap below, so nothing is lost. |
-| `.claude/` | **untracked, except `commands/ship.md`** | `commands/session-start.md` describes this laptop and builds nothing. `commands/ship.md` is the ordered walk for cutting a release, and every tool it drives — `package.ps1`, `sign.ps1`, `make_bundles.py`, `release_index.py` — is tracked already, so it qualifies under this rule's own test. Carved out 2026-08-22; it takes four lines in `.gitignore`, because git will not re-include a file out of an ignored directory. (`autosync.ps1` and `register_autosync_task.ps1` were here too until 2026-08-10, when nothing was left running on a timer and they were deleted outright.) |
-| `measure_contents.py` | **untracked** | A tool whose own docstring says not to trust it. It compares the static placeholder Contents numbers in the `build_*.py` sources against where things render, and its first four lines tell the reader those are not what anybody sees — `nav_tools.py` resolves every Contents number live. Nothing runs it, it is in no audit tier, and the placeholders it tidies are a no-JS fallback nothing displays. Written 2026-08-27 to chase a fault that did not exist, demoted the same day, untracked 2026-08-31. On disk and working. |
+| `.claude/` | **untracked, except `commands/ship.md`** | `commands/session-start.md` describes this laptop and builds nothing. `commands/ship.md` is the ordered walk for cutting a release, and every tool it drives (`package.ps1`, `sign.ps1`, `make_bundles.py`, `release_index.py`) is tracked already, so it qualifies under this rule's own test. Carved out 2026-08-22; it takes four lines in `.gitignore`, because git will not re-include a file out of an ignored directory. (`autosync.ps1` and `register_autosync_task.ps1` were here too until 2026-08-10, when nothing was left running on a timer and they were deleted outright.) |
+| `measure_contents.py` | **untracked** | A tool whose own docstring says not to trust it. It compares the static placeholder Contents numbers in the `build_*.py` sources against where things render, and its first four lines tell the reader those are not what anybody sees, `nav_tools.py` resolves every Contents number live. Nothing runs it, it is in no audit tier, and the placeholders it tidies are a no-JS fallback nothing displays. Written 2026-08-27 to chase a fault that did not exist, demoted the same day, untracked 2026-08-31. On disk and working. |
 | `tools/mapdiff.mjs` | **untracked** | A dev tool for a lab that is itself ignored. It renders the SVGs under `_combatlab/_maps` and says which moved; nothing in the repo runs it, and it needs three globally-installed npm packages a fresh clone will not have. Untracked 2026-08-27, on disk and working. |
 | `add_index.py` | **untracked** | Dead: a one-shot against `player-src.html`, a file retired 2026-07-18, marked "do not re-run" since. |
 
-The repo is **PUBLIC and stays public** — that is deliberate; don't offer to change it.
+The repo is **PUBLIC and stays public**. That is deliberate; don't offer to change it.
 
 **Landmine, hit on 2026-07-29: `git rm --cached` on a session branch DELETES THE FILE when that
 branch is merged.** `--cached` only touches the index, so on the branch the working file survives
-and everything looks right. But what the commit records is *the path being removed from the tree* —
+and everything looks right. But what the commit records is *the path being removed from the tree*,
 and merging that into `main`, where the file is still tracked, makes git perform a real
 working-tree deletion. All six files above vanished off the disk at the `--no-ff` merge, including
 `autosync.ps1` (breaking the scheduled backup) and `.claude/commands/session-start.md`.
 
-Recovery, and the right way to do it byte-exactly — `Set-Content` on a piped `git cat-file` is NOT
+Recovery, and the right way to do it byte-exactly, `Set-Content` on a piped `git cat-file` is NOT
 byte-exact, because PowerShell's string pipeline rewrites the line endings:
 ```powershell
 git checkout <pre-merge-sha> -- <paths>     # restores the working file exactly (and stages it)
 git reset -q HEAD -- <paths>                # unstage, so HEAD keeps "deleted" and the file stays
 ```
-Then confirm with `git hash-object <path>` against `git rev-parse <sha>:<path>` — equal hashes or it
+Then confirm with `git hash-object <path>` against `git rev-parse <sha>:<path>`, equal hashes or it
 isn't restored. **Next time: untrack on `main` directly, or re-verify every untracked path is still
 on disk AFTER the merge, not just after the `rm --cached`.**
-- **HRHS Scripts is local-only by design** — no remote, never push it to GitHub. Every other
+- **HRHS Scripts is local-only by design**: no remote, never push it to GitHub. Every other
   repo syncs to `github.com/cwgilgalad`.
 
 ## Changelog

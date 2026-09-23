@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""audit_ai_tells.py — does the repository's own prose read like a person wrote it?
+"""audit_ai_tells.py: does the repository's own prose read like a person wrote it?
 
 The books already get this treatment. The REPOSITORY did not, and the repository is what someone
 sees first: the README, this project's handoff doc, the changelog, the release notes. Prose that
@@ -8,20 +8,20 @@ the books do.
 
 Three independent signals, because any one alone is easy to game:
 
-  BURSTINESS — the standard deviation of sentence length divided by its mean. Human writing varies
+  BURSTINESS: the standard deviation of sentence length divided by its mean. Human writing varies
   a lot: a four-word sentence next to a forty-word one. Generated prose regresses to a comfortable
   middle. Measured on the books earlier: 0.65 / 0.94 / 0.49. Rough bands, from that calibration:
       >= 0.55  human-like
       0.45-0.55 acceptable, watch it
-      <  0.45  flat — the tell
+      <  0.45  flat: the tell
   Note this is a signal, not a verdict. Reference docs are legitimately more uniform than prose.
 
-  TELLS — phrases and shapes that are disproportionately common in generated text. The one this
+  TELLS: phrases and shapes that are disproportionately common in generated text. The one this
   project cares most about is NEGATIVE PARALLELISM ("not just X, but Y" / "it isn't X, it's Y"):
   it is the single most recognisable LLM cadence and it is easy to write by accident. The list was
-  brought up to the 2026 literature on 2026-08-22 — see the sources cited beside HARD below.
+  brought up to the 2026 literature on 2026-08-22. See the sources cited beside HARD below.
 
-  LEXICAL DIVERSITY — a moving-average type-token ratio, added 2026-08-22. The 2026 survey leads
+  LEXICAL DIVERSITY: a moving-average type-token ratio, added 2026-08-22. The 2026 survey leads
   on lower lexical diversity in generated text; this is that finding, measured. Read it against a
   file's own history rather than against an absolute, and see mattr() for why.
 
@@ -29,7 +29,7 @@ Every pattern in HARD is proved by --selfcheck, which runs each one against a se
 trip it. A guard that has never been seen to fire is a guard nobody should trust: two of the ones
 here were written wrong the first time and looked exactly like the ones written right.
 
-RESEARCH SIGNALS (added 2026-09-16) — rates per thousand words, printed beside the same rates from
+RESEARCH SIGNALS (added 2026-09-16): rates per thousand words, printed beside the same rates from
 writing done without a model: the 5e SRD for rules prose and The Virginian for western prose. They
 cover the 2025-26 findings the hard tells cannot: lexical richness, participial clauses and
 nominalizations, the Antislop phrase list, StoryScope's fiction habits, Claude's own tics, and a set
@@ -75,7 +75,7 @@ import ai_tells_lexicon as LEX  # noqa: E402
 DEFAULT_DOCS = ["README.md", "CLAUDE.md", "GK/CLAUDE.md", "CHANGELOG.md", "NOTICE"]
 
 # The books. Pass --books to scan these too. They were exempted at first on the theory that their
-# period-western register would confuse the scan; that was wrong, and it hid real findings — the
+# period-western register would confuse the scan; that was wrong, and it hid real findings: the
 # cadence tells are about SHAPE, not vocabulary, and shape does not care what century the diction
 # comes from. Sixteen negative-parallelism constructions were sitting in here unexamined.
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
@@ -100,7 +100,7 @@ HARD = [
     (r"\b(?:let'?s|we'?ll) (?:dive|jump) (?:in|into)\b", "\"let's dive in\""),
     (r"\bnavigat(?:e|ing) the (?:complex|complexities|landscape|world)\b", "\"navigating the landscape\""),
     # An assistant describing its operator in the third person. Nothing gives the game away faster
-    # in a doc that is otherwise written in the first person — CLAUDE.md opens with "How I like to
+    # in a doc that is otherwise written in the first person: CLAUDE.md opens with "How I like to
     # work" and "I direct in plain words", so "user's stated plan" a thousand lines later reads as a
     # different author entirely. Caught by eye, not by this scan, which is why it is here now.
     # The established `(user-reported)` / `(user-asked)` parentheticals are house convention and are
@@ -119,7 +119,7 @@ HARD = [
 
     # ---- added 2026-08-22, from the current literature ------------------------------------------
     # Everything above was written against the 2023-24 generation's habits, and those habits moved.
-    # Three sources, all free to read, which is why they were the ones chosen — a check nobody can
+    # Three sources, all free to read, which is why they were the ones chosen: a check nobody can
     # open the reasoning behind is a check people stop trusting:
     #   * Wikipedia, "Signs of AI writing" (living catalogue, read 2026-08-22)
     #     https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
@@ -135,7 +135,7 @@ HARD = [
     #   * Terčon & Dobrovoljc, "Linguistic Characteristics of AI-Generated Text: A Survey",
     #     arXiv:2510.05136, open access. Synthesises the feature-level work across models, genres
     #     and languages. Its headline findings are a more formal and impersonal style marked by a
-    #     higher share of nouns, and lower lexical diversity — the second of which is measured as
+    #     higher share of nouns, and lower lexical diversity: the second of which is measured as
     #     a column below. It is also the source behind the framing-verb cluster reported from
     #     mid-2025 on ("emphasizing", "highlighting", "showcasing"), which is the vocabulary the
     #     participial pattern below runs on.
@@ -181,7 +181,7 @@ HARD = [
 
     # Paste artifacts: markup that exists only inside a chat client's own rendering. Any one of
     # them means text went from a window into a file without being read. No judgement required and
-    # no false positive available, which makes these the cheapest checks in the file — and the only
+    # no false positive available, which makes these the cheapest checks in the file, and the only
     # ones here that catch PROVENANCE rather than cadence.
     (r"contentReference|oaicite|turn\d+(?:search|view|news|image)\d+", "paste artifact (ChatGPT)"),
     (r"\[cite:\s*\d+\]|\[span_\d+\]\(start_span\)", "paste artifact (Gemini)"),
@@ -231,8 +231,8 @@ def strip_html(text):
     CAVEAT, and do not quote the number without it: the BURSTINESS figure for an .html target is
     not trustworthy. Blanking tags leaves table cells, headings and stat-block fields running
     together with no terminal punctuation between them, so the sentence splitter produces
-    pseudo-sentences of several hundred words — the reported range goes to 1,268 on the Player's
-    Book — and that inflates the standard deviation enormously. The books measured 0.65 / 0.94 /
+    pseudo-sentences of several hundred words (the reported range goes to 1,268 on the Player's
+    Book) and that inflates the standard deviation enormously. The books measured 0.65 / 0.94 /
     0.49 under a proper text extraction; this scan reports 1.56 / 1.16 / 0.92 for the same prose.
     The TELL SCAN on .html is sound, because it matches local phrasing and does not care where the
     sentence boundaries are. Use this for the tells; use the book audit for burstiness.
@@ -256,7 +256,7 @@ def strip_markup(text):
 
     LENGTH-PRESERVING, deliberately. The first version collapsed spans to a single space, so every
     match offset afterwards was shorter than the original and the line numbers it reported were
-    fiction — it pointed at lines 233 and 563 for tells that were nowhere near either. A checker
+    fiction. It pointed at lines 233 and 563 for tells that were nowhere near either. A checker
     that reports the wrong location is worse than no checker: it sends you to rewrite innocent
     prose. Blanking instead of deleting keeps offsets 1:1 with the raw text.
     """
@@ -277,7 +277,7 @@ def strip_markup(text):
 # The first version of this excused them as "somebody else's cadence". That was circular and wrong,
 # and it was caught immediately: what these docs quote is the BOOKS, and the books were written by
 # the same hand as the docs. Labelling your own prose a quotation does not make it somebody else's,
-# it just launders the finding — the one thing an audit must never do. Both hits on the first real
+# it just launders the finding. The one thing an audit must never do. Both hits on the first real
 # run were book rules text (`a Rank "is not how hard the Sign is to say; it is how far you have to
 # reach"`, `"this is not a thing you kill, it is a thing you resolve"`), and scanning the books
 # themselves then turned up SIXTEEN of the same construction that this scan had been waving through.
@@ -289,7 +289,7 @@ def strip_markup(text):
 # Two things this pattern has to get right. It allows a quote to WRAP: these docs are hard-wrapped
 # at ~95 columns, so a quoted rule almost always straddles a newline, and forbidding \n meant no
 # quote was ever recognised. It stops at a blank line, so an unbalanced quote mark cannot swallow
-# the rest of the file. And the delimiters are double quotes ONLY — including the apostrophe would
+# the rest of the file. And the delimiters are double quotes ONLY, including the apostrophe would
 # make "don't … it's" read as a quoted span and would MASK genuine tells, which is the one failure
 # mode worse than a false positive here.
 QUOTE_SPAN = re.compile(r'["“]((?:[^"“”]|\n(?!\s*\n)){4,300}?)["”]')
@@ -534,7 +534,7 @@ BLOCK_TAG = re.compile(r"</?(?:p|li|div|blockquote|section|ul|ol|dd|dt|dl|figure
 
 
 # Elements that are typography rather than prose: stat blocks, running heads, page numbers, the
-# "Found —" label and the dash before a witness's name. Their dashes are not the author's.
+# "Found — " label and the dash before a witness's name. Their dashes are not the author's.
 NOT_PROSE_CLASSES = ["statblock", "runhead", "pg", "cf-tag", "src", "kn-tag", "cr-name", "ix-hd"]
 NOT_PROSE_CHAPTERS = ("", "Contents", "Index", "The Ledger")
 
@@ -722,28 +722,40 @@ def audit(name, raw, units=None, book=False):
             soft[w] = (len(hits), ln, ctx)
 
     # Em-dash density, per THOUSAND WORDS. It was per thousand characters until 2026-08-09, which is
-    # the same number divided by about six, and it was being read against a per-word baseline — so
+    # the same number divided by about six, and it was being read against a per-word baseline, so
     # the column had been quietly reporting a sixth of the real figure since the day it was added.
     # The baseline it is read against: Freeburg 2026 measured 3.23 em dashes per 1,000 words across
     # 57k words of published human essays, against 10.62 for GPT-4.1, and found the frontier models
     # spread from 0 to 10-plus. So the dash is not a binary tell; density is the whole signal, and
     # the band below is set where a real editor would start noticing rather than where a detector
     # trips.
-    nwords = max(1, sum(lens))
 
     # An HTML entity is text, not punctuation, and the books write theirs out longhand. Counting
     # raw characters therefore read `&rsquo;` as a semicolon nobody typed and missed every
-    # `&mdash;` entirely — so the dash column sat dead still through a pass that removed fifty of
+    # `&mdash;` entirely, so the dash column sat dead still through a pass that removed fifty of
     # them by hand, and the three books' wildly different dash rates were measuring which spelling
     # each builder happened to use. Blank the entities to same-length filler (the same
     # length-preserving trick strip_html uses, so reported line numbers stay true) and count the
     # spelled-out dashes separately.
-    spelled = len(ENTITY_DASH.findall(prose))
     clean = ENTITY.sub(lambda m: "·" * len(m.group(0)), prose)
-    em_1k = (clean.count("—") + spelled) / (nwords / 1000)
+    whole = clean.count("—") + len(ENTITY_DASH.findall(prose))
+
+    # And it is counted over the PROSE, which in a book is not the whole file. The cover's rule is
+    # drawn out of em dashes, a stat block's empty field IS one ("Defense —", "Ref —"), and the
+    # line before a witness's name is an attribution rule rather than a sentence. The Bestiary
+    # carries 217 dashes and five of them are in its prose, so this column said 2.6 while the pass
+    # that took them out had left 0.1: the number in the table was not the number anybody was
+    # working to, and the table is what gets read. It counts book_units() now, the same text the
+    # research signals read, and `typo` reports what it set aside so nothing is hidden. A markdown
+    # file has no typography to separate, so both of its numbers come out the same.
+    body = '\n\n'.join(txt for _, txt in units) if units is not None else prose
+    bclean = ENTITY.sub(lambda m: "·" * len(m.group(0)), body)
+    bwords = max(1, len(WORD.findall(bclean)))
+    ems = bclean.count("—") + len(ENTITY_DASH.findall(body))
+    em_1k = ems / (bwords / 1000)
 
     # Punctuation variety. The 2026 work on markdown-shaped prose finds LLM output leans on a
-    # narrow inventory — period, comma, em dash — where human prose reaches for semicolons, colons,
+    # narrow inventory (period, comma, em dash) where human prose reaches for semicolons, colons,
     # parentheses and question marks. Counted as the share of "reaching" marks among all marks.
     marks = {c: clean.count(c) for c in ",.;:?!()"}
     reach = sum(marks[c] for c in ";:?!()")
@@ -760,7 +772,7 @@ def audit(name, raw, units=None, book=False):
     return {
         "sentences": len(lens), "burst": b, "hard": hard, "quoted": quoted, "soft": soft,
         "words": sum(lens), "shortest": min(lens) if lens else 0, "longest": max(lens) if lens else 0,
-        "emdash_per_1k": em_1k, "variety": variety, "openers": openers, "mattr": ttr,
+        "emdash_per_1k": em_1k, "emdash_typo": whole - ems, "variety": variety, "openers": openers, "mattr": ttr,
         "research": research(units if units is not None else doc_units(prose), book),
     }
 
@@ -772,7 +784,7 @@ def band(b):
         return "human-like"
     if b >= 0.45:
         return "acceptable"
-    return "FLAT — the tell"
+    return "FLAT: the tell"
 
 
 # One sentence per HARD pattern, written to trip it and nothing else. Keyed by the pattern's own
@@ -920,12 +932,13 @@ def main():
     findings = 0
 
     print("burstiness = sd/mean of sentence length. Books measured 0.65 / 0.94 / 0.49.")
-    print("em/1kw = em dashes per thousand words (human baseline ~3.2, GPT-4.1 ~10.6, Freeburg 2026).")
+    print("em/1kw = em dashes per thousand words of PROSE (human ~3.2, GPT-4.1 ~10.6, Freeburg 2026);")
+    print("typo = the dashes it set aside: a cover rule, a stat block's empty field, an attribution.")
     print("var = share of punctuation that is ; : ? ! ( ).  opn = distinct sentence openers.")
     print("div = lexical diversity, moving-average type-token ratio over 100-word windows.\n")
     print(f"{'file':<30}{'sents':>6}{'words':>7}{'burst':>7}  {'range':<10}"
-          f"{'em/1kw':>7}{'var':>6}{'opn':>6}{'div':>6}  verdict")
-    print("-" * 102)
+          f"{'em/1kw':>7}{'typo':>6}{'var':>6}{'opn':>6}{'div':>6}  verdict")
+    print("-" * 108)
     reports = []
     for t in targets:
         p = ROOT / t
@@ -940,7 +953,8 @@ def main():
         rng = f"{r['shortest']}-{r['longest']}"
         dv = f"{r['mattr']:.2f}" if r["mattr"] is not None else "  -"
         print(f"{t:<30}{r['sentences']:>6}{r['words']:>7}{bs:>7}  {rng:<10}"
-              f"{r['emdash_per_1k']:>7.1f}{r['variety']:>6.2f}{r['openers']:>6.2f}{dv:>6}"
+              f"{r['emdash_per_1k']:>7.1f}{r['emdash_typo']:>6}"
+              f"{r['variety']:>6.2f}{r['openers']:>6.2f}{dv:>6}"
               f"  {band(r['burst'])}")
 
     if ncommits:
@@ -952,11 +966,11 @@ def main():
         dv = f"{r['mattr']:.2f}" if r["mattr"] is not None else "  -"
         print(f"{'commit msgs':<22}{r['sentences']:>6}{r['words']:>7}{bs:>7}  "
               f"{str(r['shortest']) + '-' + str(r['longest']):<10}{r['emdash_per_1k']:>6.1f}"
-              f"{r['variety']:>7.2f}{r['openers']:>6.2f}{dv:>6}  {band(r['burst'])}")
+              f"{r['emdash_typo']:>6}{r['variety']:>7.2f}{r['openers']:>6.2f}{dv:>6}  {band(r['burst'])}")
 
     # Findings in ALREADY-LANDED commit messages are reported and not counted. This is not a
     # softening. A commit message cannot be edited without rewriting history, and this project's
-    # own standing rule is that history on main is not rewritten — so a hard failure there is
+    # own standing rule is that history on main is not rewritten, so a hard failure there is
     # one that can never be cleared, which is exactly the defect the quoted-book-text case had.
     # (Rewritten exactly once, on 2026-08-28, to purge 68 PDF blobs that were 95% of the clone.
     # Every commit message came through it verbatim, so the reasoning here is untouched: the rule
@@ -970,7 +984,7 @@ def main():
     reports = [(n, r) for n, r in reports if not n.startswith("commit msgs")]
 
     print("\n" + "=" * 78)
-    print("HARD TELLS — these are the ones to fix")
+    print("HARD TELLS: these are the ones to fix")
     print("=" * 78)
     for name, r in reports:
         if r["hard"]:
@@ -985,17 +999,17 @@ def main():
     # Reported in full and deliberately NOT counted. CLAUDE.md has said since this script was
     # written that quoted spans "are reported apart and never fail, since both real hits were the
     # books' own rules text quoted back into a changelog and rewriting either would falsify the
-    # record" — and the tally counted them anyway and returned 1. Nobody noticed for as long as
+    # record", and the tally counted them anyway and returned 1. Nobody noticed for as long as
     # nobody ran it as a gate; the first CI run ever to execute it went red on two findings that
     # the project has already ruled must stay exactly as they are, which is a check that can never
     # pass and so a check that teaches people to ignore it.
     quoted_total = sum(len(r["quoted"]) for _, r in reports)
     if quoted_total:
         print("\n" + "=" * 78)
-        print("IN QUOTED BOOK TEXT — reported, never a failure. Fix them in the BOOK, not here.")
+        print("IN QUOTED BOOK TEXT: reported, never a failure. Fix them in the BOOK, not here.")
         print("=" * 78)
         print("(A changelog quoting the books must stay an accurate record of what they said, so the")
-        print(" rewrite belongs upstream in build_*.py — and until it happens the quote is correct.)")
+        print(" rewrite belongs upstream in build_*.py, and until it happens the quote is correct.)")
         for name, r in reports:
             for label, line, snip in r["quoted"]:
                 print(f"\n{name} L{line}: {label}")
@@ -1004,10 +1018,10 @@ def main():
     msg_hits = sum(len(r["hard"]) + len(r["quoted"]) for _, r in landed_msgs)
     if msg_hits:
         print("\n" + "=" * 78)
-        print("IN COMMIT MESSAGES ALREADY WRITTEN — reported, never a failure.")
+        print("IN COMMIT MESSAGES ALREADY WRITTEN: reported, never a failure.")
         print("=" * 78)
         print("(They cannot be edited without rewriting history, which this project does not do on")
-        print(" main. The commit-msg hook is what stops the next one — install the hooks once per")
+        print(" main. The commit-msg hook is what stops the next one, so install the hooks once per")
         print(" clone with `git config core.hooksPath .githooks`.)")
         for name, r in landed_msgs:
             for label, line, snip in r["hard"] + r["quoted"]:
@@ -1015,7 +1029,7 @@ def main():
                 print(f"  …{snip}…")
 
     print("\n" + "=" * 78)
-    print("SOFT TELLS — corporate register; judgement call, never a failure")
+    print("SOFT TELLS: corporate register, a judgement call and never a failure")
     print("=" * 78)
     for name, r in reports + landed_msgs:
         if r["soft"]:
@@ -1029,7 +1043,7 @@ def main():
 
     print()
     if findings:
-        print(f"{findings} hard tell(s). Rewrite them in your own cadence — do not just delete the words.")
+        print(f"{findings} hard tell(s). Rewrite them in your own cadence; do not just delete the words.")
         return 1
     if strict and strict_failures:
         print(f"--strict: {strict_failures} research failure(s), listed above.")
@@ -1050,7 +1064,7 @@ def report_research(reports, landed_msgs, show_all=False, worklist=None):
     things --strict would fail on (files only; commit messages that already landed cannot change)."""
     keep = load_keep()
     print("\n" + "=" * 78)
-    print("RESEARCH SIGNALS — per 1,000 words; clos% is a share of paragraphs; hapx and lexd are shares")
+    print("RESEARCH SIGNALS: per 1,000 words; clos% is a share of paragraphs; hapx and lexd are shares")
     print("'!' = more than twice the higher human baseline, on three or more hits")
     print("=" * 78)
     print(f"{'':<27}" + "".join(f"{short:>6}" for _, short in COLUMNS))
@@ -1105,7 +1119,7 @@ def report_research(reports, landed_msgs, show_all=False, worklist=None):
     if VOICE_PROFILE.is_file():
         author = json.loads(VOICE_PROFILE.read_text(encoding="utf-8")).get("rates", {})
         print("\n" + "=" * 78)
-        print("VOICE — each book beside the author's own writing (local profile, never committed)")
+        print("VOICE: each book beside the author's own writing (local profile, never committed)")
         print("=" * 78)
         print(f"{'':<27}" + "".join(f"{short:>6}" for _, short in VOICE))
         for label, rates in [("(author)", author)] + [(f"(human) {b}", v) for b, v in BASELINES.items()] + \

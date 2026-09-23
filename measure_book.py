@@ -6,7 +6,7 @@ Usage: python measure_book.py <built-file.html>
 Checks: desktop/mobile page parity, zero clipping at true scale (desktop and
 mobile, forcing zoom:1 on each .page), zero mobile horizontal scroll at natural
 zoom, and that every detailed-TOC (.toc2) and index (.ix) anchor resolves to a
-live page number. Read-only — never patches source.
+live page number. Read-only. Never patches source.
 """
 import sys
 from pathlib import Path

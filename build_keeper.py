@@ -100,7 +100,7 @@ def img(key):
     return open(f"/tmp/{key}.uri").read().strip()
 
 def plate(key, alt, cap):
-    # Plates removed at the author's request — new illustrations to be added later.
+    # Plates removed at the author's request; new illustrations to be added later.
     return ""
 
 def runhead(short):

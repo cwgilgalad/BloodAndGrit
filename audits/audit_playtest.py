@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""audit_playtest.py — is PLAYTEST.md what the engine actually says today?
+"""audit_playtest.py: is PLAYTEST.md what the engine actually says today?
 
 Every difficulty number printed in the three module books comes out of `GK/playtest` and nowhere
 else, by way of `PLAYTEST.md`: `modules_common.night_costs()` reads that file at build time and
-generates each *What the Night Costs* table from it. That is the right architecture — one source,
-generated outward — and it has exactly one hole, which is that **nothing re-runs the harness**.
+generates each *What the Night Costs* table from it. That is the right architecture (one source,
+generated outward) and it has exactly one hole, which is that **nothing re-runs the harness**.
 
 The hole cost three releases. On 2026-08-27 the B5 pass added *Not While I Stand*, a Rank 2
 Common Blessing. A 3rd-level Preacher draws from Ranks 1 and 2, so the new Miracle entered the
@@ -20,7 +20,7 @@ passed, and the number a Keeper reads when deciding whether to run a night for a
 simply wrong.
 
 So: run the harness, and hold the file to it. The run is deterministic under a fixed base seed, so
-a difference is always a real difference — either the engine moved and the file did not, or
+a difference is always a real difference. Either the engine moved and the file did not, or
 somebody edited a generated file by hand.
 
 Usage:

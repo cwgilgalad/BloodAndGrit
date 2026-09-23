@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""audit_diversity.py — is every possibility the rules offer a possibility the game can reach?
+"""audit_diversity.py: is every possibility the rules offer a possibility the game can reach?
 
 The other audits ask whether the game is *correct*. This one asks whether it is as wide as it
 claims. Those are different failures. A skill printed in the skill list that no Calling ever wants
-and no Origin ever grants is not wrong — every number about it checks out — it is simply a door
+and no Origin ever grants is not wrong (every number about it checks out); it is simply a door
 with no corridor behind it. The reader spends attention on it and gets nothing back, and the day
 somebody notices, what they have learned is that the list is padded. That is the fault this file
 looks for, and the line it draws is deliberately narrow:
@@ -11,8 +11,8 @@ looks for, and the line it draws is deliberately narrow:
     **A thing fails here only when no path in the game can reach it.** Everything else is
     measured, printed, and left to a designer.
 
-That second half matters as much as the first. "Enough variety" is a judgement — how many Callings
-should share a chassis, how many monsters should answer to fire — and a checker that guesses at
+That second half matters as much as the first. "Enough variety" is a judgement (how many Callings
+should share a chassis, how many monsters should answer to fire) and a checker that guesses at
 the answer is a checker that fires on good design, gets argued with once, and is ignored forever
 after. So the distributions below are reported with their numbers and never counted against the
 exit code. They are here to be *read*: the Faith Callings sharing one spine is a fact worth
@@ -20,28 +20,28 @@ knowing before writing the sixth one, whether or not it is a fault today.
 
 What it measures, and what can fail:
 
-  1. SKILLS — every skill must be reachable: some Calling prefers it, or some Origin trains it.
+  1. SKILLS. Every skill must be reachable: some Calling prefers it, or some Origin trains it.
      FAILS on an unreachable skill, because the app's builder can then never produce a character
      who has it and the printed list is longer than the game.
-  2. CONDITIONS — every condition defined in Appendix B must be causable by something. FAILS on
+  2. CONDITIONS: every condition defined in Appendix B must be causable by something. FAILS on
      a condition that appears nowhere but its own definition. The app carries a toggle for all
      fifteen; a toggle for a state no rule inflicts is a control that can never legitimately be
      used.
-  3. CALLING SPINES — the (group, hit die, attack rank, strong saves) chassis, and how many
+  3. CALLING SPINES: the (group, hit die, attack rank, strong saves) chassis, and how many
      Callings share each. FAILS only where two Callings are identical in chassis AND resource
      pool AND Sign access, which would make them the same character with two names.
-  4. CALLING-EDGES — every Calling must have at least one of its own. FAILS on a Calling with
+  4. CALLING-EDGES: every Calling must have at least one of its own. FAILS on a Calling with
      none, since its 3rd-level Edge slot would then draw from the general list alone.
-  5. SIGNS AND MIRACLES — every list must reach rank 5. FAILS on a list that stops early: a
+  5. SIGNS AND MIRACLES: every list must reach rank 5. FAILS on a list that stops early: a
      caster who commits to it would climb to a ceiling nobody built.
-  6. ORIGINS — every ability must be liftable by some Origin. FAILS on an ability no background
+  6. ORIGINS: every ability must be liftable by some Origin. FAILS on an ability no background
      can raise.
-  7. EDGE GROUPS — every group must be wanted by some Calling, and every Calling must want more
+  7. EDGE GROUPS: every group must be wanted by some Calling, and every Calling must want more
      than one group. FAILS either way.
-  8. THE BESTIARY'S SHAPE — creatures per Tier and per chapter, as a grid.
-  9. DREAD — which chapters roll it and which do not, and whether the DC climbs with the Tier.
- 10. THE WAYS A THING ENDS — how many distinct counters the Bestiary offers, and how often each.
- 11. THE GROUNDS' REACH — what share of the Bestiary a Keeper can actually roll into.
+  8. THE BESTIARY'S SHAPE: creatures per Tier and per chapter, as a grid.
+  9. DREAD: which chapters roll it and which do not, and whether the DC climbs with the Tier.
+ 10. THE WAYS A THING ENDS: how many distinct counters the Bestiary offers, and how often each.
+ 11. THE GROUNDS' REACH: what share of the Bestiary a Keeper can actually roll into.
 
 Checks 8-11 report and never fail. They are the map, not the fence.
 
@@ -95,7 +95,7 @@ def bar(n, of, width=28):
 
 
 def check_skills(chargen):
-    print("\nSkills — every one on the list reachable by some Calling or some Origin")
+    print("\nSkills: every one on the list reachable by some Calling or some Origin")
     skills = [s["name"] for s in chargen["skills"]]
     pref = collections.Counter()
     for c in chargen["callings"]:
@@ -109,7 +109,7 @@ def check_skills(chargen):
     dead = [s for s in skills if not pref[s] and not origin[s]]
     COUNTED[0] += len(skills)
     for s in dead:
-        fail(f'"{s}" is on the skill list and no Calling prefers it and no Origin trains it — '
+        fail(f'"{s}" is on the skill list and no Calling prefers it and no Origin trains it, so '
              f"the builder can never produce a character who has it")
     if not dead:
         ok(f"all {len(skills)} skills reachable")
@@ -135,13 +135,13 @@ def report_skill_spread(skills, pref, origin, verbose):
 
 
 def check_conditions(dig, creatures, chargen, verbose):
-    print("\nConditions — every one defined in Appendix B causable by something in the game")
+    print("\nConditions: every one defined in Appendix B causable by something in the game")
     conds = []
     for _ch, _sec, tb in X.all_tables(dig["books"]["blood-and-grit.html"]):
         if tb["headers"][:1] == ["Condition"]:
             conds = [r[0] for r in tb["rows"]]
     if not conds:
-        fail("Appendix B's condition table was not found — the check cannot run")
+        fail("Appendix B's condition table was not found. The check cannot run")
         return
 
     # Count raw occurrences across the built markup rather than the parsed prose: a condition
@@ -161,14 +161,14 @@ def check_conditions(dig, creatures, chargen, verbose):
         elsewhere = sum(per.values()) - 1 + in_data       # -1 for its own Appendix B row
         if elsewhere <= 0:
             fail(f'"{c}" is defined in Appendix B and named nowhere else in any book, any stat '
-                 f"block, or any Sign, Miracle or Edge — nothing in the game can inflict it")
+                 f"block, or any Sign, Miracle or Edge, so nothing in the game can inflict it")
     if not FAILURES:
         ok(f"all {len(conds)} conditions inflicted by something")
 
     by_creature = [c for c, _p, d in rows if d and re.search(
         r"\b" + re.escape(c.split()[0]) + r"\b", json.dumps(creatures, ensure_ascii=False))]
     note(f"{len(by_creature)} of {len(conds)} appear in a creature's stat block "
-         f"({', '.join(by_creature)}) — the rest come from the players' side of the table")
+         f"({', '.join(by_creature)}); the rest come from the players' side of the table")
     if verbose:
         print(f"        {'condition':<12}" + "".join(f"{f.split('-')[0][:6]:>8}" for f in books)
               + f"{'data':>7}")
@@ -180,7 +180,7 @@ def check_conditions(dig, creatures, chargen, verbose):
 
 
 def check_calling_spines(chargen, verbose):
-    print("\nCallings — how many genuinely different chassis the seventeen are built on")
+    print("\nCallings: how many genuinely different chassis the seventeen are built on")
     callings = chargen["callings"]
     spine = collections.defaultdict(list)
     for c in callings:
@@ -189,7 +189,7 @@ def check_calling_spines(chargen, verbose):
 
     # Sharing a chassis is normal and often right; being the same character is not. The first
     # version of this stopped at chassis + pool + Sign access and called Marshal and Mountain Man
-    # the same Calling, which is false to anyone who has played either — one runs a posse on a
+    # the same Calling, which is false to anyone who has played either. One runs a posse on a
     # reputation, the other sets traps forty miles from the nearest posse. What actually separates
     # two Callings is what they *do*, so the features they get at 1st level are part of the
     # fingerprint. A checker that fires on good design is a checker that gets ignored, and then it
@@ -206,11 +206,11 @@ def check_calling_spines(chargen, verbose):
         dup[fingerprint(c)].append(c["name"])
     for names in dup.values():
         if len(names) > 1:
-            fail(f"{' and '.join(names)} are identical in chassis, pool and Sign access — "
+            fail(f"{' and '.join(names)} are identical in chassis, pool and Sign access: "
                  f"two names for one character")
     if not any(len(v) > 1 for v in dup.values()):
         ok(f"{len(callings)} Callings, {len(spine)} distinct chassis, "
-           f"{len(dup)} distinct once pool and Signs are counted — no two the same")
+           f"{len(dup)} distinct once pool and Signs are counted: no two the same")
 
     shared = sorted(((k, v) for k, v in spine.items() if len(v) > 1), key=lambda kv: -len(kv[1]))
     for k, names in shared:
@@ -219,7 +219,7 @@ def check_calling_spines(chargen, verbose):
     for grp in sorted({c["group"] for c in callings}):
         saves = sorted({c["strongSaves"] for c in callings if c["group"] == grp})
         if len(saves) == 1:
-            note(f"every {grp} Calling has the same strong saves ({saves[0]}) — "
+            note(f"every {grp} Calling has the same strong saves ({saves[0]}): "
                  f"the group has one defensive shape")
     if verbose:
         for k, names in sorted(spine.items()):
@@ -227,23 +227,23 @@ def check_calling_spines(chargen, verbose):
 
 
 def check_calling_edges(chargen):
-    print("\nCalling-Edges — every Calling with something only it can take")
+    print("\nCalling-Edges: every Calling with something only it can take")
     per = collections.Counter(e.get("calling", "?") for e in chargen["callingEdges"])
     COUNTED[0] += len(chargen["callings"])
     missing = [c["name"] for c in chargen["callings"] if not per[c["name"]]]
     for m in missing:
-        fail(f"{m} has no Calling-Edge of its own — its 3rd-level Edge draws from the general "
+        fail(f"{m} has no Calling-Edge of its own, so its 3rd-level Edge draws from the general "
              f"list alone")
     if not missing:
         ok(f"{len(chargen['callingEdges'])} Calling-Edges across all "
            f"{len(chargen['callings'])} Callings")
     hi = [f"{k} ({v})" for k, v in per.most_common() if v > 1]
     if hi:
-        note(f"more than one: {', '.join(hi)} — the rest have exactly one")
+        note(f"more than one: {', '.join(hi)}; the rest have exactly one")
 
 
 def check_powers(chargen, verbose):
-    print("\nSigns and Miracles — every list climbing the whole way to rank 5")
+    print("\nSigns and Miracles: every list climbing the whole way to rank 5")
     for kind in ("signs", "miracles"):
         grid = collections.defaultdict(collections.Counter)
         for s in chargen[kind]:
@@ -256,7 +256,7 @@ def check_powers(chargen, verbose):
                 holes.append((name, gap))
         for name, gap in holes:
             fail(f'the {kind[:-1]} list "{name}" has nothing at rank '
-                 f"{', '.join(str(g) for g in gap)} — a caster who commits to it climbs to a "
+                 f"{', '.join(str(g) for g in gap)}: a caster who commits to it climbs to a "
                  f"ceiling nobody built")
         if not holes:
             ok(f"{len(chargen[kind])} {kind} across {len(grid)} list(s), every list ranks 1-5")
@@ -266,7 +266,7 @@ def check_powers(chargen, verbose):
 
 
 def check_origins(chargen):
-    print("\nOrigins — every ability something in your past can have lifted")
+    print("\nOrigins: every ability something in your past can have lifted")
     gifts = collections.Counter()
     for o in chargen["origins"]:
         for a, n in o["gifts"].items():
@@ -275,7 +275,7 @@ def check_origins(chargen):
     COUNTED[0] += len(abilities)
     dead = [a for a in abilities if not gifts[a]]
     for a in dead:
-        fail(f"no Origin raises {a} — a background can never have made you strong in it")
+        fail(f"no Origin raises {a}: a background can never have made you strong in it")
     if not dead:
         ok(f"{len(chargen['origins'])} Origins raise all six abilities "
            f"({', '.join(f'{a} {gifts[a]}' for a in abilities)})")
@@ -288,7 +288,7 @@ def check_origins(chargen):
 
 
 def check_edge_groups(chargen):
-    print("\nEdge groups — every one wanted by some Calling, every Calling wanting more than one")
+    print("\nEdge groups: every one wanted by some Calling, every Calling wanting more than one")
     groups = sorted({e["group"] for e in chargen["edges"]})
     wanted = collections.Counter()
     for c in chargen["callings"]:
@@ -299,11 +299,11 @@ def check_edge_groups(chargen):
     for g in groups:
         if not wanted[g]:
             bad = True
-            fail(f'the "{g}" Edge group is wanted by no Calling — the builder never offers it')
+            fail(f'the "{g}" Edge group is wanted by no Calling, so the builder never offers it')
     for c in chargen["callings"]:
         if len(c["edgePrefs"]) < 2:
             bad = True
-            fail(f"{c['name']} wants only one Edge group — every build of it takes the same Edges")
+            fail(f"{c['name']} wants only one Edge group, so every build of it takes the same Edges")
     if not bad:
         counts = collections.Counter(e["group"] for e in chargen["edges"])
         ok(f"{len(chargen['edges'])} Edges in {len(groups)} groups "
@@ -315,13 +315,13 @@ def check_edge_groups(chargen):
 
 
 def report_bestiary_shape(creatures):
-    print("\nThe Bestiary's shape — what a Keeper has to reach for, and at which Tier")
+    print("\nThe Bestiary's shape: what a Keeper has to reach for, and at which Tier")
     tiers = collections.Counter(c["tier"] for c in creatures)
     chapters = sorted({c["chapter"] for c in creatures})
     COUNTED[0] += 5
     for t in range(1, 6):
         if not tiers[t]:
-            fail(f"no creature at Tier {t} — a whole band of the campaign has nothing in it")
+            fail(f"no creature at Tier {t}: a whole band of the campaign has nothing in it")
     if all(tiers[t] for t in range(1, 6)):
         ok(f"{len(creatures)} creatures across {len(chapters)} chapters, all five Tiers filled")
     print(f"        {'chapter':<32}{'I':>4}{'II':>4}{'III':>4}{'IV':>4}{'V':>4}{'all':>6}")
@@ -334,18 +334,18 @@ def report_bestiary_shape(creatures):
     thin = [t for t in range(1, 6) if tiers[t] < len(creatures) / 20]
     if thin:
         note("thinnest bands: " + ", ".join(f"Tier {t} ({tiers[t]})" for t in thin)
-             + " — the top of a campaign has the fewest things in it")
+             + ", the top of a campaign has the fewest things in it")
 
 
 def report_dread(creatures):
-    print("\nDread — which things are frightening, and whether the fear grows with the Tier")
+    print("\nDread: which things are frightening, and whether the fear grows with the Tier")
     with_dc, without = [], []
     for c in creatures:
         (with_dc if re.search(r"DC\s*\d+", c.get("dread") or "") else without).append(c)
     COUNTED[0] += len(creatures)
     silent = [c["name"] for c in creatures if not (c.get("dread") or "").strip()]
     for s in silent:
-        fail(f"{s} has no Dread line at all — the Keeper cannot tell whether to call for the roll")
+        fail(f"{s} has no Dread line at all, so the Keeper cannot tell whether to call for the roll")
     if not silent:
         ok(f"{len(with_dc)} of {len(creatures)} creatures roll Dread; the other {len(without)} "
            f"say in words why they do not")
@@ -386,7 +386,7 @@ COUNTERS = {
 
 
 def report_counters(creatures, verbose):
-    print("\nThe ways a thing ends — how many answers the book gives, and how often each")
+    print("\nThe ways a thing ends: how many answers the book gives, and how often each")
     hits = collections.Counter()
     per_creature = {}
     for c in creatures:
@@ -404,7 +404,7 @@ def report_counters(creatures, verbose):
        f"on average")
     lead = max(hits, key=lambda k: hits[k])
     if hits[lead] > len(creatures) / 3:
-        note(f'"{lead}" answers {hits[lead]} of {len(creatures)} — it is the frontier\'s '
+        note(f'"{lead}" answers {hits[lead]} of {len(creatures)}: it is the frontier\'s '
              f"first thought, which is right, but a table that reaches for it every time is "
              f"a table with one idea")
     for t in range(1, 6):
@@ -418,7 +418,7 @@ def report_counters(creatures, verbose):
 
 
 def report_grounds_reach(dig, creatures, verbose):
-    print("\nThe Grounds' reach — how much of the Bestiary a Keeper can roll into")
+    print("\nThe Grounds' reach: how much of the Bestiary a Keeper can roll into")
     tables = collections.defaultdict(set)
     for ch, sec, tb in X.all_tables(dig["books"]["bestiary.html"]):
         if ch != "Appendix: The Grounds" or "Sign & Spoor" in sec:
@@ -439,7 +439,7 @@ def report_grounds_reach(dig, creatures, verbose):
     for ch, n in by_ch.most_common():
         total = sum(1 for c in creatures if c["chapter"] == ch)
         print(f"        {ch:<32}{bar(n, total, 20)} {n:>3}/{total:<4} off every table")
-    note(f"{len(orphan)} creatures appear on no terrain table — they are reachable by a Keeper "
+    note(f"{len(orphan)} creatures appear on no terrain table, reachable by a Keeper "
          f"who goes looking, never by one who rolls")
     if verbose:
         for n in orphan:
@@ -458,7 +458,7 @@ def main():
 
     dig = X.digest(root=ROOT)
     if dig["missing"]:
-        print(f"not built: {', '.join(dig['missing'])} — build the books first")
+        print(f"not built: {', '.join(dig['missing'])}; build the books first")
         return 1
     chargen = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
     creatures = json.loads((ROOT / "GK/rules/Data/creatures.json").read_text(encoding="utf-8"))
@@ -481,7 +481,7 @@ def main():
     if FAILURES:
         print(f"{len(FAILURES)} dead option(s) across {COUNTED[0]:,} checks. Something printed "
               f"as a choice that no path in the game can reach is a promise the book does not "
-              f"keep — cut it, or build the corridor behind the door.")
+              f"keep. Cut it, or build the corridor behind the door.")
         return 1
     print(f"every option the rules print is an option some path reaches ({COUNTED[0]:,} checks). "
           f"The distributions above are for reading, not for passing.")

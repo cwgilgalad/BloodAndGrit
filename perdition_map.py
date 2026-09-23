@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""The map of Perdition Basin — a hand-authored period map, drawn as inline SVG
+"""The map of Perdition Basin: a hand-authored period map, drawn as inline SVG
 so it inlines byte-cheap into any of the books and scales crisply on a phone.
 
 One shared base (`_base`) draws the honest geography a character would know:
 the Calvary River and its wells, the three towns, the ruined mission, the mesas,
 the trails. `player_map_html()` ships that alone. `keeper_map_html()` adds the
-secrets overlay — which wells are bound / failing / broken, the ring of nails,
-what sleeps beneath, faction reach, and the two starter-adventure sites — drawn
+secrets overlay (which wells are bound / failing / broken, the ring of nails,
+what sleeps beneath, faction reach, and the two starter-adventure sites) drawn
 from the same coordinate model so the two layers register exactly.
 
 Both books import this; nothing is baked into the HTML sources, so the map is
@@ -105,14 +105,14 @@ def _label(x, y, text, size=15, font="'EB Garamond',Georgia,serif", color=INK,
 
 def _town(x, y, seat=False):
     if seat:
-        # county seat — a ringed cluster with a church cross
+        # county seat: a ringed cluster with a church cross
         return (f'<g stroke="{INK}" stroke-width="1.6" fill="{PAPER_L}">'
                 f'<circle cx="{x}" cy="{y}" r="9"/>'
                 f'<circle cx="{x}" cy="{y}" r="4.5" fill="{BLOOD_D}" stroke="none"/>'
                 f'</g>'
                 f'<path d="M{x} {y-20} V{y-9} M{x-4} {y-16} H{x+4}" '
                 f'stroke="{INK}" stroke-width="1.6" fill="none"/>')
-    # ordinary town — a small filled square (a cluster of roofs)
+    # ordinary town: a small filled square (a cluster of roofs)
     return (f'<g stroke="{INK}" stroke-width="1.4" fill="{PAPER_L}">'
             f'<rect x="{x-6}" y="{y-6}" width="12" height="12"/>'
             f'<rect x="{x-1.5}" y="{y-1.5}" width="7" height="7" '
@@ -120,14 +120,14 @@ def _town(x, y, seat=False):
 
 
 def _station(x, y):
-    # a lone building — trapezoid roof + box
+    # a lone building: trapezoid roof + box
     return (f'<g stroke="{INK}" stroke-width="1.4" fill="{PAPER_L}">'
             f'<rect x="{x-7}" y="{y-2}" width="14" height="10"/>'
             f'<path d="M{x-9} {y-2} L{x-4} {y-9} H{x+4} L{x+9} {y-2} Z"/></g>')
 
 
 def _mission(x, y):
-    # a ruined mission — a broken facade with a leaning cross
+    # a ruined mission: a broken facade with a leaning cross
     return (f'<g stroke="{INK}" stroke-width="1.5" fill="{PAPER_L}">'
             f'<path d="M{x-11} {y+8} V{y-6} L{x} {y-13} L{x+11} {y-6} V{y+8}" '
             f'stroke-linejoin="round"/>'
@@ -138,7 +138,7 @@ def _mission(x, y):
 
 
 def _well(x, y):
-    # a plain well ring (base map — no state shown)
+    # a plain well ring (base map: no state shown)
     return (f'<circle cx="{x}" cy="{y}" r="4.4" fill="none" stroke="{INK}" '
             f'stroke-width="1.4"/><circle cx="{x}" cy="{y}" r="1.3" fill="{INK}"/>')
 
@@ -201,7 +201,7 @@ def _base():
     p.append(f'<rect x="16" y="16" width="{W-32}" height="{H-32}" fill="none" '
              f'stroke="{GOLD_D}" stroke-width="1"/>')
 
-    # the Calvary River — wet (solid) in the north, drying (dashed) to the south
+    # the Calvary River: wet (solid) in the north, drying (dashed) to the south
     river_wet = "M410 54 C 380 96, 352 124, 352 150 S 440 248, 500 286"
     river_dry = "M500 286 C 528 340, 548 430, 560 520 S 572 578, 566 600"
     p.append(f'<path d="{river_wet}" fill="none" stroke="{WATER}" stroke-width="4.5" '
@@ -341,7 +341,7 @@ def player_map_html():
 
 def keeper_map_html():
     over = []
-    # faction reach — low-opacity washes
+    # faction reach: low-opacity washes
     # the Land-and-Cattle money (west, around the ranch towns and homesteads)
     over.append(f'<path d="M232 336 C 300 288, 470 292, 528 344 C 556 448, 400 528, '
                 f'292 494 C 210 466, 200 392, 232 336 Z" fill="{GOLD}" opacity="0.11"/>')
@@ -351,7 +351,7 @@ def keeper_map_html():
     # the Mission's taint, spreading from San Clavo
     over.append(f'<circle cx="430" cy="452" r="66" fill="{BLOOD}" opacity="0.08"/>')
 
-    # the ring of nails — a dotted blood ring through the bound wells
+    # the ring of nails: a dotted blood ring through the bound wells
     bound = [(wx, wy) for wx, wy, _n, s in WELLS if s != "broken"]
     ring = "M" + " L".join(f"{x} {y}" for x, y in sorted(bound, key=lambda p: (
         (p[0]-480)**2 + (p[1]-320)**2)))
