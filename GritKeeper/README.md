@@ -37,7 +37,7 @@ your Documents, a USB stick). GritKeeper saves the table beside its own exe (`se
 
 **What it is not.** GritKeeper is a Windows desktop program and only that. It does not run
 on macOS, Linux, a phone or a tablet; there is no browser version; and it does not connect
-players over a network: one machine at the table, usually the Keeper's. (The three books
+players over a network: one machine at the table, usually the Keeper's. (The four books
 are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
 the game.)
 
@@ -259,14 +259,14 @@ the Left/Right arrow keys, every leaf formatted as proper tables: the four degre
 the DC ladder · a turn in the Iron Code · Blood/Dying/Grievous Wounds with the Lasting
 Injury table · the complete **Conditions table from Appendix B** · the Nerve/Dread
 ladder and every way to recover Nerve · the Mark's six steps and the Taint clock (DCs
-13/16/20) · the eight Signs with costs and the Sign DC formula, plus Grit's five spends
-· the Miracles of the five Callings of Faith · the Threat-by-Tier benchmarks, the
-encounter budget, and the **safe-table rule with the sign-and-spoor table** (Survival DC
-and Dread Check by the thing's Tier) · the book's **arms tables** (guns and steel,
-damage/cost/traits) · the **Goods & Provisions printed prices** · skills, saves, and
-abilities · and running a scene in town. The arms, goods, signs, and skills leaves render
-live from `Data/chargen.json`, and the safe-table numbers from `Rules.SpoorRow`, so they
-can never drift from the books.
+13/16/20) · the fifty-six Signs in three lists with costs and the Sign DC formula, plus
+Grit's five spends · the Miracles of the five Callings of Faith · the Threat-by-Tier
+benchmarks, the encounter budget, and the **safe-table rule with the sign-and-spoor
+table** (Survival DC and Dread Check by the thing's Tier) · the book's **arms tables**
+(guns and steel, damage/cost/traits) · the **Goods & Provisions printed prices** ·
+skills, saves, and abilities · and running a scene in town. The arms, goods, signs, and
+skills leaves render live from `Data/chargen.json`, and the safe-table numbers from
+`Rules.SpoorRow`, so they can never drift from the books.
 
 **Session**: the Keeper's ledger (free-form notes, with a **Stamp the date** button
 for session headers; *(v1.30)* the app writes into it too: every Lasting Injury and
