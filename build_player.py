@@ -3381,7 +3381,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>Concealable.</strong> +2 to hide it on your person, and it may be drawn as part of the Strike rather than a separate Beat.</li>
     <li><strong>Fatal dX.</strong> On a critical hit, this weapon's damage dice all become dX, and you add one extra die of that size. A gun is at its most honest in the half-second it kills you.</li>
     <li><strong>Kickback.</strong> The recoil is brutal. Take –2 to the Strike unless your STR is 12 or higher, or you spend a Beat to brace (Aim). Firing a Kickback weapon without bracing leaves you Off-Guard until your next turn.</li>
-    <li><strong>Misfire X.</strong> On a critical failure to hit (or any natural 1), the weapon jams. Clearing it costs an Interact action and a Repair check (DC 10 + X). In wet weather, increase X by 1 for black-powder arms.</li>
+    <li><strong>Misfire X.</strong> On a critical failure to hit, and on any natural 1 whether or not it would have hit, the weapon jams. Clearing it costs an Interact action and a Repair check (DC 10 + X). In wet weather, increase X by 1 for black-powder arms.</li>
     <li><strong>Reach.</strong> The weapon strikes at a step's distance: a lance, spear, pike, or fixed bayonet. It can hit a foe (or a rider) one rank back, and lets a footman set against a charge (see <em>Fighting from the Saddle</em>).</li>
     <li><strong>Repeating.</strong> Holds many rounds. Loading a single round is one Interact; a full reload follows the rule below.</li>
     <li><strong>Scatter X.</strong> On a hit, deal 1d6 splash damage to every creature within X feet of the target. On a miss within the first range increment, the target still takes the splash.</li>
@@ -3918,7 +3918,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td><strong>Critical Success</strong></td><td>Beat the number by 10 or more, <em>or</em> roll a natural 20 that also hits. Deal double damage and apply the weapon's <strong>Fatal</strong> die. A wound to be buried with.</td></tr>
       <tr><td><strong>Success</strong></td><td>Meet or beat the number. Roll damage and subtract it from their Blood.</td></tr>
       <tr><td><strong>Failure</strong></td><td>Fall short. No harm done, this time.</td></tr>
-      <tr><td><strong>Critical Failure</strong></td><td>Miss by 10 or more, <em>or</em> roll a natural 1. The shot is wasted, and a weapon with the <strong>Misfire</strong> trait jams (see Chapter X).</td></tr>
+      <tr><td><strong>Critical Failure</strong></td><td>Miss by 10 or more, <em>or</em> roll a natural 1 that misses anyway. The shot is wasted, and a weapon with the <strong>Misfire</strong> trait jams (see Chapter X).</td></tr>
     </tbody>
   </table>
   <p>This is the spine of the Iron Code: the same roll that decides whether you hit also decides whether you hit
@@ -4054,7 +4054,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <h4>Keeping the Saddle</h4>
   <p>You may be thrown when the horse takes a critical hit, when it bolts or rears, or when you yourself take a critical melee
-  blow. Make a <strong>Ride</strong> save (DC 15, or the attacker's result); on a failure you are unhorsed: fall prone, take
+  blow. Make a <strong>Ride</strong> check (DC 15, or the attacker's result); on a failure you are unhorsed: fall prone, take
   <strong>1d6</strong> damage, and land a few feet from the animal. Mounting or vaulting up on purpose costs a Beat (a Drifter
   or a Veteran may do it free). A rider who has lost his horse is, all at once, just a person standing in the open.</p>
 
@@ -4141,9 +4141,9 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>A truth that unmakes your world</td><td class="c">25</td><td>1d10 + a lasting Affliction</td></tr>
     </tbody>
   </table>
-  <p class="note">A <strong>critical success</strong> on a Dread Check (beating the DC by 10, or a natural 20) costs no Nerve
+  <p class="note">A <strong>critical success</strong> on a Dread Check (beating the DC by 10, or a natural 20 that already succeeds) costs no Nerve
   and steadies you against the same horror for the rest of the scene. A <strong>critical failure</strong> (missing by 10,
-  or a natural 1) loses the listed Nerve <em>and</em> imposes Frightened 1 at once.</p>
+  or a natural 1 that already fails) loses the listed Nerve <em>and</em> imposes Frightened 1 at once.</p>
 
   <h2 id="ix-breaking">Breaking</h2>
   <p>Lose Nerve and you fray. At low Nerve the Keeper may impose the <strong>Frightened</strong> condition, a status penalty to all your rolls equal to its value, 
@@ -5032,7 +5032,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <div class="divider"></div>
   <div class="box gold">
     <h4>The Core Roll</h4>
-    <p>d20 + ability mod + proficiency ≥ DC. Beat by 10 or a natural 20 is a critical; miss by 10 or a natural 1 is a critical failure.</p>
+    <p>d20 + ability mod + proficiency ≥ DC. Beat by 10, or a natural 20 that already succeeds, is a critical; miss by 10, or a natural 1 that already fails, is a critical failure.</p>
   </div>
   <p><strong>Difficulty.</strong> Trivial 10 · Easy 13 · Average 15 · Hard 18 · Very Hard 20 · Punishing 25 · Beyond 30.</p>
   <p><strong>Abilities.</strong> STR, DEX, CON, Wits, Resolve, Presence. Modifier = (score – 10) ÷ 2, rounded down.</p>
