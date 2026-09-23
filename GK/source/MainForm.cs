@@ -1792,7 +1792,7 @@ public partial class MainForm : Sheet
     /// A Font holds a native GDI handle, and two places were minting one per event on the hottest
     /// paths in the app: the Dice tab's result card made a fresh headline font on EVERY roll, and
     /// the Bestiary's creature renderer made about thirty per creature, so arrowing down the list
-    /// of 150 spends four and a half thousand handles in a few seconds. Nothing disposed them.
+    /// of 182 spends four and a half thousand handles in a few seconds. Nothing disposed them.
     /// The finalizer does get there eventually, which is why this never showed up in an hour of
     /// testing and is exactly the shape of thing that makes an app go strange at the end of a long
     /// evening, or after a season of them.

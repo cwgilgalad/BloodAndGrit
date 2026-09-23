@@ -129,7 +129,7 @@ near-black and bold, a plain success is verdigris green, a plain failure is rust
 any other roll gets a neutral steel-blue tag, so a result reads at a glance instead of
 by squinting at the words.
 
-**Bestiary**: all **175 creatures**, searchable by name or Found-text, filterable by
+**Bestiary**: all **182 creatures**, searchable by name or Found-text, filterable by
 tier and chapter, with the full book entry displayed. **Double-click any creature to pop
 it out into its own window**: resize it, maximize it, and step the text size up and
 down (A− / A＋); open as many creatures side by side as the fight needs. One click sends

@@ -35,6 +35,10 @@ What it holds together:
   8. PERDITION BASIN: the county every book uses as its example must be one county. Retired
      facts (a silver camp, a mission "a ruin fifty years", "Padre Ildefonso") may not come back,
      and the list of what a rider knows reads the same in the Player's Book and all three modules.
+  9. HOW MANY CREATURES THERE ARE: the one number that is typed into more places than any
+     other. `creatures.json` is the count; seventeen copies of it sit in prose across eight
+     files, including the README that ships inside the zip. Fourteen of them were two
+     Bestiary expansions out of date on 2026-09-23 and every check in this repo passed.
 
 Usage:
     python audits/audit_consistency.py            # every check
@@ -782,6 +786,55 @@ def check_front_page(chargen):
            + ", ".join(f"{v} {k}" for k, v in truth.items()))
 
 
+# How many creatures there are is a fact with one home, `GK/rules/Data/creatures.json`, and
+# check_creatures_current above proves that file is still the built Bestiary. Everywhere else the
+# number is TYPED, into prose nothing compiles and nothing counts. On 2026-09-23 a read of the
+# books for the playtest found fourteen such copies, every one of them still saying 175 or 150,
+# two Bestiary expansions out of date. One was `GK/source/README.md`, which is mirrored into the
+# zip, so every download told a Keeper the app held 175 creatures while the exe beside it held
+# 182. The app's own standing rule is that a count appearing in prose must be derived; prose in a
+# Markdown file and a C# comment cannot derive anything, so it is held to the count instead.
+COUNT_CLAIMS = [
+    ("CLAUDE.md",             r"All (\d+) are always indexed"),
+    ("GK/CLAUDE.md",          r"all \*\*(\d+) creatures\*\*"),
+    ("GK/CLAUDE.md",          r"All (\d+) creatures, extracted"),
+    ("GK/CLAUDE.md",          r"the Bestiary's (\d+) entries are horrors"),
+    ("GK/CLAUDE.md",          r"\((\d+) creatures parse"),
+    ("GK/CLAUDE.md",          r"across all (\d+) creatures"),
+    ("GK/CLAUDE.md",          r"all (\d+) entries are written"),
+    ("GK/CLAUDE.md",          r"the Bestiary's (\d+) spends"),
+    ("GK/rules/Core.cs",      r"the Bestiary's (\d+) entries are horrors"),
+    ("GK/rules/Core.cs",      r"Every one of the (\d+)"),
+    ("GK/rules/Core.cs",      r"(\d+) entries is written"),
+    ("GK/rules/Core.cs",      r"the (\d+)\. So unless"),
+    ("GK/source/MainForm.cs", r"of (\d+) spends four and a half thousand"),
+    ("GK/source/README.md",   r"all \*\*(\d+) creatures\*\*"),
+    ("GritKeeper/README.md",  r"all \*\*(\d+) creatures\*\*"),
+    ("audits/README.md",      r"against the (\d+) creatures"),
+    ("audits/audit_ui.py",    r"# (\d+) creatures spent four"),
+]
+
+
+def check_creature_count(creatures):
+    print("\nHow many creatures there are, in every place that says so")
+    truth = len(creatures)
+    bad = 0
+    for name, pattern in COUNT_CLAIMS:
+        CHECKS[0] += 1
+        found = re.findall(pattern, (ROOT / name).read_text(encoding="utf-8"))
+        if len(found) != 1:
+            bad += 1
+            fail(f"{name} matches {pattern!r} {len(found)} times, not once, so this check is "
+                 f"guarding nothing or guarding two things. Repoint it or take it out.")
+            continue
+        if int(found[0]) != truth:
+            bad += 1
+            fail(f"{name} says {found[0]} creatures and there are {truth}: {pattern!r}")
+    if not bad:
+        ok(f"{len(COUNT_CLAIMS)} typed copies of the creature count across "
+           f"{len({n for n, _ in COUNT_CLAIMS})} files, all reading {truth}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -812,6 +865,7 @@ def main():
     check_app_book_parity(dig, core, (ROOT / "GK/rules/CharGen.cs").read_text(encoding="utf-8"))
     check_front_page(json.loads(
         (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
+    check_creature_count(creatures)
 
     print()
     if FAILURES:

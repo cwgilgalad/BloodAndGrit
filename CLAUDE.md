@@ -658,7 +658,7 @@ blizzard). Keep that rule for any new natural animals or ordinary men.
   section's prefix (before the first creature), its suffix (after the last), or *inside* a
   creature block.
 - The **"The Roll, by Tier" appendix is generated** from the actual stat blocks by
-  `gen_appendix()`, so it can't drift. All 150 are always indexed; the dual flock/prophet
+  `gen_appendix()`, so it can't drift. All 182 are always indexed; the dual flock/prophet
   entry is listed in both its tiers. (The Grounds and Building-Your-Own-Dead appendices sit
   *outside* the sorter/generator scope, so they're safe to hand-author.)
 - **Ordinary beasts** (Section VIII) cost **no Nerve and never move the Mark**. Dread line
