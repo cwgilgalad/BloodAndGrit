@@ -100,8 +100,20 @@ Desktop\Git repos.)
   checked now: `audit_consistency.check_front_page` reads every number README spells out in words
   and compares it against the file that carries it, the Callings and Origins off `chargen.json` and
   the book and module counts off the two bundle manifests in `tools/make_bundles.py`, read as text
-  because importing that file builds both zips. Seven claims, proved by sabotage on three of them
-  at once and each named back by its own sentence.
+  because importing that file builds both zips.
+
+  Then the same question went to the README **inside `GritKeeper.zip`**, which is the front page
+  for anybody who downloads the app instead of browsing the repo, and it had two of its own. It
+  said **three books**, and it said **the eight Signs**, a figure from v1.6.0 against the
+  fifty-six the Reference leaf has been rendering live out of `chargen.json` for months. That page
+  is a mirror, `GK/source/README.md` copied over `GritKeeper/README.md`, so the check now reads
+  five claims off it (books, tabs, leaves, the Signs and their lists, skills) and then asserts the
+  two copies are the same bytes. The mirror is the copy that ships and it can go stale on its own,
+  which is the 2026-08-08 fault exactly: that file sat at v1.10.1 while the app was on v1.33.0
+  because nothing wrote it and nothing read it.
+
+  Twelve claims across the two pages. Proved by sabotage on three at once, each named back by its
+  own sentence, and then on the mirror by restoring only the source.
 
 - **The voice pass over everything that is not a book: the docs, the app's own words, and the
   scripts that print. GritKeeper v1.58.0 (2026-09-22).**

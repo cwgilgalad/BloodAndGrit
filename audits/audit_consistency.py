@@ -683,30 +683,53 @@ def check_app_book_parity(dig, core, chargen_src):
 # below. None of it was wrong when it was written and all of it was wrong by the time a stranger
 # read it, which is the whole argument for counting rather than typing. README's version claims
 # have been generated since 2026-08-08; its counts were the half nobody had automated.
-WORDS = {w: i for i, w in enumerate(
-    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
-    "fifteen sixteen seventeen eighteen nineteen twenty".split())}
+# Number words, including the compounds, so a claim like "fifty-six Signs" can be read back.
+_ONES = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+         "fifteen sixteen seventeen eighteen nineteen").split()
+_TENS = {"twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+         "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90}
+WORDS = {w: i for i, w in enumerate(_ONES)}
+WORDS.update(_TENS)
+WORDS.update({f"{t}-{o}": tv + ov
+              for t, tv in _TENS.items()
+              for ov, o in enumerate(_ONES) if 0 < ov < 10})
 
+# Every number a front page spells out in words, and the key in `truth` that settles it. The root
+# README is what a stranger meets on GitHub; GK/source/README.md is what they meet inside the zip,
+# and it is mirrored to GritKeeper/README.md, which is the copy that actually ships.
 FRONT_PAGE = [
     (r"(\w+) Callings, (\w+) Origins",                        ("callings", "origins")),
     (r"checks its (\w+)\s+Calling tables",                    ("callings",)),
     (r"off (\w+) books, (\w+) ready-to-run",                  ("books", "modules")),
     (r"\(The (\w+) books are PDFs",                           ("books",)),
-    (r"(\w+) companion volumes",                              ("books",)),
+    (r"(\w+) companion volumes",                               ("books",)),
     (r"indexes for all (\w+) books and the (\w+) modules",    ("books", "modules")),
     (r"prints all (\w+) documents \((\w+) books, (\w+) modules\)",
      ("documents", "books", "modules")),
 ]
 
+APP_README = [
+    (r"\(The (\w+) books\s+are PDFs",                        ("books",)),
+    (r"## The (\w+) tabs",                                   ("tabs",)),
+    (r"Keeper's screen in (\w+) leaves",                      ("leaves",)),
+    (r"the ([\w-]+) Signs in (\w+) lists",                   ("signs", "signlists")),
+    (r"(\w+) skills with proficiency ticks",                  ("skills",)),
+]
+
+PAGES = [("README.md", FRONT_PAGE), ("GK/source/README.md", APP_README)]
+
 
 def check_front_page(chargen):
-    print("\nThe front page: every number README spells out, against the file that carries it")
+    print("\nThe front pages: every number they spell out, against the file that carries it")
     # The two bundle manifests, read as text rather than imported: make_bundles.py builds both
     # zips at import time, and an audit that writes a deliverable is not an audit.
     manifest = (ROOT / "tools/make_bundles.py").read_text(encoding="utf-8")
     truth = {
         "callings": len(chargen["callings"]),
         "origins": len(chargen["origins"]),
+        "skills": len(chargen["skills"]),
+        "signs": len(chargen["signs"]),
+        "signlists": len({s["list"] for s in chargen["signs"]}),
     }
     for key, var in (("books", "BOOKS"), ("modules", "MODULES")):
         block = re.search(rf"^{var} = {{(.*?)^}}", manifest, re.S | re.M)
@@ -715,24 +738,47 @@ def check_front_page(chargen):
             return
         truth[key] = len(re.findall(r'"[^"]+\.html":', block.group(1)))
     truth["documents"] = truth["books"] + truth["modules"]
-    readme = (ROOT / "README.md").read_bytes().decode("utf-8")
+
+    # The tabs are counted off the constructor calls that name one. MainForm.LazyTab builds its
+    # shell with `new TabPage(title)`, an unquoted argument, so the helper does not count itself.
+    tabs_src = "".join((ROOT / "GK/source" / f).read_text(encoding="utf-8")
+                       for f in ("MainForm.cs", "Tabs.cs", "TabsChargen.cs", "TabsMap.cs"))
+    truth["tabs"] = len(re.findall(r'new TabPage\("', tabs_src))
+    leaves = re.search(r"RefLeafTitles\s*=\s*\{(.*?)\};",
+                       (ROOT / "GK/source/Tabs.cs").read_text(encoding="utf-8"), re.S)
+    if leaves is None:
+        fail("GK/source/Tabs.cs has no RefLeafTitles array to count")
+        return
+    truth["leaves"] = leaves.group(1).count('"') // 2
+
     bad = 0
-    for pattern, names in FRONT_PAGE:
-        CHECKS[0] += 1
-        m = re.search(pattern, readme)
-        if not m:
-            bad += 1
-            fail(f"README no longer says {pattern!r}, so this check is guarding nothing. "
-                 f"The claim moved or went: repoint it or take it out.")
-            continue
-        for said, key in zip(m.groups(), names):
+    for name, claims in PAGES:
+        page = (ROOT / name).read_bytes().decode("utf-8")
+        for pattern, names in claims:
             CHECKS[0] += 1
-            if WORDS.get(said.lower()) != truth[key]:
+            m = re.search(pattern, page)
+            if not m:
                 bad += 1
-                fail(f'README says "{said} {key}" and there are {truth[key]}: '
-                     f'"{m.group(0)[:60]}"')
+                fail(f"{name} no longer says {pattern!r}, so this check is guarding nothing. "
+                     f"The claim moved or went: repoint it or take it out.")
+                continue
+            for said, key in zip(m.groups(), names):
+                CHECKS[0] += 1
+                if WORDS.get(said.lower()) != truth[key]:
+                    bad += 1
+                    fail(f'{name} says "{said} {key}" and there are {truth[key]}: '
+                         f'"{" ".join(m.group(0).split())[:60]}"')
+
+    # The delivered copy is the one inside GritKeeper.zip, and it is a mirror, not a source.
+    CHECKS[0] += 1
+    if (ROOT / "GK/source/README.md").read_bytes() != (ROOT / "GritKeeper/README.md").read_bytes():
+        bad += 1
+        fail("GK/source/README.md and GritKeeper/README.md have drifted. The second is the copy "
+             "that ships, so a stranger downloading the app reads the stale one. Re-mirror it.")
+
     if not bad:
-        ok(f"{len(FRONT_PAGE)} counted claim(s) on the front page: "
+        ok(f"{sum(len(c) for _, c in PAGES)} counted claim(s) across "
+           f"{len(PAGES)} front page(s), and the app README mirrors: "
            + ", ".join(f"{v} {k}" for k, v in truth.items()))
 
 
