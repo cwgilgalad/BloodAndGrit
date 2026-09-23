@@ -133,12 +133,19 @@ it matters at a table, not a diff summary.
 ## 7. Tag, push the tag, cut the one Release
 
 ```bash
-git tag <tag>
+git tag -a <tag> -m "<one line: what this version of this component is>"
 git push origin <tag>
 gh release create <tag>   GritKeeper.zip BloodAndGrit-Books.zip BloodAndGrit-Modules.zip   Blood-and-Grit-Players-Book.pdf Blood-and-Grit-Keepers-Book.pdf Blood-and-Grit-Bestiary.pdf   Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf   Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf   Blood-and-Grit-Module-III-What-the-Water-Answers.pdf   Blood-and-Grit-Book-of-Legends.pdf   --title "Blood & Grit — GritKeeper vX.Y.Z · Books vA.B · Modules vC.D"   --notes-file RELEASE_NOTES_<tag>.md
 ```
 
 Tag the component that actually moved: `gritkeeper-vX.Y.Z` · `books-vX.Y` · `modules-vX.Y`.
+
+**Annotate every tag, `-a -m`, and say what that component is at that version.** Only one of the
+three tags gets a Release page, so `RELEASES.md` reads the other two off the tag itself; a
+lightweight tag has no message and the row falls back to the tagged commit's subject, which is
+whatever session was merged last and usually has nothing to do with the books. Both bundle rows
+for 2026-09-22 read that way. `tools/release_index.py` says it in its own source: tag with `-m`
+and it speaks.
 
 **Attach all ten assets every time, including the parts that did not change.** GitHub carries one
 Release page and it is the only page, so anything left off it is a thing a stranger cannot
