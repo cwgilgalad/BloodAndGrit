@@ -12,6 +12,8 @@ Reads GK/source/*.cs and checks every button the app builds through the shared h
   * a multi-line status label is measured rather than given a constant Height (the Encounter
     verdict carried Height = 26 and silently rendered NOTHING of its second line for three
     releases; UI Automation could read the string, so every check that could see it passed),
+  * a font drawn with on a path that runs again comes off the shared shelf rather than being
+    minted fresh (a Font is a native GDI handle and nothing in WinForms disposes one for you),
   * a destructive button is recoverable: it either confirms first or edits an undo-backed list,
   * and the reverse, a button that empties a list the Keeper built by hand wears the warning
     face rather than the ordinary one. Six did not, across four tabs, until a critic's pass
@@ -328,6 +330,46 @@ def silent_refusals(handler, controls, alltext):
     return out
 
 
+# ---- a font on a repeating path comes off the shelf (2026-09-23) ----
+# A Font is a native GDI handle. WinForms never disposes one for you: assigning a font to a
+# control does not transfer ownership of it, and disposing the control does not take the font
+# with it. So a font minted inside a method the Keeper can make run again is a handle leaked
+# per run, and the leak is invisible for an hour and then is not.
+#
+# MainForm.Face is the shelf, and its own docstring already carried the arithmetic: a table of
+# 150 creatures spent four and a half thousand handles in a few seconds, and the finalizer gets
+# there eventually, which is why it never showed up in testing and is exactly the shape of thing
+# that makes an app go strange late in a long evening. Nineteen sites were still minting their
+# own on 2026-09-23, the worst of them the Calling strip: every arrow-key press down the
+# initiative order rebuilds it, two fonts per feature card and per tally card.
+#
+# The rule is narrow on purpose. A font built once while a tab is being assembled is a fixed
+# cost paid once and is none of this check's business. `using var` is left alone too: disposing
+# what you make is the other correct answer, and a cached font handed to a `using` is a bug.
+REBUILT = re.compile(
+    r"^\s*(?:\w[\w<>.\[\],?]*\s+)*"
+    r"(Refresh\w*|Rebuild\w*|Draw\w*|Paint\w*|Render\w*|Show\w+|On[A-Z]\w*|\w*Card|\w*Row|\w*Cell)"
+    r"\s*\([^;=]*\)\s*$", re.M)
+
+
+def repeating_paths(text):
+    """Yield (method, [(line, source)]) for every method the app can run more than once."""
+    for m in REBUILT.finditer(text):
+        name = m.group(1)
+        tail = text[m.end():]
+        open_at = tail.find("{")
+        if open_at == -1 or ";" in tail[:open_at] or "=>" in tail[:open_at]:
+            continue                      # an abstract, expression-bodied or forward declaration
+        i, depth = m.end() + open_at + 1, 1
+        while i < len(text) and depth:
+            depth += (text[i] == "{") - (text[i] == "}")
+            i += 1
+        first = text.count("\n", 0, m.start()) + 1
+        yield name, [(first + off, row.strip())
+                     for off, row in enumerate(text[m.end():i].split("\n"))
+                     if "new Font(" in row and "using" not in row]
+
+
 def main():
     quiet = "--quiet" in sys.argv
     if not SRC.is_dir():
@@ -353,9 +395,15 @@ def main():
     controls = control_fields(alltext)
     quietcount = 0
     rtbcount = 0
+    fontcount = 0
 
     for name, text in sources.items():
         path = SRC / name
+        for owner, hits in repeating_paths(text):
+            fontcount += 1
+            for line, src in hits:
+                findings.append(f"{name}:{line}  {owner} mints a font every time it runs: "
+                                f"{src[:60]}  (Face(...) is the shelf; this is a GDI handle per run)")
         for helper, (minargs, hidx, tidx, widx) in HELPERS.items():
             for line, args in calls(text, helper):
                 counts[path.name] = counts.get(path.name, 0) + 1
@@ -569,6 +617,7 @@ def main():
         print(f"menu access keys checked for collisions:  {mnemcount}")
         print(f"keyboard bindings checked for collisions: {keycount}")
         print(f"reading surfaces checked for a right-click: {rtbcount}")
+        print(f"paths that run again, checked for minted fonts: {fontcount}")
         print()
 
     if findings:
@@ -578,7 +627,8 @@ def main():
         return 1
     print("every button has a handler, a tooltip and a hittable target; every destructive button\n"
           "is recoverable and looks it; every modal dialog answers Esc; no two menu items share an access key;\n"
-          "every keyboard shortcut is bound once and printed from the same table; and every reading surface answers a right-click.")
+          "every keyboard shortcut is bound once and printed from the same table; every reading surface answers a right-click;\n"
+          "and no font is minted on a path that runs again.")
     return 0
 
 

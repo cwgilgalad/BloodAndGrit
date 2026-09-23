@@ -8,6 +8,49 @@ Desktop\Git repos.)
 
 ---
 
+- **GritKeeper v1.59.0: the same helper written out four times, and five faults a screenshot found
+  that no test could (2026-09-23).**
+
+  A read of the whole app with nothing in particular to fix, and then a look at it running, one tab
+  at a time.
+
+  **The same six lines, four times over.** Every pane that lays out prose carried its own local
+  `Para`, and all four copies were identical to the byte. They are one line apiece now against a
+  single `MainForm.Para`. `CharGen` grew a `Seat` for work three call sites had been doing by hand,
+  and the smoke rig took forty-one new assertions to hold it. Twenty fonts came off the shelf
+  instead of being minted where they were used, which takes `new Font(` in the app from 84 sites to
+  64, and `audit_ui.py` grew a fifth rule so the next one is caught before a screenshot has to find
+  it.
+
+  **Then the screenshots.** Ten tabs, captured a window at a time at the size this machine actually
+  runs, and five things came back that no suite could have seen.
+
+  The ledger link on a *selected* row was Slate on the selection's gold, which measures 1.71:1. On
+  the one row a Keeper is actually working, the thing had all but gone off the page. The grid had
+  the right answer written twenty lines above it already, white at 4.34:1, and it follows that now.
+  Unselected the link stays Slate at 6.53:1, which was never the complaint.
+
+  "Read the Calling" was 24px tall where every other text button in the app is 32, and had been
+  since the day it was written: the descenders in "Calling" were cut off at the baseline. The
+  constant is gone, and the strip it sits on was already sized to its contents, so it takes the
+  eight pixels without anything else moving.
+
+  `QuietBtn` had dropped its border along with its fill, and on the Bestiary that left "Reset"
+  standing beside a count label in the same Slate, at the same size, in the same face. It keeps the
+  hairline now, and carries its quietness in the ink alone.
+
+  The Dice card opened on a 30pt bold middle dot where a result goes, which looks like a rendering
+  fault more than a placeholder. It says "Nothing rolled yet", in the Slate the app uses for
+  everything it is not raising its voice about.
+
+  The Generators output was the widest blank surface in the app and the only one that never said
+  what it was waiting for, while Dice, Encounter, New Soul and Session all do. It has the Encounter
+  tab's empty state now, printed in the box's own colour so it sits down on the page rather than
+  hanging over it.
+
+  16,396 smoke assertions and 44 self-test checks, green before the refactor and green after the
+  fixes, and every one of the five proved again by rendering.
+
 - **The design pass: a colour apiece, contrast a reader can feel, and the page laid out the way a
   book is. Books v2.53 / v2.37 / v2.24 / v1.2, modules v1.9 / v1.11 / v1.11 (2026-09-22).**
 

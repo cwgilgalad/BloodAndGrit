@@ -74,22 +74,8 @@ public sealed class LedgerView : Panel
     // two numbers in a column line up (user-reported, 2026-07-27). GDI+ has no way to ask a font
     // for its lining-figure set, so the figures are set in a different face: the first installed
     // serif that has lining figures by default. Prose stays Georgia, where text figures belong.
-    static readonly string NumFace = FirstInstalled("Cambria", "Palatino Linotype", "Times New Roman");
-    static string FirstInstalled(params string[] names)
-    {
-        foreach (var n in names)
-        {
-            try
-            {
-                using var probe = new Font(n, 10f);
-                // GDI+ silently substitutes Microsoft Sans Serif for a missing family, and the
-                // substitute reports its own name, so a matching Name means it really is installed.
-                if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
-            }
-            catch { /* a broken font file shouldn't cost us the sheet */ }
-        }
-        return "Georgia";
-    }
+    static readonly string NumFace =
+        MainForm.FirstInstalled("Cambria", "Palatino Linotype", "Times New Roman", "Georgia");
 
     // ---- fonts, minted per zoom level (cached so paint never allocates) ----
     // The whole set is remade whenever the zoom changes, so the previous set has to go with it.

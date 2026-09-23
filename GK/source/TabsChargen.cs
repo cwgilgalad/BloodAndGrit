@@ -181,28 +181,17 @@ public partial class MainForm
         SeatSoul(lastSoul);
     }
 
-    /// <summary>Seat a finished sheet in the posse, with everything the grid needs derived from it.
+    /// <summary>Seat a finished sheet in the posse and say so.
     ///
-    /// <para>Split out of <see cref="SoulToPosse"/> on 2026-08-28 for G7. The Posse tab can now
-    /// build, roll and import a soul itself, and each of those has to land the same way this one
-    /// does: the Nerve recalc a Stone Nerve soul needs, the faith or sign pool opening full, and
-    /// the Notes line carrying Origin, subpath and armour. Three copies of that would have drifted
-    /// on the first rule change.</para></summary>
+    /// <para>Split out of <see cref="SoulToPosse"/> on 2026-08-28 for G7, because the Posse tab
+    /// can build, roll and import a soul and each of those has to land the same way. The
+    /// conversion itself moved to <see cref="CharGen.Seat"/> on 2026-09-23, after the audit found
+    /// the fourth copy this method was written to prevent sitting in <c>SeedDemo</c>. What is
+    /// left here is the part that is genuinely the window's: the bound list, and the log line a
+    /// Keeper reads.</para></summary>
     internal PartyMember SeatSoul(CharacterSheet s)
     {
-        var p = new PartyMember
-        {
-            Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
-            BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
-            Fort = s.Fort, Ref = s.Ref, Will = s.Will,
-            RES = s.Scores["RES"],                       // drives the Nerve auto-recalc
-            Grit = s.Grit, Mark = s.Mark,
-            Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
-                             + (CharGen.ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
-            Sheet = s                                    // the full record rides along
-        };
-        if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
-        p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
+        var p = CharGen.Seat(s);
         party.Add(p);
         Log($"{s.Name} joins the posse.");
         return p;

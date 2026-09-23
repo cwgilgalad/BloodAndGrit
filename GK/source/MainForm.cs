@@ -1041,13 +1041,18 @@ public partial class MainForm : Sheet
     ///
     /// <para>It keeps the full 32px target and the tooltip, so nothing about it is less reachable
     /// than a normal button; only its ink is quieter. That distinction matters: quiet is a visual
-    /// weight, and a control a hand cannot land on is a different problem entirely.</para></summary>
+    /// weight, and a control a hand cannot land on is a different problem entirely.</para>
+    ///
+    /// <para>It keeps its BORDER for the same reason. Dropping it as well took quiet past the point
+    /// where the thing still looks pressable: borderless, transparent and in Slate, "Reset" on
+    /// the Bestiary was the same ink, size and face as the count label standing next to it, which is
+    /// a label the eye has no reason to try. The hairline in Rule is the cheapest mark that says
+    /// control, lighter than the filled face of a working button, and enough.</para></summary>
     static Button QuietBtn(string text, EventHandler onClick, int w = 120, string tip = null)
     {
         var b = Btn(text, onClick, w, tip);
         b.BackColor = Color.Transparent;
         b.ForeColor = Slate;
-        b.FlatAppearance.BorderSize = 0;
         b.FlatAppearance.MouseOverBackColor = BtnHover;
         return b;
     }
@@ -1805,6 +1810,51 @@ public partial class MainForm : Sheet
         return f;
     }
 
+    /// <summary>The first of these families actually installed, or the last one named.
+    ///
+    /// <para>GDI+ silently substitutes Microsoft Sans Serif for a family the machine does not
+    /// have, and the substitute reports its own name rather than the one it was asked for, so
+    /// comparing the two is the only way to catch it. A caller names its whole preference order
+    /// and the last name is the one it will settle for, which is why there is no fallback buried
+    /// in here: two copies of this probe existed until 2026-09-23 and the only thing they
+    /// disagreed on was that hidden last resort.</para>
+    ///
+    /// <para>The probe is deliberately thrown away. It is asked one question at one size and the
+    /// answer is a string; what gets drawn with comes out of <see cref="Face"/> afterwards.</para>
+    /// </summary>
+    internal static string FirstInstalled(params string[] names)
+    {
+        foreach (var n in names)
+        {
+            try
+            {
+                using var probe = new Font(n, 10f);
+                if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
+            }
+            catch { /* a broken font file shouldn't cost us the page it was going to sit on */ }
+        }
+        return names[^1];
+    }
+
+    /// <summary>A block of prose in a dialog, sized to the words in it.
+    ///
+    /// <para>The app's standard for a multi-line label, and the reason it is a standard is in
+    /// <c>audit_ui.py</c>: the Encounter verdict carried a constant <c>Height = 26</c> and
+    /// rendered nothing at all of its second line for three releases, while every automated check
+    /// passed because UI Automation could still read the whole string. Measuring is what makes a
+    /// label immune to a font, a DPI or a longer sentence.</para>
+    ///
+    /// <para>Four dialogs wrote this out for themselves until 2026-09-23. Each keeps a one-line
+    /// local binding its own left margin and column width, so no call site changed; what is
+    /// written once now is the measurement.</para></summary>
+    internal static Label Para(string text, int left, int top, int width, Font font, Color fore)
+        => new()
+        {
+            Left = left, Top = top, Width = width, Text = text, Font = font, ForeColor = fore,
+            Height = TextRenderer.MeasureText(text, font, new Size(width, 0),
+                                              TextFormatFlags.WordBreak).Height + 4
+        };
+
     /// <summary>The same shelf, one rung down, for the theme's own brushes and pens (v1.39.0).
     /// A brush is a native handle exactly as a font is, and the argument for keeping these is the
     /// argument above: the palette is fixed at compile time, the owner-drawn tab strip paints ten
@@ -2145,15 +2195,21 @@ public partial class MainForm : Sheet
     /// repeated once per row is a stack of grey blocks running down the edge of a warm page, and it
     /// takes more of the eye than the ledger it opens, while the same sheet is already one
     /// double-click away on the row itself. Flat, on the row's own ground, in Slate: still plainly a
-    /// button when looked at, and quiet when not.</summary>
+    /// button when looked at, and quiet when not.
+    ///
+    /// <para>Quiet is an argument about the row at REST, and the selected row was carrying it too
+    /// far: Slate on the selection's Gold measures 1.71:1, at which point the link has gone off the
+    /// page. Selection takes the grid's own answer, white at 4.34:1, so the one row a Keeper works is
+    /// one row this column can be read on. Unselected it stays Slate, 6.53:1 on the page.</para>
+    /// </summary>
     static DataGridViewButtonColumn QuietButtonCol(string text, int weight) => new()
     {
         HeaderText = "", Text = text, UseColumnTextForButtonValue = true, FillWeight = weight,
         Name = "ledgerBtn", ReadOnly = true, FlatStyle = FlatStyle.Flat,
         DefaultCellStyle = new DataGridViewCellStyle
         {
-            ForeColor = Slate, SelectionForeColor = Slate,
-            Font = new Font("Segoe UI", 8.5f), Padding = new Padding(2, 4, 2, 4)
+            ForeColor = Slate, SelectionForeColor = Color.White,
+            Font = Face("Segoe UI", 8.5f), Padding = new Padding(2, 4, 2, 4)
         }
     };
 
@@ -3202,7 +3258,7 @@ public partial class MainForm : Sheet
             using var p = new Pen(Color.FromArgb(196, 181, 148), 1f);
             e.Graphics.DrawLine(p, 0, resultCard.Height - 1, resultCard.Width, resultCard.Height - 1);
         };
-        ShowResult("·", "Roll something and the result lands here.", Ink);
+        ShowResult("Nothing rolled yet", "Roll something and the result lands here.", Slate);
 
         diceTray = new DiceTray { Dock = DockStyle.Top, Height = 84, BackColor = Color.FromArgb(243, 237, 221) };
         diceTray.Paint += PaintDiceTray;
@@ -3711,19 +3767,7 @@ public partial class MainForm : Sheet
         {
             var s = CharGen.Generate(1, rolled: false, fixedCalling: calling);
             s.Name = name; s.Gender = gender;
-            var p = new PartyMember
-            {
-                Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
-                BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
-                Fort = s.Fort, Ref = s.Ref, Will = s.Will,
-                RES = s.Scores["RES"], Grit = s.Grit, Mark = s.Mark,
-                Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
-                                 + (CharGen.ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
-                Sheet = s
-            };
-            if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
-            p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
-            party.Add(p);
+            party.Add(CharGen.Seat(s));   // the same seating every other route uses; no log, nobody is watching yet
         }
         Add("Mattie \"Six-Finger\" Lusk",    "Woman", "Gunhand");
         Add("Doc Delia Kemp",               "Woman", "Sawbones");

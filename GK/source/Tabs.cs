@@ -1,4 +1,4 @@
-namespace BloodAndGritKeeper;
+﻿namespace BloodAndGritKeeper;
 
 public enum TrkSort { InitDesc, InitAsc, NameAsc, NameDesc, BloodDesc, BloodAsc }
 
@@ -1724,7 +1724,7 @@ public partial class MainForm
             Location = new Point(Math.Max(0, Right - 540 - cascade), Top + 80 + cascade)
         };
         if (AppIcon != null) win.Icon = AppIcon;
-        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = Face("Segoe UI", 10f) };
         ReadingMenu(rtf, c.name);
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
@@ -2161,12 +2161,12 @@ public partial class MainForm
             Text = $"{soul.Name}, {soul.Calling}, level {soul.Level}"
                  + (string.IsNullOrEmpty(origin) ? "" : $", {origin}") + $". {what}",
             AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
-            Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
+            Font = Face("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
         callingPanel.Controls.Add(head);
         var read = Btn("Read the Calling ▸", (s, e) => ShowCallingCard(soul), 132,
             "Every feature this soul has, in the book's own words, including the ones nobody counts");
-        read.Height = 24; read.Margin = new Padding(6, 0, 0, 4);
+        read.Margin = new Padding(6, 0, 0, 4);
         callingPanel.Controls.Add(read);
         callingPanel.SetFlowBreak(read, true);
 
@@ -2225,7 +2225,7 @@ public partial class MainForm
         var name = new Label
         {
             Left = 8, Top = 5, Width = CW - 16, Height = 16, UseMnemonic = false, AutoEllipsis = true,
-            Text = sheet.Shape ?? "Returned", Font = new Font("Segoe UI", 9f, FontStyle.Bold),
+            Text = sheet.Shape ?? "Returned", Font = Face("Segoe UI", 9f, FontStyle.Bold),
             ForeColor = consumed ? Blood : Ink
         };
         var state = new Label
@@ -2233,7 +2233,7 @@ public partial class MainForm
             Left = 8, Top = 22, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
             Text = consumed ? "Consumed, the Keeper's now"
                             : $"Hunger {hunger} of {CharGen.HungerLost} · mends {CharGen.MendDice(soul.Level)}d6",
-            Font = new Font("Segoe UI", 8.25f), ForeColor = consumed ? Blood : Faint
+            Font = Face("Segoe UI", 8.25f), ForeColor = consumed ? Blood : Faint
         };
         card.Controls.Add(name); card.Controls.Add(state);
 
@@ -2336,7 +2336,7 @@ public partial class MainForm
         var name = new Label
         {
             Left = 8, Top = 5, Width = CW - 16, Height = 16, UseMnemonic = false, AutoEllipsis = true,
-            Text = soul.Sheet.Origin, Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = Ink
+            Text = soul.Sheet.Origin, Font = Face("Segoe UI", 9f, FontStyle.Bold), ForeColor = Ink
         };
         card.Controls.Add(name);
 
@@ -2346,7 +2346,7 @@ public partial class MainForm
             var chip = new Label
             {
                 Left = 8, Top = y, Width = CW - 16, AutoEllipsis = true, UseMnemonic = false,
-                Text = e.Says, Font = new Font("Segoe UI", 8.25f),
+                Text = e.Says, Font = Face("Segoe UI", 8.25f),
                 ForeColor = e.IsBoon ? Verdigris : Blood,
             };
             // Measured, not a flat 15. Tidy() cuts a clause at its first "and", which keeps most
@@ -2407,7 +2407,7 @@ public partial class MainForm
         {
             Left = 8, Top = 5, Width = CW - 74, Height = 17, UseMnemonic = false, AutoEllipsis = true,
             Text = CharGen.FamiliarFieldName(null, sheet.FamiliarKind),
-            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = dead ? Blood : Ink
+            Font = Face("Segoe UI", 9f, FontStyle.Bold), ForeColor = dead ? Blood : Ink
         };
         var state = new Label
         {
@@ -2415,7 +2415,7 @@ public partial class MainForm
             Text = dead ? "dead, Sickened until rebound"
                  : beast == null ? sheet.FamiliarBoon
                  : $"{beast.BloodCur} of {beast.BloodMax} Blood, on the field",
-            Font = new Font("Segoe UI", 8.25f), ForeColor = dead ? Blood : Faint
+            Font = Face("Segoe UI", 8.25f), ForeColor = dead ? Blood : Faint
         };
 
         // Prose comments stay above the call: audits/audit_ui.py reads an apostrophe between the
@@ -2462,7 +2462,7 @@ public partial class MainForm
         {
             Left = 8, Top = 5, Width = CW - 74, Height = 17, Text = CardName(row.Name),
             UseMnemonic = false,
-            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = spent ? Faint : Ink,
+            Font = Face("Segoe UI", 9f, FontStyle.Bold), ForeColor = spent ? Faint : Ink,
             AutoEllipsis = true
         };
         var left = new Label
@@ -2470,7 +2470,7 @@ public partial class MainForm
             Left = 8, Top = 23, Width = CW - 74, Height = 16,
             Text = row.Of == 1 ? (spent ? "spent: " + row.Limit.Says(soul.Sheet) : row.Limit.Says(soul.Sheet))
                                : $"{row.Left} of {row.Of} left, {row.Limit.Says(soul.Sheet)}",
-            Font = new Font("Segoe UI", 8.25f), ForeColor = spent ? Blood : Faint
+            Font = Face("Segoe UI", 8.25f), ForeColor = spent ? Blood : Faint
         };
 
         var use = Btn(spent ? "↺" : "Use", (s, e) =>
@@ -2528,14 +2528,14 @@ public partial class MainForm
             Text = row.Owed > row.Tally.At
                  ? $"{row.Tally.Noun}s: {row.Owed} owed"
                  : $"{row.Tally.Noun}s: {row.Owed} of {row.Tally.At}",
-            Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = due ? Blood : Ink,
+            Font = Face("Segoe UI", 9f, FontStyle.Bold), ForeColor = due ? Blood : Ink,
             AutoEllipsis = true
         };
         var count = new Label
         {
             Left = 8, Top = 23, Width = CW - 74, Height = 16,
             Text = due ? "it has come due" : $"the {FeatureTally.Ordinal(row.Tally.At)} comes due",
-            Font = new Font("Segoe UI", 8.25f), ForeColor = due ? Blood : Faint,
+            Font = Face("Segoe UI", 8.25f), ForeColor = due ? Blood : Faint,
             AutoEllipsis = true
         };
 
@@ -2603,7 +2603,7 @@ public partial class MainForm
         var rtf = new RichTextBox
         {
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
-            Font = new Font("Segoe UI", 10f), Text = CallingCardText(soul)
+            Font = Face("Segoe UI", 10f), Text = CallingCardText(soul)
         };
         ReadingMenu(rtf, $"{soul.Name}, {soul.Calling}");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
@@ -2686,7 +2686,7 @@ public partial class MainForm
         {
             Text = "SIGN ON THE TRAIL: too far over the posse to meet in the flesh. Read them; they take no turn.",
             AutoSize = false, Width = 980, Height = 18, ForeColor = Blood,
-            Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
+            Font = Face("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
         signPanel.Controls.Add(head);
         signPanel.SetFlowBreak(head, true);
@@ -2716,7 +2716,7 @@ public partial class MainForm
         var name = new Label
         {
             Left = 10, Top = 8, Width = CW - 150, Height = 20, Text = sign.Name, UseMnemonic = false,
-            Font = new Font("Segoe UI", 10f, FontStyle.Bold | FontStyle.Italic), ForeColor = Blood, AutoEllipsis = true
+            Font = Face("Segoe UI", 10f, FontStyle.Bold | FontStyle.Italic), ForeColor = Blood, AutoEllipsis = true
         };
 
         // The clock, drawn AND named. "2 of 4" is the part that makes the boxes mean something.
@@ -2795,12 +2795,7 @@ public partial class MainForm
             ShowIcon = false, BackColor = Paper
         };
         const int Pad = 16, CW = 460;
-        Label Para(string text, int top, Font font, Color fore)
-            => new()
-            {
-                Left = Pad, Top = top, Width = CW, Text = text, Font = font, ForeColor = fore,
-                Height = TextRenderer.MeasureText(text, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
-            };
+        Label Para(string text, int top, Font font, Color fore) => MainForm.Para(text, Pad, top, CW, font, fore);
         var (readDc, dreadDc, what) = Rules.SpoorFor(c.tier);
         int over = c.tier - Rules.PartyTier(partyLevel);
         var head = Para($"{c.name} is Tier {Rules.Roman(c.tier)}, {over} Tiers over a posse of level "
@@ -3105,13 +3100,7 @@ public partial class MainForm
         const int Pad = 16, CW = 500;   // left margin and the content width every row shares
         using var f = new Sheet { Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         Label L(string t, int top) => new() { Left = Pad, Top = top + 3, Width = 92, Text = t };
-        // A block of prose sized to the words in it, so it can never be clipped at any DPI.
-        Label Para(string text, int top, Font font, Color fore)
-            => new()
-            {
-                Left = Pad, Top = top, Width = CW, Text = text, Font = font, ForeColor = fore,
-                Height = TextRenderer.MeasureText(text, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
-            };
+        Label Para(string text, int top, Font font, Color fore) => MainForm.Para(text, Pad, top, CW, font, fore);
         var target = new ComboBox { Left = 112, Top = 15, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var t in foes) target.Items.Add(t.Name);
         target.SelectedIndex = 0;
@@ -3759,11 +3748,7 @@ public partial class MainForm
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
             ShowIcon = false, BackColor = Paper
         };
-        Label Para(string t, int top, Font font, Color fore) => new()
-        {
-            Left = Pad, Top = top, Width = CW, Text = t, Font = font, ForeColor = fore,
-            Height = TextRenderer.MeasureText(t, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
-        };
+        Label Para(string text, int top, Font font, Color fore) => MainForm.Para(text, Pad, top, CW, font, fore);
 
         var head = Para($"{c.Name} is at −{c.Bleed} of −{c.DeathAt}. {c.RoundsToDeath} round"
                       + $"{(c.RoundsToDeath == 1 ? "" : "s")} left at a Blood a round.", Pad, DialogBold, Blood);
@@ -4099,12 +4084,7 @@ public partial class MainForm
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
             ShowIcon = false, BackColor = Paper
         };
-        Label Para(string text, int top, Font font, Color fore)
-            => new()
-            {
-                Left = Pad, Top = top, Width = CW, Text = text, Font = font, ForeColor = fore,
-                Height = TextRenderer.MeasureText(text, font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
-            };
+        Label Para(string text, int top, Font font, Color fore) => MainForm.Para(text, Pad, top, CW, font, fore);
         Label L(string t, int top) => new() { Left = Pad, Top = top + 3, Width = 104, Text = t };
 
         var ground = Para($"On the ground: {what.ToLowerInvariant()}.", Pad, DialogBold, Blood);
@@ -4955,8 +4935,28 @@ public partial class MainForm
         };
         split.Panel1.Controls.Add(left);
         split.Panel2.Controls.Add(Pad(genOut, 12));
+        // empty-state: the widest blank in the app, and the only waiting surface that never said
+        // what it was waiting for. The Encounter tab's idiom, in the box's own color, so the hint
+        // sits on the page itself instead of on something drawn over it.
+        var genHint = new Label
+        {
+            Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
+            Font = new Font("Segoe UI", 11f, FontStyle.Italic), ForeColor = Gold,
+            BackColor = genOut.BackColor,
+            Text = "Whatever you roll on the left lands here.\n\n" +
+                   "A town and the country around it, a face, a rumor from the bar,\n" +
+                   "something met on the trail, an omen, the hand behind it all.\n\n" +
+                   "Rolls stack newest on top, so the page keeps everything it has\n" +
+                   "already given you. Right-click to copy a piece out, or to write\n" +
+                   "it straight into the Keeper's ledger."
+        };
+        split.Panel2.Controls.Add(genHint);
+        genHint.BringToFront();
+        genHint.Visible = genOut.TextLength == 0;
+        genOut.TextChanged += (s, e) => genHint.Visible = genOut.TextLength == 0;
         page.Controls.Add(split);
         Watermark(left, () => FlowBottom(left));
+        Watermark(genHint, () => HintBottom(genHint));
         return page;
     }
 
@@ -5047,30 +5047,12 @@ public partial class MainForm
     // not line up (the same reason LedgerView draws its figures in a different face). Courier New
     // is the monospace a period document would actually have been struck on, it is on every Windows
     // machine, and at 11.5pt it holds a line without reading as code.
-    static readonly string RefMonoFace = FirstInstalledFace("Courier New", "Consolas");
+    static readonly string RefMonoFace = FirstInstalled("Courier New", "Consolas");
     static Font RefMono  => Face(RefMonoFace, 11.5f);
     static Font RefMonoB => Face(RefMonoFace, 11.5f, FontStyle.Bold);
     static Font RefBody  => Face("Georgia", 12.5f);
     static Font RefItal  => Face("Georgia", 12f, FontStyle.Italic);
     static Font RefHead  => Face("Georgia", 16.5f, FontStyle.Bold);
-
-    /// <summary>The first of these actually installed. GDI+ silently substitutes Microsoft Sans
-    /// Serif for a family it does not have and the substitute reports its own name, which is the
-    /// only way to catch it: the same probe LedgerView uses to pick its figures face, and it lives
-    /// twice because the two files are on opposite sides of the rules/UI split.</summary>
-    static string FirstInstalledFace(params string[] names)
-    {
-        foreach (var n in names)
-        {
-            try
-            {
-                using var probe = new Font(n, 10f);
-                if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
-            }
-            catch { /* a broken font file shouldn't cost us the deck */ }
-        }
-        return "Consolas";
-    }
 
     /// <summary>How many monospaced characters fit across the reference pane right now. Measured
     /// with NoPadding over a long run, because TextRenderer adds a few pixels of its own to a short
@@ -5790,7 +5772,7 @@ public partial class MainForm
             var row = new FlowLayoutPanel { AutoSize = true, Margin = new Padding(0, 2, 0, 2) };
             var pips = new Label
             {
-                AutoSize = true, Font = new Font("Segoe UI", 12f), ForeColor = c.Filled >= c.Segments ? Blood : Gold,
+                AutoSize = true, Font = Face("Segoe UI", 12f), ForeColor = c.Filled >= c.Segments ? Blood : Gold,
                 Text = new string('●', c.Filled) + new string('○', Math.Max(0, c.Segments - c.Filled)), Padding = new Padding(0, 4, 6, 0)
             };
             row.Controls.Add(pips);

@@ -4934,5 +4934,42 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
         reloaded.TallyOwed.TryGetValue(rows[0].Name, out int ow) && ow == 1);
 }
 
+// ---- Seating a soul: the one conversion every route to the posse goes through ----
+// Four hand-written copies of this existed on 2026-09-23, one of them inside the method whose
+// docstring said three copies would drift. It is a library call now, so the rig can hold it.
+{
+    foreach (var calling in new[] { "Gunhand", "Preacher", "Hexer", "Sawbones" })
+    {
+        var s = CharGen.Generate(5, rolled: false, fixedCalling: calling);
+        s.Name = "Seat Test"; s.Gender = "Woman";
+        var seated = CharGen.Seat(s);
+
+        T($"seat {calling}: the sheet rides along",      ReferenceEquals(seated.Sheet, s));
+        T($"seat {calling}: name and calling carried",   seated.Name == s.Name && seated.Calling == s.Calling);
+        T($"seat {calling}: opens at full Blood",        seated.BloodMax == s.Blood && seated.BloodCur == s.Blood);
+        T($"seat {calling}: saves and Defense carried",
+            seated.Defense == s.Defense && seated.Fort == s.Fort && seated.Ref == s.Ref && seated.Will == s.Will);
+        T($"seat {calling}: Nerve is the sheet's, full", seated.NerveMax == s.NerveMax && seated.NerveCur == s.NerveMax);
+        T($"seat {calling}: pool opens full",            seated.PoolMax == s.PoolMax && seated.PoolCur == s.PoolMax);
+        T($"seat {calling}: pool is named or absent",    seated.PoolName == (s.PoolName ?? ""));
+        T($"seat {calling}: notes open with the Origin", seated.Notes.StartsWith(s.Origin));
+        T($"seat {calling}: armour reads once",
+            string.IsNullOrEmpty(CharGen.ArmorLine(s)) || seated.Notes.EndsWith(CharGen.ArmorLine(s)));
+        T($"seat {calling}: seating adds nothing to a list", seated.Grit == s.Grit && seated.Mark == s.Mark);
+    }
+
+    // Stone Nerve is the case the copies existed to get right: the Edge puts NerveMax above
+    // RES + level, and a member built without the recalc opens twenty Nerve short.
+    var stone = CharGen.Generate(5, rolled: false, fixedCalling: "Mountain Man");
+    if (stone.Edges.Contains("Stone Nerve"))
+        T("seat: Stone Nerve keeps its raised Nerve", CharGen.Seat(stone).NerveMax == stone.NerveMax);
+
+    // A subpath reads into the notes with the Origin, and an unsubpathed soul does not print
+    // a stray separator.
+    var plain = CharGen.Generate(1, rolled: false, fixedCalling: "Gunhand");
+    T("seat: no subpath, no stray separator",
+        plain.Subpath != null || !CharGen.Seat(plain).Notes.Contains(" \u00b7  "));
+}
+
 Console.WriteLine($"\n{pass} passed, {fail} failed");
 return fail == 0 ? 0 : 1;

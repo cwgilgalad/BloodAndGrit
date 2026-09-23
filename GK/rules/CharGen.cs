@@ -587,6 +587,37 @@ public static class CharGen
     public static string ArmorLine(CharacterSheet s) => string.IsNullOrEmpty(s.ArmorWorn)
         ? "" : $"{s.ArmorWorn}, DR {s.DrBlades} vs blades, DR {s.DrShot} vs small shot";
 
+    /// <summary>Turn a finished sheet into the posse row the table plays off.
+    ///
+    /// <para>Everything the grid shows is derived here and nowhere else: the Nerve recalc a
+    /// Stone Nerve soul needs, the faith or sign pool opening full, and the Notes line carrying
+    /// Origin, subpath and armour. It lives in the library rather than beside the grid because
+    /// both types are rules types and the smoke rig should be able to ask whether a sheet seats
+    /// correctly without opening a window.</para>
+    ///
+    /// <para>It was <c>TabsChargen.SeatSoul</c> from 2026-08-28, written to stop three copies of
+    /// this drifting apart, and a fourth copy was sitting in <c>MainForm.SeedDemo</c> the whole
+    /// time. Moving it here is what makes that fourth copy impossible rather than merely
+    /// discouraged: seating a soul is not something a caller can now spell out by hand without
+    /// noticing they are doing it.</para></summary>
+    public static PartyMember Seat(CharacterSheet s)
+    {
+        var p = new PartyMember
+        {
+            Name = s.Name, Calling = s.Calling, Gender = s.Gender, Level = s.Level,
+            BloodMax = s.Blood, BloodCur = s.Blood, Defense = s.Defense,
+            Fort = s.Fort, Ref = s.Ref, Will = s.Will,
+            RES = s.Scores["RES"],                       // drives the Nerve auto-recalc
+            Grit = s.Grit, Mark = s.Mark,
+            Notes = s.Origin + (s.Subpath != null ? " · " + s.Subpath : "")
+                             + (ArmorLine(s) is { Length: > 0 } a ? " · " + a : ""),
+            Sheet = s                                    // the full record rides along
+        };
+        if (p.NerveMax != s.NerveMax) { p.NerveMax = s.NerveMax; p.NerveCur = s.NerveMax; }   // Stone Nerve
+        p.PoolName = s.PoolName ?? ""; p.PoolMax = s.PoolMax; p.PoolCur = s.PoolMax;           // faith/sign pool, full
+        return p;
+    }
+
     /// <summary>Record what the gear says a soul is wearing, without touching Defense or Speed.
     /// Safe to call again after a hand edit: the numbers stay whatever the user typed.</summary>
     public static void ReadArmor(CharacterSheet s)
