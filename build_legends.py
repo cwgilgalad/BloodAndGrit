@@ -35,17 +35,20 @@ VERSION = "1.1"
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
 # book prints on a home printer in black and white and still reads as a bundle of different papers.
 _css = """
+  /* This book's own colour, the iron-gall blue those papers were written in, taken off its cover. It runs the
+     page frame, the rules, the labels and the stat blocks; the cover is untouched. */
+  :root{ --accent:#3f4a63; --accent-d:#333c50; }
   /* ---- The Book of Legends: papers ---- */
   .paper{ margin:1.25em 0 1.45em; padding:10px 14px 12px; background:#efe6cf; border:1px solid var(--rule); }
   .paper > .pa-head{ display:flex; justify-content:space-between; gap:12px; align-items:baseline;
-                     border-bottom:1.5px solid var(--gold-d); padding-bottom:4px; margin-bottom:7px; }
+                     border-bottom:1.5px solid var(--accent-d); padding-bottom:4px; margin-bottom:7px; }
   .paper .pa-kind{ font-variant:small-caps; letter-spacing:.07em; font-weight:700; color:var(--blood-d); font-size:12.5px; white-space:nowrap; }
   .paper .pa-src{ font-style:italic; color:var(--ink-soft); font-size:12.5px; text-align:right; }
   .paper p{ margin:.42em 0; font-size:14.4px; line-height:1.45; text-indent:0; }
   .paper p.pa-sign{ text-align:right; font-style:italic; margin-top:.7em; }
   .paper p.pa-ps{ font-size:13.6px; font-style:italic; }
   /* A letter: a hand, on paper somebody paid for. */
-  .paper.letter{ background:#f2ead6; border-left:3px solid var(--gold-d); }
+  .paper.letter{ background:#f2ead6; border-left:3px solid var(--accent-d); }
   .paper.letter p{ font-size:14.6px; line-height:1.5; }
   /* A wire: capitals, no punctuation the operator was not paid for. */
   .paper.wire{ background:#ece4cc; }
@@ -83,7 +86,7 @@ _css = """
   /* An account book. Numbers, and one line that is not about money. */
   .paper.ledger table{ width:100%; border-collapse:collapse; font-size:13.2px; margin:.3em 0; }
   .paper.ledger th{ text-align:left; font-variant:small-caps; letter-spacing:.05em; color:var(--shade);
-                    border-bottom:1.5px solid var(--gold-d); padding:3px 6px; }
+                    border-bottom:1.5px solid var(--accent-d); padding:3px 6px; }
   .paper.ledger td{ border-bottom:1px solid var(--rule); padding:3px 6px; }
   .paper.ledger td.n{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
   /* Ashby's own field-book: narrow, hurried, written on a knee. */
@@ -92,7 +95,7 @@ _css = """
   .paper.field .fb-when{ font-variant:small-caps; letter-spacing:.06em; font-weight:700; color:var(--blood-d); }
   /* Where a paper came from, in the editor's hand. */
   .gloss{ font-size:13.4px; line-height:1.44; font-style:italic; color:var(--ink-soft);
-          margin:1.1em 0 .35em; padding-left:11px; border-left:3px solid var(--gold-d); }
+          margin:1.1em 0 .35em; padding-left:11px; border-left:3px solid var(--accent-d); }
   .gloss .gl-tag{ font-variant:small-caps; font-style:normal; letter-spacing:.07em; font-weight:700;
                   color:var(--shade); margin-right:.4em; }
   /* The editor, interrupting. Square brackets, because that is what they mean in a printed text. */
@@ -2051,7 +2054,7 @@ assert sci != -1
 assert H.rfind("</div>", si, sci) != -1
 new_html = H[:si] + BODY + "\n</div>\n" + H[sci:]
 
-from nav_tools import add_detailed_toc, build_index
+from nav_tools import add_detailed_toc, build_index, assert_css_vars
 
 LEG_INDEX = [
     ("Ashby, N. (who gathered these papers)", "before"),
@@ -2111,6 +2114,7 @@ new_html = build_index(
           "many of them were written by nobody in particular. A leading &ldquo;the&rdquo; is "
           "ignored in the ordering.")
 new_html = add_detailed_toc(new_html)
+assert_css_vars(new_html, "legends.html")
 open("legends.html", "w", encoding="utf-8").write(new_html)
 print(f"legends.html: papers {new_html.count('class=\"paper')} "
       f"| glosses {new_html.count('class=\"gloss\"')} "

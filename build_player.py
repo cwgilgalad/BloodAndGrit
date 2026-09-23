@@ -13,7 +13,7 @@ SRC string below after rendering -- do not hand-edit those numbers.)
 """
 import base64, mimetypes, os, re, sys
 
-from nav_tools import add_detailed_toc
+from nav_tools import add_detailed_toc, assert_css_vars
 from perdition_map import player_map_html, rider_knows_html
 
 OUT = "blood-and-grit.html"
@@ -37,9 +37,18 @@ SRC = r"""<!DOCTYPE html>
     --ink:#2b2118; --ink-soft:#4a3c2c;
     --blood:#8b1a1a; --blood-d:#6c1212;
     --gold:#9c7a3c; --gold-d:#7d5f2a;
-    --rule:#c9b78a;
+    /* The Ledger's own red, on its labels and the Mark boxes. It was written into that
+       CSS and defined nowhere until 2026-09-22, so the boxes had no border and the labels
+       came out in body ink; nav_tools.assert_css_vars now fails a build that does it again. */
+    --oxblood:#8a2f22;
+    /* The book's own colour: the Player's Book is the gold one, and each of the others points
+       this pair at the colour its cover already wears (oxblood for the Keeper's, verdigris for
+       the Bestiary, iron-gall blue for the Book of Legends). --gold above is the gilt on the
+       dark cover and nothing else, so the triad on the shelf does not move. */
+    --accent:#8a6a30; --accent-d:#6e5322;
+    --rule:#8a7442;
     --shade:#3a2616;
-    --row-a:#ece1ba; --row-b:#e3d4a4;
+    --row-a:#ece1ba; --row-b:#dbca93;
     --western:'Rye','Iowan Old Style',Georgia,serif;
     --display:'Playfair Display','Iowan Old Style',Georgia,serif;
     --body:'EB Garamond','Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
@@ -66,7 +75,7 @@ SRC = r"""<!DOCTYPE html>
   }
   .page::before{
     content:""; position:absolute; inset:9px;
-    border:1px solid var(--gold-d); opacity:.55; pointer-events:none;
+    border:1px solid var(--accent); opacity:.72; pointer-events:none;
   }
   /* corner diamonds */
   .page::after{
@@ -95,8 +104,8 @@ SRC = r"""<!DOCTYPE html>
     float:left; font-family:var(--western); font-weight:400; color:var(--blood);
     font-size:54px; line-height:.86; padding:8px 12px 0 2px;
   }
-  .divider{ text-align:center; color:var(--gold-d); margin:14px 0 22px; }
-  .divider::before{content:"—————————  ◆  —————————"; letter-spacing:.04em; font-size:13px; color:var(--gold-d);}
+  .divider{ text-align:center; color:var(--accent-d); margin:14px 0 22px; }
+  .divider::before{content:"—————————  ◆  —————————"; letter-spacing:.04em; font-size:13px; color:var(--accent-d);}
   ul{margin:.4em 0 .7em; padding-left:1.25em;}
   ul li{margin:.32em 0;}
   ul.dash{list-style:none; padding-left:1.1em;}
@@ -104,12 +113,12 @@ SRC = r"""<!DOCTYPE html>
   ul.dash>li::before{content:"—"; position:absolute; left:-1.15em; color:var(--blood-d);}
   strong{color:var(--ink); font-weight:800;}
   em{color:var(--ink-soft);}
-  a{color:var(--blood-d); text-decoration:none; border-bottom:1px dotted var(--gold-d);}
+  a{color:var(--blood-d); text-decoration:none; border-bottom:1px dotted var(--accent-d);}
 
   /* tables */
   table{width:100%; border-collapse:collapse; margin:.9em 0 1.1em; font-size:16.5px;}
-  thead th{background:var(--shade); color:var(--paper-l); text-align:left; padding:8px 12px; font-family:var(--display); font-weight:700; letter-spacing:.02em; font-size:14.5px;}
-  tbody td{padding:7px 12px; vertical-align:top; border-bottom:1px solid rgba(120,90,50,.18);}
+  thead th{background:var(--accent-d); color:var(--paper-l); text-align:left; padding:8px 12px; font-family:var(--display); font-weight:700; letter-spacing:.02em; font-size:14.5px;}
+  tbody td{padding:7px 12px; vertical-align:top; border-bottom:1px solid rgba(120,90,50,.34);}
   tbody tr:nth-child(odd){background:var(--row-a);}
   tbody tr:nth-child(even){background:var(--row-b);}
   td.c,th.c{text-align:center;}
@@ -123,7 +132,7 @@ SRC = r"""<!DOCTYPE html>
     padding:14px 18px; margin:1.2em 0; border-radius:2px;
   }
   .box h3, .box h4{margin-top:0;}
-  .box.gold{border-left-color:var(--gold-d);}
+  .box.gold{border-left-color:var(--accent-d);}
   .equation{
     text-align:center; background:var(--paper-l); border-left:5px solid var(--blood);
     padding:14px 18px; margin:1.1em 0;
@@ -138,9 +147,9 @@ SRC = r"""<!DOCTYPE html>
     padding:18px 0; position:relative;
   }
   .quote::before, .quote::after{
-    content:"❧"; display:block; color:var(--gold-d); font-style:normal; font-size:16px; opacity:.8;
+    content:"❧"; display:block; color:var(--accent-d); font-style:normal; font-size:16px; opacity:.8;
   }
-  .quote .src{display:block; margin-top:.7em; font-size:14.5px; font-style:italic; color:var(--gold-d); font-variant:small-caps; letter-spacing:.06em;}
+  .quote .src{display:block; margin-top:.7em; font-size:14.5px; font-style:italic; color:var(--accent-d); font-variant:small-caps; letter-spacing:.06em;}
 
   /* field-journal illustration plates (reintroduced) */
   .plate{ margin:1.5em auto 1.6em; max-width:560px; }
@@ -148,7 +157,7 @@ SRC = r"""<!DOCTYPE html>
     border:2px solid var(--blood-d); box-shadow:0 8px 22px rgba(0,0,0,.42);
     background:var(--paper-l); }
   .plate figcaption{ margin-top:.55em; text-align:center; font-style:italic;
-    font-size:14px; color:var(--gold-d); font-variant:small-caps; letter-spacing:.05em; }
+    font-size:14px; color:var(--accent-d); font-variant:small-caps; letter-spacing:.05em; }
   @media print{ .plate img{ box-shadow:none; } }
 
   .narr{ margin:16px 26px; font-style:italic; color:var(--ink-soft); line-height:1.55; }
@@ -156,7 +165,7 @@ SRC = r"""<!DOCTYPE html>
   .sb-cont{ font-style:italic; font-weight:400; color:var(--ink-soft); font-size:12px; letter-spacing:0; }
   .statline{font-style:italic; color:var(--ink-soft); margin:.1em 0 .6em; font-size:16.5px;}
   .perk{
-    border-top:1px solid var(--gold-d); border-bottom:1px solid var(--gold-d);
+    border-top:1px solid var(--accent-d); border-bottom:1px solid var(--accent-d);
     background:var(--paper-l); padding:.5em 14px; margin:1em 0; break-inside:avoid;
   }
   .perk .lbl{
@@ -181,13 +190,13 @@ SRC = r"""<!DOCTYPE html>
 
   /* contents */
   .toc{list-style:none; padding:0; margin:0.1em 0; font-size:15px;}
-  .toc li{display:flex; align-items:baseline; padding:0 0 1px; border-bottom:1px dotted var(--gold-d); font-weight:700; color:var(--blood-d);}
+  .toc li{display:flex; align-items:baseline; padding:0 0 1px; border-bottom:1px dotted var(--accent-d); font-weight:700; color:var(--blood-d);}
   .toc li a{flex:1; border:none; color:var(--blood-d);}
   .toc li .pg{color:var(--ink-soft); font-weight:700;}
 
   /* detailed contents (two-level, splittable across pages) */
   .toc2{list-style:none; padding:0; margin:.1em 0;}
-  .toc2 li{display:flex; align-items:baseline; gap:8px; border-bottom:1px dotted var(--gold-d); break-inside:avoid;}
+  .toc2 li{display:flex; align-items:baseline; gap:8px; border-bottom:1px dotted var(--accent-d); break-inside:avoid;}
   .toc2 li:not(.ch) , .ix li:not(.ix-hd){cursor:pointer;}
   .toc2 li.ch{cursor:pointer;}
   .toc2 li a{flex:1; border:none;}
@@ -201,21 +210,21 @@ SRC = r"""<!DOCTYPE html>
 
   /* maps */
   .map{margin:16px 0 10px; text-align:center; break-inside:avoid;}
-  .map svg{width:100%; height:auto; display:block; border:1px solid var(--gold-d);
+  .map svg{width:100%; height:auto; display:block; border:1px solid var(--accent);
     box-shadow:0 4px 14px rgba(0,0,0,.22);}
   .map figcaption{font-style:italic; color:var(--ink-soft); font-size:13px; margin-top:7px; padding:0 8px;}
-  .hook{font-family:var(--display); font-weight:700; color:var(--gold-d); font-variant:small-caps; letter-spacing:.03em;}
+  .hook{font-family:var(--display); font-weight:700; color:var(--accent-d); font-variant:small-caps; letter-spacing:.03em;}
 
   /* index */
   .ix{list-style:none; padding:0; margin:.1em 0; font-size:13px; columns:2; column-gap:30px;}
-  .ix li{display:flex; align-items:baseline; gap:8px; padding:1px 0 2px; border-bottom:1px dotted var(--gold-d); break-inside:avoid;}
+  .ix li{display:flex; align-items:baseline; gap:8px; padding:1px 0 2px; border-bottom:1px dotted var(--accent-d); break-inside:avoid;}
   .ix li a{flex:1; border:none; color:var(--ink); font-weight:600;}
   .ix li .pg{color:var(--ink-soft); font-weight:700;}
   .ix li.ix-hd{display:block; border-bottom:none; font-family:var(--display); font-weight:700; font-size:16px; color:var(--blood-d); margin-top:.55em; break-after:avoid;}
 
   /* title page */
   .title-page{min-height:auto; text-align:center; padding-top:90px; padding-bottom:90px; container-type:inline-size; display:flex; flex-direction:column; align-items:center;}
-  .kicker{font-variant:small-caps; letter-spacing:.28em; color:var(--gold-d); font-weight:700; font-size:15px;}
+  .kicker{font-variant:small-caps; letter-spacing:.28em; color:var(--accent-d); font-weight:700; font-size:15px;}
   .big-title{position:relative; display:block; font-family:var(--western); font-weight:400; color:#f3ecd8; -webkit-text-stroke:0; line-height:1; white-space:nowrap; margin:14px 0 6px; font-size:88px; font-size:min(96px,13cqw);}
   .big-title .words{display:inline-flex; align-items:center; justify-content:center; letter-spacing:-.01em;}
   .big-title .w{position:relative; z-index:2; line-height:1; text-shadow:0 2px 0 var(--blood-d), 0 0 30px rgba(0,0,0,.4);}
@@ -232,7 +241,7 @@ SRC = r"""<!DOCTYPE html>
   .cover-emblem svg{width:100%; height:auto; display:block; overflow:visible;}
 
   .note{font-size:15px; color:var(--ink-soft); font-style:italic;}
-  hr.soft{border:none; border-top:1px solid var(--gold-d); opacity:.5; margin:1.6em 0;}
+  hr.soft{border:none; border-top:1px solid var(--accent-d); opacity:.68; margin:1.6em 0;}
   .twocol{columns:2; column-gap:34px;}
   @media (max-width:680px){
     .page{padding:34px 22px 44px;} .twocol{columns:1;}
@@ -247,10 +256,10 @@ SRC = r"""<!DOCTYPE html>
   .bigblank{border:1px solid var(--rule); background:rgba(255,255,255,.25); border-radius:3px; height:150px; margin-bottom:12px;}
   .bigblank.short{height:90px;}
   .abilities .abil{flex:1 1 90px; border:1px solid var(--rule); background:rgba(255,255,255,.25); border-radius:3px; padding:5px 6px; text-align:center;}
-  .ab-grid{display:flex; justify-content:space-around; font-size:10px; color:#6a5a44; border-top:1px dashed var(--rule); margin-top:4px; padding-top:14px;}
+  .ab-grid{display:flex; justify-content:space-around; font-size:10px; color:#5f5039; border-top:1px dashed var(--rule); margin-top:4px; padding-top:14px;}
   .mark-row{align-items:center; gap:8px;}
   .mark-label{font-variant:small-caps; font-weight:bold; color:var(--oxblood); letter-spacing:.04em; margin-right:6px;}
-  .mark-box{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border:1px solid var(--oxblood); border-radius:3px; font-size:12px; color:#6a5a44;}
+  .mark-box{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border:1px solid var(--oxblood); border-radius:3px; font-size:12px; color:#5f5039;}
   .mark-box.lost{border-color:#7a1f1f; box-shadow:inset 0 0 0 2px rgba(122,31,31,.25);}
   .sheet-cols{display:flex; gap:14px; margin-top:12px; flex-wrap:wrap;}
   .sheet-col{flex:1 1 240px;}
@@ -6314,5 +6323,6 @@ for ref in refs:
     b64 = base64.b64encode(open(ref, "rb").read()).decode("ascii")
     html = html.replace(ref, f"data:{mime};base64,{b64}")
 
+assert_css_vars(html, OUT)
 open(OUT, "w", encoding="utf-8", newline="").write(html)
 print(f"built {OUT}: {len(html)} bytes, {len(refs)} image(s) inlined: {', '.join(refs)}")

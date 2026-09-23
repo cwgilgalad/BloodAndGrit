@@ -29,6 +29,24 @@ __all__ = ["add_detailed_toc", "build_index"]
 _TAG = re.compile(r"<[^>]+>")
 
 
+# Every `var(--x)` a built book uses has to resolve. A name nothing defines makes the whole
+# declaration invalid, and the browser drops it without a word: `--oxblood` was written into the
+# Ledger's CSS and defined nowhere, so the character sheet's six Mark boxes carried no border at
+# all and its field labels came out in body ink, in all seven books, for as long as the sheet has
+# existed. Nothing rendered wrong enough to notice, which is exactly why it needed a check rather
+# than an eye. A `var(--x, fallback)` is a deliberate default and is left alone.
+_VAR_USED = re.compile(r"var\(\s*(--[a-z0-9-]+)\s*\)")
+_VAR_DEF = re.compile(r"(--[a-z0-9-]+)\s*:")
+
+
+def assert_css_vars(html: str, where: str) -> None:
+    """Stop the build if a book uses a CSS variable nothing in it defines."""
+    css = "".join(m.group(1) for m in re.finditer(r"<style[^>]*>(.*?)</style>", html, re.S))
+    missing = sorted(set(_VAR_USED.findall(css)) - set(_VAR_DEF.findall(css)))
+    if missing:
+        raise SystemExit(f"{where}: CSS variable(s) used and never defined: " + ", ".join(missing))
+
+
 def _plain(inner: str) -> str:
     """Heading inner-HTML -> plain text (for slug generation only)."""
     return _htmllib.unescape(_TAG.sub("", inner)).strip()
