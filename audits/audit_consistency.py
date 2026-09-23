@@ -676,6 +676,66 @@ def check_app_book_parity(dig, core, chargen_src):
         ok(f"{len(PARITY)} feature(s): each one both printed in a book and tracked by the app")
 
 
+# Every number README.md spells out about the game, and the file that actually carries it.
+# Written 2026-09-22, after the front page was found saying "nineteen Callings" (the Medicine
+# Man merged with the Shaman at v1.56.0, so there have been eighteen since), "seventeen Calling
+# tables", and "three books" in four places with the Book of Legends sitting in the table right
+# below. None of it was wrong when it was written and all of it was wrong by the time a stranger
+# read it, which is the whole argument for counting rather than typing. README's version claims
+# have been generated since 2026-08-08; its counts were the half nobody had automated.
+WORDS = {w: i for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+    "fifteen sixteen seventeen eighteen nineteen twenty".split())}
+
+FRONT_PAGE = [
+    (r"(\w+) Callings, (\w+) Origins",                        ("callings", "origins")),
+    (r"checks its (\w+)\s+Calling tables",                    ("callings",)),
+    (r"off (\w+) books, (\w+) ready-to-run",                  ("books", "modules")),
+    (r"\(The (\w+) books are PDFs",                           ("books",)),
+    (r"(\w+) companion volumes",                              ("books",)),
+    (r"indexes for all (\w+) books and the (\w+) modules",    ("books", "modules")),
+    (r"prints all (\w+) documents \((\w+) books, (\w+) modules\)",
+     ("documents", "books", "modules")),
+]
+
+
+def check_front_page(chargen):
+    print("\nThe front page: every number README spells out, against the file that carries it")
+    # The two bundle manifests, read as text rather than imported: make_bundles.py builds both
+    # zips at import time, and an audit that writes a deliverable is not an audit.
+    manifest = (ROOT / "tools/make_bundles.py").read_text(encoding="utf-8")
+    truth = {
+        "callings": len(chargen["callings"]),
+        "origins": len(chargen["origins"]),
+    }
+    for key, var in (("books", "BOOKS"), ("modules", "MODULES")):
+        block = re.search(rf"^{var} = {{(.*?)^}}", manifest, re.S | re.M)
+        if block is None:
+            fail(f"tools/make_bundles.py has no {var} manifest to count")
+            return
+        truth[key] = len(re.findall(r'"[^"]+\.html":', block.group(1)))
+    truth["documents"] = truth["books"] + truth["modules"]
+    readme = (ROOT / "README.md").read_bytes().decode("utf-8")
+    bad = 0
+    for pattern, names in FRONT_PAGE:
+        CHECKS[0] += 1
+        m = re.search(pattern, readme)
+        if not m:
+            bad += 1
+            fail(f"README no longer says {pattern!r}, so this check is guarding nothing. "
+                 f"The claim moved or went: repoint it or take it out.")
+            continue
+        for said, key in zip(m.groups(), names):
+            CHECKS[0] += 1
+            if WORDS.get(said.lower()) != truth[key]:
+                bad += 1
+                fail(f'README says "{said} {key}" and there are {truth[key]}: '
+                     f'"{m.group(0)[:60]}"')
+    if not bad:
+        ok(f"{len(FRONT_PAGE)} counted claim(s) on the front page: "
+           + ", ".join(f"{v} {k}" for k, v in truth.items()))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -704,6 +764,8 @@ def main():
     check_chapter_refs(dig)
     check_basin(dig)
     check_app_book_parity(dig, core, (ROOT / "GK/rules/CharGen.cs").read_text(encoding="utf-8"))
+    check_front_page(json.loads(
+        (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
 
     print()
     if FAILURES:
