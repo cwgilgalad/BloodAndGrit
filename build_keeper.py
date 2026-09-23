@@ -37,17 +37,20 @@ H = _patch_paginator(H)
 
 # ---- stat-block + keeper CSS, and cover/meta retext ----
 _css = """
+  /* This book's own colour, the Keeper's oxblood, taken off its cover. It runs the
+     page frame, the rules, the labels and the stat blocks; the cover is untouched. */
+  :root{ --accent:#a8422f; --accent-d:#8a2f22; }
   /* ---- Keeper's Book additions ---- */
-  .statblock{ background:#efe6cf; border:1px solid var(--gold-d); border-left:4px solid var(--blood); padding:9px 13px 11px; margin:1.1em 0; }
-  .statblock .sb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1.5px solid var(--gold-d); padding-bottom:4px; margin-bottom:6px; }
+  .statblock{ background:#efe6cf; border:1px solid var(--accent-d); border-left:4px solid var(--blood); padding:9px 13px 11px; margin:1.1em 0; }
+  .statblock .sb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1.5px solid var(--accent-d); padding-bottom:4px; margin-bottom:6px; }
   .statblock .sb-name{ font-family:var(--display); font-weight:700; color:var(--blood-d); font-size:17px; letter-spacing:.01em; }
   .statblock .sb-tier{ font-style:italic; color:var(--ink-soft); font-size:12.5px; white-space:nowrap; }
   .statblock p{ margin:.3em 0; font-size:14px; line-height:1.34; }
   .statblock .sb-stat strong, .statblock p strong{ color:var(--shade); }
-  .statblock hr.sb-rule{ border:none; border-top:1px solid var(--gold-d); opacity:.55; margin:.5em 0; }
+  .statblock hr.sb-rule{ border:none; border-top:1px solid var(--accent-d); opacity:.55; margin:.5em 0; }
   .statblock .sb-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--blood-d); font-weight:700; font-size:12.5px; }
   .statblock .sb-cont{ font-style:italic; font-weight:400; color:var(--ink-soft); font-size:12px; letter-spacing:0; }
-  .keeper-note{ background:#ece2c8; border-left:3px solid var(--gold-d); padding:8px 12px; margin:1em 0; font-size:14.5px; }
+  .keeper-note{ background:#ece2c8; border-left:3px solid var(--accent-d); padding:8px 12px; margin:1em 0; font-size:14.5px; }
   .keeper-note .kn-tag{ font-variant:small-caps; letter-spacing:.06em; color:var(--blood-d); font-weight:700; display:block; font-size:12.5px; margin-bottom:2px; }
   /* Keeper's Book cover: set a shade apart from the Player's Book: colder, darker ground,
      a thin oxblood keyline inside the gilt border, and an oxblood title label. */
@@ -65,13 +68,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.36 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.36)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.37 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.37)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.36</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.37</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.36 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.37 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -3102,7 +3105,7 @@ assert div_close != -1, "book closing div not found"
 
 new_html = H[:si] + BODY + "\n</div>\n" + H[sci:]
 
-from nav_tools import add_detailed_toc, build_index
+from nav_tools import add_detailed_toc, build_index, assert_css_vars
 KEEP_INDEX = [
     # --- the craft, by chapter ---
     ("The Keeper's Chair", "chair"), ("Session Zero", "chair"),
@@ -3208,5 +3211,6 @@ new_html = build_index(
     intro="A leading &ldquo;the&rdquo; is ignored in the ordering. Where a concept fills a "
           "whole chapter, the page given is where that chapter opens.")
 new_html = add_detailed_toc(new_html)
+assert_css_vars(new_html, "keeper-handbook.html")
 open("keeper-handbook.html", "w", encoding="utf-8").write(new_html)
 print("spliced. imgs:", new_html.count("<img"), "| size:", len(new_html))

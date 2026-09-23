@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The six PDFs are navigable: every page numbered, every link explicit, every number honest.
+"""The seven PDFs are navigable: every page numbered, every link explicit, every number honest.
 
 Cole, 2026-09-02: *"every time we make changes, it seems like the PDF hyperlinks break."* Nothing in
 this repo had ever looked inside a printed PDF. `make_pdf.py` checked the page count and the sheet

@@ -58,6 +58,9 @@ def current_versions() -> dict:
         # The Legends builder stamps a VERSION constant rather than a cover line, the same
         # shape the three module builders use.
         "Book of Legends": _find("build_legends.py", r'VERSION = "([\d.]+)"'),
+        "Module I": _find("build_module_salt.py", r'VERSION = "([\d.]+)"'),
+        "Module II": _find("build_module_face.py", r'VERSION = "([\d.]+)"'),
+        "Module III": _find("build_module_water.py", r'VERSION = "([\d.]+)"'),
         # The csproj carries the app's number and nothing else does: MainForm.AppVersion reads it
         # back off the assembly. This used to read a hand-typed const in MainForm.cs, and when that
         # const was retired the pattern stopped matching, so the app quietly left the README's
@@ -82,6 +85,15 @@ CLAIMS = [
     ("CLAUDE.md", r"\| The Player's Book \| v[\d.]+ \|"),
     ("CLAUDE.md", r"\| The Keeper's Book \(GM guide\) \| v[\d.]+ \|"),
     ("CLAUDE.md", r"\| The Bestiary \| v[\d.]+ \|"),
+    # The Book of Legends and the three modules. Their TOKENS were written on 2026-08-27 with
+    # the rest and their spans were not, so two patterns matched nothing for four weeks and the
+    # table sat at Legends v1.0 against a builder stamping v1.1, and the modules at v1.7/v1.9/v1.9
+    # against v1.8/v1.10/v1.10. A token with no span is a claim nobody writes.
+    ("CLAUDE.md", r"\| The Book of Legends \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"\| Module I: The Salt at Coffin Wells \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"\| Module II: A Face Not His Own \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"\| Module III: What the Water Answers \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"## The Book of Legends \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Player's Book \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Keeper's Book \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Bestiary \(v[^)]*\)"),
@@ -119,6 +131,9 @@ TOKENS = [
     (rf"(## The Keeper's Book \(v){NUM}", "Keeper's Book"),
     (rf"(## The Bestiary \(v){NUM}", "Bestiary"),
     (rf"(## The Book of Legends \(v){NUM}", "Book of Legends"),
+    (rf"(\| Module I: The Salt at Coffin Wells \| v){NUM}", "Module I"),
+    (rf"(\| Module II: A Face Not His Own \| v){NUM}", "Module II"),
+    (rf"(\| Module III: What the Water Answers \| v){NUM}", "Module III"),
 ]
 
 

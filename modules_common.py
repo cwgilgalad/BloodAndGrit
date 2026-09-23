@@ -211,29 +211,29 @@ def scene(n, title, body):
 MODULE_CSS = """
 .lvl tr.here td{ background:rgba(140,26,26,.07); font-weight:600; }
   /* ---- Adventure-module additions ---- */
-  .statblock{ background:#efe6cf; border:1px solid var(--gold-d); border-left:4px solid var(--blood); padding:9px 13px 11px; margin:1.0em 0; }
-  .statblock .sb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1.5px solid var(--gold-d); padding-bottom:4px; margin-bottom:6px; }
+  .statblock{ background:#efe6cf; border:1px solid var(--accent-d); border-left:4px solid var(--blood); padding:9px 13px 11px; margin:1.0em 0; }
+  .statblock .sb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1.5px solid var(--accent-d); padding-bottom:4px; margin-bottom:6px; }
   .statblock .sb-name{ font-family:var(--display); font-weight:700; color:var(--blood-d); font-size:17px; letter-spacing:.01em; }
   .statblock .sb-tier{ font-style:italic; color:var(--ink-soft); font-size:12.5px; white-space:nowrap; }
   .statblock p{ margin:.28em 0; font-size:13.8px; line-height:1.32; }
   .statblock .sb-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--blood-d); font-weight:700; font-size:12.5px; }
   .statblock .sb-cont{ font-style:italic; font-weight:400; color:var(--ink-soft); font-size:12px; letter-spacing:0; }
-  .keeper-note{ background:#ece2c8; border-left:3px solid var(--gold-d); padding:8px 12px; margin:1em 0; font-size:14.5px; }
+  .keeper-note{ background:#ece2c8; border-left:3px solid var(--accent-d); padding:8px 12px; margin:1em 0; font-size:14.5px; }
   .keeper-note .kn-tag{ font-variant:small-caps; letter-spacing:.06em; color:var(--blood-d); font-weight:700; display:block; font-size:12.5px; margin-bottom:2px; }
   .cr-found{ font-size:13.5px; line-height:1.4; margin:.6em 0; background:#ede3ca; border-left:3px solid var(--blood); padding:6px 11px; }
   .cr-found .cf-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--blood-d); font-weight:700; }
   /* Boxed text: what the Keeper says out loud. Set apart by rule and indent rather than by a
      screen, so it stays legible printed on a home printer in black and white. */
-  .readaloud{ border-top:2px solid var(--blood); border-bottom:1px solid var(--gold-d); background:#f2ead6;
+  .readaloud{ border-top:2px solid var(--blood); border-bottom:1px solid var(--accent-d); background:#f2ead6;
               padding:9px 14px; margin:1.1em 0; font-size:14.6px; line-height:1.46; font-style:italic; }
-  .clock{ background:#efe6cf; border:1px solid var(--gold-d); padding:8px 12px 10px; margin:1em 0; }
-  .clock .ck-head{ display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--gold-d); padding-bottom:3px; margin-bottom:6px; }
+  .clock{ background:#efe6cf; border:1px solid var(--accent-d); padding:8px 12px 10px; margin:1em 0; }
+  .clock .ck-head{ display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--accent-d); padding-bottom:3px; margin-bottom:6px; }
   .clock .ck-name{ font-family:var(--display); font-weight:700; color:var(--blood-d); font-size:15px; }
   .clock .ck-seg{ font-style:italic; color:var(--ink-soft); font-size:12px; }
   .clock .ck-pips{ display:flex; gap:5px; margin-bottom:5px; }
   .clock .pip{ width:13px; height:13px; border:1.5px solid var(--blood-d); border-radius:50%; display:inline-block; }
   .clock p{ margin:0; font-size:13.5px; line-height:1.36; }
-  .npc{ margin:.9em 0; padding-left:11px; border-left:3px solid var(--gold-d); }
+  .npc{ margin:.9em 0; padding-left:11px; border-left:3px solid var(--accent-d); }
   .npc .np-name{ font-family:var(--display); font-weight:700; color:var(--blood-d); font-size:15.5px; }
   .npc p{ margin:.2em 0; font-size:13.8px; line-height:1.34; }
   .npc .np-tag{ font-variant:small-caps; letter-spacing:.05em; color:var(--shade); font-weight:700; }
@@ -241,7 +241,7 @@ MODULE_CSS = """
   /* The playtest table, numbers the engine produced, printed as numbers. */
   table.playtest{ width:100%; border-collapse:collapse; margin:1em 0; font-size:13.2px; }
   table.playtest th{ background:var(--blood-d); color:#f2ead6; font-variant:small-caps; letter-spacing:.05em; padding:4px 7px; text-align:left; }
-  table.playtest td{ border-bottom:1px solid var(--gold-d); padding:4px 7px; }
+  table.playtest td{ border-bottom:1px solid var(--accent-d); padding:4px 7px; }
 """ + __import__("module_maps").MAP_CSS
 
 
@@ -391,9 +391,10 @@ def splice(H, BODY):
 
 
 def finish(html, *, curated, subtitle, intro, out):
-    from nav_tools import add_detailed_toc, build_index
+    from nav_tools import add_detailed_toc, build_index, assert_css_vars
     html = build_index(html, curated=curated, creatures=False, subtitle=subtitle, intro=intro)
     html = add_detailed_toc(html)
+    assert_css_vars(html, out)
     open(out, "w", encoding="utf-8").write(html)
     return html
 

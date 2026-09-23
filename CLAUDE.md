@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.52 · Keeper's Book v2.36 · Bestiary v2.23 ·
+**Current versions: Player's Book v2.53 · Keeper's Book v2.37 · Bestiary v2.24 ·
 GritKeeper app v1.58.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -82,7 +82,7 @@ tools) documented in their own sections below.
   **What changed, and why this is not the old flip-flop repeating:** until 2026-08-27 the PDFs
   were tracked and README linked each book at `blob/main/*.pdf`, so a stale PDF was an extra that
   disagreed with an HTML file anybody could open. Untracking them made the Release asset the only
-  way a stranger reads a book, because README's six "Read" links now point at
+  way a stranger reads a book, because README's seven "Read" links now point at
   `/releases/latest/download/*.pdf`. A stale PDF is a stale front page. The lean sources and the self-contained HTML are the deliverable; the PDFs are
   an extra, never a replacement. The recipe is under *"Save to PDF": my standing preference*
   below, which has always said this. **This bullet used to say the opposite**, that the CLI
@@ -120,13 +120,13 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.52 | 269 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.36 | 141 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.23 | 210 | none (182 creatures) |
-| The Book of Legends | v1.0 | 67 | none (98 documents) |
-| Module I: The Salt at Coffin Wells | v1.7 | 33 | one inline SVG map, downloadable |
-| Module II: A Face Not His Own | v1.9 | 33 | one inline SVG map, downloadable |
-| Module III: What the Water Answers | v1.9 | 33 | one inline SVG map (two panels), downloadable |
+| The Player's Book | v2.53 | 289 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.37 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.24 | 226 | none (182 creatures) |
+| The Book of Legends | v1.2 | 77 | none (98 documents) |
+| Module I: The Salt at Coffin Wells | v1.9 | 36 | one inline SVG map, downloadable |
+| Module II: A Face Not His Own | v1.11 | 38 | one inline SVG map, downloadable |
+| Module III: What the Water Answers | v1.11 | 39 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -280,12 +280,18 @@ one US-Letter PDF page. Before printing: wait for `.book.pages.ready` and fonts 
 **force-decode every `<img>` (`img.decode()`)** so any images don't blank. Verify with
 PyMuPDF: page count == sheet count, page size 612×792pt.
 
-Output names (written beside the sources in the project folder):
-`Blood-and-Grit-Players-Book.pdf` · `Blood-and-Grit-Keepers-Book.pdf` · `Blood-and-Grit-Bestiary.pdf`
+Output names (written beside the sources in the project folder), seven of them:
+`Blood-and-Grit-Players-Book.pdf` · `Blood-and-Grit-Keepers-Book.pdf` ·
+`Blood-and-Grit-Bestiary.pdf` · `Blood-and-Grit-Book-of-Legends.pdf` ·
+`Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf` ·
+`Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf` ·
+`Blood-and-Grit-Module-III-What-the-Water-Answers.pdf`
 
 *(`make_pdf.py` was rewritten for the Windows toolchain on 2026-07-12, Playwright driving
 system Edge, PyMuPDF verification built in: page count == rendered sheet count, 612×792 pt.
-Regenerating overwrites the three PDFs in place.)*
+Regenerating overwrites all seven PDFs in place. This paragraph named three of them until
+2026-09-22, a list of the core books that the modules and the Book of Legends had quietly
+outgrown.)*
 
 ---
 
@@ -460,7 +466,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.52) — structure
+## The Player's Book (v2.53) — structure
 
 *(For the chapter and appendix list, read the built book's Contents; it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -515,7 +521,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.36) — structure
+## The Keeper's Book (v2.37) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -578,7 +584,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.0) — structure & conventions
+## The Book of Legends (v1.2) — structure & conventions
 
 Thirteen chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -611,7 +617,7 @@ list, which is generated.
 
 ---
 
-## The Bestiary (v2.23) — structure & conventions
+## The Bestiary (v2.24) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
@@ -883,7 +889,7 @@ recoverable from history.
 
 | Group | Verdict | Why |
 |---|---|---|
-| The 6 PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's six "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. **Purged from the history on 2026-08-28** with `filter-branch`, which took the pack from 98.8 MB to 4.0 MB and a fresh clone to 4.7 MB; all 319 commits and 92 tags survived, and a full mirror was kept at `Desktop\Git\_BloodAndGrit-prepurge-backup.git`. |
+| The 7 PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's seven "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. **Purged from the history on 2026-08-28** with `filter-branch`, which took the pack from 98.8 MB to 4.0 MB and a fresh clone to 4.7 MB; all 319 commits and 92 tags survived, and a full mirror was kept at `Desktop\Git\_BloodAndGrit-prepurge-backup.git`. |
 | The 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
 | `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
 | `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting: the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
