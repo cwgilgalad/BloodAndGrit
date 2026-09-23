@@ -26,6 +26,11 @@ from pathlib import Path
 # what makes the move to audits/ a move and not a rewrite.
 ROOT = Path(__file__).resolve().parent.parent
 
+# The two book-wide checks below read the built page and the raw data whole, rather than
+# through load_book()/load_data(), which narrow to the eighteen Calling tables.
+BOOK_HTML = (ROOT / "blood-and-grit.html").read_text(encoding="utf-8")
+RAW_DATA = json.loads((ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8"))
+
 
 def attack_for(rank, level):
     return {"Practiced": level, "Steady": level - 1, "Slight": max(0, level - 2)}[rank]
@@ -1041,6 +1046,176 @@ def check_index_order(problems):
     return checks
 
 
+COIN_TBL = re.compile(r"<thead><tr><th>Calling</th><th>Starting Coin</th></tr></thead>\s*"
+                      r"<tbody>(.*?)</tbody>", re.S)
+COIN_ROW = re.compile(r"<tr><td>(.*?)</td><td>(.*?)</td></tr>")
+COIN_AMT = re.compile(r"(\d+)d6 × \$(\d+)")
+
+
+def check_coin(problems):
+    """Ch. X's Starting Coin table against the coin the app deals out.
+
+    Nothing checked this table until 2026-09-23, and by then it was two Callings short. The
+    Engineer and the Sister had been written into their own chapters and into chargen.json and
+    never into the table that outfits them, so the app could equip either one and the book could
+    not: a player who chose either could not finish step 7 of character creation. The dollars
+    belong to the data, so the book is read against it and not the other way round. The notes
+    ("in pelts", "as the cards fell") are short enough to hold literally; the kits are not, so
+    what is checked there is that a Calling the data gives a kit is a Calling the row says
+    "plus" for, and that one the data gives nothing is a row that promises nothing.
+    """
+    body = COIN_TBL.search(BOOK_HTML)
+    if body is None:
+        problems.append("Ch. X has no Starting Coin table to read; this check is guarding nothing")
+        return 1
+    rows = {html.unescape(a).strip(): html.unescape(b).strip()
+            for a, b in COIN_ROW.findall(body.group(1))}
+    coins = {c["name"]: c["coin"] for c in RAW_DATA["callings"]}
+    checks = 1
+    missing = sorted(set(coins) - set(rows))
+    extra = sorted(set(rows) - set(coins))
+    if missing:
+        problems.append(f"Starting Coin has no row for {', '.join(missing)}. The app outfits "
+                        f"them and the book cannot, so character creation stops at step 7.")
+    if extra:
+        problems.append(f"Starting Coin has rows for {', '.join(extra)}, which are not Callings")
+    for name, coin in sorted(coins.items()):
+        row = rows.get(name)
+        if row is None:
+            continue
+        checks += 3
+        amt = COIN_AMT.search(row)
+        if amt is None:
+            problems.append(f"Starting Coin, {name}: {row!r} states no NdN x $N to check")
+        elif (int(amt.group(1)), int(amt.group(2))) != (coin["dice"], coin["mult"]):
+            problems.append(f"Starting Coin, {name}: the book says {amt.group(0)} and the data "
+                            f"deals {coin['dice']}d6 x ${coin['mult']}")
+        note = coin.get("note", "")
+        if note and note.lower() not in row.lower():
+            problems.append(f"Starting Coin, {name}: the data notes {note!r} and the row does "
+                            f"not say it: {row!r}")
+        has_kit, says_plus = bool(coin.get("kit")), "plus" in row.lower()
+        if has_kit != says_plus:
+            problems.append(f"Starting Coin, {name}: the data "
+                            f"{'carries a kit' if has_kit else 'carries no kit'} and the row "
+                            f"{'says' if says_plus else 'does not say'} plus: {row!r}")
+    return checks
+
+
+# Every sentence in the Player's Book that spells out one of the four level ladders, and the
+# ladder it must spell. The ladders themselves are not written here: three come from the
+# predicates in Core.cs that the app actually branches on, and the fourth from Ch. XIII's own
+# Rank table, each cross-checked against a second, independent statement of the same thing.
+#
+# This is the rot the Fifteen Levels program left behind. The game ran to 10th level, the band
+# to 15th opened in B6, the tables and the predicates were all raised, and eight sentences of
+# prose went on saying "3rd, 5th, 7th, and 9th" -- including the one in Ch. VIII that is the
+# only place a player is told when their skills improve at all. Every one of them reads as a
+# complete list, so nothing about them looks stale; they are only wrong against a number that
+# is never reprinted beside them.
+LADDERS = [
+    ("Ch. V, the Calling that spells out its own skill increases",
+     r"you gain a skill increase at ([^.]*)\.", "skill", 1),
+    ("Ch. VIII, Skills",
+     r"raise one skill a rank with each skill increase at ([^.]*)\.", "skill", 1),
+    ("Ch. IX, Edges",
+     r"gains an Edge at (.*?), and may also raise", "edge", 1),
+    ("Ch. IX, the ability boost",
+     r"raise one ability score by a point at ([^.]*)\.", "boost", 1),
+    ("Ch. XIV, What a Level Brings: the Edge",
+     r"An Edge at ([^.]*)\.", "edge", 1),
+    ("Ch. XIV, What a Level Brings: the skill increase",
+     r"A skill increase at (.*?), raising one skill", "skill", 1),
+    ("Ch. XIV, What a Level Brings: the ability boost",
+     r"One ability score raised by a point at ([^.]*)\.", "boost", 1),
+    ("Chs. VI and VII, the Callings that work a Rank ladder",
+     r"learn another as each new Rank opens(?: to you)?: at ([^.]*)\.", "rank_after_first", 5),
+    ("Ch. VII, the Old Dark on its Rank ladder",
+     r"Every Sign carries a Rank from one to \w+, and you reach a new Rank at ([^;]*);",
+     "rank", 1),
+    ("Ch. XIII, the Miracle Rank ladder",
+     r"you reach a new Rank at the same rungs a sign-worker does: ([^.]*)\.", "rank", 1),
+    ("Ch. XIII, the top three Ranks",
+     r"Sign-workers reach Rank Six at ([^.]*)\.", "rank_top3", 1),
+]
+
+ORDINAL = re.compile(r"\b(\d+)(?:st|nd|rd|th)\b")
+PREDICATE = re.compile(r"bool (\w+)\(int level\)\s*=>\s*level is ([^;]+);")
+RANK_ROW = re.compile(r'<td class="c">(\d+)</td><td class="c">(\d+)(?:st|nd|rd|th) level</td>')
+
+
+def _reading_text(name):
+    """The book as a reader sees it: no tags, no entities, no line breaks."""
+    return re.sub(r"\s+", " ",
+                  html.unescape(re.sub(r"<[^>]+>", " ",
+                                       (ROOT / name).read_text(encoding="utf-8"))))
+
+
+def check_ladders(problems):
+    core = (ROOT / "GK/rules/Core.cs").read_text(encoding="utf-8")
+    listed = {m.group(1): sorted(int(x) for x in re.findall(r"\d+", m.group(2)))
+              for m in PREDICATE.finditer(core)}
+    max_level = int(re.search(r"const int MaxLevel = (\d+);", core).group(1))
+    rank_tbl = RANK_ROW.findall(BOOK_HTML)
+    rank_at = sorted(int(level) for _, level in rank_tbl)
+
+    truth = {
+        "skill": listed.get("IsSkillIncreaseLevel"),
+        "edge": listed.get("IsEdgeLevel"),
+        # IsAbilityBoostLevel is a formula, not a list, so raising MaxLevel moves it on its own.
+        "boost": list(range(5, max_level + 1, 5)),
+        "rank": rank_at,
+        # A Faith or Old Dark Calling begins knowing two workings at 1st level, so its sentence
+        # names the rungs it LEARNS on and leaves the first off. That is not the ladder being
+        # short; it is the same ladder from the second rung.
+        "rank_after_first": rank_at[1:],
+        "rank_top3": rank_at[-3:],
+    }
+    checks = 2
+    for name in ("IsSkillIncreaseLevel", "IsEdgeLevel"):
+        if listed.get(name) is None:
+            problems.append(f"GK/rules/Core.cs no longer states {name} as a list of levels, so "
+                            f"the ladder checks have nothing to read. Repoint them.")
+            return checks
+
+    # Two independent statements of each ladder, held against each other before either is used
+    # to judge the prose. The Edge ladder is also written into all eighteen printed level
+    # tables, and the Rank ladder is also written into chargen.json's rankAtLevel.
+    checks += 1
+    from_tables = sorted({r["level"] for c in RAW_DATA["callings"] for r in c["rows"]
+                          if "Edge" in r["features"]})
+    if from_tables != truth["edge"]:
+        problems.append(f"the Calling tables hand out an Edge at {from_tables} and "
+                        f"Core.cs IsEdgeLevel says {truth['edge']}")
+    checks += 2
+    at_level = {int(k): v for k, v in RAW_DATA["rankAtLevel"].items()}
+    opens = sorted(l for l in at_level if l == 1 or at_level[l] > at_level[l - 1])
+    printed_top = max(int(r) for r, _ in rank_tbl)
+    if opens != rank_at:
+        problems.append(f"chargen.json opens a new Rank at {opens} and Ch. XIII's Rank table "
+                        f"says {rank_at}")
+    if max(at_level.values()) != printed_top:
+        problems.append(f"chargen.json tops out at Rank {max(at_level.values())} and Ch. XIII's "
+                        f"table prints {printed_top}")
+
+    book = _reading_text("blood-and-grit.html")
+    for label, pattern, key, hits in LADDERS:
+        checks += 1
+        found = re.findall(pattern, book)
+        if len(found) != hits:
+            problems.append(f"{label}: the sentence this reads matched {len(found)} time(s), "
+                            f"not {hits}, so it is guarding nothing or guarding two things. "
+                            f"Repoint it or take it out.")
+            continue
+        for said in found:
+            checks += 1
+            rungs = sorted({int(x) for x in ORDINAL.findall(said)})
+            if rungs != truth[key]:
+                problems.append(f"{label}: the book names {rungs} and the ladder is "
+                                f'{truth[key]} -- "{said.strip()[:100]}"')
+    return checks
+
+
 def main():
     data, book = load_data(), load_book()
     problems = []
@@ -1055,7 +1230,7 @@ def main():
             continue
         if b["rank"] != d["rank"]:
             problems.append(f"{name}: book statline rank {b['rank']!r} != data attackRank {d['rank']!r}")
-        for level in range(1, 11):
+        for level in range(1, 16):
             ba = b["rows"].get(level)
             da = d["rows"].get(level)
             if ba is None or da is None:
@@ -1072,7 +1247,7 @@ def main():
                     problems.append(f"{name} L{level}: {label} {val} is neither strong "
                                     f"({strong(level)}) nor weak ({weak(level)})")
 
-    checks = sum(1 + 10 * 4 for _ in data)   # rank + 10 levels × (atk + 3 saves), per Calling
+    checks = sum(1 + 15 * 4 for _ in data)   # rank + 15 levels × (atk + 3 saves), per Calling
     checks += check_arms(problems)
     checks += check_features(problems)
     checks += check_subpaths(problems)
@@ -1086,6 +1261,8 @@ def main():
     checks += check_fight_ledger(problems)
     checks += check_familiars(problems)
     checks += check_index_order(problems)
+    checks += check_coin(problems)
+    checks += check_ladders(problems)
     if problems:
         print(f"DRIFT - {len(problems)} disagreement(s) between the book, the data, and the formula:")
         for p in problems[:40]:
@@ -1094,7 +1271,8 @@ def main():
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
           f"prose, their Perks, their fight ledgers, their 3rd-level paths, every Sign and "
           f"Miracle, the arms table, "
-          f"Ch. IV's Origins, the Index's own alphabet, and its encounter budget across both books "
+          f"Ch. IV's Origins, the Index's own alphabet, the coin each Calling starts with, "
+          f"every level ladder the prose spells out, and its encounter budget across both books "
           f"({checks} cross-checks, 0 drift).")
     return 0
 

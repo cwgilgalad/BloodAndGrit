@@ -835,6 +835,93 @@ def check_creature_count(creatures):
            f"{len({n for n, _ in COUNT_CLAIMS})} files, all reading {truth}")
 
 
+# The counts the Player's Book spells out in words about itself, and the key in `truth` that
+# settles each one. check_front_page does this for the two READMEs and check_creature_count for
+# the numerals typed into prose files; these are the same rot inside the book, where it is worst,
+# because a number written as a word looks like writing rather than like a fact, and a proofreader
+# slides straight over it. On 2026-09-23 the Signs chapter counted itself at fifty-five against
+# fifty-six, and Ch. XIII called the Callings of Faith six when the book prints five.
+# The last number is how many times the sentence is expected to appear. The Sign ceiling is
+# stated twice -- in Ch. VII, where a player meets the Old Dark, and again in Ch. XIII, where
+# the ladder is printed -- and on 2026-09-23 the two copies disagreed, so both are read.
+BOOK_COUNTS = [
+    (r"There are ([\w-]+) of them here", "signs", 1),
+    (r"Each of the ([\w-]+) Callings of Faith", "faith", 1),
+    (r"Every Sign carries a Rank from one to ([\w-]+)", "top_rank", 2),
+    (r"Every Miracle carries a Rank from one to ([\w-]+)", "top_rank", 1),
+]
+
+# The two notes that say how thin the top of each ladder is. Their shape carries a claim of its
+# own -- that Ranks Six and Seven hold the SAME number -- so the shape is checked before the
+# numbers are. The Signs note is right; the Miracles note was copied from it and never recounted.
+SHELVES = [("Signs", "signs"), ("Miracles", "miracles")]
+SHELF_RE = (r"Ranks Six and Seven hold ([\w-]+) {noun} apiece and Rank Eight holds ([\w-]+)")
+
+
+def _reading(name):
+    """A book as a reader sees it: no tags, no entities, no line breaks."""
+    import html as _html
+    return re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ",
+                                                     (ROOT / name).read_text(encoding="utf-8"))))
+
+
+def check_book_counts(chargen):
+    print("\nThe counts the Player's Book spells out about itself")
+    book = _reading("blood-and-grit.html")
+    by_rank = {which: {r: sum(1 for w in chargen[which] if w["rank"] == r)
+                       for r in {w["rank"] for w in chargen[which]}}
+               for _, which in SHELVES}
+    truth = {
+        "signs": len(chargen["signs"]),
+        "faith": sum(1 for c in chargen["callings"] if c.get("group") == "Faith"),
+        "top_rank": max(max(c) for c in by_rank.values()),
+    }
+    bad = 0
+    for pattern, key, hits in BOOK_COUNTS:
+        CHECKS[0] += 1
+        found = re.findall(pattern, book)
+        if len(found) != hits:
+            bad += 1
+            fail(f"the Player's Book matches {pattern!r} {len(found)} times, not {hits}, so this "
+                 f"check is guarding nothing or guarding something it was not pointed at. "
+                 f"Repoint it or take it out.")
+            continue
+        for said in found:
+            CHECKS[0] += 1
+            if WORDS.get(said.lower()) != truth[key]:
+                bad += 1
+                fail(f'the Player\'s Book says "{said}" where there are '
+                     f"{truth[key]}: {pattern!r}")
+
+    for noun, which in SHELVES:
+        CHECKS[0] += 1
+        counts = by_rank[which]
+        found = re.findall(SHELF_RE.format(noun=noun), book)
+        if len(found) != 1:
+            bad += 1
+            fail(f"the note on how many {noun} the top Ranks hold matched {len(found)} times, "
+                 f"not once. Repoint it or take it out.")
+            continue
+        CHECKS[0] += 3
+        said_six_seven, said_eight = (WORDS.get(w.lower()) for w in found[0])
+        if counts[6] != counts[7]:
+            bad += 1
+            fail(f"the book says Ranks Six and Seven hold the same number of {noun} and Rank Six "
+                 f"holds {counts[6]}, Rank Seven {counts[7]}. The sentence has to say both.")
+        elif said_six_seven != counts[6]:
+            bad += 1
+            fail(f"the book says Ranks Six and Seven hold {found[0][0]} {noun} apiece and they "
+                 f"hold {counts[6]}")
+        if said_eight != counts[8]:
+            bad += 1
+            fail(f"the book says Rank Eight holds {found[0][1]} {noun} and it holds {counts[8]}")
+
+    if not bad:
+        ok(f"{len(BOOK_COUNTS) + len(SHELVES)} count(s) the book spells out about itself: "
+           + ", ".join(f"{v} {k}" for k, v in truth.items())
+           + ", and the top three Ranks of both ladders")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -866,6 +953,8 @@ def main():
     check_front_page(json.loads(
         (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
     check_creature_count(creatures)
+    check_book_counts(json.loads(
+        (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
 
     print()
     if FAILURES:
