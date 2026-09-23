@@ -236,7 +236,7 @@ public partial class MainForm
         var win = HelpWindow(ref lessonWin, "The Five-Minute Lesson", 760, 780);
         if (win == null) return;
 
-        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Segoe UI", 10f) };
+        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = Face("Segoe UI", 10f) };
         ReadingMenu(rtf, "The Five-Minute Lesson");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
@@ -368,7 +368,7 @@ public partial class MainForm
         var win = HelpWindow(ref shortcutsWin, "Keyboard Shortcuts", 560, 520);
         if (win == null) return;
 
-        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = new Font("Consolas", 10f) };
+        var rtf = new RichTextBox { ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper, Font = Face("Consolas", 10f) };
         ReadingMenu(rtf, "Keyboard shortcuts");
         void H(string s) { rtf.SelectionFont = Face("Segoe UI", 12f, FontStyle.Bold); rtf.SelectionColor = Blood; rtf.AppendText(s + "\n"); }
         void M(string s) { rtf.SelectionFont = Face("Consolas", 10f); rtf.SelectionColor = Ink; rtf.AppendText(s + "\n"); }
@@ -443,7 +443,7 @@ public partial class MainForm
         var title = new Label
         {
             Text = "GritKeeper", AutoSize = false, TextAlign = ContentAlignment.MiddleCenter,
-            Left = 0, Top = 178, Width = 504, Height = 30, Font = new Font("Segoe UI", 13f, FontStyle.Bold), ForeColor = Blood
+            Left = 0, Top = 178, Width = 504, Height = 30, Font = Face("Segoe UI", 13f, FontStyle.Bold), ForeColor = Blood
         };
         var ver = new Label
         {

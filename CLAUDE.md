@@ -8,7 +8,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.53 · Keeper's Book v2.37 · Bestiary v2.24 ·
-GritKeeper app v1.58.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.59.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -713,7 +713,7 @@ to it: the one place this rule is written that the auditor does not read is nowh
 
 ---
 
-## GritKeeper (v1.58.0) — the C# desktop app
+## GritKeeper (v1.59.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline, separate source tree, separate build. The working
