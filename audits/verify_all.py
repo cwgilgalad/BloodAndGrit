@@ -3,7 +3,7 @@
 
 **Why this is a script and not a slash command.** A slash command runs when somebody types it,
 inside Claude Code. This has to run for Cole at a prompt, for CI, for a git hook, and for Claude
-alike — a verification entry point that only works when one particular tool is driving is the first
+alike. A verification entry point that only works when one particular tool is driving is the first
 thing in this repo that stops working the day that tool is not. A `/verify` wrapper that shells out
 to this is fine; it just is not the substance.
 
@@ -19,7 +19,7 @@ adding a file to `audits/` and a row to `CHECKS` below, and `--list` will then s
     python audits/verify_all.py --release      # everything, which is the gate /ship reads
     python audits/verify_all.py --list         # what would run, and in what order
 
-Exit code 0 means every check that can fail did not. **Advisory checks never affect it** —
+Exit code 0 means every check that can fail did not. **Advisory checks never affect it**:
 `audit_whitespace.py` measures page gaps and a Keeper decides whether a gap is a fault, so it is
 reported and never counted. Nothing here is a substitute for reading the output: a check that
 passes still prints the number it passed on, and those numbers are how drift gets noticed early.
@@ -99,7 +99,7 @@ BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legend
 
 
 def run(label, cmd, cwd=None):
-    """One check. Returns (label, ok, seconds, tail) and streams nothing — the tail is what a
+    """One check. Returns (label, ok, seconds, tail) and streams nothing. The tail is what a
     reader wants when it passed, and the whole output is what they want when it did not."""
     t0 = time.monotonic()
     p = subprocess.run(cmd, cwd=str(cwd or ROOT), capture_output=True, text=True,
@@ -219,7 +219,7 @@ def main():
     print()
     for label, out in failed:
         print("=" * 78)
-        print(f"FAILED — {label}")
+        print(f"FAILED: {label}")
         print("=" * 78)
         print(out)
         print()
@@ -232,7 +232,7 @@ def main():
         line += f"; {len(advisory_failed)} advisory check(s) had something to say"
     print(line)
     if failed:
-        print("Read the output above. Nothing here is a lint — every one of these was written "
+        print("Read the output above. Nothing here is a lint. Every one of these was written "
               "because something got past the others.")
         return 1
     print("Green. This is not permission to skip reading the numbers above.")

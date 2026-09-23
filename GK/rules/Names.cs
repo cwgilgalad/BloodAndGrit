@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BloodAndGritKeeper;
 
-/// <summary>One title form — a grammatical shape with slots, e.g. <c>What {actor} {verb3}</c>.</summary>
+/// <summary>One title form: a grammatical shape with slots, e.g. <c>What {actor} {verb3}</c>.</summary>
 public sealed class TitleForm
 {
     public string Id { get; set; } = "";
@@ -11,7 +11,7 @@ public sealed class TitleForm
 }
 
 /// <summary>The naming stock, loaded from <c>Data/names.json</c>. App-side data, not a book
-/// transcription — see the note at the top of the file.</summary>
+/// transcription. See the note at the top of the file.</summary>
 public sealed class NameData
 {
     public List<string> Spent { get; set; } = new();
@@ -60,19 +60,19 @@ public sealed class NameData
 /// <summary>Draws names that do not repeat themselves.
 ///
 /// <para>Two different problems are being solved and they need different tools. <b>Breadth</b> is
-/// the only defence ACROSS seeds — nothing one run remembers can stop two evenings drawing the
+/// the only defence ACROSS seeds. Nothing one run remembers can stop two evenings drawing the
 /// same word, so the pools in <c>names.json</c> are large. <b>Memory</b> is the defence WITHIN a
 /// seed: a Namer spends every distinctive word it hands out and will not hand it out twice.</para>
 ///
 /// <para>It spends <i>shapes</i> too, and that is the part that was actually broken. Modules I and
-/// III shipped as "The Salt at Coffin Wells" and "The Reckoning of the Wells" — they collide on the
+/// III shipped as "The Salt at Coffin Wells" and "The Reckoning of the Wells". They collide on the
 /// word <i>Wells</i>, and they collide again on the shape <c>The &lt;abstract noun&gt; &lt;prep&gt;
 /// &lt;place&gt;</c>. Widening the word lists alone would have produced "The Ashes at Gallows Fork"
 /// and "The Judgment of the Hollow", which is the same title twice in a better costume.</para>
 ///
 /// <para><b>Exactly one <c>rng.Next</c> per draw.</b> A rejection-sampling loop would consume a
 /// variable number of values, and MapGen's landmark stream (<c>rngLm</c>) names AND places from the
-/// same Random — so a name that cost two rolls instead of one would silently move the rocks. The
+/// same Random, so a name that cost two rolls instead of one would silently move the rocks. The
 /// draw picks a start index and then scans forward for the first unspent entry, which is one roll
 /// whatever it finds.</para>
 ///
@@ -94,7 +94,7 @@ public sealed class Namer
     };
 
     /// <param name="seed">Same seed, same names. This is the whole point of the class.</param>
-    /// <param name="alreadySpent">Words this run may not use — the stock's own <c>spent</c> list
+    /// <param name="alreadySpent">Words this run may not use: the stock's own <c>spent</c> list
     /// (words already on published work) plus anything the caller has committed to elsewhere.</param>
     public Namer(int seed, IEnumerable<string> alreadySpent = null)
     {
@@ -122,7 +122,7 @@ public sealed class Namer
         foreach (var w in Distinctive(phrase)) spentWords.Add(w);
     }
 
-    /// <summary>Mark a phrase used without drawing it — for a name that arrived from somewhere
+    /// <summary>Mark a phrase used without drawing it: for a name that arrived from somewhere
     /// else (a book table, a Keeper's typing, a module already published) and which the rest of
     /// this run must not echo. Consumes no randomness, so it cannot shift a seeded sequence.</summary>
     public void Reserve(string phrase) => Spend(phrase);
@@ -133,7 +133,7 @@ public sealed class Namer
     public bool WouldRepeat(string phrase) => !IsFree(phrase);
 
     /// <summary>Take one entry, preferring one whose words this run has not spent. Exactly one
-    /// <c>rng.Next</c> — see the class note.</summary>
+    /// <c>rng.Next</c>. See the class note.</summary>
     public string Draw(IReadOnlyList<string> pool)
     {
         if (pool == null || pool.Count == 0) return "";
@@ -201,7 +201,7 @@ public sealed class Namer
         return Fill(d, form.Pattern);
     }
 
-    /// <summary>Fill one template's slots. <c>{place}</c> is special — it is two draws off the town
+    /// <summary>Fill one template's slots. <c>{place}</c> is special. It is two draws off the town
     /// stock rather than one off a list, so a title can name a town that does not exist yet.</summary>
     public string Fill(NameData d, string pattern)
     {
@@ -227,8 +227,8 @@ public static class Names
 {
     static NameData data;
 
-    /// <summary>The stock, loaded once. Embedded in the rules assembly like every other data file
-    /// — see the csproj note; embedding it anywhere else makes <c>Db.ReadData</c> find nothing.</summary>
+    /// <summary>The stock, loaded once. Embedded in the rules assembly like every other data file.
+    /// See the csproj note; embedding it anywhere else makes <c>Db.ReadData</c> find nothing.</summary>
     public static NameData Data => data ??= Load();
 
     static NameData Load()
@@ -242,7 +242,7 @@ public static class Names
     public static Namer For(int seed) => new(seed, Data.Spent);
 
     /// <summary>How many distinct names a slot can offer. Used by the smoke rig to hold the stock
-    /// to a floor — breadth is the only thing that defends across seeds, so it is worth asserting
+    /// to a floor: breadth is the only thing that defends across seeds, so it is worth asserting
     /// rather than trusting.</summary>
     public static int PoolSize(string slot) =>
         Data.Slots.TryGetValue(slot, out var p) ? p.Count : 0;

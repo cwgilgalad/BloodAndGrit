@@ -1,5 +1,5 @@
 {
-  "_source": "GritKeeper's own, not transcribed from the books — the Player's Book asks the Four Questions and leaves what a soul LOOKS like to the table, which is right for a book and no help at all to a Keeper who needs a face for the woman who just walked into the saloon. Two rules govern this file. First: a people is described, never costed. Nothing here touches a number, gates an Origin or a Calling, or changes a die — it is ink, and the books' standing line holds, that the peoples of the West appear as people and professionals and the game's invented dark is never pinned to a living one. Second: the draws are CONDITIONED, not shuffled. Hair, eyes and complexion come out of the people's own lists and the garments come out of one style's own wardrobe, because six independent lists produce a Norwegian with a queue in a charro jacket and that reads as a machine talking.",
+  "_source": "GritKeeper's own, not transcribed from the books: the Player's Book asks the Four Questions and leaves what a soul LOOKS like to the table, which is right for a book and no help at all to a Keeper who needs a face for the woman who just walked into the saloon. Two rules govern this file. First: a people is described, never costed. Nothing here touches a number, gates an Origin or a Calling, or changes a die. It is ink, and the books' standing line holds, that the peoples of the West appear as people and professionals and the game's invented dark is never pinned to a living one. Second: the draws are CONDITIONED, not shuffled. Hair, eyes and complexion come out of the people's own lists and the garments come out of one style's own wardrobe, because six independent lists produce a Norwegian with a queue in a charro jacket and that reads as a machine talking.",
   "peoples": [
     {
       "name": "Anglo-American, eastern-born",
@@ -135,7 +135,7 @@
       ]
     },
     {
-      "name": "Mexican — Tejano, Californio, Sonoran",
+      "name": "Mexican: Tejano, Californio, Sonoran",
       "weight": 9,
       "complexions": [
         "warm brown",
@@ -184,7 +184,7 @@
       "complexions": [
         "warm brown",
         "light brown",
-        "deep brown, and unweathered — an indoor trade until lately",
+        "deep brown, and unweathered: an indoor trade until lately",
         "brown, sun-darkened on the arms"
       ],
       "hair": [
@@ -311,7 +311,7 @@
       ]
     },
     {
-      "name": "Pueblo — Hopi, Zuni, Taos",
+      "name": "Pueblo: Hopi, Zuni, Taos",
       "weight": 2,
       "complexions": [
         "brown",
@@ -637,7 +637,7 @@
     "broad through the chest and going soft at the middle",
     "heavy-built and slow to move, and quicker than that looks",
     "thin to the point of gaunt",
-    "solid — the build of somebody who lifts things for a living",
+    "solid: the build of somebody who lifts things for a living",
     "long-limbed and loose-jointed",
     "compact and hard",
     "run down thin by a hard year"
@@ -646,13 +646,13 @@
     "stands square and takes up the room they are given",
     "keeps their back to a wall without appearing to plan it",
     "moves slow, and never wastes a step",
-    "restless — always half-turned toward the door",
+    "restless: always half-turned toward the door",
     "carries themselves like a soldier, and has not been one in years",
     "stoops, whether from work or from wanting to be smaller",
     "quick and light, and startles easily",
     "still. Very still, until they are not",
     "walks with a limp they will not explain",
-    "hands never entirely idle — a coin, a knife, a bit of rope",
+    "hands never entirely idle: a coin, a knife, a bit of rope",
     "watches the middle distance rather than whoever is talking",
     "has the easy, ruined grace of somebody who was once well brought up"
   ],
@@ -664,7 +664,7 @@
     "hollowed out at the cheeks",
     "flat-featured and hard to read",
     "a strong nose, broken once and set poorly",
-    "deep lines from the eyes back — a squinter's face",
+    "deep lines from the eyes back: a squinter's face",
     "a wide mouth that goes to a smile before permission is given",
     "a mouth that has forgotten how",
     "heavy brows, close together",
@@ -696,7 +696,7 @@
     "a low voice that makes people lean in",
     "a carrying voice, built for open ground",
     "soft-spoken, and it is not gentleness",
-    "hoarse — something happened to that throat",
+    "hoarse: something happened to that throat",
     "a drawl slow enough to lose your place in",
     "clipped, quick, all business",
     "an accent worn thin by twenty years away from wherever it started",
@@ -849,7 +849,7 @@
     },
     {
       "name": "green-table finery",
-      "note": "the gambler's uniform — soft hands and hard eyes",
+      "note": "the gambler's uniform: soft hands and hard eyes",
       "hats": [
         "a pearl-grey derby set forward",
         "a low black planter's hat",
@@ -890,7 +890,7 @@
     },
     {
       "name": "circuit black",
-      "note": "the riding preacher's rig — black, dusty, and unarguable",
+      "note": "the riding preacher's rig: black, dusty, and unarguable",
       "hats": [
         "a broad black hat, greened with age",
         "a low-crowned black felt",
@@ -1340,7 +1340,7 @@
       ]
     },
     {
-      "name": "plains dress — hide, quill and trade cloth",
+      "name": "plains dress: hide, quill and trade cloth",
       "note": "worked by hand, and none of it bought",
       "hats": [
         "nothing on the head at all",
@@ -1603,7 +1603,7 @@
     ],
     "Mountain Man": [
       "buffalo-hide winter",
-      "plains dress — hide, quill and trade cloth",
+      "plains dress: hide, quill and trade cloth",
       "trail-worn working dress",
       "freighter's canvas"
     ],
@@ -1632,7 +1632,7 @@
       "mourning black"
     ],
     "Shaman": [
-      "plains dress — hide, quill and trade cloth",
+      "plains dress: hide, quill and trade cloth",
       "rag, charm and mismatch",
       "buffalo-hide winter",
       "trail-worn working dress"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the seven built books into one machine-readable digest — the materials as data.
+"""Convert the seven built books into one machine-readable digest: the materials as data.
 
 **Why this exists.** Every check in `audits/` that reads a book re-invents the same three hundred
 lines: find the chapters, find the headings under them, pull the tables into rows, strip the tags
@@ -9,7 +9,7 @@ is that job, once. A book goes in as HTML and comes out as chapters, sections, p
 tables, and everything downstream reads the digest instead of the markup.
 
 It is also an export. `--out` writes the whole set to JSON, which is the format a Discord bot, a
-search index or a VTT importer would want — the roadmap's online-play rungs all start by needing
+search index or a VTT importer would want: the roadmap's online-play rungs all start by needing
 the books in something other than a 700 KB self-contained page. Nothing in the repo consumes that
 file today; the audits import `digest()` and hold the data in memory, so there is no second copy
 of the books to keep in step. The file is git-ignored for exactly that reason.
@@ -46,7 +46,7 @@ ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 
 
 
 def text_of(fragment):
-    """Tags out, entities decoded, whitespace collapsed. Not length-preserving — this one is for
+    """Tags out, entities decoded, whitespace collapsed. Not length-preserving. This one is for
     reading, and the audits that need true offsets do their own stripping."""
     s = re.sub(r"<(script|style)\b.*?</\1>", " ", fragment, flags=re.S | re.I)
     s = re.sub(r"<[^>]+>", " ", s)
@@ -73,7 +73,7 @@ def book_version(src):
     """A book's own version, and only its own.
 
     Order matters. The three books stamp `Edition of 1885 · Version X.Y` and that is checked
-    first; the modules do not, and carry the Player's Book's number on their covers besides — so a
+    first; the modules do not, and carry the Player's Book's number on their covers besides, so a
     loose search would hand back the shell's version and call it the module's, which is precisely
     the failure `modules_common.py` shipped twice in August. The module form is `· Version X.Y`
     with no edition line, and the Player's mention beside it is spelled `v2.28`, which is why the
@@ -98,7 +98,7 @@ def parse_book(path):
 
     Chapters are `<h1 class="chapter">`; sections are the `<h2>`s under them. Both carry ids
     already, because `nav_tools.py` id-s anything that lacks one so the detailed Contents can
-    anchor to it — which is the reason this parse is as short as it is. Anything ahead of the
+    anchor to it, which is the reason this parse is as short as it is. Anything ahead of the
     first chapter (the cover, the Contents) lands in a chapter named "" so nothing is silently
     dropped; a table on the cover would otherwise vanish without a word.
     """
@@ -210,7 +210,7 @@ def main():
         for name, b in d["books"].items():
             for ch in b["chapters"]:
                 if args.chapter.lower() in ch["title"].lower():
-                    print(f"{name} — {ch['title']}  (#{ch['id']})")
+                    print(f"{name}: {ch['title']}  (#{ch['id']})")
                     for s in ch["sections"]:
                         print(f"   {s['title']}  ({len(s['paragraphs'])}p, {len(s['tables'])}t)")
         return 0

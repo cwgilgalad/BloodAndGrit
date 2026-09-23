@@ -6,7 +6,7 @@ The prose is hand-written and version-agnostic on purpose; the book links point 
 stale. (The book links were `blob/main/*.pdf` until 2026-08-27, when the PDFs were untracked and
 attached to the Release instead.) What *does*
 drift is every place that names a number. This script reads the versions straight from the
-build scripts and the app csproj — the files that authoritatively carry them — and rewrites
+build scripts and the app csproj (the files that authoritatively carry them) and rewrites
 the claims, so a human never has to remember to edit any of them.
 
 TWO MECHANISMS, because the sites are not alike:
@@ -15,13 +15,13 @@ TWO MECHANISMS, because the sites are not alike:
     editions line *and* the latest-change headline from CHANGELOG.md, so it is easier to
     render than to patch.
   * **Every other claim** (CLAUDE.md's two, and both app READMEs) is patched IN PLACE inside
-    an anchored span — see CLAIMS. Those sit in hand-written prose that this script has no
+    an anchored span. See CLAIMS. Those sit in hand-written prose that this script has no
     business regenerating, and the anchoring is load-bearing: CLAUDE.md also says "as of
     Bestiary v2.0" in a sentence about how the paginator works, which is a fact about history
     and must not be rewritten to the current edition. Only text inside a claim span is touched.
 
-WHY THE SECOND MECHANISM EXISTS (2026-08-08). `GritKeeper/README.md` — the README inside the
-delivered zip, the first thing anyone who downloads the app reads — said **v1.10.1** while the
+WHY THE SECOND MECHANISM EXISTS (2026-08-08). `GritKeeper/README.md` (the README inside the
+delivered zip, the first thing anyone who downloads the app reads) said **v1.10.1** while the
 app was on v1.33.0: twenty-three releases of drift, in the one document aimed at somebody who
 is not the author. Nothing caught it because nothing looked: `verify_release.py` checked the
 root README and CLAUDE.md, and this script wrote only the root README. A claim that nothing
@@ -60,7 +60,7 @@ def current_versions() -> dict:
         "Book of Legends": _find("build_legends.py", r'VERSION = "([\d.]+)"'),
         # The csproj carries the app's number and nothing else does: MainForm.AppVersion reads it
         # back off the assembly. This used to read a hand-typed const in MainForm.cs, and when that
-        # const was retired the pattern stopped matching — so the app quietly left the README's
+        # const was retired the pattern stopped matching, so the app quietly left the README's
         # editions line, which is the one place a reader looks to see what the download is.
         "GritKeeper": _find("GK/source/BloodAndGritKeeper.csproj", r"<Version>([\d.]+)</Version>"),
     }
@@ -94,7 +94,7 @@ CLAIMS = [
 ]
 
 # How a version is written, per component, wherever it appears inside a span. Each pattern keeps
-# its label in group 1 so the rewrite replaces only the number — the label is what anchors it, and
+# its label in group 1 so the rewrite replaces only the number. The label is what anchors it, and
 # a bare "v1.5.0" in prose (CLAUDE.md's note on the rename) matches nothing here on purpose.
 #
 # The number is `\d+(?:\.\d+)*` and deliberately NOT `[\d.]+`: the looser class is greedy enough to
@@ -136,7 +136,7 @@ def update_claims(versions: dict) -> list[str]:
     """Patch every claim in CLAIMS. Returns the files actually changed.
 
     Read and written as BYTES on purpose. These are CRLF files, and a text round-trip would
-    rewrite every line ending in the repo's two largest documents — a whole-file diff to correct
+    rewrite every line ending in the repo's two largest documents: a whole-file diff to correct
     three digits, which is how a useful automatic edit becomes one people turn off.
     """
     changed = []
@@ -145,7 +145,7 @@ def update_claims(versions: dict) -> list[str]:
         try:
             text = path.read_bytes().decode("utf-8")
         except OSError:
-            print(f"update_readme: {name} not found — skipped", file=sys.stderr)
+            print(f"update_readme: {name} not found, skipped", file=sys.stderr)
             continue
         new = re.sub(span_pattern,
                      lambda m: retoken(m.group(0), versions),
@@ -218,7 +218,7 @@ def main() -> int:
         # GritKeeper slipped off the editions line and stayed off it. A silent omission reads as
         # "this component has no version", so say plainly that the line is short.
         print("update_readme: no version found for " + ", ".join(missing)
-              + " — the editions line is incomplete", file=sys.stderr)
+              + ", the editions line is incomplete", file=sys.stderr)
     changed = ["README.md"] if update(readme) else []
     changed += update_claims(versions)
     print("update_readme: " + (", ".join(changed) + " updated" if changed

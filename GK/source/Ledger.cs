@@ -16,7 +16,7 @@ public sealed class LedgerView : Panel
     // .NET 10's WinForms analyzer (WFO1000) makes every public property on a control say what the
     // designer serializer should do with it, and the build treats that as an error. Hidden is the
     // true answer rather than the DefaultValue the analyzer also accepts: there is not one
-    // .Designer.cs or InitializeComponent in this tree — every control is built in code — and Zoom
+    // .Designer.cs or InitializeComponent in this tree (every control is built in code) and Zoom
     // is runtime state a Keeper drives with ctrl+wheel, not a design-time setting anything would
     // ever write out.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -65,12 +65,12 @@ public sealed class LedgerView : Panel
     // the sizes this sheet uses that rounds Georgia's word space away to nothing: the subtitle
     // rendered "A Reckoning of OneSoul" (user-reported, 2026-07-27). Plain AntiAlias positions
     // on the sub-pixel and keeps the spaces. Proved with a side-by-side render at 9.5pt before
-    // the change — GridFit collapses the space, AntiAlias does not, at every zoom below ~1.4.
+    // the change: GridFit collapses the space, AntiAlias does not, at every zoom below ~1.4.
     const System.Drawing.Text.TextRenderingHint TextHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
     // ---- the two faces ----
     // Georgia is a *text-figure* face: its 3 4 5 7 9 hang below the baseline and its 0 1 2 sit
-    // at x-height. Lovely in a sentence, wrong in a stat box — "30 ft" reads as "3o ft" and no
+    // at x-height. Lovely in a sentence, wrong in a stat box: "30 ft" reads as "3o ft" and no
     // two numbers in a column line up (user-reported, 2026-07-27). GDI+ has no way to ask a font
     // for its lining-figure set, so the figures are set in a different face: the first installed
     // serif that has lining figures by default. Prose stays Georgia, where text figures belong.
@@ -83,7 +83,7 @@ public sealed class LedgerView : Panel
             {
                 using var probe = new Font(n, 10f);
                 // GDI+ silently substitutes Microsoft Sans Serif for a missing family, and the
-                // substitute reports its own name — so a matching Name means it really is installed.
+                // substitute reports its own name, so a matching Name means it really is installed.
                 if (string.Equals(probe.Name, n, StringComparison.OrdinalIgnoreCase)) return n;
             }
             catch { /* a broken font file shouldn't cost us the sheet */ }
@@ -96,7 +96,7 @@ public sealed class LedgerView : Panel
     // `Zoom` is a public setter wired to the Ledger's zoom control, and every step used to strand
     // its thirteen fonts for the life of the window. These are all DRAWN with and never assigned
     // to a control, and MintFonts only runs on the UI thread, so releasing the old handles here
-    // is safe — nothing else is holding one.
+    // is safe. Nothing else is holding one.
     float cachedZoom = -1;
     readonly List<Font> minted = new();
     Font fTitle, fSub, fLabel, fLabelSm, fValue, fValueB, fSmall, fTiny, fWarn;
@@ -135,7 +135,7 @@ public sealed class LedgerView : Panel
         base.Dispose(disposing);
     }
 
-    // A value is drawn inside its box, never past it — trimmed with an ellipsis as the last
+    // A value is drawn inside its box, never past it: trimmed with an ellipsis as the last
     // resort, so an over-long entry can't slide under the neighbouring box and look truncated
     // by nothing (the Gender box used to paint over the tail of "Mattie "Six-Finger" Lusk").
     static readonly StringFormat FitFmt = new(StringFormat.GenericDefault)
@@ -187,7 +187,7 @@ public sealed class LedgerView : Panel
         { if (!measureOnly) g.DrawString(t, f, GetBrush(c), cx - TextW(t, f) / 2, yy); }
 
         // a bordered field box with a small-caps-style label and a value.
-        // `figures` picks the lining-figure face — on for anything that is a number to be read
+        // `figures` picks the lining-figure face: on for anything that is a number to be read
         // off and compared down a column, off for words.
         float FieldBox(float x, float yy, float bw, string label, string value, bool valueBold = false, bool figures = false, string shortLabel = null)
         {
@@ -198,7 +198,7 @@ public sealed class LedgerView : Panel
                 g.DrawRectangle(GetPen(Rule), x, yy, bw, bh);
                 var vt = value ?? "";
                 float innerW = bw - 10 * zoom;
-                // the label gets the same treatment as the value — "BLOOD / MAX" is wider than a
+                // the label gets the same treatment as the value: "BLOOD / MAX" is wider than a
                 // sixth of a narrow sheet and used to run under the Defense box beside it. It
                 // gives up its second word before it gives up its size, and only ever trims as a
                 // last resort: "BLOOD" reads; "BLOOD /…" reads like a bug.
@@ -208,7 +208,7 @@ public sealed class LedgerView : Panel
                 if (TextW(lt, lf) > innerW) lf = fLabelSm;
                 g.DrawString(lt, lf, GetBrush(Oxblood),
                     new RectangleF(x + 5 * zoom, yy + 2 * zoom, innerW, 13 * zoom), FitFmt);
-                // shrink through all three cuts before trimming — one step was not enough at the
+                // shrink through all three cuts before trimming. One step was not enough at the
                 // pop-out window's width, which is where the clipped name came from.
                 var cuts = figures
                     ? new[] { valueBold ? fNumB : fNum, fNumSm, fNumTiny }
@@ -254,11 +254,11 @@ public sealed class LedgerView : Panel
         // as an em-dash, never as a bare white box that looks like a rendering bug.
         string name = sheet?.Name ?? member?.Name ?? "";
         string calling = sheet?.Calling ?? member?.Calling ?? "";
-        // gender rides on the sheet, but hand-entered souls carry it on the member too — show
-        // whichever we have. (pattern var is gv, not sg — sg collides with the SignsKnown loop below.)
-        string Dash(string v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
+        // gender rides on the sheet, but hand-entered souls carry it on the member too; show
+        // whichever we have. (pattern var is gv, not sg: sg collides with the SignsKnown loop below.)
+        string Dash(string v) => string.IsNullOrWhiteSpace(v) ? ":" : v;
         string gender = Dash(sheet?.Gender is { Length: > 0 } gv ? gv : member?.Gender);
-        string origin = sheet?.Origin ?? "—";
+        string origin = sheet?.Origin ?? ":";
         int level = sheet?.Level ?? member?.Level ?? 1;
         string bloodTxt = member != null ? $"{member.BloodCur} / {member.BloodMax}"
                         : sheet != null ? $"{sheet.Blood} / {sheet.Blood}" : "";
@@ -272,7 +272,7 @@ public sealed class LedgerView : Panel
         // ---- header ----
         TextCenter("The Ledger", fTitle, Oxblood, x0 + w / 2, y);
         y += fTitle.GetHeight(g) + 1 * zoom;
-        TextCenter("A Reckoning of One Soul — Blood and Grit", fSub, InkSoft, x0 + w / 2, y);
+        TextCenter("A Reckoning of One Soul: Blood and Grit", fSub, InkSoft, x0 + w / 2, y);
         y += fSub.GetHeight(g) + 5 * zoom;
         if (!measureOnly) g.DrawLine(GetPen(Rule), x0 + w * 0.18f, y, x0 + w * 0.82f, y);
         y += 8 * zoom;
@@ -324,7 +324,7 @@ public sealed class LedgerView : Panel
                 }
                 else
                 {
-                    g.DrawString("—", fValue, GetBrush(InkSoft), ax + (aW - TextW("—", fValue)) / 2, y + aH - 22 * zoom);
+                    g.DrawString(":", fValue, GetBrush(InkSoft), ax + (aW - TextW(":", fValue)) / 2, y + aH - 22 * zoom);
                 }
             }
         }
@@ -334,11 +334,11 @@ public sealed class LedgerView : Panel
         float sW = (w - gap * 5) / 6;
         string atkTxt = sheet != null
             ? $"G {S(sheet.Attack + CharGen.Mod(sheet.Scores["DEX"]))} · M {S(sheet.Attack + CharGen.Mod(sheet.Scores["STR"]))}"
-            : "—";
+            : ":";
         FieldBox(x0,                  y, sW, "Blood / Max", bloodTxt, valueBold: true, figures: true, shortLabel: "Blood");
-        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "—", figures: true);
-        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "—", figures: true);
-        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : "—", figures: true);
+        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : ":", figures: true);
+        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : ":", figures: true);
+        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : ":", figures: true);
         FieldBox(x0 + (sW + gap) * 4, y, sW, "Attack", atkTxt, figures: true);
         FieldBox(x0 + (sW + gap) * 5, y, sW, "Grit", grit.ToString(), figures: true);
         y += 40 * zoom + gap;
@@ -382,12 +382,12 @@ public sealed class LedgerView : Panel
         var prose = new List<(string, bool)>();
         if (sheet != null)
         {
-            prose.Add(("Lost — " + (sheet.Lost ?? ""), false));
-            prose.Add(("Seen — " + (sheet.Seen ?? ""), false));
-            prose.Add(("Vice — " + (sheet.Vice ?? ""), false));
-            prose.Add(("Moving — " + (sheet.Moving ?? ""), false));
-            if (!string.IsNullOrWhiteSpace(sheet.Compass)) prose.Add(("Compass — " + sheet.Compass, false));
-            if (member != null && !string.IsNullOrWhiteSpace(member.Notes)) prose.Add(("Notes — " + member.Notes, false));
+            prose.Add(("Lost: " + (sheet.Lost ?? ""), false));
+            prose.Add(("Seen: " + (sheet.Seen ?? ""), false));
+            prose.Add(("Vice: " + (sheet.Vice ?? ""), false));
+            prose.Add(("Moving: " + (sheet.Moving ?? ""), false));
+            if (!string.IsNullOrWhiteSpace(sheet.Compass)) prose.Add(("Compass: " + sheet.Compass, false));
+            if (member != null && !string.IsNullOrWhiteSpace(member.Notes)) prose.Add(("Notes: " + member.Notes, false));
         }
         else if (!string.IsNullOrWhiteSpace(member?.Notes)) prose.Add((member.Notes, false));
         else prose.Add(("What did you lose? · What keeps you moving? · What is your vice? · What have you seen?", false));
@@ -395,19 +395,19 @@ public sealed class LedgerView : Panel
 
         // ---- what they look like ----
         // Above the two columns rather than inside one, because it is the only part of the sheet
-        // a player reads OUT — "who am I looking at?" — and it wants the full width for it. Shown
+        // a player reads OUT, "who am I looking at?", and it wants the full width for it. Shown
         // only when there is something to show: a sheet from before the generator existed, or one
         // whose look has been cleared by hand, gets no empty box.
         if (sheet?.Look is { Any: true } look)
         {
             var seen = new List<(string, bool)>();
             void Line(string label, string value)
-            { if (!string.IsNullOrWhiteSpace(value)) seen.Add((label + " — " + value, false)); }
+            { if (!string.IsNullOrWhiteSpace(value)) seen.Add((label + ": " + value, false)); }
             if (!string.IsNullOrWhiteSpace(look.People)) seen.Add((look.People, true));
             Line("Build", look.BodyLine);
             Line("Face", look.FaceLine);
             Line("Wearing", string.IsNullOrWhiteSpace(look.Style) ? look.DressLine
-                : $"{look.Style} — {look.DressLine}");
+                : $"{look.Style}, {look.DressLine}");
             Line("And", look.Detail);
             y += ProseBox(x0, y, w, "Appearance", seen) + gap;
         }
@@ -415,18 +415,18 @@ public sealed class LedgerView : Panel
         // ---- what they carry out of the bad nights ----
         // Only when there is something to carry: a blank box headed WHAT THEY CARRY on a soul who
         // has been through nothing reads as a sheet with a hole in it. Scars live on the table row
-        // rather than the generated sheet, because a soul earns them at the table, not at rolling
-        // — which is also why the New Soul tab's preview never shows this.
+        // rather than the generated sheet, because a soul earns them at the table, not at rolling,
+        // which is also why the New Soul tab's preview never shows this.
         if (member?.Scars is { Count: > 0 })
         {
             var carried = new List<(string, bool)>();
             foreach (var sc in member.Scars)
             {
-                carried.Add(($"{sc.Mark} {sc.Name} — {sc.Kind}"
+                carried.Add(($"{sc.Mark} {sc.Name}, {sc.Kind}"
                     + (string.IsNullOrWhiteSpace(sc.When) ? "" : $", {sc.When}"), true));
                 if (!string.IsNullOrWhiteSpace(sc.Note)) carried.Add(("    " + sc.Note, false));
             }
-            y += ProseBox(x0, y, w, "What They Carry — Injuries & Afflictions", carried) + gap;
+            y += ProseBox(x0, y, w, "What They Carry: Injuries & Afflictions", carried) + gap;
         }
 
         // ---- two columns: skills | edges & gear ----
@@ -457,7 +457,7 @@ public sealed class LedgerView : Panel
                         g.DrawLine(GetPen(Oxblood), xx + 7 * zoom, ly + 3 * zoom, xx + 5 * zoom + tick, ly + 1 * zoom + tick);
                         g.DrawLine(GetPen(Oxblood), xx + 7 * zoom, ly + 1 * zoom + tick, xx + 5 * zoom + tick, ly + 3 * zoom);
                     }
-                    string line = $"{sk.name} ({sk.ability})" + (rank >= 3 ? " — Master" : rank == 2 ? " — Expert" : "");
+                    string line = $"{sk.name} ({sk.ability})" + (rank >= 3 ? ", Master" : rank == 2 ? ", Expert" : "");
                     g.DrawString(line, rank > 0 ? fValueB : fSmall, GetBrush(rank > 0 ? Ink : InkSoft), xx + 6 * zoom + tick + 5 * zoom, ly);
                     // dotted rule under each line, like the book's sheet
                     using var dotted = new Pen(Rule, 1f) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
@@ -468,13 +468,13 @@ public sealed class LedgerView : Panel
             yL += bh;
         }
 
-        // edges, features & path — then arms, gear & coin
+        // edges, features & path, then arms, gear & coin
         {
             float bw = rightW, xx = x0 + leftW + colGap;
             var lines = new List<(string, bool)>();
             if (sheet != null)
             {
-                // What is rationed says so, and says what is left of it — the same ledger the
+                // What is rationed says so, and says what is left of it: the same ledger the
                 // Tracker's Calling strip is drawn from, so the two can never tell a player
                 // different numbers about their own Last Stand.
                 var rationed = member == null ? new() : CharGen.LedgerFor(member);
@@ -482,8 +482,8 @@ public sealed class LedgerView : Panel
                 {
                     var r = rationed.FirstOrDefault(x => x.Name == name || x.Name.EndsWith(": " + name));
                     if (r.Name == null) return "";
-                    return r.Of == 1 ? (r.Left == 1 ? "  — ready, " + r.Limit.Says(sheet) : "  — SPENT, " + r.Limit.Says(sheet))
-                                     : $"  — {r.Left} of {r.Of} left, {r.Limit.Says(sheet)}";
+                    return r.Of == 1 ? (r.Left == 1 ? ", ready, " + r.Limit.Says(sheet) : ", SPENT, " + r.Limit.Says(sheet))
+                                     : $", {r.Left} of {r.Of} left, {r.Limit.Says(sheet)}";
                 }
                 foreach (var f in sheet.Features) lines.Add(("• " + f + Tally(f), false));
                 if (sheet.Subpath != null) lines.Add(("• Path: " + CharGen.PathLabel(sheet, PlayerView) + Tally(sheet.Subpath), false));
@@ -500,7 +500,7 @@ public sealed class LedgerView : Panel
                     foreach (var sg in sheet.SignsKnown)
                     {
                         var d = CharGen.D.signs.FirstOrDefault(x => x.name == sg);
-                        lines.Add(("† " + sg + (d != null ? $" — Rank {d.rank}, {d.cost}" : ""), false));
+                        lines.Add(("† " + sg + (d != null ? $", Rank {d.rank}, {d.cost}" : ""), false));
                     }
                 }
                 if (sheet.MiraclesKnown.Count > 0)
@@ -509,11 +509,11 @@ public sealed class LedgerView : Panel
                     foreach (var mk in sheet.MiraclesKnown)
                     {
                         var d = CharGen.D.miracles.FirstOrDefault(x => x.name == mk);
-                        lines.Add(("✝ " + mk + (d != null ? $" — Rank {d.rank}, {d.cost}" : ""), false));
+                        lines.Add(("✝ " + mk + (d != null ? $", Rank {d.rank}, {d.cost}" : ""), false));
                     }
                 }
             }
-            else lines.Add(("—", false));
+            else lines.Add((":", false));
             yR += ProseBox(xx, yR, bw, "Edges, Calling Features & Path", lines, minH: 120 * zoom) + gap;
 
             var gear = new List<(string, bool)>();
@@ -524,9 +524,9 @@ public sealed class LedgerView : Panel
                     ? "Armor: none" : CharGen.ArmorLine(sheet)), true));
                 foreach (var it in CharGen.Tally(sheet.Gear)) gear.Add(("• " + it, false));
                 gear.Add((" ", false));
-                gear.Add(($"Coin — rolled ${sheet.CoinRolled:0}, ${sheet.CoinLeft:0.##} left", true));
+                gear.Add(($"Coin, rolled ${sheet.CoinRolled:0}, ${sheet.CoinLeft:0.##} left", true));
             }
-            else gear.Add(("—", false));
+            else gear.Add((":", false));
             yR += ProseBox(xx, yR, bw, "Arms, Gear & Coin", gear, minH: 90 * zoom);
         }
 
@@ -584,8 +584,8 @@ public partial class MainForm
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => ledger.Zoom -= 0.15f, 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => ledger.Zoom += 0.15f, 46, "Larger text"));
-        // Through AddSoulToTracker, not a second copy of it. This wrote its own row — no PcId, and
-        // an "already there?" test that matched on Name — so a soul renamed after joining the posse
+        // Through AddSoulToTracker, not a second copy of it. This wrote its own row (no PcId) and
+        // an "already there?" test that matched on Name, so a soul renamed after joining the posse
         // arrived twice, and the row this made was the one the Blood mirror could not find.
         bar.Controls.Add(Btn("→ Tracker", (s, e) => AddSoulToTracker(p), 95, "Put this soul onto the combat tracker"));
         if (p.Sheet != null)
@@ -614,7 +614,7 @@ public partial class MainForm
     }
 
     /// <summary>Re-ink this soul's open Ledger window, if one is open. The sheet is drawn once and
-    /// then sits there — every number on it comes off the PartyMember and the CharacterSheet at
+    /// then sits there. Every number on it comes off the PartyMember and the CharacterSheet at
     /// paint time, but nothing tells it a scar was just written or a new look rolled, so the window
     /// went on showing the soul as they were when it opened. Silent on a soul with no window, which
     /// is the ordinary case; callers should not have to ask first.</summary>
@@ -646,7 +646,7 @@ public partial class MainForm
         var v = CharGen.Validate(s);
         if (v.Count == 0) return new();
         if (s.HandTweaked)
-            return new() { $"Hand-tweaked — the book no longer vouches for {v.Count} figure(s) on this sheet." };
+            return new() { $"Hand-tweaked: the book no longer vouches for {v.Count} figure(s) on this sheet." };
         var outp = new List<string> { "RULES CHECK FAILED:" };
         outp.AddRange(v);
         return outp;

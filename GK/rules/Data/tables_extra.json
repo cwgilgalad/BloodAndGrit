@@ -132,15 +132,15 @@
     "Sandberg"
   ],
   "npcWant": [
-    "A witness gone — paid, scared, or buried",
+    "A witness gone: paid, scared, or buried",
     "Passage on the next coach, any price",
     "Someone to read them a letter they can't open",
     "Their claim worked one more month; the vein is close",
     "A buried gun that doesn't miss",
     "Absolution from a preacher who has refused twice",
-    "The party's horses — offered fair, then unfair, then desperate",
+    "The party's horses: offered fair, then unfair, then desperate",
     "To watch your face while they say a name",
-    "A letter carried east, unopened — burned if followed",
+    "A letter carried east, unopened: burned if followed",
     "One night's honest sleep, at any price",
     "The body back; the killer can keep running",
     "A guide over a pass that closed in '74",
@@ -203,11 +203,11 @@
     "The third-floor rooms are let nightly. Those stairs came out in '77",
     "The surveyor's chain went off the courthouse wall, and fence lines have moved since",
     "The west-range horses won't cross a line you can't see, and it's moving toward town",
-    "A man buys photographs of the dead — only the ones taken before burial"
+    "A man buys photographs of the dead: only the ones taken before burial"
   ],
   "trailDay": [
     "A survey stake driven where no line should run, ribbon still bright",
-    "Wagon ruts that end mid-prairie — no wreck, no stock, no turnaround",
+    "Wagon ruts that end mid-prairie: no wreck, no stock, no turnaround",
     "A swarm of grasshoppers moving against the wind",
     "An abandoned camp, gear costly and untouched, fire laid but never lit",
     "A saddled horse grazing, branded for a county that doesn't border this one",
@@ -231,7 +231,7 @@
     "A rider keeps pace on the ridge all afternoon, then is on the other side",
     "Windmill turning, tank full and sweet, every trough scoured with sand",
     "A pile of boots, paired and set neat, at the edge of a dry lake",
-    "The wind stops. Not drops — stops — and the dust hangs where it was",
+    "The wind stops. Not drops, stops, and the dust hangs where it was",
     "A survey line of blazed trees running straight through standing rock",
     "A stage team grazing in harness, the traces cut with a knife"
   ],
@@ -239,7 +239,7 @@
     "The coffee tastes of river water; the barrel was filled at a well",
     "Two fires on the flat where there should be none; near dawn both go out",
     "The picket line's knots are retied, better than anyone in the party ties them",
-    "A smell of a town — bread, smoke, stables — miles from any",
+    "A smell of a town (bread, smoke, stables) miles from any",
     "The night birds pass overhead all night, all going the one direction",
     "Someone's watch runs backward till dawn; it keeps fair time after",
     "Hoofbeats circle the camp at a canter, twice, and stop where the light ends",
@@ -270,7 +270,7 @@
     "A strongbox of assay reports, every one for the same claim, every one different",
     "$40 in scrip on a bank three days burned",
     "A bridal trunk, packed with care, smelling of cedar; the dress has been buried once",
-    "A preacher's traveling kit — Bible, salt, iron nails — worn to the shape of hard use",
+    "A preacher's traveling kit (Bible, salt, iron nails) worn to the shape of hard use",
     "A spyglass that shows the country as it was: greener, watered, peopled",
     "Letters of credit signed by a man the papers hanged last spring",
     "Tobacco, a good knife, and a map on scraped hide older than any survey",
@@ -336,7 +336,7 @@
       "The Pale Stallion (a living beast)",
       "The Hidebehind (III)",
       "The Shadow That Lags (II)",
-      "The Long Trail's End (IV) — the trail itself hunts",
+      "The Long Trail's End (IV): the trail itself hunts",
       "The Coyote (a living beast)",
       "The Bison Bull (a living beast)",
       "The Stampede (a living beast)",
@@ -355,7 +355,7 @@
       "The Old Tusker (a living beast)",
       "The Water Moccasin (II)",
       "The Boar Sounder (III)",
-      "The Flash Flood (III) — the wash comes down"
+      "The Flash Flood (III): the wash comes down"
     ],
     "Towns, Homesteads & Haunted Houses": [
       "The Ash Child (II)",
@@ -363,13 +363,13 @@
       "The Flock of the Open Eye (II)",
       "The Mesmerist (III)",
       "The Bounty Killer (III)",
-      "The Regulators (IV) — the law they brought is their own",
+      "The Regulators (IV): the law they brought is their own",
       "The Outlaw Gang (III)"
     ],
     "Graveyards & Battlefields": [
       "The Bonepicker (I)",
       "The Resurrectionist (II)",
-      "The Tallyman (III) — collecting on the fallen",
+      "The Tallyman (III): collecting on the fallen",
       "The Deserters (II)",
       "The Regulators (IV)"
     ],
@@ -388,7 +388,7 @@
       "The Black Bear (a living beast)",
       "The Gray Wolf (a living beast)",
       "The Grizzly Bear (a living beast)",
-      "The Blizzard (IV) — the weather is the monster",
+      "The Blizzard (IV): the weather is the monster",
       "The Golden Eagle (II)",
       "The Rutting Buck (II)",
       "The Sow and Cubs (II)",
@@ -404,23 +404,23 @@
       "The Gila Monster (a living beast)",
       "The Comancheros (II)",
       "The Snake Den (III)",
-      "The Flash Flood (III) — the arroyo fills in a minute"
+      "The Flash Flood (III): the arroyo fills in a minute"
     ],
     "The Old Places": [
       "The Eye Between Stars (V)",
       "The Sermon Made Flesh (IV)",
       "The Long Trail's End (IV)",
-      "The Comancheros (II) — somebody got here first",
+      "The Comancheros (II): somebody got here first",
       "The Snake Den (III)"
     ],
     "The Hand Behind It": [
-      "The Skin-Walker (III) — wearing the man you trusted",
-      "The Whisperer's Mouth (III) — the Patron needs hands",
-      "The Sermon Made Flesh (IV) — the doctrine spreads itself",
-      "The Faceless Rider (IV) — it is only the herald",
-      "The Cattle Baron's Men (III) — the money hired the rest",
-      "The Bounty Killer (III) — a man, which is worse",
-      "The Regulators (IV) — they were sent, and they will be sent again"
+      "The Skin-Walker (III): wearing the man you trusted",
+      "The Whisperer's Mouth (III): the Patron needs hands",
+      "The Sermon Made Flesh (IV): the doctrine spreads itself",
+      "The Faceless Rider (IV): it is only the herald",
+      "The Cattle Baron's Men (III): the money hired the rest",
+      "The Bounty Killer (III): a man, which is worse",
+      "The Regulators (IV): they were sent, and they will be sent again"
     ]
   },
   "cityQuarter": [
@@ -445,7 +445,7 @@
     "The streetcar franchise, and the men who voted it",
     "The Ladies' Aid Society, and its ledger",
     "A judge never once overruled",
-    "The union hall — and the man who isn't its president"
+    "The union hall, and the man who isn't its president"
   ],
   "cityWrongNote": [
     "Forty households at one address in the directory",
@@ -474,22 +474,22 @@
     "Bring a runaway home, or decide not to on the way"
   ],
   "advShape": [
-    "A hunt — something is killing, and it has a range you can draw on a map",
-    "A siege — the trouble is already inside, and the doors are the argument",
-    "A haunting — the place itself is the problem, and it has been patient",
-    "A rescue — somebody is still alive in there, and the clock is short",
-    "An escort — get a person or a thing across country that does not want it crossed",
-    "A reckoning — an old debt comes due, and the posse is standing where it lands",
-    "A mystery — people are gone and the town has an explanation ready",
-    "A quarantine — whatever it is, it spreads, and somebody must decide who is left out",
-    "A theft — something was taken that should never have been kept in the first place",
-    "A trial — the law is being used as a weapon, and the wrong person will hang",
-    "A pilgrimage — a crowd is walking somewhere, and they will not be turned back",
-    "A bargain — the thing wants to negotiate, and its terms are almost reasonable",
-    "A drowning — water is involved, and it is giving things back",
-    "A homecoming — someone the posse knows returns, and something returned with them",
-    "A harvest — the trouble runs on a season, and this is the week it comes in",
-    "An excavation — men are digging where the ground was closed on purpose"
+    "A hunt: something is killing, and it has a range you can draw on a map",
+    "A siege: the trouble is already inside, and the doors are the argument",
+    "A haunting: the place itself is the problem, and it has been patient",
+    "A rescue: somebody is still alive in there, and the clock is short",
+    "An escort: get a person or a thing across country that does not want it crossed",
+    "A reckoning: an old debt comes due, and the posse is standing where it lands",
+    "A mystery: people are gone and the town has an explanation ready",
+    "A quarantine: whatever it is, it spreads, and somebody must decide who is left out",
+    "A theft: something was taken that should never have been kept in the first place",
+    "A trial: the law is being used as a weapon, and the wrong person will hang",
+    "A pilgrimage: a crowd is walking somewhere, and they will not be turned back",
+    "A bargain: the thing wants to negotiate, and its terms are almost reasonable",
+    "A drowning: water is involved, and it is giving things back",
+    "A homecoming: someone the posse knows returns, and something returned with them",
+    "A harvest: the trouble runs on a season, and this is the week it comes in",
+    "An excavation: men are digging where the ground was closed on purpose"
   ],
   "advHook": [
     "A child is sent to fetch you, and will not come inside to say why",
@@ -542,7 +542,7 @@
   "advTurn": [
     "The person who hired you is the next to go, or arranges to appear so",
     "A second party arrives who wants it alive",
-    "The way out closes — weather, water, or a burned bridge",
+    "The way out closes: weather, water, or a burned bridge",
     "One of the posse is marked, and it starts being polite to them",
     "The town turns and decides the posse brought it",
     "The obvious monster turns out to be guarding something worse",
@@ -552,7 +552,7 @@
     "It offers a trade, by name, out loud, and the offer is fair",
     "Somebody in the posse is recognized by it",
     "The law arrives and arrests the wrong person with total confidence",
-    "The place moves — a road, a door, or a mile of country is not where it was",
+    "The place moves: a road, a door, or a mile of country is not where it was",
     "It stops entirely for three days, and the waiting does the work",
     "A child knows the way in and will only take one of you",
     "What was stolen turns up in the posse's own gear",
@@ -583,14 +583,14 @@
     "A deed to land that nobody local will buy from you",
     "The gratitude of a town that will deny hiring you",
     "A weapon that worked on it, and only on it",
-    "A name — whose, and where they can be found",
+    "A name: whose, and where they can be found",
     "A standing account at a bank three towns over",
     "The dead man's horse, which is better than yours",
     "A page torn from something older than the territory",
     "A favor from the law, redeemable once, quietly",
     "A key, and no lock yet",
     "Passage out for someone who cannot buy it themselves",
-    "A share in the mine, the well, or the line — pending",
+    "A share in the mine, the well, or the line: pending",
     "The truth, in writing, signed by someone who will hang for it",
     "A child's whole future, if you are the kind who counts that",
     "Whatever you can carry before the fire reaches it",

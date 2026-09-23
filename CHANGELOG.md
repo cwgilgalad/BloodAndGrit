@@ -8,6 +8,70 @@ Desktop\Git repos.)
 
 ---
 
+- **The voice pass over everything that is not a book: the docs, the app's own words, and the
+  scripts that print. GritKeeper v1.58.0 (2026-09-22).**
+
+  The books came out of the 2026-09-20 pass at 0.0 to 0.5 em dashes per thousand words. Nothing
+  around them did. README is the first thing a stranger reads and a button is the first thing a
+  Keeper reads, so the same gate covers both now, and the rest of the repo with them. README 0.5,
+  CLAUDE.md 1.6, GK/CLAUDE.md 0.7, this file 0.1, NOTICE 0.0, and the last forty commit messages
+  1.7, against a gate of 2.0.
+
+  **Three of the app's dashes were furniture, so they needed a convention instead of a cut.** A
+  greyed group heading in a drop-down ("Mounts", "The whole posse"), the descriptive half of a
+  combo row, and the divider the log prints at the top of a round. Each has its own mark now: a
+  trailing colon for a heading, brackets for a combo row, `ROUND n` for the log. `audit_ui.py` had
+  been reading those dashes to tell a heading from a dead button, so its rule moved with them. An
+  item with no handler is exempt only if it looks like a heading, which means it ends in a colon;
+  and `MenuBtn` renders a handler-less item disabled anyway, so a greyed line saying "Mounts:"
+  cannot be taken for a button that does nothing.
+
+  **One cut broke a file format, which is what 16,355 smoke assertions are for.** A weapon's price
+  tag is built as `{name} {dmg} ({traits}) — ${cost}` and parsed back out of the saved string, so
+  cutting the tag and leaving the parser alone turned 707 coin ledgers wrong at once ("rolled 90,
+  spent 60.75, left 9.25"). The tag takes a middle dot now and the parser accepts either mark,
+  because a session saved by an older build still has to balance.
+
+  **Two symbols went back where they were.** `c.dread is "" or "—"` and `sign.NextStrike == "—"`
+  are the Bestiary's notation for a field with nothing in it, not the app's prose, and the first
+  pass had taken them out from under the comparison.
+
+  **The data the app writes from.** `appearance.json` and `tables_extra.json` are GritKeeper's own
+  rows rather than transcriptions, printed straight into a Keeper's face by the Look roller and the
+  Ch. XII generators, so they take the app's cut: fifty-eight of them, and all but five were a term
+  followed by its gloss, which is a colon's job. `chargen.json` was left alone. `tools/extract_rules.py`
+  writes that one out of the books, and its two dashes are sidebar titles the books still carry.
+
+  **The scripts print too.** `package.ps1` and `sign.ps1` talk to a console during a release,
+  `names.json`'s `_note` is a design argument aimed at whoever widens the word pools, and the Python
+  audits announce every check with a heading and explain every failure in a sentence. The
+  twenty-two headings all took the same colon: they print one after another in a single run, and
+  three different marks across one report would have read worse than any single choice. Then a
+  tokenizer walked the plain strings, twelve of them, and the fifty-four f-strings were done by
+  hand, because on this Python an f-string is three tokens rather than one and the cutter could
+  not see a single one of them. The failure messages are the half of a check anybody actually reads.
+
+  **And the measurement turned out to be two measurements.** The audit's `em/1kw` column counted
+  every dash in the stripped file, so the cover rule (which is drawn out of em dashes), a stat
+  block's empty field and the attribution line before a witness's name all landed in it: the
+  Bestiary read 2.6 there, on five dashes of prose and 212 of typography. The books had been cut
+  against `book_units()`, the prose-only text the research signals read, which is where 0.0 to 0.5
+  came from. The table is the one anybody would read, so the column reads the prose now, with a
+  `typo` column beside it saying how many it set aside. CLAUDE.md's two stale figures from that
+  column went with it.
+
+  **Counts that appear in prose must be derived** is this project's own rule, and `GK/CLAUDE.md`
+  had drifted off it again: 141 buttons, 127 refusal-checked handlers and 24 dialogs, all typed by
+  hand. Measured, they are 144, 129, 25, and 23 access keys. Read them off `audits/audit_ui.py`.
+
+  `PLAYTEST.md` and `RELEASES.md` are generated, so both were regenerated rather than edited:
+  sixteen lines of prose in the first, no change to a single number, and a dash-free header on the
+  second. The 114 release titles inside RELEASES.md keep theirs, because that table is a record of
+  what actually went out.
+
+  Rules 1,741 / 0, consistency 105,927 / 0, diversity 699 / 0, smoke 16,355 / 0, self-test 44/44,
+  `verify_all --full` 13 of 13.
+
 - **The voice pass over the books. Player's Book v2.52, Keeper's Book v2.36, Bestiary v2.23, Book of
   Legends v1.1, modules v1.8 / v1.10 / v1.10 · GritKeeper v1.58.0 (2026-09-20).**
 

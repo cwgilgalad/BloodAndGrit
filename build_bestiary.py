@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — The Bestiary" on the shared engine (the Player's Book shell).
+# Build "Blood & Grit: The Bestiary" on the shared engine (the Player's Book shell).
 # Reads blood-and-grit.html (run build_player.py first), writes bestiary.html.
 import re
 

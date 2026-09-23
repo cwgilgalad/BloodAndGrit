@@ -1,5 +1,5 @@
 <#
-    sign.ps1 — Authenticode-sign the published GritKeeper.exe.
+    sign.ps1: Authenticode-sign the published GritKeeper.exe.
 
     Uses PowerShell's native Set-AuthenticodeSignature (no Windows SDK / signtool needed),
     with the code-signing certificate from the CurrentUser store. Timestamps the signature so
@@ -44,7 +44,7 @@ if ($TimestampServer) {
     try {
         $res = Set-AuthenticodeSignature -FilePath $Exe -Certificate $cert -HashAlgorithm SHA256 -TimestampServer $TimestampServer
     } catch {
-        Write-Host "  timestamp server unreachable ($TimestampServer) — signing without a timestamp."
+        Write-Host "  timestamp server unreachable ($TimestampServer), signing without a timestamp."
     }
 }
 if (-not $res) {

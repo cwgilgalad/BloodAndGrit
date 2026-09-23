@@ -1,15 +1,15 @@
 #!/bin/sh
-# Hold a commit message to the same prose standard as the rest of the repo — at the one
+# Hold a commit message to the same prose standard as the rest of the repo, at the one
 # moment it can still be changed.
 #
 # audit_ai_tells.py has scanned the last 40 commit messages from the start, and CI runs it,
 # so a bad one turned the build red. But a commit message cannot be edited without rewriting
-# history, and this project's standing rule is that history on main is not rewritten — so
+# history, and this project's standing rule is that history on main is not rewritten, so
 # that finding could never be cleared. (Rewritten exactly once, on 2026-08-28, to purge the PDF
 # blobs; every message survived verbatim, and a blob purge is not a precedent for editing one.)
 # A gate that cannot be satisfied is a gate people learn
 # to route around. It happened on 2026-08-01: a message closing on "X is not a backup, it is
-# a second thing to be wrong" — the exact figure the audit exists to catch — landed on main
+# a second thing to be wrong", the exact figure the audit exists to catch, landed on main
 # and there was nothing to be done about it afterwards.
 #
 # So the check moved here, where the message is still a file on disk. Landed messages are now
@@ -20,7 +20,7 @@
 
 msg_file="$1"
 
-# Merge commits, reverts, squashes and fixups are generated or conventional — not authored
+# Merge commits, reverts, squashes and fixups are generated or conventional, not authored
 # prose, and not worth blocking a merge over.
 case "$(head -n1 "$msg_file")" in
   Merge\ *|Revert\ *|fixup!\ *|squash!\ *|amend!\ *) exit 0 ;;

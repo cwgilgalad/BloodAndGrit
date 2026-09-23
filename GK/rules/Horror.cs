@@ -3,7 +3,7 @@ namespace BloodAndGritKeeper;
 // ============================================================ THE HORROR, ON RAILS
 // Chapter XII's Nerve economy, adjudicated: a Dread Check is a Will save against the Dread DC,
 // and the app should roll it, read the four degrees, take the Nerve off the ladder, and hang the
-// Frightened on the soul — the quiet bookkeeping a table forgets mid-fight. Pure and smoke-tested.
+// Frightened on the soul, the quiet bookkeeping a table forgets mid-fight. Pure and smoke-tested.
 
 public static class Horror
 {
@@ -15,10 +15,10 @@ public static class Horror
         int NerveLost, bool Frightened, bool Steadied, bool Affliction, string Detail, bool Numb = false)
     {
         public string Line =>
-            Numb ? $"Dread {DreadDc}: {DegreeName} — nothing moves. The Hunger has taken the fear with it."
-          : Steadied ? $"Dread {DreadDc}: {DegreeName} — steeled, no Nerve lost, and steady against it this scene."
-          : NerveLost == 0 ? $"Dread {DreadDc}: {DegreeName} — held. No Nerve lost."
-          : $"Dread {DreadDc}: {DegreeName} — {NerveLost} Nerve lost"
+            Numb ? $"Dread {DreadDc}: {DegreeName}. Nothing moves. The Hunger has taken the fear with it."
+          : Steadied ? $"Dread {DreadDc}: {DegreeName}, steeled, no Nerve lost, and steady against it this scene."
+          : NerveLost == 0 ? $"Dread {DreadDc}: {DegreeName}, held. No Nerve lost."
+          : $"Dread {DreadDc}: {DegreeName}, {NerveLost} Nerve lost"
               + (Frightened ? ", and Frightened 1" : "")
               + (Affliction ? ", and a lasting Affliction" : "") + ".";
     }
@@ -41,12 +41,12 @@ public static class Horror
         switch (idx)
         {
             case 3: steadied = true; break;                                        // critical success
-            case 2: break;                                                         // success — steel yourself
+            case 2: break;                                                         // success: steel yourself
             case 1: nerve = Rules.NerveLoss(tier).roll(); affliction = tier >= 5; break;   // failure
             default: nerve = Rules.NerveLoss(tier).roll(); frightened = true; affliction = tier >= 5; break; // crit fail
         }
-        // At Hunger 3 the fear stops landing. The check is still ROLLED and still fails — the
-        // Frightened and the Affliction both stand, because those are things done TO a soul — and
+        // At Hunger 3 the fear stops landing. The check is still ROLLED and still fails (the
+        // Frightened and the Affliction both stand, because those are things done TO a soul) and
         // only the Nerve is spared, since Nerve is the one that measures being able to care.
         bool numb = nerve > 0 && CharGen.NumbToDread(who);
         if (numb) nerve = 0;
@@ -62,12 +62,12 @@ public static class Horror
 
     static readonly string[] BreakTable =
     {
-        "freezes — loses the next turn, then acts Frightened",
+        "freezes, loses the next turn, then acts Frightened",
         "flees, heedless, toward the nearest dark or door",
-        "fires wild at the threat — and at whatever is near it",
+        "fires wild at the threat, and at whatever is near it",
         "goes to their knees, useless, until shaken hard",
         "hysterical laughter or weeping; others nearby test Nerve too",
-        "a moment of terrible clarity — they understand, and gain +1 Mark",
+        "a moment of terrible clarity; they understand, and gain +1 Mark",
     };
 
     /// <summary>Roll on the break table for a soul brought to 0 Nerve.</summary>
@@ -82,7 +82,7 @@ public static class Horror
     public record SignOutcome(int Die, int Mod, int Tier, int ReadDc, int DreadDc,
         int Degree, string DegreeName, string What, string Learned, string Detail)
     {
-        /// <summary>Every reading is a fresh sign, so every reading fills a segment — including a
+        /// <summary>Every reading is a fresh sign, so every reading fills a segment, including a
         /// bad one. The clock measures how often the posse has crossed this thing's trail, not how
         /// well they read it; what the roll decides is what they take away from the crossing.</summary>
         public bool FillsClock => true;
@@ -92,7 +92,7 @@ public static class Horror
 
     /// <summary>Read the sign a Tier-<paramref name="tier"/> thing left (Bestiary, Appendix: The
     /// Grounds). A Survival check against the Tier's read DC, and the four degrees decide what the
-    /// tracker takes away — everything, the direction, a bad feeling, or a reading that is simply
+    /// tracker takes away: everything, the direction, a bad feeling, or a reading that is simply
     /// backward. The Dread the reading costs comes back with the outcome rather than being rolled
     /// here: it is the reader's save, and the caller knows who is reading.</summary>
     public static SignOutcome ReadSign(int survivalMod, int tier, int? forcedDie = null)

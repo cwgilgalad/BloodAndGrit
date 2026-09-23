@@ -20,7 +20,7 @@ public class CgOrigin
     public List<string> gear { get; set; } = new();
     public int startMark { get; set; }
     public string line { get; set; } public string boon { get; set; } public string burden { get; set; }
-    /// <summary>Only Came Back Wrong has these — the Shapes of Return of Ch. XII. Empty on the
+    /// <summary>Only Came Back Wrong has these, the Shapes of Return of Ch. XII. Empty on the
     /// other nine, which is why it is a property of the Origin rather than a table of its own.</summary>
     public List<CgShape> shapes { get; set; } = new();
 }
@@ -46,7 +46,7 @@ public class CgFamiliar
     public string why { get; set; } public string note { get; set; }
 }
 
-/// <summary>The Binding — what it takes to bind a familiar, and what it costs to lose one. The
+/// <summary>The Binding, what it takes to bind a familiar, and what it costs to lose one. The
 /// book said "over a long night's rite" and stopped: no cost, no roll, no limit on how often.</summary>
 public class CgFamiliarRite
 {
@@ -70,7 +70,7 @@ public class CgEdge
 public class CgSign
 {
     public string name { get; set; } public string cost { get; set; } public string desc { get; set; }
-    /// <summary>"common" | "bargain" | "craft" — which of Ch. XIII's three lists it sits on.</summary>
+    /// <summary>"common" | "bargain" | "craft": which of Ch. XIII's three lists it sits on.</summary>
     public string list { get; set; }
     /// <summary>1–5. A soul may learn it once their level has opened that Rank.</summary>
     public int rank { get; set; }
@@ -88,7 +88,7 @@ public class CgMiracle
 }
 
 /// <summary>One row of the Ch. X arms table. <c>range</c> is the increment in feet, <c>cap</c> how
-/// many shots before reloading, and <c>reload</c> the printed cost of making it ready again —
+/// many shots before reloading, and <c>reload</c> the printed cost of making it ready again:
 /// "1", "1/shot" or "slow". All three are zero or empty on a blade, which has no such columns.
 /// They were absent until 2026-08-16, which is why the Iron Code's range increments and reload
 /// actions could not be implemented at all: the book prints seven columns and this carried four.</summary>
@@ -161,7 +161,7 @@ public class CgCalling
     /// Calling <em>is</em> and not only what it rolls. Transcribed from the book, guarded by
     /// audits/verify_rules.py.</summary>
     public string blurb { get; set; }
-    /// <summary>Its Perk — see <see cref="CgPerk"/>. Every Calling has one.</summary>
+    /// <summary>Its Perk. See <see cref="CgPerk"/>. Every Calling has one.</summary>
     public CgPerk perk { get; set; }
     public CgFight fight { get; set; }
     public int hitDie { get; set; } public int trainedSkills { get; set; }
@@ -186,7 +186,7 @@ public class CgCalling
     public CgChoice choice { get; set; }
     public int startMark { get; set; }
     public bool bonusCombatEdgeAtOdd { get; set; }
-    /// <summary>Practiced / Steady / Slight — see CharGen.AttackFor (Player's Book Ch. XIV).</summary>
+    /// <summary>Practiced / Steady / Slight. See CharGen.AttackFor (Player's Book Ch. XIV).</summary>
     public string attackRank { get; set; }
 
     public CgRow Row(int level) => rows.First(r => r.level == level);
@@ -194,7 +194,7 @@ public class CgCalling
 
 public class CgData
 {
-    /// <summary>Kit and gear lines that grant a weapon outright — see <see cref="CgGranted"/>.</summary>
+    /// <summary>Kit and gear lines that grant a weapon outright. See <see cref="CgGranted"/>.</summary>
     public List<CgGranted> grantedWeapons { get; set; } = new();
     public List<int> honestArray { get; set; } = new();
     public List<CgSkill> skills { get; set; } = new();
@@ -216,7 +216,7 @@ public class CgData
 }
 
 // ============================================================ THE SHEET
-// Auto-properties (not fields) so System.Text.Json carries the whole sheet — it rides
+// Auto-properties (not fields) so System.Text.Json carries the whole sheet. It rides
 // inside PartyMember.Sheet through session.json and back.
 public class CharacterSheet
 {
@@ -224,7 +224,7 @@ public class CharacterSheet
     public string Calling { get; set; }
     public string Origin { get; set; } public string Compass { get; set; }
     /// <summary>The Shape of Return, for a soul who Came Back Wrong. Null on everybody else, and
-    /// null on every sheet saved before v1.49.0 — so every consumer tests it rather than migrating
+    /// null on every sheet saved before v1.49.0, so every consumer tests it rather than migrating
     /// session.json, exactly as <c>Look</c> does.</summary>
     public string Shape { get; set; }
     /// <summary>The Hunger track, 0..6. Ch. XII gives it to one Origin alone, which is why it sits
@@ -251,7 +251,7 @@ public class CharacterSheet
     public string Subpath { get; set; }                                  // chosen at 3rd, or null
     public string CallingChoice { get; set; }                            // Marshal reputation / Shaman aspect / Witch familiar
     // The Witch's familiar (Ch. VII). Until v1.45.0 the bound beast was one third of the shared
-    // CallingChoice string and nothing else — the books give it a standing +2, a touch-range
+    // CallingChoice string and nothing else: the books give it a standing +2, a touch-range
     // delivery, shared senses and a Sickened when it dies, and the app carried none of that. The
     // kind is still written into CallingChoice for every reader that already prints it; these
     // three carry the mechanics. Absent from sheets saved before v1.45.0, which deserialize to
@@ -260,7 +260,7 @@ public class CharacterSheet
     public string FamiliarBoon { get; set; }                             // the standing +2 befitting its nature
     public bool FamiliarLost { get; set; }                               // it died; the Witch is Sickened until re-bound
     /// <summary>The Familiar-Bound's greater boon has been spent: "should you fall, it carries your
-    /// spirit to a new dawn — <em>once</em>". Once ever, and nothing in the app gives it back — not
+    /// spirit to a new dawn, <em>once</em>". Once ever, and nothing in the app gives it back: not
     /// a new fight, not a long rest, not a new session. It is stored on the SHEET rather than in
     /// <see cref="PartyMember.FeatureSpent"/> for exactly that reason: FeatureSpent is a ration and
     /// <see cref="CharGen.RefreshFeatures"/> walks it at every boundary, so a once-in-a-life thing kept
@@ -274,18 +274,18 @@ public class CharacterSheet
     public List<string> Gear { get; set; } = new();
     public List<string> WeaponsCarried { get; set; } = new();            // "Single-Action Revolver 1d8 (Fatal d10, Misfire 1)"
     // Armor worn (Ch. X). Added v1.12; absent from sheets saved before it, which deserialize
-    // to null/0 and simply read as an unarmored soul — no session.json migration needed.
+    // to null/0 and simply read as an unarmored soul, no session.json migration needed.
     public string ArmorWorn { get; set; }                                // Ch. X name, or null for none
     public int DrBlades { get; set; } public int DrShot { get; set; }    // what the armor turns
     public string Lost { get; set; } public string Seen { get; set; }
     public string Vice { get; set; } public string Moving { get; set; }
     // What they look like and what they are wearing (Look.Roll). Added v1.30; absent from sheets
     // saved before it, which deserialize to null and simply read as a soul nobody has described
-    // yet — every consumer tests Look?.Any, so no session.json migration is needed.
+    // yet: every consumer tests Look?.Any, so no session.json migration is needed.
     public SoulLook Look { get; set; }
     public List<int> AbilityBoostLevels { get; set; } = new();           // 5 and/or 10 if reached
     public List<string> BoostedAbilities { get; set; } = new();
-    public bool HandTweaked { get; set; }                                // edited after generation — the book no longer vouches
+    public bool HandTweaked { get; set; }                                // edited after generation: the book no longer vouches
 }
 
 // ============================================================ GENERATOR
@@ -300,14 +300,14 @@ public class CharacterSheet
 /// <para><b>Trigger</b> is the odd one, and it is here because the book has two of them: the
 /// Witch Hunter's Judgment comes back "when you name a new quarry" and the Sawbones' Field
 /// Surgery is "once per wound". No clock returns those, so nothing but the Keeper's hand and a
-/// new session does either — which is exactly why it sits directly under Session.</para></summary>
+/// new session does either, which is exactly why it sits directly under Session.</para></summary>
 public enum FeatureCadence { None = 0, Turn = 1, Round = 2, Scene = 3, Dawn = 4, Trigger = 5, Session = 6 }
 
 /// <summary>What a Calling's feature says about how often it may be used, read out of the book's
 /// own sentence rather than typed into the data a second time.
 ///
 /// <para>Forty-six of the hundred and sixteen features print a limit, and thirty-one of those are
-/// a limit on an <em>activation</em> — "Once per session, when an ally within sight would drop to
+/// a limit on an <em>activation</em>, "Once per session, when an ally within sight would drop to
 /// 0 Blood…". Those are the ones a table forgets, and the ones this reads. The rest describe
 /// something ongoing ("allies inside recover Nerve each round"), which is not a thing anybody
 /// presses, so it is deliberately not matched: a counter beside a feature nobody activates is
@@ -330,7 +330,7 @@ public readonly struct FeatureLimit
     public bool Any => Cadence != FeatureCadence.None;
 
     /// <summary>How many uses a soul of this sheet actually gets. A hand-entered soul with no
-    /// sheet has no modifier to read, so the floor is the answer — never zero, which would render
+    /// sheet has no modifier to read, so the floor is the answer, and never zero, which would render
     /// as a feature that can never be used.</summary>
     public int UsesFor(CharacterSheet s)
     {
@@ -358,12 +358,12 @@ public readonly struct FeatureLimit
     }
 }
 
-/// <summary>A count that goes <b>up</b> and that no boundary gives back — the one shape in the
+/// <summary>A count that goes <b>up</b> and that no boundary gives back: the one shape in the
 /// Player's Book the Calling strip had no home for until v1.44.0.
 ///
 /// <para>The Hexer's <b>Pact-Sworn</b> bargain is the whole of it: <i>"Once per scene, turn a
 /// failed Sign or Will save into a success by taking a Debt; on your third Debt the Patron calls
-/// it in — a demand, and +1 Mark."</i> The once-a-scene half is a ration and
+/// it in: a demand, and +1 Mark."</i> The once-a-scene half is a ration and
 /// <see cref="FeatureLimit"/> has counted it since v1.42.0. The Debts are the other half, and they
 /// are a different animal: they accumulate across scenes, across nights, and across the whole
 /// campaign, and nothing in the app's boundary machinery should ever hand one back. A Debt is owed
@@ -376,7 +376,7 @@ public readonly struct FeatureLimit
 /// answer rather than a reason to special-case the Hexer in the UI.</para></summary>
 public readonly struct FeatureTally
 {
-    /// <summary>What the book calls the thing being counted — "Debt".</summary>
+    /// <summary>What the book calls the thing being counted, "Debt".</summary>
     public string Noun { get; init; }
     /// <summary>The count at which it comes due. Three, for the Pact-Sworn.</summary>
     public int At { get; init; }
@@ -385,7 +385,7 @@ public readonly struct FeatureTally
 
     public bool Any => At > 0 && !string.IsNullOrEmpty(Noun);
 
-    // Only these five, because CharGen.ReadTally only ever produces these five — the book writes
+    // Only these five, because CharGen.ReadTally only ever produces these five. The book writes
     // its one threshold as a word. A general -st/-nd/-rd/-th builder would be dead code by the
     // build's own reckoning, and would answer "7th" for a number nothing can hand it.
     public static string Ordinal(int n) => n switch
@@ -394,7 +394,7 @@ public readonly struct FeatureTally
         _ => n.ToString(),
     };
 
-    /// <summary>What the card says under the name — "the third Debt comes due".</summary>
+    /// <summary>What the card says under the name, "the third Debt comes due".</summary>
     public string Says => Any ? $"the {Ordinal(At)} {Noun} comes due" : "";
 }
 
@@ -404,7 +404,7 @@ public readonly struct FeatureTally
 /// <see cref="FeatureLimit"/> is a thing you spend and a boundary returns; a
 /// <see cref="FeatureTally"/> is a thing that climbs and nothing returns. This is neither: it is
 /// always true and it is never automatic, because whether it applies is a fact about the world
-/// — indoors, among the wealthy, talking to a lawman — that the app does not model and must not
+/// (indoors, among the wealthy, talking to a lawman) that the app does not model and must not
 /// guess at. It is <b>offered</b>, exactly as a creature's attack rider is (see the Iron Code's
 /// rule that the engine may only write what needs nobody's judgement).</para>
 ///
@@ -413,15 +413,15 @@ public readonly struct FeatureTally
 /// instead of leaving it on a sheet nobody rereads after first level.</para></summary>
 public sealed class OriginEdge
 {
-    /// <summary>The Origin that grants it — the card's head line.</summary>
+    /// <summary>The Origin that grants it: the card's head line.</summary>
     public string Origin { get; init; }
     /// <summary>Signed, as the book prints it: +2, −1.</summary>
     public int Size { get; init; }
-    /// <summary>The short of what it applies to — "Notice against ambush", "Fortitude saves
+    /// <summary>The short of what it applies to, "Notice against ambush", "Fortitude saves
     /// against fatigue". One clause, because a chip is read at a glance or not at all.</summary>
     public string Applies { get; init; }
     /// <summary>The book's whole sentence, for the tooltip. A Keeper deserves the rule, not a
-    /// code — the same standing choice <see cref="FeatureLimit.Phrase"/> makes.</summary>
+    /// code: the same standing choice <see cref="FeatureLimit.Phrase"/> makes.</summary>
     public string Phrase { get; init; }
     /// <summary>Whether it came out of the boon or the burden. Drawn differently: a burden a
     /// player can forget to apply is the half that decides whether an Origin is a CHOICE or a
@@ -454,7 +454,7 @@ public static class CharGen
 
     /// <summary>What a soul adds to a skill check (Player's Book Ch. VIII): the keyed ability's
     /// modifier alone while untrained, and once trained, that plus your level plus the rank's
-    /// bonus — +2 trained, +4 expert, +6 master. The ability a skill is keyed to comes from the
+    /// bonus (+2 trained, +4 expert, +6 master). The ability a skill is keyed to comes from the
     /// data, not from a second list here, so the Ledger's tick and this number always agree.</summary>
     public static int SkillBonus(CharacterSheet s, string skill)
     {
@@ -465,14 +465,14 @@ public static class CharGen
         return (rank <= 0 ? mod : mod + s.Level + rank * 2) + FamiliarBoonOn(s, def?.name ?? skill);
     }
 
-    /// <summary>What the bound beast adds to this skill — the standing boon of Ch. VII, applied
+    /// <summary>What the bound beast adds to this skill, the standing boon of Ch. VII, applied
     /// here so that it is applied at all.
     ///
     /// <para>From v1.45.0 the sheet has printed "+2 Stealth" and every number the app worked out
     /// has ignored it, because the only place that skill's name existed was in the middle of a
     /// sentence written for a human reader. A bonus nobody adds is not a rule; it is a decoration.
     /// Putting it inside <see cref="SkillBonus"/> means every roll the app already reckons picks it
-    /// up at once — a Witch's initiative is a Notice check, so a live crow now moves her place in
+    /// up at once: a Witch's initiative is a Notice check, so a live crow now moves her place in
     /// the order, and the Read-the-sign dialog prefills a toad's Medicine and a cat's Stealth the
     /// same way.</para>
     ///
@@ -485,11 +485,11 @@ public static class CharGen
            && string.Equals(sk, skill, StringComparison.OrdinalIgnoreCase)
          ? FamiliarBoonSize : 0;
 
-    /// <summary>What a soul adds to initiative — their Notice bonus, because initiative IS a Notice
+    /// <summary>What a soul adds to initiative: their Notice bonus, because initiative IS a Notice
     /// check (Player's Book Ch. XI, and the app's own Reference deck says so on the Iron Code leaf).
     /// Named rather than left as a bare <see cref="SkillBonus"/> call at the tracker, so the skill
     /// the rule keys to is written down once and the tracker cannot quietly start rolling a
-    /// different one. A soul with no sheet — an ad-hoc NPC, a creature — has nothing to read and
+    /// different one. A soul with no sheet (an ad-hoc NPC, a creature) has nothing to read and
     /// adds nothing.</summary>
     public static int InitiativeBonus(CharacterSheet s) => SkillBonus(s, "Notice");
 
@@ -502,7 +502,7 @@ public static class CharGen
     ///
     /// <para>Ten sites indexed <c>signsKnownAt[level]</c> and <c>miraclesKnownAt[level]</c> directly,
     /// which threw <c>KeyNotFoundException</c> the moment B6 raised the ceiling past what the data
-    /// covered — in <c>LevelUp</c>, which is to say in a Keeper's hands mid-session. A ladder that
+    /// covered, in <c>LevelUp</c>, which is to say in a Keeper's hands mid-session. A ladder that
     /// stops short now holds its last rung instead of crashing. The gap itself is still a fault, and
     /// the smoke suite fails on it: see the assertion that every ladder covers 1 to MaxLevel.</para></summary>
     public static int KnownAt(Dictionary<string, int> ladder, int level)
@@ -530,7 +530,7 @@ public static class CharGen
          : D.miracles.Where(x => cal.miracleLists.Contains(x.list) && x.rank <= RankAt(level)).ToList();
 
     /// <summary>Every Sign a soul may actually learn at a level: their Calling's lists, gated by Rank.
-    /// A Calling that works no Signs gets nothing — unless the soul took <em>Hedge Magic</em> (Ch. IX),
+    /// A Calling that works no Signs gets nothing, unless the soul took <em>Hedge Magic</em> (Ch. IX),
     /// which opens the shallow end and only that: the Common Signs at Rank 1. Ch. XIII puts it as
     /// reached "by the Hexer freely, by the Touched a little."</summary>
     public static List<CgSign> SignsFor(CgCalling cal, int level, bool hedgeMagic = false)
@@ -541,11 +541,11 @@ public static class CharGen
 
     /// <summary>Does this Calling work anything at all, at any level it can reach? A Gunhand knows
     /// no Signs and no Miracles at 1st and still knows none at 10th, and that is the rule rather
-    /// than a gap in their sheet — so a screen offering "what do they work?" has to be able to tell
+    /// than a gap in their sheet, so a screen offering "what do they work?" has to be able to tell
     /// a soul who works nothing from a soul who has simply not learned one yet, and say which.
     /// <para>Reads the CALLING's lists rather than the soul's known names, which is the whole point:
     /// a Preacher with an empty <c>MiraclesKnown</c> is a different sentence from a Gunhand with
-    /// one. <em>Hedge Magic</em> is deliberately excluded — the Edge opens the shallow end for a
+    /// one. <em>Hedge Magic</em> is deliberately excluded. The Edge opens the shallow end for a
     /// soul who takes it, and this question is about the Calling.</para></summary>
     public static bool CallingWorksNothing(string calling)
     {
@@ -557,7 +557,7 @@ public static class CharGen
     // ---- armor (Player's Book Ch. X, "On Armor") ----
 
     /// <summary>What a soul is actually wearing, read off the gear they ended up with. The book
-    /// says armor does not stack — "count only the better of the two" — so the best row wins.</summary>
+    /// says armor does not stack, "count only the better of the two", so the best row wins.</summary>
     public static CgArmor ArmorFrom(IEnumerable<string> gear)
     {
         var owned = D.armor.Where(a => gear.Contains(a.gear)).ToList();
@@ -582,10 +582,10 @@ public static class CharGen
         return order.Select(it => count[it] > 1 ? $"{it} × {count[it]}" : it).ToList();
     }
 
-    /// <summary>How a soul's armor reads — one phrasing, used by the sheet, the ledger, the posse
+    /// <summary>How a soul's armor reads: one phrasing, used by the sheet, the ledger, the posse
     /// notes and the printed page alike. Empty when they are standing in nothing but a shirt.</summary>
     public static string ArmorLine(CharacterSheet s) => string.IsNullOrEmpty(s.ArmorWorn)
-        ? "" : $"{s.ArmorWorn} — DR {s.DrBlades} vs blades, DR {s.DrShot} vs small shot";
+        ? "" : $"{s.ArmorWorn}, DR {s.DrBlades} vs blades, DR {s.DrShot} vs small shot";
 
     /// <summary>Record what the gear says a soul is wearing, without touching Defense or Speed.
     /// Safe to call again after a hand edit: the numbers stay whatever the user typed.</summary>
@@ -610,7 +610,7 @@ public static class CharGen
 
     static T Pick<T>(List<T> list) => list[Rules.Rng.Next(list.Count)];
 
-    /// <summary>One of the colour pools in chargen.json — vices, what a soul lost, what they've
+    /// <summary>One of the colour pools in chargen.json: vices, what a soul lost, what they've
     /// seen, what moves them, the gendered given names. Internal rather than private so the smoke
     /// rig can hold each pool to a depth: a thin pool repeats over a campaign, and a pool that
     /// silently emptied would still generate perfectly valid, identical souls.</summary>
@@ -622,8 +622,8 @@ public static class CharGen
     }
 
     // a soul is somebody: gender rolled plainly, and the given name drawn to match.
-    // TryGetProperty keeps an older chargen.json (no gendered lists) from crashing —
-    // it falls back to the mixed NPC list and leaves gender blank.
+    // TryGetProperty keeps an older chargen.json (no gendered lists) from crashing.
+    // It falls back to the mixed NPC list and leaves gender blank.
     static (string gender, string given) PickPerson()
     {
         if (D.flavor.TryGetProperty("givenWomen", out _) && D.flavor.TryGetProperty("givenMen", out _))
@@ -635,7 +635,7 @@ public static class CharGen
     }
 
     // A whole name for a soul. Most of the frontier's names are a given name drawn against
-    // gender plus a surname drawn separately, and mixing those two pools freely is right —
+    // gender plus a surname drawn separately, and mixing those two pools freely is right:
     // "Refugio Whitlock" and "Jubal Deets" are both perfectly ordinary 1885. Some names do
     // NOT decompose that way, though: a Chinese name puts the surname first, and pairing one
     // half of it with a surname from the general pool produces nonsense. Those live in a
@@ -643,7 +643,7 @@ public static class CharGen
     //
     // WHICH souls get one used to be a bare 12% roll answerable to nothing, which was fine while
     // the app never said where anybody was from and became a contradiction on screen the moment it
-    // did — "Rafferty Luján, Chinese, out of Guangdong". The look decides now: a people that owns a
+    // did: "Rafferty Luján, Chinese, out of Guangdong". The look decides now: a people that owns a
     // whole-name pool (LkPeople.namesFrom) always draws from it, and everybody else always draws
     // given-plus-surname. One decision, made once. Pass a null look and the old odds stand, which
     // is what an NPC with no description should still get.
@@ -683,13 +683,13 @@ public static class CharGen
     };
 
     /// <summary>The prompt the gender picker offers beside Woman and Man. It is an invitation to
-    /// type, never an answer — <see cref="CleanGender"/> is what guarantees it can't be stored as
+    /// type, never an answer; <see cref="CleanGender"/> is what guarantees it can't be stored as
     /// one. It lives here rather than on the form so the rule holds for every caller and the smoke
     /// rig can hold it to that.</summary>
     public const string GenderOther = "Other…";
 
     /// <summary>Tidy what came out of a gender box: trimmed, and never the prompt itself. A soul's
-    /// gender is free text — the two the name lists are written for are not the only two allowed,
+    /// gender is free text: the two the name lists are written for are not the only two allowed,
     /// they are only the two with their own pools of given names.</summary>
     public static string CleanGender(string gender)
     {
@@ -734,7 +734,7 @@ public static class CharGen
         for (int i = 0; i < 6; i++) s.PreGiftScores[cal.keyAbilities[i]] = pool[i];
         foreach (var a in Ab) s.Scores[a] = s.PreGiftScores[a] + (org.gifts.TryGetValue(a, out var g) ? g : 0);
 
-        // ---- Step 5: trained skills — the Calling's number + WIT modifier; Origin grants come free ----
+        // ---- Step 5: trained skills (the Calling's number + WIT modifier; Origin grants come free) ----
         s.OriginSkills.AddRange(org.trained);
         if (org.trainedChoice.Count > 0) s.OriginSkills.Add(Pick(org.trainedChoice));
         int trainCount = Math.Max(1, cal.trainedSkills + Mod(s.Scores["WIT"]));
@@ -804,14 +804,14 @@ public static class CharGen
         // ---- Step 6: reckon the numbers (Ch. III) ----
         ReckonNumbers(s, cal, org);
 
-        // ---- Step 7: outfit (Ch. X — coin rolled, kit granted, prices as printed) ----
+        // ---- Step 7: outfit (Ch. X: coin rolled, kit granted, prices as printed) ----
         s.CoinRolled = Enumerable.Range(0, cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * cal.coin.mult;
         double left = s.CoinRolled;
         s.Gear.AddRange(cal.coin.kit);
         s.Gear.AddRange(org.gear);
         // A granted gun stops the purchase below AND arms the soul. Until 2026-08-27 it only did
         // the first: every Mountain Man ever generated carried a Hawken in his gear and had an
-        // EMPTY weapon list, and so did anyone rolled with the Veteran's service carbine — the
+        // EMPTY weapon list, and so did anyone rolled with the Veteran's service carbine, the
         // printed pregen Frank Haskins among them. The Strike dialog offered them nothing, and
         // every balance sweep this project has run had the Mountain Man punching with his fists.
         foreach (var line in cal.coin.kit.Concat(org.gear))
@@ -828,7 +828,7 @@ public static class CharGen
         {
             if (hasGun) break;
             var w = D.weapons.First(x => x.name == gunName.GetString());
-            if (left >= w.cost) { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) — ${w.cost}"); hasGun = true; }
+            if (left >= w.cost) { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) · ${w.cost}"); hasGun = true; }
         }
         if (cal.buyPlan.GetProperty("melee").ValueKind == JsonValueKind.String)
         {
@@ -842,7 +842,7 @@ public static class CharGen
             if (item.Contains("Shotgun"))
             {
                 var w = D.weapons.First(x => x.name == "Double-Barrel Shotgun");
-                if (!hasGun && left >= w.cost) { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) — ${w.cost}"); hasGun = true; }
+                if (!hasGun && left >= w.cost) { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) · ${w.cost}"); hasGun = true; }
                 continue;
             }
             double cost = D.gearPrices[item];
@@ -851,11 +851,11 @@ public static class CharGen
         }
         if (horseItems.Count == 2 && left >= horseCost) { left -= horseCost; s.Gear.AddRange(horseItems); }
         // Armor last, out of whatever is left. Ch. X is plain that there is precious little of it
-        // out here, so it is what a soul buys after the gun, the horse and the week's rations —
+        // out here, so it is what a soul buys after the gun, the horse and the week's rations,
         // never instead of them. Callings that already bought a duster as a sundry are dressed.
         // Most of them have already bought a duster among the sundries, so this is an upgrade
         // step, not a first purchase: walk the preference best-first and stop at the first thing
-        // better than what they are standing in — or at what they are standing in.
+        // better than what they are standing in, or at what they are standing in.
         if (cal.buyPlan.TryGetProperty("armor", out var armorPref))
         {
             var have = ArmorFrom(s.Gear);
@@ -868,12 +868,12 @@ public static class CharGen
             }
         }
         s.CoinLeft = Math.Round(left, 2);
-        ReckonNumbers(s, cal, org);   // again, now that the gear — and so the armor — is known
+        ReckonNumbers(s, cal, org);   // again, now that the gear, and so the armor, is known
 
         // ---- Steps 1 & 8: a person, not a statline ----
         var (gender, _) = PickPerson();
         s.Gender = gender;
-        // The look is drawn BEFORE the name, and the name is drawn against it — see FullName.
+        // The look is drawn BEFORE the name, and the name is drawn against it. See FullName.
         // Drawn against the Calling too, because most of what a soul is wearing is what they do
         // for a living. Costs nothing and gates nothing.
         s.Look = Look.Roll(s.Gender, s.Calling);
@@ -883,7 +883,7 @@ public static class CharGen
         s.Vice = Pick(FlavorList("vices")); s.Moving = Pick(FlavorList("moving"));
         // The reckoned numbers, not the roll: "the wrong Grace" and "that Blood is too high" are the
         // reports this line exists to answer, and they are about what came out, not what went in.
-        Daybook.Note("soul", $"generated {s.Name} — level {s.Level} {s.Calling}/{s.Origin}, "
+        Daybook.Note("soul", $"generated {s.Name}, level {s.Level} {s.Calling}/{s.Origin}, "
                              + $"{s.Method}, Blood {s.Blood}, Nerve {s.NerveMax}"
                              + (s.PoolName != null ? $", {s.PoolName} {s.PoolMax}" : ""));
         return s;
@@ -892,7 +892,7 @@ public static class CharGen
     // ============================================================ THE WIZARD'S ROAD
     // Every choice the wizard collects. Anything left null/empty falls back to the same
     // random draw Generate would have made, so a half-answered wizard still yields a
-    // legal sheet — and the smoke suite can prove Assemble conformant with random specs.
+    // legal sheet, and the smoke suite can prove Assemble conformant with random specs.
     public class AssembleSpec
     {
         public int Level = 1;
@@ -945,7 +945,7 @@ public static class CharGen
         while (picks.Count < trainCount && rest.Count > 0) { var r = Pick(rest); picks.Add(r); rest.Remove(r); }
         foreach (var sk in picks.Concat(s.OriginSkills)) s.SkillRanks[sk] = 1;
 
-        // the level walk — boosts, Blood, features, Edges, skill increases, in book order
+        // the level walk: boosts, Blood, features, Edges, skill increases, in book order
         var featureSet = new List<string>();
         int edgeIdx = 0, gunIdx = 0, incIdx = 0, boostIdx = 0;
         for (int L = 1; L <= level; L++)
@@ -1039,9 +1039,9 @@ public static class CharGen
         {
             var w = D.weapons.FirstOrDefault(x => x.name == wn);
             if (w != null && left >= w.cost)
-            { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) — ${w.cost}"); }
+            { left -= w.cost; s.WeaponsCarried.Add($"{w.name} {w.dmg} ({w.traits}) · ${w.cost}"); }
         }
-        // One entry per thing owned, repeats and all — a soul may want three lanterns or a
+        // One entry per thing owned, repeats and all. A soul may want three lanterns or a
         // dozen candles, and the wizard now lets them buy that (2026-07-27). The coin ledger in
         // Validate already sums Gear entry by entry, so a repeat prices itself with no other
         // change; ArmorFrom takes the best single suit, so a second duster grants no second DR.
@@ -1056,7 +1056,7 @@ public static class CharGen
         // a person, not a statline
         if (string.IsNullOrWhiteSpace(spec.Gender)) { var (rg, _) = PickPerson(); s.Gender = rg; }
         else s.Gender = spec.Gender.Trim();
-        // The wizard's own look if it collected one, otherwise a drawn one — same rule as every
+        // The wizard's own look if it collected one, otherwise a drawn one, same rule as every
         // other line here. Before the name, because the name is drawn against it (see FullName);
         // a name the wizard was GIVEN is of course kept, and then nothing is drawn against it.
         bool named = !string.IsNullOrWhiteSpace(spec.Name);
@@ -1072,8 +1072,8 @@ public static class CharGen
 
     // ============================================================ LEVELLING UP
     // One soul, one level higher. Rather than reconstruct an AssembleSpec and re-walk from
-    // 1st — Assemble re-rolls every prior level's Blood and has no way to be handed the old
-    // rolls, so that path would destabilize the levels below — LevelUp clones the finished
+    // 1st (Assemble re-rolls every prior level's Blood and has no way to be handed the old
+    // rolls, so that path would destabilize the levels below) LevelUp clones the finished
     // sheet and appends exactly the new level's growth, mirroring Generate's own per-level
     // walk (boost → Blood → features → Edge(s) → skill increase → subpath → Signs → reckon).
     // Everything below the new level is byte-stable, and the result is Validate-clean.
@@ -1090,7 +1090,7 @@ public static class CharGen
         public List<string> NewMiracles = new();   // miracles for any slots the new level opens
     }
 
-    // What a soul's next level grants — drives the level-up dialog's controls and their
+    // What a soul's next level grants. It drives the level-up dialog's controls and their
     // option lists, computed on a clone advanced by the deterministic part of the level
     // (default boost + the new features) so Edge/skill eligibility reflects the new level.
     public class LevelUpGrants
@@ -1256,13 +1256,13 @@ public static class CharGen
         return opts[0].name;
     }
 
-    // one Edge's legality against a sheet-in-progress — shared by the random generator,
+    // one Edge's legality against a sheet-in-progress: shared by the random generator,
     // the wizard's option lists, and nothing else that could drift from it
     static bool EdgeEligible(CgEdge e, CharacterSheet s, CgCalling cal, bool isFaith, HashSet<string> owned)
     {
         if (owned.Contains(e.name)) return false;
         if (e.notFaith && isFaith) return false;
-        // "though you are not a Hexer" — Hedge Magic is for souls WITHOUT the Signs
+        // "though you are not a Hexer". Hedge Magic is for souls WITHOUT the Signs
         // feature; the four sign-working Callings already have the whole craft
         if (e.effect == "sign+1" && cal.signsKnownAt != null) return false;
         if (e.reqLevel is int rl && s.Level < rl) return false;
@@ -1304,7 +1304,7 @@ public static class CharGen
             return pool.Count > 0 ? Pick(pool).name : null;
         }
         // The Gunhand's ordinary picks stay out of the Gun group: the bonus combat Edge draws
-        // from that pool at every odd level, and there are only nine combat Edges in Ch. IX —
+        // from that pool at every odd level, and there are only nine combat Edges in Ch. IX;
         // free choice elsewhere keeps the guaranteed pick guaranteed.
         bool BlockedGroup(CgEdge e) => cal.bonusCombatEdgeAtOdd && e.group == "Gun";
         // preferred groups first (calling edges ride with the first preferred group), then anything
@@ -1317,7 +1317,7 @@ public static class CharGen
         return any.Count > 0 ? Pick(any).name : null;
     }
 
-    /// Step 6 of Ch. III — the reckoned numbers, shared by Generate and Assemble so the
+    /// Step 6 of Ch. III: the reckoned numbers, shared by Generate and Assemble so the
     /// two roads can never disagree on the arithmetic.
     static void ReckonNumbers(CharacterSheet s, CgCalling cal, CgOrigin org)
     {
@@ -1326,7 +1326,7 @@ public static class CharGen
         int rawhide = (s.Edges.Contains("Tough as Rawhide") || s.BonusCombatEdges.Contains("Tough as Rawhide")) ? level : 0;   // +1 Blood per level
         int stoneNerve = s.Edges.Contains("Stone Nerve") ? 2 * level : 0;                                                       // +2 max Nerve per level
         // Armor (Ch. X) rides in the gear, which on the generation path is not bought until after
-        // the first reckoning — hence the second call once outfitting is done. This method holds no
+        // the first reckoning, hence the second call once outfitting is done. This method holds no
         // randomness and is safe to run any number of times, so Defense and Speed have exactly one
         // author and no caller has to remember to re-apply the armor itself.
         ReadArmor(s);
@@ -1345,7 +1345,7 @@ public static class CharGen
         // A soul who came back wrong has a Shape, and starts quiet. Rolled here rather than left
         // for the player to fill in later for the reason the Look is rolled here: a sheet that is
         // valid only after somebody remembers to finish it is a sheet the generator did not make.
-        // Hunger begins at 0 — the book's own reading, that you pass for living until you have
+        // Hunger begins at 0: the book's own reading, that you pass for living until you have
         // spent something.
         if (IsReturned(s) && ShapesOfReturn.Count > 0)
         {
@@ -1408,7 +1408,7 @@ public static class CharGen
         var row = cal.Row(s.Level);
 
         // Ch. IV constraint: a Calling of Faith may not take the Gambler background
-        Check(!(isFaith && org.notFaith), $"{s.Calling} (Faith) took the {s.Origin} origin — forbidden by Ch. IV");
+        Check(!(isFaith && org.notFaith), $"{s.Calling} (Faith) took the {s.Origin} origin, forbidden by Ch. IV");
 
         // ability legality
         if (s.Method.StartsWith("The Honest"))
@@ -1424,7 +1424,7 @@ public static class CharGen
             int expect = s.PreGiftScores[a] + gift + s.BoostedAbilities.Count(b => b == a);
             Check(s.Scores[a] == expect, $"{a} score {s.Scores[a]} ≠ pre-gift {s.PreGiftScores[a]} + gift {gift} + boosts");
         }
-        // Every fifth level to the ceiling, derived rather than listed — at MaxLevel 15 this
+        // Every fifth level to the ceiling, derived rather than listed: at MaxLevel 15 this
         // becomes 5/10/15 with no edit here. The message names the levels it checked.
         var wantBoosts = Enumerable.Range(1, Rules.MaxLevel / 5).Select(n => n * 5).Where(l => l <= s.Level).ToList();
         Check(s.AbilityBoostLevels.SequenceEqual(wantBoosts),
@@ -1454,7 +1454,7 @@ public static class CharGen
         Check(s.Will == row.will + Mod(s.Scores["RES"]), $"Will {s.Will} ≠ table {row.will} + RES mod");
         Check(s.Attack == row.atk, "Attack must be read straight from the Calling table");
         // The table is a transcription of the Player's Book spine (Ch. XIV). Re-derive it here so a
-        // bad transcription in chargen.json can never pass silently — book and app cannot drift apart.
+        // bad transcription in chargen.json can never pass silently, and book and app cannot drift apart.
         Check(row.atk == AttackFor(cal.attackRank, s.Level),
             $"{cal.name} L{s.Level}: table attack {row.atk} ≠ {cal.attackRank} rank formula {AttackFor(cal.attackRank, s.Level)}");
         foreach (var (label, val) in new[] { ("Fort", row.fort), ("Ref", row.@ref), ("Will", row.will) })
@@ -1474,8 +1474,8 @@ public static class CharGen
         Check(s.Speed == 30 + (s.Edges.Contains("Fleet") ? 10 : 0) + (ArmorFrom(s.Gear)?.speed ?? 0),
             "Speed ≠ 30 (+Fleet, +armor)");
 
-        // trained skills: Calling number + WIT mod (min 1) — the WIT of creation, before any
-        // 5th/10th-level boost — with Origin grants riding free
+        // trained skills: Calling number + WIT mod (min 1, and the WIT of creation, before any
+        // 5th/10th-level boost), with Origin grants riding free
         int witAtCreation = s.PreGiftScores["WIT"] + (org.gifts.TryGetValue("WIT", out var wg) ? wg : 0);
         int expectTrained = Math.Max(1, cal.trainedSkills + Mod(witAtCreation));
         int newFromIncreases = s.SkillRanks.Count - expectTrained - s.OriginSkills.Distinct().Count();
@@ -1566,8 +1566,8 @@ public static class CharGen
 
         // The Returned. Validate's whole job is to re-derive independently, so it asks the two
         // questions the generator could get wrong: that a Shape is one the book prints, and that
-        // nobody else is carrying a Hunger at all. A Hunger on a Gunhand is not a small error —
-        // it is a track with an ending, sitting on a soul no rule would ever move it for.
+        // nobody else is carrying a Hunger at all. A Hunger on a Gunhand is not a small error.
+        // It is a track with an ending, sitting on a soul no rule would ever move it for.
         if (IsReturned(s))
         {
             Check(!string.IsNullOrEmpty(s.Shape), "a soul who came back wrong has no Shape of Return");
@@ -1594,7 +1594,9 @@ public static class CharGen
             if (D.gearPrices.TryGetValue(g, out var c)) spent += c;
         foreach (var w in s.WeaponsCarried)
         {
-            var m = System.Text.RegularExpressions.Regex.Match(w, @"— \$(\d+(\.\d+)?)$");
+            // Both separators, because the tag itself changed in v1.58.0 (an em dash, then a
+            // middle dot) and a session saved by an older build still has to balance.
+            var m = System.Text.RegularExpressions.Regex.Match(w, @"[—·] \$(\d+(\.\d+)?)$");
             // The price is written with a '.' decimal point, so parse it as one. The shipped
             // app sets InvariantGlobalization and would be fine either way, but the smoke rig
             // doesn't, and on a comma-decimal machine the bare Parse throws FormatException
@@ -1618,7 +1620,7 @@ public static class CharGen
         var sb = new StringBuilder();
         string M(int m) => m >= 0 ? "+" + m : "−" + (-m);
 
-        sb.AppendLine($"{s.Name} — {s.Calling} · {org.name}");
+        sb.AppendLine($"{s.Name}, {s.Calling} · {org.name}");
         sb.AppendLine($"Level {s.Level}{(string.IsNullOrEmpty(s.Gender) ? "" : " · " + s.Gender.ToLowerInvariant())} · {s.Method} · {s.Compass}"
                       + (s.HandTweaked ? " · hand-tweaked" : ""));
         sb.AppendLine();
@@ -1629,19 +1631,19 @@ public static class CharGen
         if (IsReturned(s))
         {
             var shape = ShapeOf(s);
-            sb.AppendLine($"Returned · {s.Shape ?? "no Shape chosen"} · Hunger {s.Hunger} of {HungerLost} — {HungerSays(s.Hunger)}");
+            sb.AppendLine($"Returned · {s.Shape ?? "no Shape chosen"} · Hunger {s.Hunger} of {HungerLost}, {HungerSays(s.Hunger)}");
             sb.AppendLine($"   Mends {MendDice(s.Level)}d6, and only this way. Hungers for {shape?.hunger ?? "something it cannot name."}");
         }
         int gunAtk = s.Attack + Mod(s.Scores["DEX"]), melAtk = s.Attack + Mod(s.Scores["STR"]);
         sb.AppendLine($"Attack {M(s.Attack)} (guns {M(gunAtk)} with DEX · melee {M(melAtk)} with STR)");
         if (s.WeaponsCarried.Count > 0) foreach (var w in s.WeaponsCarried) sb.AppendLine("   " + w);
         sb.AppendLine("Armor " + (string.IsNullOrEmpty(s.ArmorWorn)
-            ? "none — no DR; cover and not being shot are your whole defense"
+            ? "none. No DR; cover and not being shot are your whole defense"
             : ArmorLine(s)));
         if (cal.signsKnownAt != null)
             sb.AppendLine($"Sign DC {10 + s.Level / 2 + Mod(s.Scores["RES"])} (10 + half level + RES mod)");
         else if (s.SignsKnown.Count > 0)
-            sb.AppendLine($"Sign DC {10 + Mod(s.Scores["RES"])} (Hedge Magic — no Signs feature, so no level added)");
+            sb.AppendLine($"Sign DC {10 + Mod(s.Scores["RES"])} (Hedge Magic, no Signs feature, so no level added)");
         if (cal.miraclesKnownAt != null)
         {
             string fa = cal.pool.formula.Substring(0, 3);
@@ -1651,7 +1653,7 @@ public static class CharGen
         sb.AppendLine();
 
         string Rank(int r) => r switch { 3 => " (Master)", 2 => " (Expert)", _ => "" };
-        sb.AppendLine("TRAINED — " + string.Join(", ", s.SkillRanks.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
+        sb.AppendLine("TRAINED: " + string.Join(", ", s.SkillRanks.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
             .Select(kv => kv.Key + Rank(kv.Value))));
         sb.AppendLine();
 
@@ -1661,12 +1663,12 @@ public static class CharGen
             string desc = FeatureText(cal, f);
             var lim = ReadLimit(desc);
             sb.AppendLine("   " + f + (lim.Any ? $"  [{lim.Says(s)}]" : "")
-                                    + (desc != null ? " — " + FirstSentence(desc) : ""));
+                                    + (desc != null ? ": " + FirstSentence(desc) : ""));
         }
         if (s.Subpath != null)
         {
             var opt = cal.subpath.options.First(o => o.name == s.Subpath);
-            sb.AppendLine($"   {cal.subpath.section}: {PathLabel(s, forPlayer)} — {FirstSentence(opt.boon)}");
+            sb.AppendLine($"   {cal.subpath.section}: {PathLabel(s, forPlayer)}. {FirstSentence(opt.boon)}");
         }
         // The familiar's own line replaces the bare "Familiar: a crow" the choice would print,
         // because the beast carries mechanics the other two choices do not.
@@ -1677,27 +1679,27 @@ public static class CharGen
 
         sb.AppendLine("EDGES");
         var allEdges = D.edges.Concat(D.callingEdges).ToList();
-        foreach (var e in s.Edges) sb.AppendLine("   " + e + " — " + allEdges.First(x => x.name == e).desc);
-        foreach (var e in s.BonusCombatEdges) sb.AppendLine("   " + e + " (Gunhand's Edge) — " + allEdges.First(x => x.name == e).desc);
+        foreach (var e in s.Edges) sb.AppendLine("   " + e + ": " + allEdges.First(x => x.name == e).desc);
+        foreach (var e in s.BonusCombatEdges) sb.AppendLine("   " + e + " (Gunhand's Edge): " + allEdges.First(x => x.name == e).desc);
         sb.AppendLine();
 
         if (s.SignsKnown.Count > 0)
         {
-            sb.AppendLine($"SIGNS KNOWN — {string.Join(" + ", cal.signLists ?? new())}, to Rank {SignRankAt(s.Level)}");
+            sb.AppendLine($"SIGNS KNOWN: {string.Join(" + ", cal.signLists ?? new())}, to Rank {SignRankAt(s.Level)}");
             foreach (var d in s.SignsKnown.Select(n => D.signs.First(x => x.name == n)).OrderBy(x => x.rank))
-                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}) — {FirstSentence(d.desc)}");
+                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}): {FirstSentence(d.desc)}");
             sb.AppendLine();
         }
 
         if (s.MiraclesKnown.Count > 0)
         {
-            sb.AppendLine($"MIRACLES KNOWN — {string.Join(" + ", cal.miracleLists ?? new())}, to Rank {MiracleRankAt(s.Level)}");
+            sb.AppendLine($"MIRACLES KNOWN: {string.Join(" + ", cal.miracleLists ?? new())}, to Rank {MiracleRankAt(s.Level)}");
             foreach (var d in s.MiraclesKnown.Select(n => D.miracles.First(x => x.name == n)).OrderBy(x => x.rank))
-                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}) — {FirstSentence(d.desc)}");
+                sb.AppendLine($"   Rank {d.rank}  {d.name} ({d.cost}): {FirstSentence(d.desc)}");
             sb.AppendLine();
         }
 
-        sb.AppendLine($"ORIGIN — {org.name}: {org.line}");
+        sb.AppendLine($"ORIGIN: {org.name}. {org.line}");
         sb.AppendLine("   Boon: " + org.boon);
         sb.AppendLine("   Burden: " + org.burden);
         sb.AppendLine();
@@ -1724,7 +1726,7 @@ public static class CharGen
             Row("Build:", s.Look.BodyLine);
             Row("Face:", s.Look.FaceLine);
             Row("Wearing:", string.IsNullOrWhiteSpace(s.Look.Style) ? s.Look.DressLine
-                : $"{s.Look.Style} — {s.Look.DressLine}");
+                : $"{s.Look.Style}, {s.Look.DressLine}");
             Row("Detail:", s.Look.Detail);
         }
         return sb.ToString();
@@ -1733,7 +1735,7 @@ public static class CharGen
     // ============================================ reading a feature's limit out of its own prose
 
     // The book states every limit in the sentence, so the sentence is where this reads it. The
-    // alternative — a `uses` column typed into chargen.json beside the description — is a second
+    // alternative, a `uses` column typed into chargen.json beside the description, is a second
     // copy of a fact, and the twenty repaired descriptions of 2026-08-19 are what a second copy
     // does when nobody is auditing it. See audits/verify_rules.py.
     //
@@ -1761,8 +1763,8 @@ public static class CharGen
     /// five features in the book were written this way and read as having no limit at all.
     ///
     /// <para>The cadence word is required, and that is the whole precision of this pattern. Two
-    /// sentences in the data say "the first time" and mean nothing of the kind — <i>"Most do not,
-    /// the first time"</i> and <i>"Roll a flat check the first time it matters"</i> — and a
+    /// sentences in the data say "the first time" and mean nothing of the kind (<i>"Most do not,
+    /// the first time"</i> and <i>"Roll a flat check the first time it matters"</i>) and a
     /// counter drawn beside either of those teaches a Keeper to stop trusting the counters that
     /// matter.</para></summary>
     static readonly System.Text.RegularExpressions.Regex FirstTimeEach = new(
@@ -1800,7 +1802,7 @@ public static class CharGen
     }
 
     /// <summary>How often this feature may be used, read from its description. A description that
-    /// states no limit — or states one about something ongoing rather than something pressed —
+    /// states no limit, or states one about something ongoing rather than something pressed,
     /// comes back as <see cref="FeatureCadence.None"/>.</summary>
     public static FeatureLimit ReadLimit(string desc)
     {
@@ -1850,7 +1852,7 @@ public static class CharGen
     }
 
     // A tally is the opposite of a ration: it climbs, and no boundary returns it. The book states
-    // one in the shape "on your third Debt the Patron calls it in", so that is what is matched —
+    // one in the shape "on your third Debt the Patron calls it in", so that is what is matched:
     // the count, the thing counted, and the sentence it lives in. Deliberately narrow: a looser
     // pattern would start reading "on your first turn" as a debt, and a counter the app invented
     // is worse than a counter it lacks.
@@ -1870,8 +1872,8 @@ public static class CharGen
     // is printed on the sheet, and until now not one of them reached a Strike: the app rolled the
     // weapon's dice and the Keeper added the rest in their head, or forgot to.
     //
-    // That is the fault this project has now fixed three times — the familiar's +2 in v1.48.0, the
-    // Returned's Dread bonus in v1.49.0 — and it is worth stating plainly: a fact that is only
+    // That is the fault this project has now fixed three times (the familiar's +2 in v1.48.0, the
+    // Returned's Dread bonus in v1.49.0) and it is worth stating plainly: a fact that is only
     // printable stops being true. At 10th level these dice are worth more than the gun. A posse
     // measured without them is a posse fighting at half strength, which is exactly what
     // _combatlab's sweeps were doing.
@@ -1882,7 +1884,7 @@ public static class CharGen
     // VERBATIM, because "a quarry who is unaware of you, who has not yet acted in the fight, or
     // whom an ally threatens" is a fact about the field and no app can know it.
     //
-    // These are therefore OFFERED, never applied — the same rule the Origin's standing edges and a
+    // These are therefore OFFERED, never applied: the same rule the Origin's standing edges and a
     // creature's attack rider follow. The app's job is to put the dice in front of the Keeper with
     // the book's sentence attached; the Keeper's job is to say whether tonight's shot earns them.
 
@@ -1891,7 +1893,7 @@ public static class CharGen
     public record StrikeRider(string Name, string Dice, double Average, string When, string Desc)
     {
         /// <summary>The dice as a Keeper would say them aloud beside the weapon's.</summary>
-        public string Says => $"{Name} — +{Dice}";
+        public string Says => $"{Name}, +{Dice}";
     }
 
     // A step in the level table, named with its dice: "Bushwhack 4d6", "Sudden Strike +3d6",
@@ -1901,7 +1903,7 @@ public static class CharGen
         @"^(?<head>.*?)\s*\+?(?<dice>\d+d\d+)$",
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-    /// <summary>The mean of a die expression — "3d6" is 10.5. Used for reporting and for the
+    /// <summary>The mean of a die expression: "3d6" is 10.5. Used for reporting and for the
     /// balance lab; nothing in play rolls off this.</summary>
     public static double DiceAverage(string dice)
     {
@@ -1921,7 +1923,7 @@ public static class CharGen
           "spend a beat", "you may add" };
 
     /// <summary>The sentence of a feature's prose that states the condition on its extra damage.
-    /// A convenience over <see cref="StrikeRider.Desc"/>, which always carries the whole of it —
+    /// A convenience over <see cref="StrikeRider.Desc"/>, which always carries the whole of it,
     /// so a miss here shortens the offer and never falsifies it.</summary>
     static string ConditionOf(string desc)
     {
@@ -1942,7 +1944,7 @@ public static class CharGen
     }
 
     /// <summary>Every extra-damage feature this soul has reached, at the step they have reached
-    /// it — one entry per feature, never one per step. Empty for twelve of the eighteen
+    /// it: one entry per feature, never one per step. Empty for twelve of the eighteen
     /// Callings, which is correct: most of them kill things with the gun they are holding.
     /// <para>The dice are read off the level table and the condition off the feature's own prose,
     /// so neither can drift from the printed book without <c>verify_rules.py</c> saying so.</para>
@@ -1979,7 +1981,7 @@ public static class CharGen
         => s == null ? new List<StrikeRider>() : StrikeRiders(s.Calling, s.Level);
 
     /// <summary>The accumulating tally a feature's prose declares, or
-    /// <see cref="FeatureTally.Any"/> false when it declares none — which is all but one of them.
+    /// <see cref="FeatureTally.Any"/> false when it declares none, which is all but one of them.
     /// </summary>
     public static FeatureTally ReadTally(string desc)
     {
@@ -2000,7 +2002,7 @@ public static class CharGen
     /// <para>The two do not always match on the nose: a level row prints "Judgment 3d8" or
     /// "Dead Aim +1d6" where the prose heads its section "Judgment", and the Drifter's 6th-level
     /// row names one entry that the book writes up as "Ghost / Uncanny Step / Vanish". This is the
-    /// one place that reconciliation lives — it used to be three chained lookups inline in
+    /// one place that reconciliation lives. It used to be three chained lookups inline in
     /// <c>Render</c>, where nothing else could reach it.</para></summary>
     public static string FeatureKey(CgCalling cal, string feature)
     {
@@ -2008,8 +2010,8 @@ public static class CharGen
         var keys = cal.featureDescs.Keys;
         if (keys.Contains(feature)) return feature;
 
-        // A level table prints the die in the column — "Judgment 3d8", "Dead Aim +1d6",
-        // "Precise Strike 2d6" — where the prose heads the section by name alone.
+        // A level table prints the die in the column ("Judgment 3d8", "Dead Aim +1d6",
+        // "Precise Strike 2d6") where the prose heads the section by name alone.
         string stem = DieSuffix.Replace(feature, "").Trim();
         foreach (var k in keys) if (k == stem) return k;
         foreach (var k in keys) if (feature.StartsWith(k, StringComparison.Ordinal)) return k;
@@ -2036,7 +2038,7 @@ public static class CharGen
     public static FeatureLimit LimitOf(CgCalling cal, string feature)
         => ReadLimit(FeatureText(cal, feature));
 
-    /// <summary>Every feature a soul of this Calling and level has, paired with its limit — the
+    /// <summary>Every feature a soul of this Calling and level has, paired with its limit: the
     /// list the Tracker's Calling strip is built from. Features that are really a slot rather than
     /// a thing you do (an Edge, a Sign learned, a Stolen Wonder) are left out, the same three the
     /// sheet's own feature list leaves out.</summary>
@@ -2048,7 +2050,7 @@ public static class CharGen
         if (cal == null) return list;
 
         // The printed table sets the two subpath entries in bold; the data cannot carry weight, so
-        // find them by the suffix instead — "Trade Mastery" at 10th for the Worldly and the
+        // find them by the suffix instead, "Trade Mastery" at 10th for the Worldly and the
         // Faithful, "Devotion (Greater)" at 9th for the three of the Old Dark. The word in front of
         // that suffix is what the 3rd-level row calls the choice, and the two are a pair.
         string greater = cal.rows.Where(r => r.level >= 9).SelectMany(r => r.features ?? new())
@@ -2073,11 +2075,11 @@ public static class CharGen
         return list;
     }
 
-    /// <summary>The 3rd-level path and its 10th-level mastery — "Game" and "Game Mastery" on the
+    /// <summary>The 3rd-level path and its 10th-level mastery: "Game" and "Game Mastery" on the
     /// Gambler's table, "Order" and "Order Mastery" on the Padre's. No featureDescs entry covers
     /// them: the rules live in <see cref="CgSubpath.options"/>, one boon per option, and half the
     /// Callings' Mastery abilities are in there. Left unresolved they were the only features in
-    /// the app with no text at all — the 3rd-level choice a player makes and then cannot read.
+    /// the app with no text at all: the 3rd-level choice a player makes and then cannot read.
     ///
     /// <para>Once a soul has chosen, this narrows to their own boon, and the mastery half narrows
     /// again to the sentence after the marker. Before they have chosen, it lists what is on
@@ -2086,8 +2088,8 @@ public static class CharGen
     {
         var opt = cal.subpath.options.FirstOrDefault(o => o.name == chosen);
         if (opt == null)
-            return (cal.subpath.section + (greater ? " — the greater boon" : ""),
-                    cal.subpath.section + " — chosen at 3rd level: "
+            return (cal.subpath.section + (greater ? " (the greater boon)" : ""),
+                    cal.subpath.section + ", chosen at 3rd level: "
                         + string.Join("; ", cal.subpath.options.Select(o => o.name)),
                     default);
 
@@ -2096,21 +2098,21 @@ public static class CharGen
         string text = cut < 0 ? boon
                     : greater ? boon.Substring(cut).Trim()
                               : boon.Substring(0, cut).Trim();
-        return ($"{cal.subpath.section}: {opt.name}" + (greater ? " — greater" : ""),
+        return ($"{cal.subpath.section}: {opt.name}" + (greater ? " (greater)" : ""),
                 text, ReadLimit(text));
     }
 
     /// <summary>What a card or a sheet should CALL a feature, which is not always the key it is
     /// stored under. <see cref="Subpath"/> keys a 3rd-level path as the section, a colon, and the
-    /// option — so the key stays unique across seventeen Callings that all print a path at 3rd.
+    /// option, so the key stays unique across seventeen Callings that all print a path at 3rd.
     /// On a 232px card that ellipsised to the section and three letters of the option: character
     /// for character the same on the 3rd-level card and on the 9th-level greater one sitting next
     /// to it, so the Tracker strip showed a Hexer two cards they could not tell apart.
     ///
     /// <para>The strip already names the Calling in its head line, so the section is the half worth
     /// dropping. Structural rather than an exemption list: the separator is there because
-    /// <see cref="Subpath"/> puts it there, and nothing off a level table carries one. Display only
-    /// — <c>FeatureSpent</c> and <c>TallyOwed</c> are still keyed by the whole string, so trimming
+    /// <see cref="Subpath"/> puts it there, and nothing off a level table carries one. Display only:
+    /// <c>FeatureSpent</c> and <c>TallyOwed</c> are still keyed by the whole string, so trimming
     /// here cannot orphan a saved session.</para></summary>
     public static string ShortFeatureName(string key)
     {
@@ -2155,20 +2157,20 @@ public static class CharGen
 
     /// <summary>Cut a description into sentences, so each one can be read for a limit of its own.
     ///
-    /// <para>An Origin states more than one rationed thing in a single paragraph — the Veteran's
+    /// <para>An Origin states more than one rationed thing in a single paragraph (the Veteran's
     /// boon holds <em>"Once per session steady the line"</em> and <em>"once per scene reroll a
-    /// failed Reflex save"</em> in one breath — and <see cref="ReadLimit"/> answers with the first
+    /// failed Reflex save"</em> in one breath) and <see cref="ReadLimit"/> answers with the first
     /// match it finds. Handing it the whole paragraph would therefore have quietly dropped the
     /// second half of four Origins.</para>
     ///
     /// <para><b>The semicolon counts as a full stop here, and that is the whole trick.</b> Ch. IV
-    /// writes its second clause in lower case after a semicolon — <em>"…for a round; once per scene
-    /// reroll a failed Reflex save"</em> — so a split that demanded a capital letter found one
+    /// writes its second clause in lower case after a semicolon (<em>"…for a round; once per scene
+    /// reroll a failed Reflex save"</em>) so a split that demanded a capital letter found one
     /// sentence where the book states two, and the Veteran's second ration went missing. Caught by
     /// running the reader over all ten Origins and reading what came out, which is the only way
     /// this kind of fault ever shows: every assertion about the first half passes perfectly.</para>
     ///
-    /// <para>No decimal is at risk — this book writes <c>1d6</c> and <c>−2</c>, never <c>1.5</c> —
+    /// <para>No decimal is at risk (this book writes <c>1d6</c> and <c>−2</c>, never <c>1.5</c>)
     /// so the split needs no lookahead beyond the whitespace.</para></summary>
     static IEnumerable<string> Sentences(string text)
         => string.IsNullOrWhiteSpace(text)
@@ -2180,15 +2182,15 @@ public static class CharGen
     ///
     /// <para>Ch. IV gives every Origin a <b>boon</b> and a <b>burden</b>, and until v1.49.0 the app
     /// printed both on the sheet and counted neither. Five of the ten ration an activation in so
-    /// many words — <em>"Once per session, when you would drop to 0 Blood…"</em> — which is the same
+    /// many words (<em>"Once per session, when you would drop to 0 Blood…"</em>) which is the same
     /// sentence shape the Callings use and so is read by the same <see cref="ReadLimit"/>. This is
     /// deliberately NOT a <c>uses</c> column added to <c>chargen.json</c>: that file is a
     /// transcription, and a second copy of a fact beside the prose is what the twenty repaired
     /// descriptions of 2026-08-19 were.</para>
     ///
     /// <para>Keyed <c>"Origin: &lt;name&gt;"</c> so the key cannot collide with a Calling feature in
-    /// <see cref="PartyMember.FeatureSpent"/>, and so <see cref="ShortFeatureName"/> — which trims
-    /// at the colon for exactly this reason — shows a card that says <em>Came Back Wrong</em>
+    /// <see cref="PartyMember.FeatureSpent"/>, and so <see cref="ShortFeatureName"/>, which trims
+    /// at the colon for exactly this reason, shows a card that says <em>Came Back Wrong</em>
     /// rather than the word <em>Origin</em>. Where one half states two rationed things, the second
     /// takes a numeral, because a card a player cannot tell from its neighbour is the fault
     /// v1.44.0 fixed for the Hexer's two Bargain cards.</para></summary>
@@ -2214,7 +2216,7 @@ public static class CharGen
     ///
     /// <para>The other half of Ch. IV, and the half no counter can hold: the Scout is <em>"+2 on
     /// Notice against ambush… −1 on Notice indoors"</em>, and the app does not know whether the
-    /// posse is indoors. So these are never applied behind the Keeper's back — they are
+    /// posse is indoors. So these are never applied behind the Keeper's back. They are
     /// <b>offered</b>, the way a creature's attack rider is and for the same reason. What the app
     /// contributes is that it knows WHICH ones this soul has and what the book says they are worth,
     /// so a Keeper stops having to remember that the Fallen Gentry is worse at going hungry.</para>
@@ -2249,7 +2251,7 @@ public static class CharGen
 
     // "+2 on Fortitude saves against fatigue", "−1 on checks of fine dexterity", "+2 to slip a
     // bond". The book writes every one of them as sign, digit, then "on"/"to"/"with"/"against" and
-    // the thing — so the shape is the book's, not one invented here.
+    // the thing, so the shape is the book's, not one invented here.
     //
     // The PREPOSITION is inside the capture on purpose. Left out, the chip for "+2 with criminals
     // and fences" renders as "+2 criminals", which reads like a typo rather than a rule; the
@@ -2264,15 +2266,16 @@ public static class CharGen
         // The book runs a clause on with "and" more often than it punctuates it, and a chip that
         // reads "on Notice against ambush, tracks, and lying-in-wait out of doors and never
         // surprised" is a chip nobody reads. One clause is the whole of what a chip is for.
-        // An em dash opens a gloss on the clause just made — "against plain hardships — hunger,
-        // exposure, hard labor" — and the gloss is the tooltip's job, not the chip's.
-        foreach (var stop in new[] { " and ", " — " })
+        // A bracket opens a gloss on the clause just made ("against the plain hardships (hunger,
+        // exposure, hard labor)"), and the gloss is the tooltip's job, not the chip's. The book
+        // printed that gloss behind an em dash until v2.52, so the dash stays a stop as well.
+        foreach (var stop in new[] { " and ", " (", " — " })
         {
             int at = s.IndexOf(stop, StringComparison.OrdinalIgnoreCase);
             if (at > 0) s = s.Substring(0, at);
         }
-        // Four of these are printed inside a parenthetical aside — "(−1 on first impressions with
-        // the breathing)" — so the closing bracket rides in on the last word.
+        // Four of these are printed inside a parenthetical aside, "(−1 on first impressions with
+        // the breathing)", so the closing bracket rides in on the last word.
         return s.TrimEnd('.', ')', ' ');
     }
 
@@ -2281,7 +2284,7 @@ public static class CharGen
     /// <summary>The one Origin that carries a Hunger. Named once so no other file spells it.</summary>
     public const string ReturnedOrigin = "Came Back Wrong";
 
-    /// <summary>Hunger 6 is <b>Consumed</b>, and the character passes to the Keeper — deliberately
+    /// <summary>Hunger 6 is <b>Consumed</b>, and the character passes to the Keeper: deliberately
     /// the same terminus as Mark 6, because the book has already taught a table what that means and
     /// a second, different ending would be a second rule to learn.</summary>
     public const int HungerLost = 6;
@@ -2317,7 +2320,7 @@ public static class CharGen
     /// not say why is reported as a broken button.
     ///
     /// <para>The only bar is the last one. A soul at Hunger 5 may still mend, and mending takes
-    /// them to 6 and out of the player's hands — that is not a bug to be clamped away, it is the
+    /// them to 6 and out of the player's hands. That is not a bug to be clamped away, it is the
     /// decision the whole Origin is built to put in front of somebody bleeding out. What the app
     /// owes them is a plain warning first, not a locked door.</para></summary>
     public static string WhyNotMend(CharacterSheet s)
@@ -2337,7 +2340,7 @@ public static class CharGen
     /// <summary>Feeding brings the Hunger down by one, and never below nothing. It is deliberately
     /// the ONLY way down: no rest returns it, no dawn, no new session. Every other boundary in this
     /// app hands something back because a clock turned over, and a Hunger that eased overnight
-    /// would say the feeding never mattered — the same argument that keeps the Witch's rite an act
+    /// would say the feeding never mattered: the same argument that keeps the Witch's rite an act
     /// rather than a boundary, and the Hexer's Debts out of <c>RefreshFeatures</c>.</summary>
     public static int Feed(CharacterSheet s, int n = 1)
     {
@@ -2365,7 +2368,7 @@ public static class CharGen
         var outp = new List<(string, string, FeatureLimit, int, int)>();
         if (p == null) return outp;
         // The Origin's rations come first, because Ch. III picks an Origin before a Calling and
-        // because they are the ones a table forgets — a Calling's features get read every level,
+        // because they are the ones a table forgets: a Calling's features get read every level,
         // an Origin's boon gets read once at character creation and never again.
         foreach (var f in OriginFeatures(p.Sheet?.Origin).Concat(
                           FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath)))
@@ -2390,16 +2393,16 @@ public static class CharGen
         if (row.Left > 0) return null;
         return row.Limit.Cadence switch
         {
-            FeatureCadence.Turn => $"{feature} is spent for this turn — it comes back on their next one.",
+            FeatureCadence.Turn => $"{feature} is spent for this turn. It comes back on their next one.",
             FeatureCadence.Round => $"{feature} is spent for this round.",
-            FeatureCadence.Scene => $"{feature} is spent for this scene — a new fight returns it.",
-            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn — a long rest returns it.",
+            FeatureCadence.Scene => $"{feature} is spent for this scene, a new fight returns it.",
+            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn, a long rest returns it.",
             FeatureCadence.Trigger => $"{feature} is spent. {row.Limit.Phrase}",
             _ => $"{feature} is spent for the session. Nothing short of the next one returns it.",
         };
     }
 
-    /// <summary>Spend one use. False when there was none to spend — ask
+    /// <summary>Spend one use. False when there was none to spend. Ask
     /// <see cref="WhyNotFeature"/> for the sentence to show.</summary>
     public static bool SpendFeature(PartyMember p, string feature)
     {
@@ -2410,15 +2413,15 @@ public static class CharGen
         return true;
     }
 
-    /// <summary>Give one back — the Keeper's undo for a press that was a mis-click or a rule the
+    /// <summary>Give one back: the Keeper's undo for a press that was a mis-click or a rule the
     /// table decided differently.</summary>
     public static bool UnspendFeature(PartyMember p, string feature)
     {
         if (p == null || !p.FeatureSpent.TryGetValue(feature, out int used) || used <= 0) return false;
         if (used == 1) p.FeatureSpent.Remove(feature); else p.FeatureSpent[feature] = used - 1;
         // AFTER the mutation, never before it. Announcing first tells the app to look at a table
-        // that has not changed yet, and with no handle to defer through — the self-test rig, and
-        // any early-startup path — the capture happens on the spot and the real change lands behind
+        // that has not changed yet, and with no handle to defer through (the self-test rig, and
+        // any early-startup path) the capture happens on the spot and the real change lands behind
         // it, unseen. Found by AuditUndo on its first run against this method, which is what that
         // audit is for.
         p.Touched(nameof(PartyMember.FeatureSpent));
@@ -2479,7 +2482,7 @@ public static class CharGen
         return (owed, owed >= row.Tally.At);
     }
 
-    /// <summary>Strike one off — the Patron collected, or the table read it differently, or it was
+    /// <summary>Strike one off: the Patron collected, or the table read it differently, or it was
     /// a mis-click. Never happens on its own: see PartyMember.TallyOwed.</summary>
     public static bool ForgiveTally(PartyMember p, string feature)
     {
@@ -2508,11 +2511,11 @@ public static class CharGen
     /// <para>Split out of <see cref="FamiliarBoonFor"/> because the boon could not otherwise be
     /// applied: the skill's name existed only inside a sentence, and a sentence is not something
     /// <see cref="SkillBonus"/> can read. Same fault, same shape, as every other pair of facts this
-    /// project has had to pull apart — the moment one of them is only printable, the other one
+    /// project has had to pull apart: the moment one of them is only printable, the other one
     /// silently stops being true.</para>
     ///
-    /// <para>Null for a beast nobody has keyed. The book states the boon as a principle — "a +2 to
-    /// one sense or skill befitting its nature" — and leaves the choice to the table, so a sixth
+    /// <para>Null for a beast nobody has keyed. The book states the boon as a principle, "a +2 to
+    /// one sense or skill befitting its nature", and leaves the choice to the table, so a sixth
     /// animal gets the generic line and no automatic bonus, rather than a guessed one.</para></summary>
     public static string FamiliarSkillFor(string kind) => FamiliarFor(kind)?.skill;
 
@@ -2534,7 +2537,7 @@ public static class CharGen
         return null;
     }
 
-    /// <summary>Why that skill and not another — the half of the boon line that is prose, kept
+    /// <summary>Why that skill and not another: the half of the boon line that is prose, kept
     /// beside the half that is a rule so a Keeper reading the sheet gets both.</summary>
     static string FamiliarReasonFor(string kind) => FamiliarFor(kind)?.why ?? LegacyReasonFor(kind);
 
@@ -2551,7 +2554,7 @@ public static class CharGen
     };
 
     /// <summary>
-    /// The standing boon each bound beast grants — "a +2 to one sense or skill befitting its
+    /// The standing boon each bound beast grants: "a +2 to one sense or skill befitting its
     /// nature", which the book states as a principle and leaves to the table. The app has to
     /// pick something, so it picks the obvious thing and says so on the sheet; a Keeper who
     /// wants otherwise edits the line. Keyed on the beast alone, so the five options in
@@ -2560,17 +2563,17 @@ public static class CharGen
     /// </summary>
     public static string FamiliarBoonFor(string kind)
         => FamiliarSkillFor(kind) is string sk
-         ? $"+{FamiliarBoonSize} {sk} — {FamiliarReasonFor(kind)}"
+         ? $"+{FamiliarBoonSize} {sk}, {FamiliarReasonFor(kind)}"
          : $"+{FamiliarBoonSize} to one sense or skill befitting its nature";
 
     /// <summary>Which level a Calling's 3rd-level path opens at, and which level its greater half
-    /// opens at — read off the level table rather than typed here, because the table is where the
+    /// opens at. Read off the level table rather than typed here, because the table is where the
     /// book states them and the two differ by Calling: the three of the Old Dark deepen at 9th and
     /// everybody else masters at 10th. Zeroes for a Calling with no path at all.
     ///
     /// <para>Worth the four lines. The alternative is the literal 3 and the literal 9 written into
     /// every rule that turns on the Craft, which is how a level table and the code that reads it
-    /// part company — and this project has already paid for that lesson under two other
+    /// part company, and this project has already paid for that lesson under two other
     /// names.</para></summary>
     public static (int At, int Greater) SubpathLevels(string callingName)
     {
@@ -2586,7 +2589,7 @@ public static class CharGen
                 rows.FirstOrDefault(r => (r.features ?? new()).Contains(greater))?.level ?? 0);
     }
 
-    /// <summary>Has this soul taken <b>the Familiar-Bound</b> — the Witch's Craft whose whole
+    /// <summary>Has this soul taken <b>the Familiar-Bound</b>: the Witch's Craft whose whole
     /// subject is the beast? At its own level the familiar "grows clever and hardy", which is the
     /// only thing the book says about how much the beast can take, and so the only thing the app
     /// has to go on when it gives the beast a Blood of its own.</summary>
@@ -2595,13 +2598,13 @@ public static class CharGen
            && (s.Subpath ?? "").Contains("Familiar-Bound", StringComparison.OrdinalIgnoreCase)
            && s.Level >= SubpathLevels(s.Calling).At;
 
-    /// <summary>...and reached its greater boon — swap places once per scene, share wounds or
+    /// <summary>...and reached its greater boon: swap places once per scene, share wounds or
     /// Blood, and the once-only spirit-carry to a new dawn.</summary>
     public static bool FamiliarBoundGreater(CharacterSheet s)
         => FamiliarBound(s) && s.Level >= SubpathLevels(s.Calling).Greater;
 
-    /// <summary>What to call the beast on the field. The sheet holds a kind and not a name — "a
-    /// crow" — so the field row borrows its Witch's, which is also how a table refers to it out
+    /// <summary>What to call the beast on the field. The sheet holds a kind and not a name, "a
+    /// crow", so the field row borrows its Witch's, which is also how a table refers to it out
     /// loud. A Keeper who has named the thing types over it.</summary>
     public static string FamiliarFieldName(string witchName, string kind)
     {
@@ -2613,7 +2616,7 @@ public static class CharGen
 
     /// <summary>
     /// Bind the beast if this Calling has one. Reads the kind back out of CallingChoice rather
-    /// than re-rolling it, so the sheet's familiar and its bonus can never name two animals —
+    /// than re-rolling it, so the sheet's familiar and its bonus can never name two animals,
     /// which is the whole failure mode of storing the same fact twice.
     /// </summary>
     static void BindFamiliar(CharacterSheet s, CgCalling cal)
@@ -2634,8 +2637,8 @@ public static class CharGen
     {
         if (string.IsNullOrEmpty(s?.FamiliarKind)) return null;
         if (s.FamiliarLost)
-            return $"Familiar: {s.FamiliarKind} — DEAD. Sickened until you bind another over a long night's rite.";
-        string line = $"Familiar: {s.FamiliarKind} — {s.FamiliarBoon}; scouts, spies, shares its senses, "
+            return $"Familiar: {s.FamiliarKind} is DEAD. Sickened until you bind another over a long night's rite.";
+        string line = $"Familiar: {s.FamiliarKind}, {s.FamiliarBoon}; scouts, spies, shares its senses, "
                     + "and can deliver a touch-range Sign.";
         if (FamiliarBoundGreater(s))
             line += " Familiar-Bound: swap places with it once per scene and share wounds or Blood"

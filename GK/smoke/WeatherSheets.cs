@@ -2,7 +2,7 @@ using BloodAndGritKeeper;
 
 // A throwaway visual check: write one SVG per sky and one per ground, so the new weather
 // washes and the new landforms can be looked at rather than merely asserted. Not part of the
-// suite's pass/fail — it just drops files where a human can open them.
+// suite's pass/fail. It just drops files where a human can open them.
 static class WeatherSheets
 {
     public static void Write(string dir)

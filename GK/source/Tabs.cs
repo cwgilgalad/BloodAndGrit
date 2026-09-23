@@ -26,7 +26,7 @@ public partial class MainForm
         var split = Split(Orientation.Vertical, 300, 340, 0.30);
 
         var leftPanel = new Panel { Dock = DockStyle.Fill, BackColor = Paper };
-        // AutoSize: at narrow widths this bar wraps to 3–4 rows — a fixed height clipped
+        // AutoSize: at narrow widths this bar wraps to 3–4 rows, and a fixed height clipped
         // the action buttons clean out of view
         var filters = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6), BackColor = Color.FromArgb(243, 237, 221) };
 
@@ -37,18 +37,18 @@ public partial class MainForm
         filters.Controls.Add(beastSearch);
         beastTier = new ComboBox { Width = 90, DropDownStyle = ComboBoxStyle.DropDownList };
         Tip.SetToolTip(beastTier, "Show one Tier only. A creature's Tier is what makes it a fair, hard fight "
-            + "for a posse of twice that many levels — Tier II is written for four 4th-level souls. Two Tiers "
+            + "for a posse of twice that many levels. Tier II is written for four 4th-level souls. Two Tiers "
             + "over the posse and the app will offer it as a sign on the trail instead of a thing on the field.");
         // Built from the creatures actually loaded rather than typed. It was a literal list ending
         // at Tier V, so the seven creatures B6 added at VI, VII and VIII could not be filtered to at
-        // all — the same ceiling-as-a-literal that four Roman-numeral readers had in the builders.
+        // all: the same ceiling-as-a-literal that four Roman-numeral readers had in the builders.
         beastTier.Items.Add("Any tier");
         foreach (int t in Db.Creatures.Select(c => c.tier).Where(t => t > 0).Distinct().OrderBy(t => t))
             beastTier.Items.Add("Tier " + Rules.Roman(t));
         beastTier.SelectedIndex = 0; beastTier.SelectedIndexChanged += (s, e) => FilterBeasts();
         filters.Controls.Add(beastTier);
         beastChapter = new ComboBox { Width = 215, DropDownStyle = ComboBoxStyle.DropDownList };
-        Tip.SetToolTip(beastChapter, "Show one chapter of the Bestiary only — the dead, cursed beasts, men "
+        Tip.SetToolTip(beastChapter, "Show one chapter of the Bestiary only: the dead, cursed beasts, men "
             + "and their shapes, spirits, weather, the Old Dark, and the two mundane chapters.\nBeasts of the "
             + "Living World and Hard Men & Hard Country are the ordinary half: they cost no Nerve and never "
             + "move the Mark, which is what lets a Keeper run a slow burn before anything gets up that shouldn't.");
@@ -58,12 +58,12 @@ public partial class MainForm
         filters.Controls.Add(beastChapter);
         filters.SetFlowBreak(beastChapter, true);
         // Each of these four declines when there is nothing to act on, and every one of them used
-        // to decline in silence — which from the Keeper's side of the screen is the same thing as a
+        // to decline in silence, which from the Keeper's side of the screen is the same thing as a
         // button wired to nothing. Say so. (Tracker's New fight was reported as dead for exactly
         // this reason; the whole class was swept in v1.36.0.)
         filters.Controls.Add(Btn("🎲 Random", (s, e) =>
         {
-            if (beastList.Items.Count == 0) { Nope("Nothing in the list to jump to — loosen the filters."); return; }
+            if (beastList.Items.Count == 0) { Nope("Nothing in the list to jump to, loosen the filters."); return; }
             beastList.SelectedIndex = Rules.Rng.Next(beastList.Items.Count);
         }, 95, "Jump to a random creature in the current filter"));
         filters.Controls.Add(Btn("→ Encounter", (s, e) =>
@@ -91,7 +91,7 @@ public partial class MainForm
         filters.Controls.Add(QuietBtn("Reset", (s, e) =>
         {
             beastSearch.Text = ""; beastTier.SelectedIndex = 0; beastChapter.SelectedIndex = 0; beastQty.Value = 1;
-        }, 65, "Clear the search and filters — the whole Bestiary again"));
+        }, 65, "Clear the search and filters, the whole Bestiary again"));
         beastCount = Lbl("");
         beastCount.ForeColor = Slate;
         filters.Controls.Add(beastCount);
@@ -99,7 +99,7 @@ public partial class MainForm
         beastList = new ListBox { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 9.5f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
         StyleList(beastList);
         beastList.SelectedIndexChanged += (s, e) => ShowBeast(beastList.SelectedItem as Creature);
-        // double-click pops the creature out into its own window — maximize it, grow the
+        // double-click pops the creature out into its own window: maximize it, grow the
         // text, keep several open side by side
         beastList.DoubleClick += (s, e) => { if (beastList.SelectedItem is Creature c) ShowCreatureCard(c); };
         beastList.KeyDown += (s, e) =>
@@ -107,13 +107,13 @@ public partial class MainForm
             if (e.KeyCode == Keys.Enter && beastList.SelectedItem is Creature c)
             { ShowCreatureCard(c); e.Handled = true; e.SuppressKeyPress = true; }
         };
-        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window — right-click for where else it can go");
+        Tip.SetToolTip(beastList, "Double-click a creature (or press Enter) to open it in its own window, right-click for where else it can go");
 
         // The filter bar's actions, on the creature itself. The quantity spinner is honored here
         // too, so "× 4 → Tracker" means the same thing whichever way it's reached.
         ListMenu<Creature>(beastList, (menu, c) =>
         {
-            MIHead(menu, $"{c.name} — Tier {Rules.Roman(c.tier)}");
+            MIHead(menu, $"{c.name}: Tier {Rules.Roman(c.tier)}");
             MI(menu, "Open it in its own window", () => ShowCreatureCard(c));
             MISep(menu);
             MI(menu, "Add to the encounter plan", () => { encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}."); });
@@ -168,7 +168,7 @@ public partial class MainForm
     /// <summary>A creature's page, set in two faces on purpose.
     ///
     /// <para><b>Narrative is Georgia; data is Segoe UI.</b> Georgia is the books' own face, and the
-    /// lore, the witness quote and the Keeper's note are the parts of this page that ARE the book —
+    /// lore, the witness quote and the Keeper's note are the parts of this page that ARE the book;
     /// setting them in the UI's sans made the Bestiary read as a database of creatures rather than
     /// as the chapter it was extracted from. The stat lines stay sans for a reason recorded in
     /// CLAUDE.md: Georgia is a text-figure face whose 3 4 5 7 9 descend below the baseline and whose
@@ -195,9 +195,9 @@ public partial class MainForm
         Prose(c.tierText + "\n\n", 10f, Gold, italic: true);
         foreach (var p in c.lore) Prose(p + "\n\n");
         // GoldDeep, not Gold: this is a whole sentence, and the palette's own note says Gold is a
-        // heading colour that measures about 3.5:1 on Paper — under what a person reads comfortably.
+        // heading colour that measures about 3.5:1 on Paper, under what a person reads comfortably.
         if (!string.IsNullOrEmpty(c.witness)) Prose("“" + c.witness + "”\n\n", 10.5f, GoldDeep, italic: true);
-        if (!string.IsNullOrEmpty(c.found)) { W("FOUND — ", true, 9.5f, Blood); W(c.found + "\n\n"); }
+        if (!string.IsNullOrEmpty(c.found)) { W("FOUND: ", true, 9.5f, Blood); W(c.found + "\n\n"); }
         void Stat(string k, string v) { if (!string.IsNullOrEmpty(v)) { W(k.ToUpper() + "  ", true, 9.5f, Blood); W(v + "\n"); } }
         Stat("Defense", c.defense); Stat("Blood", c.blood); Stat("Speed", c.speed);
         Stat("Saves", c.saves); Stat("Attacks", c.attacks); Stat("Special", c.special);
@@ -207,7 +207,7 @@ public partial class MainForm
     }
 
     /// <summary>The same stat block as plain text, for pasting into notes or a chat window. It follows
-    /// <see cref="RenderCreature"/> line for line on purpose — a Keeper who copies what's on screen
+    /// <see cref="RenderCreature"/> line for line on purpose. A Keeper who copies what's on screen
     /// should get what's on screen, not an abridgement of it.</summary>
     static string CreatureText(Creature c)
     {
@@ -215,7 +215,7 @@ public partial class MainForm
         sb.AppendLine(c.name).AppendLine(c.tierText).AppendLine();
         foreach (var p in c.lore) sb.AppendLine(p).AppendLine();
         if (!string.IsNullOrEmpty(c.witness)) sb.AppendLine("“" + c.witness + "”").AppendLine();
-        if (!string.IsNullOrEmpty(c.found)) sb.AppendLine("FOUND — " + c.found).AppendLine();
+        if (!string.IsNullOrEmpty(c.found)) sb.AppendLine("FOUND: " + c.found).AppendLine();
         void Stat(string k, string v) { if (!string.IsNullOrEmpty(v)) sb.AppendLine(k.ToUpperInvariant() + "  " + v); }
         Stat("Defense", c.defense); Stat("Blood", c.blood); Stat("Speed", c.speed);
         Stat("Saves", c.saves); Stat("Attacks", c.attacks); Stat("Special", c.special);
@@ -232,7 +232,7 @@ public partial class MainForm
     Label encVerdict;
     Panel encBottom;
     Panel encBar;
-    int encSpend, encBudget;    // what the bar paints — set by RefreshEncounter, read by the Paint handler
+    int encSpend, encBudget;    // what the bar paints. Set by RefreshEncounter, read by the Paint handler
 
     /// <summary>One line of a creature picker. The list used to hold bare names, which left out the
     /// single fact the two tabs that use it are FOR: a creature's Tier is the whole of the encounter
@@ -240,7 +240,7 @@ public partial class MainForm
     /// fight only after the thing was already on the plan. User-asked.
     ///
     /// <see cref="ToString"/> is what the type-ahead matches and what lands in the box when a line is
-    /// picked, so it keeps the NAME first — autocomplete matches on a prefix, and a leading "Tier IV"
+    /// picked, so it keeps the NAME first: autocomplete matches on a prefix, and a leading "Tier IV"
     /// would make every creature untypeable. <see cref="Sep"/> is what <see cref="PickedCreature"/>
     /// cuts the name back out at.</summary>
     sealed class CreatureLine
@@ -290,7 +290,7 @@ public partial class MainForm
 
     /// <summary>The creature a picker is sitting on. Resolved from the TEXT rather than the selected
     /// item, because the text is what the Keeper can see and it stays right after they type over a
-    /// selection — a stale SelectedItem is exactly how a picker comes to add something other than
+    /// selection: a stale SelectedItem is exactly how a picker comes to add something other than
     /// what it is showing. The Tier suffix the list appends is cut back off, and a bare name typed
     /// by hand still resolves, so nobody has to know the list decorates itself.</summary>
     static Creature PickedCreature(ComboBox box)
@@ -332,13 +332,13 @@ public partial class MainForm
         top.Controls.Add(Lbl("Add a creature:"));
         encPick = CreaturePicker(230);
         Tip.SetToolTip(encPick, "Type a few letters or pick from the list, then Add. Every line "
-            + "carries its creature's Tier — that is what the cost below is reckoned from.");
+            + "carries its creature's Tier. That is what the cost below is reckoned from.");
         encPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToEncounter(); e.SuppressKeyPress = true; } };
         top.Controls.Add(encPick);
         top.Controls.Add(Lbl(" ×"));
         encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         Tip.SetToolTip(encQty, "How many of that creature to cost into the plan at once. Six wolves is six "
-            + "lines of budget, not one — which is the whole point of costing a fight before running it.");
+            + "lines of budget, not one, which is the whole point of costing a fight before running it.");
         top.Controls.Add(encQty);
         top.Controls.Add(Btn("＋ Add", (s, e) => AddPickToEncounter(), 75, "Add it to the plan (or press Enter in the box)"));
         top.Controls.Add(Btn("✕ Remove", (s, e) =>
@@ -351,11 +351,11 @@ public partial class MainForm
             if (encounter.Count == 0) { Nope("The plan is already empty."); return; }
             if (Confirm("Clear the encounter?")) { encounter.Clear(); RefreshEncounter(); }
         }, 65, "Empty the encounter and start costing a new one"));
-        // An empty plan sent an empty loop and nothing happened — no rows, no word, no way to tell
+        // An empty plan sent an empty loop and nothing happened: no rows, no word, no way to tell
         // it apart from a button that does not work.
         top.Controls.Add(Btn("Send all → Tracker", (s, e) =>
         {
-            if (encounter.Count == 0) { Nope("Nothing costed yet — add a foe to the plan first."); return; }
+            if (encounter.Count == 0) { Nope("Nothing costed yet. Add a foe to the plan first."); return; }
             foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature);
         }, 150, "Put every listed creature on the battlefield"));
 
@@ -383,12 +383,12 @@ public partial class MainForm
             if (name == "cost") e.Value = cost;
         };
         encGrid.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) ShowCreatureCard(encounter[e.RowIndex].Creature); };
-        Tip.SetToolTip(encGrid, "Double-click a creature for its stat block — right-click for what can be done with it");
+        Tip.SetToolTip(encGrid, "Double-click a creature for its stat block, right-click for what can be done with it");
 
         GridMenu<EncounterPick>(encGrid, (menu, pick) =>
         {
             var beast = pick.Creature;
-            MIHead(menu, $"{beast.name} — Tier {Rules.Roman(beast.tier)}");
+            MIHead(menu, $"{beast.name}: Tier {Rules.Roman(beast.tier)}");
             MI(menu, "Open the stat block", () => ShowCreatureCard(beast));
             MISep(menu);
             MI(menu, "Add another of these", () => { encounter.Add(new EncounterPick(beast)); RefreshEncounter(); Log($"Encounter: added {beast.name}."); });
@@ -410,7 +410,7 @@ public partial class MainForm
         encVerdict = new Label { Dock = DockStyle.Top, Height = 26, TextAlign = ContentAlignment.TopLeft, Font = new Font("Segoe UI", 10.5f, FontStyle.Bold), ForeColor = Ink };
         // Owner-drawn rather than a ProgressBar: a themed ProgressBar ignores ForeColor outright,
         // so the bar could never agree with the verdict line above it. Drawing it also buys the
-        // budget tick — the mark that says where "a fair, hard fight" actually sits, so being
+        // budget tick: the mark that says where "a fair, hard fight" actually sits, so being
         // over is something you can SEE, not just read.
         encBar = new BufferedPanel { Dock = DockStyle.Bottom, Height = 22, BackColor = Color.FromArgb(243, 237, 221) };
         encBar.Paint += (s, e) => PaintBudgetBar(e.Graphics, encBar.ClientRectangle);
@@ -425,7 +425,7 @@ public partial class MainForm
         {
             Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 11f, FontStyle.Italic), ForeColor = Gold, BackColor = Paper,
-            Text = "The Long Odds — weigh a fight BEFORE you run it.\n\n" +
+            Text = "The Long Odds, weigh a fight BEFORE you run it.\n\n" +
                    "Add creatures above (or send them over from the Bestiary tab),\n" +
                    "set the party's level, and the verdict bar below tells you\n" +
                    "whether the fight is fair, mean, or a massacre.\n\n" +
@@ -445,7 +445,7 @@ public partial class MainForm
     void AddPickToEncounter()
     {
         var c = PickedCreature(encPick);
-        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name. Pick one from the list."); return; }
         int n = (int)encQty.Value;
         for (int i = 0; i < n; i++) encounter.Add(new EncounterPick(c));
         RefreshEncounter();
@@ -471,12 +471,12 @@ public partial class MainForm
                         + (arith == null ? "" : "\r\n" + arith);
         encVerdict.ForeColor = BudgetColor(spend, budget);
         SizeVerdict();
-        // The role column can only fit "Even foe — posse is junior"; this is where the why lives.
+        // The role column can only fit "Even foe (posse is junior)"; this is where the why lives.
         int lvl = (int)encLevel.Value;
         Tip.SetToolTip(encLevel, Rules.JuniorForTier(lvl)
             ? $"Sets each creature's role and cost against the posse.\r\n"
             + $"At level {lvl} the posse stands at Tier {Rules.Roman(Rules.PartyTier(lvl))} because Ch. IV rounds "
-            + $"half the party's level TOWARD danger — so an even foe here is the Tier the Bestiary "
+            + $"half the party's level TOWARD danger, so an even foe here is the Tier the Bestiary "
             + $"reserves for level {lvl + 1}, and the posse is the junior half of its range."
             : "Sets each creature's role and cost against the posse");
         encSpend = spend; encBudget = budget;
@@ -486,7 +486,7 @@ public partial class MainForm
     /// <summary>Fit the verdict label and the strip under it to the text the verdict actually has.
     ///
     /// <para>One line, two or three, depending on whether the plan trips Ch. IV's dearer pricing
-    /// and the arithmetic ceiling. Measured at the width the label really has — a constant height
+    /// and the arithmetic ceiling. Measured at the width the label really has: a constant height
     /// clipped the second line for as long as there has been one.</para></summary>
     void SizeVerdict()
     {
@@ -502,17 +502,17 @@ public partial class MainForm
     }
 
     /// <summary>What the spend means in color, for the verdict line and the bar both, so the two can
-    /// never disagree. Green at STANDARD — the fight the chapter says the party should win bloodied,
+    /// never disagree. Green at STANDARD: the fight the chapter says the party should win bloodied,
     /// and the one reading on this tab you should be able to spot without reading it. Red from
     /// DEADLY on, which is where Ch. IV starts saying somebody may not walk away; the words are what
-    /// say how far past. HARD is deliberately neither — a hard fight is a thing a Keeper builds on
+    /// say how far past. HARD is deliberately neither: a hard fight is a thing a Keeper builds on
     /// purpose, and colouring it as a warning would train the eye to ignore the warning.</summary>
     public static Color BudgetColor(int spend, int budget) => Rules.BudgetBand(spend, budget) switch
     {
-        Rules.Weight.Standard => Verdigris,   // the budget spent — win bloodied
+        Rules.Weight.Standard => Verdigris,   // the budget spent: win bloodied
         Rules.Weight.Deadly   => Blood,
         Rules.Weight.Beyond   => Blood,
-        _                     => Ink,         // empty, easy or hard — not worth a color
+        _                     => Ink,         // empty, easy or hard: not worth a color
     };
 
     /// <summary>The same reading, as a solid fill. Everything quiet takes a muted tan rather than the
@@ -556,10 +556,10 @@ public partial class MainForm
     NumericUpDown trkAmount, trkQty;
     ComboBox trkPick;
 
-    // The acting row's ground — gold, so it reads as "this one is up" against the posse's green
+    // The acting row's ground: gold, so it reads as "this one is up" against the posse's green
     // and the foes' clay without competing with the red a downed combatant wears. Carried a little
     // deeper in v1.38.0 when the foe ground stopped being near-white: gold and clay are both warm,
-    // so what separates them is the gap between green and blue — 50 points here against the foe's
+    // so what separates them is the gap between green and blue: 50 points here against the foe's
     // 12. See the palette note in MainForm.
     static readonly Color ActingRow = Color.FromArgb(250, 236, 186);
     // A sign & spoor row: cold and bloodless, so it never reads as one more body to shoot at.
@@ -569,13 +569,13 @@ public partial class MainForm
     Font trkBold;   // built once with the grid; CellFormatting runs on every paint
 
     // The Blood bar's three states. Green while they can take it, gold once it hurts, red when the
-    // next hit is the last one — the same reading the Encounter tab's budget bar offers, so a
+    // next hit is the last one: the same reading the Encounter tab's budget bar offers, so a
     // Keeper learns one color language and not two.
     static readonly Color BarTrack = Color.FromArgb(226, 218, 200);
     static readonly Color BarEdge   = Color.FromArgb(186, 174, 150);
 
     /// <summary>How much Blood is left, as a bar and a color. Above two thirds it is green; below
-    /// a third it is red; between, gold. A bar exactly at zero draws only its track — the row is
+    /// a third it is red; between, gold. A bar exactly at zero draws only its track: the row is
     /// already wearing red, and a red bar of no length would just be noise.</summary>
     static void PaintBloodBar(Graphics g, Rectangle r, int cur, int max)
     {
@@ -593,7 +593,7 @@ public partial class MainForm
     }
 
     /// <summary>The death clock in the Blood column, for a soul on the ground. The Blood bar has
-    /// nothing left to draw — they are at zero, so it is simply empty, which reads as "nothing is
+    /// nothing left to draw. They are at zero, so it is simply empty, which reads as "nothing is
     /// happening here" at the exact moment the most is. This fills the OTHER way: from the left, in
     /// the app's darkest red, as the bleed runs from 0 toward −CON. Full bar, empty soul.
     ///
@@ -616,7 +616,7 @@ public partial class MainForm
 
     /// <summary>A counted track drawn as boxes: <paramref name="n"/> of them, the first
     /// <paramref name="filled"/> inked. For the two clocks on this grid that count toward a fixed
-    /// end rather than draining from a maximum — the spoor a posse keeps cutting, and the Mark a
+    /// end rather than draining from a maximum: the spoor a posse keeps cutting, and the Mark a
     /// soul keeps taking. A bar would be the wrong picture for both: six boxes say "six" and
     /// invite the count, where a bar four fifths along says only "nearly".</summary>
     static void PaintPips(Graphics g, Rectangle r, int filled, int n, Color ink)
@@ -655,20 +655,20 @@ public partial class MainForm
     static readonly Font DialogItalic = new("Segoe UI", 9f, FontStyle.Italic);
     static readonly Font DialogBold = new("Segoe UI", 9.75f, FontStyle.Bold);
 
-    /// <summary>The Tracker's one refresh. Every readout on the tab that is driven by a counter —
-    /// the grid, the turn line, the round box and the glass face — is redrawn here.
+    /// <summary>The Tracker's one refresh. Every readout on the tab that is driven by a counter
+    /// (the grid, the turn line, the round box and the glass face) is redrawn here.
     ///
     /// This exists because the alternative did not work. Refreshing was done per site, as
     /// <c>RefreshTracker();</c> repeated at eighteen call sites, and every one
     /// of them was a chance to remember two of the four. <c>ShowRound</c> documents itself as the
-    /// one place the round moves through, and most of those sites never called it — which is
+    /// one place the round moves through, and most of those sites never called it, which is
     /// exactly why the round box would sit on a stale number until something unrelated happened to
     /// redraw it (user-reported). A readout that updates only when the caller remembers is a
     /// readout that is sometimes wrong, and a number that is sometimes wrong is worse than no
     /// number, because the Keeper stops checking it.
     ///
     /// So: anything that moves tracker state calls this, and nothing calls the four by hand.
-    /// It is cheap — all four are local redraws over at most a few dozen rows.</summary>
+    /// It is cheap: all four are local redraws over at most a few dozen rows.</summary>
     void RefreshTracker()
     {
         trkGrid?.Refresh();
@@ -689,14 +689,14 @@ public partial class MainForm
         if (c == null)
         {
             trkTurnLbl.Text = tracker.Count == 0 ? "nobody on the field yet"
-                : Rules.NextUp(tracker) is Combatant up ? $"press Next turn — {up.Name} is up first"
-                : "the round is spent — Next turn starts the next one";
+                : Rules.NextUp(tracker) is Combatant up ? $"press Next turn, {up.Name} is up first"
+                : "the round is spent. Next turn starts the next one";
             trkTurnLbl.ForeColor = Faint;
             return;
         }
         // What is up, and what is still to come: the second half is the part that stops a Keeper
         // counting rows to work out whether the round is nearly over.
-        trkTurnLbl.Text = $"{c.Name} is up — {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left"
+        trkTurnLbl.Text = $"{c.Name} is up: {c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left"
             + (c.Beats == 0 ? ", spent" : $", next Strike {c.NextStrike}")
             + (left == 0 ? "  ·  last of the round" : $"  ·  {left} still to go");
         trkTurnLbl.ForeColor = c.Beats == 0 ? Faint : Blood;
@@ -705,7 +705,7 @@ public partial class MainForm
     void AddPickToTracker()
     {
         var c = PickedCreature(trkPick);
-        if (c == null) { Nope("No creature by that name — pick one from the list."); return; }
+        if (c == null) { Nope("No creature by that name. Pick one from the list."); return; }
         AddCreatureToTracker(c, (int)trkQty.Value);
     }
 
@@ -717,12 +717,12 @@ public partial class MainForm
     // Three deliberate choices:
     //   * OPT-IN. Off until asked for. A table that never wanted timing should never find itself
     //     timed, and a countdown nobody agreed to is pressure, not a tool.
-    //   * The LENGTH is a preference, not session state — it is a house rule about how this table
+    //   * The LENGTH is a preference, not session state. It is a house rule about how this table
     //     plays, so it lives in prefs.json and is set before anyone sits down. Five minutes by
     //     default; ten is one click away, and any length from five seconds to an hour is allowed.
     //   * It NEVER acts on the game. It logs when the sand runs out and it turns red. It does not
     //     end a turn, spend a Beat, or take a Beat away. Nothing in the books says a slow player
-    //     loses their action, so the app must not invent it — and a timer that silently ended
+    //     loses their action, so the app must not invent it, and a timer that silently ended
     //     someone's turn would be the one feature here that could lose a Keeper's work.
     //
     // The clock itself is pure and lives in the rules library (Rules' TurnClock), so the smoke rig
@@ -732,7 +732,7 @@ public partial class MainForm
     Label turnFace;
     System.Windows.Forms.Timer turnTicker;
     readonly List<Control> turnGlassParts = new();
-    /// The Tracker bar's own switch for the glass — down when the glass is out, up when it is not.
+    /// The Tracker bar's own switch for the glass: down when the glass is out, up when it is not.
     /// See where it is built for why it has to exist.
     CheckBox glassToggle;
     /// Set while ShowTurnTimer is putting the switch back in agreement with the state it just set,
@@ -742,7 +742,7 @@ public partial class MainForm
     /// <summary>The glass, its face, and its own little menu, built as one column that the Tracker
     /// hangs at the RIGHT EDGE of the action bar rather than dropping into the flow.
     ///
-    /// It used to ride inline at the end of the round row, which made it 30×40 — a postage stamp
+    /// It used to ride inline at the end of the round row, which made it 30×40: a postage stamp
     /// competing with fourteen buttons for the same eye. A turn timer is meant to be read across a
     /// table without looking for it, so it now gets a column of its own at the far right and takes
     /// the bar's FULL HEIGHT, which is as large as the layout can give it without taking a pixel
@@ -757,7 +757,7 @@ public partial class MainForm
         var prefs = Prefs.Load();
         turnClock = new TurnClock { PresetSeconds = prefs.TurnSeconds };
 
-        // Dock-filled inside its cell, so its size comes from the bar rather than from constants —
+        // Dock-filled inside its cell, so its size comes from the bar rather than from constants,
         // the same rule the dialogs follow. HourglassView draws every part of the glass as a
         // fraction of its own box, so it simply gets bigger; nothing here needs a second layout.
         turnGlass = new HourglassView(turnClock)
@@ -767,7 +767,7 @@ public partial class MainForm
         turnGlass.Click += (s, e) => ToggleTurnGlass();
         Tip.SetToolTip(turnGlass, "The posse's turn, running out. Click the glass to start or hold it.\n"
             + "It resets and starts itself at the top of every round. When the sand is through it says "
-            + "so in the log and turns red — it never ends anyone's turn or takes a Beat away. That is "
+            + "so in the log and turns red. It never ends anyone's turn or takes a Beat away. That is "
             + "still the Keeper's call.");
 
         turnFace = new Label
@@ -783,7 +783,7 @@ public partial class MainForm
             ("Start / hold  (click the glass)", (s, e) => ToggleTurnGlass()),
             ("Reset to a full glass", (s, e) => { turnClock.Reset(); SyncTicker(); ShowTurnGlass(); Say("The turn glass is full again.", Gold); }),
             ("-", null),
-            ("— How long is a turn —", null),
+            ("How long is a turn:", null),
             (TurnPresetLabel(0), (s, e) => SetTurnLength(TurnClock.Presets[0])),
             (TurnPresetLabel(1), (s, e) => SetTurnLength(TurnClock.Presets[1])),
             (TurnPresetLabel(2), (s, e) => SetTurnLength(TurnClock.Presets[2])),
@@ -795,13 +795,13 @@ public partial class MainForm
             ("Put the glass away", (s, e) => { ShowTurnTimer(false); RebuildMenu(); }));
 
         // One timer for the whole feature, started only when the glass is on show. 60 ms is about
-        // 16 frames a second — enough that sand looks like it is falling, cheap enough that a
+        // 16 frames a second: enough that sand looks like it is falling, cheap enough that a
         // Keeper with the Tracker open all evening never notices it.
         turnTicker = new System.Windows.Forms.Timer { Interval = 60 };
         turnTicker.Tick += (s, e) =>
         {
             if (turnClock.Tick(turnTicker.Interval))
-                Log($"The posse's turn is through — {TurnClock.Spell(turnClock.PresetSeconds)} gone.");
+                Log($"The posse's turn is through, {TurnClock.Spell(turnClock.PresetSeconds)} gone.");
             turnGlass.Advance();
             ShowTurnFace();
         };
@@ -851,13 +851,13 @@ public partial class MainForm
         ShowTurnGlass();
         if (!quiet) Prefs.Save(WithTurn(Prefs.Load(), on, null));   // the quiet call IS the saved state
         if (!quiet) Say(on
-            ? $"The turn glass is on the table — {TurnClock.Spell(turnClock.PresetSeconds)} to a turn."
+            ? $"The turn glass is on the table, {TurnClock.Spell(turnClock.PresetSeconds)} to a turn."
             : "The turn glass is put away.", Gold);
     }
 
     /// <summary>Put the Tracker bar's switch in agreement with the state, without letting it answer
-    /// back. The switch is one of four routes to the glass — the other three are the View menu, the
-    /// Table menu and the Glass ▾ menu's "Put the glass away" — and every one of them lands in
+    /// back. The switch is one of four routes to the glass (the other three are the View menu, the
+    /// Table menu and the Glass ▾ menu's "Put the glass away") and every one of them lands in
     /// <see cref="ShowTurnTimer"/>, so this is the single place the switch is ever set. Guarded
     /// because setting Checked raises CheckedChanged whether a hand or the code did it, and that
     /// handler calls ShowTurnTimer straight back.</summary>
@@ -867,13 +867,13 @@ public partial class MainForm
         glassToggleSyncing = true;
         glassToggle.Checked = on;
         // What it SAYS, not what pressing it does: a switch already shows that by being down.
-        glassToggle.Text = on ? "Turn glass — on" : "＋ Turn glass";
+        glassToggle.Text = on ? "Turn glass, on" : "＋ Turn glass";
         glassToggleSyncing = false;
     }
 
     /// <summary>Whether the glass is on the table. Falls back to the saved preference, because the
-    /// Table menu can ask this before the Tracker tab has ever been opened — tabs fill themselves
-    /// on first selection, so there is no glass to interrogate until then.</summary>
+    /// Table menu can ask this before the Tracker tab has ever been opened (tabs fill themselves
+    /// on first selection), so there is no glass to interrogate until then.</summary>
     internal bool TurnTimerOn => turnGlassParts.Count > 0 ? turnGlassParts[0].Visible : Prefs.Load().TurnTimer;
 
     static Prefs.Data WithTurn(Prefs.Data d, bool? on, int? seconds)
@@ -897,7 +897,7 @@ public partial class MainForm
         SyncTicker();
         ShowTurnGlass();
         Say(turnClock.Running
-            ? $"The turn glass is running — {turnClock.Face} left."
+            ? $"The turn glass is running, {turnClock.Face} left."
             : turnClock.Expired ? "The turn glass is through." : $"The turn glass is held at {turnClock.Face}.",
             turnClock.Expired ? Blood : Gold);
     }
@@ -909,7 +909,7 @@ public partial class MainForm
     /// (user-reported). Picking "two minutes" is the Keeper saying a turn is two minutes; being
     /// told the current one keeps its old length is an answer to a question nobody asked. Worse,
     /// it rendered nonsense: <c>TurnClock.PresetSeconds</c> only refills a HELD clock, so the
-    /// running one kept its old <c>LeftMs</c> against the new preset — and since the sand level is
+    /// running one kept its old <c>LeftMs</c> against the new preset, and since the sand level is
     /// <c>1 - LeftMs/(preset*1000)</c>, shortening the turn drove Spent negative and the glass read
     /// FULL while counting down from the old, longer turn.
     ///
@@ -942,7 +942,7 @@ public partial class MainForm
         };
         const int Pad = 16, CW = 380;
         string prose = "How long the posse gets to take its turn. The glass never ends a turn by "
-            + "itself — it only shows the time going, and says so in the log when it is through.";
+            + "itself. It only shows the time going, and says so in the log when it is through.";
         var say = new Label
         {
             Left = Pad, Top = Pad, Width = CW, ForeColor = Ink, Text = prose,
@@ -974,7 +974,7 @@ public partial class MainForm
         SetTurnLength(Math.Max(5, (int)mins.Value * 60 + (int)secs.Value));
     }
 
-    /// The top of a round turns the glass over — that IS the posse's turn beginning. Called from
+    /// The top of a round turns the glass over. That IS the posse's turn beginning. Called from
     /// NextRound so the one path the app uses to roll a round over is the one that resets it.
     void TurnOverTheGlass()
     {
@@ -1000,7 +1000,7 @@ public partial class MainForm
     {
         var page = new TabPage("Tracker") { BackColor = Paper };
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(6, 4, 6, 4), BackColor = Color.FromArgb(243, 237, 221) };
-        // The round is the app's to keep — it advances itself as the turns are taken — but it stays
+        // The round is the app's to keep (it advances itself as the turns are taken) but it stays
         // a number the Keeper can reach. A spinner says "you may change this" the way a label never
         // does, and the value is read live so a lazily-built tab never shows Round 1 on a fight's
         // third (which is exactly what the old hard-coded label did).
@@ -1015,13 +1015,13 @@ public partial class MainForm
             Font = new Font("Segoe UI", 11f, FontStyle.Bold), ForeColor = Blood,
             Margin = new Padding(0, 5, 12, 3), TextAlign = HorizontalAlignment.Center
         };
-        Tip.SetToolTip(roundBox, "The round. The app advances it as the field takes its turns — "
+        Tip.SetToolTip(roundBox, "The round. The app advances it as the field takes its turns: "
             + "set it by hand if the table has got ahead of it.");
         roundBox.ValueChanged += (s, e) =>
         {
             if (roundBusy) return;
             round = (int)roundBox.Value;
-            Log($"— Round {round} (set by hand) —");
+            Log($"ROUND {round} (set by hand)");
             UpdateTurnLine();
         };
         bar.Controls.Add(roundBox);
@@ -1048,31 +1048,31 @@ public partial class MainForm
             "Hand the turn to whoever is up next by initiative, and roll the round over when the "
             + "field has all gone (Ctrl+Space)"));
         // The three OTHER ways a turn can move, behind one label. Each is an exception the loop
-        // above already handles by itself — begin out of order, step the round by hand, re-roll the
-        // order — so each was a button competing for the eye with the one button that runs the
+        // above already handles by itself (begin out of order, step the round by hand, re-roll the
+        // order) so each was a button competing for the eye with the one button that runs the
         // fight. Collapsed, the row reads "press this; here are the exceptions", which is the shape
         // of the thing. Both shortcuts still work without opening it (Ctrl+R, Ctrl+I).
         bar.Controls.Add(MenuBtn("Turn order ▾", 104,
-            "The exceptions to Next turn — hand the turn out of order, step the round by hand, or "
+            "The exceptions to Next turn: hand the turn out of order, step the round by hand, or "
             + "roll the whole field's initiative again",
             ("Begin the SELECTED combatant's turn", (s, e) => BeginTurnForSelected()),
             ("Step to the next round  (Ctrl+R)", (s, e) => NextRound()),
             ("-", null),
             ("Roll initiative for the field  (Ctrl+I)", (s, e) => RollInitiative())));
         // The glass is off by default and, when it is off, the whole column at the right edge is
-        // hidden — so the ONE route to turning it on was a menu called Table, which is where nobody
+        // hidden, so the ONE route to turning it on was a menu called Table, which is where nobody
         // looks for a clock (user-reported: "I don't see an option to turn on the hourglass
         // anywhere"). This switch stands where the turn is taken, so the feature is never invisible.
         //
         // It was a button that appeared only while the glass was away, which answered half the
         // question: putting the glass OUT was on the bar, putting it away was back in a menu, and a
         // control that vanishes once you have used it says nothing about the state it left behind
-        // (user-reported). A held-down switch says both things at once — that the glass is out, and
-        // that this is what puts it away — which is what a toggle is FOR. Same shape as the Map
+        // (user-reported). A held-down switch says both things at once (that the glass is out, and
+        // that this is what puts it away) which is what a toggle is FOR. Same shape as the Map
         // tab's ✥ Move things, so the app has one idiom for "this is on".
         glassToggle = ToggleBtn("＋ Turn glass", 108,
             "Put an hourglass on the bar that runs the posse's turn down, or take it "
-            + "away. It never ends a turn or takes a Beat — it shows the time going and says so when it is "
+            + "away. It never ends a turn or takes a Beat. It shows the time going and says so when it is "
             + "through. Also on the Table and View menus, and its length is yours to set.");
         glassToggle.CheckedChanged += (s, e) =>
         {
@@ -1083,8 +1083,8 @@ public partial class MainForm
         bar.Controls.Add(glassToggle);
 
         bar.Controls.Add(BarSep());
-        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant — the engine handles to-hit, degrees, MAP, Fatal, and DR"));
-        bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul — Nerve off the ladder, Frightened, and the break at 0 Nerve"));
+        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant: the engine handles to-hit, degrees, MAP, Fatal, and DR"));
+        bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul: Nerve off the ladder, Frightened, and the break at 0 Nerve"));
         bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
             "Work a Sign, a Miracle, or a creature's own power: who works it, on whom, what it costs "
             + "them, and how many rounds it lasts"));
@@ -1094,7 +1094,7 @@ public partial class MainForm
         trkAmount = new NumericUpDown { Minimum = 1, Maximum = 999, Value = 5, Width = 58, Margin = new Padding(3, 6, 3, 3) };
         Tip.SetToolTip(trkAmount, "How much Blood the Damage and Heal buttons beside it move. Neither runs "
             + "past 0 or past the maximum, and a posse soul's row here and on the Posse tab are the same "
-            + "number — change it in one place and it changes in both.");
+            + "number, change it in one place and it changes in both.");
         bar.Controls.Add(trkAmount);
         bar.Controls.Add(Btn("Damage", (s, e) => AdjustCombatant(-1), 80, "Subtract the Amt from the selected combatant (Ctrl+D)"));
         bar.Controls.Add(Btn("Heal", (s, e) => AdjustCombatant(+1), 65, "Add the Amt to the selected combatant (Ctrl+H)"));
@@ -1103,32 +1103,32 @@ public partial class MainForm
         // Putting the field back on its feet: what a Keeper reaches for when a scene ENDS, so it
         // sits at the end of the doing-things row rather than among the combat actions.
         bar.Controls.Add(MenuBtn("✚ Restore ▾", 118,
-            "Put Blood — and, for the posse, Nerve — back to full, or stop somebody bleeding out",
-            ($"Stop the bleeding — DC {Rules.StabilizeDc} Fortitude or Medicine", (s, e) => StabilizeDialog()),
+            "Put Blood (and, for the posse, Nerve) back to full, or stop somebody bleeding out",
+            ($"Stop the bleeding: DC {Rules.StabilizeDc} Fortitude or Medicine", (s, e) => StabilizeDialog()),
             ("-", null),
-            ("Selected combatant — Blood to full", (s, e) => RestoreSelected()),
-            ("The posse — Blood, Nerve & pool to full", (s, e) => RestPosse()),
+            ("Selected combatant, Blood to full", (s, e) => RestoreSelected()),
+            ("The posse, Blood, Nerve & pool to full", (s, e) => RestPosse()),
             ("-", null),
-            ("Everyone on the field — Blood to full", (s, e) => RestoreField())));
+            ("Everyone on the field, Blood to full", (s, e) => RestoreField())));
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
-        // ---- row 3: the field itself — filling it, ordering it, and clearing it ----
+        // ---- row 3: the field itself (filling it, ordering it, and clearing it) ----
         // Roll initiative moved up into Turn order ▾: it is pressed once at the top of a fight, and
         // it belongs with the other two ways the order gets set rather than beside the foe picker.
         bar.Controls.Add(MenuBtn("Sort ▾", 70, "Order the field",
-            ("Initiative — high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
-            ("Initiative — low to high", (s, e) => SortTracker(TrkSort.InitAsc)),
+            ("Initiative, high to low", (s, e) => SortTracker(TrkSort.InitDesc)),
+            ("Initiative, low to high", (s, e) => SortTracker(TrkSort.InitAsc)),
             ("-", null),
-            ("Name — A to Z", (s, e) => SortTracker(TrkSort.NameAsc)),
-            ("Name — Z to A", (s, e) => SortTracker(TrkSort.NameDesc)),
+            ("Name, A to Z", (s, e) => SortTracker(TrkSort.NameAsc)),
+            ("Name, Z to A", (s, e) => SortTracker(TrkSort.NameDesc)),
             ("-", null),
-            ("Blood — most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
-            ("Blood — least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
+            ("Blood, most to least", (s, e) => SortTracker(TrkSort.BloodDesc)),
+            ("Blood, least to most", (s, e) => SortTracker(TrkSort.BloodAsc))));
 
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Lbl("Foe:"));
         trkPick = CreaturePicker(200);
-        Tip.SetToolTip(trkPick, "Any creature in the Bestiary, each line showing its Tier — type a "
+        Tip.SetToolTip(trkPick, "Any creature in the Bestiary, each line showing its Tier. Type a "
             + "few letters, then Add. A thing two Tiers over the posse goes on the trail, not the field.");
         trkPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToTracker(); e.SuppressKeyPress = true; } };
         bar.Controls.Add(trkPick);
@@ -1142,7 +1142,7 @@ public partial class MainForm
         var condItems = BookConditions
             .Select(cd => (cd, (EventHandler)((s, e) => ApplyCondition(cd)))).ToList();
         condItems.Add(("-", null));
-        condItems.Add(("— Clear all —", (s, e) => ClearConditions()));
+        condItems.Add(("Clear all", (s, e) => ClearConditions()));
         bar.Controls.Add(MenuBtn("＋ Condition ▾", 130, "Tag the selected combatant with a condition", condItems.ToArray()));
 
         // The Beat actions, built from Rules.BeatActions so this menu and the Reference deck's leaf
@@ -1160,12 +1160,12 @@ public partial class MainForm
         actItems.Add(("-", null));
         actItems.Add(("In the saddle ▸", (s, e) => GaitDialog()));
         bar.Controls.Add(MenuBtn("Act ▾", 78,
-            "Spend a Beat the way Ch. XI's table says — Aim or brace, Interact, Stride, Take Cover, "
-            + "Steady a Soul — take the one reaction between your turns, or say what the horse under "
+            "Spend a Beat the way Ch. XI's table says: Aim or brace, Interact, Stride, Take Cover, "
+            + "Steady a Soul. Take the one reaction between your turns, or say what the horse under "
             + "you is doing", actItems.ToArray()));
 
         // Everything past this line throws work away. A wider gap and a different face, so the hand
-        // that means "＋ Add" never lands on "Clear field" — they were adjacent and identical before.
+        // that means "＋ Add" never lands on "Clear field". They were adjacent and identical before.
         bar.Controls.Add(BarSep(18));
         bar.Controls.Add(DangerBtn("✕ Remove", (s, e) => RemoveSelectedCombatant(), 85, "Remove the selected combatant from the field (or press Delete). A posse soul is asked about first."));
         bar.Controls.Add(DangerBtn("New fight", (s, e) => NewFight(), 90, "Clear the foes, keep the posse, back to Round 1"));
@@ -1174,7 +1174,7 @@ public partial class MainForm
             if (tracker.Count == 0 && signs.Count == 0) { Nope("The field is already empty."); return; }
             if (!Confirm("Clear the whole battlefield?")) return;
             tracker.Clear(); signs.Clear(); round = 1; ShowRound(); Log("The field is cleared.");
-        }, 95, "Wipe everyone — posse and foes — and the sign on the trail, and reset to Round 1"));
+        }, 95, "Wipe everyone, posse and foes, and the sign on the trail, and reset to Round 1"));
 
         trkGrid = new DataGridView
         {
@@ -1185,8 +1185,8 @@ public partial class MainForm
         };
         StyleGrid(trkGrid);
         trkBold = new Font(trkGrid.Font, FontStyle.Bold);
-        // Columns carry their property name as their Name too, so everything downstream — the bar
-        // painter, the tooltips, the button column — asks for a column by what it MEANS rather
+        // Columns carry their property name as their Name too, so everything downstream (the bar
+        // painter, the tooltips, the button column) asks for a column by what it MEANS rather
         // than by an index that shifts the moment a column is inserted.
         // An editable column says so twice: ✎ in the header, and a cell lifted toward paper in the
         // body (see CellFormatting). Nothing in the grid distinguished the four columns you may type
@@ -1197,40 +1197,40 @@ public partial class MainForm
                 DataPropertyName = prop, Name = prop, FillWeight = w, ReadOnly = ro,
                 HeaderText = ro ? head : head + " ✎",
                 ToolTipText = ro ? (tip ?? "")
-                    : (string.IsNullOrEmpty(tip) ? "" : tip + "\n\n") + "You can type in this column — click and type, or press F2."
+                    : (string.IsNullOrEmpty(tip) ? "" : tip + "\n\n") + "You can type in this column. Click and type, or press F2."
             });
-        // Widths allow for the ✎ on the editable ones — "Beats ✎" does not fit the 44 that plain
+        // Widths allow for the ✎ on the editable ones: "Beats ✎" does not fit the 44 that plain
         // "Beats" did, and a clipped header is worse than no marker at all.
         //
         // ---- and the thirteen weights are measured, not guessed (v1.57.0) ----
         // Fill mode makes every weight a SHARE, so seating Nerve and Mark here took width off
         // the other eleven columns, and the one that could least afford it was the longest
         // header in the app: "Next strike (MAP)" came out needing 110px in a column that had
-        // 108. It passed the clipping check on the two pixels of slack that check allows —
+        // 108. It passed the clipping check on the two pixels of slack that check allows,
         // which is not a margin, it is a coin landing on its edge, and the next narrower
         // window loses the toss. Shortening the header was the cheap fix and the wrong one:
         // it says "MAP" instead of what MAP means because a Keeper asked what it meant.
-        // So the sixteen points it needed came off four columns with room to give — Worked
+        // So the sixteen points it needed came off four columns with room to give: Worked
         // and Last carry short content with a hover behind it, and Nerve and Mark were set
         // generously to begin with. Next strike now measures 110 into 127.
         //
         // These are runtime numbers, from the app measuring its own headers at the size it
-        // opens at — see HeadersThatClip. Change a weight here and re-run --selftest rather
+        // opens at. See HeadersThatClip. Change a weight here and re-run --selftest rather
         // than reasoning about it; the Posse tab traded one clipped header for three, twice,
         // before anybody measured.
         C("Init", "Init", 58); C("Name", "Name", 152, true); C("BloodCur", "Blood", 68, false,
-            "Blood left, drawn as a bar behind the number — full green, hurt gold, near death red. "
+            "Blood left, drawn as a bar behind the number: full green, hurt gold, near death red. "
             + "On a sign & spoor row it is the spoor clock instead.");
         // Widened from 48 in v1.38.0: this cell is "/ 34" while a body is standing and the DEATH
-        // CLOCK once it is not — "dying −3 of 12" needs room that a slash and two figures did not.
+        // CLOCK once it is not, and "dying −3 of 12" needs room that a slash and two figures did not.
         C("BloodMax", "", 100, true,
             "The Blood maximum while they are standing. Once somebody is at 0 it becomes the count "
-            + "instead: how far past zero they have bled, and how far it is to their CON — which is "
+            + "instead: how far past zero they have bled, and how far it is to their CON, which is "
             + $"where the book says it ends. A Fortitude save or a Medicine check at DC {Rules.StabilizeDc} "
             + "stops the bleeding.");
         // ---- the two columns the grid cannot bind ----
-        // Blood is on the body; Nerve and the Mark are on the SOUL. The tracker binds Combatant —
-        // what is standing on the field — and Nerve, NerveMax and Mark live on PartyMember, which
+        // Blood is on the body; Nerve and the Mark are on the SOUL. The tracker binds Combatant
+        // (what is standing on the field), and Nerve, NerveMax and Mark live on PartyMember, which
         // is a different object joined to this row by SoulOf(). So these two are unbound: no
         // DataPropertyName, filled in CellFormatting from the soul behind the row, and read-only
         // because the soul's sheet and the Dread dialog are where those numbers are allowed to
@@ -1245,7 +1245,7 @@ public partial class MainForm
             { Name = name, FillWeight = w, ReadOnly = true, HeaderText = head, ToolTipText = tip });
         U("NerveLine", "Nerve", 70,
             "What this soul has left to face it with, drawn as a bar behind the number in the same "
-            + "colours Blood uses — full green, shaken gold, nearly gone red. At 0 they Break. "
+            + "colours Blood uses: full green, shaken gold, nearly gone red. At 0 they Break. "
             + "Posse souls only; change it on the Posse tab or by running the Dread Check.");
         U("MarkPips", "Mark", 60,
             $"How far along the Mark this soul has come, one box per step to {Rules.MarkLost}. "
@@ -1253,34 +1253,34 @@ public partial class MainForm
             + $"At {Rules.MarkLost} the cell reads Lost and the character passes into the Keeper's "
             + "hands (Player's Book Ch. XII). Posse souls only; change it on the Posse tab.");
         C("LastNote", "Last", 72, true,
-            "What just happened here — the damage taken, the healing done, the moment they went down. "
+            "What just happened here: the damage taken, the healing done, the moment they went down. "
             + "Cleared at the top of each round.");
         C("Defense", "Def", 46, true); C("Beats", "Beats", 66, false,
-            "Beats left this turn — a Strike costs one. Begin turn puts them back to 3.");
+            "Beats left this turn. A Strike costs one. Begin turn puts them back to 3.");
         // The header names the RULE, not just the column. "clean" is the Player's Book's own word
         // (Ch. IX: "Your first Strike in a turn is clean"), but a Keeper reading it cold has no way
-        // to know that or what to look up — reported by the user, who asked what it meant.
+        // to know that or what to look up (reported by the user, who asked what it meant).
         C("NextStrike", "Next strike (MAP)", 120, true,
-            "The Multiple Attack Penalty — Player's Book Ch. IX. Your first Strike in a turn is "
+            "The Multiple Attack Penalty, Player's Book Ch. IX. Your first Strike in a turn is "
             + "\"clean\" (no penalty); the second takes −5, the third −10. An Agile weapon softens "
             + "it to −4/−8. Begin turn resets it to clean.");
         C("Conditions", "Conditions", 106);
         C("WorkedChips", "Worked", 108, true,
-            "Signs, Miracles and creature powers working on this one — ✦ Sign, ✝ Miracle, ◈ a "
+            "Signs, Miracles and creature powers working on this one: ✦ Sign, ✝ Miracle, ◈ a "
             + "creature's own, with the rounds left. Hover for who worked it and what it does; "
             + "right-click to end one.");
-        // Figures right, words left. BloodMax is READ-ONLY here — unlike the Posse tab's, which can
-        // be typed into — so it can carry the slash in the cell rather than in the header, and with
+        // Figures right, words left. BloodMax is READ-ONLY here (unlike the Posse tab's, which can
+        // be typed into) so it can carry the slash in the cell rather than in the header, and with
         // no rule drawn between them the pair reads as the single field it is: "12 / 12".
         Figures(trkGrid, "Init", "BloodCur", "Defense", "Beats");
         trkGrid.Columns["BloodMax"].DefaultCellStyle.Padding = new Padding(1, 0, 4, 0);
         // Centred, not ranged right with the other figures. "7 / 11" is ONE field wearing its own
-        // slash — the Blood pair opposite is two columns leaning together to look like one — and a
+        // slash (the Blood pair opposite is two columns leaning together to look like one) and a
         // self-contained field ranged right sits flush against the Mark boxes beside it. The Mark
         // cell is centred for the same reason: its boxes are the content, so they want the middle.
         foreach (var n in new[] { "NerveLine", "MarkPips" })
             trkGrid.Columns[n].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-        // far-right Ledger button — posse souls only; creatures keep their double-click
+        // far-right Ledger button: posse souls only; creatures keep their double-click
         // stat block and ad-hoc rows have no sheet to show, so neither draws a button
         trkGrid.Columns.Add(QuietButtonCol("Ledger", 60));
         bool TrkHasSheet(int i) => i >= 0 && i < tracker.Count && tracker[i].IsPC
@@ -1290,7 +1290,7 @@ public partial class MainForm
             if (e.RowIndex < 0 || e.ColumnIndex >= trkGrid.Columns.Count || e.ColumnIndex < 0) return;
             string col = trkGrid.Columns[e.ColumnIndex].Name;
             // e.CellBounds, matching the Blood branch below. PaintBackground's first argument is a
-            // CLIP, not the rectangle it fills — it always fills the cell — so the two forms paint
+            // CLIP, not the rectangle it fills (it always fills the cell) so the two forms paint
             // identically and the pair being written differently only invited the reading that one
             // of them smeared across the grid. (Checked by instrumenting both; they do not.)
             if (col == "ledgerBtn" && !TrkHasSheet(e.RowIndex))
@@ -1301,7 +1301,7 @@ public partial class MainForm
             // The Blood column is the one number a Keeper reads a dozen times a round, and a bare
             // "17" says nothing about whether 17 is nearly dead. Behind the number goes a bar: how
             // much is left, in a color that says how bad it is. Nerve reads the same way and the
-            // Mark counts instead — see PaintMarkPips for why one is a bar and the other is boxes.
+            // Mark counts instead. See PaintMarkPips for why one is a bar and the other is boxes.
             var c = tracker[e.RowIndex];
             e.PaintBackground(e.CellBounds, true);
             var bar = e.CellBounds; bar.Inflate(-4, -5);
@@ -1336,7 +1336,7 @@ public partial class MainForm
         // The field repaints because the FIELD CHANGED, not because whoever changed it remembered to
         // ask (v1.38.0). Every row's ground is decided from the combatant sitting at that row index,
         // so any reorder leaves each row wearing the last occupant's colour until something repaints
-        // it — and the repaint was a `trkGrid.Refresh()` at the end of SortTracker, which is one call
+        // it, and the repaint was a `trkGrid.Refresh()` at the end of SortTracker, which is one call
         // site out of several and does nothing at all while the tab is hidden. It is hidden on the
         // commonest route of the lot: Send all -> Tracker is a button on the ENCOUNTER tab.
         // Hanging it on the list itself covers every route that exists and every route added later.
@@ -1344,12 +1344,12 @@ public partial class MainForm
         trkGrid.CellFormatting += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
-            // The row's OWN item, not the list read at the row's index. The two agree today — the
-            // grid is bound straight to the BindingList — so this is hardening rather than a fix,
+            // The row's OWN item, not the list read at the row's index. The two agree today (the
+            // grid is bound straight to the BindingList) so this is hardening rather than a fix,
             // and it is worth having because the whole fault above was a row and an index being
             // treated as the same thing.
             if (trkGrid.Rows[e.RowIndex].DataBoundItem is not Combatant c) return;
-            // Down beats acting: a combatant who is bleeding out reads red even on their own turn —
+            // Down beats acting: a combatant who is bleeding out reads red even on their own turn,
             // and since v1.38.0 there are three kinds of down, which the ground has to tell apart.
             // Dead first: it is the only one of the four that cannot change, so nothing may paint
             // over it. Then dying, which is the one with a clock on it. Then plainly down, which is
@@ -1357,12 +1357,12 @@ public partial class MainForm
             e.CellStyle.BackColor = c.Dead ? DeadRow : c.Dying ? DyingRow : c.Down ? DownRow
                                   : c.Acting ? ActingRow : c.IsPC ? PcRow
                                   : c.IsFamiliar ? FamiliarRow : FoeRow;
-            // A cell you can type in stands on lighter ground than one you cannot — applied after
+            // A cell you can type in stands on lighter ground than one you cannot, applied after
             // the row colour so it lifts whatever that row happens to be wearing.
             if (!trkGrid.Columns[e.ColumnIndex].ReadOnly) e.CellStyle.BackColor = Writable(e.CellStyle.BackColor);
             // The dead read in Slate on ash: still legible, plainly finished, and not competing for
             // the eye with the soul two rows down who has four rounds left. The dying read in Ink,
-            // not Blood — Blood on the loud red ground is mud, and this is the row that most has to
+            // not Blood. Blood on the loud red ground is mud, and this is the row that most has to
             // be readable across a table.
             if (c.Dead) e.CellStyle.ForeColor = Slate;
             else if (c.Dying) e.CellStyle.ForeColor = Ink;
@@ -1380,7 +1380,7 @@ public partial class MainForm
                 e.CellStyle.ForeColor = c.LastDelta < 0 ? Blood : Verdigris;
                 e.CellStyle.Font = trkBold;
             }
-            // Something worked on you is a fact about the fight, not a status you shrug off — it
+            // Something worked on you is a fact about the fight, not a status you shrug off. It
             // reads in the ink the app already uses for the uncanny.
             if (col == "WorkedChips" && c.Worked is { Count: > 0 }) e.CellStyle.ForeColor = Verdigris;
             // The soul's two numbers, fetched rather than bound. Blank on everything that has no
@@ -1404,7 +1404,7 @@ public partial class MainForm
                 else
                 {
                     // At the end of the track the boxes stop being a reading. Six of six is not
-                    // "nearly" anything — the character has passed into the Keeper's hands, and
+                    // "nearly" anything: the character has passed into the Keeper's hands, and
                     // that is a sentence, not a count.
                     bool lost = soul.Mark >= Rules.MarkLost;
                     e.Value = lost ? "Lost" : "";
@@ -1412,8 +1412,8 @@ public partial class MainForm
                     e.FormattingApplied = true;
                 }
             }
-            // The other half of "12 / 12". A sign & spoor row has no Blood maximum to show — its
-            // Blood cell is a spoor clock, not a number — so it gets no orphaned slash either.
+            // The other half of "12 / 12". A sign & spoor row has no Blood maximum to show (its
+            // Blood cell is a spoor clock, not a number) so it gets no orphaned slash either.
             if (col == "BloodMax")
             {
                 // For anyone on the ground the Blood maximum is the one number that no longer helps.
@@ -1429,8 +1429,8 @@ public partial class MainForm
                 e.FormattingApplied = true;
             }
         };
-        // The chips are deliberately terse, so the whole of each effect — who worked it, what it
-        // cost, what it does, when it ends — lives one hover away rather than in a wider column.
+        // The chips are deliberately terse, so the whole of each effect (who worked it, what it
+        // cost, what it does, when it ends) lives one hover away rather than in a wider column.
         trkGrid.CellToolTipTextNeeded += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count || e.ColumnIndex < 0) return;
@@ -1451,12 +1451,12 @@ public partial class MainForm
                 if (SoulOf(c) is not PartyMember soul) return;
                 e.ToolTipText = col == "NerveLine"
                     ? $"{soul.Name}: {soul.NerveCur} of {soul.NerveMax} Nerve"
-                        + (soul.NerveCur == 0 ? " — Broken.\n\n" : ".\n\n")
+                        + (soul.NerveCur == 0 ? ", Broken.\n\n" : ".\n\n")
                         + $"Will {(soul.Will >= 0 ? "+" : "")}{soul.Will} against the Dread DC. Nerve lost on a "
                         + "failure is the horror's Tier; a critical failure doubles it."
                     : $"{soul.Name}: Mark {soul.Mark} of {Rules.MarkLost}"
                         + (soul.Mark >= Rules.MarkLost
-                            ? " — Lost. The character passes into the Keeper's hands."
+                            ? ", Lost. The character passes into the Keeper's hands."
                             : soul.Taint > 0 ? $", Taint {soul.Taint}." : ".");
                 return;
             }
@@ -1470,7 +1470,7 @@ public partial class MainForm
                 if (!load.Anything)
                 {
                     e.ToolTipText = col == "Defense"
-                        ? "Defense — 10 + DEX + armor worn + cover. Nothing is riding on this one, so "
+                        ? "Defense, 10 + DEX + armor worn + cover. Nothing is riding on this one, so "
                           + "this is the number a Strike is rolled against."
                         : "Conditions off Appendix B. Add them from ＋ Condition ▾, or type your own. "
                           + "The ones the book gives numbers to are counted against Strikes and Defense "
@@ -1482,14 +1482,14 @@ public partial class MainForm
                   + (load.Defense != 0 ? $"Defense {c.Defense} → {c.EffectiveDefense}\n" : "")
                   + (load.BeatsLost > 0 ? $"Beats this turn: {c.BeatsThisTurn} of 3\n" : "")
                   + (load.Note.Length > 0 ? "\n" + load.Note : "")
-                  + "\n\nThe Strike engine applies all of this by itself — it is not yours to remember.";
+                  + "\n\nThe Strike engine applies all of this by itself. It is not yours to remember.";
             }
         };
         trkGrid.CellEndEdit += (s, e) =>
         {
-            // Guard the row index. An edit can still be open when the list underneath is rebuilt —
-            // Undo and Redo are form-level shortcuts that work mid-edit, and Load session and New
-            // fight both empty the tracker — and WinForms then ends the edit against a row that is
+            // Guard the row index. An edit can still be open when the list underneath is rebuilt
+            // (Undo and Redo are form-level shortcuts that work mid-edit, and Load session and New
+            // fight both empty the tracker) and WinForms then ends the edit against a row that is
             // gone. The Posse grid has always had this guard; this one did not, so the throw took
             // the whole app down in the middle of a fight, which is the worst possible moment.
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
@@ -1498,7 +1498,7 @@ public partial class MainForm
             // SoulOf, not a match on Name. The mirror is keyed to the soul's stable id precisely so
             // it survives a rename (see SoulOf); this site still matched by name, so typing Blood
             // straight into the grid quietly stopped reaching a renamed soul while the Damage button
-            // beside it went on working — the two disagreed and neither said so.
+            // beside it went on working. The two disagreed and neither said so.
             if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
             trkGrid.Refresh();
             // Typing a new initiative moves that combatant in the order, so it has to move in the
@@ -1515,7 +1515,7 @@ public partial class MainForm
             if (e.KeyCode != Keys.Delete || trkGrid.IsCurrentCellInEditMode) return;
             e.Handled = true;
             // Delete on the Conditions cell CLEARS the cell, which is what a grid does everywhere
-            // else in Windows. It used to take the whole combatant off the field instead — and rows
+            // else in Windows. It used to take the whole combatant off the field instead, and rows
             // are full-select here, so nothing on screen distinguished the cell being deleted from
             // the row being deleted. Reaching to wipe a stale "Frightened 2" cost you the foe.
             if (trkGrid.CurrentCell?.OwningColumn?.Name == "Conditions"
@@ -1525,7 +1525,7 @@ public partial class MainForm
             RemoveSelectedCombatant();
         };
         // double-click opens the combatant's card: foes get their Bestiary stat block,
-        // posse members get their Ledger — the same windows the source tabs open
+        // posse members get their Ledger: the same windows the source tabs open
         trkGrid.CellDoubleClick += (s, e) =>
         {
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
@@ -1537,20 +1537,20 @@ public partial class MainForm
             else if (SoulOf(t) is PartyMember p) ShowSoulCard(p);
         };
 
-        Tip.SetToolTip(trkGrid, "Double-click a combatant for their card — right-click for everything that can be done to them");
+        Tip.SetToolTip(trkGrid, "Double-click a combatant for their card, right-click for everything that can be done to them");
 
         // The bar's actions, on the combatant itself. What's offered depends on who the row is:
         // only a soul takes a Dread Check or has a Ledger, and only a creature has a stat block.
         GridMenu<Combatant>(trkGrid, (menu, c) =>
         {
             MIHead(menu, c.Name is { Length: > 0 } ? c.Name : "This combatant");
-            MI(menu, "Begin their turn — 3 Beats, a clean MAP", () => BeginTurnForSelected());
+            MI(menu, "Begin their turn, 3 Beats, a clean MAP", () => BeginTurnForSelected());
             // The Beats ride in the label rather than greying the line, so the Keeper learns the turn
             // is spent from the menu instead of from a dialog that refuses once it is open.
             MI(menu, c.Beats > 0 ? $"Strike…  ({c.Beats} Beat{(c.Beats == 1 ? "" : "s")} left)"
-                                 : "Strike…  — no Beats left this turn", () => StrikeDialog(), !c.Down);
+                                 : "Strike…, no Beats left this turn", () => StrikeDialog(), !c.Down);
             if (c.IsPC) MI(menu, "Dread check…", () => DreadDialog());
-            // The bound beast, offered from EITHER end of the binding — her row sends it out, its
+            // The bound beast, offered from EITHER end of the binding. Her row sends it out, its
             // row offers what the Craft lets the two of them do. One block rather than two, because
             // at a table the question is always "the Witch and her crow" and never one alone.
             var bound = c.IsFamiliar ? WitchOf(c) : c.IsPC ? SoulOf(c) : null;
@@ -1567,7 +1567,7 @@ public partial class MainForm
                 if (CharGen.FamiliarBoundGreater(boundSheet))
                 {
                     bool both = beast != null && !beast.Down && tracker.Any(x => x.IsSoul(bound));
-                    MI(menu, "Change places with it — once per scene", () => FamiliarSwap(bound), both);
+                    MI(menu, "Change places with it, once per scene", () => FamiliarSwap(bound), both);
                     MI(menu, "Share wounds or Blood with it…", () => FamiliarShareBlood(bound), both);
                 }
             }
@@ -1576,7 +1576,7 @@ public partial class MainForm
             MI(menu, $"Heal {trkAmount.Value}", () => AdjustCombatant(+1), c.BloodMax == 0 || c.BloodCur < c.BloodMax);
             MI(menu, "Restore to full Blood", () => RestoreSelected(), c.BloodMax > 0 && c.BloodCur < c.BloodMax);
             // The two things the book offers a body on the ground, offered where a Keeper's hand
-            // already is — on the row itself, at the moment it matters. They appear only for the row
+            // already is: on the row itself, at the moment it matters. They appear only for the row
             // they can act on, because a menu that offers a stabilize check on a standing soul is a
             // menu that has to be read rather than glanced at.
             if (c.Dying)
@@ -1585,12 +1585,12 @@ public partial class MainForm
                 MI(menu, $"Stop the bleeding…  (DC {Rules.StabilizeDc}, {c.RoundsToDeath} round"
                        + $"{(c.RoundsToDeath == 1 ? "" : "s")} left)", () => StabilizeDialog());
                 if (SoulOf(c) is PartyMember gr && !c.Upright)
-                    MI(menu, gr.Grit > 0 ? $"Refuse to fall — spend 1 Grit ({gr.Grit} left)"
-                                         : "Refuse to fall — no Grit left",
+                    MI(menu, gr.Grit > 0 ? $"Refuse to fall. Spend 1 Grit ({gr.Grit} left)"
+                                         : "Refuse to fall, no Grit left",
                        () => CheckFalling(c, false, false), gr.Grit > 0);
             }
-            // The Keeper's override, named and deliberate. The app holds the book's line — dead is
-            // dead, and no heal walks it back — and this is the one door through it, because the
+            // The Keeper's override, named and deliberate. The app holds the book's line (dead is
+            // dead, and no heal walks it back) and this is the one door through it, because the
             // table outranks the app and a rule with no override is a rule that gets fought.
             else if (c.Dead)
             {
@@ -1631,7 +1631,7 @@ public partial class MainForm
                 {
                     int n = c.Worked.Count;
                     foreach (var w in c.Worked.ToList()) c.Unwork(w);
-                    trkGrid.Refresh(); Log($"Everything working on {c.Name} ends — {n} in all.");
+                    trkGrid.Refresh(); Log($"Everything working on {c.Name} ends, {n} in all.");
                 });
                 menu.Items.Add(wk);
             }
@@ -1658,7 +1658,7 @@ public partial class MainForm
         // wants, the glass column hangs off the right edge and stretches to whatever height the bar
         // ends up. A TableLayoutPanel rather than Dock=Right on a panel, because a docked Fill child
         // contributes nothing to a container's AutoSize and the bar's height is exactly what has to
-        // travel outward here — the row measures the bar, and the glass is told that height.
+        // travel outward here. The row measures the bar, and the glass is told that height.
         var head = new TableLayoutPanel
         {
             Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
@@ -1690,7 +1690,7 @@ public partial class MainForm
         trkGrid.SelectionChanged += (s, e) => RefreshCalling();
         RefreshCalling();
 
-        // empty-state hint — the tracker fills from OTHER tabs, which is invisible until told
+        // empty-state hint: the tracker fills from OTHER tabs, which is invisible until told
         var hint = new Label
         {
             Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
@@ -1708,7 +1708,7 @@ public partial class MainForm
 
     // Modeless creature windows: the Keeper can read a stat block and run the tracker at
     // the same time (a modal box locked the whole app while open). One window PER creature,
-    // reused if that creature is already open — so two horrors can sit side by side. Each
+    // reused if that creature is already open, so two horrors can sit side by side. Each
     // window resizes, maximizes, and carries its own text-size controls.
     readonly Dictionary<string, Form> beastWindows = new(StringComparer.OrdinalIgnoreCase);
     void ShowCreatureCard(Creature c)
@@ -1740,21 +1740,21 @@ public partial class MainForm
 
     /// <summary>Take the selected combatant off the field. One method rather than three lambdas,
     /// because the bar's ✕ Remove, the Delete key and the right-click line all mean the same thing
-    /// and had each written it out separately — which is how the Delete key came to skip the
+    /// and had each written it out separately, which is how the Delete key came to skip the
     /// question the others should have been asking too.</summary>
     void RemoveSelectedCombatant()
     {
         if (trkGrid?.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         // A foe coming off the field is the routine end of a fight and is not worth a dialog. A
-        // posse soul is not routine — it is one keystroke from the arrow that got you to the row,
+        // posse soul is not routine. It is one keystroke from the arrow that got you to the row,
         // and the soul's whole turn state goes with it. The Posse tab has always asked before
         // removing a soul; the tracker never did.
         if (c.IsPC && !Confirm($"Take {c.Name} off the field? Their Posse sheet is untouched.")) return;
         tracker.Remove(c);
     }
 
-    /// <summary>The initiative a combatant walks in on. Zero while nobody has rolled — the tracker's
-    /// own word for "not in the order yet" — but once the field HAS rolled, a new arrival rolls with
+    /// <summary>The initiative a combatant walks in on. Zero while nobody has rolled (the tracker's
+    /// own word for "not in the order yet"), but once the field HAS rolled, a new arrival rolls with
     /// it. Landing every mid-fight arrival at 0 put it at the bottom of an order everyone else had a
     /// d20 for, so the thing that just kicked the door in went last, every single time.</summary>
     internal int ArrivalInit(CharacterSheet sheet = null)
@@ -1762,7 +1762,7 @@ public partial class MainForm
 
     /// <summary>Put an arrival on the field, in its place in the order rather than at the bottom of
     /// the grid. <see cref="ArrivalInit"/> has rolled it a real initiative whenever the field has
-    /// rolled at all — and then appending it left the thing that just kicked the door in sitting
+    /// rolled at all, and then appending it left the thing that just kicked the door in sitting
     /// under everyone, while Next turn handed it the turn from halfway up. The grid said one order
     /// and the fight ran another, which is the same fault as the tiebreak one and looked identical
     /// from the Keeper's chair.
@@ -1780,7 +1780,7 @@ public partial class MainForm
     {
         // Rolling initiative is the top of a fight: the order is fresh, so nobody has gone yet.
         // This method predates HasActed, so without the reset the "spent" greying and the acting
-        // row carried over from the last fight into the new order — the field showed souls as
+        // row carried over from the last fight into the new order: the field showed souls as
         // already done on a round that had not started.
         //
         // And it is a NOTICE check (Player's Book Ch. XI), which this rolled as a bare d20 for
@@ -1799,7 +1799,7 @@ public partial class MainForm
         UpdateTurnLine();
         Log(scouted == 0
             ? "Initiative rolled for the field."
-            : $"Initiative rolled for the field — a Notice check, with {scouted} soul(s) adding their own bonus.");
+            : $"Initiative rolled for the field: a Notice check, with {scouted} soul(s) adding their own bonus.");
     }
 
     /// <summary>Put the round on the bar without the spinner treating it as the Keeper's own edit.
@@ -1816,7 +1816,7 @@ public partial class MainForm
 
     /// <summary>Hand the turn to whoever is up next, and let the round look after itself. When the
     /// field has all gone, this rolls the round over and starts the next one on its first
-    /// combatant — so a Keeper running a fight presses one thing, over and over, and never has to
+    /// combatant, so a Keeper running a fight presses one thing, over and over, and never has to
     /// remember to advance a counter. Ctrl+Space, and the primary button on the bar.</summary>
     void NextTurn()
     {
@@ -1826,13 +1826,13 @@ public partial class MainForm
             // "Down" is no longer the end of it: a soul refusing to fall is at 0 Blood and still
             // taking turns, and the dead are down for good. Ask the same question CanAct asks.
             if (!tracker.Any(t => !t.IsSign && !t.Dead && (!t.Down || t.Upright)))
-            { Nope("Everyone on the field is down — the fight is over."); return; }
+            { Nope("Everyone on the field is down. The fight is over."); return; }
             NextRound();                       // clears HasActed, so NextUp answers again below
         }
         var up = Rules.NextUp(tracker);
         // Nobody can act even after the round rolled over. A field of nothing but sign & spoor rows
-        // gets here — a trace is not down, so the check above lets it through, and it takes no turn.
-        if (up == null) { Nope("Nobody on the field can take a turn — sign on the trail is read, not fought."); return; }
+        // gets here. A trace is not down, so the check above lets it through, and it takes no turn.
+        if (up == null) { Nope("Nobody on the field can take a turn, sign on the trail is read, not fought."); return; }
         foreach (var t in tracker) t.Acting = false;
         up.BeginTurn();
         // Follow the turn with the selection, so Strike, Dread and Work all act on the one who is up
@@ -1843,34 +1843,34 @@ public partial class MainForm
         // The daybook's founding complaint is "the tracker lost somebody", so the turn handoff is
         // exactly the kind of thing it exists to have written down: who went, on what initiative,
         // and who was still to go when they did.
-        Daybook.Note("turn", $"round {round}: {up.Name} (init {up.Init}) — still to go: "
+        Daybook.Note("turn", $"round {round}, {up.Name} (init {up.Init}), still to go: "
             + (string.Join(", ", Rules.InTurnOrder(tracker.Where(Rules.CanAct)).Select(c => c.Name)) is { Length: > 0 } rest ? rest : "nobody"));
         if (SoulOf(up) is PartyMember soul) CharGen.RefreshFeatures(soul, FeatureCadence.Turn);
         RefreshCalling();
-        Log($"{up.Name}'s turn — 3 Beats, a clean shot.");
+        Log($"{up.Name}'s turn, 3 Beats, a clean shot.");
     }
 
     void NextRound()
     {
         round++;
         ShowRound();
-        // Once-a-round features belong to the round, not to the soul's own turn — a Gambler who
+        // Once-a-round features belong to the round, not to the soul's own turn: a Gambler who
         // has not acted yet this round still gets their Stack the Odds when the round turns over.
         foreach (var p in party) CharGen.RefreshFeatures(p, FeatureCadence.Round);
-        // A new round means nobody has been handed the turn yet — the gold row would otherwise
+        // A new round means nobody has been handed the turn yet: the gold row would otherwise
         // sit on last round's combatant and read as though they were still up. The "Last" notes go
         // with it: they answer "what just happened", and at the top of a round nothing has.
-        // Worked effects lose a round here too, and anything that runs out says so by name — an
+        // Worked effects lose a round here too, and anything that runs out says so by name: an
         // effect that vanished off a chip without a word is one the table keeps playing anyway.
         foreach (var (on, done) in Rules.NewRound(tracker))
-            Log($"{done.Name} ends on {on.Name} — {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
+            Log($"{done.Name} ends on {on.Name}, {done.Kind.ToLowerInvariant()} worked by {done.Source}.");
         // A Blood a round off everyone on the ground, and the Grit that kept somebody standing runs
         // out. Every one of these is said by name: a soul who dies inside a column of numbers is
         // exactly the failure the daybook was built for, and a death nobody announced is a death the
         // table plays straight past.
         foreach (var (who, bleed, died, fell) in Rules.BleedOut(tracker))
         {
-            if (fell) Log($"{who.Name}'s Grit runs out — they go down.");
+            if (fell) Log($"{who.Name}'s Grit runs out. They go down.");
             if (died)
             {
                 Log($"{who.Name} bleeds out at −{bleed}. Dead, and out here dead is dead.");
@@ -1878,17 +1878,17 @@ public partial class MainForm
                 if (SoulOf(who) is PartyMember lost)
                     Nope($"{lost.Name} has bled out.\n\nThey reached −{bleed}, which is their CON, and the "
                        + "book is plain about what that means: out here dead is dead.\n\nGive the death its "
-                       + "weight — a last word, a turn of silence — before the next scene rides in.");
+                       + "weight (a last word, a turn of silence) before the next scene rides in.");
             }
             else if (who.Dying)
-                Log($"{who.Name} is bleeding — −{bleed} of {who.DeathAt}, "
+                Log($"{who.Name} is bleeding, −{bleed} of {who.DeathAt}, "
                     + $"{who.RoundsToDeath} round{(who.RoundsToDeath == 1 ? "" : "s")} left. "
                     + $"A Fortitude or Medicine check at DC {Rules.StabilizeDc} stops it.");
         }
-        Daybook.Note("turn", $"round {round} begins — {string.Join(", ", Rules.InTurnOrder(tracker).Select(c => $"{c.Name} {c.Init}"))}");
+        Daybook.Note("turn", $"round {round} begins, {string.Join(", ", Rules.InTurnOrder(tracker).Select(c => $"{c.Name} {c.Init}"))}");
         RefreshTracker();
-        TurnOverTheGlass();               // a new round is a new posse turn — see the hourglass block
-        Log($"— Round {round} —");
+        TurnOverTheGlass();               // a new round is a new posse turn. See the hourglass block
+        Log($"ROUND {round}");
     }
 
     // the conditions from Appendix B, in the order the book lists them (Frightened and
@@ -1903,14 +1903,14 @@ public partial class MainForm
     void SortTracker(TrkSort mode)
     {
         try { trkGrid?.EndEdit(); } catch { }      // commit a half-typed Init before reading it
-        // Remember WHO the Keeper had selected — clearing the list below resets the grid's
+        // Remember WHO the Keeper had selected: clearing the list below resets the grid's
         // current row to the top, and every action that reads CurrentRow (Strike, Dread,
         // Damage) would then silently act on whoever the sort floated to row 0 instead of the
         // combatant the Keeper picked. Restore the same combatant after the reorder.
         var keep = trkGrid?.CurrentRow?.DataBoundItem as Combatant;
         var sorted = (mode switch
         {
-            // Init order comes from Rules.InTurnOrder and nowhere else — it is the same sequence
+            // Init order comes from Rules.InTurnOrder and nowhere else. It is the same sequence
             // Next turn hands the turn out in, so the grid cannot disagree with the fight. Ascending
             // is that order read backwards, which keeps the tiebreaks consistent between the two.
             TrkSort.InitDesc  => Rules.InTurnOrder(tracker),
@@ -1944,10 +1944,10 @@ public partial class MainForm
             trkGrid.CurrentCell = trkGrid.Rows[row].Cells[0];
             trkGrid.Rows[row].Selected = true;
         }
-        catch { /* grid mid-rebuild — the next click re-selects */ }
+        catch { /* grid mid-rebuild: the next click re-selects */ }
     }
 
-    // Ad-hoc combatant: a named NPC, a hireling, an improvised foe — anything not in the
+    // Ad-hoc combatant: a named NPC, a hireling, an improvised foe, anything not in the
     // Bestiary. Blood/Defense by hand; the PC flag just tints the row green like the posse.
     void AddCustomCombatant()
     {
@@ -1998,13 +1998,13 @@ public partial class MainForm
         if (!set.Contains(cond)) set.Add(cond);
         c.Conditions = string.Join(", ", set);
         // ?. because a Posse-tab Dread Check can hang a Frightened on a soul whose row is in the
-        // tracker list while the Tracker TAB has never been opened — the tabs fill themselves on
+        // tracker list while the Tracker TAB has never been opened: the tabs fill themselves on
         // first visit, so the grid can legitimately not exist yet.
         trkGrid?.Refresh();
         Log($"{c.Name}: {cond}.");
     }
 
-    /// <summary>Ask the Keeper for the die they just rolled — the dice-and-books table's half of a
+    /// <summary>Ask the Keeper for the die they just rolled: the dice-and-books table's half of a
     /// roll the engine would otherwise make for them. Returns null when the engine is doing the
     /// rolling, so a caller can pass the result straight through as the "forced die".</summary>
     int? AskDie(string prompt)
@@ -2025,7 +2025,7 @@ public partial class MainForm
         var ok = new Button { Text = "That's the roll", Left = Pad + CW - 120, Top = d20.Top - 2, Width = 120, Height = 30, DialogResult = DialogResult.OK };
         f.Controls.AddRange(new Control[] { say, d20, ok });
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
-        // Esc closes it the same way the title bar's ✕ already did — by taking the number that is
+        // Esc closes it the same way the title bar's ✕ already did, by taking the number that is
         // showing. There is no cancelling this one: the caller is mid-resolution and needs a die
         // either way, and a modal that ignores Esc reads as a hung window, not as a firm question.
         f.AcceptButton = ok; f.CancelButton = ok;
@@ -2049,21 +2049,21 @@ public partial class MainForm
         int working = tracker.Sum(c => c.Worked.Count);
         int marked = tracker.Count(Rules.FightResidue);
         // An encounter is not just the foes standing in it. The signs on the trail are the spoor of
-        // the fight now ending, and what the fight left ON the survivors — conditions, spent Beats,
-        // a turn half taken, every Sign and Miracle still riding — belongs to it too. Until v1.24.2
+        // the fight now ending, and what the fight left ON the survivors (conditions, spent Beats,
+        // a turn half taken, every Sign and Miracle still riding) belongs to it too. Until v1.24.2
         // only the foes were cleared, so on a field of signs alone the button appeared to do nothing
         // at all. The guard then undercounted a second time: it asked about foes, signs and worked
         // effects while the reset below clears six more things, so with the last foe already taken
         // off by hand it said "nothing to clear" over a posse still Frightened and out of Beats.
         // Both halves now ask Rules.FightResidue, which is the reset's own inventory.
         if (foes.Count == 0 && signs.Count == 0 && marked == 0 && round == 1)
-        { Nope("Nothing to clear — no foes, no sign on the trail, and the posse is already fresh for Round 1."); return; }
+        { Nope("Nothing to clear. No foes, no sign on the trail, and the posse is already fresh for Round 1."); return; }
 
         var bits = new List<string>();
         if (foes.Count > 0) bits.Add($"{foes.Count} foe(s)");
         if (signs.Count > 0) bits.Add($"{signs.Count} sign(s) on the trail");
         if (working > 0) bits.Add($"{working} effect(s) still working");
-        // Everything else the reset touches, counted as souls rather than as a list of six fields —
+        // Everything else the reset touches, counted as souls rather than as a list of six fields:
         // "3 still carrying the last fight" is what a Keeper needs to agree to.
         int carrying = tracker.Count(c => Rules.FightResidue(c) && c.Worked.Count == 0);
         if (carrying > 0) bits.Add($"{carrying} still carrying the last fight");
@@ -2072,16 +2072,16 @@ public partial class MainForm
 
         foreach (var f in foes) tracker.Remove(f);
         signs.Clear();
-        // a fresh fight: nothing carried over — no conditions, no spent Beats, nobody mid-turn,
+        // a fresh fight: nothing carried over, no conditions, no spent Beats, nobody mid-turn,
         // and nothing still working from the last one (Rules.ResetForNewFight, so it is testable)
         Rules.ResetForNewFight(tracker);
         round = 1; ShowRound(); RefreshTracker();
         ReturnFeatures(FeatureCadence.Scene, "A new fight");
-        Log("New fight — foes cleared, the trail wiped, the posse holds the field, Round 1.");
+        Log("New fight: foes cleared, the trail wiped, the posse holds the field, Round 1.");
     }
 
     /// <summary>The name a trace goes on the field under. "Sign of the Wendigo" rather than "Sign of
-    /// The Wendigo" — the article belongs to the sentence now, not to the heading it came from.</summary>
+    /// The Wendigo": the article belongs to the sentence now, not to the heading it came from.</summary>
     internal static string SignName(string creatureName)
     {
         string n = creatureName ?? "";
@@ -2092,12 +2092,12 @@ public partial class MainForm
     /// <summary>Put a creature's TRACE on the trail instead of the creature (the safe-table rule).
     /// One thread, however many were asked for: a thing two Tiers over the posse is one thread, and
     /// four copies of a thread is not a thing a table can run. It goes to <see cref="signs"/>, not
-    /// to the field — it takes no initiative and no turn.</summary>
+    /// to the field. It takes no initiative and no turn.</summary>
     void AddSign(Creature c)
     {
         string name = SignName(c.name);
         if (signs.Any(t => string.Equals(t.Ref, c.name, StringComparison.OrdinalIgnoreCase)))
-        { Nope($"{name} is already on the trail — read it again to fill another segment."); return; }
+        { Nope($"{name} is already on the trail. Read it again to fill another segment."); return; }
         var (readDc, dreadDc, what) = Rules.SpoorFor(c.tier);
         signs.Add(new Combatant
         {
@@ -2105,7 +2105,7 @@ public partial class MainForm
             BloodCur = 0, BloodMax = 0, Defense = 0, Beats = 0,
             Conditions = what
         });
-        Log($"{name} — the trace, not the thing. Survival DC {readDc} to read it"
+        Log($"{name}: the trace, not the thing. Survival DC {readDc} to read it"
             + (dreadDc == 0 ? ", and it costs no Nerve" : $", Dread DC {dreadDc}")
             + $". A {Rules.SpoorClockSegments}-segment clock; a full one is the night it comes in the flesh.");
     }
@@ -2113,8 +2113,8 @@ public partial class MainForm
     // ---- the Calling strip: what this soul can DO, under the field, where their turn is ----
 
     // Every number a posse soul has was on this tab and every rule they had was not. A Marshal's
-    // player asking "can I still Last Stand?" was asking a question the app held the answer to —
-    // the Calling, the level, the book's own sentence — and had no place to put. The strip is that
+    // player asking "can I still Last Stand?" was asking a question the app held the answer to
+    // (the Calling, the level, the book's own sentence) and had no place to put. The strip is that
     // place: one card per limited feature, the count on its face, the whole rule in its tooltip.
     //
     // Under the grid rather than over it, and only for the posse, because the field is what a
@@ -2144,13 +2144,13 @@ public partial class MainForm
         // reads as the app contradicting itself.
         // Three sentences became four in v1.49.0, for the reason the third was added: an Origin's
         // standing +2 is not rationed either, so "Nothing here is rationed" printed over a card
-        // full of them reads as the app contradicting itself — the same fault a Debt card caused.
+        // full of them reads as the app contradicting itself, the same fault a Debt card caused.
         bool standing = CharGen.OriginEdges(soul.Sheet?.Origin).Count > 0;
         string what =
               ledger.Count > 0 && tallies.Count > 0 ? "What is rationed, what is left of it, and what is owed:"
             : ledger.Count > 0                      ? "What is rationed, and what is left of it:"
             : tallies.Count > 0                     ? "Nothing here is rationed, but there is a reckoning running:"
-            : standing                              ? "Nothing here is rationed — what the Origin is worth stands always:"
+            : standing                              ? "Nothing here is rationed, what the Origin is worth stands always:"
             :                                         "Nothing here is rationed; read the Calling for the whole of it.";
         // The Origin belongs in the head line as much as the Calling does. Ch. III picks it first,
         // it is half of what a player answers "who are you" with, and until v1.49.0 the Tracker
@@ -2158,14 +2158,14 @@ public partial class MainForm
         string origin = soul.Sheet?.Origin;
         var head = new Label
         {
-            Text = $"{soul.Name} — {soul.Calling}, level {soul.Level}"
+            Text = $"{soul.Name}, {soul.Calling}, level {soul.Level}"
                  + (string.IsNullOrEmpty(origin) ? "" : $", {origin}") + $". {what}",
             AutoSize = false, Width = 700, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
         callingPanel.Controls.Add(head);
         var read = Btn("Read the Calling ▸", (s, e) => ShowCallingCard(soul), 132,
-            "Every feature this soul has, in the book's own words — including the ones nobody counts");
+            "Every feature this soul has, in the book's own words, including the ones nobody counts");
         read.Height = 24; read.Margin = new Padding(6, 0, 0, 4);
         callingPanel.Controls.Add(read);
         callingPanel.SetFlowBreak(read, true);
@@ -2231,14 +2231,14 @@ public partial class MainForm
         var state = new Label
         {
             Left = 8, Top = 22, Width = CW - 16, Height = 15, AutoEllipsis = true, UseMnemonic = false,
-            Text = consumed ? "Consumed — the Keeper's now"
+            Text = consumed ? "Consumed, the Keeper's now"
                             : $"Hunger {hunger} of {CharGen.HungerLost} · mends {CharGen.MendDice(soul.Level)}d6",
             Font = new Font("Segoe UI", 8.25f), ForeColor = consumed ? Blood : Faint
         };
         card.Controls.Add(name); card.Controls.Add(state);
 
         var mend = Btn("Mend", (s, e) => MendReturned(soul), 74,
-            "Take one Hunger and knit what has been opened. This is the ONLY way this soul heals — "
+            "Take one Hunger and knit what has been opened. This is the ONLY way this soul heals: "
           + "no rest, no medicine, no Miracle worked over them. The Hunger it costs never comes back "
           + "on its own; only feeding lowers it.");
         mend.Left = 8; mend.Top = 38; mend.Height = 24;
@@ -2252,7 +2252,7 @@ public partial class MainForm
         string tip = $"{CharGen.HungerSays(hunger)}.\n\n"
                    + (shape == null ? "" : $"Hungers for {shape.hunger}\nFed by: {shape.feeding}\n{shape.gift}\n\n")
                    + (CharGen.NumbToDread(sheet)
-                      ? "At Hunger 3 and above the fear stops landing — this soul loses no Nerve to a "
+                      ? "At Hunger 3 and above the fear stops landing. This soul loses no Nerve to a "
                       + "Dread Check. The book prints that as a gift and says in the same breath that "
                       + "it is not one.\n\n"
                       : "+2 on Dread Checks: very little out here is new to somebody who has been on "
@@ -2265,8 +2265,8 @@ public partial class MainForm
     /// <summary>Mend: take a Hunger, close the wounds. The only healing this soul has.
     ///
     /// <para>The warning at the last rung is a <c>Confirm</c> and not a refusal, on purpose. A
-    /// Keeper may absolutely let a player spend their last step to stay upright one more round —
-    /// that is the decision the Origin is built around — and the app's job is to make sure nobody
+    /// Keeper may absolutely let a player spend their last step to stay upright one more round
+    /// (that is the decision the Origin is built around) and the app's job is to make sure nobody
     /// arrives there without having been told.</para></summary>
     void MendReturned(PartyMember soul)
     {
@@ -2283,33 +2283,33 @@ public partial class MainForm
         int rung = CharGen.TakeHunger(sheet);
         // The Sheet rides in the undo snapshot and fires no PropertyChanged of its own, so the
         // mutation has to announce itself or Undo quietly reverts it along with whatever is
-        // captured next — the fault v1.47.0 and v1.48.0 both paid for. Announced AFTER the change,
+        // captured next: the fault v1.47.0 and v1.48.0 both paid for. Announced AFTER the change,
         // for the same reason.
         soul.Touched(nameof(soul.Sheet));
         Log($"{soul.Name} mends: {breakdown} → {soul.BloodCur - before} Blood "
           + $"({soul.BloodCur}/{soul.BloodMax}), and takes a Hunger → {rung} of {CharGen.HungerLost}"
-          + (rung >= CharGen.HungerLost ? " — CONSUMED." : $" — {CharGen.HungerSays(rung)}."));
+          + (rung >= CharGen.HungerLost ? ", CONSUMED." : $", {CharGen.HungerSays(rung)}."));
         MirrorToTracker(soul);
         RefreshCalling();
     }
 
     /// <summary>Feed: the one thing that lowers a Hunger, and the only one there will ever be.
     ///
-    /// <para>Confirmed rather than instant because it is a scene and not a button — the prompt is
+    /// <para>Confirmed rather than instant because it is a scene and not a button. The prompt is
     /// where a Keeper stops and asks what it cost, which is the whole of what keeps the track
     /// meaning anything.</para></summary>
     void FeedReturned(PartyMember soul)
     {
         var sheet = soul?.Sheet;
         if (!CharGen.IsReturned(sheet)) { Nope($"{soul?.Name} did not come back wrong."); return; }
-        if (sheet.Hunger == 0) { Nope($"{soul.Name} is quiet already — there is no Hunger to feed."); return; }
+        if (sheet.Hunger == 0) { Nope($"{soul.Name} is quiet already. There is no Hunger to feed."); return; }
         var shape = CharGen.ShapeOf(sheet);
         if (!Confirm($"{soul.Name} feeds.\n\n{shape?.feeding ?? "Somebody is less afterward."}\n\n"
-                   + "This is a scene, not an action — has it been played, and did it cost somebody "
+                   + "This is a scene, not an action, has it been played, and did it cost somebody "
                    + "something?")) return;
         int rung = CharGen.Feed(sheet);
         soul.Touched(nameof(soul.Sheet));
-        Log($"{soul.Name} feeds → Hunger {rung} of {CharGen.HungerLost} — {CharGen.HungerSays(rung)}.");
+        Log($"{soul.Name} feeds → Hunger {rung} of {CharGen.HungerLost}, {CharGen.HungerSays(rung)}.");
         RefreshCalling();
     }
 
@@ -2320,7 +2320,7 @@ public partial class MainForm
     /// a Scout's −1 applies is a fact about where the posse is standing and the app models no
     /// ground. Putting an Apply button on it would be the app asking the Keeper to confirm
     /// something it cannot check, which is the same fault as asking them to type in a number it
-    /// already knows — the Iron Code's rule run the other way.</para>
+    /// already knows: the Iron Code's rule run the other way.</para>
     ///
     /// <para>Boons and burdens are inked apart because the burden is the half that decides whether
     /// an Origin was a <em>choice</em>. A player remembers the +2 unprompted; nobody has ever
@@ -2350,7 +2350,7 @@ public partial class MainForm
                 ForeColor = e.IsBoon ? Verdigris : Blood,
             };
             // Measured, not a flat 15. Tidy() cuts a clause at its first "and", which keeps most
-            // chips to one line and made a constant look right for a long time — but "+2 to make a
+            // chips to one line and made a constant look right for a long time, but "+2 to make a
             // quick exit when the law takes an interest" has no "and" in it to cut at, and it wants
             // two lines. The driven clipping walk in --selftest found it on 2026-09-01: same fault
             // as the Encounter verdict, same fix. AutoEllipsis stays as the backstop for anything
@@ -2369,11 +2369,11 @@ public partial class MainForm
             e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
         };
 
-        string tip = $"What {soul.Sheet.Origin} is worth wherever it applies — Ch. IV's boon and "
+        string tip = $"What {soul.Sheet.Origin} is worth wherever it applies, Ch. IV's boon and "
                    + "burden, which the app offers and never applies for you, because whether you "
                    + "are indoors, among the wealthy or talking to a lawman is not something it "
                    + "can see.\n\n"
-                   + string.Join("\n\n", edges.Select(x => x.Says + " — " + x.Phrase));
+                   + string.Join("\n\n", edges.Select(x => x.Says + ": " + x.Phrase));
         Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip);
         return card;
     }
@@ -2381,7 +2381,7 @@ public partial class MainForm
     /// <summary>The Witch's bound beast, on the strip where a player looks for what they can do.
     ///
     /// <para>Drawn differently from a ration card and from a tally card for the same reason those
-    /// two differ from each other: this one is not a count at all. It is a creature — it is
+    /// two differ from each other: this one is not a count at all. It is a creature. It is
     /// somewhere or it is not, it is alive or it is not, and both of those are things the table has
     /// to be able to see without asking. The button is the whole of the beast's traffic with the
     /// field: send it out to scout, call it back, and nothing else, because everything else it does
@@ -2412,21 +2412,21 @@ public partial class MainForm
         var state = new Label
         {
             Left = 8, Top = 23, Width = CW - 74, Height = 16, AutoEllipsis = true,
-            Text = dead ? "dead — Sickened until rebound"
+            Text = dead ? "dead, Sickened until rebound"
                  : beast == null ? sheet.FamiliarBoon
                  : $"{beast.BloodCur} of {beast.BloodMax} Blood, on the field",
             Font = new Font("Segoe UI", 8.25f), ForeColor = dead ? Blood : Faint
         };
 
-        // Prose comments stay above the call — audits/audit_ui.py reads an apostrophe between the
+        // Prose comments stay above the call: audits/audit_ui.py reads an apostrophe between the
         // parentheses as the start of a char literal and swallows the tooltip behind it.
         var go = Btn(dead ? "Bind" : beast == null ? "Send" : "Back", (s, e) =>
         {
             if (dead) { BindNewFamiliar(soul); return; }
             if (beast == null) { if (AddFamiliarToTracker(soul)) RefreshTracker(); }
-            else { tracker.Remove(beast); Log($"{beast.Name} goes back to her — off the field."); RefreshTracker(); }
+            else { tracker.Remove(beast); Log($"{beast.Name} goes back to her, off the field."); RefreshTracker(); }
             RefreshCalling();
-        }, 54, "What can be done with the beast from here — sent to the field, where it scouts and "
+        }, 54, "What can be done with the beast from here, sent to the field, where it scouts and "
              + "can be hurt and killed; called back off it; or, once it is dead, another bound in "
              + "its place over a long night's rite. The card says which of the three this is.");
         go.Left = CW - 62; go.Top = 10; go.Height = 30;
@@ -2434,11 +2434,11 @@ public partial class MainForm
         card.Controls.Add(name); card.Controls.Add(state); card.Controls.Add(go);
         string tip = CharGen.FamiliarLine(sheet) + "\n\n"
                    + (beast == null
-                      ? "Not on the field. Send it out and it takes a place in the order like anything else — "
+                      ? "Not on the field. Send it out and it takes a place in the order like anything else: "
                         + "and can be hurt and killed, which is the moment Ch. VII is written about."
                       : $"On the field at {beast.BloodCur} of {beast.BloodMax} Blood, Defense {beast.Defense}.")
                    + "\n\nThe book gives the beast no stat block, so its Blood and Defense are the app's "
-                   + "default worked out of its Witch's own — a third of her Blood, or half once she has "
+                   + "default worked out of its Witch's own. A third of her Blood, or half once she has "
                    + "taken the Familiar-Bound.";
         Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(state, tip);
         return card;
@@ -2468,8 +2468,8 @@ public partial class MainForm
         var left = new Label
         {
             Left = 8, Top = 23, Width = CW - 74, Height = 16,
-            Text = row.Of == 1 ? (spent ? "spent — " + row.Limit.Says(soul.Sheet) : row.Limit.Says(soul.Sheet))
-                               : $"{row.Left} of {row.Of} left — {row.Limit.Says(soul.Sheet)}",
+            Text = row.Of == 1 ? (spent ? "spent: " + row.Limit.Says(soul.Sheet) : row.Limit.Says(soul.Sheet))
+                               : $"{row.Left} of {row.Of} left, {row.Limit.Says(soul.Sheet)}",
             Font = new Font("Segoe UI", 8.25f), ForeColor = spent ? Blood : Faint
         };
 
@@ -2478,27 +2478,27 @@ public partial class MainForm
             if (spent)
             {
                 if (CharGen.UnspendFeature(soul, row.Name))
-                    Log($"{soul.Name} takes back {row.Name} — {CharGen.LedgerFor(soul).First(r => r.Name == row.Name).Left} left.");
+                    Log($"{soul.Name} takes back {row.Name}, {CharGen.LedgerFor(soul).First(r => r.Name == row.Name).Left} left.");
             }
             else if (CharGen.SpendFeature(soul, row.Name))
             {
                 int now = CharGen.LedgerFor(soul).First(r => r.Name == row.Name).Left;
-                Log($"{soul.Name} spends {row.Name} — {(now == 0 ? "that was the last of it" : now + " left")}.");
+                Log($"{soul.Name} spends {row.Name}, {(now == 0 ? "that was the last of it" : now + " left")}.");
                 Daybook.Note("feature", $"{soul.Name} used {row.Name} ({row.Limit.Says(soul.Sheet)}), {now} left");
             }
             else Nope(CharGen.WhyNotFeature(soul, row.Name));
             RefreshCalling();
-        }, 54, $"{(spent ? "Give it back — a mis-click, or a rule the table read differently" : "Spend one use of " + row.Name)}");
+        }, 54, $"{(spent ? "Give it back: a mis-click, or a rule the table read differently" : "Spend one use of " + row.Name)}");
         use.Left = CW - 62; use.Top = 10; use.Height = 30;
 
         card.Controls.Add(name); card.Controls.Add(left); card.Controls.Add(use);
-        string tip = $"{row.Name} — {row.Limit.Says(soul.Sheet)}\n\n{Wrap(row.Desc ?? row.Limit.Phrase ?? "")}";
+        string tip = $"{row.Name}, {row.Limit.Says(soul.Sheet)}\n\n{Wrap(row.Desc ?? row.Limit.Phrase ?? "")}";
         Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(left, tip);
         return card;
     }
 
     /// <summary>One running tally: what is owed, and the two buttons that move it. Sits beside the
-    /// rationed cards and is drawn to read differently from them on purpose — a ration is a thing
+    /// rationed cards and is drawn to read differently from them on purpose: a ration is a thing
     /// you have and spend, a tally is a thing you take on and cannot spend your way out of.
     ///
     /// <para>The card turns to Blood and states the book's consequence the moment the count lands,
@@ -2517,17 +2517,17 @@ public partial class MainForm
 
         // The count rides on the bold line and the consequence sits under it, which is the opposite
         // of the ration cards on purpose: on those the name is the question ("can I still Last
-        // Stand?"), here the number is. It also keeps both lines inside 158px — the first draft put
-        // "2 of 3 — the third Debt comes due" on the narrow line and it lost its last two words,
+        // Stand?"), here the number is. It also keeps both lines inside 158px, where the first draft put
+        // "2 of 3, the third Debt comes due" on the narrow line and it lost its last two words,
         // which are the only two that matter.
         var name = new Label
         {
             Left = 8, Top = 5, Width = CW - 74, Height = 17, UseMnemonic = false,
-            // "3 of 3" is worth saying; "4 of 3" is not, and the count is deliberately not clamped
-            // — the Patron collecting is the Keeper's move, not the app's.
+            // "3 of 3" is worth saying; "4 of 3" is not, and the count is deliberately not clamped:
+            // the Patron collecting is the Keeper's move, not the app's.
             Text = row.Owed > row.Tally.At
-                 ? $"{row.Tally.Noun}s — {row.Owed} owed"
-                 : $"{row.Tally.Noun}s — {row.Owed} of {row.Tally.At}",
+                 ? $"{row.Tally.Noun}s: {row.Owed} owed"
+                 : $"{row.Tally.Noun}s: {row.Owed} of {row.Tally.At}",
             Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = due ? Blood : Ink,
             AutoEllipsis = true
         };
@@ -2541,15 +2541,15 @@ public partial class MainForm
 
         // Prose comments stay above the call, never between its parentheses: audit_ui.py reads an
         // apostrophe there as the start of a char literal and swallows the tooltip behind it. Nor
-        // may a comment spell the button helper name followed by a bracket — the scanner reads
+        // may a comment spell the button helper name followed by a bracket. The scanner reads
         // that as a call of its own and reports it as one argument short. This one used to.
         var take = Btn("＋", (s, e) =>
         {
             var (owed, nowDue) = CharGen.TakeTally(soul, row.Name);
-            Log($"{soul.Name} takes on a {row.Tally.Noun} — {owed} owed."
+            Log($"{soul.Name} takes on a {row.Tally.Noun}, {owed} owed."
                 + (nowDue ? "  " + row.Tally.Phrase : ""));
             Daybook.Note("feature", $"{soul.Name} owes {owed} {row.Tally.Noun}"
-                + (nowDue ? " — it has come due" : ""));
+                + (nowDue ? ", it has come due" : ""));
             if (nowDue) Nope(row.Tally.Phrase);
             RefreshCalling();
         }, 26, "Take one on");
@@ -2558,18 +2558,18 @@ public partial class MainForm
         var strike = Btn("−", (s, e) =>
         {
             if (CharGen.ForgiveTally(soul, row.Name))
-                Log($"{soul.Name} strikes off a {row.Tally.Noun} — "
+                Log($"{soul.Name} strikes off a {row.Tally.Noun}: "
                     + $"{CharGen.TalliesFor(soul).First(r => r.Name == row.Name).Owed} owed.");
             else Nope($"{soul.Name} owes no {row.Tally.Noun} to strike off.");
             RefreshCalling();
-        }, 26, "Strike one off — the Patron collected, or the table read it differently");
+        }, 26, "Strike one off: the Patron collected, or the table read it differently");
         strike.Top = 12; strike.Height = 28;
 
         // Placed off their MEASURED widths, right to left, and never off the 26 asked for above.
         // MainForm.FitLabel grows any button whose caption needs more room than it was given, so a
         // full-width ＋ comes back about 35 wide and the thinner − about 27: laid out to constants
         // the two overlapped and the second one covered the card's right border. Same rule as the
-        // dialogs — measure, do not lay out to a number that looked right once.
+        // dialogs: measure, do not lay out to a number that looked right once.
         strike.Left = CW - 8 - strike.Width;
         take.Left = strike.Left - 4 - take.Width;
         name.Width = count.Width = Math.Max(60, take.Left - 12);
@@ -2583,7 +2583,7 @@ public partial class MainForm
         return card;
     }
 
-    /// <summary>The whole Calling, in the book's words — every feature the soul has at their level,
+    /// <summary>The whole Calling, in the book's words: every feature the soul has at their level,
     /// rationed or not, with the count beside the ones that are. Modeless and one per soul, the
     /// same shape as the creature cards, so a player can keep it open and the Keeper can keep
     /// running the fight.</summary>
@@ -2596,7 +2596,7 @@ public partial class MainForm
 
         var win = new Sheet
         {
-            Text = $"{soul.Name} — {soul.Calling}", Width = 560, Height = 660, BackColor = Paper,
+            Text = $"{soul.Name}, {soul.Calling}", Width = 560, Height = 660, BackColor = Paper,
             MinimumSize = new Size(360, 320), StartPosition = FormStartPosition.CenterParent
         };
         if (AppIcon != null) win.Icon = AppIcon;
@@ -2605,7 +2605,7 @@ public partial class MainForm
             ReadOnly = true, BorderStyle = BorderStyle.None, BackColor = Paper,
             Font = new Font("Segoe UI", 10f), Text = CallingCardText(soul)
         };
-        ReadingMenu(rtf, $"{soul.Name} — {soul.Calling}");
+        ReadingMenu(rtf, $"{soul.Name}, {soul.Calling}");
         var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, Padding = new Padding(4, 2, 4, 2), BackColor = Color.FromArgb(243, 237, 221) };
         bar.Controls.Add(Btn("A−", (s, e) => rtf.ZoomFactor = Math.Max(0.7f, rtf.ZoomFactor - 0.15f), 46, "Smaller text"));
         bar.Controls.Add(Btn("A＋", (s, e) => rtf.ZoomFactor = Math.Min(3f, rtf.ZoomFactor + 0.15f), 46, "Larger text"));
@@ -2619,7 +2619,7 @@ public partial class MainForm
     string CallingCardText(PartyMember soul)
     {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"{soul.Name} — {soul.Calling}, level {soul.Level}");
+        sb.AppendLine($"{soul.Name}, {soul.Calling}, level {soul.Level}");
         var cal = CharGen.D.callings.FirstOrDefault(c => c.name == soul.Calling);
         if (cal?.blurb != null) sb.AppendLine().AppendLine(Wrap(cal.blurb));
         // The Perk is not in the level table and so never comes back from FeaturesAt; it would
@@ -2627,7 +2627,7 @@ public partial class MainForm
         if (cal?.perk != null)
         {
             sb.AppendLine();
-            sb.AppendLine("PERK — " + cal.perk.name);
+            sb.AppendLine("PERK: " + cal.perk.name);
             sb.AppendLine(Wrap("    " + cal.perk.desc, 78));
         }
         // ...and the ledger under it, for the same reason: it is the half of the entry that says
@@ -2645,7 +2645,7 @@ public partial class MainForm
         foreach (var f in CharGen.FeaturesAt(soul.Calling, soul.Level, soul.Sheet?.Subpath))
         {
             string tally = spent.TryGetValue(f.Name, out var t)
-                ? $"   [{(t.Of == 1 ? (t.Left == 1 ? "ready" : "spent") : $"{t.Left} of {t.Of} left")} — {f.Limit.Says(soul.Sheet)}]"
+                ? $"   [{(t.Of == 1 ? (t.Left == 1 ? "ready" : "spent") : $"{t.Left} of {t.Of} left")}, {f.Limit.Says(soul.Sheet)}]"
                 : "";
             sb.AppendLine(f.Name + tally);
             if (f.Desc != null) sb.AppendLine(Wrap("    " + f.Desc, 78));
@@ -2658,13 +2658,13 @@ public partial class MainForm
     }
 
     /// <summary>A boundary passed: hand the posse back everything that comes back at it, and say
-    /// so. Silent when nothing was spent — a line about a reset that reset nothing teaches a
+    /// so. Silent when nothing was spent: a line about a reset that reset nothing teaches a
     /// Keeper to stop reading the log.</summary>
     void ReturnFeatures(FeatureCadence upTo, string because)
     {
         int gave = party.Sum(p => CharGen.RefreshFeatures(p, upTo));
         if (gave > 0)
-            Log($"{because} — {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back to the posse.");
+            Log($"{because}, {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back to the posse.");
         RefreshCalling();
     }
 
@@ -2672,7 +2672,7 @@ public partial class MainForm
 
     /// <summary>Rebuild the sign strip from <see cref="signs"/>. Hidden outright when the trail
     /// is clear, so a table that never meets the safe-table rule never sees a band of empty chrome.
-    /// Everything the rule needs a Keeper to know is spelled out here in words — the clock says
+    /// Everything the rule needs a Keeper to know is spelled out here in words. The clock says
     /// "2 of 4" and not just four boxes, because four boxes taught nobody anything.</summary>
     void RefreshSigns()
     {
@@ -2684,7 +2684,7 @@ public partial class MainForm
 
         var head = new Label
         {
-            Text = "SIGN ON THE TRAIL — too far over the posse to meet in the flesh. Read them; they take no turn.",
+            Text = "SIGN ON THE TRAIL: too far over the posse to meet in the flesh. Read them; they take no turn.",
             AutoSize = false, Width = 980, Height = 18, ForeColor = Blood,
             Font = new Font("Segoe UI", 8.25f, FontStyle.Bold), Margin = new Padding(2, 0, 0, 4)
         };
@@ -2737,11 +2737,11 @@ public partial class MainForm
             Height = TextRenderer.MeasureText(what, DialogItalic, new Size(CW - 20, 0), TextFormatFlags.WordBreak).Height + 2
         };
 
-        // A thread whose creature no longer resolves falls back to Tier I — the GENTLEST row there
+        // A thread whose creature no longer resolves falls back to Tier I: the GENTLEST row there
         // is. Left unsaid that reads as a real reading, so it says so: a re-extraction that renames
         // a creature can orphan a thread saved under the old name.
         string cost = beast == null
-            ? $"“{sign.Ref}” is not in the Bestiary — showing Tier I"
+            ? $"“{sign.Ref}” is not in the Bestiary, showing Tier I"
             : $"Tier {Rules.Roman(tier)}  ·  Survival DC {readDc}  ·  " + (dreadDc == 0 ? "no Dread" : $"Dread DC {dreadDc}");
         var dcs = new Label
         {
@@ -2760,7 +2760,7 @@ public partial class MainForm
         // Right-click for the things a Keeper needs occasionally and shouldn't have a button for.
         var menu = new ContextMenuStrip();
         MIHead(menu, sign.Name);
-        MI(menu, "Read it… — Survival, Dread, and a segment of the clock", () => ReadSignDialog(sign));
+        MI(menu, "Read it… (Survival, Dread, and a segment of the clock)", () => ReadSignDialog(sign));
         if (beast != null) MI(menu, $"Open {beast.name}'s stat block", () => ShowCreatureCard(beast));
         MISep(menu);
         MI(menu, $"Fill a segment by hand ({sign.SignFilled} of {Rules.SpoorClockSegments})",
@@ -2768,7 +2768,7 @@ public partial class MainForm
         MI(menu, "Rub out a segment", () => { sign.SignFilled -= 1; AfterClockMoved(sign, beast); }, sign.SignFilled > 0);
         MI(menu, "It comes in the flesh now", () => SignArrives(sign, beast));
         MISep(menu);
-        MI(menu, "Lose the trail — take it off", () => signs.Remove(sign));
+        MI(menu, "Lose the trail. Take it off", () => signs.Remove(sign));
         foreach (Control child in card.Controls) if (child is not Button) child.ContextMenuStrip = menu;
         card.ContextMenuStrip = menu;
         return card;
@@ -2784,7 +2784,7 @@ public partial class MainForm
     }
 
     /// <summary>Ask, once, whether a horror the safe-table rule bars should take the field anyway.
-    /// The rule is the Keeper's Book's, not the app's, so this offers rather than refuses — but it
+    /// The rule is the Keeper's Book's, not the app's, so this offers rather than refuses, but it
     /// offers the book's answer first, and says what the cost of the other one is.</summary>
     bool AskInTheFlesh(Creature c, int partyLevel)
     {
@@ -2803,13 +2803,13 @@ public partial class MainForm
             };
         var (readDc, dreadDc, what) = Rules.SpoorFor(c.tier);
         int over = c.tier - Rules.PartyTier(partyLevel);
-        var head = Para($"{c.name} is Tier {Rules.Roman(c.tier)} — {over} Tiers over a posse of level "
+        var head = Para($"{c.name} is Tier {Rules.Roman(c.tier)}, {over} Tiers over a posse of level "
                       + $"{partyLevel}. The book does not put it in front of them yet.", Pad, DialogBold, Blood);
 
         // Both outcomes named by WHERE they put the thing, because that is the part a Keeper is
         // actually choosing between and the part the old wording left them to infer.
         var optA = Para("ON THE TRAIL  (what the book does)", head.Bottom + 12, DialogBold, Ink);
-        var bodyA = Para($"It goes on the sign strip above the field — nothing to shoot, nothing that takes a "
+        var bodyA = Para($"It goes on the sign strip above the field, nothing to shoot, nothing that takes a "
                        + $"turn. On the ground: {what.ToLowerInvariant()}. Reading it is a Survival check at DC "
                        + $"{readDc}" + (dreadDc == 0 ? " and costs no Nerve" : $", and costs the reader a Dread Check at DC {dreadDc}")
                        + $". Each reading fills 1 of {Rules.SpoorClockSegments} segments; a full clock is the night "
@@ -2833,12 +2833,12 @@ public partial class MainForm
 
     void AddCreatureToTracker(Creature c, int count = 1, bool skipSafeTable = false)
     {
-        // The one place every route onto the battlefield goes through — the Bestiary's → Tracker,
-        // the Foe box, the Encounter's Send all, the right-click menus — so the safe-table rule
+        // The one place every route onto the battlefield goes through (the Bestiary's → Tracker,
+        // the Foe box, the Encounter's Send all, the right-click menus) so the safe-table rule
         // gets asked once, here, rather than in five places that would each forget it differently.
         if (!skipSafeTable && Rules.SignOnly(c.tier, partyLevelHint) && !AskInTheFlesh(c, partyLevelHint)) return;
         count = Math.Clamp(count, 1, 20);
-        // number from the highest existing suffix, not the row count — otherwise
+        // number from the highest existing suffix, not the row count; otherwise
         // add/remove/add mints two "#2"s
         var kin = tracker.Where(t => t.Ref == c.name).ToList();
         int start = kin.Count == 0 ? 0 : kin.Max(t =>
@@ -2870,13 +2870,13 @@ public partial class MainForm
         bool wasDown = c.Down, wasDead = c.Dead;
         c.Wound(sign * v);                                     // clamps, and leaves the "Last" note
         Log($"{c.Name} {(sign < 0 ? "takes" : "recovers")} {Math.Abs(c.BloodCur - was)} → {c.BloodCur}/{c.BloodMax}"
-            + (c.Dying ? $"  — DYING, −{c.Bleed} of {c.DeathAt}." : c.Down ? "  — PUT DOWN." : ""));
+            + (c.Dying ? $", DYING, −{c.Bleed} of {c.DeathAt}." : c.Down ? ", PUT DOWN." : ""));
         trkGrid.Refresh();
         if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
         CheckFalling(c, wasDown, wasDead, Math.Max(0, was - c.BloodCur));
     }
 
-    /// <summary>Put the selected combatant back to full Blood — the ad-hoc heal a Keeper wants
+    /// <summary>Put the selected combatant back to full Blood. The ad-hoc heal a Keeper wants
     /// between scenes without arithmetic. A posse soul gets their Nerve and pool back too, because
     /// for a soul "restored" means the whole of what a long rest restores.</summary>
     void RestoreSelected()
@@ -2886,18 +2886,18 @@ public partial class MainForm
         // this the button would fill the bar, leave the row dead, and give a Keeper no idea why.
         if (c.Dead)
         {
-            Nope($"{c.Name} is dead — out here dead is dead, and Blood is not what is wrong.\n\n"
+            Nope($"{c.Name} is dead, out here dead is dead, and Blood is not what is wrong.\n\n"
                + "If the table has decided otherwise, right-click the row: \"They were not dead "
                + "after all\". That is the Keeper's call to make on purpose, not a side effect of "
                + "a heal.");
             return;
         }
         if (SoulOf(c) is PartyMember soul) { RestSoul(soul); c.Wound(c.BloodMax - c.BloodCur, "restored"); }
-        else if (c.BloodMax <= 0) { Nope($"{c.Name} has no Blood maximum to restore to — set one in the /Max column."); return; }
+        else if (c.BloodMax <= 0) { Nope($"{c.Name} has no Blood maximum to restore to. Set one in the /Max column."); return; }
         else
         {
             c.Wound(c.BloodMax - c.BloodCur, "restored");
-            Log($"{c.Name} is made whole — {c.BloodCur}/{c.BloodMax} Blood.");
+            Log($"{c.Name} is made whole, {c.BloodCur}/{c.BloodMax} Blood.");
         }
         RefreshTracker();
     }
@@ -2912,7 +2912,7 @@ public partial class MainForm
         int gone = tracker.Count(t => t.Dead);
         if (bodies.Count == 0)
         {
-            Nope(gone > 0 ? $"Nobody left on the field has Blood to restore — {gone} of them are dead."
+            Nope(gone > 0 ? $"Nobody left on the field has Blood to restore, {gone} of them are dead."
                           : "Nobody on the field has Blood to restore.");
             return;
         }
@@ -2925,11 +2925,11 @@ public partial class MainForm
         { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; }
         posseGrid?.Refresh(); RefreshTracker();
         ReturnFeatures(FeatureCadence.Scene, "The field is restored");
-        Log($"The field is restored — {bodies.Count} back to full Blood, the posse's Nerve with them.");
+        Log($"The field is restored, {bodies.Count} back to full Blood, the posse's Nerve with them.");
     }
 
     // The posse soul behind a tracker row, matched by the stable id (Name only as a legacy
-    // fallback) — so damage mirrors back to the right soul even after a rename.
+    // fallback), so damage mirrors back to the right soul even after a rename.
     PartyMember SoulOf(Combatant c) => c != null && c.IsPC ? party.FirstOrDefault(c.IsSoul) : null;
 
     // ---- the Beat actions, the reaction, and the saddle (Ch. XI) ----
@@ -2948,7 +2948,7 @@ public partial class MainForm
         RefreshTracker();
     }
 
-    /// <summary>Dive for Cover — the one reaction between your turns.</summary>
+    /// <summary>Dive for Cover. The one reaction between your turns.</summary>
     void DoDiveForCover()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
@@ -2978,7 +2978,7 @@ public partial class MainForm
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         const int Pad = 16, CW = 430;
-        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name} — in the saddle",
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name}, in the saddle",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var what = new Label { Left = Pad, Top = Pad, Width = CW, Height = 58, ForeColor = Ink,
@@ -2988,7 +2988,7 @@ public partial class MainForm
         var lbl = new Label { Left = Pad, Top = what.Bottom + 14, Width = 60, Text = "Gait:" };
         var pick = new ComboBox { Left = Pad + 64, Top = what.Bottom + 10, Width = 170,
                                   DropDownStyle = ComboBoxStyle.DropDownList };
-        foreach (var g in Enum.GetNames<IronCode.Gait>()) pick.Items.Add(g == "Afoot" ? "Afoot — on their own legs" : g);
+        foreach (var g in Enum.GetNames<IronCode.Gait>()) pick.Items.Add(g == "Afoot" ? "Afoot, on their own legs" : g);
         pick.SelectedIndex = (int)c.Gait;
         Tip.SetToolTip(pick, "Afoot is everybody standing on the ground. The other four are the horse's "
             + "pace, and the saddle rules read off it.");
@@ -3005,7 +3005,7 @@ public partial class MainForm
         RefreshTracker();
     }
 
-    /// <summary>Reload, at the cost the weapon's own arms-table row prints — one Interact for a
+    /// <summary>Reload, at the cost the weapon's own arms-table row prints: one Interact for a
     /// break-action, one Beat a round for a repeater, half the capacity to top one off, and three
     /// whole rounds for a cap-and-ball cylinder, which cannot be part-filled in a hurry.</summary>
     void ReloadDialog()
@@ -3016,7 +3016,7 @@ public partial class MainForm
         if (guns.Count == 0) { Nope("Nothing in the arms table has a reload to pay."); return; }
 
         const int Pad = 16, CW = 470;
-        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name} — reload",
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{c.Name}, reload",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var lbl = new Label { Left = Pad, Top = Pad + 4, Width = 60, Text = "Weapon:" };
@@ -3038,7 +3038,7 @@ public partial class MainForm
             var rc = IronCode.Reloading(w, full.Checked, practiced.Checked);
             full.Enabled = rc.Kind == IronCode.ReloadKind.PerShot;
             cost.Text = rc.Rounds > 0
-                ? $"{w.name}: {rc.Line}. That is not a Beat you can spend — mark it and let the rounds pass."
+                ? $"{w.name}: {rc.Line}. That is not a Beat you can spend, mark it and let the rounds pass."
                 : $"{w.name}: {rc.Line}." + (Rules.WhyNoBeats(c, rc.Beats) is string why ? "  " + why : "");
         }
         pick.SelectedIndexChanged += (s, e) => Sync();
@@ -3059,13 +3059,13 @@ public partial class MainForm
         var paid = IronCode.Reloading(chosen, full.Checked, practiced.Checked);
         if (paid.Rounds > 0)
         {
-            Log($"{c.Name} sets to charging the {chosen.name} — {paid.Line}.");
+            Log($"{c.Name} sets to charging the {chosen.name}, {paid.Line}.");
             RefreshTracker();
             return;
         }
         if (Rules.WhyNoBeats(c, paid.Beats) is string no) { Nope(no); return; }
         c.Beats -= paid.Beats;
-        Log($"{c.Name} reloads the {chosen.name} — {paid.Line}.");
+        Log($"{c.Name} reloads the {chosen.name}, {paid.Line}.");
         RefreshTracker();
     }
 
@@ -3075,21 +3075,21 @@ public partial class MainForm
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         foreach (var t in tracker) t.Acting = false;   // one at a time; the last turn is over
         c.BeginTurn(); RefreshTracker();
-        Log($"{c.Name}'s turn — 3 Beats, a clean shot.");
+        Log($"{c.Name}'s turn, 3 Beats, a clean shot.");
     }
 
     // Resolve a Strike from the selected combatant through the Iron Code engine: to hit, the four
     // degrees, the Multiple Attack Penalty at this combatant's current step, the Fatal die on a
-    // crit, and the damage after the target's DR — then spend the Beat and apply it.
+    // crit, and the damage after the target's DR, then spend the Beat and apply it.
     void StrikeDialog()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant attacker) { Nope("Select the attacker first."); return; }
         var foes = tracker.Where(t => !ReferenceEquals(t, attacker)).ToList();
-        // The safe-table rule needs no enforcing here any more — a trace is never on the field to
+        // The safe-table rule needs no enforcing here any more. A trace is never on the field to
         // be picked as attacker or target. It only needs saying when the field is empty BECAUSE
         // everything out there is a thread.
         if (foes.Count == 0)
-        { Nope(signs.Count > 0 ? "Nothing on the field to strike — only sign & spoor, which is read, not shot."
+        { Nope(signs.Count > 0 ? "Nothing on the field to strike: only sign & spoor, which is read, not shot."
                                : "Nothing on the field to strike."); return; }
 
         // A creature strikes with its OWN attacks, parsed from the Bestiary line; a soul (or a
@@ -3101,7 +3101,7 @@ public partial class MainForm
         bool hasSpecials = asCreature && (!string.IsNullOrWhiteSpace(creature.special) || riders.Count > 0);
         // Everything below is laid out by measurement, not by guessed constants. The prose here
         // changes with the run mode and with whether a creature or a soul is swinging, and the
-        // old fixed heights cut the last line of it — and the Beats count — off the right edge.
+        // old fixed heights cut the last line of it (and the Beats count) off the right edge.
         const int Pad = 16, CW = 500;   // left margin and the content width every row shares
         using var f = new Sheet { Text = $"{attacker.Name} strikes", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         Label L(string t, int top) => new() { Left = Pad, Top = top + 3, Width = 92, Text = t };
@@ -3133,7 +3133,7 @@ public partial class MainForm
         // after it. Placed further down, once the prose above them has been measured.
         var ok = new Button { Text = "Strike ▸", Width = 90, DialogResult = DialogResult.OK };
         var cancel = new Button { Text = "Close", Width = 84, DialogResult = DialogResult.Cancel };
-        // Why the Strike is refused, on its own full-width line. It cannot ride in mapLbl — that is
+        // Why the Strike is refused, on its own full-width line. It cannot ride in mapLbl. That is
         // 320px beside the To-hit box and would ellipsize the sentence to nothing. The line is
         // reserved whether or not it is currently saying anything, because this dialog is re-shown
         // in a loop and the reason appears mid-loop: a block that only exists once the Beats run
@@ -3142,13 +3142,13 @@ public partial class MainForm
         // The line that says what this Strike is ACTUALLY rolled at and against, once everything
         // riding on either of them is counted. Without it the engine applies a Frightened 2 and a
         // −2 Defense correctly and the Keeper watches a number they cannot account for come out of
-        // it — which reads as the app being wrong even when it is right.
+        // it, which reads as the app being wrong even when it is right.
         //
         // Declared up here with the buttons, and for the same reason they are: Sync writes to it,
         // and a local declared after Sync cannot be reached from inside it.
         var against = new Label { Left = Pad, Top = 152, Width = CW, Height = 20, ForeColor = GoldDeep, Font = DialogItalic, AutoEllipsis = true };
 
-        // Prefill the to-hit — a creature's built-in bonus, or a soul's own off their sheet — and
+        // Prefill the to-hit (a creature's built-in bonus, or a soul's own off their sheet) and
         // re-figure it (and the MAP) when the chosen attack changes.
         void Sync()
         {
@@ -3162,7 +3162,7 @@ public partial class MainForm
                 agile = WeaponTraits.Parse(w.traits).Agile;
             }
             int map = IronCode.MapPenalty(attacker.MapStep, agile);
-            // A Strike costs a Beat, and once they are gone the turn is over — so the button that
+            // A Strike costs a Beat, and once they are gone the turn is over, so the button that
             // takes one goes grey and the dialog says which of the three reasons it is. It used to
             // stay live and keep resolving: the Beat count stopped at zero, the MAP step went on
             // climbing, and the engine handed out a fourth and fifth Strike the Iron Code does not
@@ -3170,7 +3170,7 @@ public partial class MainForm
             string why = Rules.WhyNoBeats(attacker);
             ok.Enabled = why == null;
             // Esc and Enter must both still leave. With the commit greyed there is nothing for Enter
-            // to do, so it answers with the way out rather than doing nothing at all — and the way
+            // to do, so it answers with the way out rather than doing nothing at all, and the way
             // out says where it goes, because at that point it is the only thing left to press.
             cancel.Text = why == null ? "Close" : "Back to the field ▸";
             f.AcceptButton = why == null ? ok : cancel;
@@ -3187,9 +3187,9 @@ public partial class MainForm
             int total = (int)toHit.Value + map + mine.Strike;
             var bits = new List<string> { $"Rolls d20{(total >= 0 ? "+" : "")}{total} vs Defense {tgt.EffectiveDefense}" };
             if (mine.Strike != 0)
-                bits.Add($"{attacker.Name} is {attacker.Conditions.Trim()} — {(mine.Strike > 0 ? "+" : "")}{mine.Strike}");
+                bits.Add($"{attacker.Name} is {attacker.Conditions.Trim()}: {(mine.Strike > 0 ? "+" : "")}{mine.Strike}");
             if (theirs.Defense != 0)
-                bits.Add($"{tgt.Name} is {tgt.Conditions.Trim()} — Defense {tgt.Defense} → {tgt.EffectiveDefense}");
+                bits.Add($"{tgt.Name} is {tgt.Conditions.Trim()}: Defense {tgt.Defense} → {tgt.EffectiveDefense}");
             if (mine.Damage != 0) bits.Add($"{mine.Damage} damage");
             against.Text = string.Join("   ·   ", bits);
             against.ForeColor = mine.Anything || theirs.Anything ? GoldDeep : Faint;
@@ -3233,7 +3233,7 @@ public partial class MainForm
         var range = new NumericUpDown { Left = Pad + 82, Top = how.Bottom + 8, Width = 70,
                                         Minimum = 0, Maximum = 2000, Value = 0 };
         Tip.SetToolTip(range, "How far the target is, in feet. Zero means you have not said, and no range "
-            + "rule runs at all — the engine never guesses a distance. Past the first increment it is "
+            + "rule runs at all. The engine never guesses a distance. Past the first increment it is "
             + "−2 for each, at arm's length a long gun is unwieldy, and a Volley iron resents close work.");
         var coverLbl = new Label { Left = Pad + 164, Top = how.Bottom + 12, Width = 46, Text = "Cover:" };
         var cover = new ComboBox { Left = Pad + 212, Top = how.Bottom + 8, Width = 104,
@@ -3241,7 +3241,7 @@ public partial class MainForm
         cover.Items.AddRange(new object[] { "none", "light −2", "heavy −4" });
         cover.SelectedIndex = 0;
         Tip.SetToolTip(cover, "What stands between the shot and them. Prefilled from what the target is "
-            + "already behind on the field — Take Cover puts them there — and yours to overrule.");
+            + "already behind on the field (Take Cover puts them there) and yours to overrule.");
         var intoMelee = new CheckBox { Left = Pad, Top = range.Bottom + 8, Width = 150, Text = "Into melee −4" };
         Tip.SetToolTip(intoMelee, "Firing into a scrum. A miss may strike a friend, at your call.");
         var concealed = new CheckBox { Left = Pad + 164, Top = range.Bottom + 8, Width = 152, Text = "Blind −8" };
@@ -3279,7 +3279,7 @@ public partial class MainForm
             var rk = IronCode.Reckon(facts, w, attacker.Aimed && IronCode.CanAim(attacker.Gait));
             circRead.Text = rk.Parts.Count == 0
                 ? "Circumstance: nothing the moment adds or takes away."
-                : $"Circumstance {(rk.Total > 0 ? "+" : "")}{rk.Total} — " + string.Join(", ", rk.Parts) + ".";
+                : $"Circumstance {(rk.Total > 0 ? "+" : "")}{rk.Total}: " + string.Join(", ", rk.Parts) + ".";
         }
         range.ValueChanged += (s, e) => SyncCirc();
         cover.SelectedIndexChanged += (s, e) => SyncCirc();
@@ -3305,10 +3305,10 @@ public partial class MainForm
             var bits = new List<string>();
             if (!string.IsNullOrWhiteSpace(creature.special)) bits.Add(creature.special.Trim());
             foreach (var r in riders) bits.Add("• " + char.ToUpper(r[0]) + r.Substring(1));
-            var head = Para("Its special work — narrate as it fights:", y, DialogItalic, Blood);
+            var head = Para("Its special work, narrate as it fights:", y, DialogItalic, Blood);
             f.Controls.Add(head);
             // Sized to the words, capped so a wordy horror can't push the buttons off a small
-            // screen — past the cap it scrolls.
+            // screen; past the cap it scrolls.
             string body = string.Join("\r\n", bits);
             int wanted = TextRenderer.MeasureText(body, f.Font, new Size(CW - 8, 0), TextFormatFlags.WordBreak).Height + 12;
             var box = new TextBox
@@ -3322,7 +3322,7 @@ public partial class MainForm
         }
 
         // Reserved to the tallest sentence the rule can produce for THIS attacker, measured rather
-        // than guessed — the name is in it, so the height is not a constant.
+        // than guessed. The name is in it, so the height is not a constant.
         refusal.Top = y;
         // Both sentences come from the rule itself rather than being copied here, so a reword there
         // cannot leave this reserving the wrong height. A stand-in with the attacker's name, no
@@ -3352,24 +3352,24 @@ public partial class MainForm
                 ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced, shot)
                 : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList,
                                             forced, null, null, shot);
-            Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $"  — {catks[idx].Effect}." : ""));
+            Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $", {catks[idx].Effect}." : ""));
             // the Strike reads on the Dice tab's card too, graded like any other check
             ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
             // A terrible blow. The rule has been printed on the Keeper's screen since v1.4 and was
-            // implemented nowhere — the app read it out and then left the Keeper to remember it in
+            // implemented nowhere: the app read it out and then left the Keeper to remember it in
             // the middle of a fight, which is the one moment nobody remembers anything.
-            // The test itself now lives in CheckFalling, so every door asks it — see there.
+            // The test itself now lives in CheckFalling, so every door asks it. See there.
             // And the blow that put them on the ground. After the grievous offer on purpose: the
             // Lasting Injury is what the hit did, and refusing to fall is what they do about it.
             CheckFalling(tgt, tgtWasDown, tgtWasDead, rep.Res.AfterDR, rep.Res.Strike.Crit);
-            // What the blow's own rider does beyond the Blood — a claw that grabs, a bite that
+            // What the blow's own rider does beyond the Blood: a claw that grabs, a bite that
             // sickens. Last of the three, because a condition on somebody who is already dying is
             // the least of what just happened to them.
             if (asCreature) OfferConditions(tgt, rep.Inflicts, catks[idx].Effect);
             // And the shot that does not stop at the one it was aimed at.
             if (!asCreature) OfferScatter(tgt, CharGen.D.weapons[idx], rep.Res.Strike.Hit, shot.Distance);
-            // Beats/MAP moved on — say so in both places, and keep the dialog live for a follow-up
+            // Beats/MAP moved on: say so in both places, and keep the dialog live for a follow-up
             RefreshTracker(); Sync();
         }
     }
@@ -3378,7 +3378,7 @@ public partial class MainForm
     /// within its radius takes 1d6, and on a MISS inside the first range increment the target still
     /// wears it, which is the whole argument for a shotgun.
     ///
-    /// <para><b>Who is standing within the radius is the Keeper's to say</b> — the app models no
+    /// <para><b>Who is standing within the radius is the Keeper's to say</b>: the app models no
     /// ground and will not invent one. So this offers the splash and names the radius rather than
     /// picking victims, which is the same rule a creature's attack rider follows. Each soul rolls
     /// their own d6: one roll shared out would make a shotgun a thing that hits everybody for
@@ -3396,11 +3396,11 @@ public partial class MainForm
         if (others.Count == 0) return;
 
         const int Pad = 16, CW = 400;
-        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{w.name} — Scatter {radius} ft",
+        using var f = new Sheet { Width = CW + Pad * 3, Text = $"{w.name}, Scatter {radius} ft",
             FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         var head = new Label { Left = Pad, Top = Pad, Width = CW, Height = 54, ForeColor = Ink,
-            Text = hit ? $"The shot spreads. Everything within {radius} ft of {aimedAt.Name} takes 1d6 — "
+            Text = hit ? $"The shot spreads. Everything within {radius} ft of {aimedAt.Name} takes 1d6: "
                        + "tick whoever was standing in it."
                        : $"A miss inside the first increment still spreads. Tick whoever caught it, "
                        + $"{aimedAt.Name} included." };
@@ -3411,7 +3411,7 @@ public partial class MainForm
         foreach (var c in others) list.Items.Add($"{c.Name}  ({c.BloodCur}/{c.BloodMax})");
         if (targetToo) list.SetItemChecked(0, true);
         Tip.SetToolTip(list, "Who was standing inside the spread. The app models no ground, so this is "
-            + "yours to say — each one ticked rolls their own 1d6.");
+            + "yours to say, each one ticked rolls their own 1d6.");
         var ok = new Button { Text = "Spread it ▸", Left = Pad + CW - 200, Top = list.Bottom + 14,
                               Width = 100, Height = 32, DialogResult = DialogResult.OK };
         var no = new Button { Text = "Nobody", Left = Pad + CW - 94, Top = ok.Top, Width = 94,
@@ -3434,7 +3434,7 @@ public partial class MainForm
         RefreshTracker();
     }
 
-    /// <summary>A blow or a working named a condition — offer to lay it on. Offered rather than
+    /// <summary>A blow or a working named a condition: offer to lay it on. Offered rather than
     /// applied, and that is the whole design: the Bestiary's riders are English, and half of them
     /// hang on a save somebody still has to call ("Fort DC 15 or take the hydrophobia"). An engine
     /// that read "grab" and silently Grabbed the target would be right often enough to be trusted
@@ -3462,7 +3462,7 @@ public partial class MainForm
             return;
 
         on.Conditions = have.Count == 0 ? what : string.Join(", ", have) + ", " + what;
-        Log($"{on.Name} is {what}" + (weight.Any ? $" — {weight.Line}." : "."));
+        Log($"{on.Name} is {what}" + (weight.Any ? $", {weight.Line}." : "."));
         Daybook.Note("turn", $"round {round}: {on.Name} takes {what}");
         RefreshTracker();
     }
@@ -3473,21 +3473,21 @@ public partial class MainForm
     /// that moment. Called with whether they were already down BEFORE the harm, because "they are
     /// down" is true for every round afterwards and the offer belongs to the round they fell.
     ///
-    /// <para>Every route that can take Blood off a tracker row goes through here — the Strike, the
-    /// Damage button, a working that deals damage — for the same reason every route onto the field
+    /// <para>Every route that can take Blood off a tracker row goes through here (the Strike, the
+    /// Damage button, a working that deals damage) for the same reason every route onto the field
     /// goes through AddCreatureToTracker: a rule asked in three places is a rule forgotten in
     /// one.</para></summary>
     void CheckFalling(Combatant c, bool wasDown, bool wasDead, int damage = 0, bool crit = false)
     {
         if (c == null || c.IsSign) return;
-        // The bound beast is not governed by any of what follows — no Grit, no Fortitude save, no
-        // count toward a CON it does not have — but its fall is the one moment Ch. VII actually
+        // The bound beast is not governed by any of what follows (no Grit, no Fortitude save, no
+        // count toward a CON it does not have) but its fall is the one moment Ch. VII actually
         // legislates, so it is noticed here, where every route that takes Blood off anything
         // already arrives. Same reason the terrible blow was moved here.
         if (c.IsFamiliar) { FamiliarFell(c); return; }
         // Ch. XI's terrible blow, asked on EVERY route that takes Blood off a soul rather than only
         // in the Strike dialog. It lived at the Strike's call site for four releases, which meant a
-        // dice-and-books Keeper — who types the damage the physical dice rolled — never once got
+        // dice-and-books Keeper, who types the damage the physical dice rolled, never once got
         // offered the Fortitude save, and the Lasting Injury the rule promises never happened. That
         // is the same fault this method's own docstring was written about, one rule down.
         // Asked BEFORE the falling below: a soul can take a terrible blow and stay on their feet,
@@ -3497,7 +3497,7 @@ public partial class MainForm
             OfferGrievous(hurt, c, damage, crit);
         if (c.Dead && !wasDead)
         {
-            Log($"{c.Name} is killed outright — the blow carried past −{c.DeathAt}.");
+            Log($"{c.Name} is killed outright, the blow carried past −{c.DeathAt}.");
             Daybook.Note("death", $"round {round}: {c.Name} killed outright at −{c.Bleed} of {c.DeathAt}");
             if (SoulOf(c) is PartyMember gone)
                 Nope($"{gone.Name} is killed outright.\n\nThe blow carried them to −{c.Bleed}, past the "
@@ -3511,43 +3511,43 @@ public partial class MainForm
         var soul = SoulOf(c);
         // The offer is the posse's; a foe on the ground is simply on the ground.
         if (soul == null) return;
-        Log($"{c.Name} falls — dying, and bleeding a Blood a round toward −{c.DeathAt}.");
+        Log($"{c.Name} falls, dying, and bleeding a Blood a round toward −{c.DeathAt}.");
 
-        // "Should you fall, it carries your spirit to a new dawn — once." Offered at the fall,
+        // "Should you fall, it carries your spirit to a new dawn, once." Offered at the fall,
         // because the fall is what the book calls a fall, and offered BEFORE the Grit: Grit buys
         // one more round on her feet, and this buys the night.
         if (OfferFamiliarCarry(soul, c)) return;
 
         if (soul.Grit <= 0)
         {
-            Nope($"{soul.Name} is down at 0 Blood — Dying, and bleeding one Blood every round toward "
+            Nope($"{soul.Name} is down at 0 Blood, Dying, and bleeding one Blood every round toward "
                + $"−{c.DeathAt}.\n\nThey have no Grit left to refuse the fall. A Fortitude save or "
                + $"somebody's Medicine check at DC {Rules.StabilizeDc} stops the bleeding; right-click "
                + "their row for it.");
             return;
         }
         // A Confirm, not a menu: there are exactly two answers and one of them is doing nothing.
-        if (!Confirm($"{soul.Name} is down at 0 Blood — Dying, and bleeding one Blood every round "
+        if (!Confirm($"{soul.Name} is down at 0 Blood, Dying, and bleeding one Blood every round "
                    + $"toward −{c.DeathAt}. That is {c.DeathAt} rounds.\n\n"
                    + $"REFUSE TO FALL?  Spend 1 Grit ({soul.Grit} left) to stay conscious and on their "
-                   + "feet for one more round (Ch. II). The bleeding does not stop — the book buys "
+                   + "feet for one more round (Ch. II). The bleeding does not stop. The book buys "
                    + "consciousness with Grit, not time.\n\n"
                    + "Yes spends the Grit. No lets them fall."))
             return;
 
         if (Rules.RefuseToFall(c, soul) is string why) { Nope(why); return; }
-        Log($"{soul.Name} REFUSES TO FALL — 1 Grit spent ({soul.Grit} left), on their feet one more round.");
+        Log($"{soul.Name} REFUSES TO FALL: 1 Grit spent ({soul.Grit} left), on their feet one more round.");
         Daybook.Note("turn", $"round {round}: {soul.Name} spent Grit to refuse the fall at −{c.Bleed}");
         posseGrid?.Refresh(); RefreshTracker();
     }
 
-    /// <summary>The long night's rite — the only thing Ch. VII offers a Witch whose beast is dead,
+    /// <summary>The long night's rite: the only thing Ch. VII offers a Witch whose beast is dead,
     /// and until now the one part of the familiar the app could state and not do.
     ///
     /// <para>Deliberately NOT hung on Rest or on any dawn. Every other boundary in this app hands
     /// something back because a clock turned over; this one is a night's work somebody chose to
     /// do, and a Sickened that lifted by itself overnight would quietly say the loss cost nothing.
-    /// The beast that comes is the same kind unless the table says otherwise — the sheet's
+    /// The beast that comes is the same kind unless the table says otherwise: the sheet's
     /// Familiar line is editable on the New Soul tab, which is where a Witch who bound something
     /// else writes it down.</para></summary>
     void BindNewFamiliar(PartyMember soul)
@@ -3557,20 +3557,20 @@ public partial class MainForm
         if (!sheet.FamiliarLost) { Nope($"{soul.Name}'s {sheet.FamiliarKind} is alive. There is nothing to bind."); return; }
         if (!Confirm($"A long night's rite, and {soul.Name} is bound to another beast.\n\n"
                    + "The Sickened lifts and the standing boon comes back. It is the same kind of "
-                   + "creature unless the table says otherwise — change the Familiar on her sheet if "
+                   + "creature unless the table says otherwise, change the Familiar on her sheet if "
                    + "something else answered.\n\n"
                    + "This is a night's work, not a rest. Has she done it?"))
             return;
         sheet.FamiliarLost = false;
         soul.Touched(nameof(PartyMember.Sheet));
-        Log($"{soul.Name} binds another over a long night's rite — {sheet.FamiliarKind}, and the boon "
+        Log($"{soul.Name} binds another over a long night's rite, {sheet.FamiliarKind}, and the boon "
           + "with it. Clear the Sickened by hand when the table is done with it.");
         Daybook.Note("feature", $"{soul.Name} bound a new familiar over a long night's rite");
         posseGrid?.Refresh(); RefreshTracker(); RefreshCalling();
     }
 
     /// <summary>The last thing the Familiar-Bound is for: "should you fall, it carries your spirit
-    /// to a new dawn — <em>once</em>".
+    /// to a new dawn, <em>once</em>".
     ///
     /// <para>Once EVER, so the spending is written on the character sheet rather than into
     /// <c>FeatureSpent</c>, which every scene boundary hands back. Same separation, and the same
@@ -3587,7 +3587,7 @@ public partial class MainForm
         var beast = FamiliarRowOf(soul);
         if (beast == null || beast.Down) return false;
 
-        if (!Confirm($"{soul.Name} is down at 0 Blood — and {beast.Name} is still standing.\n\n"
+        if (!Confirm($"{soul.Name} is down at 0 Blood, and {beast.Name} is still standing.\n\n"
                    + "LET IT CARRY HER SPIRIT TO A NEW DAWN? The beast dies in her place. She stops "
                    + "bleeding where she lies and will not wake before morning.\n\n"
                    + "This is the once. The Familiar-Bound grants it one time in a life, and nothing "
@@ -3610,7 +3610,7 @@ public partial class MainForm
     /// <summary>What it means when the bound beast reaches 0 Blood, and what it means when it is
     /// brought back off it.
     ///
-    /// <para>At 0 Blood the beast is DEAD, not down — the same reading the app already gives every
+    /// <para>At 0 Blood the beast is DEAD, not down. The same reading the app already gives every
     /// creature ("a creature at 0 Blood is simply put down"), and the right one here: the dying
     /// rule is written for characters, and a cat with a count running toward its CON is a rule the
     /// book does not have. So the fall IS the death, which is what makes Ch. VII's sentence
@@ -3633,8 +3633,8 @@ public partial class MainForm
             witch.Touched(nameof(PartyMember.Sheet));
             ApplyConditionTo(tracker.FirstOrDefault(x => x.IsSoul(witch)), "Sickened 1");
             Log($"{c.Name} is killed. {witch.Name} is Sickened until another is bound over a long "
-              + "night's rite — and the boon it granted goes with it.");
-            Daybook.Note("death", $"round {round}: {c.Name} killed — {witch.Name} Sickened, familiar lost");
+              + "night's rite, and the boon it granted goes with it.");
+            Daybook.Note("death", $"round {round}: {c.Name} killed, {witch.Name} Sickened, familiar lost");
             Nope($"{c.Name} is dead.\n\n{witch.Name} is Sickened until she can bind another over a "
                + "long night's rite, and the standing boon it granted is gone from every roll she "
                + "makes until then (Ch. VII).\n\nYou will feel the loss far longer than the penalty "
@@ -3643,11 +3643,11 @@ public partial class MainForm
         else if (!c.Down && sheet.FamiliarLost)
         {
             // Healed off zero before the night was over. It was never dead, so the Sickened it
-            // caused was never earned — the Keeper's own condition string is not touched, because
+            // caused was never earned: the Keeper's own condition string is not touched, because
             // everything in that string is their word and the engine does not write there.
             sheet.FamiliarLost = false;
             witch.Touched(nameof(PartyMember.Sheet));
-            Log($"{c.Name} is breathing again — {witch.Name}'s boon comes back with it. "
+            Log($"{c.Name} is breathing again, {witch.Name}'s boon comes back with it. "
               + "Clear the Sickened by hand if the table is done with it.");
         }
         posseGrid?.Refresh(); RefreshTracker();
@@ -3659,9 +3659,9 @@ public partial class MainForm
     static string FamiliarBoundKey(PartyMember soul)
         => CharGen.LedgerFor(soul).FirstOrDefault(
                r => r.Name.Contains("Familiar-Bound", StringComparison.Ordinal)
-                 && r.Name.EndsWith("— greater", StringComparison.Ordinal)).Name;
+                 && r.Name.EndsWith(" (greater)", StringComparison.Ordinal)).Name;
 
-    /// <summary>Swap places with the beast — the greater boon's once-per-scene move.
+    /// <summary>Swap places with the beast: the greater boon's once-per-scene move.
     ///
     /// <para>The app models no ground, so what it can honestly exchange is everything about WHERE
     /// the two of them are that it does hold: what each is standing behind, and whether either is
@@ -3681,13 +3681,13 @@ public partial class MainForm
 
         (hers.Cover, beast.Cover) = (beast.Cover, hers.Cover);
         (hers.Gait, beast.Gait) = (beast.Gait, hers.Gait);
-        Log($"{witch.Name} and {beast.Name} change places — where one was, the other is. "
+        Log($"{witch.Name} and {beast.Name} change places, where one was, the other is. "
           + "Once per scene.");
         Daybook.Note("feature", $"round {round}: {witch.Name} swapped places with {beast.Name}");
         RefreshTracker();
     }
 
-    /// <summary>Share wounds or Blood — the other half of the greater boon. Moves Blood between the
+    /// <summary>Share wounds or Blood: the other half of the greater boon. Moves Blood between the
     /// two of them in whichever direction the Keeper needs, which is what "share" means at a table:
     /// the beast takes a hit meant for her, or she gives back what it spent for her.</summary>
     void FamiliarShareBlood(PartyMember witch)
@@ -3709,19 +3709,19 @@ public partial class MainForm
         from.Wound(-moved, "shared");
         to.Wound(moved, "shared");
         if (to == hers) witch.BloodCur = hers.BloodCur;
-        Log($"{moved} Blood passes from {from.Name} to {to.Name} — shared, as the Familiar-Bound share.");
+        Log($"{moved} Blood passes from {from.Name} to {to.Name}, shared, as the Familiar-Bound share.");
         CheckFalling(from, fromWasDown, fromWasDead, moved);
         posseGrid?.Refresh(); RefreshTracker();
     }
 
     /// <summary>The Keeper overruling the book. Nothing in Ch. XI walks a death back, and the app
-    /// should not pretend otherwise by letting a heal do it quietly — but a Miracle, a Patron's
+    /// should not pretend otherwise by letting a heal do it quietly, but a Miracle, a Patron's
     /// bargain, or a table that simply decided is above the app's pay grade. So it exists, it is
     /// named for what it is, and it is asked about.</summary>
     void Resurrect(Combatant c)
     {
         if (c == null || !c.Dead) { Nope("That one is not dead."); return; }
-        if (!Confirm($"{c.Name} is dead — they reached −{c.Bleed}, which is their CON.\n\n"
+        if (!Confirm($"{c.Name} is dead. They reached −{c.Bleed}, which is their CON.\n\n"
                    + "Put them back? They come round at 1 Blood: on their feet, and one hit from "
                    + "being back on the ground.\n\n"
                    + "The book has no rule for this. It is the table's call."))
@@ -3730,21 +3730,21 @@ public partial class MainForm
         c.Wound(1, "back");
         if (SoulOf(c) is PartyMember p) p.BloodCur = c.BloodCur;
         posseGrid?.Refresh(); RefreshTracker();
-        Log($"{c.Name} is back — 1 Blood, and the table's word for it.");
+        Log($"{c.Name} is back, 1 Blood, and the table's word for it.");
         Daybook.Note("death", $"round {round}: {c.Name} brought back by the Keeper's ruling");
     }
 
     /// <summary>Stop somebody bleeding out: a Fortitude save of their own, or another soul's
-    /// Medicine check — the book gives both DC 15. Offered from the tracker's right-click menu and
+    /// Medicine check. The book gives both DC 15. Offered from the tracker's right-click menu and
     /// from Restore ▾, because it is the thing a Keeper reaches for at the worst moment and hunting
     /// for it is part of what makes that moment bad.</summary>
     void StabilizeDialog()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select whoever is on the ground first."); return; }
-        if (c.Dead) { Nope($"{c.Name} is dead. Out here dead is dead — there is nothing left to stop."); return; }
+        if (c.Dead) { Nope($"{c.Name} is dead. Out here dead is dead. There is nothing left to stop."); return; }
         if (!c.Dying)
         {
-            Nope(c.Stable ? $"{c.Name} is already stable — the bleeding has stopped."
+            Nope(c.Stable ? $"{c.Name} is already stable. The bleeding has stopped."
                : c.Down ? $"{c.Name} is down, but the dying rule does not run on this row. It is the "
                         + "posse's rule; a creature at 0 Blood is simply put down."
                         : $"{c.Name} is still on their feet. There is nothing to stabilize.");
@@ -3755,7 +3755,7 @@ public partial class MainForm
         const int Pad = 16, CW = 470;
         using var f = new Sheet
         {
-            Text = $"{c.Name} — stop the bleeding", FormBorderStyle = FormBorderStyle.FixedDialog,
+            Text = $"{c.Name}. Stop the bleeding", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
             ShowIcon = false, BackColor = Paper
         };
@@ -3768,7 +3768,7 @@ public partial class MainForm
         var head = Para($"{c.Name} is at −{c.Bleed} of −{c.DeathAt}. {c.RoundsToDeath} round"
                       + $"{(c.RoundsToDeath == 1 ? "" : "s")} left at a Blood a round.", Pad, DialogBold, Blood);
         var body = Para($"A Fortitude save or a Medicine check, either one at DC {Rules.StabilizeDc}, stops "
-                      + "the bleeding (Ch. XI). Stable is not awake — they stay senseless at 0 Blood until "
+                      + "the bleeding (Ch. XI). Stable is not awake. They stay senseless at 0 Blood until "
                       + "somebody puts Blood back in them.", head.Bottom + 6, f.Font, Ink);
 
         var whichLbl = new Label { Left = Pad, Top = body.Bottom + 12, Width = 92, Text = "The check:" };
@@ -3785,7 +3785,7 @@ public partial class MainForm
         {
             bool own = which.SelectedIndex == 0;
             if (own && soul != null) mod.Value = Math.Clamp(soul.Fort, mod.Minimum, mod.Maximum);
-            modNote.Text = own ? "their Fortitude, off the sheet" : "the healer's Medicine bonus — type it in";
+            modNote.Text = own ? "their Fortitude, off the sheet" : "the healer's Medicine bonus. Type it in";
         }
         which.SelectedIndexChanged += (s, e) => SyncWhich();
         SyncWhich();
@@ -3805,7 +3805,7 @@ public partial class MainForm
         {
             var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value);
             Log($"{c.Name}: {res.Line}  (d20 {res.Die}{(res.Mod >= 0 ? "+" : "")}{res.Mod})");
-            ShowResult(res.DegreeName, $"{c.Name} — {res.Line}", DegreeColor(res.DegreeName));
+            ShowResult(res.DegreeName, $"{c.Name}, {res.Line}", DegreeColor(res.DegreeName));
             if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
             RefreshTracker();
             if (res.Stopped) break;                      // nothing left to roll for
@@ -3815,14 +3815,14 @@ public partial class MainForm
     }
 
     // Roll a Dread Check for the selected soul (Ch. XII): Will save vs the Dread DC, Nerve off the
-    // ladder on a failure, Frightened on a critical failure — and, at 0 Nerve, the break table.
+    // ladder on a failure, Frightened on a critical failure, and, at 0 Nerve, the break table.
     void DreadDialog()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope(NoSoulPicked); return; }
         var soul = SoulOf(c);
-        if (soul == null) { Nope("Dread Checks are for the posse — select a player's soul."); return; }
+        if (soul == null) { Nope("Dread Checks are for the posse, select a player's soul."); return; }
 
-        using var f = new Sheet { Width = 430, Height = 300, Text = $"{soul.Name} — Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
+        using var f = new Sheet { Width = 430, Height = 300, Text = $"{soul.Name}: Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
         f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
         var dc = new NumericUpDown { Left = 112, Top = 48, Width = 70, Minimum = 5, Maximum = 40, Value = 16 };
         f.Controls.Add(new Label { Left = 16, Top = 51, Width = 92, Text = "Dread DC:" });
@@ -3851,14 +3851,14 @@ public partial class MainForm
             ResolveDread(soul, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
     }
 
-    /// <summary>One Dread Check, resolved one way, wherever it was called from — the Tracker's
+    /// <summary>One Dread Check, resolved one way, wherever it was called from: the Tracker's
     /// dialog above or the Posse tab's two buttons.
     ///
     /// It had two implementations, and they disagreed about the rule. The Posse tab rolled its own
     /// ladder and DOUBLED the loss on a critical failure, which the book does not say ("A critical
     /// failure … loses the listed Nerve and imposes Frightened 1 at once", Ch. XII); it also never
     /// hung the Frightened, never rolled the Affliction a DC-25 failure carries, and never touched
-    /// the break table — so the same horror cost a soul twice the Nerve and left no mark on one tab,
+    /// the break table, so the same horror cost a soul twice the Nerve and left no mark on one tab,
     /// and cost the printed Nerve and left a scar on the other. This is the one road now.</summary>
     void ResolveDread(PartyMember soul, int dc, int? forcedDie)
     {
@@ -3874,12 +3874,12 @@ public partial class MainForm
             // problem two rounds later.
             var row = tracker.FirstOrDefault(t => t.IsSoul(soul));
             if (row != null) ApplyConditionTo(row, "Frightened 1");
-            else Log($"{soul.Name} is Frightened 1 — send them to the Tracker for it to be carried.");
+            else Log($"{soul.Name} is Frightened 1. Send them to the Tracker for it to be carried.");
         }
 
         // Two rules, both the book's, and they can fire on the same check: a DC-25 failure carries
         // "1d10 + a lasting Affliction", and breaking at 0 Nerve takes "a lasting Affliction that
-        // rides you until it is treated". One d10 is rolled either way — the soul came out of one
+        // rides you until it is treated". One d10 is rolled either way: the soul came out of one
         // night changed once, and two modal dialogs back to back for it would be the app arguing
         // with itself in front of the table.
         bool broke = soul.NerveCur == 0;
@@ -3894,8 +3894,8 @@ public partial class MainForm
             var (d10, aff, cost) = Rules.RollAffliction();
             string why = o.Affliction && broke ? "a truth that unmakes a world, and no Nerve left to meet it"
                        : o.Affliction ? "a truth that unmakes a world"
-                       : "driven to 0 Nerve — they broke";
-            Log($"{soul.Name} does not come back whole — Affliction, d10 {d10}: {aff}. {cost}");
+                       : "driven to 0 Nerve. They broke";
+            Log($"{soul.Name} does not come back whole, Affliction, d10 {d10}: {aff}. {cost}");
             ShowResult("AFFLICTION", $"{soul.Name}: {aff}\n{cost}", Blood);
             RecordScar(soul, "Affliction", aff, why);
         }
@@ -3903,39 +3903,39 @@ public partial class MainForm
     }
 
     /// <summary>A blow bad enough to leave something behind (Ch. XI): half the soul's maximum Blood
-    /// in one hit, or any critical. Fortitude save at DC 15 — the engine table rolls it, the
-    /// dice-and-books table is asked for it — and on a failure the d6 says what it cost.</summary>
+    /// in one hit, or any critical. Fortitude save at DC 15 (the engine table rolls it, the
+    /// dice-and-books table is asked for it) and on a failure the d6 says what it cost.</summary>
     void OfferGrievous(PartyMember soul, Combatant row, int damage, bool crit)
     {
         string why = crit ? "a critical hit" : $"{damage} in one blow, against {row.BloodMax} Blood";
-        if (!Confirm($"A terrible blow — {why}.\n\n{soul.Name} makes a Fortitude save at DC {Rules.GrievousDc} "
+        if (!Confirm($"A terrible blow, {why}.\n\n{soul.Name} makes a Fortitude save at DC {Rules.GrievousDc} "
                    + "or takes a Lasting Injury. Roll it?")) return;
 
-        int die = AskDie($"{soul.Name}'s Fortitude save against DC {Rules.GrievousDc} — what did the d20 come up?")
+        int die = AskDie($"{soul.Name}'s Fortitude save against DC {Rules.GrievousDc}, what did the d20 come up?")
                   ?? Rules.Rng.Next(1, 21);
         var (idx, deg, detail) = Rules.FourDegrees(die, soul.Fort, Rules.GrievousDc);
         if (idx > 1)   // 2 = success, 3 = critical success
         {
-            Log($"{soul.Name} rides it out — Fortitude {detail} → {deg}. No lasting injury.");
+            Log($"{soul.Name} rides it out, Fortitude {detail} → {deg}. No lasting injury.");
             ShowResult(deg, $"{soul.Name} rides out a terrible blow.", Verdigris);
             return;
         }
         var (d6, injury) = Rules.RollInjury();
-        Log($"{soul.Name} — Fortitude {detail} → {deg}. Lasting Injury, d6 {d6}: {injury}.");
+        Log($"{soul.Name}, Fortitude {detail} → {deg}. Lasting Injury, d6 {d6}: {injury}.");
         ShowResult("LASTING INJURY", $"{soul.Name}: {injury}", Blood);
         RecordScar(soul, "Injury", injury, why);
     }
 
-    /// <summary>Write a mark onto a soul that they do not get to put down — a Lasting Injury off
+    /// <summary>Write a mark onto a soul that they do not get to put down: a Lasting Injury off
     /// the d6, or an Affliction out of a Dread Check that went badly. Prefilled with what the app
     /// knows and editable, because the books name the six injuries and deliberately leave the
     /// Afflictions to the table: "the scars that stay" is a prompt, not a list.</summary>
     /// <param name="soul">Who carries it. Null is a no-op, so callers need not test first.</param>
-    /// <param name="kind">"Injury" or "Affliction" — which of the two ledgers, and which book's
+    /// <param name="kind">"Injury" or "Affliction": which of the two ledgers, and which book's
     /// list the What box offers.</param>
     /// <param name="suggested">What the dice said, prefilled into the What box and editable.</param>
-    /// <param name="because">What brought it on, in the app's own words, when the engine knows —
-    /// it goes into the dialog's opening line and into the Keeper's ledger with the entry. Empty
+    /// <param name="because">What brought it on, in the app's own words, when the engine knows.
+    /// It goes into the dialog's opening line and into the Keeper's ledger with the entry. Empty
     /// for the two hand-written routes off the Posse tab's menu, where the Keeper knows why.</param>
     void RecordScar(PartyMember soul, string kind, string suggested, string because = "")
     {
@@ -3948,11 +3948,11 @@ public partial class MainForm
             MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper
         };
         string blurb = kind == "Affliction"
-            ? $"{soul.Name} came out of that changed{(because.Length > 0 ? " — " + because : "")}. An "
-              + "Affliction is not a condition — it does not wear off, and it is yours to name: a fear "
+            ? $"{soul.Name} came out of that changed{(because.Length > 0 ? ": " + because : "")}. An "
+              + "Affliction is not a condition. It does not wear off, and it is yours to name: a fear "
               + "of the dark, a stammer, a thing they will not do any more. Keeper's Book, Ch. III."
-            : $"{soul.Name} took a terrible blow{(because.Length > 0 ? " — " + because : "")}. A Lasting "
-              + "Injury does not heal with rest alone — it takes a Sawbones, time, and sometimes a "
+            : $"{soul.Name} took a terrible blow{(because.Length > 0 ? ": " + because : "")}. A Lasting "
+              + "Injury does not heal with rest alone. It takes a Sawbones, time, and sometimes a "
               + "graveyard. Player's Book, Ch. XI.";
         var say = new Label
         {
@@ -3991,7 +3991,7 @@ public partial class MainForm
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
         f.AcceptButton = ok; f.CancelButton = skip;
 
-        if (f.ShowDialog(this) != DialogResult.OK) { Log($"{soul.Name} — the {kind.ToLowerInvariant()} was not written down."); return; }
+        if (f.ShowDialog(this) != DialogResult.OK) { Log($"{soul.Name}. The {kind.ToLowerInvariant()} was not written down."); return; }
         string what = name.Text.Trim();
         if (what.Length == 0) what = kind == "Affliction" ? "Something changed" : "A lasting hurt";
         var scar = new Scar { Kind = kind, Name = what, Note = note.Text.Trim(), When = when.Text.Trim() };
@@ -4001,21 +4001,21 @@ public partial class MainForm
         posseGrid?.Refresh();
         RefreshSoulCard(soul);
         // "Write it down" now writes it down somewhere a Keeper can read at the end of the night.
-        // It always went onto the soul — the Posse tab's Scars column, the Ledger sheet — and that
+        // It always went onto the soul (the Posse tab's Scars column, the Ledger sheet) and that
         // is the ledger the RULES care about, but the button says the words the Session tab's
         // Keeper's ledger is for, and a scar nobody sees written is a scar the table doubts
         // happened. Both, therefore: the sheet keeps it, the ledger says it happened tonight.
-        ToLedger($"{soul.Name} — {kind.ToLowerInvariant()}: {what}"
+        ToLedger($"{soul.Name}, {kind.ToLowerInvariant()}: {what}"
             + (because.Length > 0 ? $"  ({because})" : "")
             + (scar.Note.Length > 0 ? Environment.NewLine + "    " + scar.Note : ""));
-        Log($"{soul.Name} carries it now — {kind.ToLowerInvariant()}: {what}. Written into the Keeper's ledger.");
+        Log($"{soul.Name} carries it now, {kind.ToLowerInvariant()}: {what}. Written into the Keeper's ledger.");
     }
 
-    /// <summary>Put a soul back to a clean sheet — strike the scars, drop the look, lift the
+    /// <summary>Put a soul back to a clean sheet: strike the scars, drop the look, lift the
     /// conditions. Any combination of the three, asked about once and done in one undo step.
     ///
-    /// <para>Each of the three could already be undone ONE AT A TIME — a scar off the Posse menu,
-    /// a redraw of the look, conditions off the Tracker row — and none of them could be cleared.
+    /// <para>Each of the three could already be undone ONE AT A TIME (a scar off the Posse menu,
+    /// a redraw of the look, conditions off the Tracker row) and none of them could be cleared.
     /// A soul handed to a new player, a pregen reused for a second table, a sheet the Keeper wants
     /// back at zero: all of them meant striking six scars off one at a time through six confirms,
     /// and there was no way at all to take a look off once one had been drawn.</para>
@@ -4033,8 +4033,8 @@ public partial class MainForm
         if (nScars == 0 && !hasLook && !hasCond) { Nope($"{p.Name} has nothing of that to clear."); return; }
 
         var parts = new List<string>();
-        if (nScars > 0) parts.Add($"{nScars} scar{(nScars == 1 ? "" : "s")} — what they carry out of the bad nights");
-        if (hasLook) parts.Add("their look — build, face, dress and detail");
+        if (nScars > 0) parts.Add($"{nScars} scar{(nScars == 1 ? "" : "s")}, what they carry out of the bad nights");
+        if (hasLook) parts.Add("their look. Build, face, dress and detail");
         if (hasCond) parts.Add($"their conditions ({row.Conditions})");
         if (!Confirm($"Start {p.Name} clean?" + Environment.NewLine + Environment.NewLine
                    + "This wipes " + string.Join(Environment.NewLine + "  · ", parts.Prepend("")).TrimStart()
@@ -4049,11 +4049,11 @@ public partial class MainForm
         CaptureUndo();
         posseGrid?.Refresh(); trkGrid?.Refresh();
         RefreshSoulCard(p);
-        Log($"{p.Name} starts clean — {string.Join(", ", did)}.");
-        ToLedger($"{p.Name} — the sheet is put back to clean: {string.Join(", ", did)}.");
+        Log($"{p.Name} starts clean, {string.Join(", ", did)}.");
+        ToLedger($"{p.Name}. The sheet is put back to clean: {string.Join(", ", did)}.");
     }
 
-    /// <summary>Append a dated line to the Keeper's ledger on the Session tab — the app's own hand
+    /// <summary>Append a dated line to the Keeper's ledger on the Session tab: the app's own hand
     /// in the notebook the Keeper keeps. Written through the FIELD as well as the box, because the
     /// Session tab fills itself on first visit and a night's play can easily never open it; the
     /// box, when it exists, is the live view of that same string.</summary>
@@ -4071,9 +4071,9 @@ public partial class MainForm
 
     /// <summary>Read a sign &amp; spoor row: a Survival check at the Tier's DC, what the four degrees
     /// give the tracker, the Dread it costs them, and one more segment of the clock. This is the
-    /// safe-table rule as a scene you can actually run — the thing takes part in the fight through
+    /// safe-table rule as a scene you can actually run. The thing takes part in the fight through
     /// what it left behind, and the fight is against the reading.</summary>
-    /// <param name="sign">The thread being read. Normally the card's own — each Threads card carries
+    /// <param name="sign">The thread being read. Normally the card's own. Each Threads card carries
     /// its Read it ▸ button, so there is no selection to guess at. Null falls back to the only thread
     /// on the trail, which is what a keyboard or menu route means when there is just one.</param>
     void ReadSignDialog(Combatant sign = null)
@@ -4081,7 +4081,7 @@ public partial class MainForm
         if (sign == null)
         {
             if (signs.Count == 0) { Nope("Nothing on the trail. A creature too far over the posse arrives as sign & spoor."); return; }
-            if (signs.Count > 1) { Nope("More than one thread on the trail — press Read it ▸ on the one being read."); return; }
+            if (signs.Count > 1) { Nope("More than one thread on the trail. Press Read it ▸ on the one being read."); return; }
             sign = signs[0];
         }
         var beast = Db.Find(sign.Ref);
@@ -4090,12 +4090,12 @@ public partial class MainForm
 
         var readers = tracker.Where(t => SoulOf(t) != null).Select(t => SoulOf(t)).ToList();
         if (readers.Count == 0) readers = party.ToList();
-        if (readers.Count == 0) { Nope("Nobody to read it — put the posse on the field first."); return; }
+        if (readers.Count == 0) { Nope("Nobody to read it. Put the posse on the field first."); return; }
 
         const int Pad = 16, CW = 470;
         using var f = new Sheet
         {
-            Text = $"{sign.Name} — read it", FormBorderStyle = FormBorderStyle.FixedDialog,
+            Text = $"{sign.Name}. Read it", FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
             ShowIcon = false, BackColor = Paper
         };
@@ -4121,7 +4121,7 @@ public partial class MainForm
             ForeColor = Gold, Font = DialogItalic, AutoEllipsis = true
         };
         // Prefilled from the reader's own sheet by the book's formula (Ch. VIII), so the Keeper
-        // isn't asked for a number the app already knows — and can still overrule it.
+        // isn't asked for a number the app already knows, and can still overrule it.
         void SyncReader()
         {
             var p = readers[Math.Max(0, who.SelectedIndex)];
@@ -4130,23 +4130,23 @@ public partial class MainForm
             {
                 mod.Value = Math.Clamp(CharGen.SkillBonus(sheet, "Survival"), -20, 40);
                 int rank = sheet.SkillRanks != null && sheet.SkillRanks.TryGetValue("Survival", out int r) ? r : 0;
-                modNote.Text = rank <= 0 ? "untrained — RES alone"
+                modNote.Text = rank <= 0 ? "untrained, RES alone"
                     : (rank >= 3 ? "master" : rank == 2 ? "expert" : "trained") + $", level {sheet.Level}";
             }
-            else { modNote.Text = "no sheet on this soul — set the bonus by hand"; }
+            else { modNote.Text = "no sheet on this soul. Set the bonus by hand"; }
         }
         who.SelectedIndexChanged += (s, e) => SyncReader();
         SyncReader();
 
         var dcLine = Para($"Survival DC {readDc}  ·  "
-            + (dreadDc == 0 ? "no Dread — this one is only weather and teeth" : $"Dread DC {dreadDc} for the reader")
+            + (dreadDc == 0 ? "no Dread. This one is only weather and teeth" : $"Dread DC {dreadDc} for the reader")
             + $"  ·  clock {sign.SignFilled} of {Rules.SpoorClockSegments}", mod.Bottom + 10, DialogItalic, Ink);
 
         var d20 = new NumericUpDown { Left = Pad + 108, Top = dcLine.Bottom + 8, Width = 68, Minimum = 1, Maximum = 20, Value = 10 };
         var d20Lbl = L("d20 rolled:", dcLine.Bottom + 5);
         int afterDice = EngineRolls ? dcLine.Bottom : d20.Bottom + 4;
 
-        var how = Para("Every reading is a fresh crossing of its trail, so every reading fills a segment — "
+        var how = Para("Every reading is a fresh crossing of its trail, so every reading fills a segment: "
             + "what the roll decides is what the tracker takes away from the crossing. A full clock is the "
             + "night it stops leaving sign and arrives.", afterDice + 8, f.Font, Ink);
 
@@ -4164,12 +4164,12 @@ public partial class MainForm
             Log($"{reader.Name} reads {sign.Name}: {o.Detail} → {o.DegreeName}. {o.Learned}");
             ShowResult(o.DegreeName, $"{reader.Name} reads {sign.Name}: {o.Learned}", DegreeColor(o.DegreeName));
 
-            // The Dread of standing over it — one rung below meeting the thing, and nothing at all
+            // The Dread of standing over it: one rung below meeting the thing, and nothing at all
             // for a Tier I trace, which is a dead rabbit eaten the way rabbits get eaten.
             if (o.DreadDc > 0)
             {
                 var d = Horror.DreadCheck(reader.Will, o.DreadDc,
-                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}) — what did the d20 come up?"),
+                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}), what did the d20 come up?"),
                     reader.Sheet);
                 Log($"{reader.Name}: {d.Line}");
                 if (d.NerveLost > 0) reader.NerveCur = Math.Max(0, reader.NerveCur - d.NerveLost);
@@ -4184,7 +4184,7 @@ public partial class MainForm
 
             if (o.FillsClock) sign.SignFilled += 1;
             dcLine.Text = $"Survival DC {readDc}  ·  "
-                + (dreadDc == 0 ? "no Dread — this one is only weather and teeth" : $"Dread DC {dreadDc} for the reader")
+                + (dreadDc == 0 ? "no Dread. This one is only weather and teeth" : $"Dread DC {dreadDc} for the reader")
                 + $"  ·  clock {sign.SignFilled} of {Rules.SpoorClockSegments}";
             posseGrid?.Refresh(); trkGrid?.Refresh(); RefreshSigns();
 
@@ -4193,15 +4193,15 @@ public partial class MainForm
     }
 
     /// <summary>The clock is full: the thing stops leaving sign. Offered rather than done, because
-    /// WHEN it walks in is the Keeper's call — but the row is spent either way, and leaving a full
+    /// WHEN it walks in is the Keeper's call, but the row is spent either way, and leaving a full
     /// clock sitting on the field is how a thread quietly stops meaning anything.</summary>
     void SignArrives(Combatant sign, Creature beast)
     {
         Log($"{sign.Name}: the clock is full. It stops leaving sign.");
         string ask = beast == null
-            ? $"{sign.Name}'s clock is full — the thread is spent. Take it off the field?"
+            ? $"{sign.Name}'s clock is full. The thread is spent. Take it off the field?"
             : $"{sign.Name}'s clock is full. It comes in the flesh: put {beast.name} on the field "
-              + $"in its place — {beast.BloodValue} Blood, Defense {beast.DefenseValue}?";
+              + $"in its place, {beast.BloodValue} Blood, Defense {beast.DefenseValue}?";
         if (!Confirm(ask)) return;
         signs.Remove(sign);
         if (beast != null)
@@ -4215,17 +4215,17 @@ public partial class MainForm
     // ---- Signs, Miracles, and creature powers: working one, and what it costs ----
 
     /// <summary>One thing a combatant could work, gathered from wherever that combatant's powers
-    /// actually live — a soul's own known lists, or a creature's Bestiary line — together with what
+    /// actually live (a soul's own known lists, or a creature's Bestiary line) together with what
     /// the printed text says it DOES (<see cref="Rules.ReadWorking"/>): who it lands on, how long it
     /// holds, what dice it rolls, and what it costs the worker when it turns on them.</summary>
     sealed record Workable(string Name, string Kind, int Rank, string Cost, string Effect, Rules.Working Read);
 
     /// <summary>What this combatant can work. A posse soul offers exactly what is written on their
-    /// sheet — Signs from Ch. XIII, Miracles from Ch. VI, nothing they have not learned. A creature
+    /// sheet: Signs from Ch. XIII, Miracles from Ch. VI, nothing they have not learned. A creature
     /// offers the power its own stat block names. Anything else is typed by hand, because the
     /// Keeper is allowed to invent and the app should not be the reason they cannot.
     ///
-    /// The worker's level rides along because the book scales some durations by it — "one round per
+    /// The worker's level rides along because the book scales some durations by it: "one round per
     /// two levels" is a real number once you know whose Sign it is, and the app is what should be
     /// doing that arithmetic.</summary>
     List<Workable> WorkablesFor(Combatant c)
@@ -4290,7 +4290,7 @@ public partial class MainForm
 
         // The Backlash gets its own field, in the ink the app uses for what the dark costs you. It
         // used to sit in the middle of the effect blob above, which is where a Keeper looks last
-        // and needs it first — and forty of the eighty workings have one.
+        // and needs it first, and forty of the eighty workings have one.
         var backlash = new TextBox
         {
             Left = Pad, Top = detail.Bottom + 6, Width = CW, Height = 40, Multiline = true, ReadOnly = true,
@@ -4302,7 +4302,7 @@ public partial class MainForm
         var onLbl = L("On whom:", backlash.Bottom + 6);
 
         // Duration is the book's word, not a round count. Eleven of the eighty last "for a scene",
-        // six until dawn, five a day — and every one of them showed on the chip as "until it is
+        // six until dawn, five a day, and every one of them showed on the chip as "until it is
         // ended by hand", which is true of none of them. The reader prefills this; the Keeper can
         // still say otherwise, because a ruling at the table beats a parser every time.
         var lasts = new ComboBox { Left = Pad + 104, Top = onWhom.Bottom + 8, Width = 178, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -4322,7 +4322,7 @@ public partial class MainForm
                 Rules.WorkEnds.Day        => "for a day",
                 Rules.WorkEnds.Month      => "for a month",
                 Rules.WorkEnds.UntilDawn  => "until dawn",
-                Rules.WorkEnds.Instant    => "at once — nothing to carry",
+                Rules.WorkEnds.Instant    => "at once, nothing to carry",
                 _                         => "until something ends it",
             });
         var lastsLbl = L("Lasts:", onWhom.Bottom + 5);
@@ -4348,13 +4348,13 @@ public partial class MainForm
         };
         Tip.SetToolTip(rolled, "The total you rolled on the dice this working calls for");
         var saved = new ComboBox { Left = Pad + 104, Top = rollIt.Bottom + 4, Width = CW - 104, DropDownStyle = ComboBoxStyle.DropDownList, Visible = false };
-        saved.Items.AddRange(new object[] { "they failed the save — it lands in full", "they made it — half", "they made it — none at all" });
+        saved.Items.AddRange(new object[] { "they failed the save. It lands in full", "they made it, half", "they made it, none at all" });
         saved.SelectedIndex = 0;
         var savedLbl = new Label { Left = Pad, Top = rollIt.Bottom + 8, Width = 100, Text = "The save:", Visible = false };
 
         var spend = new CheckBox { Left = Pad, Top = saved.Bottom + 8, Width = CW, Height = 22, Checked = true };
         // What working this costs OUT OF THE TURN, which is the half of the price the app never
-        // charged. The cost line the book prints — "1 Beat · 2 Nerve · Will save" — has been parsed
+        // charged. The cost line the book prints, "1 Beat · 2 Nerve · Will save", has been parsed
         // since v1.20 and only its currencies were ever spent, so a soul with three Beats could work
         // six Signs and still Strike. Two lines tall, fixed: the refusal is longer than the price,
         // and a block that changes height would walk the buttons around under the Keeper's hand.
@@ -4377,31 +4377,31 @@ public partial class MainForm
             what.Items.Clear();
             foreach (var o in options) what.Items.Add($"{(o.Kind == "Miracle" ? "✝" : o.Kind == "Power" ? "◈" : "✦")} {o.Name}"
                                                     + (o.Rank > 0 ? $"  (R{o.Rank})" : ""));
-            what.Items.Add("— something else —");
+            what.Items.Add("(something else)");
             what.SelectedIndex = 0;
 
             var soul = SoulOf(worker);
-            // An empty list is the commonest thing this dialog shows — four of the six pregens work
-            // nothing, correctly — and it used to show it as a bare "— something else —" over
+            // An empty list is the commonest thing this dialog shows (four of the six pregens work
+            // nothing, correctly) and it used to show it as a bare "(something else)" over
             // nothing, which reads as the app having lost the soul's Signs. Say which empty it is:
             // a Calling that works none, or one that has simply not learned one yet.
             whoNote.Text = soul?.Sheet is CharacterSheet sh
                 ? options.Count > 0
-                    ? $"{sh.Calling}, level {sh.Level} — {options.Count(o => o.Kind == "Sign")} Signs, "
+                    ? $"{sh.Calling}, level {sh.Level}, {options.Count(o => o.Kind == "Sign")} Signs, "
                       + $"{options.Count(o => o.Kind == "Miracle")} Miracles known"
                     : CharGen.CallingWorksNothing(sh.Calling)
-                        ? $"{sh.Calling}, level {sh.Level} — works no Signs and no Miracles at any level. "
+                        ? $"{sh.Calling}, level {sh.Level}, works no Signs and no Miracles at any level. "
                           + "That is the Calling, not a gap; name anything else they do by hand below."
-                        : $"{sh.Calling}, level {sh.Level} — knows none yet. The Calling works them and "
+                        : $"{sh.Calling}, level {sh.Level}, knows none yet. The Calling works them and "
                           + "this soul has not learned one; name what they do by hand below."
-                : soul != null ? "no sheet on this soul — name what they work by hand"
-                : Db.Find(worker.Ref) != null ? "a creature — offering the power its stat block names"
-                : "an ad-hoc combatant — name what they work by hand";
+                : soul != null ? "no sheet on this soul. Name what they work by hand"
+                : Db.Find(worker.Ref) != null ? "a creature, offering the power its stat block names"
+                : "an ad-hoc combatant. Name what they work by hand";
         }
         // Re-shape the "on whom" list for the working now selected. The old list offered
         // one combatant or "everyone on the field" and nothing else, which fits about half the
         // book: Witch-Sight is worked on yourself, The Tally is a question put to the dark and
-        // lands on nobody, and Salt & Iron catches everything within ten feet — friends included,
+        // lands on nobody, and Salt & Iron catches everything within ten feet, friends included,
         // which is not the same list as everyone in the fight. The right entry is preselected; the
         // whole roster stays on offer underneath it, because the parse is advice, not a gate.
         void SyncTargets(Rules.Working w, Combatant worker)
@@ -4410,24 +4410,24 @@ public partial class MainForm
             switch (w?.Shape)
             {
                 case Rules.WorkShape.Trait:
-                    onWhom.Items.Add("— nothing to target: this is what it IS —");
+                    onWhom.Items.Add("(nothing to target: this is what it IS)");
                     break;
                 case Rules.WorkShape.Self:
-                    onWhom.Items.Add($"— {worker.Name}, who is working it —");
+                    onWhom.Items.Add($"({worker.Name}, who is working it)");
                     break;
                 case Rules.WorkShape.Area:
                     onWhom.Items.Add(w.AreaFeet > 0
-                        ? $"— everything within {w.AreaFeet} feet (friends too) —"
-                        : "— everything nearby (friends too) —");
+                        ? $"(everything within {w.AreaFeet} feet, friends too)"
+                        : "(everything nearby, friends too)");
                     break;
                 case Rules.WorkShape.Place:
-                    onWhom.Items.Add("— a place, a thing, or nobody at all —");
+                    onWhom.Items.Add("(a place, a thing, or nobody at all)");
                     break;
                 case Rules.WorkShape.Counter:
-                    onWhom.Items.Add("— another working, not a person —");
+                    onWhom.Items.Add("(another working, not a person)");
                     break;
                 default:
-                    onWhom.Items.Add("— everyone on the field —");
+                    onWhom.Items.Add("(everyone on the field)");
                     break;
             }
             foreach (var t in folk) onWhom.Items.Add(t.Name);
@@ -4444,15 +4444,15 @@ public partial class MainForm
         }
 
         // Stack everything below the effect box off whatever is actually showing, and size
-        // the form to what came out. The dialog's height genuinely changes with the working now —
-        // a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
-        // neither — so a layout pinned to constants would leave a hole under half the workings and
+        // the form to what came out. The dialog's height genuinely changes with the working now
+        // (a Sign shows its Backlash and a damaging one shows a save row, and a Miracle shows
+        // neither) so a layout pinned to constants would leave a hole under half the workings and
         // clip the buttons off the bottom of the other half. Same rule as the Strike dialog: place
         // off the previous control's Bottom, and set ClientSize last.
         //
         // SyncDetail wraps its own body so this runs on EVERY path out of it, rather than on the
-        // paths somebody remembered. It was written the other way first, and the "— something
-        // else —" branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
+        // paths somebody remembered. It was written the other way first, and the ", something
+        // else, " branch returned before reflowing: a Gunhand, who knows no Signs and no Miracles
         // and so only ever sees that branch, opened this dialog at the WinForms default 300x300
         // with the buttons off the bottom edge. It built clean and passed the whole smoke suite;
         // it was caught by taking a picture of it. The wrapper is why it cannot happen again.
@@ -4477,14 +4477,14 @@ public partial class MainForm
         }
 
         // What the turn is charged, and whether there is a turn left to charge. Runs from the
-        // SyncDetail wrapper so it covers every path out of the body — including the two early
+        // SyncDetail wrapper so it covers every path out of the body, including the two early
         // returns, which is exactly the shape of miss that put a Gunhand's dialog at 300x300.
         void SyncBeats()
         {
             var worker = folk[Math.Max(0, who.SelectedIndex)];
             bool custom = what.SelectedIndex < 0 || what.SelectedIndex >= options.Count;
             // A hand-named working has no printed time line, so the app has no business inventing a
-            // cost for it — the Keeper said what it was and the Keeper can say what it took.
+            // cost for it: the Keeper said what it was and the Keeper can say what it took.
             int beats = custom ? 0 : Rules.BeatsFor(Rules.ParseCost(options[what.SelectedIndex].Cost).Time);
             string why = Rules.WhyNoBeats(worker, beats);
             go.Enabled = why == null;
@@ -4492,8 +4492,8 @@ public partial class MainForm
             f.AcceptButton = why == null ? go : close;
             beatLbl.ForeColor = why == null ? Faint : Blood;
             beatLbl.Text = why ?? (beats == 0
-                ? $"Takes no Beat — worked outside the turn. {worker.Name} still has {worker.Beats} of three."
-                : $"Costs {beats} Beat{(beats == 1 ? "" : "s")} of {worker.Name}'s turn — {worker.Beats} left, "
+                ? $"Takes no Beat, worked outside the turn. {worker.Name} still has {worker.Beats} of three."
+                : $"Costs {beats} Beat{(beats == 1 ? "" : "s")} of {worker.Name}'s turn, {worker.Beats} left, "
                   + $"{worker.Beats - beats} after.");
         }
 
@@ -4527,7 +4527,7 @@ public partial class MainForm
                 rollIt.Visible = rolled.Visible = saved.Visible = savedLbl.Visible = false;
                 SyncTargets(null, worker);
                 SyncEnds(Rules.WorkEnds.UntilEnded, 0);
-                spend.Text = "Spend nothing — a hand-named effect has no printed cost";
+                spend.Text = "Spend nothing. A hand-named effect has no printed cost";
                 spend.Checked = false; spend.Enabled = false;
                 return;
             }
@@ -4535,8 +4535,8 @@ public partial class MainForm
             var w = o.Read;
             var pc = Rules.ParseCost(o.Cost);
 
-            // The header line now says the three things the Keeper is about to be asked about —
-            // who it lands on, how long it holds, and what dice it rolls — instead of only the cost.
+            // The header line now says the three things the Keeper is about to be asked about
+            // (who it lands on, how long it holds, and what dice it rolls) instead of only the cost.
             var facts = new List<string> { w.Kind + (o.Rank > 0 ? $", Rank {o.Rank}" : "") };
             if (!string.IsNullOrWhiteSpace(o.Cost)) facts.Add(o.Cost);
             facts.Add(w.ShapeLine);
@@ -4560,9 +4560,9 @@ public partial class MainForm
                         : w.Ongoing.Length > 0 ? w.Ongoing : w.Damage;
             string verb = w.Heal.Length > 0 ? "and mend them now"
                         : w.Nerve.Length > 0 ? "Nerve and apply it now"
-                        : w.Ongoing.Length > 0 ? "now — it repeats each round"
+                        : w.Ongoing.Length > 0 ? "now. It repeats each round"
                         : "and apply it now";
-            rollIt.Text = EngineRolls ? $"Roll {dice} {verb}" : $"Apply {dice} {verb} — you rolled:";
+            rollIt.Text = EngineRolls ? $"Roll {dice} {verb}" : $"Apply {dice} {verb}. You rolled:";
             rolled.Visible = w.Resolves && !EngineRolls;
             if (rolled.Visible && rolled.Value == 0) rolled.Value = Math.Clamp(Rules.RollExpr(dice).total, 1, 999);
             saved.Visible = savedLbl.Visible = w.Resolves && (w.SaveForHalf || w.HasSave);
@@ -4570,7 +4570,7 @@ public partial class MainForm
             var soul = SoulOf(worker);
             if (!pc.Spends || soul == null)
             {
-                spend.Text = pc.Spends ? "Spend the cost — only a posse soul keeps the pools it comes out of"
+                spend.Text = pc.Spends ? "Spend the cost, only a posse soul keeps the pools it comes out of"
                                        : "Costs nothing to work";
                 spend.Checked = false; spend.Enabled = false;
                 return;
@@ -4581,7 +4581,7 @@ public partial class MainForm
             if (pc.Blood > 0) bits.Add($"{pc.Blood} Blood");
             if (pc.Mark > 0) bits.Add($"{pc.Mark} Mark");
             spend.Enabled = true; spend.Checked = true;
-            spend.Text = "Spend it from " + soul.Name + " — " + string.Join(", ", bits)
+            spend.Text = "Spend it from " + soul.Name + ": " + string.Join(", ", bits)
                        + (pc.OrBlood > 0 ? $"   (or {pc.OrBlood} Blood instead)" : "");
         }
 
@@ -4626,7 +4626,7 @@ public partial class MainForm
                 if (pc.Blood > 0) { worker.Wound(-pc.Blood, $"−{pc.Blood} working it"); soul.BloodCur = worker.BloodCur; }
             }
 
-            // The Beat is charged whether or not the pools are — it is the turn's own currency and
+            // The Beat is charged whether or not the pools are. It is the turn's own currency and
             // it belongs to the combatant, not to the soul behind them, so a creature working its
             // own power pays it too. Outside the "spend it" checkbox for the same reason: that
             // switch is about the Keeper overruling a soul's Nerve and Faith, not about whether the
@@ -4634,13 +4634,13 @@ public partial class MainForm
             int beatCost = custom ? 0 : Rules.BeatsFor(pc.Time);
             if (beatCost > 0) worker.Beats = Math.Max(0, worker.Beats - beatCost);
 
-            // Duration is whatever the Keeper left in the box — prefilled from the book, theirs to
+            // Duration is whatever the Keeper left in the box, prefilled from the book, theirs to
             // override. Only a round count is a number the tracker counts down; everything else
             // rides at −1 and says so in its own words on the chip.
             var ends = lastsKinds[Math.Max(0, lasts.SelectedIndex)];
             int left = ends == Rules.WorkEnds.Rounds ? (int)rounds.Value : -1;
 
-            // The first entry is the shape's own answer — "everything within ten feet", "nobody at
+            // The first entry is the shape's own answer: "everything within ten feet", "nobody at
             // all", "the worker". Beyond a Trait or a Place, that means the whole field; a Trait or
             // a Place lands on nothing and simply gets recorded against the worker so there is a
             // note of it somewhere.
@@ -4653,7 +4653,7 @@ public partial class MainForm
                         : w.Shape == Rules.WorkShape.Self ? new List<Combatant> { worker }
                         : folk;
 
-            // Roll what it does, once, and share the one result out — an area Sign is one working,
+            // Roll what it does, once, and share the one result out: an area Sign is one working,
             // not one per body, and rolling per target would make a 6d8 crack in the ground land
             // differently on two people standing in the same hole.
             string note = "";
@@ -4665,8 +4665,8 @@ public partial class MainForm
                 // The engine table's dice are the app's; the dice table's are the Keeper's.
                 int total = EngineRolls ? Rules.RollExpr(expr).total : (int)rolled.Value;
                 int applied = band == 2 ? 0 : band == 1 ? Math.Max(1, total / 2) : total;
-                string saveWord = band == 2 ? " — saved, and it does nothing"
-                                : band == 1 ? $" — saved for half, {applied}" : "";
+                string saveWord = band == 2 ? ", saved, and it does nothing"
+                                : band == 1 ? $", saved for half, {applied}" : "";
 
                 if (w.Heal.Length > 0)
                 {
@@ -4683,7 +4683,7 @@ public partial class MainForm
                 else
                 {
                     // Captured before the harm, because "were they already down" stops being
-                    // answerable the moment it lands — same reason the Strike dialog captures it.
+                    // answerable the moment it lands, for the same reason the Strike dialog captures it.
                     var before = targets.ToDictionary(t => t, t => (t.Down, t.Dead));
                     foreach (var t in targets)
                     { t.Wound(-applied, $"−{applied}"); if (SoulOf(t) is PartyMember dp) dp.BloodCur = t.BloodCur; }
@@ -4710,7 +4710,7 @@ public partial class MainForm
                 });
 
             // A working that names one of Appendix B's conditions lays it on the same way a
-            // creature's rider does — through the ONE condition column, so the arithmetic under it
+            // creature's rider does, through the ONE condition column, so the arithmetic under it
             // has a single author. Not asked for a Trait or a Place: nothing is standing there to
             // be Frightened.
             if (w.Shape != Rules.WorkShape.Trait && w.Shape != Rules.WorkShape.Place)
@@ -4718,12 +4718,12 @@ public partial class MainForm
                     OfferConditions(t, Rules.InflictedConditions(w.Effect), o.Name);
 
             string onWho = !shapeEntry ? targets[0].Name
-                         : landsNowhere ? "no one — it is not that kind of working"
+                         : landsNowhere ? "no one. It is not that kind of working"
                          : w.Shape == Rules.WorkShape.Self ? worker.Name
                          : w.Shape == Rules.WorkShape.Area
                              ? (w.AreaFeet > 0 ? $"everything within {w.AreaFeet} feet" : "everything nearby")
                              : "everyone on the field";
-            Log($"{worker.Name} works {o.Name} ({o.Kind.ToLowerInvariant()}) on {onWho} — "
+            Log($"{worker.Name} works {o.Name} ({o.Kind.ToLowerInvariant()}) on {onWho}: "
                 + $"{new WorkedEffect { Ends = ends, RoundsLeft = left }.Duration}"
                 + (note.Length > 0 ? $". {note}" : "")
                 + (pc.HasSave && !rollIt.Checked ? $". {(targets.Count > 1 ? "Each" : targets[0].Name)} rolls a {pc.Save} save." : "."));
@@ -4744,7 +4744,7 @@ public partial class MainForm
 
     // The last town and the last city rolled, kept so they can be handed to the Map tab as a
     // place to survey. A rolled town that can't be drawn is a rolled town the Keeper writes on
-    // a napkin — this is the seam between "what's here" and "what it looks like".
+    // a napkin. This is the seam between "what's here" and "what it looks like".
     string genLastTown, genLastCity;
     Adventure genLastAdv;
 
@@ -4753,7 +4753,7 @@ public partial class MainForm
         var page = new TabPage("Generators") { BackColor = Paper };
         // Seated against the button column rather than at 27% of the window (v1.38.0, user-reported).
         // Every control in the left panel is 230px wide by construction, so a ratio could only ever
-        // be right at one window size — at 1280 it put the splitter some seventy pixels clear of the
+        // be right at one window size: at 1280 it put the splitter some seventy pixels clear of the
         // buttons and called the gap a layout. Panel1's minimum comes down with it: 300 was above
         // what the column measures, so it was doing the clamping and the measurement never got a
         // say. The Func is evaluated in the deferred handler, after `left` below has been filled.
@@ -4768,16 +4768,16 @@ public partial class MainForm
         //
         // Each is a menu rather than a single action because a settlement is two maps, not one.
         // The streets answer "what is in here"; the county answers "what is around it, and how far".
-        // A city could only ever be drawn as a ward before v1.25.0, so the second question — the one
-        // a posse riding toward it actually has — had no answer at all.
+        // A city could only ever be drawn as a ward before v1.25.0, so the second question (the one
+        // a posse riding toward it actually has) had no answer at all.
         (string, EventHandler)[] PlaceMenu(Func<string> Place, bool city)
         {
             var items = new List<(string, EventHandler)>
             {
-                (city ? "The ward itself — blocks and avenues" : "The town itself — its streets",
+                (city ? "The ward itself, blocks and avenues" : "The town itself, its streets",
                     (s, e) => SendPlaceToMap(Place(), city, PlaceView.Itself)),
                 ("-", null),
-                ("In its country — roll the ground",
+                ("In its country. Roll the ground",
                     (s, e) => SendPlaceToMap(Place(), city, PlaceView.InItsCountry)),
                 ("Or set it down in…", null),      // null handler = a greyed heading, not a choice
             };
@@ -4790,11 +4790,11 @@ public partial class MainForm
             return items.ToArray();
         }
 
-        var townToMap = MenuBtn("→ Map — this town ▾", 230,
-            "Survey the town just rolled — its streets, or the country it stands in",
+        var townToMap = MenuBtn("→ Map, this town ▾", 230,
+            "Survey the town just rolled. Its streets, or the country it stands in",
             PlaceMenu(() => genLastTown, false));
-        var cityToMap = MenuBtn("→ Map — this city ▾", 230,
-            "Survey the city just rolled — its ward, or the country it stands in",
+        var cityToMap = MenuBtn("→ Map, this city ▾", 230,
+            "Survey the city just rolled. Its ward, or the country it stands in",
             PlaceMenu(() => genLastCity, true));
         townToMap.Enabled = cityToMap.Enabled = false;
 
@@ -4814,7 +4814,7 @@ public partial class MainForm
         {
             genLastCity = Db.Pick("cityQuarter");
             cityToMap.Enabled = true;
-            Gen($"A CITY — {genLastCity.ToUpper()}\n" +
+            Gen($"A CITY: {genLastCity.ToUpper()}\n" +
                 $"  Who really runs it: {Db.Pick("cityMachine")}\n" +
                 $"  Its wrong note:     {Db.Pick("cityWrongNote")}\n" +
                 $"  Work for a posse:   {Db.Pick("cityJob")}");
@@ -4823,18 +4823,18 @@ public partial class MainForm
         // ---- a whole adventure ----
         // The rest of this column rolls one line at a time and leaves the joining to the Keeper.
         // This one rolls the joins as well: a shape, a hook, a place, a trouble out of the Bestiary,
-        // the truth under it, the turn, and a clock — then hands the pieces to the parts of the app
+        // the truth under it, the turn, and a clock, then hands the pieces to the parts of the app
         // that can actually run them, because a scenario that stays in a text box is a scenario the
         // Keeper has to retype at midnight.
-        var advToThread = Btn("→ Thread — start its clock", (s, e) =>
+        var advToThread = Btn("→ Thread. Start its clock", (s, e) =>
         {
-            if (genLastAdv == null) { Nope("Roll an adventure first — there is no clock to start yet."); return; }
+            if (genLastAdv == null) { Nope("Roll an adventure first. There is no clock to start yet."); return; }
             clocks.Add(new CampaignClock { Name = genLastAdv.Clock, Segments = genLastAdv.ClockSegments });
             RefreshClocks();
-            Log($"Thread started — “{genLastAdv.Clock}”, {genLastAdv.ClockSegments} segments.");
+            Log($"Thread started, “{genLastAdv.Clock}”, {genLastAdv.ClockSegments} segments.");
         }, 230, "Put what happens if nobody moves on the Ledger as a running clock");
-        var advToMap = MenuBtn("→ Map — its town ▾", 230,
-            "Survey the adventure's town — its streets, or the country it stands in",
+        var advToMap = MenuBtn("→ Map, its town ▾", 230,
+            "Survey the adventure's town. Its streets, or the country it stands in",
             PlaceMenu(() => genLastAdv?.TownName, false));
         advToThread.Enabled = advToMap.Enabled = false;
 
@@ -4851,14 +4851,14 @@ public partial class MainForm
             $"{Db.Pick("npcGiven")} {Db.Pick("npcSurname")}\n" +
             $"  Wants: {Db.Pick("npcWant")}\n" +
             $"  Tell:  {Db.Pick("npcTell")}"), 230, "Roll a face: a name, what they want, and the tell that gives them away"));
-        left.Controls.Add(Btn("Bar talk — a rumor", (s, e) => Gen("RUMOR — " + Db.Pick("rumors")), 230, "What they're saying in the saloon"));
-        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day) — " + Db.Pick("trailDay")), 230, "Something met on the trail between dawn and dusk"));
-        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night) — " + Db.Pick("trailNight")), 230, "Something met on the trail after dark"));
-        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND — " + Db.Pick("plunder")), 230, "What's worth carrying off"));
-        left.Controls.Add(Btn("A wrong note — an omen", (s, e) => Gen("OMEN — " + Db.Pick("omens")), 230, "A sign the country is wrong here"));
+        left.Controls.Add(Btn("Bar talk, a rumor", (s, e) => Gen("RUMOR: " + Db.Pick("rumors")), 230, "What they're saying in the saloon"));
+        left.Controls.Add(Btn("The trail, by day", (s, e) => Gen("TRAIL (day): " + Db.Pick("trailDay")), 230, "Something met on the trail between dawn and dusk"));
+        left.Controls.Add(Btn("The trail, by night", (s, e) => Gen("TRAIL (night): " + Db.Pick("trailNight")), 230, "Something met on the trail after dark"));
+        left.Controls.Add(Btn("Plunder && finds", (s, e) => Gen("FIND: " + Db.Pick("plunder")), 230, "What's worth carrying off"));
+        left.Controls.Add(Btn("A wrong note, an omen", (s, e) => Gen("OMEN: " + Db.Pick("omens")), 230, "A sign the country is wrong here"));
 
-        left.Controls.Add(Heading("The Grounds — encounters by terrain"));
-        // "The Hand Behind It" is the villain picker, not a terrain — in the dropdown it
+        left.Controls.Add(Heading("The Grounds, encounters by terrain"));
+        // "The Hand Behind It" is the villain picker, not a terrain; in the dropdown it
         // reads like a stray creature, so it gets its own button below instead.
         const string villainTable = "The Hand Behind It";
         void RollGround(string t)
@@ -4870,16 +4870,16 @@ public partial class MainForm
             var c = m.Success ? Db.Find(m.Groups[1].Value.Trim()) : null;
             int lvl = (int)(encLevel?.Value ?? 2);
             // Flagging the rule was never enough on its own: it told the Keeper what NOT to run and
-            // left them to invent the scene. Roll it out here — how to read the sign, what it costs,
-            // and what to leave on the table — so the answer arrives with the problem.
+            // left them to invent the scene. Roll it out here (how to read the sign, what it costs,
+            // and what to leave on the table) so the answer arrives with the problem.
             if (c != null && Rules.Cost(c.tier, lvl).spoor)
             {
                 var sp = Rules.SpoorRow[Math.Clamp(c.tier - 1, 0, Rules.SpoorRow.Length - 1)];
                 extra = $"\n  SAFE-TABLE RULE (vs party level {lvl}): two or more Tiers over the posse."
-                      + "\n  It arrives as sign and spoor — the trace, not the thing."
+                      + "\n  It arrives as sign and spoor, the trace, not the thing."
                       + $"\n    On the ground:  {sp.what}."
                       + $"\n    Read it:        Survival DC {sp.readDc}."
-                      + $"\n    Dread Check:    {(sp.dreadDc == 0 ? "none — this one is only weather and teeth" : "DC " + sp.dreadDc)}."
+                      + $"\n    Dread Check:    {(sp.dreadDc == 0 ? "none (this one is only weather and teeth)" : "DC " + sp.dreadDc)}."
                       + $"\n    Then:           a {Rules.SpoorClockSegments}-segment clock. Each fresh sign fills one;"
                       + "\n                    a full clock is the night it comes in the flesh.";
             }
@@ -4888,31 +4888,31 @@ public partial class MainForm
             // loud, once, with the roll: a Keeper who goes looking for "The Gulf Coast" in the
             // Bestiary should not have to find out from its absence.
             if (Db.GroundIsBorrowed(t))
-                extra += "\n  This ground is the app's, not the Bestiary's — its table is the book's"
+                extra += "\n  This ground is the app's, not the Bestiary's. Its table is the book's"
                        + "\n  nearest country pooled, so everything above is a creature the book prints.";
-            Gen($"{t.ToUpper()} — {pick}{extra}");
+            Gen($"{t.ToUpper()}, {pick}{extra}");
         }
         var terr = new ComboBox { Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var k in Db.Terrain.Keys) if (k != villainTable) terr.Items.Add(k);
         terr.SelectedIndex = 0;
-        Tip.SetToolTip(terr, "Which ground the posse is on — each of the Grounds has its own table of what "
+        Tip.SetToolTip(terr, "Which ground the posse is on. Each of the Grounds has its own table of what "
             + "is out there, so a roll on the high desert can't hand you a swamp thing.\nRoll below. What "
             + "comes up is reported with its Tier, and where it is too much for the posse to meet head-on "
             + "you are given its sign and its clock instead: the safe-table rule, applied for you.\n"
-            + "The last seven are the app's own country — timber, bayou, canyon, shortgrass, brush, "
+            + "The last seven are the app's own country: timber, bayou, canyon, shortgrass, brush, "
             + "alkali and coast marsh. The Bestiary has no page for them yet, so each rolls on the "
             + "book's nearest grounds pooled, and the roll says so.");
         left.Controls.Add(terr);
-        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground — the safe-table rule is applied for you"));
-        left.Controls.Add(Btn("The Hand Behind It — a villain", (s, e) => RollGround(villainTable), 230,
-            "Who's truly behind the trouble — the villain picker, its own table in the book"));
+        left.Controls.Add(Btn("Roll on that ground", (s, e) => RollGround(terr.SelectedItem.ToString()), 230, "Roll an encounter on the chosen ground. The safe-table rule is applied for you"));
+        left.Controls.Add(Btn("The Hand Behind It, a villain", (s, e) => RollGround(villainTable), 230,
+            "Who's truly behind the trouble: the villain picker, its own table in the book"));
 
         left.Controls.Add(new Label { Height = 8, Width = 4 });
         // A copy to the clipboard leaves no mark on the screen at all, so silence here reads as
         // failure whether it worked or not. Both ends now say which happened.
         left.Controls.Add(Btn("Copy output", (s, e) =>
         {
-            if (genOut.TextLength == 0) { Nope("Nothing rolled yet — no output to copy."); return; }
+            if (genOut.TextLength == 0) { Nope("Nothing rolled yet, no output to copy."); return; }
             Clipboard.SetText(genOut.Text);
             Log("The generator's output is on the clipboard.");
         }, 112, "Copy everything rolled so far to the clipboard"));
@@ -4927,7 +4927,7 @@ public partial class MainForm
         // rolled rumour is written down somewhere else or it is lost.
         ReadingMenu(genOut, "What the generator rolled");
         // A read-only RichTextBox gets no menu from WinForms, so a right-click on a rolled-up town
-        // did nothing whatever — not even Copy on the selection the Keeper had just made. Everything
+        // did nothing whatever, not even Copy on the selection the Keeper had just made. Everything
         // here exists as a button below; what the menu adds is the roll going straight into the
         // ledger, which is where most rolls are headed anyway.
         genOut.MouseUp += (s, e) =>
@@ -4936,7 +4936,7 @@ public partial class MainForm
             var menu = PopupMenu();
             bool some = genOut.TextLength > 0;
             string sel = genOut.SelectedText ?? "";
-            MI(menu, sel.Length > 0 ? "Copy what's selected" : "Copy — nothing selected",
+            MI(menu, sel.Length > 0 ? "Copy what's selected" : "Copy, nothing selected",
                () => Clipboard.SetText(sel), sel.Length > 0);
             MI(menu, "Copy everything rolled", () =>
             { Clipboard.SetText(genOut.Text); Log("The generator's output is on the clipboard."); }, some);
@@ -4976,11 +4976,11 @@ public partial class MainForm
     Label refTitle, refCount;
     int refPage;
     (string title, Action<RichTextBox> render)[] refDeck;
-    /// The pane's width in monospaced characters at the last deal — see the Resize handler.
+    /// The pane's width in monospaced characters at the last deal. See the Resize handler.
     int refCols;
 
     /// <summary>The Keeper's screen, leaf by leaf. Named here rather than inline with the
-    /// renderers so that everything which counts them reads one list — the five-minute lesson
+    /// renderers so that everything which counts them reads one list: the five-minute lesson
     /// quotes the number, and prose has no way of noticing when a leaf is added. It went stale
     /// twice: the app told Keepers it held eleven leaves for two releases while the deck held
     /// thirteen.</summary>
@@ -4997,12 +4997,12 @@ public partial class MainForm
     /// here are the two whose content comes wholly out of the Keeper's Book and appears nowhere in
     /// the Player's Book at all (checked against the built HTML, not judged by eye):
     ///
-    ///   The Long Odds   — Keeper's Book Ch. IV. Threat by Tier is every creature's Defense, Attack,
+    ///   The Long Odds: Keeper's Book Ch. IV. Threat by Tier is every creature's Defense, Attack,
     ///                     Blood, saves, damage and Dread DC before the posse has met one; the
     ///                     encounter budget is the Keeper's dial for how hard tonight is; and the
     ///                     safe-table rule tells a player which horrors the app will refuse to put
     ///                     in front of them. Reading it is reading the answers.
-    ///   Running in Town — Keeper's Book Ch. XIV, and the leaf's own header says so. It is running
+    ///   Running in Town: Keeper's Book Ch. XIV, and the leaf's own header says so. It is running
     ///                     advice end to end ("charge for it; never forbid it", how a city cult
     ///                     incorporates, how the last scene usually goes), which is craft for the
     ///                     chair, not a rule anyone at the table plays by.
@@ -5017,7 +5017,7 @@ public partial class MainForm
         false, true,
     };
 
-    /// <summary>How many leaves the Keeper's screen holds — derived, never typed twice.</summary>
+    /// <summary>How many leaves the Keeper's screen holds: derived, never typed twice.</summary>
     internal static int RefLeafCount => RefLeafTitles.Length;
 
     /// <summary>How many leaves a given table's screen holds. Derived from the same two arrays for
@@ -5031,13 +5031,13 @@ public partial class MainForm
     /// </summary>
     internal int RefDeckLength => refDeck?.Length ?? 0;
 
-    // The Keeper's screen, in the faces the books are set in — and, since v1.38.0, at a size a
+    // The Keeper's screen, in the faces the books are set in, and, since v1.38.0, at a size a
     // Keeper can read across a table (user-reported: "change the font so that it's more in line with
     // the settings and themes of the game, also enlarging the reference material so that it fills
     // the empty space better").
     //
     // Two things were wrong and only one of them was the size. The prose was already Georgia, but
-    // the TABLES — which are most of what is on every leaf — were Consolas, a face drawn in 2006 for
+    // the TABLES, which are most of what is on every leaf, were Consolas, a face drawn in 2006 for
     // reading source code on a screen. Nothing else in this app or these books is set in it. The
     // deck is the Keeper's screen out of a western-horror rulebook and it read like a terminal.
     //
@@ -5056,7 +5056,7 @@ public partial class MainForm
 
     /// <summary>The first of these actually installed. GDI+ silently substitutes Microsoft Sans
     /// Serif for a family it does not have and the substitute reports its own name, which is the
-    /// only way to catch it — the same probe LedgerView uses to pick its figures face, and it lives
+    /// only way to catch it: the same probe LedgerView uses to pick its figures face, and it lives
     /// twice because the two files are on opposite sides of the rules/UI split.</summary>
     static string FirstInstalledFace(params string[] names)
     {
@@ -5089,15 +5089,15 @@ public partial class MainForm
 
     /// <summary>Widen an authored table to the room actually on screen. The leaves' column widths
     /// were written to fit about eighty characters, so on this laptop's 1280px window the tables
-    /// occupied a little under half the pane and the rest was empty paper — which is exactly what
+    /// occupied a little under half the pane and the rest was empty paper, which is exactly what
     /// was reported.
     ///
-    /// <para>The surplus goes to the LAST column and nowhere else — the one carrying the rule text.
+    /// <para>The surplus goes to the LAST column and nowhere else: the one carrying the rule text.
     /// The columns beside it hold a DC, a die face, a condition name: they are already as wide as
     /// anything that goes in them, and widening one only opens a gulf between a label and the
     /// sentence it labels. The first version of this spread the leftovers across every column and
     /// put thirty-six characters under a heading reading "Degree", with "CRITICAL SUCCESS" marooned
-    /// at one end of it — wider is not the same as better used.</para>
+    /// at one end of it: wider is not the same as better used.</para>
     ///
     /// <para>Capped at <see cref="RefMeasureCap"/> characters, because past about ninety a line
     /// stops being easier to read and starts being harder; whatever is left over stays as margin,
@@ -5134,8 +5134,8 @@ public partial class MainForm
 
     // A monospace table with a Blood-red header band; only the LAST column wraps, with
     // continuation lines under itself, so alignment survives long rules text.
-    // RichTextBox quirk: selection formatting must be re-asserted before EVERY append —
-    // set once before a loop, later lines silently fall back to the control's default
+    // RichTextBox quirk: selection formatting must be re-asserted before EVERY append.
+    // Set once before a loop, later lines silently fall back to the control's default
     // proportional font and the columns shear.
     void RTbl(RichTextBox r, int[] w, string[] head, IEnumerable<string[]> rows)
     {
@@ -5181,7 +5181,7 @@ public partial class MainForm
 
         refView = new RichTextBox { ReadOnly = true, BackColor = Paper, Font = RefBody, BorderStyle = BorderStyle.None };
         ReadingMenu(refView, "This reference leaf");
-        // The tables are laid to the pane's width, so the pane changing width relaid them — but only
+        // The tables are laid to the pane's width, so the pane changing width relaid them, but only
         // when the number of CHARACTERS across actually changes. A resize drag raises this event
         // dozens of times a second and re-dealing a leaf on every one of them would redraw the whole
         // deck while the mouse is still down. Comparing the measurement rather than the pixels means
@@ -5218,7 +5218,7 @@ public partial class MainForm
         if (leaves.Length != RefLeafTitles.Length || RefLeafKeeperOnly.Length != RefLeafTitles.Length)
             throw new InvalidOperationException(
                 $"Reference deck: {RefLeafTitles.Length} titles against {leaves.Length} leaves and "
-                + $"{RefLeafKeeperOnly.Length} audience flags — add the title AND the flag beside the renderer.");
+                + $"{RefLeafKeeperOnly.Length} audience flags. Add the title AND the flag beside the renderer.");
         refDeck = RefLeafTitles.Zip(leaves, (t, r) => (t, r))
             .Where((_, i) => Mode != RunMode.Player || !RefLeafKeeperOnly[i])
             .ToArray();
@@ -5240,10 +5240,10 @@ public partial class MainForm
     {
         RH(r, "The Four Degrees");
         RTbl(r, new[] { 17, 62 }, new[] { "Degree", "How it happens" },
-            new[] { "CRITICAL SUCCESS", "Beat the DC by 10 — or a natural 20 steps the result up one degree" },
+            new[] { "CRITICAL SUCCESS", "Beat the DC by 10, or a natural 20 steps the result up one degree" },
             new[] { "Success",          "Meet or beat the DC" },
             new[] { "Failure",          "Miss the DC" },
-            new[] { "CRITICAL FAILURE", "Miss by 10 — or a natural 1 steps the result down one degree" });
+            new[] { "CRITICAL FAILURE", "Miss by 10, or a natural 1 steps the result down one degree" });
 
         RH(r, "Setting a DC");
         RTbl(r, new[] { 4, 60 }, new[] { "DC", "The task" },
@@ -5261,17 +5261,17 @@ public partial class MainForm
     {
         RH(r, "A Turn in the Iron Code");
         // The Beat row is DERIVED from Rules.BeatActions, not typed. It was typed for six releases,
-        // and for six releases it named six actions the app could not carry out — a Keeper reading
+        // and for six releases it named six actions the app could not carry out. A Keeper reading
         // this leaf mid-fight was told the app knew what a Beat buys. Now the leaf and the Tracker's
         // Act ▾ menu are two views of one array, and the leaf cannot promise what the app will not do.
         RTbl(r, new[] { 16, 66 }, new[] { "Element", "The rule" },
             new[] { "Initiative",   "A Notice check" },
-            new[] { "The turn",     $"Three Beats, spent as you like — {Rules.BeatActions.Length} things to spend them on" },
+            new[] { "The turn",     $"Three Beats, spent as you like, {Rules.BeatActions.Length} things to spend them on" },
             new[] { "A Beat",       string.Join(" · ", Rules.BeatActions.Select(a => a.Name)) },
             new[] { "A Strike",     "d20 + attack proficiency + DEX/STR against Defense" },
             new[] { "More attacks", "Multiple Attack Penalty −5 / −10 (Agile weapons −4 / −8)" },
             new[] { "A critical hit", "Applies the weapon's Fatal die" },
-            new[] { "A reaction",   "One between your turns — Dive for Cover is the common one" },
+            new[] { "A reaction",   "One between your turns. Dive for Cover is the common one" },
             new[] { "Circumstance", "Cover −2 / −4 · into melee −4 · beyond the first increment −2 each · blind −8" },
             new[] { "Aim / Brace",  "A Beat for +2 on the next Strike, and it braces a Kickback weapon" },
             new[] { "From the saddle", "Trot or gallop: −2, no aiming; a long gun −4 in all. Charge 20 ft: +1 die" });
@@ -5286,12 +5286,12 @@ public partial class MainForm
             new[] { "A terrible blow", $"One hit for half maximum Blood or more, or any critical hit → Fortitude save DC {Rules.GrievousDc} (higher for terrible weapons) or take a Lasting Injury" });
 
         RH(r, "Lasting Injuries");
-        // Rendered from Rules.LastingInjuries, not typed here — the app rolls off that same list
+        // Rendered from Rules.LastingInjuries, not typed here: the app rolls off that same list
         // when a terrible blow lands, and a printed table that could disagree with the roller is
         // the exact drift this project keeps closing.
         RTbl(r, new[] { 3, 60 }, new[] { "d6", "Injury" },
             Rules.LastingInjuries.Select((n, i) => new[] { (i + 1).ToString(), n }));
-        RT(r, "Lasting Injuries do not heal with rest alone — they take a Sawbones, time, and sometimes a graveyard.");
+        RT(r, "Lasting Injuries do not heal with rest alone. They take a Sawbones, time, and sometimes a graveyard.");
         RI(r, "The app keeps them: a terrible blow offers the save, and what it costs goes on the "
              + "soul's Scars, beside any Affliction a Dread Check leaves. Posse tab, Scars column.");
 
@@ -5323,33 +5323,33 @@ public partial class MainForm
     }
 
     // Keeper's Book Ch. XIV in one leaf: what actually changes when the game moves off the
-    // range and into Dodge, Kansas City, or Butte. Nothing here is a new rule — it is the
+    // range and into Dodge, Kansas City, or Butte. Nothing here is a new rule. It is the
     // existing rules, plus the handful of rulings a city keeps asking for.
     void RefLeafCity(RichTextBox r)
     {
         RH(r, "The City  (Keeper's Book, Ch. XIV)");
         RT(r, "A crowd is better cover than a wilderness. In a town of two hundred a thing that takes one soul a week " +
               "is noticed by Tuesday; in Kansas City it feeds forever, because a missing stranger is a filing. Run the " +
-              "same rules — the city changes what they cost, not what they are.");
+              "same rules: the city changes what they cost, not what they are.");
 
         RH(r, "The Six Changes");
         RTbl(r, new[] { 22, 44 }, new[] { "At the table", "What it costs" },
-            new[] { "The deadline",        "Guns checked north of the tracks by ordinance — the party is disarmed lawfully, by their own choice" },
+            new[] { "The deadline",        "Guns checked north of the tracks by ordinance. The party is disarmed lawfully, by their own choice" },
             new[] { "Firing a shot",       "An arrest, a coroner's inquest, two newspapers, a bail bond. Charge for it; never forbid it" },
-            new[] { "Witnesses & the press","Nothing done in public stays private — and a thing can be put IN the paper too" },
-            new[] { "Help exists",         "Police, hospital, coroner — and a man raving about the dead is committed, not ignored" },
+            new[] { "Witnesses & the press","Nothing done in public stays private, and a thing can be put IN the paper too" },
+            new[] { "Help exists",         "Police, hospital, coroner, and a man raving about the dead is committed, not ignored" },
             new[] { "Paper is the tracking","Newspaper morgue, city directory, recorder, inquest book, hospital register, a bought telegraph clerk" },
             new[] { "Dread moves indoors", "The killing floor at three, the tenement stair, the ore drift, the fog. DCs unchanged; there is nowhere to ride to" });
 
         RH(r, "The Cult, Chartered");
-        RT(r, "In the country a cult is a barn and eleven people. In a city it incorporates — a benevolent association " +
+        RT(r, "In the country a cult is a barn and eleven people. In a city it incorporates, a benevolent association " +
               "with a president, a treasurer, minute-books, a lawyer, and the coroner on its roll. It need not silence a " +
               "witness; it can outspend one, sue one, or have one committed. Its one weakness is publicity, so the last " +
               "scene of a city campaign is usually an exposure rather than a gunfight.");
         RI(r, "Give the party one honest official, well down the ladder, with no power and a family.");
 
         RH(r, "Keeping the Tone");
-        RT(r, "Keep the party's country competence valuable — they read sign, sit a horse, and stay calm with a gun, and " +
+        RT(r, "Keep the party's country competence valuable. They read sign, sit a horse, and stay calm with a gun, and " +
               "the city has almost nobody who can do all three. Keep the money problems mundane. And ride out to a ranch, " +
               "a mine, or a rail camp every third night, so the city is a place they come back to rather than a box.");
     }
@@ -5364,16 +5364,16 @@ public partial class MainForm
             new[] { "II",   "1d4" },
             new[] { "III",  "1d6" },
             new[] { "IV–V", "1d10" });
-        RI(r, "Familiarity is the death of dread — the same sight costs nothing the second time.");
+        RI(r, "Familiarity is the death of dread. The same sight costs nothing the second time.");
 
-        // Rendered from Rules.Afflictions, which is the Keeper's Book's own d10 — the app rolls
+        // Rendered from Rules.Afflictions, which is the Keeper's Book's own d10: the app rolls
         // off that same list when a Dread Check leaves a scar, so the printed table and the roller
         // cannot part company.
-        RH(r, "Afflictions — the Scars That Stay  (Keeper's Book, Ch. III)");
+        RH(r, "Afflictions: the Scars That Stay  (Keeper's Book, Ch. III)");
         RTbl(r, new[] { 4, 17, 58 }, new[] { "d10", "The Affliction", "What it costs" },
             Rules.Afflictions.Select((a, i) => new[] { (i + 1).ToString(), a.name, a.cost }));
         RT(r, "Rolled on a true Break, a horror beheld at DC 25, or a Mark step that should cost more "
-             + "than the rest. They heal slowly and seldom on their own — a season of safety, a true "
+             + "than the rest. They heal slowly and seldom on their own, a season of safety, a true "
              + "sanctification, an Alienist's care, or facing down the thing that caused it.");
         RI(r, "An Affliction is a story hook, not a punishment. The app writes it onto the soul's "
              + "Scars, and the Posse tab's right-click menu strikes it off when it is earned.");
@@ -5384,7 +5384,7 @@ public partial class MainForm
             new[] { "A full night unmolested in genuine safety", "1d6" },
             new[] { "A week of true peace",                      "All of it" },
             new[] { "A sermon, a Sawbones' reason, a grim joke, or a point of Grit", "A measure of steadiness" },
-            new[] { "Whiskey — steadies the hand now",           "1d4, but courts a vice and its Fortitude saves" });
+            new[] { "Whiskey, steadies the hand now",           "1d4, but courts a vice and its Fortitude saves" });
     }
 
     void RefLeafMarkTaint(RichTextBox r)
@@ -5416,19 +5416,19 @@ public partial class MainForm
     {
         RH(r, "Signs & the Sign DC");
         RT(r, "Where a Sign forces a save, the DC is the worker's Sign DC = 10 + half their level + RES modifier. " +
-              "A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier — no level added.");
-        RT(r, "Rank opens at 1st, 3rd, 5th, 7th and 9th level. A Sign above your Rank does nothing at all — "
+              "A soul without the Signs feature working folk-rites has a Sign DC of only 10 + RES modifier, no level added.");
+        RT(r, "Rank opens at 1st, 3rd, 5th, 7th and 9th level. A Sign above your Rank does nothing at all: "
              + "the words are there, the meaning is not. Nerve is the standing coin; two Blood buys one Nerve where "
              + "a Sign offers the trade; Rank 5 costs Mark, and Mark never comes back.");
         if (CharGen.D?.signs?.Count > 0)
-            foreach (var (key, title) in new[] { ("common", "The Common Signs — any worker"),
-                                                 ("bargain", "The Bargain — Hexer, Dark Cultist, False Prophet"),
-                                                 ("craft",   "The Craft — the Witch alone") })
+            foreach (var (key, title) in new[] { ("common", "The Common Signs, any worker"),
+                                                 ("bargain", "The Bargain: Hexer, Dark Cultist, False Prophet"),
+                                                 ("craft",   "The Craft, the Witch alone") })
             {
                 RH(r, title);
                 RTbl(r, new[] { 6, 19, 22, 46 }, new[] { "Rank", "Sign", "Cost", "The working" },
                     CharGen.D.signs.Where(sg => sg.list == key).OrderBy(sg => sg.rank).ThenBy(sg => sg.name)
-                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? "—", sg.desc ?? "" }));
+                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? ":", sg.desc ?? "" }));
             }
 
         RH(r, "Grit");
@@ -5448,7 +5448,7 @@ public partial class MainForm
         RT(r, "The faith-side counterpart to the Signs, worked by the five Callings of Faith (Ch. VI). "
              + "Where a Miracle forces a save, the DC is 10 + half your level + your faith ability's modifier "
              + "(the Padre's and Preacher's PRE, the Shaman's and Sister's RES, the Witch Hunter's WIT).");
-        RT(r, "Same Rank spine as the Signs — Rank opens at 1st, 3rd, 5th, 7th and 9th level, and nothing above "
+        RT(r, "Same Rank spine as the Signs. Rank opens at 1st, 3rd, 5th, 7th and 9th level, and nothing above "
              + "your Rank will work. Miracles are paid from your Calling's pool (Grace, Conviction, Breath, Mercy, "
              + "or the Witch Hunter's Zeal), not in Nerve or Blood. Faith does not bite back; the cost is "
              + "the pool, and the risk is a prayer unanswered.");
@@ -5457,13 +5457,13 @@ public partial class MainForm
         // seven Miracles had never appeared on this leaf at all. A list the data holds and this
         // loop has not heard of now prints under its own key rather than silently going missing.
         var owner = new Dictionary<string, string> {
-                    ["blessing"]     = "The Common Blessings — any Calling of Faith",
-                    ["liturgy"]      = "The Liturgy — the Padre",
-                    ["revival"]      = "The Revival — the Preacher",
-                    ["spirits"]      = "The Spirits — the Shaman",
-                    ["mending"]      = "The Mending — the Shaman's second list",
-                    ["vigil"]        = "The Vigil — the Sister",
-                    ["consecration"] = "The Consecrations — the Witch Hunter" };
+                    ["blessing"]     = "The Common Blessings, any Calling of Faith",
+                    ["liturgy"]      = "The Liturgy, the Padre",
+                    ["revival"]      = "The Revival, the Preacher",
+                    ["spirits"]      = "The Spirits, the Shaman",
+                    ["mending"]      = "The Mending, the Shaman's second list",
+                    ["vigil"]        = "The Vigil, the Sister",
+                    ["consecration"] = "The Consecrations, the Witch Hunter" };
         if (CharGen.D?.miracles?.Count > 0)
             foreach (var (key, title) in CharGen.D.miracles.Select(m => m.list).Distinct()
                          .OrderBy(k => owner.Keys.ToList().IndexOf(k) is var i && i < 0 ? 99 : i)
@@ -5472,7 +5472,7 @@ public partial class MainForm
                 RH(r, title);
                 RTbl(r, new[] { 6, 21, 20, 46 }, new[] { "Rank", "Miracle", "Cost", "The working" },
                     CharGen.D.miracles.Where(m => m.list == key).OrderBy(m => m.rank).ThenBy(m => m.name)
-                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? "—", m.desc ?? "" }));
+                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? ":", m.desc ?? "" }));
             }
         RI(r, "\"Faith\" in a Miracle's cost means points from your Calling's pool, whatever your Calling names it.");
     }
@@ -5498,22 +5498,22 @@ public partial class MainForm
             new[] { new[] { "The budget, per player character", Rules.BudgetPerSoul.ToString() } }
                 .Concat(Rules.BudgetRungs.Select(g => new[] { $"{g.Name} ({g.Gloss})", g.Cost.ToString() })));
         // Rendered from Rules.BudgetFights, which is also what the Encounter tab's verdict line
-        // reads. The leaf and the tab printed different scales until v1.41.0 — the leaf gave the
+        // reads. The leaf and the tab printed different scales until v1.41.0: the leaf gave the
         // Bestiary's one-liner and the tab called the exact budget "a fair, hard fight", which is
         // Ch. IV's word for half again over it.
         RTbl(r, new[] { 12, 18, 40 }, new[] { "The fight", "Spend", "What Ch. IV promises" },
-            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? "—" }));
+            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? ":" }));
         RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
-        RI(r, "At double, the chapter does not only price it — it says to tell the fiction so, with a "
+        RI(r, "At double, the chapter does not only price it. It says to tell the fiction so, with a "
              + "sight, an omen, a dead man already on the ground, before the players commit.");
         RI(r, "Half the party's level is rounded TOWARD danger, so at an odd level the posse is the "
-             + "junior half of the Tier it is matched against — the Bestiary's line reads the same "
+             + "junior half of the Tier it is matched against. The Bestiary's line reads the same "
              + "rule from the creature's end: a fair, hard fight for a party of twice its Tier.");
 
-        RH(r, "The Safe-Table Rule — Sign & Spoor");
+        RH(r, "The Safe-Table Rule: Sign & Spoor");
         RT(r, "A horror two or more Tiers over the posse does not arrive in the flesh. It arrives as "
              + "sign and spoor, and the scene is a reading rather than a fight.");
-        RI(r, "Spoor is the physical trace — track, scat, hair, blood, a scrape on a tree at a height "
+        RI(r, "Spoor is the physical trace: track, scat, hair, blood, a scrape on a tree at a height "
              + "that ends the conversation. Sign is everything wider: a kill, a silence, stock that "
              + "will not go back in the barn.");
         RTbl(r, new[] { 6, 9, 9, 46 },
@@ -5522,22 +5522,22 @@ public partial class MainForm
             {
                 var s = Rules.SpoorRow[i];
                 return new[] { Rules.Roman(i + 1), "Survival " + s.readDc,
-                               s.dreadDc == 0 ? "—" : "DC " + s.dreadDc, s.what };
+                               s.dreadDc == 0 ? ":" : "DC " + s.dreadDc, s.what };
             }));
         RT(r, "The Dread DC is one rung below meeting the thing itself: reading an aftermath is not "
              + "standing in front of the animal. Nerve is lost off the usual ladder.");
-        RH(r, "Reading it — the four degrees");
+        RH(r, "Reading it, the four degrees");
         RTbl(r, new[] { 18, 52 }, new[] { "Degree", "What the tracker gets" },
             new[] { "CRITICAL SUCCESS", Rules.SpoorRead(3) },
             new[] { "Success",          Rules.SpoorRead(2) },
             new[] { "Failure",          Rules.SpoorRead(1) },
             new[] { "CRITICAL FAILURE", Rules.SpoorRead(0) });
         RI(r, $"Then it is a thread, not a funeral: a {Rules.SpoorClockSegments}-segment clock, and every "
-             + "fresh sign of the same thing fills one. A full clock is the night it comes in the flesh — "
+             + "fresh sign of the same thing fills one. A full clock is the night it comes in the flesh: "
              + "and by then the posse should be a Tier higher, or have a plan.");
         RT(r, "The app runs this for you. Send a creature the rule bars to the Tracker and it offers to put it "
-             + "on the trail instead of the field. Threads live in their own strip above the initiative order — "
-             + "they take no turn and there is nothing to shoot — each showing what is on the ground, the DCs, "
+             + "on the trail instead of the field. Threads live in their own strip above the initiative order: "
+             + "they take no turn and there is nothing to shoot. Each showing what is on the ground, the DCs, "
              + "and its clock in plain words. Read it ▸ resolves the Survival check, the Dread it costs the "
              + "reader, and one more segment. When the clock fills, the app offers to bring the thing in.");
     }
@@ -5546,7 +5546,7 @@ public partial class MainForm
     {
         var guns  = CharGen.D?.weapons?.Where(w => w.kind == "gun").ToList();
         var steel = CharGen.D?.weapons?.Where(w => w.kind != "gun").ToList();
-        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : "—";
+        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : ":";
         RH(r, "Guns");
         if (guns?.Count > 0)
             RTbl(r, new[] { 23, 7, 5, 42 }, new[] { "Arm", "Damage", "Cost", "Traits" },
@@ -5602,7 +5602,7 @@ public partial class MainForm
             RTbl(r, new[] { 22, 9, 12, 8 }, new[] { "Protection", "Blades", "Small shot", "Price" },
                 CharGen.D.armor.Select(a => new[] {
                     a.name, "DR " + a.drBlades, "DR " + a.drShot, "$" + a.cost.ToString("0.##") }));
-        RI(r, "Most firearms ignore most armor. DR applies to blades and small shot only — birdshot, "
+        RI(r, "Most firearms ignore most armor. DR applies to blades and small shot only, birdshot, "
              + "buckshot, a ricochet, a pocket pistol across a room. Armor does not stack: count the better of two.");
         RH(r, "Skills");
         if (CharGen.D?.skills?.Count > 0)
@@ -5620,7 +5620,7 @@ public partial class MainForm
 
         var notesGroup = new GroupBox { Text = "The Keeper's ledger  (auto-saves on exit && every five minutes)", Dock = DockStyle.Fill, Padding = new Padding(8), ForeColor = Blood, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
         notesBox = new TextBox { Multiline = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical, Font = new Font("Segoe UI", 10f), BorderStyle = BorderStyle.None, BackColor = Color.FromArgb(252, 249, 240) };
-        Tip.SetToolTip(notesBox, "The Keeper's notebook — whatever you want to still have next session. It "
+        Tip.SetToolTip(notesBox, "The Keeper's notebook, whatever you want to still have next session. It "
             + "saves with everything else: on exit, and every five minutes while you work.\nThis box keeps "
             + "its own typing undo (Ctrl+Z inside it); the app's Undo in the status bar is for the tables, "
             + "and deliberately leaves your writing alone.");
@@ -5639,7 +5639,7 @@ public partial class MainForm
         nbar.Controls.Add(Btn("Stamp the date", (s, e) =>
         {
             notesBox.AppendText((notesBox.TextLength > 0 ? Environment.NewLine : "") +
-                $"—  {DateTime.Now:MMMM d, yyyy}  —" + Environment.NewLine);
+                $"·  {DateTime.Now:MMMM d, yyyy}  ·" + Environment.NewLine);
             notesBox.Focus();
         }, 115, "Drop a dated session header into the ledger"));
         nbar.Controls.Add(Btn("Clear ledger", (s, e) =>
@@ -5660,19 +5660,19 @@ public partial class MainForm
         cbar.Controls.Add(Btn("Save now", (s, e) =>
         {
             if (AutoSave()) Log("Session saved.");
-            else Nope("The session did NOT save — see the message above, or use File ▸ Save session as…");
-        }, 90, "Write the session to disk now — it also saves itself every 5 minutes and on exit"));
+            else Nope("The session did NOT save. See the message above, or use File ▸ Save session as…");
+        }, 90, "Write the session to disk now. It also saves itself every 5 minutes and on exit"));
         cbar.Controls.Add(DangerBtn("Clear threads", (s, e) =>
         {
             if (clocks.Count == 0) { Nope("No threads to clear."); return; }
             if (Confirm($"Clear all {clocks.Count} thread(s) and their clocks for a fresh start?"))
-            { clocks.Clear(); RefreshClocks(); Log("All threads cleared — the board is clean."); }
+            { clocks.Clear(); RefreshClocks(); Log("All threads cleared. The board is clean."); }
         }, 105, "Delete every thread and clock at once"));
         var clockHint = new Label
         {
             Dock = DockStyle.Top, Height = 36, ForeColor = Gold,
             Font = new Font("Segoe UI", 9f, FontStyle.Italic),
-            Text = "A thread is trouble on its way — name it and give it a clock. Tick ＋ when the world\nmoves toward it (a lead ignored, a night wasted). When the last segment fills, it comes due."
+            Text = "A thread is trouble on its way. Name it and give it a clock. Tick ＋ when the world\nmoves toward it (a lead ignored, a night wasted). When the last segment fills, it comes due."
         };
         clockPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
         clocksGroup.Controls.Add(clockPanel);
@@ -5689,7 +5689,7 @@ public partial class MainForm
     /// <summary>The thread's own menu, hung on the row and on every label in it.
     ///
     /// <para>The four buttons on the row are a tick, an untick, a rename and a delete, which is the
-    /// whole of what a clock can do — except the two things a Keeper actually reaches for mid-scene
+    /// whole of what a clock can do, except the two things a Keeper actually reaches for mid-scene
     /// and had no way to ask for: run it out to the end (the thing has come due, now, not in four
     /// clicks) and put the thread into the written ledger. Both are here, with the four.</para>
     ///
@@ -5706,16 +5706,16 @@ public partial class MainForm
             MI(menu, "Tick it forward", () =>
             {
                 c.Filled = Math.Min(c.Segments, c.Filled + 1);
-                if (c.Filled == c.Segments) Log($"THREAD COMPLETE — {c.Name}. It comes due.");
+                if (c.Filled == c.Segments) Log($"THREAD COMPLETE: {c.Name}. It comes due.");
                 RefreshClocks();
             }, c.Filled < c.Segments);
             MI(menu, "Untick a segment", () => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, c.Filled > 0);
-            MI(menu, "It comes due now — fill it", () =>
+            MI(menu, "It comes due now, fill it", () =>
             {
                 if (!Confirm($"Run \"{c.Name}\" out to the end? It comes due this scene.")) return;
                 c.Filled = c.Segments;
-                Log($"THREAD COMPLETE — {c.Name}. It comes due.");
-                ToLedger($"{c.Name} — the clock is full. It comes due.");
+                Log($"THREAD COMPLETE: {c.Name}. It comes due.");
+                ToLedger($"{c.Name}. The clock is full. It comes due.");
                 RefreshClocks();
             }, c.Filled < c.Segments);
             MI(menu, "Wind it back to nothing", () => { c.Filled = 0; RefreshClocks(); }, c.Filled > 0);
@@ -5723,7 +5723,7 @@ public partial class MainForm
             MI(menu, "Rename this thread…", () => RenameThread(c));
             MI(menu, "Write it into the ledger", () =>
             {
-                ToLedger($"{c.Name} — {c.Filled} of {c.Segments} segments"
+                ToLedger($"{c.Name}, {c.Filled} of {c.Segments} segments"
                        + (c.Filled >= c.Segments ? ", and it comes due." : "."));
                 Log($"{c.Name} written into the Keeper's ledger.");
             });
@@ -5795,7 +5795,7 @@ public partial class MainForm
             };
             row.Controls.Add(pips);
             row.Controls.Add(new Label { Text = $"{c.Name}  ({c.Filled}/{c.Segments})", AutoSize = true, Padding = new Padding(0, 7, 6, 0), ForeColor = Ink });
-            row.Controls.Add(Btn("＋", (s, e) => { c.Filled = Math.Min(c.Segments, c.Filled + 1); if (c.Filled == c.Segments) Log($"THREAD COMPLETE — {c.Name}. It comes due."); RefreshClocks(); }, 34, "Tick the clock forward"));
+            row.Controls.Add(Btn("＋", (s, e) => { c.Filled = Math.Min(c.Segments, c.Filled + 1); if (c.Filled == c.Segments) Log($"THREAD COMPLETE: {c.Name}. It comes due."); RefreshClocks(); }, 34, "Tick the clock forward"));
             row.Controls.Add(Btn("−", (s, e) => { c.Filled = Math.Max(0, c.Filled - 1); RefreshClocks(); }, 34, "Untick a segment"));
             row.Controls.Add(Btn("✎", (s, e) => RenameThread(c), 34, "Rename this thread"));
             row.Controls.Add(Btn("✕", (s, e) => { if (Confirm($"Delete the thread \"{c.Name}\"?")) { clocks.Remove(c); RefreshClocks(); } }, 34, "Delete this thread"));

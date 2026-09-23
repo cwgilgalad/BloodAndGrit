@@ -3,14 +3,14 @@
 
 Same discipline as `perdition_map.py`: the map is not an image somebody drew and then described,
 it is geometry declared once and rendered outward. That matters more here than it did there,
-because a module map has to agree with a module — every place the map names is a scene the Keeper
+because a module map has to agree with a module: every place the map names is a scene the Keeper
 will run, and a map that shows a tack room the adventure never keys is a map that will get a table
 lost. So each feature carries the anchor of the scene it belongs to (`data-scene`), and
 `audit_maps.py` walks both sides and fails if either names something the other does not.
 
 Two outputs from the same model:
-  * `map_html(slug)` — inline SVG for the module book, with a download control beside it.
-  * `python module_maps.py` — writes `map-<slug>.svg` beside the books, so the map can be handed
+  * `map_html(slug)`: inline SVG for the module book, with a download control beside it.
+  * `python module_maps.py`: writes `map-<slug>.svg` beside the books, so the map can be handed
     to a table on its own, printed, or dropped into a virtual tabletop.
 
 The inline copy and the standalone file are the same serialization, so they cannot disagree.
@@ -19,7 +19,7 @@ import html as _html
 
 # ---------------------------------------------------------------- palette
 # Print-first. These maps are meant to survive a home printer in black and white, so every feature
-# is distinguished by shape and label as well as by ink — colour is the last cue, never the only one.
+# is distinguished by shape and label as well as by ink; colour is the last cue, never the only one.
 INK      = "#2a1f19"
 INK_SOFT = "#6b5a4b"
 PAPER    = "#f2ead6"
@@ -160,7 +160,7 @@ def fightmark(x, y, n):
 
 
 def pin(x, y, n):
-    """A numbered scene pin — the number is the scene number printed in the module's margin."""
+    """A numbered scene pin: the number is the scene number printed in the module's margin."""
     return (f'<g><circle cx="{x}" cy="{y}" r="10.5" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
             f'{_lab(x, y + 4, n, size=12, ink=INK)}</g>')
 
@@ -454,7 +454,7 @@ MAP_CSS = """
 """
 
 # The download control. It serializes the map that is already on the page rather than fetching a
-# file, so it works from a book opened off a thumb drive with no network and no sibling files —
+# file, so it works from a book opened off a thumb drive with no network and no sibling files,
 # which is the state most of these books will actually be read in.
 _DL = (
     "var w=b.closest('.mapwrap'),s=w.querySelector('svg').cloneNode(true);"

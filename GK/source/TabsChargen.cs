@@ -5,7 +5,7 @@ public partial class MainForm
     // ============================================================ NEW SOUL TAB
     // A whole character sheet at the press of a button, walked through Chapter III's
     // eight steps against Data/chargen.json (transcribed from the Player's Book) and
-    // re-validated by CharGen.Validate before it is ever shown — the generator is not
+    // re-validated by CharGen.Validate before it is ever shown: the generator is not
     // allowed to hand the Keeper a character the book couldn't have made. The result
     // is displayed on the book's own Ledger sheet, and can be hand-tweaked or built
     // choice by choice through the wizard.
@@ -29,7 +29,7 @@ public partial class MainForm
         soulMethod = new ComboBox { Width = 165, DropDownStyle = ComboBoxStyle.DropDownList };
         soulMethod.Items.AddRange(new object[] { "The Honest Array", "The Gamble (rolled)" });
         soulMethod.SelectedIndex = 0;
-        Tip.SetToolTip(soulMethod, "Ch. III — the fixed 15/14/13/12/10/8 array, or 4d6-drop-lowest");
+        Tip.SetToolTip(soulMethod, "Ch. III: the fixed 15/14/13/12/10/8 array, or 4d6-drop-lowest");
         bar.Controls.Add(soulMethod);
 
         bar.Controls.Add(Lbl("  Calling:"));
@@ -37,7 +37,7 @@ public partial class MainForm
         soulCalling.Items.Add("Random");
         foreach (var c in CharGen.D.callings.OrderBy(c => c.name)) soulCalling.Items.Add(c.name);
         soulCalling.SelectedIndex = 0;
-        Tip.SetToolTip(soulCalling, "Pin the Calling — what this soul does for a living — or leave it on "
+        Tip.SetToolTip(soulCalling, "Pin the Calling, what this soul does for a living, or leave it on "
             + "Random and let the dice choose. It is the one choice the rest of the sheet hangs off: the die "
             + "that rolls Blood, which two saves are strong, how many skills are trained, and whether they "
             + "work Signs, Miracles, or neither.");
@@ -66,13 +66,13 @@ public partial class MainForm
                 ShowSoul(lastSoul);
                 Log($"{lastSoul.Name}'s sheet hand-tweaked.");
             }
-        }, 85, "Hand-adjust the sheet — any number, any list"));
+        }, 85, "Hand-adjust the sheet, any number, any list"));
         bar.Controls.Add(Btn("🎲 New look", (s, e) => DrawLookFor(lastSoul, () => ShowSoul(lastSoul)), 100,
-            "Draw this soul a fresh face, build and outfit — nothing else on the sheet moves"));
+            "Draw this soul a fresh face, build and outfit. Nothing else on the sheet moves"));
         bar.Controls.Add(Btn("→ Posse", (s, e) => SoulToPosse(), 85, "Add this soul to the Posse tab"));
         bar.Controls.Add(Btn("Copy sheet", (s, e) =>
         {
-            if (lastSoul == null) { Nope("Make a soul first — there is no sheet to copy."); return; }
+            if (lastSoul == null) { Nope("Make a soul first. There is no sheet to copy."); return; }
             Clipboard.SetText(CharGen.Render(lastSoul, PlayerTable));
             Log($"{lastSoul.Name}'s sheet copied to the clipboard.");
         }, 95, "Copy the sheet as plain text"));
@@ -81,7 +81,7 @@ public partial class MainForm
         bar.Controls.Add(Btn("A＋", (s, e) => { if (soulLedger != null) soulLedger.Zoom += 0.15f; }, 46, "Larger sheet"));
         bar.Controls.Add(Btn("Clear", (s, e) =>
         {
-            if (lastSoul == null) { Nope("There is no sheet to clear — make a soul first."); return; }
+            if (lastSoul == null) { Nope("There is no sheet to clear. Make a soul first."); return; }
             if (!Confirm($"Clear {lastSoul.Name}'s sheet? Unsaved work is lost.")) return;
             soulLedger.Clear(); lastSoul = null; soulHint.Visible = true;
         }, 70, "Wipe the sheet for a fresh start"));
@@ -93,13 +93,13 @@ public partial class MainForm
             Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 11f, FontStyle.Italic), ForeColor = Gold, BackColor = Paper,
             // Interpolated rather than typed. It read "Eight steps" for as long as the wizard has
-            // had nine — the same fault CLAUDE.md records against the Reference screen, which told
+            // had nine: the same fault CLAUDE.md records against the Reference screen, which told
             // Keepers it held eleven leaves for two releases while it held thirteen.
             Text = $"{SpelledSteps(StepCount)} steps from a blank page to a soul worth losing.\n\n" +
-                   "🎲 Make a soul rolls the whole character for you, strictly by the book —\n" +
+                   "🎲 Make a soul rolls the whole character for you, strictly by the book,\n" +
                    "pin a level, Calling, or Origin first if you have one in mind.\n\n" +
                    "🧭 Wizard… walks you through every choice yourself: abilities, skills,\n" +
-                   "Edges, Signs, coin and all — checked against the rules at each step.\n\n" +
+                   "Edges, Signs, coin and all, checked against the rules at each step.\n\n" +
                    "Either way the sheet lands on the book's own Ledger. ✎ Tweak it by hand,\n" +
                    "send it to the Posse, or copy it out."
         };
@@ -120,17 +120,17 @@ public partial class MainForm
     }
 
     /// <summary>Draw a soul a new description and say what came up. One method behind the New Soul
-    /// tab's button and the Posse tab's menu line, so the two cannot start drawing differently —
+    /// tab's button and the Posse tab's menu line, so the two cannot start drawing differently,
     /// and it deliberately does NOT set <c>HandTweaked</c>: a rolled look is the generator's work,
     /// not the Keeper's word against the book's, and the sheet's numbers have not been touched.</summary>
     /// <param name="sheet">Whose. Null says so and does nothing.</param>
-    /// <param name="after">What to redraw once it is rolled — the tab's Ledger, or a pop-out.</param>
+    /// <param name="after">What to redraw once it is rolled: the tab's Ledger, or a pop-out.</param>
     void DrawLookFor(CharacterSheet sheet, Action after)
     {
-        if (sheet == null) { Nope("Make a soul first — a look belongs to somebody."); return; }
+        if (sheet == null) { Nope("Make a soul first, a look belongs to somebody."); return; }
         sheet.Look = Look.Roll(sheet.Gender, sheet.Calling, nameIsFixed: true);
         after?.Invoke();
-        Log($"{sheet.Name} — {sheet.Look.AtAGlance}");
+        Log($"{sheet.Name}, {sheet.Look.AtAGlance}");
     }
 
     void GenerateSoul()
@@ -138,10 +138,10 @@ public partial class MainForm
         string calling = soulCalling.SelectedIndex > 0 ? soulCalling.SelectedItem.ToString() : null;
         string origin = soulOrigin.SelectedIndex > 0 ? soulOrigin.SelectedItem.ToString() : null;
 
-        // Ch. IV: a Calling of Faith may not take the Gambler background — say so rather than silently ignoring
+        // Ch. IV: a Calling of Faith may not take the Gambler background; say so rather than silently ignoring
         if (calling != null && origin == "The Gambler" && CharGen.D.callings.First(c => c.name == calling).group == "Faith")
         {
-            Log("Ch. IV: a soul sworn to the pulpit has no business at the green table — a Calling of Faith may not take the Gambler origin. Origin re-drawn.");
+            Log("Ch. IV: a soul sworn to the pulpit has no business at the green table. A Calling of Faith may not take the Gambler origin. Origin re-drawn.");
             origin = null;
         }
 
@@ -165,7 +165,7 @@ public partial class MainForm
         {
             File.WriteAllBytes(d.FileName, Pdf.TextSheet(
                 s.Name,
-                $"{s.Calling} · {s.Origin} — level {s.Level}" + (string.IsNullOrEmpty(s.Gender) ? "" : $" · {s.Gender.ToLowerInvariant()}"),
+                $"{s.Calling} · {s.Origin}, level {s.Level}" + (string.IsNullOrEmpty(s.Gender) ? "" : $" · {s.Gender.ToLowerInvariant()}"),
                 CharGen.Render(s, PlayerTable)));
             Log($"Sheet saved: {Path.GetFileName(d.FileName)}.");
         }
@@ -215,8 +215,8 @@ public partial class MainForm
     // CharGen.LevelUp re-draws anything that turns out illegal.
     //
     // Every road out of here that ISN'T a level-up says so in a dialog. It used to write the
-    // reason to the roll log and return, which — on the far side of the screen from the
-    // button, in a list that scrolls — is indistinguishable from a button that does nothing.
+    // reason to the roll log and return, which (on the far side of the screen from the
+    // button, in a list that scrolls) is indistinguishable from a button that does nothing.
     internal void LevelUpMember(PartyMember p, IWin32Window owner)
     {
         if (p == null)
@@ -228,9 +228,9 @@ public partial class MainForm
         if (p.Level >= Rules.MaxLevel)
         {
             MessageBox.Show(owner,
-                $"{p.Name} already stands at {Rules.MaxLevel}th level — the frontier's ceiling. "
+                $"{p.Name} already stands at {Rules.MaxLevel}th level, the frontier's ceiling. "
                 + "There's nothing above it in the book.",
-                "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Level up, at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
         if (p.Sheet == null && !BackfillSheet(p, owner)) return;
@@ -239,14 +239,14 @@ public partial class MainForm
         if (g.AtCeiling)
         {
             MessageBox.Show(owner,
-                $"{p.Name}'s sheet already stands at {Rules.MaxLevel}th level — the frontier's ceiling.",
-                "Level up — at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                $"{p.Name}'s sheet already stands at {Rules.MaxLevel}th level, the frontier's ceiling.",
+                "Level up, at the ceiling", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
         using var f = new Sheet
         {
-            Text = $"Level up — {cur.Name}", Width = 520, AutoSize = true,
+            Text = $"Level up, {cur.Name}", Width = 520, AutoSize = true,
             AutoSizeMode = AutoSizeMode.GrowAndShrink, FormBorderStyle = FormBorderStyle.FixedDialog,
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false,
             ShowIcon = false, BackColor = Paper
@@ -277,7 +277,7 @@ public partial class MainForm
         Span(new Label { Text = $"{cur.Calling}   ·   Level {cur.Level} → {g.NewLevel}", AutoSize = true,
             Font = new Font(Font, FontStyle.Bold), ForeColor = Blood, Margin = new Padding(3, 0, 3, 8) });
 
-        // Blood — roll the new level's Hit Die (or set the face), CON mod added automatically
+        // Blood: roll the new level's Hit Die (or set the face), CON mod added automatically
         var dieUp = new NumericUpDown { Minimum = 1, Maximum = g.HitDie, Width = 55 };
         dieUp.Value = Rules.Rng.Next(1, g.HitDie + 1);
         var totalLbl = new Label { AutoSize = true, ForeColor = Ink, Margin = new Padding(8, 8, 3, 3) };
@@ -333,7 +333,7 @@ public partial class MainForm
         var cancelBtn = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true, Margin = new Padding(6, 10, 3, 3) };
         f.AcceptButton = okBtn; f.CancelButton = cancelBtn;
         var btnPanel = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0) };
-        // Cancel first, so the RIGHT-to-left flow lays them out as [Level up] [Cancel] — the commit
+        // Cancel first, so the RIGHT-to-left flow lays them out as [Level up] [Cancel]: the commit
         // on the left, the way the Tweak dialog, the wizard and every absolutely-placed dialog in
         // the app already read. Added the other way round, this was the one that read backwards.
         btnPanel.Controls.Add(cancelBtn); btnPanel.Controls.Add(okBtn);
@@ -361,7 +361,7 @@ public partial class MainForm
         posseGrid?.Refresh();
         if (soulWindows.TryGetValue(p, out var win) && !win.IsDisposed)
             foreach (var lv in win.Controls.OfType<LedgerView>()) lv.ShowSheet(next, p, SheetWarnings(next));
-        Log($"{next.Name} rises to {Ordinal(next.Level)} level — +{bloodGain} Blood."
+        Log($"{next.Name} rises to {Ordinal(next.Level)} level, +{bloodGain} Blood."
             + (next.Edges.Count > cur.Edges.Count ? $"  New Edge: {next.Edges[^1]}." : "")
             + (next.SignsKnown.Count > cur.SignsKnown.Count ? $"  New Sign: {next.SignsKnown[^1]}." : "")
             + (next.MiraclesKnown.Count > cur.MiraclesKnown.Count ? $"  New Miracle: {next.MiraclesKnown[^1]}." : "")
@@ -373,7 +373,7 @@ public partial class MainForm
 
     // ------------------------------------------------------------ SHEETLESS SOULS
     // A posse row with no CharacterSheet can't level: there's nothing to grow. Two ways a
-    // row ends up that way — a Keeper typed it in by hand, or (the one that bit us) it was
+    // row ends up that way: a Keeper typed it in by hand, or (the one that bit us) it was
     // seeded by a build older than v1.9.0, when the first-launch demo posse was bare rows
     // rather than full sheets. Those rows persist in session.json forever, so the ✦ Level up
     // button quietly did nothing for the six souls most Keepers actually have seated. It used
@@ -390,30 +390,30 @@ public partial class MainForm
         {
             MessageBox.Show(owner,
                 $"{p.Name} has no character sheet, and \"{p.Calling}\" isn't one of the seventeen "
-                + "Callings in Chapter IV — so there's no table to grow them by.\r\n\r\n"
+                + "Callings in Chapter IV, so there's no table to grow them by.\r\n\r\n"
                 + "Set their Calling on the Posse tab to a Calling from the book, or build them "
                 + "on the New Soul tab, and they'll level by the book from then on.",
-                "Level up — no sheet to grow",
+                "Level up, no sheet to grow",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return false;
         }
 
         var answer = MessageBox.Show(owner,
-            $"{p.Name} is a hand-entered row — no character sheet behind it, so there's nothing "
+            $"{p.Name} is a hand-entered row: no character sheet behind it, so there's nothing "
             + "for the book to advance.\r\n\r\n"
             + $"Draw one up now? GritKeeper will roll a rules-legal {p.Calling} at "
             + $"{Ordinal(p.Level)} level, keeping their name and gender, and then level them.\r\n\r\n"
             + "Their Blood, Nerve, Defense and saves will be replaced by the new sheet's numbers "
             + "(current Blood and Nerve stay where they are, capped at the new maximums). "
             + "Notes and Grit are untouched.",
-            "Level up — draw up a sheet?",
+            "Level up, draw up a sheet?",
             MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         if (answer != DialogResult.Yes) return false;
 
         int bloodCur = p.BloodCur, nerveCur = p.NerveCur;
         var s = CharGen.Generate(Math.Clamp(p.Level, 1, Rules.MaxLevel), rolled: false, fixedCalling: p.Calling);
         s.Name = p.Name;
-        // Keep the row's gender; where the row has none — every pre-v1.9.0 demo row — leave it
+        // Keep the row's gender; where the row has none (every pre-v1.9.0 demo row), leave it
         // blank rather than let the generator's coin-flip write one in. Mattie "Six-Finger"
         // Lusk coming back from this as a Man is worse than her coming back unstated.
         s.Gender = p.Gender ?? "";
@@ -422,19 +422,19 @@ public partial class MainForm
         p.BloodCur = Math.Min(bloodCur, p.BloodMax);
         p.NerveCur = Math.Min(nerveCur, p.NerveMax);
         posseGrid?.Refresh();
-        Log($"{p.Name} gets a sheet — a {Ordinal(s.Level)}-level {s.Calling} out of {s.Origin}.");
+        Log($"{p.Name} gets a sheet, a {Ordinal(s.Level)}-level {s.Calling} out of {s.Origin}.");
         return true;
     }
 
     // ============================================================ THE TWEAK DIALOG
-    // Hand adjustments to a finished sheet — every number and every list editable.
+    // Hand adjustments to a finished sheet: every number and every list editable.
     // The result is re-checked, but never blocked: a tweaked sheet is the Keeper's
     // word against the book's, and the Ledger notes it instead of arguing.
     internal bool TweakSheet(CharacterSheet s, IWin32Window owner)
     {
         using var f = new Sheet
         {
-            Width = 700, Height = 760, Text = $"Tweak — {s.Name}",
+            Width = 700, Height = 760, Text = $"Tweak, {s.Name}",
             StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = true,
             ShowIcon = false, BackColor = Paper, MinimumSize = new Size(560, 480)
         };
@@ -510,7 +510,7 @@ public partial class MainForm
         string RankSuffix(int r) => r >= 3 ? " (Master)" : r == 2 ? " (Expert)" : "";
         var skills = Multi(s.SkillRanks.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
             .Select(kv => kv.Key + RankSuffix(kv.Value)), 96);
-        Tip.SetToolTip(skills, "One skill per line — add (Expert) or (Master) after the name for higher ranks");
+        Tip.SetToolTip(skills, "One skill per line. Add (Expert) or (Master) after the name for higher ranks");
         Wide("Skills", skills);
 
         var edges = Multi(s.Edges, 76);
@@ -566,14 +566,14 @@ public partial class MainForm
             Wide(label, t);
             return t;
         }
-        LookRow("People", "People", look.People, "Where their people came from. Description only — nothing in the app reads it but the eye.");
+        LookRow("People", "People", look.People, "Where their people came from. Description only. Nothing in the app reads it but the eye.");
         LookRow("Height", "Height", look.Height, "How tall, and what that has done to how they carry it");
         LookRow("Build", "Frame", look.Frame, "The frame under the clothes");
         LookRow("Complexion", "Complexion", look.Complexion, "Skin, and what the country has done to it");
         LookRow("Hair", "Hair", look.Hair, "Colour and cut");
         LookRow("Eyes", "Eyes", look.Eyes, "Eye colour");
         LookRow("Face", "Face", look.Face, "The face, and any whiskers on it");
-        LookRow("Marks", "Marks", look.Marks, "What they walked in already carrying — a scar, a brand, a missing finger. "
+        LookRow("Marks", "Marks", look.Marks, "What they walked in already carrying: a scar, a brand, a missing finger. "
             + "Lasting Injuries and Afflictions earned at the table live on the Posse tab instead.");
         LookRow("Bearing", "Bearing", look.Bearing, "How they hold themselves and move");
         LookRow("Voice", "Voice", look.Voice, "How they sound");
@@ -587,7 +587,7 @@ public partial class MainForm
         LookRow("The detail", "Detail", look.Detail, "The one thing a witness describes first");
         var reroll = new Button { Text = "🎲 Draw a new look", Width = 160, Height = 28, Margin = new Padding(3, 5, 3, 3) };
         Tip.SetToolTip(reroll, "Roll the whole description again, drawn against this soul's Calling. "
-            + "It fills the boxes above — nothing is committed until Apply.");
+            + "It fills the boxes above. Nothing is committed until Apply.");
         reroll.Click += (s2, e2) =>
         {
             // nameIsFixed: this dialog is editing a soul who is already called something, and the
@@ -607,7 +607,7 @@ public partial class MainForm
         {
             Dock = DockStyle.Bottom, Height = 34, ForeColor = GoldDeep, Padding = new Padding(12, 2, 4, 2),
             Font = new Font("Segoe UI", 8.8f, FontStyle.Italic),
-            Text = "Hand tweaks are the Keeper's word against the book's — the sheet is re-checked but never blocked;\nthe Ledger simply notes it was tweaked."
+            Text = "Hand tweaks are the Keeper's word against the book's. The sheet is re-checked but never blocked;\nthe Ledger simply notes it was tweaked."
         };
         f.Controls.Add(scroll); f.Controls.Add(note); f.Controls.Add(bar);
         f.AcceptButton = ok; f.CancelButton = cancel;
@@ -650,8 +650,8 @@ public partial class MainForm
         return true;
     }
 
-    // One name, one field, both ways. The alternative was eighteen assignments written twice —
-    // once to fill the boxes from a fresh draw and once to read them back — and eighteen pairs of
+    // One name, one field, both ways. The alternative was eighteen assignments written twice
+    // (once to fill the boxes from a fresh draw and once to read them back), and eighteen pairs of
     // lines that have to agree is eighteen chances for one of them to be quietly reading Boots
     // into Legs. Reflection is not worth its unpredictability here; a switch is checked by the
     // compiler and reads as the list it is.

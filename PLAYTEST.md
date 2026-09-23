@@ -1,14 +1,14 @@
-# Module playtest — what the engine says about the three adventures
+# Module playtest: what the engine says about the three adventures
 
 Every night below was played through **the same rules library the app runs on** (`GK/rules`), with the Bestiary's own numbers for every foe and the book's own dice for every roll. Nothing here is estimated. 3 adventures × 12 posses = 36 full runs, base seed `20260809`; re-running a seed reproduces the night exactly.
 
-The posse is the same four callings every time — **Gunhand, Preacher, Mountain Man, Sawbones** — so the three nights are compared against one party shape, and a Keeper reading a number knows who was at the table when it was earned.
+The posse is the same four callings every time: **Gunhand, Preacher, Mountain Man, Sawbones**, so the three nights are compared against one party shape, and a Keeper reading a number knows who was at the table when it was earned.
 
 ---
 
 ## The Salt at Coffin Wells
 
-*A first reckoning for a fresh posse — one night, three acts, and a banker who dug where he was told not to*
+*A first reckoning for a fresh posse: one night, three acts, and a banker who dug where he was told not to*
 
 **Coffin Wells · a posse of four at level 1 · party Tier 1**
 
@@ -20,26 +20,26 @@ The posse is the same four callings every time — **Gunhand, Preacher, Mountain
 
 ### Fight by fight
 
-*Cold — no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
+*Cold: no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the Pell place — the dead getting up | TI | 2/12 | 9/12 | 1.6 | 28% | 48% |
+| the Pell place, the dead getting up | TI | 2/12 | 9/12 | 1.6 | 28% | 48% |
 | the Nightwalker at the opened grave | TIII ⚠ | 0/2 | 2/2 | 1.0 | 33% | 67% |
 
 ### The way through
 
-Not one of the Tier III fights above was ever cleared by shooting it — across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
+Not one of the Tier III fights above was ever cleared by shooting it, across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
 
-**The Nightwalker** — *putting it down:* Pin it, stake it through the heart with seasoned wood, take the head and burn it, and salt the grave.
+**The Nightwalker**. *Putting it down:* Pin it, stake it through the heart with seasoned wood, take the head and burn it, and salt the grave.
 
-> **⚠ The safe-table rule refuses one of these fights.** A horror two or more Tiers over the posse is offered as sign and spoor rather than seated on the field — so if a Keeper builds this fight in GritKeeper, the app will ask whether it should go on the trail instead. That is not a bug in either the module or the app: it is the book saying out loud that this is not a fight to be won by shooting, and the module has to give the posse the other way through.
+> **⚠ The safe-table rule refuses one of these fights.** A horror two or more Tiers over the posse is offered as sign and spoor rather than seated on the field, so if a Keeper builds this fight in GritKeeper, the app will ask whether it should go on the trail instead. That is not a bug in either the module or the app: it is the book saying out loud that this is not a fight to be won by shooting, and the module has to give the posse the other way through.
 
 ---
 
 ## A Face Not His Own
 
-*A second reckoning — a lonely relay, eight souls under one roof, and one of them is wearing somebody*
+*A second reckoning: a lonely relay, eight souls under one roof, and one of them is wearing somebody*
 
 **Saltlick Station · a posse of four at level 3 · party Tier 2**
 
@@ -51,7 +51,7 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 ### Fight by fight
 
-*Cold — no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
+*Cold: no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
@@ -60,15 +60,15 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 ### The way through
 
-Not one of the Tier III fights above was ever cleared by shooting it — across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
+Not one of the Tier III fights above was ever cleared by shooting it, across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
 
-**The Skin-Walker** — *putting it down:* It cannot abide its true reflection nor cross a line of ash and bone; a prayed-over or silver bullet wounds past the borrowed skin.
+**The Skin-Walker**. *Putting it down:* It cannot abide its true reflection nor cross a line of ash and bone; a prayed-over or silver bullet wounds past the borrowed skin.
 
 ---
 
 ## What the Water Answers
 
-*A third reckoning — the water is going bad from the bottom up, and the mission knows why*
+*A third reckoning: the water is going bad from the bottom up, and the mission knows why*
 
 **Mission San Clavo · a posse of four at level 5 · party Tier 3**
 
@@ -80,7 +80,7 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 ### Fight by fight
 
-*Cold — no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
+*Cold: no recovery between acts, no Grit spent, no Sign or Miracle worked. This is the floor: what the night costs a posse that only shoots.*
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
@@ -90,9 +90,9 @@ Not one of the Tier III fights above was ever cleared by shooting it — across 
 
 ### The way through
 
-Not one of the Tier III fights above was ever cleared by shooting it — across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
+Not one of the Tier III fights above was ever cleared by shooting it, across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
 
-**The Hunger That Walks** — *putting it down:* Fire and iron put it down; faster, a true name and a held warmth may yet call the man back from it, once.
+**The Hunger That Walks**. *Putting it down:* Fire and iron put it down; faster, a true name and a held warmth may yet call the man back from it, once.
 
 ---
 

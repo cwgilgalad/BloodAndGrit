@@ -19,10 +19,10 @@ public partial class MainForm
 
     /// <summary>Self-test hook, the Reference deck's <see cref="BuildReferenceTab"/> pattern applied
     /// to the wizard: build every step that applies to this Calling and count them. Wizard pages are
-    /// realized lazily — nothing else in the self-test would touch them, and a step that throws on
+    /// realized lazily. Nothing else in the self-test would touch them, and a step that throws on
     /// construction is otherwise only found by a person clicking Next.
     /// <para>It also returns every control on those pages that carries no tooltip. The wizard's tips
-    /// ARE its manual — a player meeting "Hedge Magic" has nothing else to go on — so a step added
+    /// ARE its manual (a player meeting "Hedge Magic" has nothing else to go on) so a step added
     /// later with a bare ComboBox on it teaches nothing, and that silence is invisible at the table.
     /// Counting them here makes it a failing check instead of a thing somebody notices.</para>
     /// <para><c>Shown</c> is every word those pages put in front of a reader, so the self-test can
@@ -37,7 +37,7 @@ public partial class MainForm
 
     // Sheet, not Form: this is a full window with a caption bar, and it was one of two left wearing
     // the system's white one after v1.32.0 dressed the rest. It is also the longest-lived window in
-    // the app — nine steps of a character — so it is the last place a Keeper should be looking at
+    // the app (nine steps of a character), so it is the last place a Keeper should be looking at
     // somebody else's chrome.
     /// <summary>How many steps the wizard walks. Prose that quotes the number interpolates this
     /// rather than typing a word: the New Soul tab said "Eight steps" for as long as the wizard has
@@ -98,7 +98,7 @@ public partial class MainForm
         public SoulWizard(bool forPlayer = false)
         {
             this.forPlayer = forPlayer;
-            Text = "Build a soul — the wizard";
+            Text = "Build a soul, the wizard";
             Width = 780; Height = 680; MinimumSize = new Size(700, 560);
             StartPosition = FormStartPosition.CenterParent;
             MinimizeBox = false; ShowIcon = false; BackColor = Paper;
@@ -116,14 +116,14 @@ public partial class MainForm
             back = new Button { Text = "◂ Back", Width = 88, Height = 32 };
             // Weight, so the row does not read as three of the same thing. Next ▸ is what drives the
             // nine steps and is the only reason this window is open; Cancel sits right beside it and
-            // throws all nine away, which is the exact adjacency DangerBtn exists for — "it stops
+            // throws all nine away, which is the exact adjacency DangerBtn exists for: "it stops
             // looking like the button beside it, so it is never pressed by muscle memory". ◂ Back
             // keeps the ordinary face the walk gives it: it is neither the point nor a loss.
             MainForm.DressPrimary(next);
             MainForm.DressDanger(cancel);
             next.Click += (s, e) => GoNext();
             back.Click += (s, e) => GoBack();
-            Tipped(next, "On to the next step. What this one asks for is checked first — anything the book insists on has to be settled before you move.");
+            Tipped(next, "On to the next step. What this one asks for is checked first. Anything the book insists on has to be settled before you move.");
             Tipped(back, "Back a step. Nothing you've chosen is lost; steps that don't apply to this soul are skipped over.");
             Tipped(cancel, "Close the wizard and build nothing.");
             bar.Controls.Add(cancel); bar.Controls.Add(next); bar.Controls.Add(back);
@@ -224,7 +224,7 @@ public partial class MainForm
                 Subpath = subpathPick, CallingChoice = choicePick,
                 CoinRolled = coinRolled > 0 ? coinRolled : null,
                 // Assemble buys one entry at a time and prices each, so a count of three goes
-                // down as the same name three times — which is also how the sheet stores it.
+                // down as the same name three times, which is also how the sheet stores it.
                 BuyWeapons = buyPicks.Where(kv => CharGen.D.weapons.Any(w => w.name == kv.Key))
                                      .SelectMany(kv => Enumerable.Repeat(kv.Key, kv.Value)).ToList(),
                 BuyGear = buyPicks.Where(kv => CharGen.D.gearPrices.ContainsKey(kv.Key))
@@ -249,7 +249,7 @@ public partial class MainForm
             Font = new Font("Segoe UI", 9f, FontStyle.Italic), ForeColor = GoldDeep, Padding = new Padding(0, 4, 0, 6)
         };
         /// A bold caption. <paramref name="readout"/> marks one that carries a LIVE number rather
-        /// than prose — the pool, the picked-of counts, the coin. Those are held to the same
+        /// than prose. The pool, the picked-of counts, the coin. Those are held to the same
         /// say-what-you-are standard as the controls; see <see cref="WantsTip"/>.
         static Label Cap(string t, bool readout = false) => new()
         {
@@ -272,11 +272,11 @@ public partial class MainForm
         /// Per-row tooltips for a ListBox or CheckedListBox. WinForms has none of its own, so
         /// follow the pointer and re-point the shared ToolTip whenever it crosses into a new row.
         ///
-        /// <paramref name="resting"/> is what the list says when the pointer is NOT on a row — over
+        /// <paramref name="resting"/> is what the list says when the pointer is NOT on a row, over
         /// the blank ground below the last item, or before it has moved at all. It used to be
         /// nothing, which made every list here the one thing on its step that explained itself only
         /// by accident: the rows described a Calling or a skill beautifully and the list never said
-        /// what it wanted from you. That matters most on the two lists that REFUSE a click — tick
+        /// what it wanted from you. That matters most on the two lists that REFUSE a click: tick
         /// past the cap, or past what the coin covers, and the tick simply doesn't take, with no
         /// word anywhere as to why. So the resting tip is the list's own instructions, and a row's
         /// tip is laid over it.
@@ -297,7 +297,7 @@ public partial class MainForm
 
         // ---- the book's own words for each kind of thing, for the tips above ----
         static string SkillTip(CgSkill sk) =>
-            $"{sk.name} — rolled on {sk.ability}. Trained adds your level to the roll; untrained is the bare ability modifier. "
+            $"{sk.name}, rolled on {sk.ability}. Trained adds your level to the roll; untrained is the bare ability modifier. "
           + "Expert and Master come later, from the skill increases at 3rd, 5th, 7th and 9th.";
 
         static string EdgeTip(string name)
@@ -314,21 +314,21 @@ public partial class MainForm
                  + (req.Count > 0 ? "\nRequires: " + string.Join(", ", req) : "");
         }
 
-        /// What each ability actually buys, in the book's terms — the six one-liners the sheet
+        /// What each ability actually buys, in the book's terms: the six one-liners the sheet
         /// never has room for.
         static string AbilityTip(string key) => key switch
         {
-            "STR" => "Strength — hauling, holding, and what a swung or thrust weapon does. Carries the Fortitude save's partner in a brawl.",
-            "DEX" => "Dexterity — aim, balance and speed of hand. Sets Defense, Initiative, and what a gun hits with.",
-            "CON" => "Constitution — wind and endurance. Sets the Fortitude save, and every level's Blood roll adds its modifier.",
-            "WIT" => "Wits — sharpness and schooling. Adds to how many skills the Calling trains, and to noticing what is wrong with a room.",
-            "RES" => "Resolve — nerve in the older sense. Sets the Will save, and Nerve itself is Resolve plus level — the stat the dark spends.",
-            "PRE" => "Presence — bearing and force of person. Carries talking, leading, lying, and the Callings that work on people.",
+            "STR" => "Strength: hauling, holding, and what a swung or thrust weapon does. Carries the Fortitude save's partner in a brawl.",
+            "DEX" => "Dexterity: aim, balance and speed of hand. Sets Defense, Initiative, and what a gun hits with.",
+            "CON" => "Constitution: wind and endurance. Sets the Fortitude save, and every level's Blood roll adds its modifier.",
+            "WIT" => "Wits: sharpness and schooling. Adds to how many skills the Calling trains, and to noticing what is wrong with a room.",
+            "RES" => "Resolve: nerve in the older sense. It sets the Will save, Nerve itself is Resolve plus level, and it is the stat the dark spends.",
+            "PRE" => "Presence: bearing and force of person. Carries talking, leading, lying, and the Callings that work on people.",
             _ => key
         };
 
         static string SignTip(CgSign sg) =>
-            $"{sg.name} — Rank {sg.rank}, on the {sg.list} list.\nCost: {sg.cost}\n{sg.desc}";
+            $"{sg.name}, Rank {sg.rank}, on the {sg.list} list.\nCost: {sg.cost}\n{sg.desc}";
 
         // ============================================== 1 · basics
         NumericUpDown wLevel; ComboBox wMethod, wGender; TextBox wName;
@@ -340,7 +340,7 @@ public partial class MainForm
             row1.Controls.Add(Lbl("Level:"));
             wLevel = new NumericUpDown { Minimum = 1, Maximum = Rules.MaxLevel, Value = level, Width = 56, Margin = new Padding(3, 6, 3, 3) };
             Tipped(wLevel, "How experienced this soul already is. 1 is a fresh character; the wizard walks every "
-                + "level up to this one, so a higher number means more Edges, more skill increases, more Blood — and more steps to answer. "
+                + "level up to this one, so a higher number means more Edges, more skill increases, more Blood, and more steps to answer. "
                 + "Changing it clears the Edge, skill-increase, Sign and boost picks, since which of those you get depends on it.");
             row1.Controls.Add(wLevel);
             row1.Controls.Add(Lbl("   Abilities by:"));
@@ -348,9 +348,9 @@ public partial class MainForm
             wMethod.Items.AddRange(new object[] { "The Honest Array (15 14 13 12 10 8)", "The Gamble (roll 4d6, drop lowest)", "Set the scores by hand" });
             wMethod.SelectedIndex = methodIdx;
             Tipped(wMethod, "How the six ability scores are found (Ch. III).\n"
-                + "• The Honest Array — everyone gets the same six numbers to arrange. Fair, and no one is born unlucky.\n"
-                + "• The Gamble — roll 4d6 and drop the lowest die, six times. Swingier; you may end up better or worse than the array.\n"
-                + "• By hand — type the scores yourself. The sheet is still checked, but nothing stops you being generous.");
+                + "• The Honest Array, everyone gets the same six numbers to arrange. Fair, and no one is born unlucky.\n"
+                + "• The Gamble. Roll 4d6 and drop the lowest die, six times. Swingier; you may end up better or worse than the array.\n"
+                + "• By hand. Type the scores yourself. The sheet is still checked, but nothing stops you being generous.");
             row1.Controls.Add(wMethod);
             col.Controls.Add(row1);
             var row2 = new FlowLayoutPanel { AutoSize = true };
@@ -396,11 +396,11 @@ public partial class MainForm
             {
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.Items[i]);
                 if (c == null) return null;
-                return $"{c.name} — a Calling of the {c.group}.\n{c.blurb}\n\n"
-                     + (c.perk != null ? $"Perk — {c.perk.name}: {c.perk.desc}\n\n" : "")
+                return $"{c.name}, a Calling of the {c.group}.\n{c.blurb}\n\n"
+                     + (c.perk != null ? $"Perk, {c.perk.name}: {c.perk.desc}\n\n" : "")
                      // The wizard is where the choice is actually made, so the honest half of the
                      // entry belongs here rather than only on the sheet it prints afterward.
-                     + (c.fight != null ? $"In a fight — {c.fight.brings}\nYou pay — {c.fight.costs}\n\n" : "")
+                     + (c.fight != null ? $"In a fight, {c.fight.brings}\nYou pay, {c.fight.costs}\n\n" : "")
                      + $"Blood is rolled on a d{c.hitDie}; strong saves are {c.strongSaves}; "
                      + $"trains {c.trainedSkills} skills plus your WIT modifier; leans on {string.Join(", ", c.keyAbilities.Take(2))}."
                      + (c.signsKnownAt != null ? " Works the Signs of Ch. XIII." : "")
@@ -408,7 +408,7 @@ public partial class MainForm
                      + (c.bonusCombatEdgeAtOdd ? " Takes a bonus combat Edge at every odd level." : "")
                      + (c.startMark > 0 ? $" Begins already at Mark {c.startMark}." : "");
             },
-            "What this soul does for a living — the single choice the rest of the sheet hangs off. It sets "
+            "What this soul does for a living: the single choice the rest of the sheet hangs off. It sets "
           + "the Hit Die that rolls Blood, which two saves are strong, how many skills are trained, and "
           + "whether they work Signs or Miracles at all. Grouped by the three kinds: the Worldly, the "
           + "Faithful, and the Old Dark.\nHover a name for its numbers; the panel to the right carries the "
@@ -421,8 +421,8 @@ public partial class MainForm
             {
                 var c = CharGen.D.callings.FirstOrDefault(x => x.name == (string)wCalList.SelectedItem);
                 if (c == null) { detail.Text = ""; return; }
-                detail.Text = $"{c.name} — a Calling of the {c.group}\n\n{c.blurb}\n\n" +
-                    (c.perk != null ? $"PERK — {c.perk.name}\n{c.perk.desc}\n\n" : "") +
+                detail.Text = $"{c.name}, a Calling of the {c.group}\n\n{c.blurb}\n\n" +
+                    (c.perk != null ? $"PERK: {c.perk.name}\n{c.perk.desc}\n\n" : "") +
                     $"Hit Die: d{c.hitDie}\nStrong saves: {c.strongSaves}\nTrained skills: {c.trainedSkills} + WIT modifier\n" +
                     $"Key abilities (in order): {string.Join(", ", c.keyAbilities)}\n" +
                     (c.signsKnownAt != null ? "Works the Signs.\n" : "") +
@@ -458,8 +458,8 @@ public partial class MainForm
             var col = Column();
             bool isFaith = Cal?.group == "Faith";
             col.Controls.Add(Note(isFaith
-                ? "A soul sworn to the pulpit has no business at the green table — the Gambler is barred to Callings of Faith (Ch. IV)."
-                : "Where they come from — gifts, free trained skills, a boon and a burden."));
+                ? "A soul sworn to the pulpit has no business at the green table. The Gambler is barred to Callings of Faith (Ch. IV)."
+                : "Where they come from: gifts, free trained skills, a boon and a burden."));
             var row = new FlowLayoutPanel { AutoSize = true };
             wOrgList = new ListBox { Width = 220, Height = 300, Font = new Font("Segoe UI", 9.5f) };
             StyleList(wOrgList);
@@ -468,20 +468,20 @@ public partial class MainForm
             {
                 var o = CharGen.D.origins.FirstOrDefault(x => x.name == (string)wOrgList.Items[i]);
                 if (o == null) return null;
-                return $"{o.name} — {o.line}\n"
+                return $"{o.name}, {o.line}\n"
                      + (o.gifts.Count > 0 ? "Gifts " + string.Join(", ", o.gifts.Select(kv => $"{kv.Key} +{kv.Value}")) + ". " : "")
                      + (o.trained.Count > 0 ? "Trained free in " + string.Join(", ", o.trained) + ". " : "")
                      + $"\nBoon: {o.boon}\nBurden: {o.burden}";
             },
-            "Where they come from — the second half of who this is. An Origin gives ability points, trains "
+            "Where they come from. The second half of who this is. An Origin gives ability points, trains "
           + "a skill or two free of the Calling's allowance, sometimes hands over gear, and always carries "
           + "one boon and one burden.\nHover a name for the whole of it. There is no wrong pick here: every "
-          + "Origin goes with every Calling, save one — the Gambler is barred to the Callings of Faith.");
+          + "Origin goes with every Calling, save one. The Gambler is barred to the Callings of Faith.");
             var detail = new Label { Width = 440, Height = 300, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f) };
             var choiceRow = new FlowLayoutPanel { AutoSize = true };
             choiceRow.Controls.Add(Lbl("Either/or skill:"));
             wOrgChoice = new ComboBox { Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
-            Tipped(wOrgChoice, "This Origin trains one of these two, your pick — it comes free and does not count against the Calling's trained skills.");
+            Tipped(wOrgChoice, "This Origin trains one of these two, your pick. It comes free and does not count against the Calling's trained skills.");
             choiceRow.Controls.Add(wOrgChoice);
             wOrgList.SelectedIndexChanged += (s, e) =>
             {
@@ -558,7 +558,7 @@ public partial class MainForm
                 wPoolLbl = Tipped(Cap("The pool:  " + string.Join("  ", pool), readout: true),
                     "The six numbers this soul has to spend, before the Origin's gifts are added on top. "
                   + (methodIdx == 0
-                        ? "The Honest Array — the same six for everybody, so nobody is born unlucky."
+                        ? "The Honest Array. The same six for everybody, so nobody is born unlucky."
                         : "Rolled 4d6 and dropped the lowest die, six times, and sorted highest first. Re-roll "
                         + "above if the dice were unkind; that clears what you have assigned.")
                   + "\nAssign each one to an ability below. All six must be used, and a value that appears "
@@ -584,7 +584,7 @@ public partial class MainForm
                     for (int i = 0; i < 6; i++) wAbCombos[Cal.keyAbilities[i]].SelectedItem = sorted[i].ToString();
                 }, 90, "Assign the pool by the Calling's own priorities"));
                 col.Controls.Add(noteRow);
-                col.Controls.Add(Note("Give each ability one value from the pool — every value used exactly as often as it appears."));
+                col.Controls.Add(Note("Give each ability one value from the pool: every value used exactly as often as it appears."));
                 foreach (var (key, name) in AbKeys.Zip(AbNames))
                 {
                     var row = new FlowLayoutPanel { AutoSize = true };
@@ -592,7 +592,7 @@ public partial class MainForm
                     var cb = new ComboBox { Width = 70, DropDownStyle = ComboBoxStyle.DropDownList, Margin = new Padding(3, 5, 3, 3) };
                     foreach (var v in pool.Distinct().OrderByDescending(x => x)) cb.Items.Add(v.ToString());
                     if (abilityPick.TryGetValue(key, out var prev)) cb.SelectedItem = prev;
-                    Tipped(cb, AbilityTip(key) + "\nGive it one value from the pool — every value must be used exactly as often as it appears.");
+                    Tipped(cb, AbilityTip(key) + "\nGive it one value from the pool. Every value must be used exactly as often as it appears.");
                     wAbCombos[key] = cb;
                     row.Controls.Add(cb);
                     var gift = Org?.gifts.TryGetValue(key, out var g) == true ? g : 0;
@@ -613,7 +613,7 @@ public partial class MainForm
                     var cb = new ComboBox { Width = 130, DropDownStyle = ComboBoxStyle.DropDownList, Margin = new Padding(3, 5, 3, 3) };
                     cb.Items.AddRange(AbKeys.Cast<object>().ToArray());
                     cb.SelectedItem = i < boostPicks.Count ? boostPicks[i] : Cal.keyAbilities[0];
-                    Tipped(cb, $"At {boostLevels[i]}th level one ability rises by 1. Worth spending on an odd score — it is the even numbers "
+                    Tipped(cb, $"At {boostLevels[i]}th level one ability rises by 1. Worth spending on an odd score. It is the even numbers "
                         + "that move the modifier. Everything derived from it (Defense, saves, Nerve, Blood) is re-reckoned for you.");
                     wBoostCombos.Add(cb);
                     row.Controls.Add(cb);
@@ -638,7 +638,7 @@ public partial class MainForm
                     chosen.Add(int.Parse(v));
                 }
                 if (!chosen.OrderBy(x => x).SequenceEqual(pool.OrderBy(x => x)))
-                { MessageBox.Show("Each pool value must be used exactly as often as it appears — the six picks must be the pool itself.", "The wizard", MessageBoxButtons.OK, MessageBoxIcon.Information); return false; }
+                { MessageBox.Show("Each pool value must be used exactly as often as it appears. The six picks must be the pool itself.", "The wizard", MessageBoxButtons.OK, MessageBoxIcon.Information); return false; }
                 abilityPick.Clear();
                 foreach (var key in AbKeys) abilityPick[key] = (string)wAbCombos[key].SelectedItem;
             }
@@ -684,11 +684,11 @@ public partial class MainForm
             var free = new List<string>(Org?.trained ?? new());
             if (originChoice != null) free.Add(originChoice);
             int count = TrainCount();
-            col.Controls.Add(Note($"The {calName} trains {count} skill(s) — the Calling's {Cal.trainedSkills} plus your WIT modifier ({WitMod():+0;−0})." +
-                (free.Count > 0 ? $"  The Origin's own — {string.Join(", ", free)} — come free." : "")));
+            col.Controls.Add(Note($"The {calName} trains {count} skill(s): the Calling's {Cal.trainedSkills} plus your WIT modifier ({WitMod():+0;−0})." +
+                (free.Count > 0 ? $"  The Origin's own, {string.Join(", ", free)}, come free." : "")));
             wSkillCount = Tipped(Cap("", readout: true),
                 $"How many of the {count} trained skills you have ticked. It must read {count} of {count} "
-              + "before the wizard will move on — this is the one step in the book with an exact number "
+              + "before the wizard will move on. This is the one step in the book with an exact number "
               + "rather than an allowance.");
             col.Controls.Add(wSkillCount);
             wSkillList = new CheckedListBox { Width = 340, Height = 300, CheckOnClick = true, Font = new Font("Segoe UI", 9.5f) };
@@ -701,7 +701,7 @@ public partial class MainForm
                 if (skillPicks.Contains(sk.name)) wSkillList.SetItemChecked(idx, true);
             }
             ItemTips(wSkillList, i => SkillTip(shelf[i]),
-                $"The skills this soul is trained in — tick exactly {count}, no more. Trained means you add "
+                $"The skills this soul is trained in, tick exactly {count}, no more. Trained means you add "
               + "your whole level to the roll; untrained is the bare ability modifier and nothing else.\n"
               + "The count is watched: once you have ticked all " + count + ", a further tick will not take. "
               + "Untick something first. Anything the Origin trains free is already off this list.\n"
@@ -758,7 +758,7 @@ public partial class MainForm
             var col = Column();
             wEdgeCombos.Clear(); wGunCombos.Clear();
             var levels = new[] { 1, 3, 5, 7, 9 }.Where(l => l <= level).ToList();
-            col.Controls.Add(Note($"An Edge at 1st and each odd level — {levels.Count} in all" +
+            col.Controls.Add(Note($"An Edge at 1st and each odd level, {levels.Count} in all" +
                 (Cal.bonusCombatEdgeAtOdd ? ", and the Gunhand's bonus combat Edge beside each" : "") +
                 ". Each list shows only what's legal given everything picked so far; later slots re-check as earlier ones change."));
             wEdgeDetail = new Label { AutoSize = true, MaximumSize = new Size(690, 0), ForeColor = Ink, Font = new Font("Segoe UI", 9f), Padding = new Padding(0, 6, 0, 0) };
@@ -766,7 +766,7 @@ public partial class MainForm
             bool refilling = false;
             void RefillAll()
             {
-                if (refilling) return;                       // combos refill each other — no echoes
+                if (refilling) return;                       // combos refill each other: no echoes
                 refilling = true;
                 try { RefillCore(); } finally { refilling = false; }
             }
@@ -803,8 +803,8 @@ public partial class MainForm
                 cb.SelectedIndexChanged += (s, e) =>
                 {
                     var edge = CharGen.EdgeByName(cb.SelectedItem as string);
-                    wEdgeDetail.Text = edge != null ? $"{edge.name} — {edge.desc}" : "";
-                    // the tip carries what the detail line leaves out — the effect and the requirements
+                    wEdgeDetail.Text = edge != null ? $"{edge.name}, {edge.desc}" : "";
+                    // the tip carries what the detail line leaves out: the effect and the requirements
                     Tip.SetToolTip(cb, Wrap(EdgeTip(cb.SelectedItem as string) ?? ""));
                     RefillAll();
                 };
@@ -860,7 +860,7 @@ public partial class MainForm
             int signs = SignCount();
             if (signs > 0)
             {
-                col.Controls.Add(Cap($"Signs known — pick {signs}"));
+                col.Controls.Add(Cap($"Signs known. Pick {signs}"));
                 wSignCount = Tipped(Cap("", readout: true),
                     $"How many of this soul's {signs} Signs you have chosen yourself. Unlike the skills you "
                   + "may leave this short and move on: every Sign you don't pick is dealt at the end from "
@@ -873,9 +873,9 @@ public partial class MainForm
                     if (signPicks.Contains(sg.name)) wSignList.SetItemChecked(idx, true);
                 }
                 ItemTips(wSignList, i => SignTip(CharGen.D.signs[i]),
-                    $"The Signs this soul already knows — tick up to {signs}. Each is listed with what it "
+                    $"The Signs this soul already knows, tick up to {signs}. Each is listed with what it "
                   + "costs to work; hover one for its Rank, its list, and what it does.\nA tick past "
-                  + $"{signs} will not take — untick something first. Unlike the skills you may stop short: "
+                  + $"{signs} will not take, untick something first. Unlike the skills you may stop short: "
                   + "whatever you leave unpicked is dealt at the end from the lists this Calling is allowed, "
                   + "at the Ranks this level has opened.");
                 void Refresh() => wSignCount.Text = $"Picked {wSignList.CheckedItems.Count} of {signs}  (any left unpicked are dealt at the end)";
@@ -903,7 +903,7 @@ public partial class MainForm
                 Tipped(wSubpath, veiled
                     ? $"At 3rd level the {Cal.name} says what they want from the dark. The Keeper says who answered, "
                       + "what it grants and what it wants back."
-                    : $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept — "
+                    : $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept: "
                       + "the boon it grants is printed below as you move through the list.");
                 wSubpath.SelectedIndex = Math.Max(0, pathChoices.FindIndex(p => p.Name == subpathPick));
                 var detail = new Label { AutoSize = true, MaximumSize = new Size(690, 0), ForeColor = Ink, Font = new Font("Segoe UI", 9f), Padding = new Padding(0, 4, 0, 0) };
@@ -919,7 +919,7 @@ public partial class MainForm
                 col.Controls.Add(Cap(Cal.choice.label));
                 wChoice = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
                 foreach (var o in Cal.choice.options) wChoice.Items.Add(o);
-                Tipped(wChoice, $"{Cal.choice.label} — the {Cal.name}'s own standing choice, made at 1st level and written on the sheet.");
+                Tipped(wChoice, $"{Cal.choice.label}: the {Cal.name}'s own standing choice, made at 1st level and written on the sheet.");
                 wChoice.SelectedItem = choicePick != null && wChoice.Items.Contains(choicePick) ? choicePick : wChoice.Items[0];
                 col.Controls.Add(wChoice);
 
@@ -933,7 +933,7 @@ public partial class MainForm
                 void ShowFamiliar()
                 {
                     var f = CharGen.FamiliarFor(wChoice.SelectedItem as string);
-                    famDetail.Text = f == null ? "" : $"+2 {f.skill} while it is near — {f.why}.";
+                    famDetail.Text = f == null ? "" : $"+2 {f.skill} while it is near, {f.why}.";
                 }
                 wChoice.SelectedIndexChanged += (s, e) => ShowFamiliar();
                 ShowFamiliar();
@@ -954,7 +954,7 @@ public partial class MainForm
         // ============================================== 8 · outfit
         /// One line on the general store's shelf. The list holds these rather than formatted
         /// strings, so the item's name is read back off the object instead of cut out of its own
-        /// label — a name containing the separator used to take the whole purchase with it.
+        /// label: a name containing the separator used to take the whole purchase with it.
         sealed class StoreItem
         {
             public string Name; public double Cost; public string Detail; public bool IsWeapon;
@@ -969,7 +969,7 @@ public partial class MainForm
                 .Replace(Name, @"\s*\((?:\$[\d.,]+|[\d.,]+¢)\)$", "");
 
             public override string ToString() =>
-                $"{Shown}{(Qty > 1 ? $"  × {Qty}" : "")} — {Money(Cost * Qty)}"
+                $"{Shown}{(Qty > 1 ? $"  × {Qty}" : "")}, {Money(Cost * Qty)}"
               + (Qty > 1 ? $" ({Money(Cost)} ea.)" : "")
               + (string.IsNullOrEmpty(Detail) ? "" : "   " + Detail);
         }
@@ -982,8 +982,8 @@ public partial class MainForm
             if (coinRolled <= 0)
                 coinRolled = Enumerable.Range(0, Cal.coin.dice).Sum(_ => Rules.Rng.Next(1, 7)) * Cal.coin.mult;
             wCoinLbl = Tipped(Cap("", readout: true),
-                $"The money this soul starts with — {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}, rolled "
-              + "for you — against what is in the basket, and what is left. Whatever is left stays on the "
+                $"The money this soul starts with, {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}, rolled "
+              + "for you, against what is in the basket, and what is left. Whatever is left stays on the "
               + "sheet as coin in their pocket; there is no requirement to spend it. The store below will not "
               + "let the basket pass this number.");
             var rollRow = new FlowLayoutPanel { AutoSize = true };
@@ -994,14 +994,14 @@ public partial class MainForm
                 foreach (int i in wBuyList.CheckedIndices.Cast<int>().ToList()) wBuyList.SetItemChecked(i, false);
                 qtySuppress = false;
                 RefreshCoin();
-            }, 140, $"Roll the starting coin again — {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}. Everything in the basket is put back."));
+            }, 140, $"Roll the starting coin again, {Cal.coin.dice}d6 × ${Cal.coin.mult} {Cal.coin.note}. Everything in the basket is put back."));
             col.Controls.Add(wCoinLbl);
             col.Controls.Add(rollRow);
             var kit = Cal.coin.kit.Concat(Org?.gear ?? new List<string>()).ToList();
             if (kit.Count > 0)
                 col.Controls.Add(Note("Comes free with the Calling and Origin: " + string.Join(" · ", kit)));
             col.Controls.Add(Cap("At the general store (printed prices)"));
-            col.Controls.Add(Note("Tick a line to buy it. To take more than one — a second pistol, a dozen candles — highlight the "
+            col.Controls.Add(Note("Tick a line to buy it. To take more than one (a second pistol, a dozen candles) highlight the "
                 + "line and set the number below; the price and what's left of the coin follow along."));
 
             wBuyList = new CheckedListBox { Width = 560, Height = 260, CheckOnClick = true, Font = new Font("Segoe UI", 9f) };
@@ -1028,17 +1028,17 @@ public partial class MainForm
                 if (buyPicks.ContainsKey(kv.Key)) wBuyList.SetItemChecked(idx, true);
             }
             ItemTips(wBuyList, i => StoreTip((StoreItem)wBuyList.Items[i]),
-                "The general store, at Chapter X's printed prices — guns and blades first, then goods, both "
+                "The general store, at Chapter X's printed prices: guns and blades first, then goods, both "
               + "alphabetical. Tick a line to buy it.\nA tick the rolled coin will not cover does not take: "
               + "that is the refusal, not a stuck checkbox. To take more than one of something, highlight the "
-              + "line and set the number below.\nNothing here is compulsory — coin left unspent stays on the "
+              + "line and set the number below.\nNothing here is compulsory, coin left unspent stays on the "
               + "sheet as money. Hover a line for its price, its damage and traits, and whether it is armor.");
 
             wBuyList.ItemCheck += (s, e) =>
             {
                 if (qtySuppress) return;
                 if (e.NewValue == CheckState.Checked && SpentIf(e.Index, ((StoreItem)wBuyList.Items[e.Index]).Qty) > coinRolled)
-                    e.NewValue = CheckState.Unchecked;      // can't afford it — the tick doesn't take
+                    e.NewValue = CheckState.Unchecked;      // can't afford it: the tick doesn't take
                 BeginInvoke(RefreshCoin);
             };
             wBuyList.SelectedIndexChanged += (s, e) => SyncQtyBox();
@@ -1062,13 +1062,13 @@ public partial class MainForm
         static string StoreTip(StoreItem it) =>
             it == null ? null
           : it.IsWeapon
-            ? $"{it.Shown} — {StoreItem.Money(it.Cost)} each. {it.Detail}\nBought more than once, each is carried separately: "
+            ? $"{it.Shown}, {StoreItem.Money(it.Cost)} each. {it.Detail}\nBought more than once, each is carried separately: "
               + "a brace of pistols is two guns, not one gun fired twice."
-            : $"{it.Shown} — {StoreItem.Money(it.Cost)} each."
+            : $"{it.Shown}, {StoreItem.Money(it.Cost)} each."
               + (CharGen.D.armor.FirstOrDefault(a => a.gear == it.Name) is { } ar
                  ? $"\nThis is armor: DR {ar.drBlades} vs blades, DR {ar.drShot} vs small shot"
                    + (ar.defense != 0 ? $", Defense {ar.defense:+0;−0}" : "") + (ar.speed != 0 ? $", Speed {ar.speed:+0;−0} ft" : "")
-                   + ".\nA second suit grants nothing — only the best one worn counts."
+                   + ".\nA second suit grants nothing, only the best one worn counts."
                  : "");
 
         /// What the basket costs if row <paramref name="index"/> were held at <paramref name="qty"/>.
@@ -1118,7 +1118,7 @@ public partial class MainForm
         void RefreshCoin()
         {
             double spent = Spent();
-            wCoinLbl.Text = $"Rolled ${coinRolled:0} {Cal.coin.note} — spent ${spent:0.##}, ${coinRolled - spent:0.##} left";
+            wCoinLbl.Text = $"Rolled ${coinRolled:0} {Cal.coin.note}, spent ${spent:0.##}, ${coinRolled - spent:0.##} left";
         }
 
         bool CollectOutfit()
@@ -1140,7 +1140,7 @@ public partial class MainForm
         Control BuildPerson()
         {
             var col = Column();
-            col.Controls.Add(Note("The Four Questions and the Compass — pick from the book's tables, write your own, or leave blank to roll."));
+            col.Controls.Add(Note("The Four Questions and the Compass. Pick from the book's tables, write your own, or leave blank to roll."));
             ComboBox Row(string label, string key, string current)
             {
                 var row = new FlowLayoutPanel { AutoSize = true };
@@ -1150,11 +1150,11 @@ public partial class MainForm
                 cb.Text = current ?? "";
                 Tipped(cb, key switch
                 {
-                    "lost"    => "What did you lose? The thing that is already gone when play starts — it is what the Keeper reaches for when the game needs to hurt.",
+                    "lost"    => "What did you lose? The thing that is already gone when play starts. It is what the Keeper reaches for when the game needs to hurt.",
                     "seen"    => "What have you seen? The reason you believe in the dark when the sensible people don't.",
                     "vices"   => "What is your vice? Where the money and the good sense go. Grit is easier to spend when a soul has somewhere to fall.",
                     "moving"  => "What keeps you moving? The one thing that gets a frightened person back on the trail.",
-                    "compass" => "Which way the soul points — the standing lean the Keeper reads you by. Not a rule, a promise about who this is.",
+                    "compass" => "Which way the soul points. The standing lean the Keeper reads you by. Not a rule, a promise about who this is.",
                     _ => null
                 } + "\nPick from the book's table, write your own, or leave it blank to have it dealt at the end.");
                 row.Controls.Add(cb);
@@ -1171,8 +1171,8 @@ public partial class MainForm
             // …and what they look like. Drawn here rather than asked for field by field: eighteen
             // more boxes at the end of a nine-step wizard is where a player puts the thing down.
             // One button, a plain-English read-back, and the whole of it is editable afterwards
-            // from ✎ Tweak — which is the right place for somebody who wants to choose the coat.
-            col.Controls.Add(Note("A face and an outfit, drawn against the Calling. Roll it as often as you like — "
+            // from ✎ Tweak, which is the right place for somebody who wants to choose the coat.
+            col.Controls.Add(Note("A face and an outfit, drawn against the Calling. Roll it as often as you like: "
                 + "✎ Tweak on the finished sheet opens every part of it for editing."));
             var lookRow = new FlowLayoutPanel { AutoSize = true };
             lookRow.Controls.Add(Lbl("Look:", 70));
@@ -1181,7 +1181,7 @@ public partial class MainForm
                 Width = 460, AutoSize = false, Height = 46, ForeColor = Ink, Padding = new Padding(0, 4, 0, 0),
                 Font = new Font("Segoe UI", 9f, FontStyle.Italic), Tag = "readout"
             };
-            Tipped(wLookLbl, "How this soul strikes a stranger — their people, build, dress and the one detail "
+            Tipped(wLookLbl, "How this soul strikes a stranger: their people, build, dress and the one detail "
                 + "anybody would describe first. Nothing here costs or grants anything.");
             ShowLook();
             lookRow.Controls.Add(wLookLbl);
@@ -1201,7 +1201,7 @@ public partial class MainForm
             if (wLookLbl == null) return;
             wLookLbl.Text = look is { Any: true }
                 ? look.AtAGlance
-                : "Not drawn yet — one is dealt with the sheet if you leave it.";
+                : "Not drawn yet. One is dealt with the sheet if you leave it.";
         }
         bool CollectPerson()
         {

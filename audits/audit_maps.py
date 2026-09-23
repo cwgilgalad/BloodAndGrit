@@ -94,7 +94,7 @@ def audit(slug, book):
         if n not in scenes:
             bad(slug, f"pin {n} is on the map, but the book has no scene numbered {n}")
 
-    # A feature may legitimately carry more than one number — the Pell place is scene 5 and the
+    # A feature may legitimately carry more than one number: the Pell place is scene 5 and the
     # fight in its yard is scene 6, drawn on the same building. What it may NOT do is carry a set
     # of numbers none of which is its own scene: that is a pin renumbered on one side only.
     for key, scene, body in feats:
@@ -106,7 +106,7 @@ def audit(slug, book):
     # The inline copy and the downloadable file must be the same drawing.
     f = ROOT / module_maps.filename(slug)
     if not f.is_file():
-        bad(slug, f"{f.name} has not been generated — run `python module_maps.py`")
+        bad(slug, f"{f.name} has not been generated; run `python module_maps.py`")
     else:
         standalone = f.read_text(encoding="utf-8")
         if module_maps.svg(slug, standalone=True) not in standalone:
@@ -136,7 +136,7 @@ def audit(slug, book):
             bad(slug, f"a rect runs outside the {W}x{H} frame: {x:.0f},{y:.0f} {w:.0f}x{h:.0f}")
 
     # Label collisions. Estimated boxes, generous on height and mean glyph width, so this reports
-    # real overlaps rather than near misses — a map whose labels touch is a map somebody misreads.
+    # real overlaps rather than near misses: a map whose labels touch is a map somebody misreads.
     boxes = []
     for x, y, anchor, size, t in texts:
         x, y, size = float(x), float(y), float(size)
@@ -170,7 +170,7 @@ def audit(slug, book):
 
 for slug, book in PAIRS:
     if not (ROOT / book).is_file():
-        print(f"{book}: not built — run the module builders first")
+        print(f"{book}: not built; run the module builders first")
         fails.append(book)
         continue
     audit(slug, book)

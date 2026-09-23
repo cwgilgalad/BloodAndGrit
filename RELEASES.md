@@ -1,9 +1,9 @@
 # Release history
 
 GitHub carries **one Release page**, and it holds the current build of every part of the
-game at once: the app, the three books, the three modules, and the six PDFs as their own
+game at once: the app, the four books, the three modules, and the seven PDFs as their own
 downloads. Consolidated 2026-08-27 from three per-component pages, which had a trap in
-them — README points at `/releases/latest`, so shipping a book quietly aimed the app's
+them: README points at `/releases/latest`, so shipping a book silently aimed the app's
 download button at a zip of PDFs until somebody remembered to move the Latest flag back.
 
 Everything that ever shipped is listed here, and every version below is still reachable by its
@@ -13,11 +13,11 @@ git tag:
 git checkout <tag>      # the tree exactly as it shipped, at any tag below
 ```
 
-The full notes for each version — what changed and why — are in
+The full notes for each version, what changed and why, are in
 [CHANGELOG.md](CHANGELOG.md), which is the canonical log and always has been. This page is the
 index to it.
 
-## GritKeeper — the Keeper's app
+## GritKeeper: the Keeper's app
 
 | Version | Tag | Shipped | What it was |
 |---|---|---|---|

@@ -397,8 +397,16 @@ hand in the right order out of memory.
   (the share of marks that are `; : ? ! ( )`), and **sentence-opener diversity**. The dash figure
   had two faults that cancelled into a plausible-looking column. It was per thousand *characters*,
   and `strip_html` blanked `&mdash;` along with every other entity, which is how every book
-  writes theirs. Corrected, the three modules read 8.6 / 9.2 / 9.4 and **the three books read
-  15.2 / 16.7 / 16.6, which is the one outstanding prose finding in the repo.**
+  writes theirs. Corrected, it read 15.2 / 16.7 / 16.6 for the books and 8.6 / 9.2 / 9.4 for the
+  modules, and that was the repo's outstanding prose finding until the voice pass of 2026-09-20.
+  **The column counts PROSE only, as of 2026-09-22.** It read the whole stripped file until then,
+  so the cover rule (drawn out of em dashes), a stat block's empty field ("Defense —", "Ref —") and
+  the attribution line before a witness's name all landed in it. The Bestiary showed 2.6 on five
+  dashes of prose and 212 of typography, which meant the figure in the table and the figure the
+  books were being rewritten to were two different measurements, and the table is the one anybody
+  reads. It counts `book_units()` now, the same text the research signals read, with a `typo`
+  column beside it saying how many it set aside. The books read 0.0 / 0.2 / 0.1, the Book of
+  Legends 0.4, the modules 0.4 / 0.5 / 0.4. The gate is 2.0.
   Three things about that script are worth not re-learning: its markup stripping is
   **length-preserving**, because collapsing spans made every reported line number fiction and sent
   you to rewrite innocent prose; **quoted** spans are reported apart and never fail, since both real
@@ -582,8 +590,11 @@ list, which is generated.
 - **Every document has its own voice.** A clerk, a bank, a freighter and a frightened woman do not
   write alike, and the variance is the point: uniform prose is the thing the AI-cadence audit is
   built to find, and a book of documents is the best defence against it the project has. The
-  measured result is the best in the set (0.4 em dashes per thousand words against the other books'
-  8&ndash;12, burstiness 0.9 against the two human baselines' 0.8 and 0.9).
+  measured result was the best in the set on the day it was written (0.4 em dashes per thousand
+  words against the other books' 8&ndash;12, burstiness 0.9 against the two human baselines' 0.8
+  and 0.9). The voice pass took the other three down to 0.0&ndash;0.2 the next day, so Legends is
+  the highest of the four now; what the documents still hold on their own is the burstiness, and
+  no pass can manufacture that.
 - **Contractions belong to the informal voices only.** Official returns write it out; letters,
   field-books and spoken answers contract. That spread is deliberate and it is what took the book
   from 0.3 contractions per thousand words to 8.5.

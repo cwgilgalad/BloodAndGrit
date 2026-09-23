@@ -11,12 +11,12 @@ static class Program
         // Headless self-check of THIS binary: `GritKeeper.exe --selftest`. Drives the real code
         // paths behind the table tools (#1 the Iron Code Strike, #2 the Beat/MAP turn state,
         // #3 the Dread economy and the faith pool), validates a generated soul, and attempts to
-        // construct the whole WinForms UI graph — then writes a report and exits 0 (clear) / 1
+        // construct the whole WinForms UI graph, then writes a report and exits 0 (clear) / 1
         // (a check failed). Lets a remote/headless session verify the shipped exe; the visual and
         // click behavior of the modal dialogs still wants the on-screen run-through.
         if (args != null && Array.IndexOf(args, "--selftest") >= 0)
         {
-            AttachConsole(-1);   // ATTACH_PARENT_PROCESS — this is a WinExe; borrow the caller's console
+            AttachConsole(-1);   // ATTACH_PARENT_PROCESS: this is a WinExe; borrow the caller's console
             Environment.Exit(SelfTest());
             return;
         }
@@ -47,7 +47,7 @@ static class Program
 
         // The daybook: a capped record of what the app just did, kept in memory and written out only
         // when there is a reason to. The two tiers below answer "it stopped"; this answers the report
-        // a table actually makes — "that roll can't have been a 3", "the tracker lost somebody" —
+        // a table actually makes ("that roll can't have been a 3", "the tracker lost somebody")
         // where nothing threw and so nothing was written. Opened here rather than in the library so
         // the smoke rig's fuzz loops stay silent (see Daybook).
         //
@@ -57,13 +57,13 @@ static class Program
         Daybook.Open(verbose ? Path.Combine(AppContext.BaseDirectory, "daybook.txt") : null);
         Daybook.Note("app", $"GritKeeper v{typeof(Program).Assembly.GetName().Version} on "
                             + $"{Environment.OSVersion}, 64-bit: {Environment.Is64BitProcess}"
-                            + (verbose ? " — verbose, mirroring to daybook.txt" : ""));
+                            + (verbose ? ", verbose, mirroring to daybook.txt" : ""));
 
         // Two tiers of failure handling:
         //  - UI-thread exceptions (a locked clipboard, a bad paste, one misbehaving
-        //    handler) are RECOVERABLE — report them and keep the table running.
+        //    handler) are RECOVERABLE: report them and keep the table running.
         //    Killing the app here would also skip FormClosing and lose the autosave.
-        //  - Truly unhandled exceptions are fatal — attempt an emergency save,
+        //  - Truly unhandled exceptions are fatal: attempt an emergency save,
         //    write startup-error.txt beside the exe (or %TEMP%), then exit.
         AppDomain.CurrentDomain.UnhandledException += (s, e) => Crash(e.ExceptionObject as Exception);
         Application.ThreadException += (s, e) => Recoverable(e.Exception);
@@ -76,7 +76,7 @@ static class Program
             CharGen.Load();
             Look.Load();
 
-            // How is this table run — a player's own view, a Keeper with dice, or a Keeper on the
+            // How is this table run: a player's own view, a Keeper with dice, or a Keeper on the
             // engine? Ask at launch unless a past table asked to be remembered; the choice is saved
             // and can be changed any time from the Table menu.
             var prefs = Prefs.Load();
@@ -102,18 +102,18 @@ static class Program
         void Line(string s) { Console.WriteLine(s); log.AppendLine(s); }
         void Chk(bool ok, string label) { checks++; if (!ok) fails++; Line((ok ? "  ok   " : "  FAIL ") + label); }
 
-        Line("GritKeeper self-test — v" + typeof(Program).Assembly.GetName().Version);
+        Line("GritKeeper self-test, v" + typeof(Program).Assembly.GetName().Version);
         try
         {
             ApplicationConfiguration.Initialize();
             // Point the state at a scratch folder BEFORE anything can read or write it. The three
             // MainForm instances below each run TryAutoLoad in their constructor, which reads the
-            // session and — on a file it cannot parse — MOVES it aside to session-unreadable.json.
+            // session and, on a file it cannot parse, MOVES it aside to session-unreadable.json.
             // Against a real Keeper's folder that is a self-test rearranging somebody's table. It
             // also makes the run hermetic: what the self-test does no longer depends on what
             // happens to be saved on the machine running it.
             AppState.UseForTesting(Path.Combine(Path.GetTempPath(), "gritkeeper-selftest"));
-            // The clipping audits SHOW the form (off-screen) — an unshown one measures nothing —
+            // The clipping audits SHOW the form (off-screen): an unshown one measures nothing,
             // and a scratch folder looks like a first run, which opens the tour offer as a MODAL on
             // Shown. Nobody is here to click it. Same reason as --timetabs above.
             MainForm.SuppressFirstRunTour = true;
@@ -153,8 +153,8 @@ static class Program
             //    but does not by itself fail the run. --
             try
             {
-                // Construct the graph in every mode — the player's pared-down board and both Keeper
-                // tables — so a broken tab filter or mode wiring fails the self-test, not the table.
+                // Construct the graph in every mode (the player's pared-down board and both Keeper
+                // tables), so a broken tab filter or mode wiring fails the self-test, not the table.
                 foreach (var mode in new[] { RunMode.Player, RunMode.KeeperDice, RunMode.KeeperEngine })
                 {
                     using var mf = new MainForm(mode);
@@ -164,7 +164,7 @@ static class Program
                     // count the app's own prose quotes is the count it actually holds.
                     //
                     // Per mode, because the deck is dealt per mode: a Keeper gets the whole screen,
-                    // and a player's table must come up SHORT — the two Keeper's-Book leaves are not
+                    // and a player's table must come up SHORT: the two Keeper's-Book leaves are not
                     // theirs to read. A filter that quietly stopped filtering would look like nothing
                     // at all at the table, so it is asserted from both ends.
                     int want = MainForm.RefLeafCountFor(mode);
@@ -176,7 +176,7 @@ static class Program
                         Chk(want < MainForm.RefLeafCount,
                             $"GUI: a player's screen is the shorter deck ({want} of {MainForm.RefLeafCount} leaves)");
 
-                    // Every control on every tab must say what it is — see MainForm's tip audit.
+                    // Every control on every tab must say what it is. See MainForm's tip audit.
                     // Once per mode: the Player board is a different set of tabs, not a subset of
                     // the same objects, so a tip missed there is missed for the person least likely
                     // to know the rules already.
@@ -211,7 +211,7 @@ static class Program
                         Chk(mf.MapFullScreenRoundTrip(), "GUI: the Map comes home from full screen with everything on it");
 
                         // Undo is snapshot-based, so a field nothing captures does not merely fail
-                        // to undo — it rides along on the NEXT undo and gets reverted with it. That
+                        // to undo. It rides along on the NEXT undo and gets reverted with it. That
                         // failure is silent at the table and takes the Keeper's work with it, so
                         // every field of the session is probed rather than trusted.
                         var stale = mf.AuditUndo();
@@ -239,7 +239,7 @@ static class Program
                         // v1.57.0: Nerve and the Mark live on the SOUL and the Tracker binds the
                         // BODY, so the two new columns are unbound and filled by hand from
                         // SoulOf(). An unbound column that nothing fills is not a visible failure
-                        // — it is a quiet empty strip on the tab a Keeper watches all night — so
+                        // (it is a quiet empty strip on the tab a Keeper watches all night) so
                         // the cells are read back through the real formatter rather than trusted.
                         var unseen = mf.TrackerShowsTheSoul();
                         if (unseen != null) Line("       tracker: " + unseen);
@@ -247,7 +247,7 @@ static class Program
                     }
                 }
 
-                // The soul wizard's nine steps, built for EVERY Calling at level 9 — the level that
+                // The soul wizard's nine steps, built for EVERY Calling at level 9: the level that
                 // opens all of them (both ability boosts, all four skill increases, five Edges, the
                 // subpath, the full Sign allowance). Four hand-picked Callings used to stand in for
                 // the seventeen on the grounds that they reached every optional page between them.
@@ -267,7 +267,7 @@ static class Program
                     // assertion that lets that stand (2026-08-30).
                     Chk(pages == MainForm.StepCount,
                         $"GUI: the soul wizard builds all {MainForm.StepCount} steps for a {cal} ({pages} pages)");
-                    // The wizard's tooltips are its manual — see BuildWizardStepsForSelfTest.
+                    // The wizard's tooltips are its manual. See BuildWizardStepsForSelfTest.
                     silent += untipped.Count;
                     if (untipped.Count > 0)
                         Line($"  FAIL GUI: a {cal}'s wizard has {untipped.Count} silent control(s): "
@@ -294,7 +294,7 @@ static class Program
             }
             catch (Exception ux)
             {
-                Line("  n/a  GUI: not constructible headlessly (needs a desktop) — "
+                Line("  n/a  GUI not constructible headlessly (needs a desktop): "
                      + ux.GetType().Name + ": " + ux.Message.Split('\n')[0]);
             }
         }
@@ -304,7 +304,7 @@ static class Program
             fails++;
         }
 
-        Line($"\nself-test: {checks - fails}/{checks} checks passed" + (fails == 0 ? " — all clear." : $" — {fails} FAILED."));
+        Line($"\nself-test: {checks - fails}/{checks} checks passed" + (fails == 0 ? ", all clear." : $", {fails} FAILED."));
         try { File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "selftest-report.txt"), log.ToString()); } catch { }
         return fails == 0 ? 0 : 1;
     }
@@ -324,9 +324,9 @@ static class Program
         {
             MessageBox.Show(
                 "That action hit a snag:\r\n\r\n" + ex?.Message +
-                "\r\n\r\nThe table is unharmed — you can keep playing.\r\n" +
+                "\r\n\r\nThe table is unharmed. You can keep playing.\r\n" +
                 "(Details in %TEMP%\\BloodAndGrit-last-error.txt.)",
-                "Blood & Grit — GritKeeper",
+                "Blood & Grit: GritKeeper",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         catch { }
@@ -343,7 +343,7 @@ static class Program
         }
         catch { }
         string report =
-            "Blood & Grit — GritKeeper: startup/runtime error\r\n" +
+            "Blood & Grit · GritKeeper: startup/runtime error\r\n" +
             $"Time: {DateTime.Now}\r\n" +
             $"BaseDirectory: {AppContext.BaseDirectory}\r\n" +
             $"CurrentDirectory: {Environment.CurrentDirectory}\r\n" +
@@ -366,10 +366,10 @@ static class Program
             MessageBox.Show(
                 "GritKeeper hit a snag and had to stop.\r\n\r\n" +
                 ex?.Message + "\r\n\r\nA full report was written to:\r\n" + path,
-                "Blood & Grit — GritKeeper",
+                "Blood & Grit: GritKeeper",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        catch { /* headless — nothing more we can do */ }
+        catch { /* headless. Nothing more we can do */ }
         Environment.Exit(1);
     }
 }

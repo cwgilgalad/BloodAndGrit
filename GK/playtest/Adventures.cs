@@ -1,10 +1,10 @@
 // The three adventures, declared as data so one runner plays all of them.
 //
-// Every creature here is named, never described — the runner looks each one up in
+// Every creature here is named, never described. The runner looks each one up in
 // Data/creatures.json and plays it on the Bestiary's own Defense, Blood, attacks and Dread DC.
 // If a name does not resolve, the run FAILS rather than quietly substituting something plausible:
 // an adventure that cites a creature the Bestiary does not have is an adventure a Keeper cannot
-// run. That check has already earned its keep — the first draft of this file asked for "Risen",
+// run. That check has already earned its keep: the first draft of this file asked for "Risen",
 // "Skinwalker" and "Ghoul", and the Bestiary has "The Risen", "The Skin-Walker" and no ghoul at
 // all. Two near-misses and an invention, in four names.
 
@@ -20,7 +20,7 @@ public record Beat(
     string[] Foes = null,        // Bestiary names, one entry per body on the field
     int DreadDc = 0,
     int DreadTier = 0,           // which rung of the Nerve-loss ladder a failure pays
-    int Toll = 0,                // Blood taken by the country itself — a fall, a fever, bad water
+    int Toll = 0,                // Blood taken by the country itself: a fall, a fever, bad water
     string Note = null);
 
 public record Act(string Title, string Purpose, Beat[] Beats);
@@ -44,7 +44,7 @@ public static class Adventures
     public static readonly Adventure Salt = new(
         "salt-at-coffin-wells",
         "The Salt at Coffin Wells",
-        "A first reckoning for a fresh posse — one night, three acts, and a banker who dug where he was told not to",
+        "A first reckoning for a fresh posse: one night, three acts, and a banker who dug where he was told not to",
         PartyLevel: 1,
         Site: "Coffin Wells",
         Truth: "Josiah Vane dug up a staked and salted grave on the old mission ground hunting silver, "
@@ -53,23 +53,23 @@ public static class Adventures
              + "it is past any stake.",
         Acts: new[]
         {
-            new Act("Act One — The Ordinary West",
+            new Act("Act One: The Ordinary West",
                 "Be a real town for one scene, then turn the note.",
                 new[]
                 {
                     new Beat(BeatKind.Dread, "the boot-hill graves are disturbed", DreadDc: 13, DreadTier: 1,
                         Note: "Soft on purpose. The first Dread Check of a campaign should be survivable."),
                 }),
-            new Act("Act Two — The Wrong Note Answers",
+            new Act("Act Two: The Wrong Note Answers",
                 "The dead get up. Nerve becomes real.",
                 new[]
                 {
                     new Beat(BeatKind.Dread, "the supper cold on the table, the door standing open", DreadDc: 16, DreadTier: 1),
-                    new Beat(BeatKind.Fight, "the Pell place — the dead getting up",
+                    new Beat(BeatKind.Fight, "the Pell place, the dead getting up",
                         Foes: new[] { "The Risen", "The Risen", "The Risen" }),
                     new Beat(BeatKind.Dread, "the wife in the cellar, bled and half-turned", DreadDc: 16, DreadTier: 2),
                 }),
-            new Act("Act Three — The Reckoning",
+            new Act("Act Three: The Reckoning",
                 "The ruined mission, the opened grave, and the thing that came out of it.",
                 new[]
                 {
@@ -90,7 +90,7 @@ public static class Adventures
     public static readonly Adventure Face = new(
         "a-face-not-his-own",
         "A Face Not His Own",
-        "A second reckoning — a lonely relay, eight souls under one roof, and one of them is wearing somebody",
+        "A second reckoning: a lonely relay, eight souls under one roof, and one of them is wearing somebody",
         PartyLevel: 3,
         Site: "Saltlick Station",
         Truth: "Something at Saltlick takes a face and keeps it. It came in with the last coach and has "
@@ -98,14 +98,14 @@ public static class Adventures
              + "posse in a hurry shoots the wrong person before they find it.",
         Acts: new[]
         {
-            new Act("Act One — The Wrong Note Among Friends",
+            new Act("Act One: The Wrong Note Among Friends",
                 "Eight names, one roof, and something already inside it.",
                 new[]
                 {
                     new Beat(BeatKind.Dread, "the hostler answers to a name that is not his", DreadDc: 15, DreadTier: 2),
                     new Beat(BeatKind.Toll, "a night in the cold with the doors barred", Toll: 2),
                 }),
-            new Act("Act Two — The First Taking",
+            new Act("Act Two: The First Taking",
                 "It takes somebody the posse has spoken to, and leaves what it does not need.",
                 new[]
                 {
@@ -113,7 +113,7 @@ public static class Adventures
                     new Beat(BeatKind.Fight, "the tack room, and the two it has already been inside",
                         Foes: new[] { "The Possessed", "The Possessed" }),
                 }),
-            new Act("Act Three — The Tell Made Plain",
+            new Act("Act Three: The Tell Made Plain",
                 "The tell named out loud, and the thing that no longer needs the face.",
                 new[]
                 {
@@ -124,10 +124,10 @@ public static class Adventures
         });
 
     // ---------------------------------------------------------------- III
-    // The third Hand, at Mission San Clavo — the ruined heart of the Basin from Ch. XIII. The two
+    // The third Hand, at Mission San Clavo, the ruined heart of the Basin from Ch. XIII. The two
     // book adventures both END at the mission and neither goes into it. This one does, and goes
     // under it. Level 5 puts the posse at Tier 3, which is what a Tier III boss wants.
-    // The title was retired in modules-v1.1 — "The Reckoning of the Wells" collided with "The Salt
+    // The title was retired in modules-v1.1: "The Reckoning of the Wells" collided with "The Salt
     // at Coffin Wells" on the word AND on the grammar, which is the whole reason audit_names.py
     // exists. The harness kept the dead name for six days after the module was renamed, and carried
     // it into PLAYTEST.md, which SHIPS inside BloodAndGrit-Modules.zip. Nothing looked: audit_names
@@ -135,7 +135,7 @@ public static class Adventures
     public static readonly Adventure Wells = new(
         "what-the-water-answers",
         "What the Water Answers",
-        "A third reckoning — the water is going bad from the bottom up, and the mission knows why",
+        "A third reckoning: the water is going bad from the bottom up, and the mission knows why",
         PartyLevel: 5,
         Site: "Mission San Clavo",
         Truth: "The wells of the Basin were bound one by one by the padres of San Clavo, and a binding "
@@ -144,7 +144,7 @@ public static class Adventures
              + "through them ever since, one well at a time, from the bottom of the Basin.",
         Acts: new[]
         {
-            new Act("Act One — What Comes Up With the Water",
+            new Act("Act One: What Comes Up With the Water",
                 "A well gone wrong, and the homesteads that drink from it.",
                 new[]
                 {
@@ -153,7 +153,7 @@ public static class Adventures
                         Foes: new[] { "The Drowned", "The Drowned", "The Drowned" }),
                     new Beat(BeatKind.Toll, "the walk to the mission on bad water", Toll: 3),
                 }),
-            new Act("Act Two — The Ledger of the Padres",
+            new Act("Act Two: The Ledger of the Padres",
                 "The mission's own record of what it bound, and what keeping it cost.",
                 new[]
                 {
@@ -161,7 +161,7 @@ public static class Adventures
                     new Beat(BeatKind.Fight, "what has been living in the nave",
                         Foes: new[] { "The Plague-Dead", "The Plague-Dead", "The Plague-Dead" }),
                 }),
-            new Act("Act Three — The Bottom of the Basin",
+            new Act("Act Three: The Bottom of the Basin",
                 "Down the well the padres bound first.",
                 new[]
                 {

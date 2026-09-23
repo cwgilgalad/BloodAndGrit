@@ -198,6 +198,14 @@ what each tab *is*, plus the decisions already settled.
   already priced gear by counting) and **`CharGen.Tally` is the single place** those entries
   become lines again ("Lantern × 3"), shared by the Ledger, the text sheet and the PDF. Buying a
   second suit of armor grants no second DR.
+
+  **A weapon's price tag is a parsed format, not a label.** `WeaponsCarried` holds
+  `"{name} {dmg} ({traits}) · ${cost}"` and `Validate`'s coin ledger reads the cost back off the
+  end of that string. It was an em dash until v1.58.0, when the voice pass took the dash out of
+  the app's own words and left the regex where it was: 707 smoke assertions failed at once on a
+  coin ledger that no longer balanced. The mark is a middle dot now and the parser takes `[—·]`,
+  because a `session.json` written by an older build still has to add up. Changing the shape of
+  that string changes a saved-file format.
 - **Generators**: every Ch. XII rollable table plus all nine Grounds terrain tables and the Hand
   Behind It villain picker, safe-table rule applied automatically. Expansions live in
   `Data/tables_extra.json`, merged at load by `Db.MergeTables` and **kept separate so a book
@@ -886,9 +894,9 @@ a weight changed in a Fill-mode grid is re-measured by `--selftest` rather than 
   unreachable from a press and is not a refusal. Both were principled rules rather than an exemption
   list: `mapPanel.Model` looks identical to the compiler and *is* a real refusal a
   Keeper needs told, so an exemption list would have suppressed it too.
-  Currently 141 buttons, 127 refusal-checked handlers, 24 dialogs, 23 access keys: measured
-  2026-08-22, and it had drifted from a typed 134/20, which is this file failing the very rule the
-  app is held to (*counts that appear in prose must be derived*). Read the numbers off
+  Currently 144 buttons, 129 refusal-checked handlers, 25 dialogs, 23 access keys: measured
+  2026-09-22, and it had drifted again, from a typed 141/127/24. This file keeps failing the very
+  rule the app is held to (*counts that appear in prose must be derived*). Read the numbers off
   `audits/audit_ui.py` before quoting them. (It was 132 until v1.32.0 turned the Tracker's
   ＋ Turn glass button into a `CheckBox` toggle; a drop of one here means a `Btn` became something
   else, so check that before assuming a control went missing. It went to 134 in v1.33.0 when the

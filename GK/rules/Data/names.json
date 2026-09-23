@@ -6,12 +6,12 @@
     "Two things are being defended here, and they are different problems.",
     "",
     "BREADTH defends across seeds. Nothing a single run remembers can stop two Keepers, or one",
-    "Keeper on two evenings, from drawing the same word — only the size of the pool can. The old",
+    "Keeper on two evenings, from drawing the same word; only the size of the pool can. The old",
     "town stock was 16 x 16 = 256, and the birthday bound puts the first repeat at about twenty",
     "draws, which is one campaign.",
     "",
     "FORM defends within a seed. A bigger word list alone yields 'The Ashes at Gallows Fork' and",
-    "'The Judgment of the Hollow' — different words, one shape, and the pair still reads as the",
+    "'The Judgment of the Hollow': different words, one shape, and the pair still reads as the",
     "machine talking. So titles are built from templates, and Namer spends a form as readily as it",
     "spends a word. This is the fault that shipped: 'The Salt at Coffin Wells' and 'The Reckoning",
     "of the Wells' collided on the word AND on the shape.",
@@ -325,7 +325,7 @@
     "actor is singular and takes verb3 (the -s form); actorp is plural and takes verb (the bare",
     "form). Splitting them is the only reason 'Until the Homesteaders Pays' cannot be generated.",
     "A form that mixes them wrong reads as a machine talking, which is the whole thing this file",
-    "exists to avoid — see also motion3, which exists because 'Something Forgets to Chalk Section'",
+    "exists to avoid. See also motion3, which exists because 'Something Forgets to Chalk Section'",
     "is what happens when an arrival template is handed an intransitive verb."
   ],
   "actor": [

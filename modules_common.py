@@ -4,14 +4,14 @@
 Same architecture as the other two companion books: the Player's Book is the shell, and a builder
 reads `blood-and-grit.html`, retexts the cover, swaps the body for its own, and writes a sibling.
 `build_keeper.py` and `build_bestiary.py` each carry their own copy of that transform because they
-are one-of-a-kind books. Three modules are not one-of-a-kind — they differ in their content and in
-one accent colour — so the transform lives here once, the way `nav_tools.py` and `pag_patch.py`
+are one-of-a-kind books. Three modules are not one-of-a-kind (they differ in their content and in
+one accent colour) so the transform lives here once, the way `nav_tools.py` and `pag_patch.py`
 already do, and each builder carries only its own adventure.
 
 The statblocks are the load-bearing part. A module that retypes a creature's Defense is a module
 that will one day disagree with the Bestiary, and this project has a name for that: two authorities
-for one number. `statblock(name)` reads `GK/rules/Data/creatures.json` — the same file the app
-embeds — and generates the block. A name that does not resolve raises, so a module can never cite
+for one number. `statblock(name)` reads `GK/rules/Data/creatures.json`, the same file the app
+embeds, and generates the block. A name that does not resolve raises, so a module can never cite
 a creature the Bestiary does not have. That has already caught three bad names once.
 """
 import json

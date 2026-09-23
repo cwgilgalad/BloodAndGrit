@@ -1,5 +1,5 @@
 <#
-    package.ps1 — assemble GritKeeper.zip for a GitHub Release.
+    package.ps1: assemble GritKeeper.zip for a GitHub Release.
 
     Run this AFTER you have signed the published exe. The zip must carry the SIGNED binary,
     so signing comes first; this script only assembles and compresses. It folds in the
@@ -10,7 +10,7 @@
         2.  <your sign step>  (sign.ps1 / signtool with your .pfx)  on the published exe
         3.  .\package.ps1                                   # this script -> GritKeeper.zip
         4.  upload GritKeeper.zip to the GitHub Release, paste RELEASE_NOTES_vX.Y.Z.md
-            (a local scratch file — git-ignored, like the zip; the text lives on the Release)
+            (a local scratch file, git-ignored like the zip; the text lives on the Release)
 
     -Exe    path to the (signed) published exe; defaults to the standard publish output.
     -Force  package even if the exe is not Authenticode-signed (for a local test build only).
@@ -47,7 +47,7 @@ if ($sig -ne "Valid" -and -not $Force) {
 # --- 0. is a copy of the app running out of the folder we are about to overwrite? ---
 # Copying over a running exe fails, and it used to fail as a raw Copy-Item access error two
 # thirds of the way through a release. Name the process instead, and carry on into a staging
-# tree so the zip still gets built — the running instance is never touched.
+# tree so the zip still gets built: the running instance is never touched.
 $appDir = Join-Path $root "GritKeeper\app"
 $appExe = Join-Path $appDir "GritKeeper.exe"
 $holders = @(Get-Process GritKeeper -ErrorAction SilentlyContinue |
@@ -58,7 +58,7 @@ if ($holders.Count -gt 0 -and -not $Staged) {
         Write-Host "  GritKeeper is running from GritKeeper\app (pid $($h.Id), started $($h.StartTime.ToString('HH:mm')))."
     }
     Write-Host "  It holds GritKeeper\app\GritKeeper.exe, so that folder is left as it is."
-    Write-Host "  Building the zip from a staging tree instead — the zip is unaffected."
+    Write-Host "  Building the zip from a staging tree instead. The zip is unaffected."
     Write-Host "  Close that instance and re-run to bring GritKeeper\app up to date too."
 }
 
@@ -77,11 +77,11 @@ New-Item -ItemType Directory -Force -Path $destApp | Out-Null
 Copy-Item $Exe (Join-Path $destApp "GritKeeper.exe") -Force
 # Everything the app writes beside itself at runtime, out. session.json was already handled;
 # prefs.json was NOT, and it shipped in v1.20.1 carrying the packager's own run mode with
-# "Remember": true — so every download launched into someone else's table and never saw the
+# "Remember": true, so every download launched into someone else's table and never saw the
 # chooser. Anything the exe drops here belongs to the machine that ran it, not to the release.
 #
 # MOVED, not deleted (2026-08-01). This was Remove-Item, which does not use the Recycle Bin, and
-# GritKeeper stages its saves to session.json.new and moves them rather than keeping a .bak — so
+# GritKeeper stages its saves to session.json.new and moves them rather than keeping a .bak, so
 # a Keeper who plays out of GritKeeper\app, as one does, loses their table the first time anyone
 # packages a release. That happened. The intent is unchanged and is still absolute: none of these
 # files ship. They just go somewhere first.
@@ -102,10 +102,10 @@ foreach ($dropping in "session.json", "prefs.json", "startup-error.txt", "selfte
 if ($Staged) { Copy-Item (Join-Path $root "GritKeeper\README.md") (Join-Path $dest "README.md") -Force }
 Write-Host "  copied exe -> $(Split-Path -Leaf $dest)\app\"
 
-# --- 2. re-mirror the source (overwrite, not sync-and-diff — CLAUDE.md) ---
+# --- 2. re-mirror the source (overwrite, not sync-and-diff; see CLAUDE.md) ---
 # Two trees since v1.28.0: the WinForms app and the rules library it references. They ship as
 # SIBLINGS because that is how they sit in GK/, and the app's <ProjectReference> points at
-# ..\rules\ — flatten or rename either one and the delivered source no longer builds.
+# ..\rules\: flatten or rename either one and the delivered source no longer builds.
 foreach ($tree in "source", "rules") {
     robocopy "GK\$tree" (Join-Path $dest $tree) /MIR /XD bin obj publish /NFL /NDL /NJH /NJS | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "robocopy failed on GK\$tree ($LASTEXITCODE)" }
@@ -120,7 +120,7 @@ foreach ($tree in "source", "rules") {
 # asserts it, so a future release cannot quietly drop them again.
 foreach ($legal in "LICENSE", "NOTICE") {
     $src = Join-Path $root $legal
-    if (-not (Test-Path $src)) { throw "$legal is missing from the repo root — the zip must ship it" }
+    if (-not (Test-Path $src)) { throw "$legal is missing from the repo root; the zip must ship it" }
     Copy-Item $src (Join-Path $dest $legal) -Force
 }
 Write-Host "  copied LICENSE + NOTICE -> $(Split-Path -Leaf $dest)\"
@@ -157,7 +157,7 @@ Write-Host "Upload it to the GitHub Release with RELEASE_NOTES_v$($info.FileVers
 Write-Host "  gh release create gritkeeper-v$($info.FileVersion -replace '\.0$','') GritKeeper.zip --notes-file RELEASE_NOTES_v$($info.FileVersion -replace '\.0$','').md"
 if ($Staged) {
     Write-Host ""
-    Write-Host "NOTE: built from staging — GritKeeper\app is still on its old build. The zip is correct." -ForegroundColor Yellow
+    Write-Host "NOTE: built from staging. GritKeeper\app is still on its old build. The zip is correct." -ForegroundColor Yellow
 }
 
 # robocopy leaves a non-zero $LASTEXITCODE on success (1 = files copied); end clean so a

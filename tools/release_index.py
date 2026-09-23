@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write RELEASES.md — the archive of every version that ever shipped.
+"""Write RELEASES.md: the archive of every version that ever shipped.
 
 GitHub's Releases page carries one page now: thirty-four pages of history, each with a zip nobody
 downloads, is noise in front of the one download that matters, and the zips alone were 1.9 GB. The
@@ -28,7 +28,7 @@ from pathlib import Path
 # Which family a tag belongs to, and what to call that family. First match wins, so the
 # order matters: `gritkeeper-` before the bare-version fallback.
 FAMILIES = [
-    (re.compile(r"^gritkeeper-v"), "GritKeeper — the Keeper's app"),
+    (re.compile(r"^gritkeeper-v"), "GritKeeper: the Keeper's app"),
     (re.compile(r"^books-v"), "The three books"),
     (re.compile(r"^modules-v"), "The three modules"),
     # Per-book tags from before the bundle model (books-v1.0, 2026-08-10). Each book was tagged on
@@ -38,8 +38,8 @@ FAMILIES = [
     (re.compile(r"^keepers?-v"), "Before the bundles: the Keeper's Book"),
     (re.compile(r"^bestiary-v"), "Before the bundles: the Bestiary"),
     (re.compile(r"^keepers-table-v"), "Keeper's Table, the app's first name"),
-    (re.compile(r"^tidewatch-win-v"), "Tidewatch — the Windows app"),
-    (re.compile(r"^tidewatch-html-v"), "Tidewatch — the HTML app"),
+    (re.compile(r"^tidewatch-win-v"), "Tidewatch: the Windows app"),
+    (re.compile(r"^tidewatch-html-v"), "Tidewatch: the HTML app"),
     (re.compile(r"^labs-v"), "The labs"),
 ]
 OTHER = "Everything else"
@@ -110,12 +110,12 @@ def git_tags():
 
 
 def title_of(rel):
-    """The release's own headline, with the version stripped off the front — the table already
+    """The release's own headline, with the version stripped off the front: the table already
     has a Version column, and repeating it in every row is the kind of noise that makes a table
     unreadable. An untitled release answers with an em dash rather than a blank cell."""
     t = (rel.get("name") or "").strip()
     t = re.sub(r"^[A-Za-z&'\s]*v?\d+[\d.]*\s*(—|-|·|:)?\s*", "", t).strip()
-    # A release whose headline names BOTH halves ("(Windows) / v1.16.0 (HTML) — the UX revamp")
+    # A release whose headline names BOTH halves ("(Windows) / v1.16.0 (HTML); the UX revamp")
     # is left with a parenthetical the family heading already says. Drop it; keep the sentence.
     t = re.sub(r"^\((?:Windows|HTML)\)\s*/?\s*v?[\d.]*\s*(?:\((?:Windows|HTML)\))?\s*(—|-|·|:)?\s*", "", t).strip()
     return t or "—"
@@ -176,7 +176,7 @@ def main():
         "git checkout <tag>      # the tree exactly as it shipped, at any tag below",
         "```",
         "",
-        "The full notes for each version — what changed and why — are in",
+        "The full notes for each version, what changed and why, are in",
         "[CHANGELOG.md](CHANGELOG.md), which is the canonical log and always has been. This page is the",
         "index to it.",
         "",

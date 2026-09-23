@@ -6,17 +6,17 @@ namespace BloodAndGritKeeper;
 // The gun rules of Chapter XI applied, not just displayed. Everything here is pure (no
 // WinForms), so the smoke rig can prove it against the book. The weapon's free-text `traits`
 // string stays the single source of truth (it is what the book prints); WeaponTraits.Parse
-// reads structure out of it, and a smoke test asserts every weapon parses cleanly — so the
+// reads structure out of it, and a smoke test asserts every weapon parses cleanly, so the
 // engine can never quietly disagree with the printed trait.
 
 /// <summary>The structured form of a weapon's Chapter X traits, parsed from its `traits` text.</summary>
 public class WeaponTraits
 {
-    public int FatalDie { get; set; }        // 0 = none; else 6/8/10/12 — the crit die (Ch. X "Fatal dX")
+    public int FatalDie { get; set; }        // 0 = none; else 6/8/10/12: the crit die (Ch. X "Fatal dX")
     public int Misfire { get; set; } = -1;   // -1 = no Misfire trait; else X: jam on crit-fail/nat 1, clear DC 10+X
     public bool Agile { get; set; }          // MAP softens to -4/-8 (Ch. XI)
-    public int Scatter { get; set; }         // 0 = none; else feet — 1d6 splash within (Ch. X "Scatter X")
-    public int Volley { get; set; }          // 0 = none; else feet — -2 to Strikes within (Ch. X "Volley X")
+    public int Scatter { get; set; }         // 0 = none; else feet: 1d6 splash within (Ch. X "Scatter X")
+    public int Volley { get; set; }          // 0 = none; else feet: -2 to Strikes within (Ch. X "Volley X")
     public bool Kickback { get; set; }       // -2 and Off-Guard unless braced or STR 12+ (Ch. XI)
     public bool Repeating { get; set; }
     public bool Concealable { get; set; }
@@ -45,11 +45,11 @@ public class WeaponTraits
 }
 
 /// <summary>One attack a Bestiary creature makes, read out of its free-text <c>attacks</c> line so a
-/// creature can Strike through the very same Iron Code engine as a posse gun — with its OWN to-hit
+/// creature can Strike through the very same Iron Code engine as a posse gun, with its OWN to-hit
 /// and damage, not the party's. The free-text in creatures.json stays the single source of truth (it
 /// is what the Bestiary prints); this parses structure out of it, exactly as <see cref="WeaponTraits"/>
 /// does for a gun's traits. A creature's whole line splits on ';' into named Strikes ("pick and claw
-/// +4 (1d6+2 and grab)") and riders — the maneuvers and auras with no to-hit that the Keeper narrates.</summary>
+/// +4 (1d6+2 and grab)") and riders: the maneuvers and auras with no to-hit that the Keeper narrates.</summary>
 public class CreatureAttack
 {
     public string Name { get; set; } = "";      // "pick and claw", "draining bite", "a touch that blisters"
@@ -60,7 +60,7 @@ public class CreatureAttack
 
     public bool DealsDamage => !string.IsNullOrWhiteSpace(Damage);
 
-    /// <summary>A creature attack feeds the engine as a plain weapon of its own damage — no gun
+    /// <summary>A creature attack feeds the engine as a plain weapon of its own damage, no gun
     /// traits (no Fatal/Misfire). Its <see cref="Type"/> overrides the gun/blade damage-type guess.
     /// A dice-less attack ("spray +7 (no Blood…)") deals 0 Blood: the hit is real, the harm is the rider.</summary>
     public CgWeapon ToWeapon() => new() { name = Name, dmg = string.IsNullOrEmpty(Damage) ? "0" : Damage, traits = "", kind = "natural" };
@@ -72,7 +72,7 @@ public class CreatureAttack
 
     static readonly char[] EffectTrim = { ' ', ',', '-', '—' };   // strip leading punctuation and dashes
 
-    // Split a creature's line on ';' — but only at paren depth zero, so a parenthetical that itself
+    // Split a creature's line on ';', but only at paren depth zero, so a parenthetical that itself
     // holds a ';' ("bite +5 (1d4 and holds; venom Fort DC 13 …)") is not sheared in two.
     static IEnumerable<string> Clauses(string s)
     {
@@ -88,7 +88,7 @@ public class CreatureAttack
     }
 
     /// <summary>Parse a creature's whole <c>attacks</c> line into its Strikes (with numbers, ready for
-    /// the engine) and its riders (clauses that carry no to-hit — the special maneuvers and auras).</summary>
+    /// the engine) and its riders (clauses that carry no to-hit, the special maneuvers and auras).</summary>
     public static (List<CreatureAttack> strikes, List<string> riders) Parse(string attacks)
     {
         var strikes = new List<CreatureAttack>();
@@ -106,7 +106,7 @@ public class CreatureAttack
             var dm = LeadDice.Match(inner);
             string effect;
             if (dm.Success) { a.Damage = dm.Groups["dmg"].Value.Replace(" ", ""); effect = inner.Substring(dm.Length).TrimStart(EffectTrim); }
-            else            { a.Damage = ""; effect = inner; }  // "+9 (all in its path)" — a hit, no dice of its own
+            else            { a.Damage = ""; effect = inner; }  // "+9 (all in its path)": a hit, no dice of its own
             if (tail.Length > 0) effect = (effect.Length > 0 ? effect + " " : "") + tail.TrimStart(EffectTrim);
             if (effect.StartsWith("and ", StringComparison.OrdinalIgnoreCase)) effect = effect.Substring(4);
             a.Effect = effect.Trim();
@@ -118,7 +118,7 @@ public class CreatureAttack
     }
 }
 
-/// <summary>Decides what a tracker row fights with — the one authority both the Strike dialog
+/// <summary>Decides what a tracker row fights with: the one authority both the Strike dialog
 /// and its tests go through, so the two can never drift. A foe that resolves to a Bestiary
 /// entry uses THAT creature's own attacks; the posse and any hand-entered row reach for the
 /// shared weapon table. <c>IsPC</c> is authoritative: a player's soul is never treated as a
@@ -131,7 +131,7 @@ public static class CombatMenu
         c != null && !c.IsPC && !string.IsNullOrEmpty(c.Ref) && Db.Find(c.Ref) != null;
 
     /// <summary>The creature's own attacks (with a tier-benchmark blow for a bodiless foe that
-    /// has no dice of its own), its riders, and the resolved Creature — or all null when this
+    /// has no dice of its own), its riders, and the resolved Creature, or all null when this
     /// row fights with the posse's weapons instead.</summary>
     public static (List<CreatureAttack> attacks, List<string> riders, Creature creature) For(Combatant c)
     {
@@ -184,13 +184,13 @@ public static class IronCode
     /// <summary>What stands between the shot and the target.</summary>
     public enum Cover { None, Light, Heavy }
 
-    /// <summary>Adjacent, in feet — one square, and the range at which a long gun becomes a
+    /// <summary>Adjacent, in feet: one square, and the range at which a long gun becomes a
     /// nuisance rather than a reach.</summary>
     public const int PointBlankFeet = 5;
 
     /// <summary>The facts of a shot that the engine cannot see from a tracker row: how far, what is
     /// in the way, whether it is fired into a scrum, and whether the target can be seen at all. The
-    /// app models no ground, so the Keeper is the only one who knows these — but once they are
+    /// app models no ground, so the Keeper is the only one who knows these, but once they are
     /// known the whole Circumstance table is arithmetic, and the arithmetic is the engine's.</summary>
     public record Shot
     {
@@ -208,7 +208,7 @@ public static class IronCode
         public bool Nonlethal { get; init; }
 
         /// <summary>How the striker's horse is moving. Filled in by the engine from the row rather
-        /// than asked of the Keeper — unlike the distance and the cover, this is something the app
+        /// than asked of the Keeper, unlike the distance and the cover, this is something the app
         /// already knows.</summary>
         public Gait Gait { get; init; }
 
@@ -235,11 +235,11 @@ public static class IronCode
     /// exactly the fault the derived-Burden design exists to prevent.</para></summary>
     public record Reckoning(int Total, List<string> Parts, bool CannotTarget);
 
-    /// <summary>Whether this is a long gun — rifle, carbine, shotgun or repeater — which the Code
+    /// <summary>Whether this is a long gun (rifle, carbine, shotgun or repeater) which the Code
     /// handles differently at point-blank and from the saddle. Read off the NAME on purpose: Ch. X's
     /// glossary defines a <em>Two-Handed</em> trait and then prints it on no weapon in either table,
-    /// so there is no trait to read. Ch. XI names them the same way — "a two-handed long gun
-    /// (rifle, carbine, shotgun)" — so this follows the book rather than inventing data for it.</summary>
+    /// so there is no trait to read. Ch. XI names them the same way, "a two-handed long gun
+    /// (rifle, carbine, shotgun)", so this follows the book rather than inventing data for it.</summary>
     public static bool IsLongGun(CgWeapon w)
     {
         if (!string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)) return false;
@@ -257,7 +257,7 @@ public static class IronCode
     /// <see cref="Afoot"/> is not mounted at all.</summary>
     public enum Gait { Afoot, Standing, Walking, Trotting, Galloping }
 
-    /// <summary>A moving platform — trotting or galloping. Standing and walking shoot as normal,
+    /// <summary>A moving platform, trotting or galloping. Standing and walking shoot as normal,
     /// which the book says in as many words.</summary>
     public static bool IsMoving(Gait g) => g == Gait.Trotting || g == Gait.Galloping;
 
@@ -270,7 +270,7 @@ public static class IronCode
     /// <summary>The DC to keep the saddle, or to master a green or frightened animal.</summary>
     public const int RideDc = 15;
 
-    /// <summary>The charge weapons — lance, spear, saber. A knife or a hatchet earns no charge
+    /// <summary>The charge weapons: lance, spear, saber. A knife or a hatchet earns no charge
     /// bonus, which the book's by-weapon box says outright.</summary>
     public static bool IsChargeWeapon(CgWeapon w)
     {
@@ -281,7 +281,7 @@ public static class IronCode
     }
 
     /// <summary>A two-handed melee weapon, which is awkward swung from the saddle. Read off the
-    /// name, and note that <b>no melee weapon in the arms table is one today</b> — the book prints
+    /// name, and note that <b>no melee weapon in the arms table is one today</b>, the book prints
     /// a Two-Handed trait in Ch. X's glossary and applies it to nothing in either table. The rule
     /// is implemented rather than left out so that a pike or a polearm added later is handled;
     /// today it is correctly a no-op for every weapon a soul can actually buy.</summary>
@@ -296,7 +296,7 @@ public static class IronCode
     }
 
     /// <summary>Whether a shot may be aimed or braced at all. You cannot from a moving horse, which
-    /// also means a Kickback weapon can never be braced at a gallop — the shotgun's recoil and the
+    /// also means a Kickback weapon can never be braced at a gallop: the shotgun's recoil and the
     /// horse's motion arrive together, exactly as the chapter implies.</summary>
     public static bool CanAim(Gait g) => !IsMoving(g);
 
@@ -310,9 +310,9 @@ public static class IronCode
         if (feetStraight < ChargeFeet)
             return new(false, 0, false, 0, $"a charge wants {ChargeFeet} feet of straight line, and this had {feetStraight}");
         if (!IsChargeWeapon(w))
-            return new(false, 0, false, 0, $"{w?.name ?? "this"} earns no charge bonus — the lance, the spear and the saber do");
+            return new(false, 0, false, 0, $"{w?.name ?? "this"} earns no charge bonus. The lance, the spear and the saber do");
         return couchedLance && (w.name ?? "").Contains("Lance", StringComparison.OrdinalIgnoreCase)
-            ? new(true, 0, true, -2, "a couched lance — double dice, and −2 Defense until your next turn")
+            ? new(true, 0, true, -2, "a couched lance, double dice, and −2 Defense until your next turn")
             : new(true, 1, false, -2, "+1 die on the charge, and −2 Defense until your next turn");
     }
 
@@ -321,14 +321,14 @@ public static class IronCode
     public static (bool Kept, int Damage, string Line) KeepTheSaddle(int rideTotal, int dc = RideDc)
         => rideTotal >= dc
             ? (true, 0, "kept the saddle")
-            : (false, Rules.Rng.Next(1, 7), "unhorsed — prone, and a few feet from the animal");
+            : (false, Rules.Rng.Next(1, 7), "unhorsed, prone, and a few feet from the animal");
 
     // ---- Two Kinds of Fighting (Ch. XI) ----
 
     /// <summary>What it costs to pull a blow with an arm not made for it.</summary>
     public const int PulledBlowPenalty = -2;
 
-    /// <summary>Whether this arm subdues by nature — fists and a club — so striking nonlethally
+    /// <summary>Whether this arm subdues by nature, fists and a club, so striking nonlethally
     /// with it costs nothing. Read off the printed Notes column, which is where the book says it:
     /// "nonlethal by choice", "Nonlethal unless you mean it".</summary>
     public static bool NonlethalByNature(CgWeapon w)
@@ -349,7 +349,7 @@ public static class IronCode
 
         bool pointBlank = s.Distance > 0 && s.Distance <= PointBlankFeet;
 
-        // Range. Point-blank waives the increment penalty outright — you are not missing a man at
+        // Range. Point-blank waives the increment penalty outright. You are not missing a man at
         // arm's length because the barrel is rated for two hundred yards.
         if (!pointBlank)
         {
@@ -389,7 +389,7 @@ public static class IronCode
                 // The moving platform. Ranged and thrown alike; a pistol at a walk is free, which is
                 // the whole reason the horseman carries one.
                 Take(gun || thrown ? -2 : 0, "shooting from a moving horse");
-                // And a long gun is doubly awkward up there — the box's −4 in all.
+                // And a long gun is doubly awkward up there, the box's −4 in all.
                 Take(gun && IsLongGun(w) ? -2 : 0, "a two-handed long gun from the saddle");
             }
             // Striking down at a footman. The saber is the horseman's blade and waives the mounted
@@ -409,8 +409,8 @@ public static class IronCode
 
     /// <summary>Where a Scatter weapon's splash falls. On a hit, everything within the radius takes
     /// 1d6. On a MISS inside the first range increment the target still wears it, which is the whole
-    /// argument for a shotgun. Who is standing within the radius is the Keeper's to say — the app
-    /// models no ground — so this answers whether the splash falls, not on whom.</summary>
+    /// argument for a shotgun. Who is standing within the radius is the Keeper's to say (the app
+    /// models no ground), so this answers whether the splash falls, not on whom.</summary>
     public static (bool Falls, int Radius, bool TargetToo) ScatterFalls(
         WeaponTraits tr, CgWeapon w, bool hit, int distance)
     {
@@ -430,7 +430,7 @@ public static class IronCode
     public enum ReloadKind { None, Single, PerShot, Slow }
 
     /// <summary>A cap-and-ball cylinder is three rounds of dedicated work, and cannot be part-filled
-    /// in a hurry. Rounds, not Beats — it is the one reload the book prices in whole rounds.</summary>
+    /// in a hurry. Rounds, not Beats. It is the one reload the book prices in whole rounds.</summary>
     public const int SlowReloadRounds = 3;
 
     /// <summary>Read the arms table's Reload column. Anything unrecognised is
@@ -456,10 +456,10 @@ public static class IronCode
         switch (kind)
         {
             case ReloadKind.Slow:
-                // No partial loading in a hurry — the book is explicit, so there is no single-round
+                // No partial loading in a hurry. The book is explicit, so there is no single-round
                 // branch here to offer.
                 return new(kind, 0, SlowReloadRounds,
-                    $"{SlowReloadRounds} rounds of dedicated work — a cylinder is charged, not thumbed");
+                    $"{SlowReloadRounds} rounds of dedicated work. A cylinder is charged, not thumbed");
 
             case ReloadKind.Single:
                 // A break-action is one Interact whether it holds one barrel or two.
@@ -470,7 +470,7 @@ public static class IronCode
 
             case ReloadKind.PerShot:
             {
-                // Beats equal to half its capacity, rounded up — a six-gun three, a twelve-shot six.
+                // Beats equal to half its capacity, rounded up, a six-gun three, a twelve-shot six.
                 int beats = Math.Max(1, (cap + 1) / 2 - (practiced ? 1 : 0));
                 return new(kind, beats, 0,
                     $"{beats} Beat{(beats == 1 ? "" : "s")} to top off {cap}"
@@ -486,7 +486,7 @@ public static class IronCode
     public record StrikeOutcome(int Die, int Total, int Defense, int Degree, string DegreeName,
         bool Hit, bool Crit, bool Jam, string Detail);
 
-    /// <summary>Resolve one Strike. <paramref name="attackMod"/> is the whole bonus already summed —
+    /// <summary>Resolve one Strike. <paramref name="attackMod"/> is the whole bonus already summed:
     /// attack rank + ability + circumstance − MAP − Volley, etc. A Misfire weapon jams on a critical
     /// failure (which includes any natural 1, per the four-degree rule).</summary>
     public static StrikeOutcome ResolveStrike(int attackMod, int defense, WeaponTraits tr, int? forcedDie = null)
@@ -495,7 +495,7 @@ public static class IronCode
         var (idx, _, detail) = Rules.FourDegrees(die, attackMod, defense);
         // Ch. XI states a combat-specific floor beyond the Ch. II one-step shift: "a natural 20
         // always at least hits; a natural 1 always at least misses." It only bites at wide margins
-        // (a nat 20 that still missed by 10+, a nat 1 that still beat by 10+), and only for Strikes —
+        // (a nat 20 that still missed by 10+, a nat 1 that still beat by 10+), and only for Strikes;
         // skill checks keep the pure one-step shift in Rules.FourDegrees. (Flagged for the Ch. II/XI
         // consistency pass: this is where the two chapters are reconciled.)
         if (die == 20) idx = Math.Max(idx, 2);
@@ -513,7 +513,7 @@ public static class IronCode
     static readonly Regex OneDice = new(@"^\s*(\d*)d(\d+)\s*$", RegexOptions.Compiled);
 
     /// <summary>Roll a weapon's damage. On a critical hit the damage doubles, and a Fatal weapon
-    /// rolls its dice at the Fatal size and adds one more Fatal die <em>after</em> doubling — so a
+    /// rolls its dice at the Fatal size and adds one more Fatal die <em>after</em> doubling, so a
     /// 1d8 Fatal d10 crit is 2×(1d10)+1d10, faithful to the PF2E rule the Code is built on.</summary>
     public static DamageRoll RollDamage(string dmgExpr, WeaponTraits tr, bool crit)
     {
@@ -540,7 +540,7 @@ public static class IronCode
     }
 
     // ---- Damage Reduction (Ch. XI) ----
-    /// <summary>Apply the best matching DR to a hit. DR does not stack (Ch. X — "count the better of
+    /// <summary>Apply the best matching DR to a hit. DR does not stack (Ch. X: "count the better of
     /// two"), only the highest applicable line applies, and it never lowers a hit below zero.</summary>
     public static int ApplyDR(int damage, string damageType, IEnumerable<DrEntry> dr)
     {
@@ -573,7 +573,7 @@ public static class IronCode
         if (!so.Hit) return new Resolution(so, null, 0, null);
         var dmg = RollDamage(weapon?.dmg ?? "1d4", tr, so.Crit);
         // A creature attack names its own damage type (a fiery touch, a freezing grip); a gun's is
-        // read off its kind and Scatter. The forced type, when given, wins — so worn-armor DR ("blades")
+        // read off its kind and Scatter. The forced type, when given, wins, so worn-armor DR ("blades")
         // keeps out a claw but not a flame.
         string dtype = string.IsNullOrEmpty(forceType) ? DamageType(weapon) : forceType;
         int after = ApplyDR(dmg.Total, dtype, targetDr);
@@ -583,13 +583,13 @@ public static class IronCode
 
 // ============================================================ AT THE TABLE
 // The bridge from the engine to the tracker: reads a PC's own to-hit off their sheet, and takes
-// a Strike from one combatant at another — spending the Beat, taking the MAP at the attacker's
+// a Strike from one combatant at another, spending the Beat, taking the MAP at the attacker's
 // current step, applying the damage, and advancing the step. Pure and smoke-tested; the UI just
 // gathers the attacker, the target, and the weapon and calls it.
 public static class CombatFlow
 {
     /// <summary>A PC's attack bonus for a Strike with a given weapon: the sheet's Attack plus the
-    /// keyed ability — DEX for guns and thrown, STR for blades and fists (Ch. XI).</summary>
+    /// keyed ability: DEX for guns and thrown, STR for blades and fists (Ch. XI).</summary>
     public static int AttackBonusFor(CharacterSheet s, CgWeapon w)
     {
         if (s == null) return 0;
@@ -598,7 +598,7 @@ public static class CombatFlow
         return s.Attack + mod;
     }
 
-    /// <summary><paramref name="Inflicts"/> is the conditions this blow's own printed rider names —
+    /// <summary><paramref name="Inflicts"/> is the conditions this blow's own printed rider names:
     /// a ghoul's "grab", a horror's "and they are Frightened 2". Read off the Bestiary's free text by
     /// <see cref="Rules.InflictedConditions"/> and handed back rather than applied, because the
     /// riders are English and half of them hang on a save the Keeper has to call. The UI offers
@@ -609,8 +609,8 @@ public static class CombatFlow
     /// <summary>Take one Strike from <paramref name="attacker"/> at <paramref name="target"/> and
     /// apply it: spend a Beat, resolve at the attacker's current MAP step, subtract the damage
     /// (after DR) from the target's Blood, and advance the step. Returns a one-line log summary.</summary>
-    /// <summary>Take a Strike with a creature's own natural attack — its built-in to-hit, its damage,
-    /// and its damage type — through the identical path a posse gun takes. The Bestiary's numbers
+    /// <summary>Take a Strike with a creature's own natural attack (its built-in to-hit, its damage,
+    /// and its damage type) through the identical path a posse gun takes. The Bestiary's numbers
     /// finally reach the table: a ghoul claws with +6 (1d8+3), not with the party's revolver.</summary>
     public static StrikeReport StrikeAndApply(Combatant attacker, Combatant target, CreatureAttack attack,
         int attackBonus, IEnumerable<DrEntry> targetDr = null, int? forcedDie = null,
@@ -625,7 +625,7 @@ public static class CombatFlow
         var tr = WeaponTraits.Parse(weapon?.traits);
         int map = IronCode.MapPenalty(attacker?.MapStep ?? 1, tr.Agile);
         // What is riding on the two of them (Appendix B). The attacker's conditions move the Strike;
-        // the target's move the Defense it is rolled against. Both are DERIVED — nothing here reads
+        // the target's move the Defense it is rolled against. Both are DERIVED. Nothing here reads
         // a number somebody stored earlier, so an effect cannot be applied twice.
         //
         // The playtest harness and the modules' What the Night Costs numbers are safe from this:
@@ -636,7 +636,7 @@ public static class CombatFlow
 
         // What the rows already know, filled in rather than asked of the Keeper: the gait of the
         // horse under the striker, and whether the target is mounted too. Distance and cover stay
-        // the Keeper's to say, because the app models no ground — these two it can see.
+        // the Keeper's to say, because the app models no ground. These two it can see.
         var facts = (shot ?? IronCode.Shot.Plain) with
         {
             Gait = attacker?.Gait ?? IronCode.Gait.Afoot,
@@ -648,7 +648,7 @@ public static class CombatFlow
         // buys +2 on this Strike and it is also what "braced" means to a Kickback weapon. The
         // strong are exempt from the recoil outright rather than taking a lesser penalty.
         //
-        // From a moving horse you can do neither, which the chapter says outright — so a shotgun
+        // From a moving horse you can do neither, which the chapter says outright, so a shotgun
         // fired at a gallop recoils however strong the arm holding it was going to be about it.
         bool braced = (attacker?.Aimed ?? false) && IronCode.CanAim(facts.Gait);
         int aim     = braced ? IronCode.AimBonus : 0;
@@ -656,7 +656,7 @@ public static class CombatFlow
         int kick    = kicks ? IronCode.KickbackPenalty : 0;
 
         // What the moment costs (Ch. XI, "Circumstance"). A caller that says nothing about the
-        // ground — the playtest harness, the smoke fights — gets Shot.Plain and no range rule runs,
+        // ground (the playtest harness, the smoke fights) gets Shot.Plain and no range rule runs,
         // so the numbers those were measured against do not move.
         var circ = IronCode.Reckon(facts, weapon, braced);
 
@@ -664,7 +664,7 @@ public static class CombatFlow
                                   weapon, targetDr, forcedDie, forceType);
         // Sickened takes its −2 off the damage as well as the Strike, and the adjustment is folded
         // back into the Resolution rather than applied at the wound: every caller downstream reads
-        // AfterDR — the log line, the grievous-blow check, the tracker's Last column — and a number
+        // AfterDR (the log line, the grievous-blow check, the tracker's Last column) and a number
         // that was quietly different from the one they were handed is a bug waiting on a bad night.
         if (res.Strike.Hit && mine.Damage != 0 && res.Damage != null)
             res = res with { AfterDR = Math.Max(0, res.AfterDR + mine.Damage) };
@@ -673,7 +673,7 @@ public static class CombatFlow
         {
             if (attacker.Beats > 0) attacker.Beats -= 1;   // a Strike is one Beat (Ch. XI)
             attacker.MapStep += 1;                          // the next Strike this turn is at higher MAP
-            // The Aim is spent by the Strike that used it, hit or miss — the book buys ONE Strike
+            // The Aim is spent by the Strike that used it, hit or miss. The book buys ONE Strike
             // with that Beat, not every Strike left in the turn.
             attacker.Aimed = false;
             // And the shotgun fired from the hip leaves them open until their own turn comes round.
@@ -696,7 +696,7 @@ public static class CombatFlow
         // What this blow's own rider would lay on them, if it landed. A creature's attacks line is
         // the source: "pick and claw +4 (1d6+2 and grab)" means Grabbed, and until now that was a
         // word in a dialog the Keeper had to notice, remember, and type into the conditions column
-        // themselves — which is to say a rule the app read out and did not run. Only on a hit: a
+        // themselves, which is to say a rule the app read out and did not run. Only on a hit: a
         // miss grabs nobody.
         var inflicts = res.Strike.Hit ? Rules.InflictedConditions(rider) : new List<string>();
         if (res.Strike.Hit)
@@ -706,16 +706,16 @@ public static class CombatFlow
             target.Wound(-res.AfterDR, nonlethal: shot?.Nonlethal ?? false);
             string drNote = res.Damage != null && res.AfterDR != res.Damage.Total
                 ? $" ({res.Damage.Total} − DR)" : "";
-            line = $"{who}{mapNote}: {res.Strike.DegreeName}{(res.Strike.Crit ? " —" : "")} "
+            line = $"{who}{mapNote}: {res.Strike.DegreeName}{(res.Strike.Crit ? "," : "")} "
                  + $"{res.AfterDR} Blood{drNote}. {target.Name} at {target.BloodCur}."
-                 + (target.Senseless ? " SENSELESS — laid out, not killed."
+                 + (target.Senseless ? " SENSELESS: laid out, not killed."
                   : target.Down ? " DOWN." : "");
         }
         else
         {
             target.LastDelta = 0;
             target.LastNote = res.Strike.Jam ? "jam" : "missed";
-            line = $"{who}{mapNote}: {res.Strike.DegreeName} — "
+            line = $"{who}{mapNote}: {res.Strike.DegreeName}, "
                  + (res.Strike.Jam ? "the iron JAMS (clear it: Interact + Repair)." : "a miss.");
         }
         return new StrikeReport(res, map, line, inflicts, circ);

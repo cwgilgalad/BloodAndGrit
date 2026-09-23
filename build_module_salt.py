@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Build "Blood & Grit — The Salt at Coffin Wells", module I, on the shared engine.
+# Build "Blood & Grit: The Salt at Coffin Wells", module I, on the shared engine.
 # Reads blood-and-grit.html (run build_player.py first), writes module-salt-at-coffin-wells.html.
 #
 # The adventure is the Keeper's Book Ch. IX, which gives it in two pages. This is the same night
@@ -155,7 +155,7 @@ TRUTH = '''
 # The module's second truth, and the one it is actually about. Vane's bargain is the plot; the
 # Wednesday reading is the horror, and it survives the plot being solved. Keyed here rather than
 # folded into "The Truth of It" because a Keeper who reads only that page should still be able to
-# run the module — this page changes what the ending means, and nothing about how the night runs.
+# run the module. This page changes what the ending means, and nothing about how the night runs.
 TURN = '''
 <section class="page" id="turn">
   ''' + runhead("The Reading") + '''

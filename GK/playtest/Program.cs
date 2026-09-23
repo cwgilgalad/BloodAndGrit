@@ -1,7 +1,7 @@
 // Play the three adventures on the same rules library the app runs on, several posses each,
 // and report what actually happened.
 //
-// The point is not to prove the engine works — GK/smoke does that. The point is that a module
+// The point is not to prove the engine works; GK/smoke does that. The point is that a module
 // printing "this fight is a fair fight for a fresh posse" has to have somebody's word for it, and
 // the only word this project accepts is the engine's. Every number in the three module books that
 // describes difficulty comes out of this run.
@@ -20,20 +20,20 @@ bool verbose = args.Contains("--verbose");
 string outPath = null;
 for (int i = 0; i < args.Length - 1; i++) if (args[i] == "--out") outPath = args[i + 1];
 
-// The four callings a first posse most often actually is — a gun, a faith, a frontier hand, and a
+// The four callings a first posse most often actually is: a gun, a faith, a frontier hand, and a
 // doctor. Fixed rather than random so the three adventures are compared against the same party
 // shape, and so a Keeper reading the results knows exactly who was at the table.
 string[] Callings = { "Gunhand", "Preacher", "Mountain Man", "Sawbones" };
 
 // The Bestiary and the chargen tables, off the rules assembly's embedded resources. Nothing below
 // works without them, and CharGen.Generate fails with a bare null rather than a sentence if the
-// load is skipped — so it is done once, here, before a single die is rolled.
+// load is skipped, so it is done once, here, before a single die is rolled.
 Db.Load();
 CharGen.Load();
 
-Console.WriteLine($"Blood & Grit — module playtest\n  {Adventures.All.Length} adventures x {RunsPerAdventure} posses, base seed {BaseSeed}\n");
+Console.WriteLine($"Blood & Grit: module playtest\n  {Adventures.All.Length} adventures x {RunsPerAdventure} posses, base seed {BaseSeed}\n");
 
-md.AppendLine("# Module playtest — what the engine says about the three adventures");
+md.AppendLine("# Module playtest: what the engine says about the three adventures");
 md.AppendLine();
 md.AppendLine($"Every night below was played through **the same rules library the app runs on** "
             + $"(`GK/rules`), with the Bestiary's own numbers for every foe and the book's own dice "
@@ -41,8 +41,8 @@ md.AppendLine($"Every night below was played through **the same rules library th
             + $"{RunsPerAdventure} posses = {Adventures.All.Length * RunsPerAdventure} full runs, "
             + $"base seed `{BaseSeed}`; re-running a seed reproduces the night exactly.");
 md.AppendLine();
-md.AppendLine("The posse is the same four callings every time — **Gunhand, Preacher, Mountain Man, "
-            + "Sawbones** — so the three nights are compared against one party shape, and a Keeper "
+md.AppendLine("The posse is the same four callings every time: **Gunhand, Preacher, Mountain Man, "
+            + "Sawbones**, so the three nights are compared against one party shape, and a Keeper "
             + "reading a number knows who was at the table when it was earned.");
 md.AppendLine();
 
@@ -107,7 +107,7 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
         BloodCur = s.Blood, BloodMax = s.Blood, Defense = s.Defense,
     }).ToList();
 
-    // Nerve is a PartyMember's, not a Combatant's — the tracker carries a fight, and Nerve is a
+    // Nerve is a PartyMember's, not a Combatant's. The tracker carries a fight, and Nerve is a
     // thing a soul carries through a whole night. Kept beside the field, indexed with it.
     var nerve = sheets.Select(s => s.NerveMax).ToArray();
 
@@ -139,9 +139,9 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
                             nerve[who] = Math.Max(0, nerve[who] - loss);
                             run.NerveLost += loss;
                             if (nerve[who] == 0 && !run.Broke.Contains(s.Name)) run.Broke.Add(s.Name);
-                            log.Add($"    dread {beat.DreadDc}: {s.Name} rolled {die}{will:+#;-#;+0} — {degree}, -{loss} Nerve ({label}) -> {nerve[who]}");
+                            log.Add($"    dread {beat.DreadDc}: {s.Name} rolled {die}{will:+#;-#;+0}, {degree}, -{loss} Nerve ({label}) -> {nerve[who]}");
                         }
-                        else log.Add($"    dread {beat.DreadDc}: {s.Name} rolled {die}{will:+#;-#;+0} — {degree}");
+                        else log.Add($"    dread {beat.DreadDc}: {s.Name} rolled {die}{will:+#;-#;+0}, {degree}");
                     }
                     break;
                 }
@@ -149,7 +149,7 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
                 case BeatKind.Toll:
                 {
                     foreach (var s in souls.Where(s => !s.Down)) s.Wound(-beat.Toll);
-                    log.Add($"    toll: {beat.Toll} Blood each — {beat.Name}");
+                    log.Add($"    toll: {beat.Toll} Blood each, {beat.Name}");
                     break;
                 }
 
@@ -165,12 +165,12 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
         }
 
         // Between acts the posse gets its breath back the way a night actually gives it: the fight
-        // is over, so ResetForNewFight clears the residue. Blood and Nerve do NOT come back — that
+        // is over, so ResetForNewFight clears the residue. Blood and Nerve do NOT come back. That
         // is the whole shape of a one-night adventure, and it is why act three is the dangerous one.
         Rules.ResetForNewFight(souls.Where(s => !s.Down));
 
         // Between acts, the Sawbones works and somebody boils coffee. Modelled as the posse coming
-        // back to half Blood — deliberately modest, and deliberately NOT full: a one-night adventure
+        // back to half Blood, deliberately modest, and deliberately NOT full: a one-night adventure
         // that hands back everything between acts has no arc, and the whole shape of act three is
         // that it is fought by people who are already hurt. Souls already down stay down; a soul
         // put on the ground is a soul the night has taken.
@@ -214,7 +214,7 @@ FightResult Fight(Adventure adv, List<Combatant> souls, List<CharacterSheet> she
         beat.Foes.Select(n => Db.Find(n)).Where(c => c != null).Max(c => c.tier),
         Rules.PartyTier(adv.PartyLevel));
 
-    // The safe-table rule, asked of this fight before a die is rolled — the same question the
+    // The safe-table rule, asked of this fight before a die is rolled. The same question the
     // Tracker asks every time something is put on the field.
     fr.SignOnly = beat.Foes.Any(n => Rules.SignOnly(Db.Find(n).tier, adv.PartyLevel));
 
@@ -228,7 +228,7 @@ FightResult Fight(Adventure adv, List<Combatant> souls, List<CharacterSheet> she
     int half = (int)Math.Ceiling(souls.Count(s => !s.Down) / 2.0);
     while (field.Any(c => c.IsPC && !c.Down) && field.Any(c => !c.IsPC && !c.Down) && guard++ < 60)
     {
-        // The break-off. A posse with half its number on the ground quits the field — which is what
+        // The break-off. A posse with half its number on the ground quits the field, which is what
         // a table does, and what the books assume when they say the dawn is always one scene away.
         // Without it this rig measures how long four souls take to die standing in the open, which
         // is a fact about the rig rather than about the adventure.
@@ -242,7 +242,7 @@ FightResult Fight(Adventure adv, List<Combatant> souls, List<CharacterSheet> she
             up.BeginTurn();
             if (up.Down) continue;
 
-            // The posse concentrates — that is what a table does, and it is the posse's whole
+            // The posse concentrates. That is what a table does, and it is the posse's whole
             // advantage over a pack. The pack does not: three Risen do not agree on which soul to
             // pull down, and a rig in which they do is a rig measuring perfect enemy coordination
             // rather than an adventure. This one line moved every fight below from a slaughter to
@@ -290,7 +290,7 @@ FightResult Fight(Adventure adv, List<Combatant> souls, List<CharacterSheet> she
     return fr;
 }
 
-// Who this one swings at. A soul picks the foe already hurt worst — finish what is started. A
+// Who this one swings at. A soul picks the foe already hurt worst: finish what is started. A
 // horror picks whoever is in front of it, which on a dark night is whoever the dice say.
 Combatant PickTarget(List<Combatant> field, Combatant up)
 {
@@ -315,7 +315,7 @@ CgWeapon BestWeapon(CharacterSheet s)
         double avg = AvgOf(w.dmg);
         if (avg > bestAvg) { bestAvg = avg; best = w; }
     }
-    // A soul who bought no weapon still gets a turn, and the book has a row for exactly that —
+    // A soul who bought no weapon still gets a turn, and the book has a row for exactly that:
     // Fists / Boots, 1d3 and Agile. This used to invent a "fists 1d4" with no traits, which was a
     // harder punch than the book prints and one that did not soften the MAP; it was invented because
     // Fists / Boots was missing from chargen.json until the arms table was audited in v1.40.0. It
@@ -383,7 +383,7 @@ void Report(AdventureResult a, StringBuilder md)
     md.AppendLine();
     md.AppendLine("### Fight by fight");
     md.AppendLine();
-    md.AppendLine("*Cold — no recovery between acts, no Grit spent, no Sign or Miracle worked. "
+    md.AppendLine("*Cold: no recovery between acts, no Grit spent, no Sign or Miracle worked. "
                 + "This is the floor: what the night costs a posse that only shoots.*");
     md.AppendLine();
     md.AppendLine("| Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |");
@@ -406,14 +406,14 @@ void Report(AdventureResult a, StringBuilder md)
     {
         md.AppendLine("### The way through");
         md.AppendLine();
-        md.AppendLine("Not one of the Tier III fights above was ever cleared by shooting it — across "
+        md.AppendLine("Not one of the Tier III fights above was ever cleared by shooting it, across "
                     + "every run, cold or tended. That is the design, not a shortfall: the Bestiary "
                     + "prints an answer for each of them, and the module's job is to put that answer "
                     + "where the posse can find it under fire.");
         md.AppendLine();
         foreach (var c in bosses)
         {
-            md.AppendLine($"**{c.name}** — *putting it down:* {c.puttingItDown}");
+            md.AppendLine($"**{c.name}**. *Putting it down:* {c.puttingItDown}");
             md.AppendLine();
         }
     }
@@ -423,7 +423,7 @@ void Report(AdventureResult a, StringBuilder md)
     {
         md.AppendLine($"> **⚠ The safe-table rule refuses {(flagged.Count == 1 ? "one of these fights" : $"{flagged.Count} of these fights")}.** "
                     + $"A horror two or more Tiers over the posse is offered as sign and spoor rather "
-                    + $"than seated on the field — so if a Keeper builds {(flagged.Count == 1 ? "this fight" : "these fights")} "
+                    + $"than seated on the field, so if a Keeper builds {(flagged.Count == 1 ? "this fight" : "these fights")} "
                     + $"in GritKeeper, the app will ask whether it should go on the trail instead. That is "
                     + $"not a bug in either the module or the app: it is the book saying out loud that this "
                     + $"is not a fight to be won by shooting, and the module has to give the posse the other way through.");
