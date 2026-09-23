@@ -8,26 +8,6 @@ Desktop\Git repos.)
 
 ---
 
-- **The front page was counting from memory (2026-09-22).**
-
-  README is the first thing a stranger reads and it was wrong in eight places, none of them wrong
-  when they were written. It said **nineteen Callings**, which stopped being true at v1.56.0 when
-  the Medicine Man merged with the Shaman, and **seventeen Calling tables** further down, which
-  stopped being true before that. It said **three books** in four separate places, with the Book of
-  Legends sitting in the table directly under one of them since 2026-09-19, and the parenthetical
-  listing the self-contained HTML files named three of the four. `nav_tools.py` was credited with
-  the indexes for "all three books" when five builders import it. And the Bestiary's one-line
-  description read "the old dark, and, a whole mundane half", which is a comma the dash cut left
-  behind.
-
-  The versions on that page have been generated since 2026-08-08 and have not drifted since. The
-  counts were the half nobody had automated, so they drifted the moment the game grew. They are
-  checked now: `audit_consistency.check_front_page` reads every number README spells out in words
-  and compares it against the file that carries it, the Callings and Origins off `chargen.json` and
-  the book and module counts off the two bundle manifests in `tools/make_bundles.py`, read as text
-  because importing that file builds both zips. Seven claims, proved by sabotage on three of them
-  at once and each named back by its own sentence.
-
 - **The design pass: a colour apiece, contrast a reader can feel, and the page laid out the way a
   book is. Books v2.53 / v2.37 / v2.24 / v1.2, modules v1.9 / v1.11 / v1.11 (2026-09-22).**
 
@@ -102,6 +82,26 @@ Desktop\Git repos.)
   Keeper's 152 (141), the Bestiary 226 (210), the Book of Legends 77 (67), and the modules 36, 38
   and 39 (33 each). All five measured books hold desktop and mobile to the same page count,
   clip nothing at true scale, and scroll sideways nowhere on a phone.
+
+- **The front page was counting from memory (2026-09-22).**
+
+  README is the first thing a stranger reads and it was wrong in eight places, none of them wrong
+  when they were written. It said **nineteen Callings**, which stopped being true at v1.56.0 when
+  the Medicine Man merged with the Shaman, and **seventeen Calling tables** further down, which
+  stopped being true before that. It said **three books** in four separate places, with the Book of
+  Legends sitting in the table directly under one of them since 2026-09-19, and the parenthetical
+  listing the self-contained HTML files named three of the four. `nav_tools.py` was credited with
+  the indexes for "all three books" when five builders import it. And the Bestiary's one-line
+  description read "the old dark, and, a whole mundane half", which is a comma the dash cut left
+  behind.
+
+  The versions on that page have been generated since 2026-08-08 and have not drifted since. The
+  counts were the half nobody had automated, so they drifted the moment the game grew. They are
+  checked now: `audit_consistency.check_front_page` reads every number README spells out in words
+  and compares it against the file that carries it, the Callings and Origins off `chargen.json` and
+  the book and module counts off the two bundle manifests in `tools/make_bundles.py`, read as text
+  because importing that file builds both zips. Seven claims, proved by sabotage on three of them
+  at once and each named back by its own sentence.
 
 - **The voice pass over everything that is not a book: the docs, the app's own words, and the
   scripts that print. GritKeeper v1.58.0 (2026-09-22).**
