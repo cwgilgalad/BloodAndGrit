@@ -8,6 +8,81 @@ Desktop\Git repos.)
 
 ---
 
+- **The design pass: a colour apiece, contrast a reader can feel, and the page laid out the way a
+  book is. Books v2.53 / v2.37 / v2.24 / v1.2, modules v1.9 / v1.11 / v1.11 (2026-09-22).**
+
+  Two passes over the shared shell, once the prose was settled. The first was about colour and the
+  second about the page, and both were measured before anything moved.
+
+  **Every book owns a colour now.** The covers have been a triad since the start, gold for the
+  Player's, oxblood for the Keeper's, verdigris for the Bestiary, and inside all three the accents
+  were the same red. `--accent` and `--accent-d` carry each book's own, and the four builders that
+  splice the shell override the pair: kickers, quote attributions, figure captions and the dividers
+  between sections now say which book you're holding from any page in it. The Book of Legends took
+  a faded ink-brown, and the three modules a dusty gold apiece.
+
+  **The furniture was invisible.** Measured against the paper it sits on, the rule under a heading
+  came in at 1.39:1, a zebra stripe at 1.128:1, the line between two cells at .18, the inner frame
+  at .55, the soft break at .5. Those are the parts of a page a reader is supposed to feel without
+  looking at, and under about 1.2:1 there's nothing there to feel. They read 3.18, 1.25, .34, .72
+  and .68 now, and the character sheet's grey text went from 5.06:1 to 5.94:1.
+
+  **One variable had never existed.** `--oxblood` was named in four rules in the Keeper's Book CSS
+  and defined nowhere, so the browser threw all four away and those elements inherited whatever
+  colour was above them. `nav_tools.assert_css_vars` reads every built book and fails on a
+  `var(--x)` with no `--x` behind it.
+
+  **Then the page itself, read the way somebody who sets books for a living reads one.** Ten
+  findings, each priced by rendering it before it was kept.
+
+  **The measure ran eight characters long.** Text filled 7.01in of an 8.5in sheet, 80.9 characters
+  to the line, 71.6% of the paper. The window a book is set in tops out around 72. Three variants
+  were rendered and counted first: 0.95in sides bought 75.6 characters for eight pages, 1.00in and
+  1.05in both cost thirteen, so 1.05in was the better buy. The foot went from 0.82in to 0.95in in
+  the same edit, which puts the four margins in the order a reader expects without being able to
+  name it, head shallowest, foot deeper, sides deepest. It's 73.9 characters now.
+
+  **Eighty-six chapter openers carried a running head.** It read III. MAKING A CHARACTER in small
+  caps directly over a 37px title reading III. Making a Character, and that title started flush
+  with the top of the text block, in the same place a continuation page starts its first line of
+  prose. The head is gone from openers and the title sinks 1.25in, because the drop is what tells a
+  reader thumbing through that something has begun, before a word of it is read.
+
+  **The drop cap touched neither line it spanned.** At 54px, Rye gives 36px of capital: its top sat
+  4.3px below the first line's capitals and its foot 2.3px above the second line's baseline. Worked
+  out of the two fonts' own metrics, a two-line cap at 19px on 1.58 wants 42.75px of capital, which
+  is Rye at 63.8px. It's 64px with a 2.66px pad to set it down on the baseline, and the float still
+  fits inside two lines, so nothing repaginated.
+
+  **A folio is a number, so it stopped being tracked like a word.** At .3em, page 143 read "1 4 3".
+  And any centred line that is tracked sits half a letter-space left of true centre, because the
+  browser puts a space after the last letter too and centres the box with that space inside it:
+  2.85px on a .3em line, measured. Eight centred rules took a `text-indent` matching their own
+  tracking, and the running head's outboard span pulls right by its track, so its last letter lands
+  on the margin instead of a space's width inside it.
+
+  **A subhead was set smaller than the copy under it.** `h4` was 18px over a 19px body, surviving
+  on weight and slope alone. It's 19px.
+
+  **A table that carried over said nothing about it.** A stat block has said "(cont.)" since v2.0;
+  a table repeated its header and left a reader at the top of a page to work out whether this was a
+  new one. Both continuation clones say it now, and a Perk band's label carries over the same way.
+
+  **And a block of CSS that has never once rendered came out**, corner diamonds, `display:none`
+  since the day they were written, with a `letter-spacing:840px` inside them.
+
+  **The last line of a paragraph is the compositor's problem**, and 62 of them in the
+  Player's Book came up under a tenth of the measure: one short word alone on a line, where a
+  compositor would have pulled a word down from the line above. `text-wrap:pretty` is the
+  browser doing that, and it was priced the same way as the rest. Sixty-two runts down to
+  twenty, at a cost of zero pages.
+
+  **Everything static was re-measured afterwards**: 337 index entries and 19 Contents lines
+  repatched off the rendered sheets. As built, the Player's Book is 289 pages (was 268), the
+  Keeper's 152 (141), the Bestiary 226 (210), the Book of Legends 77 (67), and the modules 36, 38
+  and 39 (33 each). All five measured books hold desktop and mobile to the same page count,
+  clip nothing at true scale, and scroll sideways nowhere on a phone.
+
 - **The voice pass over everything that is not a book: the docs, the app's own words, and the
   scripts that print. GritKeeper v1.58.0 (2026-09-22).**
 

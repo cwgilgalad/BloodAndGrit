@@ -146,7 +146,7 @@ download. Re-upload the unchanged zips and PDFs from disk; they are cheap and th
 page that serves half a game.
 
 The zips exist because GitHub serves raw `.html` as plain text, so without one a stranger cannot
-get a book in a click. The six PDFs are attached loose as well as inside the zips, because
+get a book in a click. The seven PDFs are attached loose as well as inside the zips, because
 `README.md` links each book at `/releases/latest/download/<name>.pdf`: a link that reads in the
 browser and never goes stale.
 
