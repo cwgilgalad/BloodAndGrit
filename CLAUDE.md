@@ -123,7 +123,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.53 | 289 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.37 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.24 | 226 | none (182 creatures) |
-| The Book of Legends | v1.2 | 77 | none (98 documents) |
+| The Book of Legends | v1.3 | 120 | none (166 documents) |
 | Module I: The Salt at Coffin Wells | v1.9 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.11 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.11 | 39 | one inline SVG map (two panels), downloadable |
@@ -179,7 +179,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 98 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 166 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
 | **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -584,12 +584,26 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.2) — structure & conventions
+## The Book of Legends (v1.3) — structure & conventions
 
-Thirteen chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
+Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
 blocks, no page references into the other books. Read the built book's Contents for the chapter
 list, which is generated.
+
+**The order is a slow burn, and it is set in one place (Cole, 2026-09-24).** `ORDER` in
+`build_legends.py` holds the chapters in sequence, and every numeral, Contents line, running head
+and "Chapter N" in the prose is read off it through `chref()`. Nothing in the book types a chapter
+number any more. That matters, because the book has been renumbered twice: once when the Trades
+chapter went in (which left an editor's note pointing at the wrong chapter for three versions), and
+again in v1.3. The Basin opens it because the plot lives there. The frauds and the weather come
+straight after, so a reader learns what a lie sounds like early. From there each chapter is a little
+harder to explain away than the last, up through the Long Table, the Dark Cultists' own papers and
+the cosmic chapter, to the satchel. Two habits carry the burn and should be kept: **every thread is
+planted as talk before it arrives** (the Long Table is a Kansas City swindle, a skipping rhyme, a
+bounty poster and a green door before it gets a chapter), and **Ashby himself is drawn in only at
+the end**. Within a chapter the papers climb as well, from the dullest to the worst. Moving a
+chapter moves the arc, so score it against its neighbours before you do.
 
 **The conventions that make it work, and that a later session should keep:**
 
@@ -604,16 +618,27 @@ list, which is generated.
 - **Contractions belong to the informal voices only.** Official returns write it out; letters,
   field-books and spoken answers contract. That spread is deliberate and it is what took the book
   from 0.3 contractions per thousand words to 8.5.
-- **Nothing is confirmed, and the editor says so on page one.** Chapter XII proves two stories
-  frauds, one of them with a signed confession. Chapter XIII ends mid-sentence on a torn page,
-  under an instruction from the gatherer not to supply an ending.
+- **Nothing is confirmed, and the editor says so on page one.** The frauds chapter, second in the
+  book, takes one story apart after another, most of them on the word of whoever made them up. The
+  last chapter ends mid-sentence on a torn page, under an instruction from the gatherer not to
+  supply an ending.
+  Every paper in the v1.3 chapters that could be read as a confirmation has an editor's note beside
+  it that takes some of it back: a card game, a melancholy, a compositor's short line, a chain
+  error, two astronomers who saw a planet that was not there.
 - **No Patron is named.** `verify_rules.py::check_patron_silence` fails the build if one ever is,
   and it was proved by sabotage the day the book was written.
-- **Nine counted things.** `98` documents, `49` provenance notes, `31` editor's notes: the builder
-  prints those counts and nothing else in the repo types them.
+- **Counted, not remembered.** `166` documents, `89` provenance notes, `59` editor's notes: the
+  builder prints those counts, and `audit_consistency.py` holds every copy this file and README type
+  to the built book. (This bullet used to say nothing else in the repo typed them, while README and
+  two rows of this file typed the 98.)
 - The document helpers (`paper`, `news`, `wire`, `depo`, `filedoc`, `bill`, `song`, `ledger`,
-  `field`) each generate one kind of paper. Add a kind by adding a helper and a CSS block, not by
-  hand-writing markup into a chapter.
+  `field`, and since v1.3 `card`, `tract` and `scrip`) each generate one kind of paper. Add a kind
+  by adding a helper and a CSS block, not by hand-writing markup into a chapter. A kind that must
+  never be split across a page (a card, a banknote) puts its whole body in one inner box, because
+  the paginator only splits a `.paper` with more than two children.
+- **The Patron silence has an in-world reason now.** The editor says in *A Word Before* that where
+  anybody named the thing they serve, the name came out, as Ashby did. Keep it that way: a paper
+  may call a Patron "the thing" or "what she served", never by a handle a player could look up.
 
 ---
 
