@@ -8,13 +8,61 @@ Desktop\Git repos.)
 
 ---
 
+- **The Book of Legends v1.4 and the Keeper's Book v2.39: eight slips in the papers, and the paragraph
+  that sends the players to them (2026-09-25).**
+
+  The read-through before the P10 sessions took in the Book of Legends as well, and asked it the one
+  question a book of papers can fairly be asked: does a paper contradict itself, or another paper,
+  where nobody in the world meant it to? Witnesses who disagree are the design, and none of that was
+  touched. Nine slips came back, two of them in pages v1.3 had just added or touched. The first of
+  the nine had fixed itself: *A Face Not Their Own* promised four cases and printed three until v1.3
+  gave it the drifter. The other eight are fixed here.
+
+  **A register that disagreed with Module III.** The Register at San Clavo named the three fathers as
+  Blázquez, Ortíz and Salgado and buried Salgado in February 1810. Module III's ledger is Fray
+  Ignacio Salcedo's, written in his own hand in October 1809 and dictated at the end of a long life.
+  A parish register is a primary paper and it has to agree with the module, so it names Salcedo now
+  and buries Blázquez.
+
+  **Dates that ran past the man who wrote them.** The undertaker kept his day-book "thirty-one
+  years" by three separate counts while its heading gave 1868 to 1885, which is seventeen, and
+  Ashby's note on it was dated September '85, a year after he stopped writing. The book runs 1853 to
+  1884 now, its last entries fall in June 1883 and February 1884, and the note is September '84.
+  Ashby's note on the green door in Denver, written a few weeks after the clipping printed beside it,
+  said he had thought better of the afternoon "every year since". It says every day.
+
+  **Things the editor said he had done.** *A Word Before* says that one name in the book was changed
+  and that the page says so. No page did. The Yeager letter says so now, and why. The Ellender store
+  account headed its dollar column "£ s. d.", and it says Amount. The index had no line for One of
+  the Thirty-Six. The note on the New Orleans sanitary inspector called him the only person in the
+  chapter "received anywhere near her" who wrote down what he saw, one page after two women who sat
+  across a table from her, and one of those two was printed. He is the only one who went on
+  somebody else's business, the city's.
+
+  **The chapter that promised not to tell.** *A Face Not Their Own* opens by putting one ordinary
+  bigamy case among its strange ones "so that the reader has the experience of not knowing which".
+  Two glosses told. The drifter's opened "The fourth of the four", which makes the three before it
+  the first three, and the Yeager letter's said "This is the one I warned you about" and then that it
+  had not marked which of four. The drifter no longer numbers itself, and the Yeager gloss says the
+  letter may be the one, out of five. Its heading stays as it was, since that is what the letter looks
+  like, and the note under it already has its doubts.
+
+  **The Keeper's Book v2.39.** Ch. XVI told the Keeper that two of its three legends were in the
+  players' book. All three are, and the paragraph says where to find the two whose names differ: the
+  Outfit under *The Fifth Rider* and the song under *The One About the Weather*. The cloud session
+  saw it in v1.3 and left it for this machine, because it means a Keeper's Book bump and a status-bar
+  sync in the app. The app reads Keeper's v2.39 now, still under v1.59.0, which has not shipped.
+
+  Pages, measured here: Book of Legends 119 (the cloud's font-matched render said 120), Keeper's
+  Book 152.
+
 - **Every book read the way a table reads it, before a die was rolled. Books v2.54 / v2.38 / v2.25,
   modules v1.10 / v1.12 / v1.12 (2026-09-25).**
 
   Before twenty-five sessions are played from the books alone, the whole shelf was read through
   once, asking a single question of every page: could a table do what this says with only this
   book open? Sixty-one faults came back from the six books here, three of them fixed in two earlier
-  commits. The Book of Legends had six of its own, which go in with the next entry.
+  commits. The Book of Legends had nine of its own, which go in with the next entry.
 
   **Two Callings could not be finished.** The Starting Coin table had sixteen rows for eighteen
   Callings, so an Engineer or a Sister stopped dead at step 7 of creation. The point-buy method was

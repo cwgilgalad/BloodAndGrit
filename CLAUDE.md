@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.54 · Keeper's Book v2.38 · Bestiary v2.25 ·
+**Current versions: Player's Book v2.54 · Keeper's Book v2.39 · Bestiary v2.25 ·
 GritKeeper app v1.59.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -121,9 +121,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | Book | Version | Pages† | Images |
 |---|---|---|---|
 | The Player's Book | v2.54 | 290 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.38 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Keeper's Book (GM guide) | v2.39 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.25 | 226 | none (182 creatures) |
-| The Book of Legends | v1.3 | 120 | none (166 documents) |
+| The Book of Legends | v1.4 | 119 | none (166 documents) |
 | Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
@@ -521,7 +521,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.38) — structure
+## The Keeper's Book (v2.39) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -584,7 +584,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.3) — structure & conventions
+## The Book of Legends (v1.4) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat

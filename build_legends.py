@@ -29,7 +29,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.3"
+VERSION = "1.4"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -388,12 +388,13 @@ def chapter(anchor, sub, body):
 
 # ---------------------------------------------------------------- Contents
 # The page numbers here are the no-JS fallback and nothing more: the paginator overwrites every one of
-# them from the rendered sheets. Measured for v1.3 with the book's own web fonts loaded, which is what
-# makes them agree with the laptop's Edge; a render that falls back to system fonts runs a page long.
+# them from the rendered sheets. Measured for v1.4 in the laptop's Edge. The cloud's render of v1.3,
+# with the book's own web fonts loaded, still ran one page long from Chapter X on, so take them from
+# this machine; a render that falls back to system fonts runs longer again.
 STATIC_PG = {"before": 7, "basin": 9, "frauds": 18, "weather": 24, "paper": 27, "jubilee": 32,
-             "faces": 39, "songs": 45, "trades": 50, "road": 57, "dead": 64, "ground": 71,
-             "hunger": 77, "preaching": 84, "longtable": 91, "brother": 99, "depth": 106,
-             "last": 114}
+             "faces": 39, "songs": 45, "trades": 50, "road": 57, "dead": 63, "ground": 70,
+             "hunger": 76, "preaching": 83, "longtable": 90, "brother": 98, "depth": 105,
+             "last": 113}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'
@@ -485,9 +486,9 @@ CH1 = chapter("basin", "One county, and everything written about it.", "\n".join
        "Latin and the Spanish are Ashby&rsquo;s translation and are not always good."),
  ledger("Parish register", "Mission of San Clavo, 1809&ndash;1811",
         ["Date", "Entry", "Name"],
-        [("11 Sept. 1809", "Arrival of the fathers, three", "Bl&aacute;zquez, Ort&iacute;z, Salgado"),
+        [("11 Sept. 1809", "Arrival of the fathers, three", "Bl&aacute;zquez, Ort&iacute;z, Salcedo"),
          ("2 Nov. 1809", "Baptism", "Mar&iacute;a, of the mesa, adult"),
-         ("19 Feb. 1810", "Burial", "Fr. Salgado, of a fever"),
+         ("19 Feb. 1810", "Burial", "Fr. Bl&aacute;zquez, of a fever"),
          ("4 April 1810", "Well blessed, the second", "&mdash;"),
          ("7 April 1810", "Marriage", "Cardoza and Ybarra"),
          ("1 June 1810", "Well blessed, the fourth", "&mdash;"),
@@ -786,7 +787,7 @@ CH2 = chapter("dead", "Burials that did not take, and the paperwork they generat
  gloss("Extracts from the day-book of an undertaker at a cattle town, kept for thirty-one years. "
        "The italics are his own, and he used them for exactly one purpose, which the reader will "
        "work out."),
- paper("Day-book", "an undertaker, 1868&ndash;1885", p(
+ paper("Day-book", "an undertaker, 1853&ndash;1884", p(
      "<strong>1871, Mch.</strong> Coffin, plain, for the Mims child. Paid.",
      "<strong>1874, Aug.</strong> Coffin, lined, for Mr. Whately of the bank. <em>Screwed.</em> "
      "Paid by the estate.",
@@ -794,12 +795,12 @@ CH2 = chapter("dead", "Burials that did not take, and the paperwork they generat
      "Not paid, and I did not ask.",
      "<strong>1881, Nov.</strong> Coffin, plain, for the woman found at the crossing. "
      "<em>Screwed, and stone on it.</em> Paid by subscription.",
-     "<strong>1884, June.</strong> Coffin, lined, Mrs. Hackney. <em>Screwed.</em> The family "
+     "<strong>1883, June.</strong> Coffin, lined, Mrs. Hackney. <em>Screwed.</em> The family "
      "objected to the screws and I explained it was the damp and they were satisfied.",
-     "<strong>1885, Feb.</strong> Coffin, plain. <em>Screwed, stone, and I sat up with it.</em> "
+     "<strong>1884, Feb.</strong> Coffin, plain. <em>Screwed, stone, and I sat up with it.</em> "
      "Not paid. Nobody to pay."),
      ),
- field("Sept., &rsquo;85", "a cattle town",
+ field("Sept., &rsquo;84", "a cattle town",
        ["He screws about one in nine. I counted it up: thirty-one years, four hundred and forty "
         "coffins, "
         "forty-nine screwed and eleven of those with a stone laid on as well.",
@@ -975,10 +976,9 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
      cls="letter", sign="Yr. obedient servant, W. Boothe"),
 
  '  <h2 id="ix-drifter">The Man Who Kept to the Shade</h2>',
- gloss("The fourth of the four. A page from the lock-up book at a county seat on the Arkansas, a letter "
-       "from a saloon-keeper in the same town, and what a boy told his mother, which she wrote down that "
-       "night because, she said, he was not a boy who made things up and she did not mean to start "
-       "believing he was."),
+ gloss("A page from the lock-up book at a county seat on the Arkansas, a letter from a saloon-keeper "
+       "in the same town, and what a boy told his mother, which she wrote down that night because, she "
+       "said, he was not a boy who made things up and she did not mean to start believing he was."),
  paper("Lock-up book", "a county seat on the Arkansas, 12 October 1880", p(
      "<strong>7.40 pm.</strong> Received one man, about thirty, no horse, held on the marshal&rsquo;s "
      "order for vagrancy and for refusing to give a name.",
@@ -1020,9 +1020,8 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
 
  '  <h2 id="ix-thirtysix">One of the Thirty-Six</h2>',
  gloss("A letter from a woman at Dodge to a woman at Trinidad, forwarded twice, ending up in a "
-       "lawyer&rsquo;s file and thence to Ashby. This is the one I warned you about in the opening "
-       "of this chapter, and I have not marked which of the four the impostor is, and I am not "
-       "going to."),
+       "lawyer&rsquo;s file and thence to Ashby. It may be the one I warned you about in the opening "
+       "of this chapter. I have not marked which of the five that is, and I am not going to."),
  paper("Letter", "Dodge City, 7 March", p(
      "Mrs. Yeager,",
      "You do not know me and I am sorry to be the one. The man you married in November is my "
@@ -1039,7 +1038,8 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
  ednote(f"Restful is the word that decided me to print it here rather than in {chref('frauds')}. Every "
         "other witness in this chapter says the same thing in worse English: the man was easy to "
         "be around, the man was pleasant, the man thanked me twice. It proves nothing whatever. It "
-        "is only that I noticed"),
+        "is only that I noticed. Yeager is not the name on the envelope. It is the one name in this "
+        "book I have changed, and I changed it because Mrs. Puckett asked me to and nobody else did"),
 ]))
 
 
@@ -1058,7 +1058,7 @@ CH4 = chapter("hunger", "Parties that went in with provisions, and what the stor
  gloss("The best-known of these and the one with the most paper. Nineteen people went up the north "
        "fork in the autumn of 1871 with three wagons. Four came out in the spring."),
  ledger("Store account", "outfitting of the Ellender party, 14 September 1871",
-        ["Item", "Quantity", "&pound; s. d."],
+        ["Item", "Quantity", "Amount"],
         [("Flour", "1,400 lb.", "#$42.00"),
          ("Bacon, side", "600 lb.", "#$54.00"),
          ("Beans", "400 lb.", "#$12.00"),
@@ -1858,7 +1858,7 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
         "constantly and that it is the least interesting thing about the work, and that I had "
         "come a long way to ask about money like everybody else, and would I like some coffee. I "
         "would. It was very good coffee and I learned nothing and I have thought better of the "
-        "afternoon every year since."]),
+        "afternoon every day since."]),
 ]))
 
 
@@ -2818,7 +2818,8 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      sign="Inspector, Second District"),
  ednote("The fever of that year killed some four thousand people in the city, and on every square some "
         "houses came through it untouched. I print the inspector because he is the only person in this "
-        "chapter who was received anywhere near her and wrote down what he saw. He saw a courtyard"),
+        "chapter who went near her on somebody else&rsquo;s business, the city&rsquo;s, and wrote down "
+        "what he saw. He saw a courtyard"),
 
  '  <h2 id="ix-ninth">The Ninth Child</h2>',
  gloss("Two letters from a woman on the Neches, in the piney woods of Texas, to her sister, written a "
@@ -3352,6 +3353,7 @@ LEG_INDEX = [
     ("Revival, the Good", "ix-revival"),
     ("Riding circuit, a preacher&rsquo;s letters on", "ix-circuit"),
     ("Sawbones, a case book kept by a", "ix-sawbones"),
+    ("Thirty-six, one of the", "ix-thirtysix"),
     ("Tracker&rsquo;s evidence, a", "ix-scout"),
     ("Trades, them that make a living at it", "trades"),
     ("Saltlick Station, two accounts of", "ix-saltlick"),
