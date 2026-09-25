@@ -66,6 +66,97 @@ Desktop\Git repos.)
   Miracle's price, the familiar's binding DC, eight Calling features and two ghost stat blocks) under
   v1.59.0, which has not shipped yet, and its status bar reads the new book numbers. Smoke 16,396
   passed, self-test 44 of 44.
+- **The Book of Legends v1.3: the organised dark, eight more legends, and a book put in the order of
+  a slow burn (2026-09-24).**
+
+  Cole liked the book and found it short of flair. What he named was the organised dark it only
+  hinted at: the Dread Mother and her covens, Jubilee and Redemption, the Dark Cultists in their own
+  words, and cosmic horror that actually frightens. While that was being written he added eight more
+  (a Hexer whose power comes through one snake's bite, a gathering of vampires, a witch the Table has
+  put a price on, Redemption's business in Mexico, a long black train, a drifter who goes into
+  shadows, a spirit-talker everybody hunts for in Montana, a crossroads nobody comes back from) and
+  two conditions that shaped the rest. Balance all of it. And keep the slow burn, but let the
+  intensity build and build.
+
+  **Four new chapters.** *The Spur to Jubilee* is Redemption as its neighbours see it: the branch
+  time-table with a customs post the United States says does not exist, a porter who has never been
+  let off at the platform and knows exactly which verse of Leviticus the town was named out of, two
+  newspapers that agree to the comma except about three passengers, a letter home about wheat and a
+  stake the stock won't graze past, a Treasury note, a page of the Golden Circle's parcels with two
+  lines ruled for purchases not yet made, and a Mexican collector of customs who has refused to sell
+  them a salt pan four times. *The Long Table* is the covens: a card that asks a house to stand, a
+  seated house's tithe book with an empty column headed *received from the Table*, a witch who
+  answers Ashby's question and will not talk about the children in a letter, two women who sat
+  across from the Mother and describe different women with the same hands, two letters a year apart
+  about a ninth child and what saying no cost, and Mother Harrow, who took a child that was owed and
+  kept it. *There Is Always a Brother* is the Dark Cultists: the sign in a hotel dining room and the
+  man who answered it, a woman happier than she has ever been, somebody's uncle, a prisoner who would
+  not take off his gloves, and something that looked out of a man at a night meeting on the
+  Canadian. *What the Country Stands On* is the cosmic horror, and there is no monster in it: a
+  plain three miles longer going east, a well that breathes against a ton of iron, a street closed
+  because it cannot be put right, four camps in the high country, a crossroads whose four corners
+  measure three hundred and sixty-one and a quarter degrees, and the eclipse of 1878, which one
+  observer says had more stars in it than the chart.
+
+  **The other eight went where they fit, and where a chapter was light.** The drifter is the fourth
+  case in *A Face Not Their Own*, whose opening has promised four since v1.0 and printed three. The
+  rock snake came up with the spoil in *What the Ground Keeps*. The vampires are a hotel's account of
+  a week in which nobody ordered food and six of forty attendants did not collect their wages, in
+  *Hunger*, beside a congregation on the Dismal River that will not let a guest eat alone. The long
+  train is a dispatcher's sheet in *The Dead Do Not Stay Put*, the spirit-talker a guide's handbill
+  and ledger in *Preaching*, Redemption's Mexican business a section of its own chapter, and Mother
+  Harrow a bounty notice in the Trades with no money on it long before she speaks for herself.
+
+  **The order is the arc now.** The book used to run in subject order. It runs as a slow burn: the
+  Basin, where the plot is, then the frauds and the weather, so a reader learns early what a lie
+  sounds like, then chapters that are each a little harder to explain away than the last, up through
+  the Long Table, the faithful and the cosmic chapter to the satchel. Every new thread arrives first
+  as talk. The Long Table is a Kansas City swindle, a skipping rhyme, a bounty poster and a green door
+  before it gets a chapter; Redemption is a land-warrant fraud before it is a country; the eclipse is
+  a lantern lecture by a quack before it is a young woman's letter. Ashby himself is drawn in only at
+  the end. Inside each chapter the papers climb too, and the cosmic chapter was re-set to climb to
+  the eclipse.
+
+  **Balance, measured.** The first drafts made the four new chapters the longest in the book, and an
+  early chapter the longest of all works against a slow burn. They were cut back to their papers,
+  Jubilee from 2,967 words to about 2,350, and the chapters now run three to nine pages, lighter at
+  the front and fuller toward the end. Every paper in the new material that could be read as a
+  confirmation has an editor's note beside it taking some of it back: a card game, a melancholy, a
+  compositor's short line, a chain error, two astronomers who saw a planet that was not there, a man
+  who went to the crossroads to get away from his wife. No Patron is named anywhere in it, and
+  `verify_rules.py` reads the book to hold it there. The editor now says why, in *A Word Before*:
+  where anybody named the thing they serve, the name came out, as Ashby did.
+
+  **Three new kinds of paper**, each a helper and a CSS block: a card (the Table's), a printed
+  leaflet (the cultists' tract), and a banknote, double-ruled like an engraving, whose vignette is a
+  railroad track that runs into a depot and does not come out.
+
+  **Chapter numbers are read off one list.** `ORDER` in the builder carries the sequence, and every
+  numeral, Contents line, running head and "Chapter N" in the prose comes from it through `chref()`.
+  That fixed a stale one on the way past: since the Trades chapter went in, the editor's note on the
+  bigamy letter had been sending readers to the Songs for the Frauds.
+
+  **The front page's count of papers is checked.** README and CLAUDE.md typed "98" in four places and
+  nothing held them to the book. `audit_consistency.py` counts the papers, provenance notes and
+  editor's notes off the built book and fails any typed copy that disagrees. It failed on all six
+  stale figures before they were corrected.
+
+  **Measured with the book's own fonts, in the cloud.** The cloud session's headless browser does not
+  trust the session proxy, so its first renders fell back to system fonts and ran a page long. The
+  fonts were fetched with verification on and served to the browser locally. Rendered that way v1.2
+  comes out at the same 77 pages the laptop measures, so the 120 below should be close to what the
+  laptop gets, and it is the laptop's own print at ship time that goes on the Release. The other books
+  do not match as well from the cloud (the Bestiary prints 220 pages there against 226 here), which is
+  one more reason their PDFs are reprinted on this machine and nowhere else.
+
+  Pages: Book of Legends 120 (was 77), desktop and mobile alike, nothing clipped, no sideways scroll.
+  166 papers (was 98), 89 provenance notes (49), 59 editor's notes (31), about 36,300 words (20,900).
+  Rules 1,741 / 0, consistency 113,642 / 0, diversity 699 / 0, no hard prose tells, and the signals
+  the prose audit watches moved the right way: echo 2.2 to 1.4 per thousand words, negative
+  parallelism 0.1 to 0.0, em dashes 0.4 to 0.2, contractions 8.7 to 9.8. The Keeper's Book is
+  unchanged. Its paragraph about the players' book still says two of its three legends are in it,
+  which was already one short and now undersells it; correcting it means a Keeper's Book bump and an
+  app status-bar sync, so it waits for the laptop.
 
 - **GritKeeper v1.59.0: the same helper written out four times, and five faults a screenshot found
   that no test could (2026-09-23).**

@@ -710,6 +710,9 @@ FRONT_PAGE = [
     (r"indexes for all (\w+) books and the (\w+) modules",    ("books", "modules")),
     (r"prints all (\w+) documents \((\w+) books, (\w+) modules\)",
      ("documents", "books", "modules")),
+    # The Book of Legends' papers, in digits. Added 2026-09-24: v1.3 took the book from 98 papers to
+    # 157, and three typed copies of the 98 had nothing holding them to it.
+    (r"(\d+) in-world papers",                              ("papers",)),
 ]
 
 APP_README = [
@@ -720,7 +723,16 @@ APP_README = [
     (r"(\w+) skills with proficiency ticks",                  ("skills",)),
 ]
 
-PAGES = [("README.md", FRONT_PAGE), ("GK/source/README.md", APP_README)]
+# CLAUDE.md types the same counts three times, in the book table, the builder's row and the Book of
+# Legends' own section, so it is held to the built book the same way.
+CLAUDE_MD = [
+    (r"none \((\d+) documents\)",                          ("papers",)),
+    (r"it is (\d+) in-world documents",                     ("papers",)),
+    (r"`(\d+)` documents, `(\d+)` provenance notes, `(\d+)` editor's notes",
+     ("papers", "glosses", "ednotes")),
+]
+
+PAGES = [("README.md", FRONT_PAGE), ("GK/source/README.md", APP_README), ("CLAUDE.md", CLAUDE_MD)]
 
 
 def check_front_page(chargen):
@@ -742,6 +754,15 @@ def check_front_page(chargen):
             return
         truth[key] = len(re.findall(r'"[^"]+\.html":', block.group(1)))
     truth["documents"] = truth["books"] + truth["modules"]
+    # Counted off the built book the way build_legends.py counts them when it prints its summary line.
+    legends = ROOT / "legends.html"
+    if legends.is_file():
+        built = legends.read_text(encoding="utf-8")
+        truth.update(papers=built.count('class="paper'), glosses=built.count('class="gloss"'),
+                     ednotes=built.count('class="ednote"'))
+    else:
+        fail("legends.html is not built, so the Book of Legends counts the docs quote cannot be checked")
+        return
 
     # The tabs are counted off the constructor calls that name one. MainForm.LazyTab builds its
     # shell with `new TabPage(title)`, an unquoted argument, so the helper does not count itself.
@@ -768,7 +789,8 @@ def check_front_page(chargen):
                 continue
             for said, key in zip(m.groups(), names):
                 CHECKS[0] += 1
-                if WORDS.get(said.lower()) != truth[key]:
+                count = int(said) if said.isdigit() else WORDS.get(said.lower())
+                if count != truth[key]:
                     bad += 1
                     fail(f'{name} says "{said} {key}" and there are {truth[key]}: '
                          f'"{" ".join(m.group(0).split())[:60]}"')
