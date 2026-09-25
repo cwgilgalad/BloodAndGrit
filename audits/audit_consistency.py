@@ -851,11 +851,15 @@ BOOK_COUNTS = [
     (r"Every Miracle carries a Rank from one to ([\w-]+)", "top_rank", 1),
 ]
 
-# The two notes that say how thin the top of each ladder is. Their shape carries a claim of its
-# own -- that Ranks Six and Seven hold the SAME number -- so the shape is checked before the
-# numbers are. The Signs note is right; the Miracles note was copied from it and never recounted.
+# The two notes that say how thin the top of each ladder is. The Signs note says Ranks Six and
+# Seven hold the same number "apiece", which is a claim of its own; the Miracles note was copied
+# from it and never recounted, and since 2026-09-23 it counts each Rank separately, because Six
+# and Seven differ there. Either shape is read, and every Rank it names is held to the data.
 SHELVES = [("Signs", "signs"), ("Miracles", "miracles")]
-SHELF_RE = (r"Ranks Six and Seven hold ([\w-]+) {noun} apiece and Rank Eight holds ([\w-]+)")
+SHELF_RES = [
+    (r"Ranks Six and Seven hold ([\w-]+) {noun} apiece and Rank Eight holds ([\w-]+)", (6, 7), (8,)),
+    (r"Rank Six holds ([\w-]+) {noun}, Rank Seven ([\w-]+),? and Rank Eight ([\w-]+)", (6,), (7,), (8,)),
+]
 
 
 def _reading(name):
@@ -896,25 +900,21 @@ def check_book_counts(chargen):
     for noun, which in SHELVES:
         CHECKS[0] += 1
         counts = by_rank[which]
-        found = re.findall(SHELF_RE.format(noun=noun), book)
+        found = [(m, ranks) for pattern, *ranks in SHELF_RES
+                 for m in re.findall(pattern.format(noun=noun), book)]
         if len(found) != 1:
             bad += 1
             fail(f"the note on how many {noun} the top Ranks hold matched {len(found)} times, "
                  f"not once. Repoint it or take it out.")
             continue
-        CHECKS[0] += 3
-        said_six_seven, said_eight = (WORDS.get(w.lower()) for w in found[0])
-        if counts[6] != counts[7]:
-            bad += 1
-            fail(f"the book says Ranks Six and Seven hold the same number of {noun} and Rank Six "
-                 f"holds {counts[6]}, Rank Seven {counts[7]}. The sentence has to say both.")
-        elif said_six_seven != counts[6]:
-            bad += 1
-            fail(f"the book says Ranks Six and Seven hold {found[0][0]} {noun} apiece and they "
-                 f"hold {counts[6]}")
-        if said_eight != counts[8]:
-            bad += 1
-            fail(f"the book says Rank Eight holds {found[0][1]} {noun} and it holds {counts[8]}")
+        said, ranks = found[0]
+        for word, group in zip(said, ranks):
+            for r in group:
+                CHECKS[0] += 1
+                if WORDS.get(word.lower()) != counts[r]:
+                    bad += 1
+                    fail(f"the book says Rank {_ONES.split()[r].title()} holds {word} {noun} and it holds "
+                         f"{counts[r]}")
 
     if not bad:
         ok(f"{len(BOOK_COUNTS) + len(SHELVES)} count(s) the book spells out about itself: "

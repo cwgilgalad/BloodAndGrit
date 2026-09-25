@@ -7,10 +7,17 @@
 # modules end within sight of San Clavo and neither goes in. This one goes in, and then goes under.
 # Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
-                            keeper, clock, npc, statblock, found, contents)
+                            keeper, clock, npc, statblock, found, contents,
+                            fight, night, words, odds)
+
+# The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
+_ACT1, _NAVE, _PIT = (fight("What the Water Answers", i) for i in range(3))
+_NIGHT = night("What the Water Answers")
+# "Not one soul broke" is printed in bold below; a run in which one did makes it false.
+assert _NIGHT["broken"] == 0, "PLAYTEST.md has a soul breaking in Module III; reread The Night, End to End"
 from module_maps import map_html
 
-VERSION = "1.11"
+VERSION = "1.12"
 SLUG = "what-the-water-answers"
 
 H = shell(
@@ -129,20 +136,21 @@ TRUTH = '''
   the module should not go looking for one.</p>
 
   <h2 id="truth-wells">What Is Failing, and in What Order</h2>
-  <p>Four months without renewal. The nails are giving in the order they were driven, which is the
-  order of the wells outward from the mission, which means the failures have been walking toward
-  the towns and away from the thing all summer. Three have gone. The Cardoza well went eleven days
-  ago and is where Act One opens.</p>
+  <p>Four months without renewal. The nails were driven from the mission outward, the courtyard well
+  first, and they're giving in the opposite order: the far wells first, then one well nearer the
+  mission each time, walking in toward the thing all summer. Three have gone and four hold. The
+  Cardoza well went eleven days ago and is where Act One opens. The courtyard nail, the first one
+  driven and the one directly over it, will be the last to go.</p>
 
   <p>What comes up first isn't the thing. It's the water: bad, and then wrong, and then busy. The
   ones who drink it drown standing up, in air, months later, and get up afterward.</p>
 
   <h2 id="truth-clock">The Clock</h2>
   ''' + clock("The Wells, Failing Outward", 6,
-              "Three segments are already filled when the module opens: three nails gone. "
+              "Three segments are already filled when the module opens, one for each nail gone. "
               "Fill one each time the posse spends a night elsewhere, and one when they open the "
-              "shaft. At six the first well fails, which is the one directly over it, which is the "
-              "one they are standing on in Act Three.") + '''
+              "shaft. At six the ring is gone and the courtyard nail is holding it alone, and that "
+              "is the well they are standing on in Act Three.") + '''
 
   ''' + keeper(
     "<p>Show the clock. Put it on the table with three pips already inked and don't explain it "
@@ -202,8 +210,6 @@ TURN = '''
   recorded at the county seat, and there are always one or two, and there have been for as long
   as anybody keeps paper. It's the least remarkable statistic in the territory. That's why it
   worked for seventy-five years.</p>
-
-  ''' + statblock("The Drowned") + '''
 
   <h2 id="turn-esperanza">Esperanza Did Not Forget</h2>
   <p>The module opens with a woman who meant to hand it on and ran out of time, which is a sad
@@ -330,7 +336,7 @@ ACT1 = '''
   <p class="note">Aim for an hour. One Dread Check, one fight the posse should win.</p>
 
   <h2 id="a1-house">1. The Cardoza Place</h2>
-  <p>Adobe, forty years old, four miles east of Calvary Crossing on the mission road. Eleven people
+  <p>Adobe, forty years old, the last homestead out past the mission, six miles on and downhill from it. Eleven people
   lived here in the spring. Six do now. Two are buried out back in ground that won't stay dry and
   three have gone to relatives and aren't coming home.</p>
 
@@ -339,7 +345,7 @@ ACT1 = '''
   minutes establishing that, which is time well spent.</p>
 
   <h2 id="a1-well">2. The Cardoza Well</h2>
-  <p><strong>Dread Check, DC 16, Will save.</strong> Tier II loss. Not for anything that moves. For
+  <p><strong>Dread Check, DC 13, Will save.</strong> Lose 1d4 Nerve. Not for anything that moves. For
   what the bucket brings up.</p>
 
   ''' + readaloud(
@@ -374,7 +380,7 @@ ACT1 = '''
 
   <h2 id="a1-road">The Walk to the Mission</h2>
   <p>Six miles, uphill, on bad water, and the module charges for it: <strong>3 Blood from each soul,
-  no save</strong>, unless they thought to haul clean water from the Crossing. Nobody will have.
+  no save</strong>, unless they thought to haul clean water out with them. Nobody will have.
   Charge it once, say what it feels like, and don't make it a scene.</p>
 </section>
 '''
@@ -407,7 +413,7 @@ ACT2 = '''
   ''' + found("The Plague-Dead") + '''
 
   <p>Full entry under <a href="#dead">What's Coming Up</a>. Three of them, and this is the fight
-  this module lets go badly: three clears in nine on the engine. See
+  this module lets go badly: ''' + words(_NAVE["cleared"]) + ''' clear in ''' + words(_NAVE["reached"]) + ''' on the engine. See
   <a href="#cost">What the Night Costs</a> before you run it, because the reason isn't the
   creature.</p>
 
@@ -443,7 +449,7 @@ ACT2 = '''
 
   ''' + keeper(
     "<p><strong>Stop there. Don't add to it.</strong> Esperanza Ríos died in April. Nobody was "
-    "late, nobody betrayed anything, and nothing in seventy years failed except that a very old "
+    "late, nobody betrayed anything, and nothing in seventy-five years failed except that a very old "
     "woman meant to do a thing at Easter and didn't live to Easter. Every player at the table will "
     "understand that, and it will do more work than any villain this module could have had.</p>",
     "The whole module") + '''
@@ -471,10 +477,10 @@ ACT3 = '''
   the pip in front of them.</p>
 
   <h2 id="a3-descent">9. Down the Shaft</h2>
-  <p><strong>Dread Check, DC 19, Will save.</strong> Tier III loss. A hundred and forty feet of wet
+  <p><strong>Dread Check, DC 20, Will save.</strong> Lose 1d10 Nerve. A hundred and forty feet of wet
   rope in the dark, and the cut sockets going past at every waterline the well has ever had:
   six of them, one above another, each one greened, each one empty, a record of how far the water
-  has fallen in seventy years and how many times somebody climbed down here to reset a nail into
+  has fallen in seventy-five years and how many times somebody climbed down here to reset a nail into
   new stone.</p>
 
   ''' + readaloud(
@@ -482,9 +488,10 @@ ACT3 = '''
     "socket, and it is not empty. There is a nail in it. It is bright. Somebody polished it, and "
     "not very long ago, and they polished it from a rope with no one at the top to hold it.") + '''
 
-  <h2 id="a3-nail">10. The Sixth Nail</h2>
-  <p>The one Esperanza Ríos reset last, in March, at eighty-one, alone. It's holding. It's the
-  only thing in the Basin that still is, and it will hold for perhaps another year.</p>
+  <h2 id="a3-nail">10. The First Nail</h2>
+  <p>The one Esperanza Ríos reset last, in March, at eighty-one, alone. It's holding. Three
+  more hold out on the ring, for now, but this is the one the rest were driven around, and it will
+  hold for perhaps another year.</p>
 
   <p>There are four blanks of unworked silver in the sacristy chest, a hammer, and a whetstone. That
   isn't a puzzle and the module doesn't want it treated as one. It is an offer, and the players
@@ -513,7 +520,7 @@ ACT3 = '''
   <h2 id="a3-out">The Way Back Up</h2>
   <p>The escape valve, and it is always available. The rope is right there and nothing at the bottom
   of this well climbs. A posse that goes back up alive hasn't failed. They've left a thing
-  pinned by one nail with a year on it, and they know exactly what that means now, which is more
+  under a ring that's giving and one bright nail with a year in it, and they know exactly what that means now, which is more
   than anybody in the Basin knew this morning.</p>
 </section>
 '''
@@ -584,7 +591,7 @@ DEAD = '''
 
   ''' + keeper(
     "<p><strong>On the safe-table rule, and why it is silent here.</strong> A 5th-level posse is "
-    "Tier 3 and everything in this module is Tier II or III, and nothing is over them at all. "
+    "Tier III and everything in this module is Tier II or III, and nothing is over them at all. "
     "GritKeeper will seat every one of these fights without a murmur, which is the third of three "
     "answers the modules give: in module I the app refuses the boss outright, in module II it "
     "allows it grudgingly at one rung over, and here it has nothing to say. The posse has caught "
@@ -608,14 +615,15 @@ COST = '''
       ["The ones who drank first (Act One)", "What lives in the nave (Act Two)", "The thing at the bottom (Act Three)"]) + '''
 
   <p>Read the first two rows together, because they're the interesting pair. Both fights are Tier
-  II. In the second one the posse shoots half again as well, 61 per cent against 41, 
-  and clears it one time in eight where it cleared the first two times in three. Same tier, same
-  party, better dice, far worse outcome.</p>
+  II. The posse shoots about as well in the second as in the first, ''' + str(_NAVE["ours"]) + ''' per cent
+  against ''' + str(_ACT1["ours"]) + ''', and clears it ''' + words(_NAVE["cleared"]) + ''' time in ''' + words(_NAVE["reached"]) + ''' where it
+  cleared the first ''' + words(_ACT1["cleared"]) + ''' times in ''' + words(_ACT1["reached"]) + '''. Same tier, same party, same dice,
+  far worse outcome.</p>
 
   <p>What changed is that the posse arrived at the nave already spent. The round counts say it:
-  Act One runs three rounds, and the nave is finished inside a round and a half, which at this
-  level is what losing looks like rather than what winning looks like. Eight of twelve reached the
-  nave; one of eight got past it.</p>
+  Act One runs ''' + f"{_ACT1['rounds']:.1f}" + ''' rounds, and the nave is over in ''' + f"{_NAVE['rounds']:.1f}" + ''', which at this
+  level is what losing looks like rather than what winning looks like. ''' + words(_NAVE["reached"], True) + ''' of twelve
+  reached the nave; ''' + words(_PIT["reached"]) + ''' of ''' + words(_NAVE["reached"]) + ''' got past it.</p>
 
   ''' + keeper(
     "<p><strong>This is the module's own lesson about itself.</strong> Attrition is the enemy here, "
@@ -627,10 +635,10 @@ COST = '''
     "charge exactly that and no more.</p>") + '''
 
   <h2 id="cost-night">The Night, End to End</h2>
-  <p>Zero of twelve finished the night on their feet. Nine broke off and rode out; three were put down
-  to the last soul. Souls down at the end averaged 2.9 of 4. Nerve, though, finished at 70.1 of a
-  possible 75, and <strong>not one soul broke in twelve runs</strong>: the lowest Nerve cost
-  of the three modules, at the highest level, against the worst things.</p>
+  <p>''' + words(_NIGHT["finished"], True) + ''' of twelve finished the night on their feet. ''' + words(_NIGHT["broke"], True) + ''' broke off and rode out;
+  ''' + words(_NIGHT["down"]) + ''' were put down to the last soul. Souls down at the end averaged ''' + _NIGHT["souls"] + ''' of 4. Nerve,
+  though, finished at ''' + _NIGHT["nerve"] + ''' of a possible ''' + _NIGHT["nerve_of"] + ''', and <strong>not one soul broke in twelve
+  runs</strong>, at the highest level of the three and against the worst things in them.</p>
 
   <p>That is not an accident of the dice. A 5th-level posse has the Nerve to look at this, and the
   module knows it. What it doesn't have is the Blood to walk through it, and the Sawbones running
@@ -640,7 +648,7 @@ COST = '''
   <h2 id="cost-scaling">Scaling the Night</h2>
   <ul>
     <li><strong>A bigger or bolder posse.</strong> Four Plague-Dead in the nave and drop the timber
-    on somebody. Have the sixth nail be already failing when they reach it: hours left in it instead
+    on somebody. Have the first nail be already failing when they reach it: hours left in it instead
     of a year. Don't add Blood to the thing at the bottom; take the ledger name away instead.</li>
     <li><strong>A smaller or greener posse.</strong> Two Drowned in Act One. Let the sacristy be
     found before the nave. Have Rosalía Cardoza ride up to the mission on her own and say what the
@@ -671,8 +679,8 @@ AFTER = '''
   entirely the Keeper&rsquo;s, and it should be short, and it should not be grateful.</p>
 
   <h2 id="after-lost">If they went back up the rope</h2>
-  <p>Do not run this as a failure. They know what nobody else in the Basin knows: seven wells, one
-  nail left, and about a year. That's a campaign, and it's a better one than a clean kill would
+  <p>Do not run this as a failure. They know what nobody else in the Basin knows: seven wells, three
+  of them open and the rest going one at a time, and a year left in the nail over the thing. That's a campaign, and it's a better one than a clean kill would
   have been. The Basin has been living on borrowed water since 1809 and now somebody alive knows the
   terms of the loan.</p>
 
@@ -718,7 +726,7 @@ html = finish(
         ("The sacristy", "a2-ledger"),
         ("The ledger", "a2-ledger"),
         ("The shaft", "a3-descent"),
-        ("The sixth nail", "a3-nail"),
+        ("The first nail", "a3-nail"),
         ("The silver nails", "truth-wells"),
         ("The circuit of seven wells", "after-nails"),
         ("The terms of the loan", "turn"),

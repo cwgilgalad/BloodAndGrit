@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.53 -->
+<!-- Blood & Grit — The Player's Book · Version 2.54 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.53)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.54)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -381,7 +381,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.53</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.54</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -402,7 +402,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.53 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.54 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -730,7 +730,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <ul class="dash">
     <li><strong>The Gamble (Rolled).</strong> Roll four six-sided dice, drop the lowest, and total the rest. Do this six times and assign the results. Bold, and sometimes cruel, fitting for the country.</li>
     <li><strong>The Honest Array.</strong> Assign these six numbers as you like: 15, 14, 13, 12, 10, 8. Fair and quick.</li>
-    <li><strong>The Wager (Point-Buy).</strong> Every score starts at 8. You have 27 points to raise them, costing more the higher you climb. Nothing may begin above 15 or below 8 by this method.</li>
+    <li><strong>The Wager (Point-Buy).</strong> Every score starts at 8. You have 27 points to raise them, costing more the higher you climb. Nothing may begin above 15 or below 8 by this method. Each point up to 13 costs one, and the fourteenth and fifteenth cost two apiece, so a 13 comes to 5 points, a 14 to 7 and a 15 to 9. Spend all 27 on 15, 14, 13, 12, 10 and 8 and you have bought the Honest Array.</li>
   </ul>
 
   <div class="box gold">
@@ -947,7 +947,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   followed it across these plains. You know drill, the chain of command, the weight of a carbine, and exactly what a volley
   does to men. Some of it you are proud of. Some of it wakes you in the small hours. <strong>Gift:</strong> +1 CON and +1 STR.
   You are trained in <strong>Athletics</strong> or <strong>Intimidate</strong> at your choice, begin play with a service carbine or sidearm, and once
-  per session may steady the line; you and each ally who can hear you shrug off fear for a round. <strong>Boon:</strong> drill is in your bones. Once per scene reroll a failed Reflex save to take cover or hit the dirt, and you reload and clear a jam a half-beat faster than any green hand. <strong>Burden:</strong> some of it never left; the first time each session the sudden roar of gunfire or the touch of the uncanny finds you, make a Dread Check or be Shaken a round as the old war rises behind your eyes.</p>
+  per session may steady the line; you and each ally who can hear you shrug off fear for a round. <strong>Boon:</strong> drill is in your bones. Once per scene reroll a failed Reflex save to take cover or hit the dirt, and you reload and clear a jam a half-beat faster than any green hand. <strong>Burden:</strong> some of it never left; the first time each session the sudden roar of gunfire or the touch of the uncanny finds you, make a Dread Check or be Frightened 1 as the old war rises behind your eyes.</p>
 
   <h3 id="ix-o-wrong">Came Back Wrong</h3>
   <p>You died (of fever, of lead, of cold, of something with no name) and then you did not stay dead. You remember the dark
@@ -1119,9 +1119,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   </div>
 
   <p class="dropcap lead">A Calling is what your character does when the talking stops: the trade by which they earn
-  coin, enemies, and an early grave. Each advances over ten levels, the highest a mortal is likely to reach before the
-  country collects its due. Your Calling sets your Hit Die (the dice you roll for Blood), your war-progression (Base
-  Attack Bonus), your strong saves, and the features that make you dangerous.</p>
+  coin, enemies, and an early grave. Each advances over fifteen levels, the highest a mortal is likely to reach before the
+  country collects its due. Your Calling sets your Hit Die (the dice you roll for Blood), your attack rank (how fast your aim
+  improves, Chapter XIV), your strong saves, and the features that make you dangerous.</p>
   <p id="ix-perks">Each Calling also carries one <strong>Perk</strong>, printed above its table. A Perk is the single
   thing that Calling alone does, true from 1st level and true forever after. It costs nothing, spends nothing, and is
   never rolled for. Some are worth a great deal at the right moment and nothing at all for weeks; a few are as much
@@ -1145,7 +1145,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   from its table, added to Strikes along with your keyed ability; <strong>Fort/Ref/Will</strong> are
   your save proficiencies by level, added to saves along with the keyed ability; <strong>Features</strong> are gained at the
   listed level. The number beside <strong>Trained Skills</strong> in the statline, plus your WIT modifier, is how many skills
-  you begin trained in; you gain a skill increase at 3rd, 5th, 7th, and 9th level.</p>
+  you begin trained in; you gain a skill increase at 3rd, 5th, 7th, 9th, 11th, and 13th level.</p>
 </section>
 
 <section class="page">
@@ -1293,8 +1293,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>Never Was Here</h4>
   <p>You have got so good at leaving that the leaving takes the arriving with it. After a night in a place you may spend an
   hour undoing your own presence in it: the ledger entry, the stall in the livery, the face behind the bar. Anyone
-  questioned about you afterward remembers a man, remembers nothing useful, and grows less certain the harder they are
-  pressed. Dogs and children are unaffected, and neither are the dead.</p>
+  questioned about you afterward remembers a stranger, remembers nothing useful, and grows less certain the harder they are
+  pressed. Dogs and children are unaffected, and so are the dead.</p>
   <h4>The Long Odds</h4>
   <p>Evasion becomes something worse for whatever is throwing at you. On a failed save against an effect Evasion would have
   halved, you take half instead of full; on a success you take none and may Step for free. The blast that catches the
@@ -1312,7 +1312,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>Trails of the Drifter</h4>
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
-      <li><strong>The Ghost Trail.</strong> Gain a bonus to Sneak and Hide, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
+      <li><strong>The Ghost Trail.</strong> Gain a bonus to Stealth, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
       <li><strong>The Hard Trail.</strong> Ignore the toll of harsh country, weather, and want; +2 Fortitude against the elements. <em>Mastery (10th):</em> once per scene, shrug off the first wound or affliction that would lay you low.</li>
       <li><strong>The Hunter's Trail.</strong> You never lose a trail and gain +2 against ambush and to read a quarry. <em>Mastery (10th):</em> once per scene, study a foe a moment and learn the weakness that undoes it.</li>
     </ul>
@@ -2054,7 +2054,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   the day with the pool halved: the Church is exacting about its bookkeeping.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Liturgy</strong> (the sacramental Latin the Church has kept against the dark for eighteen centuries), paid from your Grace.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Rite of Exorcism</h4>
   <p>Your signature work. Against a possessing spirit, a controlling influence, or the Mark working in a living soul, spend
   Grace and intone the Rite: a contest of your <strong>Sacrament DC</strong> (10 + half level + PRE) against the thing's
@@ -2153,7 +2153,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   dawn. Conviction fuels your sermons and miracles. It is faith made countable, and it runs dry exactly when you need it most.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Revival</strong>: the mourner&rsquo;s bench, the camp meeting, and the fire that falls when the Word is loud enough, paid from your Conviction.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Sermon</h4>
   <p>Spend 1 Conviction and speak for a round. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on
   Will saves until the scene ends. The unfaithful may mock; they steady all the same.</p>
@@ -2264,7 +2264,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   6th level.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on two lists of your own: <strong>the Spirits</strong>, courtesies asked of the crowded country, and <strong>the Mending</strong>, the stubborn craft of keeping the wounded alive. You are the only Calling of Faith to hold two, which is the whole of what the spirits give you that the pulpit does not.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Mending Hands</h4>
   <p>Spend 1 Breath to heal <strong>2d8 Blood</strong> by touch and song, which is more per point than
   any other Calling manages, or to bring a dying soul back to their senses and stable at once. Pour
@@ -2410,7 +2410,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing
   on the <strong>Common Blessings</strong> and on <strong>the Vigil</strong> (the warding, watching work of an
   order that has always been sent to sit up with things nobody else will) paid from your Mercy. You begin knowing
-  two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Nurse</h4>
   <p>Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a full rest recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.</p>
   <h4>Hold the Lamp</h4>
@@ -2502,8 +2502,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your <strong>Miracles</strong>
   (see <em>The Work of Faith</em>, in Chapter XIII), drawn from the <strong>Common Blessings</strong>
   and from <strong>the Consecrations</strong>: salt, silver, fire, ward, and the litany of weaknesses that turns
-  a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, and
-  9th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.</p>
+  a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, 9th,
+  11th, 13th and 15th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.</p>
   <h4>Steeled Nerve</h4>
   <p>You have stared into too many open graves to flinch at one more. Gain +2 on all Dread Checks and saves against fear,
   and halve the Nerve you lose to your current quarry's kind. The horror is still there. You have simply made a profession
@@ -2573,7 +2573,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   the things the handbills don't mention. It isn't too late to close the book. It has never yet been
   too late for anyone, at this particular page.</div>
   <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one, the <strong>Old Dark</strong>: the deep strata of buried gods, drowned hungers, and patient things that were ancient when the first peoples were young. It doesn't love you and it doesn't hate you; it lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it's an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf, and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has simply fallen in love with one of the things below, and serves it gladly, body and soul.</p>
-  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to five, and you reach a new Rank at 1st, 3rd, 5th, 7th and 9th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the thing the others deal with. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th. For the Hexer it is a bargain, for the Witch a craft, for the False Prophet a lie, and for the Dark Cultist a devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
+  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to eight, and you reach a new Rank at 1st, 3rd, 5th, 7th, 9th, 11th, 13th and 15th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the thing the others deal with. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th. For the Hexer it is a bargain, for the Witch a craft, for the False Prophet a lie, and for the Dark Cultist a devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
   <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried wasn't a wolf, and it wasn't Abner. Salt the grave. Don't mark it.&rdquo;
     <span class="src">&mdash; Marshal T. Coyle, on a matter he would not enter in the ledger</span></div>
 
@@ -2612,13 +2612,13 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <h4>Devotion</h4>
-  <p>You have a pool of <strong>Devotion</strong>, your patron's favor, equal to your RES modifier + half your level,
-  refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark
+  <p>You have a pool of <strong>Devotion</strong>, your patron's favor, equal to your RES modifier + half your level
+  (minimum 1), refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark
   Communion. A Dark Cultist who lets devotion lapse finds the favor cold exactly when it is needed.</p>
   <h4>Dark Communion</h4>
   <p>You draw on the <strong>Common Signs</strong> and <strong>the Bargain</strong> (Chapter XIII), up to the highest Rank your level allows, paid in Devotion (or, when that runs dry,
   in Nerve and Blood), and you receive them as what they are to you: genuine gifts from the thing you serve. You begin knowing
-  two Signs and learn another at each <em>Sign learned</em>.</p>
+  two Signs and learn another at 2nd, 4th, 6th and 8th level, and again at 11th and 13th.</p>
   <h4>The Glad Mark</h4>
   <p>You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you <em>walk</em>
   it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the
@@ -2826,7 +2826,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>Signs</h4>
   <p>You know and may work <strong>Signs</strong>, the rites of the Old Dark (Chapter XIII), drawing on
   the <strong>Common Signs</strong> and on <strong>the Bargain</strong>, the list of those who reached out and took. You
-  begin knowing two and learn another at each even level, choosing freely from any Rank your level has opened
+  begin knowing two and learn another at each even level to 10th and again at 11th and 13th, choosing freely from any Rank your level has opened
   to you. Working a Sign costs Nerve, and sometimes Blood, and always risks <strong>Backlash</strong>.</p>
   <h4>Witch-Sight</h4>
   <p>You see what is truly there: the residue of violence, the Mark upon a soul, the thin places where the world wears
@@ -2908,7 +2908,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <h4>The Craft</h4>
-  <p>You know and work <strong>Signs</strong> (Chapter XIII), beginning with two and learning another at each even level,
+  <p>You know and work <strong>Signs</strong> (Chapter XIII), beginning with two and learning another at each even level to 10th
+  and again at 11th and 13th,
   paid in Nerve and risking Backlash as the Hexer's are, and choosing freely from any Rank your level has opened.
   Where you differ is the list. You draw on the <strong>Common Signs</strong> and on <strong>the Craft</strong>, and the Craft is
   closed to every other Calling in this book: no Hexer learns the Poppet, and no cultist will ever ward a house.
@@ -2922,7 +2923,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   Binding, and you will feel the loss far longer than the penalty lasts.</p>
   <h4>The Evil Eye</h4>
   <p>With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls
-  and a run of small misfortunes for a round per two levels. It costs no Nerve, but everyone who sees you do it remembers
+  and a run of small misfortunes for a round per two levels (at least one). It costs no Nerve, but everyone who sees you do it remembers
   your face.</p>
   <h4>Brew</h4>
   <p>This is the kitchen craft, not the Rank 3 Sign of the same family: <em>The Brewing</em> bottles a
@@ -2994,7 +2995,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     </table>
     <h4 id="ix-binding">The Binding</h4>
     <p>The rite that binds one, and the rite that replaces one. It takes <strong>one night, from dusk to the first light</strong>
-    and costs <strong>3 Nerve, and a thing of yours the beast chooses and keeps</strong>. Roll a Lore (Occult) check against DC 15 + 2 per familiar you have bound before, this one included. On a failure, the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down.</p>
+    and costs <strong>3 Nerve, and a thing of yours the beast chooses and keeps</strong>. Roll a Lore (Occult) check against DC 15, plus 2 for each familiar you have bound before this one. On a failure, the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down.</p>
     <p>How many you may hold: you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen.</p>
     <p class="note">A witch who has lost three has a reputation, and it is not the reputation she
     would have chosen. The country counts them even when she does not.</p>
@@ -3077,7 +3078,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   your proficiency (your level, plus +2 trained, +4 expert, or +6 master) + the keyed ability's modifier, against a
   Difficulty Class; while untrained, you roll ability alone. At creation you become trained in a number of skills set by
   your Calling and your Wits, and you raise one skill a rank with each <strong>skill increase</strong> at 3rd, 5th, 7th,
-  and 9th level, as your level allows, for out here, a thing you cannot do is a way you can die.</p>
+  9th, 11th, and 13th level, as your level allows, for out here, a thing you cannot do is a way you can die.</p>
   <table>
     <thead><tr><th>Skill</th><th>Ability</th><th>What It Covers</th></tr></thead>
     <tbody>
@@ -3114,7 +3115,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="box">
     <h4 id="ix-green-table">At the Green Table &mdash; Each Trade Its Own Tell</h4>
-    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (Men and women of faith are pointedly absent from this list; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack and no more.</p>
+    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, nearly every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (The Engineer is missing: an Engineer would sooner take the wheel apart to see how it is weighted. Men and women of faith are pointedly absent too; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack and no more.</p>
     <ul class="dash">
       <li><strong>Bounty Hunter: Reading the Room.</strong> Gain +1 on Notice and Gamble checks to take the measure of a table, and you know at a glance which player is carrying the most iron, and which face matches the paper in your pocket.</li>
       <li><strong>Drifter: Stranger&rsquo;s Seat.</strong> No one here has played you before. Gain +1 on Gamble checks at any table where you are not known, and a foe gets no read on your tells the first hand.</li>
@@ -3328,6 +3329,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Bounty Hunter</td><td>3d6 × $10 (in collected bounties)</td></tr>
       <tr><td>Dark Cultist</td><td>2d6 × $5, plus the favor of the patron</td></tr>
       <tr><td>Drifter</td><td>2d6 × $10</td></tr>
+      <tr><td>Engineer</td><td>3d6 × $10, plus a toolroll and a contraption of your own making</td></tr>
       <tr><td>False Prophet</td><td>3d6 × $10 (collected, never earned)</td></tr>
       <tr><td>Gambler</td><td>3d6 × $10 (as the cards fell)</td></tr>
       <tr><td>Gunhand</td><td>3d6 × $10</td></tr>
@@ -3339,6 +3341,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Prospector</td><td>3d6 × $10, plus prospecting tools</td></tr>
       <tr><td>Sawbones</td><td>3d6 × $10, plus a surgeon's kit</td></tr>
       <tr><td>Shaman</td><td>2d6 × $10, plus a healer's kit, herbs, and the regard of the spirits</td></tr>
+      <tr><td>Sister</td><td>2d6 × $10, plus a nursing kit and a plain wooden cross</td></tr>
       <tr><td>Witch</td><td>2d6 × $5, plus a familiar</td></tr>
       <tr><td>Witch Hunter</td><td>3d6 × $10, plus silver for a few rounds</td></tr>
     </tbody>
@@ -3519,7 +3522,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 <section class="page">
   <div class="runhead"><span class="l">X. Goods &amp; Provisions</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-more-arms">More Arms &amp; Powder</h2>
-  <p>The five irons of the foregoing table are the common run; a person with coin and a particular need has further choices.
+  <p>The six irons of the foregoing table are the common run; a person with coin and a particular need has further choices.
   Traits are explained on the previous pages and apply as written.</p>
   <table>
     <thead><tr><th>Weapon</th><th class="c">Damage</th><th class="c">Range</th><th class="c">Cap.</th><th class="c">Reload</th><th>Traits</th><th class="c">Cost</th></tr></thead>
@@ -3712,8 +3715,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman treat one
-  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate in
-  Chapter X: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
+  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate on
+  the armor table: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
   against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
   through it. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
   Lore: Occult, or (at the Keeper's discretion, and at the usual risk) the working of a single Sign.
@@ -4375,7 +4378,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="dropcap lead">There is power in the old country beneath the country, and it can be reached: by the Hexer freely,
   by the Touched a little, by the desperate at ruinous cost. <strong>Signs</strong> are worked acts of will and word. Each one lists its
   <strong>Rank</strong>, its casting time, its price in Nerve or Blood, the save it forces where it forces one, what it
-  does, and its <strong>Backlash</strong>, what the dark exacts when the working slips. There are fifty-five of them here,
+  does, and its <strong>Backlash</strong>, what the dark exacts when the working slips. There are fifty-six of them here,
   across three lists, and no single soul will ever hold more than a handful.</p>
   <p>The <strong>Miracles</strong> are in this chapter too, beginning at <em>The Work of Faith</em>. They are the other
   half of the same subject and the book kept them eighty pages apart for years, which helped nobody: a Sign is taken and
@@ -4416,8 +4419,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>Blood</strong> is the desperate coin. Where a Sign offers the trade you may pay <strong>two Blood for
     each Nerve</strong> instead, and some Signs take Blood and nothing else. Blood spent on a working does not come back
     until you have rested properly; it is not a wound a Sawbones can close.</li>
-    <li><strong>Mark</strong> is the coin you cannot earn back. Rank 5 Signs cost it, some of the Bargain's Signs cost it
-    at any Rank, and nothing in this book gives it back. Six Marks and the character is the Keeper's (Chapter XII).</li>
+    <li><strong>Mark</strong> is the coin you cannot earn back. Most Common and Bargain Signs of Rank 5 and up cost it, two of the Bargain's cost it
+    at Rank 4, the Craft never asks it, and nothing in this book gives it back. Six Marks and the character is the Keeper's (Chapter XII).</li>
   </ul>
   <p class="note" id="ix-sign-dc">Where a Sign forces a save, the DC is the worker's <strong>Sign DC = 10 + half their
   level + RES modifier</strong>. A casting time given in Beats follows the Iron Code (Chapter XI); a Sign that takes an
@@ -4604,7 +4607,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   is noticed, and the debt is entered in a ledger that never forgets. A Miracle is <em>asked for</em>, on the knees, of
   a higher and quieter thing, and now and again it is granted. It costs no Mark and draws no Backlash. It costs the
   pool, and it risks the oldest disappointment there is: a prayer that goes unanswered.</p>
-  <p>Each of the six Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
+  <p>Each of the five Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
   ranked and gated exactly as the Signs are.</p>
 
   <h2 id="ix-m-rank">Rank and the Pool</h2>
@@ -4613,7 +4616,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   work any Miracle of a Rank your level allows, and no higher; ask for more than you have earned and the grace simply
   does not come. You begin knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a
   repertoire of six by the height of a frontier life and nine by the end of a very long one.</p>
-  <p class="note">Ranks Six and Seven hold four Miracles apiece and Rank Eight holds three. All three of the Rank Eight
+  <p class="note">Rank Six holds six Miracles, Rank Seven four, and Rank Eight three. All three of the Rank Eight
   Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
   between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
   <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
@@ -4742,7 +4745,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-riverclose">What the River Closes</h3>
   <p><em>Rank 2 · One minute · 2 Faith.</em> Lay the hurt in running water, or carry the water to the hurt, and ask. The wound heals 2d6 and closes clean: no rot, no fever, no scar worth the name, and no Lasting Injury out of that wound however bad it looked going in. The river does this for anything it likes and holds no particular opinion about people.</p>
   <h3 id="ix-m-pack">Set the Pack On</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
+  <p><em>Rank 3 · 1 Beat · 3 Faith.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
   <h3 id="ix-m-weather">Turn the Weather</h3>
   <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel; it grants favors and takes no orders.</p>
   <h3 id="ix-m-snare">The Spirit-Snare</h3>
@@ -5032,7 +5035,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <div class="divider"></div>
   <div class="box gold">
     <h4>The Core Roll</h4>
-    <p>d20 + ability mod + proficiency ≥ DC. Beat by 10, or a natural 20 that already succeeds, is a critical; miss by 10, or a natural 1 that already fails, is a critical failure.</p>
+    <p>d20 + ability mod + proficiency ≥ DC. Beat it by 10 for a critical, miss it by 10 for a critical failure. A natural 20 moves any result one step better and a natural 1 one step worse.</p>
   </div>
   <p><strong>Difficulty.</strong> Trivial 10 · Easy 13 · Average 15 · Hard 18 · Very Hard 20 · Punishing 25 · Beyond 30.</p>
   <p><strong>Abilities.</strong> STR, DEX, CON, Wits, Resolve, Presence. Modifier = (score – 10) ÷ 2, rounded down.</p>

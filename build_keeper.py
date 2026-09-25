@@ -68,13 +68,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.37 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.37)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.38 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.38)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.37</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.38</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.37 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.38 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -413,8 +413,8 @@ CH3 = f"""<!-- III -->
   </table>
   <p>A <strong>critical success</strong> costs no Nerve and steadies that character against the same horror for the
   rest of the scene. Reward the hard-bitten. A <strong>critical failure</strong> loses the Nerve and imposes
-  <em>Frightened 1</em> at once. Remember the players begin each session at full Nerve (RES score + level); a tough
-  hand might bank twelve or fifteen, a green and gentle soul barely six. Know your table's numbers before you start
+  <em>Frightened 1</em> at once. Remember the players usually begin a session at full Nerve (RES score + level); a tough
+  hand might bank twelve or fifteen, a green and gentle soul barely nine. Know your table's numbers before you start
   spending them.</p>
 
   <h2>Spending Dread Wisely</h2>
@@ -443,7 +443,7 @@ CH3 = f"""<!-- III -->
       <tr><td>1</td><td>The Shakes</td><td>&minus;2 to anything fine or steady-handed while under any strain</td></tr>
       <tr><td>2</td><td>Night Terrors</td><td>No Nerve returns from sleep alone: only by a fire, in company, or in drink</td></tr>
       <tr><td>3</td><td>The Long Stare</td><td>&minus;2 to be trusted or read by folk; they see the haunt on you</td></tr>
-      <tr><td>4</td><td>A Compulsion</td><td>A small rite (counting, salt, a rhyme) must be done, or be Shaken until it is</td></tr>
+      <tr><td>4</td><td>A Compulsion</td><td>A small rite (counting, salt, a rhyme) must be done, or be Frightened 1 until it is</td></tr>
       <tr><td>5</td><td>The Cold</td><td>Never quite warm again; &minus;2 against cold and against fear</td></tr>
       <tr><td>6</td><td>Faithless</td><td>The old comforts (prayer, ward, hymn) no longer steady you as they did</td></tr>
       <tr><td>7</td><td>The Whisper</td><td>You hear it now; once a session it tells you something true, to earn a lie later</td></tr>
@@ -462,10 +462,12 @@ CH3 = f"""<!-- III -->
   it to them.</div>
 
   <h2>Giving Back Nerve</h2>
-  <p>Nerve does not come back in the field. It returns at full only with the new session: a night survived,
-  a fire, the company of the living. You may grant a small recovery (1d4) in play for a true respite: a safe night
-  in a real bed, a hymn sung all the way through, whiskey shared with people who saw the same thing and lived. Never
-  in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
+  <p>Nerve does not come back in the field. The Player's Book prints the ways it does come back (Ch. XII,
+  <em>Recovering Nerve</em>): a confession or a full night unmolested in genuine safety for 1d6 apiece, whiskey for
+  1d4 and the start of a vice, and a week of true peace for all of it. That last is why a posse usually sits down to
+  a new session at full. The time between two reckonings is mostly that week. When the next session picks up the
+  same night, it isn't, and they begin where they stopped. You're the one who says whether a night was genuinely
+  safe: never in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
 
   <h2>A Night's Worth of Dread &mdash; Worked</h2>
   <p>The hardest thing to feel for, starting out, is how much Nerve a night should cost. Too little and the horror
@@ -612,7 +614,9 @@ CH4 = f"""<!-- IV -->
   </table>
   <p>As a rough rule, a creature's Tier is a fair, dangerous fight for a party whose <strong>level equals twice the
   Tier</strong>: Tier I tests 1st&ndash;2nd level, Tier II around 4th, Tier III around 6th, and so on. A monster two
-  Tiers above the party's reckoning is a thing to be fled, not fought, and good horror has plenty of those.</p>
+  Tiers above the party's reckoning is a thing to be fled, not fought, and good horror has plenty of those. The
+  table stops at V because this book's posses mostly do; Tiers VI to VIII, for the 11th level and past, are in the
+  Bestiary's own copy of it.</p>
 
   <h2>Budgeting a Fight</h2>
   <p>For a quick measure, give the party a budget of <strong>4 points per character</strong>. Spend it on foes:</p>
@@ -839,7 +843,7 @@ CH5 = f"""<!-- V -->
   <div class="box">
     <h4>Reading a Stat Block</h4>
     <ul>
-      <li><strong>Tier</strong> (I&ndash;V) is the measure of danger: a fair, hard fight for a party of twice
+      <li><strong>Tier</strong> (I&ndash;VIII) is the measure of danger: a fair, hard fight for a party of twice
       that in levels (Ch. IV). <strong>Defense</strong> is the number to hit it; <strong>Blood</strong> is what it takes.</li>
       <li><strong>Saves</strong> are Fortitude / Reflex / Will. <strong>Attacks</strong> give the bonus to hit and the
       damage on a hit; apply the Multiple Attack Penalty to extra strikes as a player would.</li>
@@ -1017,10 +1021,10 @@ CH7 = f"""<!-- VII -->
   monster put down, a place cleansed, a truth survived) not by a tally of kills. A new level every two or three
   sessions keeps the numbers climbing without outrunning the dread; a party that levels too fast soon shrugs off the
   horrors that should still chill them. When in doubt, slow down. A 3rd-level character in this game is a hardened,
-  capable soul; a 7th is a legend the territory will remember; there is no need to climb past ten.</p>
+  capable soul; a 7th is a legend the territory will remember. The levels past ten are there for the long ending, and most campaigns end before they need them.</p>
 
   <h2>Grit</h2>
-  <p>Grit is the players' luck, their hero points, and you are its other source. Hand a point,
+  <p>Grit is the players' luck, their hero points, and you are its other source. Hand one out,
   there at the table, for a deed of true courage, a moment of perfect character, or a line that makes the whole table
   go quiet. Be generous with it before a hard reckoning and the players will spend it bravely; hoard it and they will
   too, and someone will die clutching an unspent token. The point of Grit is to be spent.</p>
@@ -1668,8 +1672,8 @@ CH9 = f"""<!-- IX -->
   <div class="divider"></div>
   <p class="dropcap lead"><em>The Salt at Coffin Wells</em> is a one-session adventure for a fresh party of 1st-level
   characters. It's built to do the thing a first session most often fails to do: open as an honest western, turn the
-  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night, with every monster you need drawn
-  from the Bestiary so you never have to leave this book. Read it once; run it loose. Module I tells this same
+  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night, with every monster you need printed
+  right here, so you never have to reach for the Bestiary. Read it once; run it loose. Module I tells this same
   night at full length, with a bigger cast and a map of its own. Run one or the other, and whichever you run is what
   happened at Coffin Wells.</p>
 
@@ -1758,8 +1762,8 @@ APX = f"""<!-- APPENDIX -->
     &middot; Beyond 30. Against a living thing, use its Defense or save instead.</p>
 
     <h3>The Four Degrees</h3>
-    <p>Beat the DC by 10 (or nat 20) = critical success. Miss by 10 (or nat 1) = critical failure. Nat 20 / nat 1
-    shift one step. Narrate all four.</p>
+    <p>Beat the DC by 10 = critical success. Miss by 10 = critical failure. A nat 20 moves any result one step
+    better, a nat 1 one step worse. Narrate all four.</p>
 
     <h3>Dread Checks (Will save)</h3>
     <p>Corpse, murdered: DC 10, lose 1.<br>
@@ -1790,7 +1794,7 @@ APX = f"""<!-- APPENDIX -->
     <h3>Signs &amp; Miracles</h3>
     <p><strong>Sign DC</strong> (the Old Dark) and <strong>Miracle DC</strong> (the Faithful) = 10 + half the worker's
     level + the keyed ability: RES for Signs; PRE, RES, or WIT for Miracles. Rank opens at 1st / 3rd / 5th /
-    7th / 9th. Signs are paid in Nerve, Blood, and the Mark; Miracles from the Calling's pool. For an uncanny foe, read
+    7th / 9th / 11th / 13th / 15th. Signs are paid in Nerve, Blood, and the Mark; Miracles from the Calling's pool. For an uncanny foe, read
     its level as twice its Tier: a Tier III worker forces about DC 16.</p>
   </div>
 
@@ -1801,6 +1805,7 @@ APX = f"""<!-- APPENDIX -->
     III: 17 / +9 / 40.<br>
     IV: 20 / +13 / 70.<br>
     V: 23 / +17 / 110.<br>
+    VI&ndash;VIII: the Bestiary.<br>
     Fair fight &asymp; party level = twice the Tier. Budget 4 points/PC; even foe 8, mook 4, standout 16.</p>
 
     <h3>d12 &mdash; An Omen of the Dark</h3>
@@ -1882,7 +1887,7 @@ CH10 = f"""<!-- X -->
   <div class="box">
     <h4>The Truth (for the Keeper alone)</h4>
     <p>Saltlick Station is a lonely stage relay a hard day from anywhere. Two weeks ago a <strong>Skin-Walker</strong>
-    (Tier III, Ch. V) killed the hostler, <strong>Eli Stroud</strong>, and put on his skin. It has been thinning the
+    (Tier III, Bestiary Ch. IV) killed the hostler, <strong>Eli Stroud</strong>, and put on his skin. It has been thinning the
     travelers who stop here ever since, learning to pass for a man, and it's getting good at it.</p>
     <p>Tonight a
     blue norther closes the trail and strands the party at the station overnight, alongside a handful of other
@@ -2600,7 +2605,7 @@ CH14 = f"""<!-- XIV -->
   <h2>The Bestiary, Downtown</h2>
   <p>Each kind bends differently to a city, and the bend is usually an improvement.</p>
   <ul>
-    <li><strong>The Restless Dead (Ch. II).</strong> The country's dead haunt a grave; a city's dead haunt a
+    <li><strong>The Restless Dead (Bestiary Ch. II).</strong> The country's dead haunt a grave; a city's dead haunt a
     <em>system</em>. A potter's field with eleven thousand in it. A cholera trench built over by a good address. The
     dissection room at the medical college, and the resurrection men who supply it. The Resurrectionist stops being
     a lone ghoul with a spade and becomes a going concern with a price list and a standing order from a professor. Run a
@@ -2831,7 +2836,7 @@ CH15 = f"""<!-- XV -->
   strikes, and it works for whoever is paying, and it doesn't distinguish between the two.</p>
   <p>For a Keeper the Agency is the answer to a problem this game otherwise has: <strong>consequence at a distance</strong>.
   The Old Dark doesn't investigate. The dead don't file reports. A posse that shoots its way through a mining camp in
-  Chapter II has faced nothing at all in Chapter VII unless somebody sends a professional after them, and the Agency is
+  the spring has faced nothing at all for it by the fall unless somebody sends a professional after them, and the Agency is
   the profession.</p>
   <ul class="dash">
     <li><strong>They aren't corrupt.</strong> An operative who takes a bribe is a bad operative and the Agency fires
@@ -3139,7 +3144,7 @@ KEEP_INDEX = [
     ("Bargaining, why it works", "patrons-why"),
     ("The Patrons at the table", "patrons-table"),
     ("The Devourer", "patron-devourer"), ("The Whisperer", "patron-whisperer"),
-    ("The Cold Deep", "patron-colddeep"), ("The Long Trail", "patron-longtrail"),
+    ("The Cold Deep", "patron-colddeep"), ("The Long Trail (a Patron)", "patron-longtrail"),
     ("The Thing Beneath the Mountain", "patron-thingbeneath"),
     ("The Red Sermon", "patron-redsermon"),
     ("The gatherings in the Rockies", "patrons-rockies"),
@@ -3154,7 +3159,7 @@ KEEP_INDEX = [
     ("A Second Reckoning", "secondreckoning"),
     ("A Face Not His Own <span class=\"note\">(adventure)</span>", "secondreckoning"),
     ("The Keeper's Year", "keepersyear"), ("The three campaign frames", "keepersyear"),
-    ("The Haunted County", "keepersyear"), ("The Long Trail", "keepersyear"),
+    ("The Haunted County", "keepersyear"), ("The Long Trail (a campaign)", "keepersyear"),
     ("The Closing Circle", "keepersyear"), ("The rhythm of a year", "keepersyear"),
     ("The Salt Valley <span class=\"note\">(campaign seed)</span>", "keepersyear"),
     ("The Country in Your Pocket <span class=\"note\">(tables)</span>", "pocket"),

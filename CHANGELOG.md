@@ -8,6 +8,65 @@ Desktop\Git repos.)
 
 ---
 
+- **Every book read the way a table reads it, before a die was rolled. Books v2.54 / v2.38 / v2.25,
+  modules v1.10 / v1.12 / v1.12 (2026-09-25).**
+
+  Before twenty-five sessions are played from the books alone, the whole shelf was read through
+  once, asking a single question of every page: could a table do what this says with only this
+  book open? Sixty-one faults came back from the six books here, three of them fixed in two earlier
+  commits. The Book of Legends had six of its own, which go in with the next entry.
+
+  **Two Callings could not be finished.** The Starting Coin table had sixteen rows for eighteen
+  Callings, so an Engineer or a Sister stopped dead at step 7 of creation. The point-buy method was
+  offered with no costs at all. Both are printed now, and the costs come out at exactly 27 points for
+  the Honest Array, which is how you know they are the right ones.
+
+  **The fifteen levels had not reached every page.** Ch. VIII still ended skill increases at 9th,
+  and it is the only place a player is told when their skills improve. Ch. VII still stopped the
+  Signs at Rank five, the five Callings of Faith learned their last Miracle at 9th, the Hexer and the
+  Witch learned Signs "at each even level" past the point where their tables stop giving them, and
+  the Keeper's Book said there was no need to climb past ten. The Dark Cultist learned a Sign "at each
+  Sign learned", which is a circle.
+
+  **Rules that read two ways.** Nerve came back 1d6 for a safe night and in full after a week of
+  peace in the Player's Book, and 1d4 a night and in full only with a new session in the Keeper's
+  Book. The Player's Book was right, since it is what the app does, and the Keeper's Book points there
+  now. The critical thresholds were written carefully in two places and loosely in four, and the
+  loose copies made any natural 1 a critical failure, so a Gunhand who rolled a 1 and still beat the
+  Defense would jam a Misfire gun on a shot the careful reading calls a plain miss. Every copy says
+  the one rule now, the Keeper's Screen and the Quick Reference included: beat the DC by 10 for a
+  critical, miss it by 10 for a critical failure, and a natural 20 or a natural 1 moves the result one
+  step. "Shaken" was used four times as a condition no book defines; it is Frightened 1 in all four,
+  and in the app's affliction table as well. The unhorsing rule asked for a Ride save in a game with
+  three saves and no Ride among them.
+
+  **Counts the books keep about themselves.** Fifty-five Signs where there are fifty-six, six Callings
+  of Faith where there are five, Rank Six holding "four Miracles apiece" where it holds six, five irons
+  in a table of six, and the Tier scale printed as I to V in three places while the Bestiary prints VI
+  to VIII. Seventeen typed copies of the creature count said 175 or 150 against 182, and one of them
+  is the README inside the zip. The audit that reads the Rank note learned to read it counted Rank by
+  Rank, which is how it has to be written now that Six and Seven differ.
+
+  **The modules were quoting an engine that had moved on.** Every module prints the playtest
+  engine's numbers, and the sentences around the tables were typed by hand the last time the tables
+  changed. Module II said ten clears in twelve beside a table showing nine, and Module III said three
+  in nine beside one. The prose reads its numbers from `PLAYTEST.md` at build time now, from the same
+  rows the tables come from, and a builder refuses to build when a sentence like "not one soul broke"
+  stops being true.
+
+  **Story faults.** Module III's nails gave "in the order they were driven", which would have taken
+  the courtyard nail first; they give from the far wells inward, three gone and four holding, and the
+  courtyard nail is the last. Module II brought both Possessed down off the tack-room wall while their
+  bodies lay in the ice house. Module I opened on "the fourth night of the fourth week" of a dig six
+  weeks old, and Module III's directions put the mission ten miles from Calvary Crossing, where Module
+  I puts it most of a day's ride away. The Dread Checks at DC 15, 17, 18 and 19 are on the ladder now,
+  and each one prints the Nerve it costs where it used to say "Tier II loss", which no book defines.
+
+  The app took the changes that are its own text (the Compulsion affliction, the Veteran's burden, a
+  Miracle's price, the familiar's binding DC, eight Calling features and two ghost stat blocks) under
+  v1.59.0, which has not shipped yet, and its status bar reads the new book numbers. Smoke 16,396
+  passed, self-test 44 of 44.
+
 - **GritKeeper v1.59.0: the same helper written out four times, and five faults a screenshot found
   that no test could (2026-09-23).**
 

@@ -51,13 +51,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.24 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.24)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.25 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.25)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.24</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.25</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.24 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.25 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
@@ -201,7 +201,7 @@ HOWTO = f"""<!-- I -->
   <div class="box">
     <h4>Reading a Stat Block</h4>
     <ul>
-      <li><strong>Tier</strong> (I&ndash;V) is the measure of danger. A creature is a fair, hard fight for a party
+      <li><strong>Tier</strong> (I&ndash;VIII) is the measure of danger. A creature is a fair, hard fight for a party
       whose <strong>level is twice its Tier</strong>; two Tiers above the party is a thing to flee.</li>
       <li><strong>Defense</strong> is the number to beat to hit it; <strong>Blood</strong> is what it can take.</li>
       <li><strong>Saves</strong> are Fortitude / Reflex / Will. <strong>Attacks</strong> give the bonus to hit and the
@@ -1081,7 +1081,7 @@ SPIRITS = f"""<!-- V -->
 
   {creature(
     sb("The Cold Spot", "Tier I &middot; a small unrest", "&mdash;", 10, "fixed", "+6", "&mdash;", "+4",
-       "a chill, a whisper, a hand on the neck (Will DC 12 or Shaken); cannot truly harm, yet",
+       "a chill, a whisper, a hand on the neck (Will DC 13 or Frightened 1); cannot truly harm, yet",
        "<strong>Bound to a spot.</strong> A minor dead clinging to where it fell; mostly an omen and a warning of worse, but it festers if ignored.",
        "DC 10, 1",
        "Find and bury the bones, say the name, or cleanse the ground; small mercies lay it."),
@@ -1225,7 +1225,7 @@ SPIRITS = f"""<!-- V -->
     keeper="The Mourner is an omen to interpret and race against rather than a monster to defeat, and she's one of the most useful tools in the chapter. When she appears and names someone, you've handed the party a ticking clock and a mystery: <em>who's about to die, how, and can it be stopped?</em> She can't be fought or fled, so the entire scenario becomes about heeding the warning, identifying the coming death and acting to cheat it. Sometimes it can be averted (the ambush avoided, the illness cured, the accident prevented); sometimes it can't, and the party has to sit with that. Use her to open a scenario with dread and urgency, to foreshadow a threat, or to give a doomed NPC weight. The Frightened effect is minor; her real power is narrative. Be fair with the cheating-death option, reward a party that moves fast and cleverly, but don't make her warnings empty. She works best as a recurring harbinger whose appearance makes the whole table go quiet, because they've learned what it means. The country's grief, arriving early, asking only to be heard.")}
   {creature(
     sb("The Hitchhiker", "Tier I &middot; the one who only wants to get home", "&mdash;", 10, "walks; and never far from the road", "+6", "&mdash;", "+4",
-       "none at all. She asks, and she is polite about it; refuse her three times and no horse of yours will take that stretch again (Will DC 12 or Shaken)",
+       "none at all. She asks, and she is polite about it; refuse her three times and no horse of yours will take that stretch again (Will DC 13 or Frightened 1)",
        "<strong>She gives an address.</strong> Rides quiet behind the saddle or up on the wagon seat, says where she is going, and is gone off the horse between one fence post and the next. The house burned in the seventies, or the family in it buried a daughter the year you were born.",
        "DC 10, 1",
        "Take her where she asked. That is the whole of the remedy, and whoever does it is never troubled on that road again as long as they live."),
@@ -1886,8 +1886,9 @@ GROUNDS = f"""<!-- GROUNDS -->
   </table>
 
   <p class="note">The Dread DC is one rung below meeting the thing itself, because reading an aftermath is not standing
-  in front of the animal. Nerve comes off the usual ladder (Ch. XII). A Tier I trace costs nothing at all: out
-  here a cougar kills a calf, and that's weather.</p>
+  in front of the animal. Nerve comes off the usual ladder (the Keeper's Book, Ch. III). A Tier I trace costs nothing
+  at all: out here a cougar kills a calf, and that's weather. A thing of Tier VI or above leaves the Tier V sign,
+  because a place can only be unmade once.</p>
 
   <p>The Survival check reads the four degrees like any other:</p>
   <ul>

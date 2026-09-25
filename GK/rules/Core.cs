@@ -1354,7 +1354,7 @@ public static class Rules
         ("The Shakes",       "−2 to anything fine or steady-handed while under any strain"),
         ("Night Terrors",    "No Nerve returns from sleep alone: only by a fire, in company, or in drink"),
         ("The Long Stare",   "−2 to be trusted or read by folk; they see the haunt on you"),
-        ("A Compulsion",     "A small rite (counting, salt, a rhyme) must be done, or be Shaken until it is"),
+        ("A Compulsion",     "A small rite (counting, salt, a rhyme) must be done, or be Frightened 1 until it is"),
         ("The Cold",         "Never quite warm again; −2 against cold and against fear"),
         ("Faithless",        "The old comforts (prayer, ward, hymn) no longer steady you as they did"),
         ("The Whisper",      "You hear it now; once a session it tells you something true, to earn a lie later"),

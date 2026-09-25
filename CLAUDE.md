@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.53 · Keeper's Book v2.37 · Bestiary v2.24 ·
+**Current versions: Player's Book v2.54 · Keeper's Book v2.38 · Bestiary v2.25 ·
 GritKeeper app v1.59.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -120,13 +120,13 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.53 | 289 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.37 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.24 | 226 | none (182 creatures) |
+| The Player's Book | v2.54 | 290 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.38 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.25 | 226 | none (182 creatures) |
 | The Book of Legends | v1.2 | 77 | none (98 documents) |
-| Module I: The Salt at Coffin Wells | v1.9 | 36 | one inline SVG map, downloadable |
-| Module II: A Face Not His Own | v1.11 | 38 | one inline SVG map, downloadable |
-| Module III: What the Water Answers | v1.11 | 39 | one inline SVG map (two panels), downloadable |
+| Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
+| Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
+| Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -466,7 +466,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.53) — structure
+## The Player's Book (v2.54) — structure
 
 *(For the chapter and appendix list, read the built book's Contents; it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -521,7 +521,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.37) — structure
+## The Keeper's Book (v2.38) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -617,7 +617,7 @@ list, which is generated.
 
 ---
 
-## The Bestiary (v2.24) — structure & conventions
+## The Bestiary (v2.25) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
