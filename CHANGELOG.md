@@ -8,6 +8,69 @@ Desktop\Git repos.)
 
 ---
 
+- **The Old Dark: one evil where there were six Patrons. Books v2.55 / v2.40 / v2.26, the Book of
+  Legends v1.5 (2026-09-25).**
+
+  Cole stopped the read-through to make one change across every book and the app. The game's cosmic
+  horror, and the slow burn under all of it, would work better as a single horrifying and evil
+  presence called the Old Dark than as a set of Patrons, and the Callings that deal with the dark should
+  be devoted to it in general, each seeing it as their own intentions and beliefs let them.
+
+  **What it is now.** The Old Dark is one thing. It is ancient and patient and aware, evil the way a man
+  can be evil, which is to say it knows what it's doing, and it means the living harm and can wait a
+  hundred years to do it. It is no god, and the preachers' Devil is somebody else. The six that were
+  Patrons are faces it wears, each shaped by what a soul came to it wanting: a starving man meets the
+  Devourer, a grieving woman the Cold Deep, a prospector the Thing Beneath the Mountain. Each
+  congregation is sure its own face is the true one, and every one of them is feeding the same thing.
+  The Keeper's Book says so in Ch. VII, rebuilt around it under new anchors (`olddark`, `olddark-why`,
+  `olddark-faces`, `olddark-terms`, `olddark-devotions`, `olddark-rockies`), and its *Four things to hold
+  to* box opens now on *It's one.* The four readings of *Why It Answers at All* stand, and so do the
+  four readings of the Rockies, which are now about the Old Dark's people going up the mountains: sent
+  for, going for six unrelated reasons, drawn by the dark coming nearer the surface up there, or driven
+  by something older that has frightened it. None is confirmed, as before.
+
+  **The Callings.** The Dark Cultist is devoted to the Old Dark itself. At 3rd level the player says
+  what they want from it and the Keeper says what face it shows them, and the Gifts at Mark 2, 3 and 4
+  remake her in the image of the face she knows it by. The Hexer borrows from it, and on the third Debt
+  the Old Dark calls it in. A Witch seldom deals with it, because her Craft is older. The False Prophet
+  feeds it through his Gospel, and it comes to the plate wearing whatever face the sermon promised. Four
+  of the Dark Cultist's features took the new name: *Gifts of the Dark*, *The Dark's Ear*, *The Dark
+  Comes* and, in the Gamble rules, *The Dark Smiles*. Not one number moved. Every boon, Debt, DC and
+  step on the Mark reads as it did.
+
+  **What a player may know.** The Player's Book tells them the Old Dark is one presence whose face
+  differs with what its faithful came wanting, and still names no face; its *Patrons of the Old Dark*
+  section is *The Old Dark* now (`ix-olddark`). `verify_rules.py::check_patron_silence` became
+  `check_face_silence` and reads the Player's Book and the Book of Legends as before. A second check,
+  `check_patrons_retired`, fails if the word comes back into any of the seven books, any JSON file the
+  app loads or any C# file under `GK/`, and lets *patron saint* and *patronage* through. Both were
+  proved by sabotage: a face planted in the Player's Book and another in the Book of Legends failed the
+  first; the word planted in the Bestiary, `tables_extra.json`, `names.json` and a UI string in
+  `Tabs.cs` failed the second, and the two ordinary uses beside it passed. `verify_rules.py` runs 2,226
+  cross-checks now, with no drift.
+
+  **The other books.** Keeper's Book v2.40 carries the change through Ch. III, VI, VII and XI, into
+  Perdition Basin, where the padres bound a reaching hand of the Old Dark under the wells and *Keeping
+  the Basin* leaves the Keeper to decide which face it wears and never print it, and into Ch. XV, where
+  the Dread Mother is no face of it. Bestiary v2.26 renames its Tier VIII entry *What the Old Dark Is
+  Afraid Of*, points it at the Rockies readings in Keeper's Ch. VII, and gives the Servant of the Deep
+  Dark and the Whisperer's Mouth the Old Dark to serve. The Book of Legends v1.5 keeps its silence and
+  changes its grammar: its papers had spoken of the things a Hexer deals with, in the plural, and they
+  speak of one thing now. The Cross Timbers letter says before anything else that the Mother is no face
+  of the Old Dark. The modules never named a Patron, and rebuilt byte-identical.
+
+  **The app** is still v1.59.0 and still unreleased. Its New Soul wizard, sheet, tooltips, Debt strip
+  and self-test read the new words; `chargen.json` carries the renamed features and the Dark Cultist's
+  blurb, which `verify_rules.py` holds to the book's opening words; `tables_extra.json` names the Old
+  Dark; and `creatures.json` was re-extracted from the built Bestiary and diffed. The status bar reads
+  Player's v2.55, Keeper's v2.40 and Bestiary v2.26. Build 0 warnings and 0 errors, smoke 16,396 passed.
+
+  The entries below this one say "Patron" wherever they did. They record what shipped at the time, and
+  they stay as written.
+
+  Pages, measured here: Player's Book 290, Keeper's Book 153, Bestiary 226, Book of Legends
+  119.
+
 - **The Book of Legends v1.4 and the Keeper's Book v2.39: eight slips in the papers, and the paragraph
   that sends the players to them (2026-09-25).**
 

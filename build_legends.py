@@ -10,10 +10,11 @@ cover without spoiling anything, because nothing in it is confirmed and a good d
 
 TWO RULES THIS BOOK IS HELD TO.
 
-  1. **It never names a Patron.** It is a player-side book, so the line the Player's Book keeps
-     (Cole, 2026-09-19) applies here in full: a Dark Cultist picks a want and the Keeper says who
-     answered. `verify_rules.py::check_patron_silence` reads this file too. Papers may circle a
-     thing, disagree about it and be frightened of it. They may not name it.
+  1. **It never names a face of the Old Dark.** It is a player-side book, so the line the Player's
+     Book keeps (Cole, 2026-09-19, carried over when the Patrons became faces on 2026-09-25)
+     applies here in full: a Dark Cultist picks a want and the Keeper says which face answered.
+     `verify_rules.py::check_face_silence` reads this file too. Papers may circle a thing,
+     disagree about it and be frightened of it. They may not name it.
   2. **Nothing settles.** Two papers about one night should not both be true, and the book never
      says which one is. Where a document could be read as a confirmation, another document nearby
      takes it back. The Keeper's Book has the answers and does not print them either.
@@ -29,7 +30,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.4"
+VERSION = "1.5"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -2711,8 +2712,8 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
   rite and no enemy, and every one of them says it has a chair at the same table, and that the table
   is kept by a woman in New Orleans. They call her the Mother when they call
   her anything, and the Dread Mother when they are talking to somebody like me. Every one of them will
-  tell you, before she tells you anything else, that the Mother is not one of the things a Hexer
-  deals with. Nothing is granted in her name. Nobody prays to her. What she has, they say, is
+  tell you, before she tells you anything else, that the Mother is not the thing a Hexer deals
+  with, or any part of it. Nothing is granted in her name. Nobody prays to her. What she has, they say, is
   authority, and I have come to think that is a harder thing to sit across from than an
   appetite.</p>""",
 
@@ -2760,8 +2761,8 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "Mr. Ashby,",
      "You asked a straight question and I'll give you as straight an answer as I'm able to, which won't "
      "be as straight as you'd like.",
-     "First, she's not one of those. You'll have heard her talked of alongside the things a Hexer deals "
-     "with, and I'd take it kindly if you didn't write it that way. Nobody asks her for anything. She "
+     "First, she's no face of the Old Dark. You'll have heard her talked of alongside the thing a Hexer "
+     "deals with, and I'd take it kindly if you didn't write it that way. Nobody asks her for anything. She "
      "doesn't give. If a woman in my house tried to pray to her I'd put her out in the road, and the "
      "Mother would thank me for it.",
      "The Table is a table. It's long. There's a chair at it for this house and there has been since my "
@@ -3078,9 +3079,9 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
   papers. There is no monster in any of them. They are about size: how far a plain runs, how deep a
   well goes, how many stars there are, how many of anything there are, and what a man is left holding
   once he has measured and the figure will not come out.</p>
-  <p>The saloons call what is supposed to be at the bottom of all of it the Old Dark, and count six
-  things in it that have ever answered anybody, and never agree on the sixth. Ashby thought the
-  counting was a comfort. I have printed what he kept and left the count alone.</p>""",
+  <p>The saloons call what is supposed to be at the bottom of all of it the Old Dark. They tell six
+  kinds of story about the face it shows the people it answers, and never agree on the sixth. Ashby
+  thought the counting was a comfort. I have printed what he kept and left the count alone.</p>""",
 
  '  <h2 id="ix-llano">The Llano Is Longer Going East</h2>',
  gloss("From the field-book of a deputy surveyor who ran a line across the Staked Plain for a land "
@@ -3137,23 +3138,23 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
 
  '  <h2 id="ix-afraid">Two Witches on One Question</h2>',
  gloss("Ashby put one question to two seated houses a thousand miles apart, in the same week of 1884: "
-       "whether the things a Hexer deals with are afraid of anything."),
+       "whether the thing a Hexer deals with is afraid of anything."),
  paper("Letter", "a house in the Wind River country", p(
-     "Yes. They're frightened. You only have to watch them.",
-     "For four years the people who serve them have been going up into the mountains in bunches, and "
+     "Yes. It's frightened. You only have to watch its people.",
+     "For four years the ones who serve it have been going up into the mountains in bunches, and "
      "nobody told them to go. You watch cattle go up a draw ahead of weather and not one of them could "
      "tell you why, and every one of them is right.",
-     "Something has frightened them. The Table has been saying so since before your railroad got to "
+     "Something has frightened it. The Table has been saying so since before your railroad got to "
      "Denver, and nobody listens to the Table about anything but babies."),
      cls="letter", sign="[a house in the Wind River country]"),
  paper("Letter", "a house on the Brazos", p(
      "Whoever told you that is a fool from a house that ought to have been asked to stand years ago, and "
      "you may tell her I said so.",
-     "Nothing down there is frightened. Fright is for things that can be hurt. You think of them as "
-     "animals because you are one, and so am I.",
-     "If they're going up the mountains it's because that's where they're going, and there's no more "
-     "reason in it than in rain. I've lived next door to them sixty years and I'd sooner you were right "
-     "and they were frightened. A frightened thing can be dealt with."),
+     "Nothing down there is frightened. Fright is for things that can be hurt. You think of it as an "
+     "animal because you are one, and so am I.",
+     "If its people are going up the mountains it's because that's where they're going, and there's no "
+     "more reason in it than in rain. I've lived next door to it sixty years and I'd sooner you were "
+     "right and it was frightened. A frightened thing can be dealt with."),
      cls="letter", sign="[a house on the Brazos]"),
  ednote("I print them together because I cannot choose between them, and because the last line of the "
         "second letter has kept me up more nights than all of the first"),
@@ -3367,7 +3368,7 @@ LEG_INDEX = [
     ("Wells, the water going bad", "ix-water"),
     ("Will of a careful man, the", "ix-will"),
     ("Wrong detail, the", "ix-wrongdetail"),
-    ("Afraid, whether the things below are", "ix-afraid"),
+    ("Afraid, whether the Old Dark is", "ix-afraid"),
     ("Asked to stand", "ix-stand"),
     ("Brother, there is always a", "brother"),
     ("Circle, a page of the Golden", "ix-gold"),

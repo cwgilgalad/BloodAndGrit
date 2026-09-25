@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.54", KeeperBookVer = "2.39", BestiaryVer = "2.25";
+    internal const string PlayerBookVer = "2.55", KeeperBookVer = "2.40", BestiaryVer = "2.26";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -363,7 +363,7 @@ public partial class MainForm : Sheet
         // actually been opened: tabs are lazy, and building it here would defeat that.
         if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
         // A sheet already on the New Soul tab was drawn for the other table. Redraw it for this one,
-        // or a Keeper who hands the laptop to a player leaves a Patron's name on the screen.
+        // or a Keeper who hands the laptop to a player leaves a face's name on the screen.
         if (lastSoul != null && soulLedger != null) ShowSoul(lastSoul);
         if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference

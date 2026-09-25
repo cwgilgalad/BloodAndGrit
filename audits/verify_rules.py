@@ -302,8 +302,8 @@ def load_book_boons(book="blood-and-grit.html"):
 
     Takes a filename because not every 3rd-level path prints in the Player's Book any more. The
     Dark Cultist's Devotions moved to the Keeper's Book on 2026-09-19: a player now picks what she
-    wants from the dark and the Keeper tells her who answered, so the Patron names and their boons
-    are Keeper-side. `printedIn` in chargen.json says which book to read."""
+    wants from the dark and the Keeper tells her which face of it answered, so the six faces and
+    their boons are Keeper-side. `printedIn` in chargen.json says which book to read."""
     text = (ROOT / book).read_text(encoding="utf-8")
     out = {}
     for m in BOLD_LI_RE.finditer(text):
@@ -344,19 +344,21 @@ def check_subpaths(problems):
     return checks
 
 
-def check_patron_silence(problems):
-    """The Player's Book must not name a Patron, and must print the six wants instead.
+def check_face_silence(problems):
+    """The Player's Book must not name a face of the Old Dark, and must print the six wants instead.
 
     Cole's call, 2026-09-19: the players' book keeps the dark unnamed. A Dark Cultist says what she
-    wants and the Keeper tells her who answered. Prose drifts back on its own, so this holds the
-    decision: every `want` in the data has to be printed in the Player's Book, and no Patron's name
-    may appear anywhere in it. A name is matched without its article, so "the Cold Deep" in running
+    wants and the Keeper tells her which face answered. When the six Patrons became six faces of one
+    Old Dark (2026-09-25) the line moved with them unchanged: a player may know that the dark is one
+    thing and looks like whatever a soul came to it wanting, and may not know what its faithful call
+    any of the faces. Prose drifts back on its own, so this holds the decision: every `want` in the
+    data has to be printed in the Player's Book, and no face's name may appear anywhere in it. A name is matched without its article, so "the Cold Deep" in running
     prose is caught as surely as a bolded heading, and with its capitals, so the cattle in Ch. IV can
     still come up the long trails out of Texas. The Keeper's Book and the Bestiary are Keeper-side
     and unaffected.
 
     THE BOOK OF LEGENDS IS HELD TO THE SAME LINE (2026-09-19). It is player-side, anybody at the
-    table may read it, and its whole method is that nothing in it settles. A Patron's name in it
+    table may read it, and its whole method is that nothing in it settles. A face's name in it
     would settle the largest thing in the game. Only the name half of this check applies there: the
     wants and the playerNote are the Player's Book's job, and the Book of Legends prints no rules at
     all. A book that is not built is skipped rather than failed, so a fresh clone that has only run
@@ -393,8 +395,43 @@ def check_patron_silence(problems):
             for where, text in PLAYER_SIDE:
                 checks += 1
                 if re.search(rf"\b{re.escape(bare)}\b", text):
-                    problems.append(f"{where} names {opt['name']}, which is Keeper-side now "
-                                    f"(players pick a want; the Keeper says who answered)")
+                    problems.append(f"{where} names {opt['name']}, which is Keeper-side "
+                                    f"(players pick a want; the Keeper says which face answers)")
+    return checks
+
+
+RETIRED = re.compile(r"\bpatrons?\b(?!\s+saints?\b)", re.I)
+RETIRED_IN = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
+              "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
+              "module-what-the-water-answers.html"]
+RETIRED_IN += sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "GK/rules/Data").glob("*.json"))
+RETIRED_IN += sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "GK").rglob("*.cs")
+                     if not {"bin", "obj"} & set(p.relative_to(ROOT / "GK").parts))
+
+
+def check_patrons_retired(problems):
+    """No book, no rules data and no line of the app says "Patron" any more (Cole, 2026-09-25).
+
+    The Old Dark is one evil presence, and what the books used to call its six Patrons are six faces
+    it wears for six different wants. The word went out of the seven books, the app and its data in
+    one pass, and it is a word that comes back by habit: somebody writes "the Patron collects" in a
+    new paragraph and nobody blinks, because for months it was right. An anchor like `ix-patrons`
+    counts as well, since a stale id means a link somebody forgot. Every JSON file the app loads and
+    every C# file under GK/ is read, found by glob, so a new data file is covered the day it lands.
+    "Patronage" and "patron saint" are ordinary English and pass. A book that is not built is
+    skipped, as check_face_silence skips an unbuilt Book of Legends."""
+    checks = 0
+    for rel in RETIRED_IN:
+        path = ROOT / rel
+        if not path.is_file():
+            continue
+        checks += 1
+        for n, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
+            m = RETIRED.search(line)
+            if m:
+                near = _tidy(TAG_RE.sub(" ", line[max(0, m.start() - 60):m.end() + 40]))
+                problems.append(f"{rel}:{n} still says {m.group(0)!r}, retired when the Patrons "
+                                f"became the Old Dark's faces: ...{near}...")
     return checks
 
 
@@ -1251,7 +1288,8 @@ def main():
     checks += check_arms(problems)
     checks += check_features(problems)
     checks += check_subpaths(problems)
-    checks += check_patron_silence(problems)
+    checks += check_face_silence(problems)
+    checks += check_patrons_retired(problems)
     checks += check_budget(problems)
     checks += check_origins(problems)
     checks += check_perks(problems)
@@ -1272,7 +1310,8 @@ def main():
           f"prose, their Perks, their fight ledgers, their 3rd-level paths, every Sign and "
           f"Miracle, the arms table, "
           f"Ch. IV's Origins, the Index's own alphabet, the coin each Calling starts with, "
-          f"every level ladder the prose spells out, and its encounter budget across both books "
+          f"every level ladder the prose spells out, the Old Dark's faces kept off the players' "
+          f"side, and its encounter budget across both books "
           f"({checks} cross-checks, 0 drift).")
     return 0
 

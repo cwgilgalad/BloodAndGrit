@@ -262,12 +262,12 @@ public class PartyMember : INotifyPropertyChanged
     public Dictionary<string, int> FeatureSpent { get; set; } = new();
 
     /// <summary>What this soul owes, keyed by the feature that lends it: the Hexer's Debts to
-    /// their Patron, and nothing else in the book so far.
+    /// the Old Dark, and nothing else in the book so far.
     ///
     /// <para>Deliberately NOT part of <see cref="FeatureSpent"/>, and the separation is the whole
     /// design. <c>CharGen.RefreshFeatures</c> is the single path a boundary takes to give things
     /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a long rest and a new session
-    /// cannot reach a Debt however they change. A Debt is owed until the Patron collects it, and
+    /// cannot reach a Debt however they change. A Debt is owed until the Old Dark collects it, and
     /// the app should never be the reason one quietly went away.</para>
     ///
     /// <para>A public property, so it rides in <c>session.json</c> without being told: the same

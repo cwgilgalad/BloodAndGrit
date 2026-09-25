@@ -114,7 +114,7 @@ T("every creature carries a Found line", Db.Creatures.All(c => c.found.Length > 
         T($"[{c.name}] riders are non-empty", riders.All(r => r.Trim().Length > 0));
     }
     // 25 before B6. Five of the seven apex creatures print no attack line at all -- the Parcel,
-    // the Ledger, the Dread Mother, What the Patrons Are Afraid Of, and the Circuit, whose harm is
+    // the Ledger, the Dread Mother, What the Old Dark Is Afraid Of, and the Circuit, whose harm is
     // done by ordinary preachers. A thing whose Putting It Down is a courthouse has no claw die.
     T($"most creatures have at least one Strike ({noStrikeCreatures})", noStrikeCreatures <= 30);
     T("attacks parse into 120+ strikes", totalStrikes >= 120);
@@ -201,7 +201,7 @@ foreach (var (ground, list) in Db.Terrain)
         "The White Bison",
         "The Parcel", "The Ninth Child", "The Circuit",
         "The Gentleman on the Road", "The Ledger of the Territory",
-        "The Dread Mother", "What the Patrons Are Afraid Of",
+        "The Dread Mother", "What the Old Dark Is Afraid Of",
     };
     var onTables = new HashSet<string>(
         Db.Terrain.SelectMany(kv => kv.Value)
@@ -3804,10 +3804,10 @@ if (Environment.GetEnvironmentVariable("GK_ORIGIN_PROBE") == "1")
             Console.WriteLine($"    {(e.IsBoon ? "boon  " : "burden")}  {e.Says}");
     }
 var dc10 = CharGen.Generate(10, false, "Dark Cultist");
-T("Dark Cultist L10: patron named at 3rd among the six", CharGen.D.callings.First(c => c.name == "Dark Cultist").subpath.options.Any(o => o.name == dc10.Subpath));
+T("Dark Cultist L10: a face named at 3rd among the six", CharGen.D.callings.First(c => c.name == "Dark Cultist").subpath.options.Any(o => o.name == dc10.Subpath));
 
 // The Dark Cultist's Devotions print Keeper-side since 2026-09-19: a player picks a want and the
-// Keeper says who answered. The sheet still stores the name, because Validate, FeaturesAt and the
+// Keeper says which face answered. The sheet still stores the name, because Validate, FeaturesAt and the
 // tallies are keyed by it; what a player's own table SHOWS is the want (CharGen.PathLabel).
 var dvCalling = CharGen.D.callings.First(c => c.name == "Dark Cultist");
 var dvPaths = dvCalling.subpath;
@@ -3823,7 +3823,7 @@ foreach (var o in dvPaths.options)
     var dvSoul = CharGen.Generate(9, false, "Dark Cultist");
     dvSoul.Subpath = o.name;
     string dvMine = CharGen.Render(dvSoul, forPlayer: true), dvKeepers = CharGen.Render(dvSoul);
-    T($"Devotions: a player who asked '{o.want.TrimEnd('.')}' reads the want and no Patron",
+    T($"Devotions: a player who asked '{o.want.TrimEnd('.')}' reads the want and no face",
         dvMine.Contains(o.want.TrimEnd('.')) && dvPaths.options.All(x => !dvMine.Contains(dvBare(x.name))));
     T($"Devotions: the Keeper's copy says {o.name} answered", dvKeepers.Contains(o.name));
 }
@@ -4833,7 +4833,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
 // ---- what a soul OWES: the running tally (v1.44.0) ----
 // A ration is given back by a boundary; a tally is not given back by anything. The Hexer's
 // Pact-Sworn is the only feature in the book with the second shape, and the whole risk here is the
-// app being generous with a debt the Patron has not forgiven.
+// app being generous with a debt the Old Dark has not forgiven.
 {
     var pact = CharGen.FeaturesAt("Hexer", 9, "The Pact-Sworn")
                       .First(f => f.Name.Contains("Pact-Sworn") && !f.Name.EndsWith(" (greater)"));
@@ -4841,7 +4841,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("tally: the Pact-Sworn keeps one",        t.Any);
     T("tally: it counts Debts",                 t.Noun == "Debt");
     T("tally: and the third one comes due",     t.At == 3);
-    T("tally: the book's sentence is kept",     (t.Phrase ?? "").Contains("Patron calls it in"));
+    T("tally: the book's sentence is kept",     (t.Phrase ?? "").Contains("Old Dark calls it in"));
     T("tally: the card says it in words",       t.Says == "the third Debt comes due");
 
     // Ordinary prose is not a tally. "on your first turn" is the shape that would flood the strip
@@ -4876,7 +4876,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("tally: the second stands too",  owed2 == 2 && !due2);
     var (owed3, due3) = CharGen.TakeTally(hex, rows[0].Name);
     T("tally: the third comes due",    owed3 == 3 && due3);
-    // Past the threshold it keeps counting rather than clamping: the Patron collecting is the
+    // Past the threshold it keeps counting rather than clamping: the Old Dark collecting is the
     // Keeper's move, and an app that refused a fourth Debt would be making it for them.
     var (owed4, due4) = CharGen.TakeTally(hex, rows[0].Name);
     T("tally: and a fourth is allowed", owed4 == 4 && due4);

@@ -2158,7 +2158,7 @@
  {
   "name": "The Whisperer's Mouth",
   "chapter": "The Old Dark",
-  "tierText": "Tier III \u00b7 a vessel for the Patron's words",
+  "tierText": "Tier III \u00b7 a vessel for the Old Dark's words",
   "tier": 3,
   "defense": "16",
   "blood": "38",
@@ -2173,7 +2173,7 @@
    "Something out beyond the veil has things it wants said, and it needs a mouth to say them. The Whisperer's Mouth is a person, or what's left of one, hollowed out and made into a vessel for a voice from outside. It does nothing but talk. It raises no hand, makes no attack. And it is one of the most dangerous things in this book, because the words it speaks are true , and that truth is the harm of them: secrets that unmake you to know, answers to questions you should never have asked, the outlines of things the mind is not built to hold.",
    "Hear it long enough and you lose the thread of your own mind, unspooling as the true and terrible words wind into you. The only defense is silence (stop your ears, gag the vessel, end it if you must) and the discipline never to listen for the rest, no matter what it promises to tell you, no matter how badly you want to know."
   ],
-  "found": "Wherever a Patron wants a message delivered. The vessel may be a captured person, a corpse, a cultist who volunteered, set in a place the Patron means to influence. It speaks to whoever comes within earshot.",
+  "found": "Wherever the Old Dark wants a message delivered. The vessel may be a captured person, a corpse, a cultist who volunteered, set in a place it means to influence. It speaks to whoever comes within earshot.",
   "keeperNote": "The Whisperer's Mouth weaponizes knowledge and curiosity, and it's a fight the party wins by refusing to engage . It has no attack but speech, and the speech is true, and that's why it's deadly. The mechanical pressure is the per-round Will save for anyone who keeps listening, eroding their mind. The defenses are about silence and discipline: deafen yourself, gag or destroy the vessel, and crucially, don't listen for more even though it offers true and tantalizing answers. The horror is the temptation; it knows things, real things, things the party desperately wants to know (about the plot, about their pasts, about the dark itself), and listening is how it kills you. The Mark warning is sharp: heeding what it says corrupts. Run the agonizing pull of forbidden truth, and reward the player who has the discipline to clap their hands over their ears and cut the vessel's throat rather than hear one more sentence. It's a test of a party's restraint and a pure distillation of cosmic horror's central idea: some knowledge costs you the mind that holds it.",
   "witness": ""
  },
@@ -2290,7 +2290,7 @@
  {
   "name": "Servant of the Deep Dark",
   "chapter": "The Old Dark",
-  "tierText": "Tier IV\u2013V \u00b7 a Patron's reaching hand",
+  "tierText": "Tier IV\u2013V \u00b7 the Old Dark's reaching hand",
   "tier": 4,
   "defense": "21",
   "blood": "90",
@@ -2300,13 +2300,13 @@
   "special": "Not meant for here. Lead and steel close like water around it; to behold it fully is the DC-25 sight.",
   "dread": "DC 20 glimpsed, DC 25 beheld; 1d10 (+Affliction if beheld)",
   "puttingItDown": "You do not kill it; you close the door: break the rite, cleanse the ground, end the bargain that thinned the veil.",
-  "mark": "Any plea or working aimed at it or its Patron is +1 Mark at least.",
+  "mark": "Any plea or working aimed at it or at the Old Dark behind it is +1 Mark at least.",
   "lore": [
-   "It is a hand reaching through from somewhere that is not anywhere, the local instrument of a Patron: one of the vast, indifferent things that wait outside the world and occasionally extend a piece of themselves into it. The Servant of the Deep Dark does not belong here, and the world knows it: the geometry of the thing is wrong, its limbs reach from angles that aren't there, and it is never quite where the eye says it is, so that lead and steel close around it like water around a stone and find nothing to break.",
+   "It is a hand reaching through from somewhere that is not anywhere, the local instrument of the Old Dark, the vast and patient thing that waits beyond the veil and now and then puts a piece of itself through. The Servant of the Deep Dark does not belong here, and the world knows it: the geometry of the thing is wrong, its limbs reach from angles that aren't there, and it is never quite where the eye says it is, so that lead and steel close around it like water around a stone and find nothing to break.",
    "To glimpse it is bad. To behold it fully, to let the eye actually resolve what it's looking at, is to risk the mind coming apart. And it is always nearer than it was, drawn through by some rite, some bargain, some thinning of the veil that a fool or a desperate man performed. You do not kill a reaching hand. You close the door it reached through, and you pray the rest of the thing doesn't notice the door is gone."
   ],
   "found": "Wherever the veil has been thinned: a site of dark ritual, a place where a bargain was struck, ground that's been soaked in the wrong kind of attention. It manifests near the rite or the bargain that called it.",
-  "keeperNote": "The Servant of the Deep Dark introduces the chapter's iron rule: you shut these out; nothing here dies . Its wrongness is mechanical (weapons close like water around it, it's nearer than it was, beholding it fully courts an Affliction) so a party that tries to win by damage will fail and lose their minds trying. The win is to close the door: find and break the rite, cleanse the ground, end the bargain that thinned the veil. This makes the encounter an investigation under terrible pressure: what opened this door, and how do we shut it, before the hand pulls more of itself through? Run the dread of the wrong geometry and the thing that won't stay where it's looked at. The Mark warning is central to the whole chapter: any attempt to plead with or work upon it or its Patron corrupts. Use it to establish that the party has crossed into territory where their guns are nearly useless and their wits, nerve, and restraint are all that stand between them and something that was never meant to be here. It's the gateway to the deep dark, and it should feel like a door closing behind them. In Perdition Basin it's what the thing under the water sends to a pulled nail, and what stands at the Mission spring if the master nail goes (Keeper's Book Ch. XIII).",
+  "keeperNote": "The Servant of the Deep Dark introduces the chapter's iron rule: you shut these out; nothing here dies . Its wrongness is mechanical (weapons close like water around it, it's nearer than it was, beholding it fully courts an Affliction) so a party that tries to win by damage will fail and lose their minds trying. The win is to close the door: find and break the rite, cleanse the ground, end the bargain that thinned the veil. This makes the encounter an investigation under terrible pressure: what opened this door, and how do we shut it, before the hand pulls more of itself through? Run the dread of the wrong geometry and the thing that won't stay where it's looked at. The Mark warning is central to the whole chapter: any attempt to plead with or work upon it or the Old Dark behind it corrupts. Use it to establish that the party has crossed into territory where their guns are nearly useless and their wits, nerve, and restraint are all that stand between them and something that was never meant to be here. It's the gateway to the deep dark, and it should feel like a door closing behind them. In Perdition Basin it's what the thing under the water sends to a pulled nail, and what stands at the Mission spring if the master nail goes (Keeper's Book Ch. XIII).",
   "witness": ""
  },
  {
@@ -2500,7 +2500,7 @@
   "puttingItDown": "He cannot be, and this is not a challenge. He leaves when the conversation is over. What a party can do is find out what he wants, which nobody has managed in three hundred and forty years.",
   "mark": "",
   "lore": [
-   "The Mad Spaniard is no Patron and every story about him is attached to one. A courteous gentleman met on a road at an hour when nobody should be on it, dressed in clothes so far out of fashion that no soul on this continent can place them. Travellers know something is wrong with him well before they can say what, and when they finally reach for it they land on the clothing: dated. Out of date. They settle on an eccentric, or an actor, or a gentleman of the old families in his grandfather's things, and they are a day down the road before they think about the hat again. In the mining camps he warns men off the bad veins and is thanked. On the Llano he is said to have ridden a season with the comancheros and to have been the reason they stopped. In the Rockies they say he is going from gathering to gathering with a proposal.",
+   "The Mad Spaniard is no face of the Old Dark, and every story about him is attached to one. A courteous gentleman met on a road at an hour when nobody should be on it, dressed in clothes so far out of fashion that no soul on this continent can place them. Travellers know something is wrong with him well before they can say what, and when they finally reach for it they land on the clothing: dated. Out of date. They settle on an eccentric, or an actor, or a gentleman of the old families in his grandfather's things, and they are a day down the road before they think about the hat again. In the mining camps he warns men off the bad veins and is thanked. On the Llano he is said to have ridden a season with the comancheros and to have been the reason they stopped. In the Rockies they say he is going from gathering to gathering with a proposal.",
    "His name is Tristan de la Sombra, and almost nobody alive has any use for it. He came out with an entrada in the 1540s, was detached east after a watercourse, and watched the plain run out past every estimate his party could make and then run out further. The horses went first. Starvation took half his reason and the sheer size of the country took the rest, and in his last clear hours he begged aloud for terms from anything that would hear him, and something did. He was willing. Every man who rode out with him died. He has been described the same way ever since by people with no reason to have compared notes, and the description includes a scar he did not have in the earliest tellings. He never lies and he never explains. Everything he says is true and incomplete, and the incomplete part is always the part that would have helped."
   ],
   "found": "On a road, at an hour when nobody should be on it, shortly before something changes.",
@@ -2539,7 +2539,7 @@
   "speed": "she does not travel; her houses do",
   "saves": "Fort +31, Ref +20, Will +31",
   "attacks": "she has never struck a living soul. Every harm laid at her door was done by somebody keeping a promise",
-  "special": "She is not one of the six. Her people are adamant on the point, and correct: nothing is granted in her name, no Bargain is struck with her, and no Sign has ever answered a rite that called on her. What she has is authority, and authority is far harder to sit across a table from than an appetite.",
+  "special": "She is no face of the Old Dark. Her people are adamant on the point, and correct: nothing is granted in her name, no Bargain is struck with her, and no Sign has ever answered a rite that called on her. What she has is authority, and authority is far harder to sit across a table from than an appetite.",
   "dread": "DC 30, 1d10 + Affliction",
   "puttingItDown": "Nothing ends her. What can be ended is a house, one at a time, by giving the county something that does what the house did: a doctor, a midwife, a fund, a road to the next town. Take the house without replacing it and the county buries the difference within two winters, and the next house is welcomed.",
   "mark": "",
@@ -2552,7 +2552,7 @@
   "witness": ""
  },
  {
-  "name": "What the Patrons Are Afraid Of",
+  "name": "What the Old Dark Is Afraid Of",
   "chapter": "The Old Dark",
   "tierText": "Tier VIII \u00b7 unnamed, and left that way",
   "tier": 8,
@@ -2561,13 +2561,13 @@
   "speed": "unknown",
   "saves": "Fort +31, Ref +31, Will +31",
   "attacks": "unknown, and no account of it agrees with any other",
-  "special": "Read this before you use it. This entry is deliberately empty in the middle. Whether it exists at all depends on which of the four readings of the Rockies gatherings you chose in Keeper\u2019s Book Ch. XV, and under two of those readings there is nothing here and the fear is the point.",
+  "special": "Read this before you use it. This entry is empty in the middle, and meant to be. Whether it exists at all depends on which of the four readings of the Rockies gatherings you chose in Keeper\u2019s Book Ch. VII. Under three of them there is nothing here, and the fear is all there is.",
   "dread": "DC 30, 1d10 + Affliction",
-  "puttingItDown": "There is no answer printed here because printing one would settle a question this game keeps open on purpose. Whatever ends it, your table finds it, and you will know it when they say it out loud.",
+  "puttingItDown": "There is no answer printed here, because printing one would settle a question this game keeps open. Whatever ends it, your table finds it, and you will know it when they say it out loud.",
   "mark": "",
   "lore": [
-   "Beginning about four years ago, cults that have never cooperated with anything began cooperating. A Devourer congregation in Montana and a Red Sermon circuit out of Denver moved money through the same three banks. A Cold Deep cell wintered at a Thing Beneath the Mountain dig and neither side lost anybody, which has never once happened. There are four separate written accounts of the same meeting and no two agree on who called it.",
-   "One reading of that evidence is that something above the six is compelling it, and that the Patrons are frightened. This entry is that reading, and it's written thin for a reason. Three other readings fit every fact just as well: they really are conspiring; they are not cooperating at all and the pattern is in the observer; or all six have been dealing with the same thing wearing six faces for a century."
+   "Beginning about four years ago, congregations that have never had a use for one another started going up into the Rockies. A Devourer congregation out of Montana wintered above the Boulder River in weather that should have killed half of it. A Red Sermon circuit leaves Denver every spring and comes home forty people short. Cold Deep men, who never gather for anything, camped nine weeks at a dry lake in the Sawatch. Nobody has caught one of these congregations speaking to another. There are four separate written accounts of a meeting nobody can place, and no two agree on who called it.",
+   "One reading of that evidence is that something older has frightened the Old Dark, and that it is pulling its faithful in around it the way a hurt animal goes to ground. This entry is that reading, and it's written thin for a reason. Three other readings fit every fact just as well: the Old Dark sent for them, each by the face it knows; nobody called anything, and the pattern is in whoever draws the map; or the dark lies nearer the surface up there, and the faithful go to it the way stock goes to water."
   ],
   "found": "In the gap between what your players have proved and what they have concluded.",
   "keeperNote": "Don't answer this early and don't answer it twice. A table will carry an unanswered question for years and will do most of your work for you while it carries it, and the moment you confirm a reading three quarters of the Rockies goes quiet. If you use this entry at all, use it in the last session of a campaign or the one before, and never in a way that requires a speech. The best version of this creature is the one your players assembled themselves out of four sessions of evidence, and your job is to be a little less certain than they are.",

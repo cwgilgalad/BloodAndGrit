@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.54 · Keeper's Book v2.39 · Bestiary v2.25 ·
+**Current versions: Player's Book v2.55 · Keeper's Book v2.40 · Bestiary v2.26 ·
 GritKeeper app v1.59.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -120,10 +120,10 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.54 | 290 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.39 | 152 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.25 | 226 | none (182 creatures) |
-| The Book of Legends | v1.4 | 119 | none (166 documents) |
+| The Player's Book | v2.55 | 290 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.40 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.26 | 226 | none (182 creatures) |
+| The Book of Legends | v1.5 | 119 | none (166 documents) |
 | Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
@@ -179,7 +179,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 166 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a Patron (`verify_rules.py::check_patron_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 166 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do and carries its own copy of the shell transform, which is now the **third** copy: if a fifth book is ever made, lift the transform into `book_shell.py` and leave the CSS per-book. It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
 | **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -466,7 +466,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.54) — structure
+## The Player's Book (v2.55) — structure
 
 *(For the chapter and appendix list, read the built book's Contents; it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -521,7 +521,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.39) — structure
+## The Keeper's Book (v2.40) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -531,41 +531,59 @@ distinct from the Bestiary-style `id="index"`; and **XV and XVI are not two halv
 chapter**. See below. The **detailed two-level Contents** is generated by
 `nav_tools.py`.
 
-**Ch. VII holds the Patron cosmology, and *Why It Answers at All* (`patrons-why`, v2.31) answers
-the table's standing question with four readings rather than one.** The question, why would a thing
-that indifferent bargain with a Hexer at all, was raised by the *four things to hold to* box and left
-open. It is answered with **the wear**, **the debt**, **the tongue** and **the appetite nobody has
-named**, none confirmed, over one piece of stagecraft that holds under all four: *never let a Patron
-want; let it be available.*
+**Ch. VII holds the Old Dark (`olddark`), and *Why It Answers at All* (`olddark-why`, v2.31) answers
+the table's standing question with four readings rather than one.** The question, why a thing that old
+and that patient would trouble itself with one Hexer in a rented room, is answered with **the wear**,
+**the debt**, **the tongue** and **the appetite nobody has named**, none confirmed, over one piece of
+stagecraft that holds under all four: *never let it be seen to want; let it be available.*
 
-**The Player's Book never names a Patron (Cole, 2026-09-19).** A Dark Cultist picks a *want* at 3rd
-level (six of them, printed in the Player's Book) and the Keeper says who answered. The six named
-Devotions and their boons live in the Keeper's Book under *What a Devotion Grants* (`patrons-devotions`),
-with a table pairing want, Patron and the Ch. VII story the player has instead. Those stories are headed
+**There are no Patrons any more (Cole, 2026-09-25).** The game's slow horror hangs on one evil,
+patient, aware presence, **the Old Dark**, and the six that used to be separate Patrons (the Devourer,
+the Whisperer, the Cold Deep, the Long Trail, the Thing Beneath the Mountain, the Red Sermon) are
+**faces** it wears, each shaped by what the soul came to it wanting. It is no god and no Devil; it means
+the living harm and can wait a hundred years to do it. The *Four things to hold to* box opens the
+chapter's case with the four a Keeper keeps: it is one thing, the preachers' Devil is somebody else, it
+is evil and patient, and what it wants in the end is never settled. The Callings moved with it: the Dark Cultist is devoted to the Old Dark itself and the Keeper
+says which face answers, the Hexer borrows from it, the Witch's Craft is older than its lending, and the
+False Prophet feeds it, and it comes to the plate wearing the face the sermon promised. Four features
+were renamed (*Gifts of the Dark*, *The Dark's Ear*, *The Dark Comes*, *The Dark Smiles*), the Bestiary
+entry became *What the Old Dark Is Afraid Of*, and no number moved anywhere. The word is retired from
+every book and every rules file, and `verify_rules.py::check_patrons_retired` fails if it comes back.
+It lets "patron saint" and "patronage" pass (no book uses either today), so a paper written later can
+still use the word in its ordinary sense. The CHANGELOG entries and `RELEASES.md` from before the change
+say "Patron" and stay as written.
+
+**The Player's Book never names a face (Cole, 2026-09-19).** A Dark Cultist picks a *want* at 3rd
+level (six of them, printed in the Player's Book) and the Keeper says which face answered. The six named
+Devotions and their boons live in the Keeper's Book under *What a Devotion Grants* (`olddark-devotions`),
+with a table pairing want, face and the Ch. VII story the player has instead. Those stories are headed
 by their own handles (the Ellender Party, Somebody's Uncle, the Quiet Kind, the Rider a Ridge Back, the
-Bad Vein, the Good Revival), and the count of six is hearsay on the player's side. In the data this is
+Bad Vein, the Good Revival), and the count of six is hearsay on the player's side. The player-side books
+may say the Old Dark is one presence whose face differs with what its faithful came wanting; the word
+*face* is allowed there, and the face **names** are Keeper-side only. In the data this is
 `"printedIn": "keeper"` on the Dark Cultist's subpath plus a `want` per option and a `playerNote`;
-`verify_rules.py::check_patron_silence` fails if a name comes back into the Player's Book, and the app
-shows a player's table the want through `CharGen.PathLabel`. The Book of Legends is player-side too and
-is held to the same line. **The four-reading shape was deliberate and should not be collapsed into a
-settled answer**: the box two paragraphs above it promises this book never settles whether there are
-six Patrons at all, and six numbered dossiers with d6 tables already strain that promise; a fifth
-certainty would break it. Same shape as Ch. XVI and the Rockies gatherings, for the same reason.
+`verify_rules.py::check_face_silence` fails if a name comes back into the Player's Book, and the app
+shows a player's table the want through `CharGen.PathLabel`. The Book of Legends is player-side too
+and is held to the same line. **The four-reading shape was deliberate and should
+not be collapsed into a settled answer**: the box above it promises this book gives four ways to explain
+why it answers and four ways to read what's gathering in the Rockies, and never picks one. Six faces
+with numbered dossiers and d6 tables already strain that promise; a fifth certainty would break it.
+Same shape as Ch. XVI and the Rockies gatherings, for the same reason.
 
 **Ch. XIII Perdition Basin** is `CH13` in `build_keeper.py` (spliced into `BODY` before the Screen
 appendix), embeds `keeper_map_html()`, and carries anchor ids (`basin`, `basin-truth`,
 `basin-wells`, `basin-crossing`, `basin-coffin`, `basin-saltlick`, `basin-mission`, `basin-mesa`,
 `basin-homesteads`, `basin-hands`, `basin-running`, `basin-keeping`) the Keeper index links to.
-Its spine (the padres' silver "nails" binding a Patron under the wells, now failing well by well) 
+Its spine (the padres' silver "nails" binding a reaching hand of the Old Dark under the wells, now failing well by well) 
 is the same as the Ch. XI Salt Valley seed.
 
 **`basin-keeping` (*Keeping the Basin*, v2.34) is the second year**, and it is what makes the county
 a campaign rather than a starter: the ring held (somebody walks it, once a season, across everybody's
-ground) or the ring broken (a smaller, meaner game about who gets the water), which Patron is under
-there (you decide, you never say), a tier ladder from 5th to 15th built on Bestiary entries at their
-real tiers, and a d12 of further nights. **Do not print which Patron it is.** The chapter's whole
-method is that the county's hand is unnamed, and naming it would also break the Ch. VII promise the
-book makes two chapters earlier.
+ground) or the ring broken (a smaller, meaner game about who gets the water), which face the thing
+under there wears (you decide, you never say), a tier ladder from 5th to 15th built on Bestiary entries
+at their real tiers, and a d12 of further nights. **Do not print which face it wears.** The chapter works
+because the county's hand is unnamed, and naming it would also break the Ch. VII promise the book makes
+two chapters earlier.
 
 **Ch. XV Powers vs. Ch. XVI Legends** is the one distinction in this book that is easy to
 collapse and expensive to get wrong. A **Power** owns ground, wants something, and can be joined,
@@ -584,7 +602,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.4) — structure & conventions
+## The Book of Legends (v1.5) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -625,8 +643,9 @@ chapter moves the arc, so score it against its neighbours before you do.
   Every paper in the v1.3 chapters that could be read as a confirmation has an editor's note beside
   it that takes some of it back: a card game, a melancholy, a compositor's short line, a chain
   error, two astronomers who saw a planet that was not there.
-- **No Patron is named.** `verify_rules.py::check_patron_silence` fails the build if one ever is,
-  and it was proved by sabotage the day the book was written.
+- **No face of the Old Dark is named.** `verify_rules.py::check_face_silence` fails the build if one
+  ever is, and it was proved by sabotage the day the book was written and again on 2026-09-25, when
+  the Patrons became faces.
 - **Counted, not remembered.** `166` documents, `89` provenance notes, `59` editor's notes: the
   builder prints those counts, and `audit_consistency.py` holds every copy this file and README type
   to the built book. (This bullet used to say nothing else in the repo typed them, while README and
@@ -636,13 +655,14 @@ chapter moves the arc, so score it against its neighbours before you do.
   by adding a helper and a CSS block, not by hand-writing markup into a chapter. A kind that must
   never be split across a page (a card, a banknote) puts its whole body in one inner box, because
   the paginator only splits a `.paper` with more than two children.
-- **The Patron silence has an in-world reason now.** The editor says in *A Word Before* that where
+- **The face silence has an in-world reason now.** The editor says in *A Word Before* that where
   anybody named the thing they serve, the name came out, as Ashby did. Keep it that way: a paper
-  may call a Patron "the thing" or "what she served", never by a handle a player could look up.
+  may call it the Old Dark, "the thing" or "what she served", never by a face's name a player could
+  look up.
 
 ---
 
-## The Bestiary (v2.25) — structure & conventions
+## The Bestiary (v2.26) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,

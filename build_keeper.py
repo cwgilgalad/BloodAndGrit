@@ -68,13 +68,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.39 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.39)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.40 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.40)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.39</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.40</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.39 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.40 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -508,8 +508,8 @@ so no check for more Risen; this is a <em>new</em> horror, the living victim). H
     clarity) where the dark gets a hook in.</li>
     <li><strong>Reaching for the Old Dark</strong>: when a character draws on power the world was not meant to
     hold: a hex worked, a bargain struck, a sign cut into living ground.</li>
-    <li><strong>Touching the deep dark and surviving changed</strong>: a Patron met and walked away from, a
-    truth at DC 25 endured.</li>
+    <li><strong>Touching the deep dark and surviving changed</strong>: the Old Dark met face to face and walked
+    away from, a truth at DC 25 endured.</li>
   </ul>
   <p>Each step costs the character something the table can feel: dogs that will not meet their eye, a chill,
   a hunger, a voice that gives good advice. At the sixth, the dark owns them, and they pass from a player's hands into
@@ -904,12 +904,12 @@ CH6 = f"""<!-- VI -->
   land itself takes a stain, and asks a toll of every living soul who lingers, monster or no. Run it as the
   <em>Taint</em> clock from the Player's Book (Chapter XII): for every three days on cursed ground, a Fortitude save
   (the body first) or Will (once it reaches the mind) against the ground's DC (<strong>13</strong> for soured
-  earth, <strong>16</strong> for a blighted seat, <strong>20</strong> for a Patron's own ground). Fail and the Taint
+  earth, <strong>16</strong> for a blighted seat, <strong>20</strong> for the Old Dark's own ground). Fail and the Taint
   deepens a step; the four steps run from a souring sickness to a whisper that turns the soul onto the dark's errands.
   This is your tool for a haunted house that hurts to stay in even before the haunting starts. Wards, salt, and the
   right Provisions ease the DC; only true sanctification sheds it for good.</p>
   <p>In Perdition Basin (Ch. XIII) the grades follow the wells. The ground around a broken well starts out soured and
-  is blighted by the end of a season. If the Mission spring goes, the whole south of the county is a Patron's own
+  is blighted by the end of a season. If the Mission spring goes, the whole south of the county is the Old Dark's own
   ground, and the players will find out the week their Taint starts climbing on a ride that used to be safe.</p>
 
   <h2>The Wrong House</h2>
@@ -1036,51 +1036,51 @@ CH7 = f"""<!-- VII -->
   the players will agonize over when to spend it.</p>
 
   <h2>The Dark's Wages</h2>
-  <p>The Old Dark pays well and collects worse. When a Patron offers, let the offer be real and the price be Mark
+  <p>The Old Dark pays well and collects worse. When it offers, let the offer be real and the price be Mark
   (Ch. III), never a flat "no," which only makes the dark boring, but never a free "yes" either. The best
   bargains solve the immediate problem and plant the next one. A player who took the deal to save a friend, and would
   take it again, is exactly where the game wants them: one step further down a road they chose.</p>
 
-  <h2 id="patrons-olddark">The Old Dark, and the Six in It</h2>
-  <p>The Player's Book tells a player that the Old Dark is a depth rather than a god: the deep strata
-  of buried gods, drowned hungers and patient things that were ancient when the first peoples here
-  were young, which does not love him and does not hate him, and which lends and is inherited and is
-  worshipped and always collects. It also tells him the country can't agree how many things down
-  there have ever answered anybody, and it leaves the argument open. That's the right amount for him
-  to have. What it leaves out is where the Patrons sit inside all of it, and you can't run this game
-  without knowing.</p>
-  <p>The Old Dark is one thing. It's ancient, it's cosmic, and it's evil in the way a January is
-  evil: without appetite for you in particular, and fatal all the same. It has no centre a man could
-  ride to, no throne, no name of its own that anything has ever used, and no interest whatever in
-  being understood. Under all of that, in the part that has never moved, it's simply deep.</p>
-  <p>The <strong>six Patrons are the parts of it that took a shape and kept it</strong>. Old enough
-  and particular enough to be worth a name, settled enough to be recognised twice, and, so far as
-  anybody has ever managed to tell, the only parts of the whole depth that have answered anybody. The
-  rest of it behaves like weather. So when a teamster in a saloon says the Old Dark he means whatever
-  talks back, and when a Hexer says it he means the depth his loan is drawn from. Both are right. The
-  book uses the phrase both ways, and your players will learn the difference the year they need
-  it.</p>
-  <div class="keeper-note"><span class="kn-tag">Four things to hold to</span><strong>They aren't a
-  pantheon.</strong> None of the six rules another, none owes another anything, and you should never
-  let your players confirm that any two of them are aware of each other. <strong>They're not
-  devils.</strong> A devil wants your soul and has a use for it; these want what they want and take
-  the soul as packaging. <strong>They aren't cruel</strong>, and playing them as cruel makes them
-  small; a thing that hates you can be reasoned with, and the horror here is that nothing is being
-  withheld and nothing is being aimed. And <strong>whether there are six of them at all</strong> is
-  a live question this book never settles, and never will. See the gatherings in the Rockies, below:
-  one of the four readings there is that all six cults have spent a century dealing with one thing
-  wearing six faces.</div>
-  <p>One depth, six mouths anybody has ever heard from, and a country sitting on top of the lot of it
+  <h2 id="olddark">The Old Dark, and Its Six Faces</h2>
+  <p>The Player's Book tells a player that the Old Dark is one thing, older than anybody's gods and evil all
+  the way down, and that it lends, is inherited, is worshipped and always collects. It also tells him why
+  the country tells six sets of stories about it: the Old Dark looks like whatever a soul came to it
+  wanting. That's the right amount for him to have. What it leaves out is which faces the country has seen
+  it wear and what each one trades in, and you can't run this game without knowing.</p>
+  <p>The Old Dark is one thing. It's ancient, it's vast, and it's evil the way a man can be evil, which is
+  to say it knows what it's doing. It means the living harm, all of them, and it has never once been in a
+  hurry about it. It has no centre a man could ride to, no throne, and no name of its own that anything has
+  ever used, and it has no interest whatever in being understood. Under all of that, in the part that has
+  never moved, it's simply deep, and it's awake.</p>
+  <p><strong>The six are faces it wears</strong>, and it wears each one for somebody. A soul comes to the
+  dark wanting something, and what answers looks like the want: a starving man meets a hunger, a grieving
+  woman meets a great calm, a prospector meets something patient under the rock that pays in ore. The
+  country has seen six of those faces often enough to name them, and its faithful have been naming them for
+  longer than anybody has kept records. Each congregation is sure its own face is the true one. Every one
+  of them is feeding the same thing. So when a teamster in a saloon says the Old Dark he means whatever
+  talks back, when a Hexer says it he means the depth his loan is drawn from, and when a Dark Cultist says
+  it she means the face she loves. All three mean one thing, and your players will learn that the year
+  they need it.</p>
+  <div class="keeper-note"><span class="kn-tag">Four things to hold to</span><strong>It's one.</strong>
+  There are no six rivals down there and no pantheon. Two cults at each other's throats are two hands of one
+  body, and nothing a congregation says about another should ever persuade your table otherwise.
+  <strong>It isn't the Devil</strong>, though half the country calls it that. The preachers' Devil wants a
+  soul and has a use for it. The Old Dark wants the soul ruined and will take a lifetime over the ruin.
+  <strong>It's evil, and it's patient.</strong> Play it as a thing that means harm and can wait a hundred
+  years to do it; a thing in a hurry can be outrun. And <strong>what it wants in the end is never
+  settled.</strong> This book gives you four ways to explain why it answers anybody and four ways to read
+  what's gathering in the Rockies, and it never picks one. Don't you pick one out loud either.</div>
+  <p>One dark, six faces anybody has ever seen it wear, and a country sitting on top of the lot of it
   wondering why the wells go bad.</p>
   <p class="note">What follows is six dossiers, and every part of each one after the first paragraph is an offer
-  rather than a fact. The ground a Patron holds, the kind of people who serve it, the three signs and the d6 are
+  rather than a fact. The ground a face holds, the kind of people who serve it, the three signs and the d6 are
   there so a Keeper five minutes from the table has something to reach for. Use the ones that fit the county you have
-  already built, ignore the rest, and invent freely against them. The door each Patron waits at is the only part you
+  already built, ignore the rest, and invent freely against them. The door each face waits at is the only part you
   shouldn't change, because the door is the mechanism and everything else is scenery.</p>
 
-  <h2 id="patrons-why">Why It Answers at All</h2>
+  <h2 id="olddark-why">Why It Answers at All</h2>
   <p>Sooner or later somebody asks it, and it is usually the player running the Hexer. If the thing is
-  that old and that large and that thoroughly uninterested, why does it trouble itself with him? Why
+  that old and that large and that patient, why does it trouble itself with him? Why
   would a depth that was here before the mountains take a call from a man in a rented room in
   Leadwater?</p>
   <p>Have an answer ready, because the question is a good one and a table can hear an empty chair behind
@@ -1089,9 +1089,9 @@ CH7 = f"""<!-- VII -->
   Run the one that suits the county you've built, keep the other three in your pocket, and confirm
   none of them aloud, ever, to anybody.</p>
   <p><strong>The wear.</strong> It never set any terms. It has a shape, and a shape leaned on in the same
-  place for ten thousand years has a groove worn into it. The Devourer answers at the snowed-in pass for
-  the reason a dry wash runs where it runs: that's where everything went, so that's where the channel
-  is. Under this reading the Hexer persuades nothing whatever. He has found a channel and stepped into
+  place for ten thousand years has a groove worn into it. It answers as the Devourer at the snowed-in
+  pass for the reason a dry wash runs where it runs: that's where everything went, so that's where the
+  channel is, and the six faces are the six deepest grooves. Under this reading the Hexer persuades nothing whatever. He has found a channel and stepped into
   it, and a mineshaft doesn't decide to be entered. The Mark, then, is what a channel gets from having
   been used; he's worn into a shape that things run downhill into, and in time something does.</p>
   <p><strong>The debt.</strong> It answers because answering is how it comes to be owed, and being owed
@@ -1100,30 +1100,32 @@ CH7 = f"""<!-- VII -->
   there gathering. Under this reading the Tallyman isn't sent. He's what a debt turns into when it has
   sat long enough.</p>
   <p><strong>The tongue.</strong> A question is the only pressure a man can bring to bear on a depth, and
-  the six are the parts of it shaped enough to take the pressure. They answer the way a canyon answers:
-  in your own voice, later, and changed. Under this reading nothing has ever answered anybody out here,
-  and every bargain ever struck was a man hearing himself come back wrong.</p>
-  <p><strong>The appetite nobody has named.</strong> It answers because it wants something. Ten thousand
-  years of men have gone down after what, and the answer has never come back up, and the thing has never
-  once been in a hurry about it. This reading sits badly with the box above, and that's the reason
-  to keep it. Hold it in reserve for the night a table has grown comfortable with an indifferent
-  universe.</p>
+  the Old Dark has never said a word back. It listens. What comes back is the man's own want, off the
+  rock, the way a canyon answers: in your own voice, later, and changed. The six faces are the six shapes
+  a want comes back in. Under this reading nothing has ever answered anybody out here, and every bargain
+  ever struck was a man hearing himself come back wrong while something enormous listened.</p>
+  <p><strong>The appetite nobody has named.</strong> It answers because it wants something in particular.
+  Harm it can have any night, anywhere, for nothing; this is a thing it can only get through a man who
+  asked. Ten thousand years of men have gone down after what, and the answer has never come back up, and
+  the thing has never once been in a hurry about it. Hold this reading in reserve for the night a table
+  has decided the dark is merely cruel and grown comfortable with that.</p>
   <div class="keeper-note"><span class="kn-tag">However you answer it</span>The stagecraft is the same
-  under all four, and it's one rule: <strong>never let a Patron want. Let it be available.</strong>
-  Whenever you catch yourself about to have one pursue, tempt, argue or gloat, stop, and make it already
+  under all four, and it's one rule: <strong>never let it be seen to want. Let it be available.</strong>
+  Whenever you catch yourself about to have it pursue, tempt, argue or gloat, stop, and make it already
   there instead: already open, already the easiest thing in the room, already what a tired man
   reaches for without deciding to. The test afterward is quick. If you can retell the scene with the
-  Patron doing nothing at all and only the players moving, you ran it right. If the scene needs the
-  Patron to have made a decision, you wrote a devil.</div>
+  Old Dark doing nothing at all and only the players moving, you ran it right. If the scene needs it to
+  have made a decision where the table could watch, you wrote a devil.</div>
 
-  <h2 id="patrons-table">The Patrons at the Table</h2>
+  <h2 id="olddark-faces">The Six Faces at the Table</h2>
   <p>The Player's Book gives a player six sets of campfire stories (Ch. VII) and no names at all. Here's the rest:
-  how each one actually comes at a table of players, and when. Timing is most of it with devils. An offer that comes
-  right when everybody expects it just feels like a rule, but the same offer at the worst possible moment is what your
-  table will still be talking about years later. A Patron never simply appears. Each waits at a different door, and the players open every one of those doors
-  themselves.</p>
+  how each face actually comes at a table of players, and when. Timing is most of it. An offer that comes right
+  when everybody expects it just feels like a rule, but the same offer at the worst possible moment is what your
+  table will still be talking about years later. The Old Dark never simply appears. It waits at six doors, wears a
+  different face at each, and the players open every one of those doors themselves. Which face comes through
+  depends on who opened the door and what they wanted.</p>
 
-  <h3 id="patron-devourer">The Devourer, at the door of want</h3>
+  <h3 id="face-devourer">The Devourer, at the door of want</h3>
   <p>It comes when the body is failing: the snowed-in pass, the tainted well, the wound going bad three days'
   ride from help. It has no voice and needs none, because its offer arrives as meat. Game where no game should be,
   strength flooding into a starving frame, and only afterward the understanding of what was traded. Make the offer
@@ -1147,12 +1149,12 @@ CH7 = f"""<!-- VII -->
   now every week &middot; 5 a trapper's line has been robbed all winter and nothing left behind &middot; 6 a man
   came down off the pass alone and will not say how many went up</p>
 
-  <h3 id="patron-whisperer">The Whisperer, at the door of the question</h3>
+  <h3 id="face-whisperer">The Whisperer, at the door of the question</h3>
   <p>It waits on curiosity, and its moment is the fact your players cannot reach: the name they have hunted
   for three sessions, the hour the train passes, what is really under the church. It answers questions nobody asked
   aloud, as a certainty arriving at the edge of sleep, sourceless and correct. The craft here is discipline.
   Everything it says has to be true, every single time, or it dies as a horror at your table. Its price rides inside
-  the gift: each answer carries one more truth the asker didn't want and can't now unknow. It's the Patron for
+  the gift: each answer carries one more truth the asker didn't want and can't now unknow. It's the face for
   your party's thinker, and it will find the one soul at the table who can't leave a locked box alone.</p>
   <p><strong>The ground it already holds.</strong> It holds no ground at all, which is what makes it the hardest of the six to get away from. What it has
   instead is correspondents: an assay office, a land office, a newspaper morgue, a telegraph key, a county clerk who
@@ -1170,7 +1172,7 @@ CH7 = f"""<!-- VII -->
   &middot; 5 the telegraph operator has stopped sleeping &middot; 6 somebody has been buying up old survey
   maps</p>
 
-  <h3 id="patron-colddeep">The Cold Deep, at the door of hurt</h3>
+  <h3 id="face-colddeep">The Cold Deep, at the door of hurt</h3>
   <p>It comes to the grieving and the broken, and it never comes during the horror. It comes after: the
   shaking hour past midnight when the thing is over, the day after the funeral, the first camp after a soul has
   Broken at 0 Nerve. What it offers is relief, an end to the shaking, and relief is the hardest offer a player ever
@@ -1192,7 +1194,7 @@ CH7 = f"""<!-- VII -->
   the shaft and one came up calm &middot; 5 the doctor has stopped charging &middot; 6 nobody in the house has
   raised their voice in a month</p>
 
-  <h3 id="patron-longtrail">The Long Trail, at the door of the grave</h3>
+  <h3 id="face-longtrail">The Long Trail, at the door of the grave</h3>
   <p>It bargains exactly once, and its circumstance is a death: there at the table, with the body still warm
   and your players still silent. That's the hour the rider is on the ridge. One offer, in plain terms, no haggling.
   Refused, it touches its hat brim and is gone, and it doesn't come back for that soul. Never offer twice. Its power
@@ -1215,8 +1217,8 @@ CH7 = f"""<!-- VII -->
   &middot; 5 someone left the burying-ground gate open and the town is upset out of proportion &middot; 6 a dog has
   sat at the same point on the trail for four days</p>
 
-  <h3 id="patron-thingbeneath">The Thing Beneath the Mountain, at the door of the strike</h3>
-  <p>The one Patron that pays first and bargains afterward. Its circumstance is prosperity: the vein too rich
+  <h3 id="face-thingbeneath">The Thing Beneath the Mountain, at the door of the strike</h3>
+  <p>The one face that pays first and bargains afterward. Its circumstance is prosperity: the vein too rich
   for the ground it sits in, the claim sold suspiciously cheap, the town growing faster than an honest town grows.
   It seldom addresses your players at all, because it works through the diggings and the money, and every dollar out
   of that ground is a signature on its paper. Run it as economics before you run it as horror. The players profit,
@@ -1239,7 +1241,7 @@ CH7 = f"""<!-- VII -->
   office burned &middot; 5 wages went up and nobody asked &middot; 6 the shaft is being sunk past any seam on the
   survey</p>
 
-  <h3 id="patron-redsermon">The Red Sermon, at the door of the flock</h3>
+  <h3 id="face-redsermon">The Red Sermon, at the door of the flock</h3>
   <p>It rarely wants your players. It wants the crowd around them, so it comes at the table sideways: through
   the revival tent, the new church, the charity that is feeding the hungry and filling the pews. Its moment is the
   moment your players begin to love a congregation, a town, a good man in a pulpit. What it offers a soul is
@@ -1263,21 +1265,21 @@ CH7 = f"""<!-- VII -->
   families sold up in one week and left no address &middot; 4 the new deacon is somebody's dead brother's name
   &middot; 5 the schoolhouse is being used for meetings &middot; 6 the preacher has stopped needing to eat</p>
 
-  <div class="keeper-note"><span class="kn-tag">The veteran's rules</span>Four rules carry all six. A Patron makes
-  its offer at the moment of weakness it owns and not before. Hold the offer you've planned until the door
+  <div class="keeper-note"><span class="kn-tag">The veteran's rules</span>Four rules carry all six. The Old Dark
+  makes its offer at the moment of weakness the face owns and not before. Hold the offer you've planned until the door
   is truly open, even if that takes a season. It almost never speaks in its own voice; it prefers heralds, dreams,
-  signs, meat, money, and paperwork, and it's the more frightening for the indirection. One waking Patron is a
-  campaign; two is a muddle. Keep the others as rumors at the edge of the map. And the answer must always
+  signs, meat, money, and paperwork, and it's the more frightening for the indirection. One face awake in a
+  county is a campaign; two is a muddle. Keep the others as rumors at the edge of the map. And the answer must always
   be allowed to be no, and mean it. The Mark means something only because the player chose it, and a table that
-  turns a Patron down flat has just told you, precisely, what they hold dearest. The dark was listening, and so
+  turns the Old Dark down flat has just told you, precisely, what they hold dearest. The dark was listening, and so
   were you.</div>
 
 
-  <h2 id="patrons-terms">What Each One Offers, and What It Takes</h2>
-  <p>A Keeper needs to know what each Patron trades in, and a player is better off learning it the hard way. The
+  <h2 id="olddark-terms">What Each Face Offers, and What It Takes</h2>
+  <p>A Keeper needs to know what each face trades in, and a player is better off learning it the hard way. The
   Player's Book carries the six as stories and nothing else.</p>
   <table class="lvl">
-    <thead><tr><th>Patron</th><th>It offers</th><th>It takes</th><th>Its sign</th></tr></thead>
+    <thead><tr><th>The face</th><th>It offers</th><th>It takes</th><th>Its sign</th></tr></thead>
     <tbody>
       <tr><td><strong>The Devourer</strong></td><td>Strength, swiftness, a body that knits its own wounds and never
       stops wanting.</td><td>An appetite that outgrows your power to feed it, until the hunger decides your body suits
@@ -1305,16 +1307,17 @@ CH7 = f"""<!-- VII -->
     </tbody>
   </table>
 
-  <h2 id="patrons-devotions">What a Devotion Grants</h2>
+  <h2 id="olddark-devotions">What a Devotion Grants</h2>
   <p>A Dark Cultist picks a Devotion at 3rd level, and what she picks is a <em>want</em>: the Player's Book gives her
-  six of those and no names. You decide who answered. Usually it's the obvious one, and the table is better served
-  when it is; save the mismatch for a campaign where a soul asked one thing and something else spoke up. Tell the
-  player what the Devotion does as soon as it is taken, because she has to be able to play it. Don't tell her the
-  name until the fiction gives it to her, and let her hear it first from somebody who's frightened of it. The stories
-  in Ch. VII are what she has instead, and the third column below is the story her Patron belongs to.</p>
-  <p>The boon lands at once. The greater boon lands at 9th, as the thing below sinks its hooks the deeper.</p>
+  six of those and no names. She's devoted to the Old Dark, all of it, and the want decides which face it shows her.
+  You decide which. Usually it's the obvious one, and the table is better served when it is; save the mismatch for a
+  campaign where a soul asked for one thing and the dark showed her another. Tell the player what the Devotion does as
+  soon as it is taken, because she has to be able to play it. Don't tell her what the faithful call that face until
+  the fiction gives it to her, and let her hear it first from somebody who's frightened of it. The stories in Ch. VII
+  are what she has instead, and the third column below is the story her face belongs to.</p>
+  <p>The boon lands at once. The greater boon lands at 9th, as the Old Dark sinks its hooks the deeper.</p>
   <table class="lvl">
-    <thead><tr><th>She says she wants</th><th>Who answers</th><th>Told in Ch. VII as</th></tr></thead>
+    <thead><tr><th>She says she wants</th><th>The face it wears</th><th>Told in Ch. VII as</th></tr></thead>
     <tbody>
       <tr><td>Never to go hungry again.</td><td><strong>The Devourer</strong></td><td>The Ellender Party</td></tr>
       <tr><td>To know what can't be known.</td><td><strong>The Whisperer</strong></td><td>Somebody's Uncle</td></tr>
@@ -1330,10 +1333,10 @@ CH7 = f"""<!-- VII -->
     <li><strong>The Long Trail.</strong> Spend Devotion to lay a withering death-touch (necrotic cold) and to sense the dying; you know who in your sight is marked to die soon, and may bid a freshly-slain foe rise and serve you a round. Your Gifts favor a deathless calm, an unerring eye for a mortal wound, and a body slow to quit. <em>Greater (9th):</em> once per session, pronounce a death sentence on one you can name (short of a true miracle, death comes for them before the arc is out) or, when you yourself fall, rise once at the next dusk, a little further down the trail than you were.</li>
     <li><strong>The Red Sermon.</strong> Spend Devotion to borrow a face and a honeyed voice: charm or compel those who hear you, pass for someone trusted, and feed on a crowd's devotion to refill your pool. You gather a small flock that believes, and their belief is meat. Your Gifts favor a stolen face, a compelling word, and a hunger worn as warmth. <em>Greater (9th):</em> once per session, hollow a gathering: every soul who can hear you is gripped by compulsion or terror, and a little of each is fed to the thing you serve, leaving you flush with power and them diminished and yours.</li>
     <li><strong>The Thing Beneath the Mountain.</strong> Spend Devotion to call on the deep stone: a crushing grip, a hide of grinding rock (DR and resistance), and tremor-sense through earth and floorboard. You see in the lightless dark, never lose your way underground, and the buried answers when you knock. Your Gifts favor stone flesh, a crushing strength, and the secrets of ore and vein. <em>Greater (9th):</em> once per session, wake the mountain a little: bring down a ceiling, split the ground, or clad yourself in living rock, huge and all but unkillable, for a few rounds.</li>
-    <li><strong>The Whisperer.</strong> Spend Devotion to pluck a secret from a mind or the air, and to whisper madness: confusion, fear, or a Dread Check. <em>Greater (9th):</em> once per session, speak the Unspeakable Word: unmake a mind, or wring one true and terrible answer from your Patron.</li>
+    <li><strong>The Whisperer.</strong> Spend Devotion to pluck a secret from a mind or the air, and to whisper madness: confusion, fear, or a Dread Check. <em>Greater (9th):</em> once per session, speak the Unspeakable Word: unmake a mind, or wring one true and terrible answer from the Old Dark.</li>
   </ul>
 
-  <h2 id="patrons-rockies">The Gatherings in the Rockies</h2>
+  <h2 id="olddark-rockies">The Gatherings in the Rockies</h2>
   <p>Beginning about four years ago, word started coming down out of the high country about gatherings. A Devourer
   congregation out of Montana wintering above the Boulder River, three hundred strong, in weather that should have
   killed half of them. A Red Sermon circuit that leaves Denver every spring and comes back forty people short. Cold
@@ -1341,7 +1344,7 @@ CH7 = f"""<!-- VII -->
   the time anybody rode up. A dig above Leadville on a hundred and sixty acres of worthless slope that somebody paid
   eleven thousand dollars in gold for.</p>
   <p>Here's how it lies, and that's the difficulty. They're cultists of <strong>different
-  Patrons</strong>, in <strong>different places</strong>, and there's no evidence at all that any of them is trying
+  faces</strong>, in <strong>different places</strong>, and there's no evidence at all that any of them is trying
   to reach any of the others. Nobody has caught two of these congregations in the same valley. Nobody has traced a
   letter between them. They come up, they camp, they wait, and eventually they go home, and not one soul who has been
   will say a word about what for. Four separate written accounts survive of a meeting nobody can place, and no two
@@ -1352,22 +1355,22 @@ CH7 = f"""<!-- VII -->
   <table class="lvl">
     <thead><tr><th>The reading</th><th>What it makes the campaign about</th><th>How the players find out</th></tr></thead>
     <tbody>
-      <tr><td><strong>They were all called, and all six answered.</strong> The Patrons have agreed on something,
-      which makes them neither vast nor indifferent, which is the frightening part.</td><td>Cosmic politics. The
-      players are ants who have noticed the gardeners talking.</td><td>By getting into a room they should not be in
-      and understanding perhaps a third of what is said in it.</td></tr>
-      <tr><td><strong>Nobody called anything.</strong> Six appetites are converging on one range for six unrelated
+      <tr><td><strong>It sent for them.</strong> The Old Dark is doing something up there that needs hands, and it
+      has called six congregations to be them, each by the face it knows, and told none of them about the
+      others.</td><td>A rite. The players are racing something that was planned before the country had a
+      name.</td><td>By marking all six camps on one map and seeing the figure they make.</td></tr>
+      <tr><td><strong>Nobody called anything.</strong> Six congregations are converging on one range for six unrelated
       reasons, and the pattern lives entirely in whoever is drawing the map.</td><td>Paranoia, and the price of being
       wrong. The players build a conspiracy and then act on it.</td><td>Slowly and humiliatingly, well after they have
       done something drastic about it.</td></tr>
-      <tr><td><strong>The cults are mistaken about who answers them.</strong> All six have been dealing with one thing
-      wearing six faces, which is exactly why they gather in six places and never once meet.</td><td>Revelation. Every
-      earlier session gets re-read in a worse light.</td><td>One detail that turns up in two rites that should share
-      nothing at all. Plant it in session four and let it sit.</td></tr>
-      <tr><td><strong>Something above them is driving them up there.</strong> The Patrons are frightened, they are
-      being made to do this, and the Dread Mother's covens have been saying so all along.</td><td>Scale. The horror
-      the players spent a campaign learning to survive turns out to be somebody's livestock.</td><td>By a Patron
-      asking them for help, badly, and meaning it.</td></tr>
+      <tr><td><strong>It's nearer the surface up there.</strong> The dark has come up under the high country the way
+      water comes up under a field, every face answers louder there, and the faithful go to it the way stock goes to
+      water.</td><td>A rising. The country is tilting toward something, and every Marked soul in it can feel the
+      slope.</td><td>When the most Marked character at the table starts wanting to ride west and can't say why.</td></tr>
+      <tr><td><strong>Something older is driving them up there.</strong> The Old Dark is frightened, it's pulling its
+      faithful in around it the way a hurt animal goes to ground, and the Dread Mother's covens have been saying so all
+      along.</td><td>Scale. The horror the players spent a campaign learning to survive turns out to be somebody's
+      livestock.</td><td>By the Old Dark asking them for help, badly, and meaning it.</td></tr>
     </tbody>
   </table>
   <div class="keeper-note"><span class="kn-tag">The one thing not to do</span>Do not answer it early and do not answer
@@ -1375,27 +1378,30 @@ CH7 = f"""<!-- VII -->
   it carries it. The moment you confirm a reading, three quarters of the Rockies goes quiet, so confirm it in the last
   session of the campaign or the one before, and never in a way that needs a speech.</div>
 
-  <h2 id="prophet-patrons">Whose Plate the False Prophet Fills</h2>
+  <h2 id="prophet-plate">Whose Plate the False Prophet Fills</h2>
   <p>Of all who deal with the Old Dark the False Prophet deals most blindly, and this is the part he must never be
-  told. A Hexer signs a Bargain and reads its terms. A Dark Cultist names the thing she serves and calls it grace. The
+  told. A Hexer signs a Bargain and reads its terms. A Dark Cultist knows the thing she serves by the face it shows her, and calls it grace. The
   Prophet half-believes his own pulpit, or believes only in the collection plate, and never learns whose appetite his
-  gospel feeds. The Patron is content to go unnamed. Worship eats just as well from a congregation that thinks it is
+  gospel feeds. The Old Dark is content to go unnamed. Worship eats just as well from a congregation that thinks it is
   praying to Heaven.</p>
-  <p>His <em>Conduit</em> and his <em>Tribute</em> are a Patron's hunger fed secondhand: every soul gathered,
-  frightened, healed or fleeced sends its portion down, and a little power comes back up as wonders. The kind of
-  wonders gives away who's behind them, because a Prophet's <strong>Gospel</strong> is the mask his Patron wears.</p>
+  <p>His <em>Conduit</em> and his <em>Tribute</em> are the Old Dark's hunger fed secondhand: every soul gathered,
+  frightened, healed or fleeced sends its portion down, and a little power comes back up as wonders. The plate is
+  always the Old Dark's. What changes is the face it wears to empty the plate, and the Prophet's
+  <strong>Gospel</strong> shapes that, because a flock meets the face its preacher promised it. The kind of wonders
+  gives away which face it is.</p>
   <ul class="dash">
     <li>The <strong>Borrowed Saint</strong> usually fronts the <strong>Red Sermon</strong>, which loves a crowded tent.
     A healer's gospel can as easily mask the <strong>Long Trail</strong>, trading true cures for a quiet claim on the
     cured.</li>
-    <li>The <strong>Doomsayer</strong> serves a Patron of fear and ruin: the <strong>Whisperer</strong>, whose
+    <li>The <strong>Doomsayer</strong> calls up a face of fear and ruin: the <strong>Whisperer</strong>, whose
     prophecies come true because it whispered them first, or the <strong>Devourer</strong>, whose promised judgments
     are its appetite given a date.</li>
     <li>The <strong>Golden Calf</strong> answers to whatever pays. Commonly the <strong>Red Sermon</strong> again, or
     the <strong>Thing Beneath the Mountain</strong>, whose veins of easy gold are never free for long.</li>
   </ul>
-  <div class="keeper-note"><span class="kn-tag">At the table</span>Never let the Prophet's player pick the Patron. Pick
-  it yourself, early, write it down, and run every wonder he works as that thing reaching through him. The session
+  <div class="keeper-note"><span class="kn-tag">At the table</span>Never let the Prophet's player pick the face. Pick
+  it yourself, early, write it down, and run every wonder he works as the Old Dark reaching through him with that
+  face on. The session
   where he finds out is worth more than any session where he knew.</div>
 
   <h2 id="returned">Running One Who Came Back</h2>
@@ -1471,8 +1477,8 @@ CH7 = f"""<!-- VII -->
   country's wrongness spreads from one homestead to a county, and the same dark hand shows behind a season of separate
   horrors. A few principles carry you from a one-night scare to a saga.</p>
   <ul>
-    <li><strong>The dark has a shape.</strong> Behind the monsters, set one patient cause: a Patron waking, a
-    cult building toward its rite, a curse spreading like blight, a Marked man climbing. Each adventure is a symptom;
+    <li><strong>The dark has a shape.</strong> Behind the monsters, set one patient cause: the Old Dark waking under a
+    county, a cult building toward its rite, a curse spreading like blight, a Marked man climbing. Each adventure is a symptom;
     the campaign is the disease, and the players are slowly learning its name.</li>
     <li><strong>Mark and Taint are the campaign's clock.</strong> They only ever climb. A campaign is partly the story
     of who falls and who's pulled back. Let the players feel the track filling over months, and let a hard-won
@@ -1485,7 +1491,7 @@ CH7 = f"""<!-- VII -->
     that can never be saved is a treadmill with skulls; a west the players bleed to save is a story.</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The recurring hand</span>Give the campaign a face the players come to
-  hate or pity: a Hollow Prophet who keeps rising, a Marshal going slowly Marked, a Patron's herald always one
+  hate or pity: a Hollow Prophet who keeps rising, a Marshal going slowly Marked, the Old Dark's herald always one
   town ahead. Met across a season, a single antagonist does more for dread than a parade of monsters seen once and shot.</div>
 
   <h2>Between the Reckonings</h2>
@@ -1998,7 +2004,7 @@ CH11 = f"""<!-- XI -->
     a single thread pulling them onward: a name, a debt, a thing they're chasing or that's chasing them. Strength:
     variety and momentum; you can run nearly any one-shot as a stop on the road. Run it when your table likes the new
     and the open, and a campaign that keeps moving.</li>
-    <li><strong>The Closing Circle.</strong> The players know, from early, what the great dark is (the Patron
+    <li><strong>The Closing Circle.</strong> The players know, from early, what the great dark is (the Old Dark
     waking, the cult's rite, the Wound widening) and the whole campaign is the race to close it before it
     finishes. Strength: a clear, mounting dread with a real ending in sight. Run it when your table wants a story with
     a spine and a climax they can see coming for them.</li>
@@ -2019,7 +2025,7 @@ CH11 = f"""<!-- XI -->
     End it. A campaign that can end, and does, is a story; one that can't is a treadmill (Ch. VII).</li>
   </ul>
   <div class="keeper-note"><span class="kn-tag">The throughline</span>Whatever frame you choose, run one thread the
-  whole way: a Patron, a cult, a curse, a Marked soul climbing. Each session is a symptom; the campaign is the
+  whole way: a face of the Old Dark, a cult, a curse, a Marked soul climbing. Each session is a symptom; the campaign is the
   disease, slowly named. Drop a clue toward the throughline in nearly every night, even the standalone ones, and by the
   end the players will feel the whole year was one story tightening, because it was.</div>
 
@@ -2030,7 +2036,7 @@ CH11 = f"""<!-- XI -->
   <div class="box">
     <h4>The Salt Valley &mdash; a Haunted County</h4>
     <p><strong>The frame:</strong> the players settle in Saltlick Valley, a hard ranching country ringed by old mission
-    ground. <strong>The throughline:</strong> in the mission days the padres staked and salted a Patron's reaching hand into
+    ground. <strong>The throughline:</strong> in the mission days the padres staked and salted a reaching hand of the Old Dark into
     the valley floor; the railroad's blasting has cracked the seal, and the dark is leaking back, one homestead at a
     time. <strong>The clock:</strong> each season the unhallowed ground spreads a ranch further, the dead get bolder,
     and the valley's folk turn on each other (the Drought-Bringer's despair, made political). <strong>The door:</strong>
@@ -2284,8 +2290,8 @@ CH13 = f"""<!-- XIII -->
   <p>In 1809 the Franciscan padres of <strong>Mission San Clavo</strong> learned it: from the ground, from
   the dead that would not stay down, and last and least willingly from the <strong>Painted Mesa people</strong>, who had
   said as much for longer than the mission had stood and had not been heeded. What lay under the water was no devil the
-  padres had a rite to burn. It was a <strong>Patron</strong> (Ch. VII), one of the old reaching
-  hands of the Dark, and it was coming up through the wells the way damp comes up through a wall.</p>
+  padres had a rite to burn. It was <strong>the Old Dark</strong> itself (Ch. VII), one of its old
+  reaching hands, and it was coming up through the wells the way damp comes up through a wall.</p>
   <p>They couldn't kill it. They did the next thing, and the harder one: they <strong>bound</strong> it. Blessed silver
   driven as nails, <em>clavos</em>, one at the waterline of each of the <strong>seven wells</strong> that ring the thing's
   reaching fingers; salt packed around each; a rite said over each, and said again on a schedule, because a nail has to
@@ -2328,7 +2334,7 @@ CH13 = f"""<!-- XIII -->
       <strong>Skin-Walker</strong> to easy prey at the lonely relay. This is <em>A Face Not His Own</em>, site
       &#9313;, Ch. X.</td></tr>
       <tr><td><strong>the Mission spring</strong></td><td>failing</td><td>The heart of the ring, at San Clavo itself. When
-      this nail goes, the Patron's hand is free. The whole campaign is the race to keep it, or re-drive it.</td></tr>
+      this nail goes, the hand is free. The whole campaign is the race to keep it, or re-drive it.</td></tr>
       <tr><td><strong>the South well</strong></td><td>broken</td><td>Gone quietly, out in the Badlands, and nobody living
       near to notice yet. What came up is yours to choose (roll the Old Dark, Bestiary Ch. VII): a whole reckoning
       waiting to be found.</td></tr>
@@ -2372,7 +2378,7 @@ CH13 = f"""<!-- XIII -->
 
   <h3 id="basin-mission">Mission San Clavo &mdash; the ruined heart</h3>
   <p>The oldest thing the settlers built, and a ruin since it burned in 1811: a broken adobe church on the ground the padres
-  chose because it sat over the Patron's reaching hand. The <strong>Mission spring</strong> rises in its cracked
+  chose because it sat over the reaching hand. The <strong>Mission spring</strong> rises in its cracked
   baptistry, and the master nail, the one that closes the whole ring, is driven into the altar stone. Come
   here and the campaign's true shape is on the walls: the padres' carvings, the record of the binding, and the warning
   they left for whoever came after. The last keeper of the ring lived four miles from it.</p>
@@ -2387,8 +2393,8 @@ CH13 = f"""<!-- XIII -->
   <p>Rising red in the south-east, the Painted Mesa is the ground of the people who were in this country long before the
   mission, and who told the padres what lay under the water, and were displaced for their trouble. They tend the
   Painted spring by rites older than the nails, and they know things about the thing beneath that no carving at San Clavo
-  records. They aren't an oracle the players may squeeze. They're people with their own stake (the Patron threatens
-  their ground too), their own grievance (the settlers owe them, not the other way around), and every right to weigh
+  records. They aren't an oracle the players may squeeze. They're people with their own stake (the thing under the water
+  threatens their ground too), their own grievance (the settlers owe them, not the other way around), and every right to weigh
   whether these particular strangers deserve help.</p>
   <div class="keeper-note"><span class="kn-tag">Play them as people</span>Give the Painted Mesa folk names, faces,
   disagreements, and interests of their own: an elder who counsels caution, a young rider who's done being patient
@@ -2461,16 +2467,16 @@ CH13 = f"""<!-- XIII -->
   is the last sweet water in the county, and the players are the people who stayed. It's a smaller, meaner campaign
   than the first year: supply runs, getting families out, holding one town's well against whatever comes up the others,
   and deciding who gets the water when there isn't enough of it. The cults come to a place like that the way flies
-  come to a wound. A Patron's own ground is a pilgrimage for the faithful of the Old Dark, and the gatherings in the
+  come to a wound. Ground the Old Dark holds outright is a pilgrimage for its faithful, and the gatherings in the
   Rockies (Ch. VII) will send somebody down to look.</p>
   <p>The door back doesn't close. Re-drive the master nail, or find the Mesa people's older working (<em>Running the
   Basin</em>, above). A broken ring can be closed again, and it costs more for every season it's left open.</p>
 
   <h3>What's under the water</h3>
-  <p>This chapter never says which Patron the padres pinned, and you should decide before the second year starts and
-  then never say it out loud either. The Cold Deep suits the water and the numbness out on the homesteads. The Devourer
-  suits the fever and the cattle. The Thing Beneath the Mountain suits the silver and the survey's powder. Whichever you
-  pick, it's what speaks up when a Dark Cultist inside the basin asks the dark for something, whatever they asked for.
+  <p>This chapter never says which face the thing the padres pinned wears, and you should decide before the second
+  year starts and then never say it out loud either. The Cold Deep suits the water and the numbness out on the
+  homesteads. The Devourer suits the fever and the cattle. The Thing Beneath the Mountain suits the silver and the
+  survey's powder. Whichever you pick, it's the face a Dark Cultist inside the basin meets, whatever she came wanting.
   <em>What a Devotion Grants</em> (Ch. VII) tells you to save that mismatch for the right campaign, and this is the
   right campaign.</p>
 
@@ -2795,7 +2801,7 @@ CH15 = f"""<!-- XV -->
 <section class="page">
   {runhead('XV. The Powers of the Territory')}
   <h2 id="powers-mother">The Dread Mother</h2>
-  <p>She is no Patron, and the women who serve her will correct you on that before they answer anything else. Nothing
+  <p>She is no face of the Old Dark, and the women who serve her will correct you on that before they answer anything else. Nothing
   is granted in her name. No Bargain is struck with her, no Devotion is paid to her, no Sign has ever answered a rite
   that called on her, and a Hexer who tried it would get silence and would deserve it. What she has instead is a good
   deal harder to sit across a table from: she has <strong>authority</strong>.</p>
@@ -3139,17 +3145,20 @@ KEEP_INDEX = [
     ("Grit (running)", "rewards"), ("Carrying the Marked", "rewards"),
     ("Running one who Came Back", "returned"), ("The Returned (running)", "returned"),
     ("Hunger (running one)", "returned"), ("Feeding a Returned soul", "returned"),
-    ("The Old Dark (what it is)", "patrons-olddark"),
-    ("The six, and the depth", "patrons-olddark"),
-    ("Why the dark answers at all", "patrons-why"),
-    ("Bargaining, why it works", "patrons-why"),
-    ("The Patrons at the table", "patrons-table"),
-    ("The Devourer", "patron-devourer"), ("The Whisperer", "patron-whisperer"),
-    ("The Cold Deep", "patron-colddeep"), ("The Long Trail (a Patron)", "patron-longtrail"),
-    ("The Thing Beneath the Mountain", "patron-thingbeneath"),
-    ("The Red Sermon", "patron-redsermon"),
-    ("The gatherings in the Rockies", "patrons-rockies"),
-    ("The four readings (the gatherings)", "patrons-rockies"),
+    ("The Old Dark (what it is)", "olddark"),
+    ("The six faces", "olddark"),
+    ("Why the dark answers at all", "olddark-why"),
+    ("Bargaining, why it works", "olddark-why"),
+    ("The faces at the table", "olddark-faces"),
+    ("The Devourer", "face-devourer"), ("The Whisperer", "face-whisperer"),
+    ("The Cold Deep", "face-colddeep"), ("The Long Trail (a face)", "face-longtrail"),
+    ("The Thing Beneath the Mountain", "face-thingbeneath"),
+    ("The Red Sermon", "face-redsermon"),
+    ("What each face offers", "olddark-terms"),
+    ("Devotions (what each grants)", "olddark-devotions"),
+    ("The False Prophet's plate", "prophet-plate"),
+    ("The gatherings in the Rockies", "olddark-rockies"),
+    ("The four readings (the gatherings)", "olddark-rockies"),
     ("The Dark's Wages", "rewards"),
     ("The Cast", "cast"), ("An NPC in three lines", "cast"),
     ("Reaction &amp; morale", "cast"), ("Folk of the frontier", "cast"),
@@ -3178,7 +3187,7 @@ KEEP_INDEX = [
     # --- Perdition Basin ---
     ("Perdition Basin", "basin"), ("The truth of the basin", "basin-truth"),
     ("The wells (the binding ring)", "basin-wells"), ("The ring of nails", "basin-wells"),
-    ("The clavos (the padres' nails)", "basin-truth"), ("The Patron beneath the basin", "basin-truth"),
+    ("The clavos (the padres' nails)", "basin-truth"), ("What's under the basin", "basin-truth"),
     ("Calvary Crossing", "basin-crossing"), ("Coffin Wells (the town)", "basin-coffin"),
     ("Saltlick Station", "basin-saltlick"), ("Mission San Clavo", "basin-mission"),
     ("The Painted Mesa", "basin-mesa"), ("The Homesteads (Perdition Basin)", "basin-homesteads"),
