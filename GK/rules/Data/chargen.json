@@ -289,7 +289,7 @@
       ],
       "line": "You served, blue or gray, and some of it wakes you in the small hours.",
       "boon": "Once per session steady the line; you and each ally in earshot shrug off fear for a round; once per scene reroll a failed Reflex save to take cover.",
-      "burden": "First time each session sudden gunfire or the uncanny finds you, make a Dread Check or be Shaken a round."
+      "burden": "First time each session sudden gunfire or the uncanny finds you, make a Dread Check or be Frightened 1."
     },
     {
       "name": "Came Back Wrong",
@@ -790,8 +790,8 @@
     {
       "name": "It Volunteers",
       "calling": "Dark Cultist",
-      "reqFeature": "The Patron's Ear",
-      "desc": "Once per session the Patron answers a question you did not ask, at the moment it becomes relevant, whether or not you wanted it.",
+      "reqFeature": "The Dark's Ear",
+      "desc": "Once per session the Old Dark answers a question you did not ask, at the moment it becomes relevant, whether or not you wanted it.",
       "reqLevel": 11
     },
     {
@@ -1572,7 +1572,7 @@
       "name": "Set the Pack On",
       "list": "spirits",
       "rank": 3,
-      "cost": "1 Beat · 3 Breath",
+      "cost": "1 Beat · 3 Faith",
       "desc": "Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy."
     },
     {
@@ -2359,7 +2359,7 @@
         "Pathfinder": "You move at full speed through wilderness others must crawl through, leave a trail only the gifted can follow, and add your level to checks to track, forage, or find the way.",
         "Ghost / Uncanny Step / Vanish": "You learn to disappear. Ghost lets you hide even while briefly observed. Uncanny Step leaves no track on any surface. Vanish lets you drop from sight once per scene, as if the land itself closed over you. Out here, perhaps it has.",
         "Evasion": "Your reflexes are inhuman. On a successful Reflex save against an effect that would harm an area (a blast, a cave-in, a sweep of fire) you take no harm at all rather than half. On a critical success, you also end your move in any open square adjacent to the danger.",
-        "Never Was Here": "You have got so good at leaving that the leaving takes the arriving with it. After a night in a place you may spend an hour undoing your own presence in it: the ledger entry, the stall in the livery, the face behind the bar. Anyone questioned about you afterward remembers a man, remembers nothing useful, and grows less certain the harder they are pressed. Dogs and children are unaffected, and neither are the dead.",
+        "Never Was Here": "You have got so good at leaving that the leaving takes the arriving with it. After a night in a place you may spend an hour undoing your own presence in it: the ledger entry, the stall in the livery, the face behind the bar. Anyone questioned about you afterward remembers a stranger, remembers nothing useful, and grows less certain the harder they are pressed. Dogs and children are unaffected, and so are the dead.",
         "The Long Odds": "Evasion becomes something worse for whatever is throwing at you. On a failed save against an effect Evasion would have halved, you take half instead of full; on a success you take none and may Step for free. The blast that catches the posse has caught you three hundred times, and you have gone under it three hundred times.",
         "Gone": "There is no situation you cannot walk out of. Once per session, as a free action at any moment including one in which you are held, bound, buried, grappled, surrounded, unconscious or falling, you are simply elsewhere: any place you could plausibly have reached on foot within the last hour, unharmed, with whatever you were carrying and one thing or one willing soul you had a hand on. Nothing that was watching can say how. The cost is that you leave: whatever you were in the middle of goes on without you, and the country between you and it is a day's ride wide by the time you think better of it."
       },
@@ -2369,7 +2369,7 @@
         "options": [
           {
             "name": "The Ghost Trail",
-            "boon": "Gain a bonus to Sneak and Hide, and you may Hide in cover even while observed. Mastery (10th): once per scene, become wholly unseen for a round, striking from nowhere."
+            "boon": "Gain a bonus to Stealth, and you may Hide in cover even while observed. Mastery (10th): once per scene, become wholly unseen for a round, striking from nowhere."
           },
           {
             "name": "The Hard Trail",
@@ -5542,7 +5542,7 @@
       "featureDescs": {
         "The Hunt": "As a single Beat, name one creature you can see as your quarry. Against that quarry you gain +1 to hit and to all checks to find, track, and study it; you ignore any supernatural concealment it enjoys; and you may not be forced to flee it by fear. You may have one quarry at a time and may shift it with another Beat. It all comes down to the Hunt: choose your prey, and never lose the trail.",
         "Sanctified Iron": "Each dawn, anoint your weapons with salt, silver-wash, oil, and a muttered rite. Until next dawn they count as silver, cold iron, and blessed for the purpose of overcoming the uncanny's resistances, and deal +1 damage to the Marked and the unnatural. At 6th level, all three at once; before that, choose one each morning and guess well.",
-        "Zeal": "You carry a cold and countable certainty: a pool of Zeal equal to your WIT modifier + half your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your Miracles (see The Work of Faith, in Chapter XIII), drawn from the Common Blessings and from the Consecrations: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, and 9th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.",
+        "Zeal": "You carry a cold and countable certainty: a pool of Zeal equal to your WIT modifier + half your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your Miracles (see The Work of Faith, in Chapter XIII), drawn from the Common Blessings and from the Consecrations: salt, silver, fire, ward, and the litany of weaknesses that turns a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.",
         "Steeled Nerve": "You have stared into too many open graves to flinch at one more. Gain +2 on all Dread Checks and saves against fear, and halve the Nerve you lose to your current quarry's kind. The horror is still there. You have simply made a profession of not looking away.",
         "Recognize the Unclean": "Study a creature or a person for a round and make a Lore: Occult check. Learn whether they bear the Mark or are unnatural, what manner of thing they are, and one weakness the Keeper will honor: silver, fire, running water, true names, the dawn. The gift is exact, and it is the most dangerous thing you own, for it tempts you to trust it absolutely.",
         "Judgment": "Once per quarry, declare Judgment before a Strike. On a hit, deal the listed extra holy-and-silver damage; on a critical hit, the quarry must save (DC 10 + half level + WIT) or be Frightened and Slowed, losing a Beat. Judgment refreshes when you name a new quarry.",
@@ -5655,7 +5655,7 @@
     },
     {
       "name": "Dark Cultist",
-      "blurb": "Where the Hexer uses the dark and the False Prophet cheats it, the Dark Cultist loves it. They have looked upon one of the old things beneath the country, understood exactly what it is, and chosen it: gladly, fully, with both hands.",
+      "blurb": "Where the Hexer uses the dark and the False Prophet cheats it, the Dark Cultist loves it. They have looked upon the Old Dark, understood exactly what it is, and chosen it: gladly, fully, with both hands.",
       "perk": {
         "name": "There Is Always a Brother",
         "desc": "In any settlement of any size at least one soul keeps the faith, and the signs the two of you share will turn them up by the second night. They will help you. What they want in exchange is a separate conversation, and it is never nothing."
@@ -5722,7 +5722,7 @@
           "will": 4,
           "features": [
             "Edge",
-            "Gifts of the Patron"
+            "Gifts of the Dark"
           ]
         },
         {
@@ -5785,7 +5785,7 @@
           "will": 7,
           "features": [
             "Sign learned",
-            "The Patron's Ear"
+            "The Dark's Ear"
           ]
         },
         {
@@ -5826,21 +5826,21 @@
           "ref": 5,
           "will": 9,
           "features": [
-            "The Patron Comes"
+            "The Dark Comes"
           ]
         }
       ],
       "featureDescs": {
-        "Devotion": "You have a pool of Devotion, your patron's favor, equal to your RES modifier + half your level, refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark Communion. A Dark Cultist who lets devotion lapse finds the favor cold exactly when it is needed.",
-        "Dark Communion": "You draw on the Common Signs and the Bargain (Chapter XIII), up to the highest Rank your level allows, paid in Devotion (or, when that runs dry, in Nerve and Blood), and you receive them as what they are to you: genuine gifts from the thing you serve. You begin knowing two Signs and learn another at each Sign learned.",
-        "The Glad Mark": "You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you walk it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the steps. And unlike any other Calling, a rising Mark repays you (see Gifts of the Patron). You are choosing to become something else, and calling it grace.",
-        "Sacrifice": "Devotion is best shown in blood. Spend your own Blood to empower a working at the Blood-Price rate, or offer a worthier sacrifice (a beast, a treasure, a life) to petition your patron for a boon beyond your level, which the Keeper adjudicates. Great gifts demand great offerings, and the patron always knows the difference between a sacrifice that costs you and one that does not.",
-        "Gifts of the Patron": "As the Mark claims you, the patron remakes you in its image. At Mark 2, 3, and 4, choose a Gift: unnatural toughness (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more the dark can pour through you.",
-        "Rapture": "Once per scene, give yourself over to ecstatic communion: become immune to fear and pain (ignore Frightened, gain DR) and let your workings surge in power. While raptured you cannot retreat, and you cannot act against your patron's interest, for in that moment you have no interest of your own.",
-        "Vessel": "Once per session you may invite your patron to descend fully into you for a scene. You become its herald upon the earth, wielding power no mortal should hold, and the Keeper plays you while it lasts, for it is no longer entirely your body. When the scene ends, make a Will save against a DC the Keeper sets. Fail, and a little more of you stays behind the veil; fail at high Mark, and you do not come back at all, but step willingly into the dark a finished thing. The most devoted Dark Cultist's last prayer is always answered, exactly as it was asked.",
-        "The Patron's Ear": "It listens now without being called. Once per scene, ask a question of your Patron in your own head and receive an answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.",
+        "Devotion": "You have a pool of Devotion, the Old Dark's favor, equal to your RES modifier + half your level (minimum 1), refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark Communion. A Dark Cultist who lets devotion lapse finds the favor cold exactly when it is needed.",
+        "Dark Communion": "You draw on the Common Signs and the Bargain (Chapter XIII), up to the highest Rank your level allows, paid in Devotion (or, when that runs dry, in Nerve and Blood), and you receive them as what they are to you: genuine gifts from the thing you serve. You begin knowing two Signs and learn another at 2nd, 4th, 6th and 8th level, and again at 11th and 13th.",
+        "The Glad Mark": "You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you walk it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the steps. And unlike any other Calling, a rising Mark repays you (see Gifts of the Dark). You are choosing to become something else, and calling it grace.",
+        "Sacrifice": "Devotion is best shown in blood. Spend your own Blood to empower a working at the Blood-Price rate, or offer a worthier sacrifice (a beast, a treasure, a life) to petition the Old Dark for a boon beyond your level, which the Keeper adjudicates. Great gifts demand great offerings, and the Old Dark always knows the difference between a sacrifice that costs you and one that does not.",
+        "Gifts of the Dark": "As the Mark claims you, the Old Dark remakes you in the image of the face you know it by. At Mark 2, 3, and 4, choose a Gift: unnatural toughness (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more the dark can pour through you.",
+        "Rapture": "Once per scene, give yourself over to ecstatic communion: become immune to fear and pain (ignore Frightened, gain DR) and let your workings surge in power. While raptured you cannot retreat, and you cannot act against the Old Dark's interest, for in that moment you have no interest of your own.",
+        "Vessel": "Once per session you may invite the Old Dark to descend fully into you for a scene. You become its herald upon the earth, wielding power no mortal should hold, and the Keeper plays you while it lasts, for it is no longer entirely your body. When the scene ends, make a Will save against a DC the Keeper sets. Fail, and a little more of you stays behind the veil; fail at high Mark, and you do not come back at all, but step willingly into the dark a finished thing. The most devoted Dark Cultist's last prayer is always answered, exactly as it was asked.",
+        "The Dark's Ear": "It listens now without being called. Once per scene, ask a question of the Old Dark in your own head and receive an answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.",
         "What Is Owed": "You've learned how the ledger you're in is kept. Once per scene, name a price and pay it (Blood, Nerve, a memory, a year, a companion's luck) and take back exactly what it was worth: damage undone, a save passed, a Sign worked for free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is more than most bargains offer.",
-        "The Patron Comes": "Once per session, you may open the way and let something through. It comes. For one scene the Patron is present in the world where you are standing (not summoned, not bound, not yours) and it does what it came to do, which will include the thing you wanted, and will not stop there. Say what you asked for and the Keeper says what arrives; the thing you asked for happens completely. Everything else that happens is the Keeper's. Your Mark rises by 1 permanently and cannot be reduced, every soul who witnessed it must save against fear at your Devotion DC or be Frightened for a day, and the place it stood in is never quite right again. You will do this more than once. That is the part they never believe when they are told."
+        "The Dark Comes": "Once per session, you may open the way and let something through. It comes. For one scene the Old Dark is present in the world where you are standing (not summoned, not bound, not yours) and it does what it came to do, which will include the thing you wanted, and will not stop there. Say what you asked for and the Keeper says what arrives; the thing you asked for happens completely. Everything else that happens is the Keeper's. Your Mark rises by 1 permanently and cannot be reduced, every soul who witnessed it must save against fear at your Devotion DC or be Frightened for a day, and the place it stood in is never quite right again. You will do this more than once. That is the part they never believe when they are told."
       },
       "signsKnownAt": {
         "1": 2,
@@ -5862,7 +5862,7 @@
       "subpath": {
         "section": "Dark Cultist’s Devotions",
         "printedIn": "keeper",
-        "playerNote": "Your Keeper tells you who answered and what it wants back. It grants you something at once and more at 9th level, as the thing below sinks its hooks the deeper. You'll learn its name when it decides you should.",
+        "playerNote": "Your Keeper tells you what face the dark shows you and what it wants back. It grants you something at once and more at 9th level, as the Old Dark sinks its hooks the deeper. You'll learn what its faithful call that face when it decides you should.",
         "options": [
           {
             "name": "The Cold Deep",
@@ -5892,7 +5892,7 @@
           {
             "name": "The Whisperer",
             "want": "To know what can't be known.",
-            "boon": "Spend Devotion to pluck a secret from a mind or the air, and to whisper madness: confusion, fear, or a Dread Check. Greater (9th): once per session, speak the Unspeakable Word: unmake a mind, or wring one true and terrible answer from your Patron."
+            "boon": "Spend Devotion to pluck a secret from a mind or the air, and to whisper madness: confusion, fear, or a Dread Check. Greater (9th): once per session, speak the Unspeakable Word: unmake a mind, or wring one true and terrible answer from the Old Dark."
           }
         ]
       },
@@ -5900,7 +5900,7 @@
         "dice": 2,
         "mult": 5,
         "kit": [
-          "The favor of the patron"
+          "The favor of the Old Dark"
         ],
         "note": ""
       },
@@ -6131,11 +6131,11 @@
         }
       ],
       "featureDescs": {
-        "The Conduit": "Your power is stolen worship, and your pool of it is called Tribute. It equals your PRE modifier + half your level, but its maximum swells with the size and fervor of the flock you have deceived: a packed revival tent raises the ceiling high; a doubting crowd or a night alone drops it to nothing. Tribute refills when you preach the false gospel to believers. Cut off from a congregation to fleece, you are merely a liar with empty hands and a dangerous patron.",
+        "The Conduit": "Your power is stolen worship, and your pool of it is called Tribute. It equals your PRE modifier + half your level, but its maximum swells with the size and fervor of the flock you have deceived: a packed revival tent raises the ceiling high; a doubting crowd or a night alone drops it to nothing. Tribute refills when you preach the false gospel to believers. Cut off from a congregation to fleece, you are merely a liar with empty hands and a dangerous creditor.",
         "False Gospel": "You may work a small repertoire drawn from the Common Signs and the Bargain (Chapter XIII), up to the Rank your level allows, but in your hands they wear the mask of holy wonders: light where there should be shadow, a dove where there should be a worm. None but the witch-sighted perceive the dark beneath. You pay for these workings in Tribute, never your own Nerve. You begin knowing two such wonders and learn another with each Stolen Wonder feature.",
         "Honeyed Word": "Few resist a prophet. Gain +3 on Persuade and Deceive against crowds and the faithful, and once per scene issue a Command the devout obey as scripture (Will save to resist, at disadvantage for true believers).",
         "Visit the Cost": "This is the black heart of the Calling, and the thing that sets you apart from every other soul in this chapter. When a working would make you pay (a Backlash, a Blood price, an advance of the Mark) you may instead lay that cost upon a member of your flock: a believer takes the wound, the ruin, the creeping Mark, while you walk away clean and haloed. The dark does not care who bleeds, only that someone does. But each time you do it, the thing behind your gospel sinks its hooks a little deeper into the congregation, and into you.",
-        "Feed the Dark": "Once per session, offer the massed devotion of a gathering up to your unseen patron. Refill your Tribute and gain a surge besides, and the dark grows fat, while your flock comes away hollowed, hungrier for you, and a little less themselves than they were. They will not know why. They will only know they need another sermon.",
+        "Feed the Dark": "Once per session, offer the massed devotion of a gathering up to the Old Dark. Refill your Tribute and gain a surge besides, and the dark grows fat, while your flock comes away hollowed, hungrier for you, and a little less themselves than they were. They will not know why. They will only know they need another sermon.",
         "The Hollow Crown": "Once per session, for a single scene, you throw the doors wide and let the dark wear your gospel openly through you: tremendous power flows (great smitings, healings, terrors, commands) and the crowd will die at your asking, and some may. But you are no longer entirely the one preaching; the Keeper may put a word in your mouth and turn your hand, as the thing behind the curtain stretches into the room it has rented all this time. When the scene ends the Mark advances, and you finally see the trick for what it was: you did not gather a flock for yourself. You baited a hook. You were the worm.",
         "Three Debts: Hexer, Witch, False Prophet": "The Hexer borrows from the dark directly and is Marked from the first hour. The Witch inherits an older craft and pays in her own Nerve. The False Prophet does neither; they run a confidence game on the dark's behalf and arrange for the deceived to settle the account. The Hexer dreads the bill. The Witch budgets for it. The False Prophet mails it to a parishioner and passes the collection plate again.",
         "The Bigger Lie": "The small ones stopped working on you years ago; the enormous ones have never failed. Once per session, tell a lie so large that checking it is somebody else's job (an army behind you, a pardon in your pocket, a dead man alive, the whole town in on it) and until it is disproved by direct evidence, everyone who heard it acts as though it were so. The disproving is a scene of its own, and you should be elsewhere by then.",
@@ -6410,7 +6410,7 @@
         }
       ],
       "featureDescs": {
-        "Signs": "You know and may work Signs, the rites of the Old Dark (Chapter XIII), drawing on the Common Signs and on the Bargain, the list of those who reached out and took. You begin knowing two and learn another at each even level, choosing freely from any Rank your level has opened to you. Working a Sign costs Nerve, and sometimes Blood, and always risks Backlash.",
+        "Signs": "You know and may work Signs, the rites of the Old Dark (Chapter XIII), drawing on the Common Signs and on the Bargain, the list of those who reached out and took. You begin knowing two and learn another at each even level to 10th and again at 11th and 13th, choosing freely from any Rank your level has opened to you. Working a Sign costs Nerve, and sometimes Blood, and always risks Backlash.",
         "Witch-Sight": "You see what is truly there: the residue of violence, the Mark upon a soul, the thin places where the world wears through. This sight cannot be unlearned, and some nights you wish it could.",
         "Marked": "You begin at Mark 1 and advance the Mark faster than others: reckless use of Signs, and the knowledge they bring, pushes you along the track toward the thing you are slowly becoming. Power and ruin are the same road.",
         "Blood Price": "From 5th level you may pay for a Sign in Blood (Hit Points) when your Nerve runs short, at a rate of 2 Blood per point of Nerve. The Old Dark does not care which red ledger you draw from.",
@@ -6450,7 +6450,7 @@
           },
           {
             "name": "The Pact-Sworn",
-            "boon": "Once per scene, turn a failed Sign or Will save into a success by taking a Debt; on your third Debt the Patron calls it in: a demand, and +1 Mark. Greater (9th): once per session, when you would die, the Patron stays death's hand. Stabilize at 1 Blood and rise, at the cost of +1 Mark."
+            "boon": "Once per scene, turn a failed Sign or Will save into a success by taking a Debt; on your third Debt the Old Dark calls it in: a demand, and +1 Mark. Greater (9th): once per session, when you would die, the Old Dark stays death's hand. Stabilize at 1 Blood and rise, at the cost of +1 Mark."
           },
           {
             "name": "The Spiritist",
@@ -6689,9 +6689,9 @@
         }
       ],
       "featureDescs": {
-        "The Craft": "You know and work Signs (Chapter XIII), beginning with two and learning another at each even level, paid in Nerve and risking Backlash as the Hexer's are, and choosing freely from any Rank your level has opened. Where you differ is the list. You draw on the Common Signs and on the Craft, and the Craft is closed to every other Calling in this book: no Hexer learns the Poppet, and no cultist will ever ward a house. The Craft is inherited, not borrowed: you do not begin Marked, and you advance the Mark only through genuine recklessness, never automatically. The dark did not hand you this. Your line did.",
+        "The Craft": "You know and work Signs (Chapter XIII), beginning with two and learning another at each even level to 10th and again at 11th and 13th, paid in Nerve and risking Backlash as the Hexer's are, and choosing freely from any Rank your level has opened. Where you differ is the list. You draw on the Common Signs and on the Craft, and the Craft is closed to every other Calling in this book: no Hexer learns the Poppet, and no cultist will ever ward a house. The Craft is inherited, not borrowed: you do not begin Marked, and you advance the Mark only through genuine recklessness, never automatically. The dark did not hand you this. Your line did.",
         "Familiar": "A small beast is bound to you, and it is not a pet. It is cannier than any animal, scouts and spies at your bidding, can deliver a touch-range Sign for you, and grants a standing boon while near: +2 to the one skill its nature suits, from the table of familiars below. You share its senses at will. Choose the beast when you make the Witch, and choose it rather than roll it, because the skill comes with it. Should it die you are Sickened until you bind another by the Binding, and you will feel the loss far longer than the penalty lasts.",
-        "The Evil Eye": "With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls and a run of small misfortunes for a round per two levels. It costs no Nerve, but everyone who sees you do it remembers your face.",
+        "The Evil Eye": "With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls and a run of small misfortunes for a round per two levels (at least one). It costs no Nerve, but everyone who sees you do it remembers your face.",
         "Brew": "This is the kitchen craft, not the Rank 3 Sign of the same family: The Brewing bottles a working, while this bottles medicine. Given a kitchen, a fire, and time, you brew the work of the Goods chapter and more: healing poultices, sleeping draughts, truth-loosening teas, and poisons that no assayer can name. Treat your brews as a Sawbones' Tonics, with effects you and the Keeper devise; the dose is in the making, and the making is in your hands.",
         "Hex": "Your maledictions grow teeth. As an action and 1 Nerve, lay a true Hex on a foe (Will save vs Sign DC): Frightened, Clumsy, Sickened, or cursed with ruinous luck (foes' crits against allies, your crits against the cursed) for a scene. A Hexed soul knows it is Hexed, and knows who did it, which is sometimes the worst of it.",
         "The Old Witch": "At 10th level your curses set like winter ground: a target who fails a Hex carries it until it is lifted by rite, apology, or your death. Once per session you may speak a true curse of dire and lasting effect, the kind that follows a bloodline. You have outlived everyone who feared you young. The ones who fear you now are right to.",
@@ -7197,7 +7197,7 @@
     "name": "The Binding",
     "time": "one night, from dusk to the first light",
     "cost": "3 Nerve, and a thing of yours the beast chooses and keeps",
-    "check": "a Lore (Occult) check against DC 15 + 2 per familiar you have bound before, this one included",
+    "check": "a Lore (Occult) check against DC 15, plus 2 for each familiar you have bound before this one",
     "failure": "the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down",
     "limit": "you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen"
   }

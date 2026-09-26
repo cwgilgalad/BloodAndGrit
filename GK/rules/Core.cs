@@ -262,12 +262,12 @@ public class PartyMember : INotifyPropertyChanged
     public Dictionary<string, int> FeatureSpent { get; set; } = new();
 
     /// <summary>What this soul owes, keyed by the feature that lends it: the Hexer's Debts to
-    /// their Patron, and nothing else in the book so far.
+    /// the Old Dark, and nothing else in the book so far.
     ///
     /// <para>Deliberately NOT part of <see cref="FeatureSpent"/>, and the separation is the whole
     /// design. <c>CharGen.RefreshFeatures</c> is the single path a boundary takes to give things
     /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a long rest and a new session
-    /// cannot reach a Debt however they change. A Debt is owed until the Patron collects it, and
+    /// cannot reach a Debt however they change. A Debt is owed until the Old Dark collects it, and
     /// the app should never be the reason one quietly went away.</para>
     ///
     /// <para>A public property, so it rides in <c>session.json</c> without being told: the same
@@ -1354,7 +1354,7 @@ public static class Rules
         ("The Shakes",       "−2 to anything fine or steady-handed while under any strain"),
         ("Night Terrors",    "No Nerve returns from sleep alone: only by a fire, in company, or in drink"),
         ("The Long Stare",   "−2 to be trusted or read by folk; they see the haunt on you"),
-        ("A Compulsion",     "A small rite (counting, salt, a rhyme) must be done, or be Shaken until it is"),
+        ("A Compulsion",     "A small rite (counting, salt, a rhyme) must be done, or be Frightened 1 until it is"),
         ("The Cold",         "Never quite warm again; −2 against cold and against fear"),
         ("Faithless",        "The old comforts (prayer, ward, hymn) no longer steady you as they did"),
         ("The Whisper",      "You hear it now; once a session it tells you something true, to earn a lie later"),
@@ -1430,7 +1430,7 @@ public static class Rules
     //
     // THE BOOK GIVES THE BEAST NO STAT BLOCK, and that is not an oversight to be corrected here.
     // Ch. VII describes what the familiar DOES (scouts, spies, carries a touch-range Sign, grants
-    // a standing boon, and Sickens you when it dies) and the Bestiary's 175 entries are horrors,
+    // a standing boon, and Sickens you when it dies) and the Bestiary's 182 entries are horrors,
     // not livestock. So there is no number to copy and the app cannot pretend there is one.
     //
     // What it can honestly do is derive. The two figures below are the app's DEFAULT for a beast
@@ -1922,7 +1922,7 @@ public static class Rules
         Place,
         /// <summary>Another working, not a person: Unmake the Working, and anything like it.</summary>
         Counter,
-        /// <summary>Not worked on anybody: something a creature simply IS. Every one of the 150
+        /// <summary>Not worked on anybody: something a creature simply IS. Every one of the 182
         /// Bestiary <c>special</c> lines is written this way ("Does not stop. Ignores pain, fear,
         /// and being bloodied"), and not one of them carries a die or a save. The dialog used to
         /// ask who a creature's nature was being worked on and how many rounds it would last, which
@@ -2167,7 +2167,7 @@ public static class Rules
         WorkShape shape;
         // A creature's own line comes off its stat block, and the Bestiary writes those as what a
         // thing IS, never as something it works on somebody: no dice, no save, no radius in any of
-        // the 150. So unless this particular line plainly reaches out and touches someone, it is a
+        // the 182. So unless this particular line plainly reaches out and touches someone, it is a
         // trait, and the dialog stops asking a question it has no answer to.
         if (string.Equals(kind, "Power", StringComparison.OrdinalIgnoreCase)
             && feet == 0 && !pc.HasSave && damage.Length == 0 && ongoing.Length == 0
@@ -2347,7 +2347,7 @@ public static class Rules
     }
 
     /// <summary>A creature's power, pulled off its Bestiary <c>special</c> line. Every one of the
-    /// 150 entries is written "Short name. What it does.", so the lead phrase is the name and the
+    /// 182 entries is written "Short name. What it does.", so the lead phrase is the name and the
     /// rest is the effect. A line that doesn't follow it still yields one power, named by its own
     /// opening words, rather than nothing.</summary>
     public static (string name, string effect) ParsePower(string special)

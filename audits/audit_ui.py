@@ -337,7 +337,7 @@ def silent_refusals(handler, controls, alltext):
 # per run, and the leak is invisible for an hour and then is not.
 #
 # MainForm.Face is the shelf, and its own docstring already carried the arithmetic: a table of
-# 150 creatures spent four and a half thousand handles in a few seconds, and the finalizer gets
+# 182 creatures spent four and a half thousand handles in a few seconds, and the finalizer gets
 # there eventually, which is why it never showed up in testing and is exactly the shape of thing
 # that makes an app go strange late in a long evening. Nineteen sites were still minting their
 # own on 2026-09-23, the worst of them the Calling strip: every arrow-key press down the

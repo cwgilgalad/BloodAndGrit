@@ -22,12 +22,12 @@ OUT = "blood-and-grit.html"
 # The Player's Book, cover to colophon. Edit here.
 # ---------------------------------------------------------------------------
 SRC = r"""<!DOCTYPE html>
-<!-- Blood & Grit — The Player's Book · Version 2.53 -->
+<!-- Blood & Grit — The Player's Book · Version 2.56 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.53)</title>
+<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v2.56)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Rye&display=swap" rel="stylesheet">
@@ -381,7 +381,7 @@ body{ background:#525659; }
   <div class="t-sub">A Roleplaying Game of the Haunted Frontier</div>
   <div class="title-rule">———————  ◆  ———————</div>
   <div class="t-foot">The Player's Book</div>
-  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.53</div>
+  <div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version 2.56</div>
   <div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>
 
   <div class="cover-emblem" role="img" aria-label="A longhorn steer skull mounted over crossed lever rifles, in gold"><img src="assets/img20.png" alt="" style="width:100%; height:auto; display:block;" decoding="async"></div>
@@ -402,7 +402,7 @@ body{ background:#525659; }
     <span class="src">— a saying common to the trail, author unknown</span>
   </div>
   <div class="divider" style="margin-top:130px;"></div>
-  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.53 · First Complete Edition</p>
+  <p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player's Book · Version 2.56 · First Complete Edition</p>
 </section>
 
 <!-- ===================== CONTENTS ===================== -->
@@ -424,21 +424,21 @@ body{ background:#525659; }
     <li><a href="#origins">IV. Origins &amp; the Peoples of the Frontier</a><span class="pg">27</span></li>
     <li><a href="#callings">V. Worldly Callings</a><span class="pg">44</span></li>
     <li><a href="#faith">VI. Callings of Faith</a><span class="pg">93</span></li>
-    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">124</span></li>
-    <li><a href="#skills">VIII. Skills</a><span class="pg">153</span></li>
-    <li><a href="#edges">IX. Edges</a><span class="pg">158</span></li>
-    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">169</span></li>
-    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">194</span></li>
-    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">206</span></li>
-    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">217</span></li>
-    <li><a href="#advancement">XIV. Advancement</a><span class="pg">258</span></li>
-    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">262</span></li>
-    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">264</span></li>
-    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">266</span></li>
-    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">268</span></li>
-    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">274</span></li>
-    <li><a href="#ledger">The Ledger</a><span class="pg">280</span></li>
-    <li><a href="#index">Index</a><span class="pg">283</span></li>
+    <li><a href="#hexer">VII. Callings of the Old Dark</a><span class="pg">125</span></li>
+    <li><a href="#skills">VIII. Skills</a><span class="pg">154</span></li>
+    <li><a href="#edges">IX. Edges</a><span class="pg">159</span></li>
+    <li><a href="#goods">X. Goods &amp; Provisions</a><span class="pg">170</span></li>
+    <li><a href="#conflict">XI. Conflict &amp; the Iron Code</a><span class="pg">195</span></li>
+    <li><a href="#nerve">XII. Nerve &amp; the Uncanny</a><span class="pg">207</span></li>
+    <li><a href="#signs">XIII. Signs, Miracles &amp; Old Rites</a><span class="pg">218</span></li>
+    <li><a href="#advancement">XIV. Advancement</a><span class="pg">259</span></li>
+    <li><a href="#play">A. Appendix: An Example of Play</a><span class="pg">263</span></li>
+    <li><a href="#conditions">B. Appendix: Conditions</a><span class="pg">265</span></li>
+    <li><a href="#quickref">C. Appendix: Quick Reference</a><span class="pg">267</span></li>
+    <li><a href="#posse">D. Appendix: A Posse, Ready-Made</a><span class="pg">269</span></li>
+    <li><a href="#basin">E. Appendix: The Country &mdash; Perdition Basin</a><span class="pg">275</span></li>
+    <li><a href="#ledger">The Ledger</a><span class="pg">281</span></li>
+    <li><a href="#index">Index</a><span class="pg">284</span></li>
   </ul>
 </section>
 
@@ -730,7 +730,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <ul class="dash">
     <li><strong>The Gamble (Rolled).</strong> Roll four six-sided dice, drop the lowest, and total the rest. Do this six times and assign the results. Bold, and sometimes cruel, fitting for the country.</li>
     <li><strong>The Honest Array.</strong> Assign these six numbers as you like: 15, 14, 13, 12, 10, 8. Fair and quick.</li>
-    <li><strong>The Wager (Point-Buy).</strong> Every score starts at 8. You have 27 points to raise them, costing more the higher you climb. Nothing may begin above 15 or below 8 by this method.</li>
+    <li><strong>The Wager (Point-Buy).</strong> Every score starts at 8. You have 27 points to raise them, costing more the higher you climb. Nothing may begin above 15 or below 8 by this method. Each point up to 13 costs one, and the fourteenth and fifteenth cost two apiece, so a 13 comes to 5 points, a 14 to 7 and a 15 to 9. Spend all 27 on 15, 14, 13, 12, 10 and 8 and you have bought the Honest Array.</li>
   </ul>
 
   <div class="box gold">
@@ -805,7 +805,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   over to the divine (certain Callings of Faith at their height, a weapon truly consecrated, ground that has been
   hallowed) carries the <strong>holy</strong> quality. A soul given over to the Old Dark, by a Hexer's Bargain, a
   Cultist's Devotion, or a Mark grown deep (Chapter XII), carries the <strong>unholy</strong> quality. The two cut across
-  the line at one another: the Witch Hunter's <em>Sanctified Iron</em>, holy water, the Preacher's fire, a Patron's gifts: all strike hardest where they meet their opposite. A wicked man is not unholy until he has dealt with the dark; a kind one
+  the line at one another: the Witch Hunter's <em>Sanctified Iron</em>, holy water, the Preacher's fire, the Old Dark's gifts: all strike hardest where they meet their opposite. A wicked man is not unholy until he has dealt with the dark; a kind one
   is not holy until something greater than him has laid a hand on his shoulder. The <strong>Mark</strong> is the road from
   the one to the other, and it runs downhill.</p>
   <div class="box gold">
@@ -947,7 +947,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   followed it across these plains. You know drill, the chain of command, the weight of a carbine, and exactly what a volley
   does to men. Some of it you are proud of. Some of it wakes you in the small hours. <strong>Gift:</strong> +1 CON and +1 STR.
   You are trained in <strong>Athletics</strong> or <strong>Intimidate</strong> at your choice, begin play with a service carbine or sidearm, and once
-  per session may steady the line; you and each ally who can hear you shrug off fear for a round. <strong>Boon:</strong> drill is in your bones. Once per scene reroll a failed Reflex save to take cover or hit the dirt, and you reload and clear a jam a half-beat faster than any green hand. <strong>Burden:</strong> some of it never left; the first time each session the sudden roar of gunfire or the touch of the uncanny finds you, make a Dread Check or be Shaken a round as the old war rises behind your eyes.</p>
+  per session may steady the line; you and each ally who can hear you shrug off fear for a round. <strong>Boon:</strong> drill is in your bones. Once per scene reroll a failed Reflex save to take cover or hit the dirt, and you reload and clear a jam a half-beat faster than any green hand. <strong>Burden:</strong> some of it never left; the first time each session the sudden roar of gunfire or the touch of the uncanny finds you, make a Dread Check or be Frightened 1 as the old war rises behind your eyes.</p>
 
   <h3 id="ix-o-wrong">Came Back Wrong</h3>
   <p>You died (of fever, of lead, of cold, of something with no name) and then you did not stay dead. You remember the dark
@@ -1119,9 +1119,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   </div>
 
   <p class="dropcap lead">A Calling is what your character does when the talking stops: the trade by which they earn
-  coin, enemies, and an early grave. Each advances over ten levels, the highest a mortal is likely to reach before the
-  country collects its due. Your Calling sets your Hit Die (the dice you roll for Blood), your war-progression (Base
-  Attack Bonus), your strong saves, and the features that make you dangerous.</p>
+  coin, enemies, and an early grave. Each advances over fifteen levels, the highest a mortal is likely to reach before the
+  country collects its due. Your Calling sets your Hit Die (the dice you roll for Blood), your attack rank (how fast your aim
+  improves, Chapter XIV), your strong saves, and the features that make you dangerous.</p>
   <p id="ix-perks">Each Calling also carries one <strong>Perk</strong>, printed above its table. A Perk is the single
   thing that Calling alone does, true from 1st level and true forever after. It costs nothing, spends nothing, and is
   never rolled for. Some are worth a great deal at the right moment and nothing at all for weeks; a few are as much
@@ -1145,7 +1145,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   from its table, added to Strikes along with your keyed ability; <strong>Fort/Ref/Will</strong> are
   your save proficiencies by level, added to saves along with the keyed ability; <strong>Features</strong> are gained at the
   listed level. The number beside <strong>Trained Skills</strong> in the statline, plus your WIT modifier, is how many skills
-  you begin trained in; you gain a skill increase at 3rd, 5th, 7th, and 9th level.</p>
+  you begin trained in; you gain a skill increase at 3rd, 5th, 7th, 9th, 11th, and 13th level.</p>
 </section>
 
 <section class="page">
@@ -1293,8 +1293,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>Never Was Here</h4>
   <p>You have got so good at leaving that the leaving takes the arriving with it. After a night in a place you may spend an
   hour undoing your own presence in it: the ledger entry, the stall in the livery, the face behind the bar. Anyone
-  questioned about you afterward remembers a man, remembers nothing useful, and grows less certain the harder they are
-  pressed. Dogs and children are unaffected, and neither are the dead.</p>
+  questioned about you afterward remembers a stranger, remembers nothing useful, and grows less certain the harder they are
+  pressed. Dogs and children are unaffected, and so are the dead.</p>
   <h4>The Long Odds</h4>
   <p>Evasion becomes something worse for whatever is throwing at you. On a failed save against an effect Evasion would have
   halved, you take half instead of full; on a success you take none and may Step for free. The blast that catches the
@@ -1312,7 +1312,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>Trails of the Drifter</h4>
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
-      <li><strong>The Ghost Trail.</strong> Gain a bonus to Sneak and Hide, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
+      <li><strong>The Ghost Trail.</strong> Gain a bonus to Stealth, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
       <li><strong>The Hard Trail.</strong> Ignore the toll of harsh country, weather, and want; +2 Fortitude against the elements. <em>Mastery (10th):</em> once per scene, shrug off the first wound or affliction that would lay you low.</li>
       <li><strong>The Hunter's Trail.</strong> You never lose a trail and gain +2 against ambush and to read a quarry. <em>Mastery (10th):</em> once per scene, study a foe a moment and learn the weakness that undoes it.</li>
     </ul>
@@ -2054,7 +2054,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   the day with the pool halved: the Church is exacting about its bookkeeping.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Liturgy</strong> (the sacramental Latin the Church has kept against the dark for eighteen centuries), paid from your Grace.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Rite of Exorcism</h4>
   <p>Your signature work. Against a possessing spirit, a controlling influence, or the Mark working in a living soul, spend
   Grace and intone the Rite: a contest of your <strong>Sacrament DC</strong> (10 + half level + PRE) against the thing's
@@ -2153,7 +2153,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   dawn. Conviction fuels your sermons and miracles. It is faith made countable, and it runs dry exactly when you need it most.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on <strong>the Revival</strong>: the mourner&rsquo;s bench, the camp meeting, and the fire that falls when the Word is loud enough, paid from your Conviction.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Sermon</h4>
   <p>Spend 1 Conviction and speak for a round. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on
   Will saves until the scene ends. The unfaithful may mock; they steady all the same.</p>
@@ -2264,7 +2264,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   6th level.</p>
   <h4>Miracles</h4>
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing on the <strong>Common Blessings</strong> and on two lists of your own: <strong>the Spirits</strong>, courtesies asked of the crowded country, and <strong>the Mending</strong>, the stubborn craft of keeping the wounded alive. You are the only Calling of Faith to hold two, which is the whole of what the spirits give you that the pulpit does not.
-  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  You begin knowing two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Mending Hands</h4>
   <p>Spend 1 Breath to heal <strong>2d8 Blood</strong> by touch and song, which is more per point than
   any other Calling manages, or to bring a dying soul back to their senses and stable at once. Pour
@@ -2410,7 +2410,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>You know and work <strong>Miracles</strong> (see <em>The Work of Faith</em>, in Chapter XIII), drawing
   on the <strong>Common Blessings</strong> and on <strong>the Vigil</strong> (the warding, watching work of an
   order that has always been sent to sit up with things nobody else will) paid from your Mercy. You begin knowing
-  two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, and 9th level.</p>
+  two and learn another as each new Rank opens to you: at 3rd, 5th, 7th, 9th, 11th, 13th and 15th level.</p>
   <h4>Nurse</h4>
   <p>Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a full rest recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.</p>
   <h4>Hold the Lamp</h4>
@@ -2502,8 +2502,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   your level (minimum 1), refreshed each dawn when you anoint your irons. Zeal fuels your <strong>Miracles</strong>
   (see <em>The Work of Faith</em>, in Chapter XIII), drawn from the <strong>Common Blessings</strong>
   and from <strong>the Consecrations</strong>: salt, silver, fire, ward, and the litany of weaknesses that turns
-  a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, and
-  9th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.</p>
+  a hunt into an execution. You begin knowing two and learn another as each new Rank opens: at 3rd, 5th, 7th, 9th,
+  11th, 13th and 15th level. The Witch Hunter is no healer, and it shows in the list; grace, in these hands, is a weapon like any other.</p>
   <h4>Steeled Nerve</h4>
   <p>You have stared into too many open graves to flinch at one more. Gain +2 on all Dread Checks and saves against fear,
   and halve the Nerve you lose to your current quarry's kind. The horror is still there. You have simply made a profession
@@ -2572,8 +2572,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   soul looks up from its reading and finds the light has changed. The pages from here forward concern
   the things the handbills don't mention. It isn't too late to close the book. It has never yet been
   too late for anyone, at this particular page.</div>
-  <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one, the <strong>Old Dark</strong>: the deep strata of buried gods, drowned hungers, and patient things that were ancient when the first peoples were young. It doesn't love you and it doesn't hate you; it lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it's an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf, and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has simply fallen in love with one of the things below, and serves it gladly, body and soul.</p>
-  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to five, and you reach a new Rank at 1st, 3rd, 5th, 7th and 9th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the thing the others deal with. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th. For the Hexer it is a bargain, for the Witch a craft, for the False Prophet a lie, and for the Dark Cultist a devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
+  <p class="dropcap lead">Not all power is preached from a pulpit. Beneath this country lies an older one, the <strong>Old Dark</strong>: one presence, vast and patient, older than anybody&rsquo;s gods and evil all the way down. It means the living harm and has never once been in a hurry about it. It lends, and is inherited, and is worshipped, and it always collects. Four Callings in this chapter reach down into the Old Dark, each by a different road, and it's an old and fatal error to mistake one road for another. The <strong>Hexer</strong> takes power on loan from the Old Dark, and the lender never forgets a debt. The <strong>Witch</strong> inherits an older, steadier craft, bound to a familiar and worked in curses and brews. The <strong>False Prophet</strong> neither borrows nor inherits, but runs a confidence game on the Old Dark&rsquo;s behalf, and arranges for a deceived flock to pay the bill. And the <strong>Dark Cultist</strong> has fallen in love with the Old Dark itself, and serves it gladly, body and soul.</p>
+  <p class="note">All four work <strong>Signs</strong> and <strong>Old Rites</strong> from Chapter XIII, paying the Old Dark in Nerve (and sometimes Blood, or worse). Every Sign carries a <strong>Rank</strong> from one to eight, and you reach a new Rank at 1st, 3rd, 5th, 7th, 9th, 11th, 13th and 15th level; every Sign also sits on one of three lists. Three of these Callings draw on the Common Signs and <strong>the Bargain</strong>; the Witch alone draws on <strong>the Craft</strong>, which is older than the Old Dark&rsquo;s lending. Each chooses a <strong>Bargain</strong> at 3rd level that grants a boon now and a greater boon at 9th. For the Hexer it is a bargain, for the Witch a craft, for the False Prophet a lie, and for the Dark Cultist a devotion. Hexer and Dark Cultist begin Marked and walk the track quickly: the Hexer dragged, the Dark Cultist glad of it; the Witch does not begin Marked at all; and the False Prophet, cleverest and worst, sees to it that someone <em>else</em> bears the Mark in their stead. What the Mark is, what it costs, and what it takes to clear are set out in <strong>Chapter XII</strong>. Read it before you choose from this chapter: all four of these roads are an agreement to walk that one.</p>
   <div class="quote">&ldquo;We put six torches and a deal of lead into the thing that used to be Abner Cole, and ran it clear to Diablo Canyon before it went down. What we buried wasn't a wolf, and it wasn't Abner. Salt the grave. Don't mark it.&rdquo;
     <span class="src">&mdash; Marshal T. Coyle, on a matter he would not enter in the ledger</span></div>
 
@@ -2582,8 +2582,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-c-cultist">Dark Cultist</h2>
   <p>Where the Hexer <em>uses</em> the dark and the False Prophet <em>cheats</em> it, the Dark Cultist <strong>loves</strong> it.
-  They have looked upon one of the old things beneath the country, understood exactly what it is, and chosen it: gladly,
-  fully, with both hands. Their power is the gift of a true believer to a patron that answers, and they pay its price not in
+  They have looked upon the Old Dark, understood exactly what it is, and chosen it: gladly,
+  fully, with both hands. Their power is what the dark gives a true believer, and they pay its price not in
   dread but in joy. The Hexer flinches at the Mark. The Dark Cultist counts each step of it as a sacrament, and asks the dark for one more.</p>
   <p class="statline">Hit Die d8 · Trained Skills 4 + WIT · Strong Save Will · Attack Slight</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">There Is Always a Brother.</span> In any settlement of any size at least one soul keeps the faith, and the signs the two of you share will turn them up by the second night. They will help you. What they want in exchange is a separate conversation, and it is never nothing.</p>
@@ -2598,54 +2598,54 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>2</td><td class="c">+0</td><td class="c">+0</td><td class="c">+0</td><td class="c">+3</td><td>Sign learned</td></tr>
       <tr><td>3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+1</td><td class="c">+3</td><td>Edge, Sacrifice, Devotion</td></tr>
       <tr><td>4</td><td class="c">+2</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Sign learned</td></tr>
-      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Gifts of the Patron</td></tr>
+      <tr><td>5</td><td class="c">+3</td><td class="c">+1</td><td class="c">+1</td><td class="c">+4</td><td>Edge, Gifts of the Dark</td></tr>
       <tr><td>6</td><td class="c">+4</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Sign learned</td></tr>
       <tr><td>7</td><td class="c">+5</td><td class="c">+2</td><td class="c">+2</td><td class="c">+5</td><td>Edge, Rapture</td></tr>
       <tr><td>8</td><td class="c">+6</td><td class="c">+2</td><td class="c">+2</td><td class="c">+6</td><td>Sign learned</td></tr>
       <tr><td>9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+3</td><td class="c">+6</td><td>Edge, Devotion (Greater)</td></tr>
       <tr><td>10</td><td class="c">+8</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Vessel</td></tr>
-      <tr><td>11</td><td class="c">+9</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Patron's Ear</td></tr>
+      <tr><td>11</td><td class="c">+9</td><td class="c">+3</td><td class="c">+3</td><td class="c">+7</td><td>Sign learned, The Dark's Ear</td></tr>
       <tr><td>12</td><td class="c">+10</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
       <tr><td>13</td><td class="c">+11</td><td class="c">+4</td><td class="c">+4</td><td class="c">+8</td><td>Sign learned, What Is Owed</td></tr>
       <tr><td>14</td><td class="c">+12</td><td class="c">+4</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
-      <tr><td>15</td><td class="c">+13</td><td class="c">+5</td><td class="c">+5</td><td class="c">+9</td><td>The Patron Comes</td></tr>
+      <tr><td>15</td><td class="c">+13</td><td class="c">+5</td><td class="c">+5</td><td class="c">+9</td><td>The Dark Comes</td></tr>
     </tbody>
   </table>
   <h4>Devotion</h4>
-  <p>You have a pool of <strong>Devotion</strong>, your patron's favor, equal to your RES modifier + half your level,
-  refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark
+  <p>You have a pool of <strong>Devotion</strong>, the Old Dark's favor, equal to your RES modifier + half your level
+  (minimum 1), refreshed through observance: the kept fast, the night vigil, the rite performed at the proper hour. It fuels your Dark
   Communion. A Dark Cultist who lets devotion lapse finds the favor cold exactly when it is needed.</p>
   <h4>Dark Communion</h4>
   <p>You draw on the <strong>Common Signs</strong> and <strong>the Bargain</strong> (Chapter XIII), up to the highest Rank your level allows, paid in Devotion (or, when that runs dry,
   in Nerve and Blood), and you receive them as what they are to you: genuine gifts from the thing you serve. You begin knowing
-  two Signs and learn another at each <em>Sign learned</em>.</p>
+  two Signs and learn another at 2nd, 4th, 6th and 8th level, and again at 11th and 13th.</p>
   <h4>The Glad Mark</h4>
   <p>You begin already touched (Mark 1), as a Hexer does, but where the Hexer is dragged along the track, you <em>walk</em>
   it, willingly, eyes open. Reckless workings advance your Mark as theirs do; the difference is that you do not mourn the
-  steps. And unlike any other Calling, a rising Mark <strong>repays</strong> you (see Gifts of the Patron). You are choosing
+  steps. And unlike any other Calling, a rising Mark <strong>repays</strong> you (see Gifts of the Dark). You are choosing
   to become something else, and calling it grace.</p>
   <h4>Sacrifice</h4>
   <p>Devotion is best shown in blood. Spend your own Blood to empower a working at the Blood-Price rate, or offer a worthier
-  sacrifice (a beast, a treasure, a life) to petition your patron for a boon beyond your level, which the Keeper
-  adjudicates. Great gifts demand great offerings, and the patron always knows the difference between a sacrifice that costs
+  sacrifice (a beast, a treasure, a life) to petition the Old Dark for a boon beyond your level, which the Keeper
+  adjudicates. Great gifts demand great offerings, and the Old Dark always knows the difference between a sacrifice that costs
   you and one that does not.</p>
-  <h4>Gifts of the Patron</h4>
-  <p>As the Mark claims you, the patron remakes you in its image. At Mark 2, 3, and 4, choose a <strong>Gift</strong>:
+  <h4>Gifts of the Dark</h4>
+  <p>As the Mark claims you, the Old Dark remakes you in the image of the face you know it by. At Mark 2, 3, and 4, choose a <strong>Gift</strong>:
   unnatural toughness (DR), a malformed weapon-limb, sight that pierces any dark, a voice that staggers the faithful, the
   cold strength of the deep places. Each is a true power and a true disfigurement. The more monstrous you become, the more
   the dark can pour through you.</p>
   <h4>Rapture</h4>
   <p>Once per scene, give yourself over to ecstatic communion: become immune to fear and pain (ignore Frightened,
-  gain DR) and let your workings surge in power. While raptured you cannot retreat, and you cannot act against your patron's
+  gain DR) and let your workings surge in power. While raptured you cannot retreat, and you cannot act against the Old Dark's
   interest, for in that moment you have no interest of your own.</p>
   <h4>Vessel</h4>
-  <p>Once per session you may invite your patron to descend fully into you for a scene. You become its herald upon the
+  <p>Once per session you may invite the Old Dark to descend fully into you for a scene. You become its herald upon the
   earth, wielding power no mortal should hold, and the Keeper plays you while it lasts, for it is no longer entirely your
   body. When the scene ends, make a Will save against a DC the Keeper sets. Fail, and a little more of you stays behind the
   veil; fail at high Mark, and you do not come back at all, but step willingly into the dark a finished thing. The most
   devoted Dark Cultist's last prayer is always answered, exactly as it was asked.</p>
-  <h4>The Patron's Ear</h4>
-  <p>It listens now without being called. Once per scene, ask a question of your Patron in your own head and receive an
+  <h4>The Dark's Ear</h4>
+  <p>It listens now without being called. Once per scene, ask a question of the Old Dark in your own head and receive an
   answer: one word, one image, or one direction, honest in the way a thing that does not care about you is honest. Each
   answer moves you one step further toward its manner of seeing, and the Keeper keeps that count.</p>
   <h4>What Is Owed</h4>
@@ -2653,8 +2653,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   a year, a companion's luck) and take back exactly what it was worth: damage undone, a save passed, a Sign worked for
   free, a door open. The Keeper sets the exchange and the Keeper is not generous, but the Keeper is exact, and that is
   more than most bargains offer.</p>
-  <h4>The Patron Comes</h4>
-  <p>Once per session, you may open the way and let something through. It comes. For one scene the Patron is present in
+  <h4>The Dark Comes</h4>
+  <p>Once per session, you may open the way and let something through. It comes. For one scene the Old Dark is present in
   the world where you are standing (not summoned, not bound, not yours) and it does what it came to do, which will
   include the thing you wanted, and will not stop there. Say what you asked for and the Keeper says what arrives; the
   thing you asked for happens completely. Everything else that happens is the Keeper's. Your Mark rises by 1 permanently
@@ -2681,7 +2681,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <li><strong>To strike it rich.</strong></li>
       <li><strong>To be loved by a crowd.</strong></li>
     </ul>
-    <p>Your Keeper tells you who answered and what it wants back. It grants you something at once and more at 9th level, as the thing below sinks its hooks the deeper. You&rsquo;ll learn its name when it decides you should.</p>
+    <p>Your Keeper tells you what face the dark shows you and what it wants back. It grants you something at once and more at 9th level, as the Old Dark sinks its hooks the deeper. You&rsquo;ll learn what its faithful call that face when it decides you should.</p>
   </div>
 </section>
 <section class="page">
@@ -2690,7 +2690,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>A False Prophet did not sign for power as a Hexer does, nor inherit it as a Witch does. They stumbled instead on a
   meaner trick: the dark will pay, and pay handsomely, for <strong>worship</strong>, and it doesn't greatly care where
   the worship is aimed. So the False Prophet raises a congregation that believes it prays to Heaven, skims the devotion off
-  the top, and lets something out past the firelight drink the rest. The miracles are real. The gospel is a lie. And the
+  the top, and lets something out past the firelight drink the rest. That something is the Old Dark, and it comes to
+  the plate wearing whatever face the sermon promised. The miracles are real. The gospel is a lie. And the
   bill, when at last it falls due, is mailed to the flock.</p>
   <p class="statline">Hit Die d8 · Trained Skills 6 + WIT · Strong Saves Reflex, Will · Attack Steady</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Whatever You Say You Are.</span> You arrive with papers, a history, and two or three people willing to swear to it: a bishop's letter, a discharge, a widow who remembers you fondly from somewhere she cannot quite place. It holds until somebody with a real reason to check actually checks, and most people go their whole lives without a real reason.</p>
@@ -2722,7 +2723,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Your power is stolen worship, and your pool of it is called <strong>Tribute</strong>. It equals your PRE modifier +
   half your level, but its maximum <em>swells</em> with the size and fervor of the flock you have deceived: a packed revival
   tent raises the ceiling high; a doubting crowd or a night alone drops it to nothing. Tribute refills when you preach the
-  false gospel to believers. Cut off from a congregation to fleece, you are merely a liar with empty hands and a dangerous patron.</p>
+  false gospel to believers. Cut off from a congregation to fleece, you are merely a liar with empty hands and a dangerous creditor.</p>
   <h4>False Gospel</h4>
   <p>You may work a small repertoire drawn from the <strong>Common Signs</strong> and <strong>the Bargain</strong> (Chapter XIII), up to the Rank your level allows, but in your hands they wear the mask of holy
   wonders: light where there should be shadow, a dove where there should be a worm. None but the witch-sighted perceive the
@@ -2738,7 +2739,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   dark does not care who bleeds, only that someone does. But each time you do it, the thing behind your gospel sinks its
   hooks a little deeper into the congregation, and into you.</p>
   <h4>Feed the Dark</h4>
-  <p>Once per session, offer the massed devotion of a gathering up to your unseen patron. Refill your Tribute and gain a
+  <p>Once per session, offer the massed devotion of a gathering up to the Old Dark. Refill your Tribute and gain a
   surge besides, and the dark grows fat, while your flock comes away hollowed, hungrier for you, and a little less themselves
   than they were. They will not know why. They will only know they need another sermon.</p>
   <h4>The Hollow Crown</h4>
@@ -2826,7 +2827,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h4>Signs</h4>
   <p>You know and may work <strong>Signs</strong>, the rites of the Old Dark (Chapter XIII), drawing on
   the <strong>Common Signs</strong> and on <strong>the Bargain</strong>, the list of those who reached out and took. You
-  begin knowing two and learn another at each even level, choosing freely from any Rank your level has opened
+  begin knowing two and learn another at each even level to 10th and again at 11th and 13th, choosing freely from any Rank your level has opened
   to you. Working a Sign costs Nerve, and sometimes Blood, and always risks <strong>Backlash</strong>.</p>
   <h4>Witch-Sight</h4>
   <p>You see what is truly there: the residue of violence, the Mark upon a soul, the thin places where the world wears
@@ -2868,7 +2869,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <ul class="dash">
       <li><strong>The Conjurer.</strong> Bind a Sign or Rite into a charm anyone may trigger without Nerve (keep WIT-mod charms); +2 and half-time on Old Rites. <em>Greater (9th):</em> once per session, craft a great charm that wards a whole scene (allies gain a Ward, the uncanny recoil) paid for with something dear.</li>
       <li><strong>The Hollow-Born.</strong> Feel pain and fear dimly (DR 2 vs nonmagical harm, ignore the first Nerve lost each scene) but advance the Mark faster. <em>Greater (9th):</em> at Mark 4+, once per scene work any Sign without Nerve, paying in Blood instead, each working a step nearer the sixth Mark.</li>
-      <li><strong>The Pact-Sworn.</strong> Once per scene, turn a failed Sign or Will save into a success by taking a Debt; on your third Debt the Patron calls it in: a demand, and +1 Mark. <em>Greater (9th):</em> once per session, when you would die, the Patron stays death's hand. Stabilize at 1 Blood and rise, at the cost of +1 Mark.</li>
+      <li><strong>The Pact-Sworn.</strong> Once per scene, turn a failed Sign or Will save into a success by taking a Debt; on your third Debt the Old Dark calls it in: a demand, and +1 Mark. <em>Greater (9th):</em> once per session, when you would die, the Old Dark stays death's hand. Stabilize at 1 Blood and rise, at the cost of +1 Mark.</li>
       <li><strong>The Spiritist.</strong> See and briefly question the recently dead; set a willing spirit to watch and warn (+5 Notice). <em>Greater (9th):</em> once per session, invite a willing spirit to act through you for a round, borrowing a skill or memory; the unwilling risks possession.</li>
     </ul>
   </div>
@@ -2908,7 +2909,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <h4>The Craft</h4>
-  <p>You know and work <strong>Signs</strong> (Chapter XIII), beginning with two and learning another at each even level,
+  <p>You know and work <strong>Signs</strong> (Chapter XIII), beginning with two and learning another at each even level to 10th
+  and again at 11th and 13th,
   paid in Nerve and risking Backlash as the Hexer's are, and choosing freely from any Rank your level has opened.
   Where you differ is the list. You draw on the <strong>Common Signs</strong> and on <strong>the Craft</strong>, and the Craft is
   closed to every other Calling in this book: no Hexer learns the Poppet, and no cultist will ever ward a house.
@@ -2922,7 +2924,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   Binding, and you will feel the loss far longer than the penalty lasts.</p>
   <h4>The Evil Eye</h4>
   <p>With a look and a muttered word, lay a minor bane on a creature you can see (Will save vs your Sign DC): –1 to its rolls
-  and a run of small misfortunes for a round per two levels. It costs no Nerve, but everyone who sees you do it remembers
+  and a run of small misfortunes for a round per two levels (at least one). It costs no Nerve, but everyone who sees you do it remembers
   your face.</p>
   <h4>Brew</h4>
   <p>This is the kitchen craft, not the Rank 3 Sign of the same family: <em>The Brewing</em> bottles a
@@ -2994,7 +2996,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     </table>
     <h4 id="ix-binding">The Binding</h4>
     <p>The rite that binds one, and the rite that replaces one. It takes <strong>one night, from dusk to the first light</strong>
-    and costs <strong>3 Nerve, and a thing of yours the beast chooses and keeps</strong>. Roll a Lore (Occult) check against DC 15 + 2 per familiar you have bound before, this one included. On a failure, the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down.</p>
+    and costs <strong>3 Nerve, and a thing of yours the beast chooses and keeps</strong>. Roll a Lore (Occult) check against DC 15, plus 2 for each familiar you have bound before this one. On a failure, the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down.</p>
     <p>How many you may hold: you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen.</p>
     <p class="note">A witch who has lost three has a reputation, and it is not the reputation she
     would have chosen. The country counts them even when she does not.</p>
@@ -3002,18 +3004,18 @@ which is to say the difference between a friend who is wounded and a friend who 
 </section>
 <section class="page">
   <div class="runhead"><span class="l">VII. Callings of the Old Dark</span><span>Blood &amp; Grit</span></div>
-  <h2 id="ix-patrons">The Patrons of the Old Dark</h2>
-  <p>The Old Dark is a depth rather than a god, and things move in that depth. Some of them are old enough and
-  particular enough that the country has put names to them, and those are what people mean by a
-  <strong>Patron</strong>: the powers a Hexer borrows from on his Bargain, a Dark Cultist serves in her Devotion, and a
-  False Prophet feeds through his Gospel without ever quite learning whose plate he's filling. A Witch seldom deals
-  with them at all. Her Craft is older and quieter and doesn&rsquo;t need them.</p>
-  <p>How many there are depends on who you ask. Six is the usual count in a saloon, and the men who count six can
-  rarely agree on the sixth. Some hold that those are the only parts of that depth that have ever answered anybody and
-  the rest of it is weather. Some hold that the answering parts are one thing in different hats. Some hold that the
-  counting is a comfort people invented so the dark would hold still long enough to be talked about. A teamster who
-  says <em>the Old Dark</em> in a saloon means whatever talks back, and a Hexer who says it means the deep his loan is
-  drawn from, and neither of them is being careless.</p>
+  <h2 id="ix-olddark">The Old Dark</h2>
+  <p>The Old Dark is one thing. It&rsquo;s older than anybody&rsquo;s gods and evil all the way down, it means the
+  living harm, all of them, and it has all the time there is to do it in. It has no throne, no name of its own, and no
+  interest in being understood. A Hexer borrows from it on his Bargain, a Dark Cultist serves it in her Devotion, and a
+  False Prophet feeds it through his Gospel without ever quite learning whose plate he's filling. A Witch seldom deals
+  with it at all. Her Craft is older and quieter and doesn&rsquo;t need it.</p>
+  <p>What it looks like depends on who comes to it and what they came wanting. A man who went to it starving and a
+  woman who went to it grieving will come home with two different stories about what they met, and both of them will
+  be telling the truth. That&rsquo;s why the country tells so many tales about one dark, and why the tales never agree.
+  Six sets of them turn up in any saloon, and the men who count six can rarely agree on the sixth. A teamster who says
+  <em>the Old Dark</em> means whatever talks back, a Hexer means the deep his loan is drawn from, and a Dark Cultist
+  means the face she loves. All three of them mean it.</p>
   <p>Nobody has written any of this down honestly. What follows is what the country says, which is a different thing:
   six sets of stories, collected off men who were drunk, frightened, or lying, and set out in the order they&rsquo;re
   usually told. Your Keeper knows which of it is true, if any of it is. You aren&rsquo;t going to find out by
@@ -3077,7 +3079,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   your proficiency (your level, plus +2 trained, +4 expert, or +6 master) + the keyed ability's modifier, against a
   Difficulty Class; while untrained, you roll ability alone. At creation you become trained in a number of skills set by
   your Calling and your Wits, and you raise one skill a rank with each <strong>skill increase</strong> at 3rd, 5th, 7th,
-  and 9th level, as your level allows, for out here, a thing you cannot do is a way you can die.</p>
+  9th, 11th, and 13th level, as your level allows, for out here, a thing you cannot do is a way you can die.</p>
   <table>
     <thead><tr><th>Skill</th><th>Ability</th><th>What It Covers</th></tr></thead>
     <tbody>
@@ -3114,7 +3116,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <div class="box">
     <h4 id="ix-green-table">At the Green Table &mdash; Each Trade Its Own Tell</h4>
-    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (Men and women of faith are pointedly absent from this list; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack and no more.</p>
+    <p>Anyone may sit down to cards, and most do. Beyond the <strong>Gamble</strong> skill itself, nearly every worldly Calling, and every Calling of the Old Dark, brings a small standing edge to the table, in the manner of the Gift an Origin grants. (The Engineer is missing: an Engineer would sooner take the wheel apart to see how it is weighted. Men and women of faith are pointedly absent too; the Padre would rather you came to the rail than the rake.) Each edge below is a minor knack and no more.</p>
     <ul class="dash">
       <li><strong>Bounty Hunter: Reading the Room.</strong> Gain +1 on Notice and Gamble checks to take the measure of a table, and you know at a glance which player is carrying the most iron, and which face matches the paper in your pocket.</li>
       <li><strong>Drifter: Stranger&rsquo;s Seat.</strong> No one here has played you before. Gain +1 on Gamble checks at any table where you are not known, and a foe gets no read on your tells the first hand.</li>
@@ -3124,7 +3126,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <li><strong>Mountain Man: Granite Face.</strong> Your weathered stillness gives nothing away: foes take &minus;1 to read your tells, and you ignore the first measure of drink or fatigue that would shake another&rsquo;s hand.</li>
       <li><strong>Prospector: Reads the Odds Like Ore.</strong> Gain +1 on Gamble checks in games of pure chance (faro, dice, chuck-a-luck) which you reckon as coldly as an assay.</li>
       <li><strong>Sawbones: The Body Doesn&rsquo;t Lie.</strong> Gain +1 on Gamble checks to read an opponent. You mark the racing pulse, the dry mouth, the sweat at the collar: the tells a man cannot will away.</li>
-      <li><strong>Dark Cultist: The Patron Smiles.</strong> Once per session, when you stake something real, your patron tilts a single card your way: roll one Gamble check twice and keep the better. It helps, and it's never free.</li>
+      <li><strong>Dark Cultist: The Dark Smiles.</strong> Once per session, when you stake something real, the Old Dark tilts a single card your way: roll one Gamble check twice and keep the better. It helps, and it's never free.</li>
       <li><strong>False Prophet: The Long Con.</strong> Gain +1 on Gamble checks to deceive at the table; you run a crooked game as smoothly as a crooked gospel, and the marks thank you for the fleecing.</li>
       <li><strong>Hexer: Borrowed Luck.</strong> Once per session, whisper to the Old Dark and reroll one Gamble check. The unpaid luck comes due later: a point of Nerve, or worse, at the Keeper&rsquo;s choosing.</li>
       <li><strong>Witch: A Charm in the Sleeve.</strong> Keep a small luck-charm worked beforehand; once per session it turns one losing hand into a winning one, until someone notices the brew on your breath.</li>
@@ -3299,7 +3301,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3>Callings of the Old Dark</h3>
   <ul class="dash">
     <li><strong>Dark Cultist: Devoted Unto Death.</strong> You are immune to fear of the power you serve, and once per scene may shrug off a wound's effect for a round: the Mark keeps the tally.</li>
-    <li><strong>Dark Cultist: It Volunteers.</strong> (The Patron's Ear, 11th) Once per session the Patron answers a question you did not ask, at the
+    <li><strong>Dark Cultist: It Volunteers.</strong> (The Dark's Ear, 11th) Once per session the Old Dark answers a question you did not ask, at the
       moment it becomes relevant, whether or not you wanted it.</li>
     <li><strong>False Prophet: Golden Tongue.</strong> You may work a single Deceive against an entire crowd at once, as readily as against one trusting soul.</li>
     <li><strong>False Prophet: Told Twice.</strong> (The Bigger Lie, 11th) A lie of yours that is disproved may be told again, once, to a different
@@ -3326,8 +3328,9 @@ which is to say the difference between a friend who is wounded and a friend who 
     <thead><tr><th>Calling</th><th>Starting Coin</th></tr></thead>
     <tbody>
       <tr><td>Bounty Hunter</td><td>3d6 × $10 (in collected bounties)</td></tr>
-      <tr><td>Dark Cultist</td><td>2d6 × $5, plus the favor of the patron</td></tr>
+      <tr><td>Dark Cultist</td><td>2d6 × $5, plus the favor of the Old Dark</td></tr>
       <tr><td>Drifter</td><td>2d6 × $10</td></tr>
+      <tr><td>Engineer</td><td>3d6 × $10, plus a toolroll and a contraption of your own making</td></tr>
       <tr><td>False Prophet</td><td>3d6 × $10 (collected, never earned)</td></tr>
       <tr><td>Gambler</td><td>3d6 × $10 (as the cards fell)</td></tr>
       <tr><td>Gunhand</td><td>3d6 × $10</td></tr>
@@ -3339,6 +3342,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Prospector</td><td>3d6 × $10, plus prospecting tools</td></tr>
       <tr><td>Sawbones</td><td>3d6 × $10, plus a surgeon's kit</td></tr>
       <tr><td>Shaman</td><td>2d6 × $10, plus a healer's kit, herbs, and the regard of the spirits</td></tr>
+      <tr><td>Sister</td><td>2d6 × $10, plus a nursing kit and a plain wooden cross</td></tr>
       <tr><td>Witch</td><td>2d6 × $5, plus a familiar</td></tr>
       <tr><td>Witch Hunter</td><td>3d6 × $10, plus silver for a few rounds</td></tr>
     </tbody>
@@ -3381,7 +3385,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>Concealable.</strong> +2 to hide it on your person, and it may be drawn as part of the Strike rather than a separate Beat.</li>
     <li><strong>Fatal dX.</strong> On a critical hit, this weapon's damage dice all become dX, and you add one extra die of that size. A gun is at its most honest in the half-second it kills you.</li>
     <li><strong>Kickback.</strong> The recoil is brutal. Take –2 to the Strike unless your STR is 12 or higher, or you spend a Beat to brace (Aim). Firing a Kickback weapon without bracing leaves you Off-Guard until your next turn.</li>
-    <li><strong>Misfire X.</strong> On a critical failure to hit (or any natural 1), the weapon jams. Clearing it costs an Interact action and a Repair check (DC 10 + X). In wet weather, increase X by 1 for black-powder arms.</li>
+    <li><strong>Misfire X.</strong> On a critical failure to hit, and on any natural 1 whether or not it would have hit, the weapon jams. Clearing it costs an Interact action and a Repair check (DC 10 + X). In wet weather, increase X by 1 for black-powder arms.</li>
     <li><strong>Reach.</strong> The weapon strikes at a step's distance: a lance, spear, pike, or fixed bayonet. It can hit a foe (or a rider) one rank back, and lets a footman set against a charge (see <em>Fighting from the Saddle</em>).</li>
     <li><strong>Repeating.</strong> Holds many rounds. Loading a single round is one Interact; a full reload follows the rule below.</li>
     <li><strong>Scatter X.</strong> On a hit, deal 1d6 splash damage to every creature within X feet of the target. On a miss within the first range increment, the target still takes the splash.</li>
@@ -3519,7 +3523,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 <section class="page">
   <div class="runhead"><span class="l">X. Goods &amp; Provisions</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-more-arms">More Arms &amp; Powder</h2>
-  <p>The five irons of the foregoing table are the common run; a person with coin and a particular need has further choices.
+  <p>The six irons of the foregoing table are the common run; a person with coin and a particular need has further choices.
   Traits are explained on the previous pages and apply as written.</p>
   <table>
     <thead><tr><th>Weapon</th><th class="c">Damage</th><th class="c">Range</th><th class="c">Cap.</th><th class="c">Reload</th><th>Traits</th><th class="c">Cost</th></tr></thead>
@@ -3712,8 +3716,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman treat one
-  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate in
-  Chapter X: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
+  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate on
+  the armor table: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
   against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
   through it. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
   Lore: Occult, or (at the Keeper's discretion, and at the usual risk) the working of a single Sign.
@@ -3761,8 +3765,9 @@ which is to say the difference between a friend who is wounded and a friend who 
   against it at a steep penalty. A small tin holds perhaps three pinches, and there is no more being made.</p>
 
   <h4 id="ix-rel-tooth">Coyote's Tooth <span class="note">(Rare · cursed)</span></h4>
-  <p>A yellowed canine on a leather cord, taken, so the story goes, from the Trickster's own jaw while he slept. Once
-  per session, slip free of any one thing that holds you: a knot, a manacle, a grapple, a cell. But the tooth loves a
+  <p>A yellowed canine on a leather cord. The story goes that the coyote it came from slipped every trap on the
+  Cimarron for eleven years until a horse thief shot it, and that the thief wore the tooth out of two jails before
+  they hanged him. Once per session, slip free of any one thing that holds you: a knot, a manacle, a grapple, a cell. But the tooth loves a
   liar, and while you wear it small falsehoods come easier than truths, until the people who know you best begin to
   hear it.</p>
 
@@ -3918,7 +3923,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td><strong>Critical Success</strong></td><td>Beat the number by 10 or more, <em>or</em> roll a natural 20 that also hits. Deal double damage and apply the weapon's <strong>Fatal</strong> die. A wound to be buried with.</td></tr>
       <tr><td><strong>Success</strong></td><td>Meet or beat the number. Roll damage and subtract it from their Blood.</td></tr>
       <tr><td><strong>Failure</strong></td><td>Fall short. No harm done, this time.</td></tr>
-      <tr><td><strong>Critical Failure</strong></td><td>Miss by 10 or more, <em>or</em> roll a natural 1. The shot is wasted, and a weapon with the <strong>Misfire</strong> trait jams (see Chapter X).</td></tr>
+      <tr><td><strong>Critical Failure</strong></td><td>Miss by 10 or more, <em>or</em> roll a natural 1 that misses anyway. The shot is wasted, and a weapon with the <strong>Misfire</strong> trait jams (see Chapter X).</td></tr>
     </tbody>
   </table>
   <p>This is the spine of the Iron Code: the same roll that decides whether you hit also decides whether you hit
@@ -4054,7 +4059,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <h4>Keeping the Saddle</h4>
   <p>You may be thrown when the horse takes a critical hit, when it bolts or rears, or when you yourself take a critical melee
-  blow. Make a <strong>Ride</strong> save (DC 15, or the attacker's result); on a failure you are unhorsed: fall prone, take
+  blow. Make a <strong>Ride</strong> check (DC 15, or the attacker's result); on a failure you are unhorsed: fall prone, take
   <strong>1d6</strong> damage, and land a few feet from the animal. Mounting or vaulting up on purpose costs a Beat (a Drifter
   or a Veteran may do it free). A rider who has lost his horse is, all at once, just a person standing in the open.</p>
 
@@ -4141,9 +4146,9 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>A truth that unmakes your world</td><td class="c">25</td><td>1d10 + a lasting Affliction</td></tr>
     </tbody>
   </table>
-  <p class="note">A <strong>critical success</strong> on a Dread Check (beating the DC by 10, or a natural 20) costs no Nerve
+  <p class="note">A <strong>critical success</strong> on a Dread Check (beating the DC by 10, or a natural 20 that already succeeds) costs no Nerve
   and steadies you against the same horror for the rest of the scene. A <strong>critical failure</strong> (missing by 10,
-  or a natural 1) loses the listed Nerve <em>and</em> imposes Frightened 1 at once.</p>
+  or a natural 1 that already fails) loses the listed Nerve <em>and</em> imposes Frightened 1 at once.</p>
 
   <h2 id="ix-breaking">Breaking</h2>
   <p>Lose Nerve and you fray. At low Nerve the Keeper may impose the <strong>Frightened</strong> condition, a status penalty to all your rolls equal to its value, 
@@ -4307,7 +4312,7 @@ which is to say the difference between a friend who is wounded and a friend who 
 <section class="page">
   <div class="runhead"><span class="l">XII. Nerve &amp; the Uncanny</span><span>Blood &amp; Grit</span></div>
   <h2 id="ix-taint">The Taint of the Land</h2>
-  <p>Some country has drunk too deep. Where a Patron of the Old Dark has been fed (a massacre left unburied, a cult's
+  <p>Some country has drunk too deep. Where the Old Dark has been fed (a massacre left unburied, a cult's
   ground worked for a generation, a mine that broke into the deep dark, a thin place where the veil has worn through),
   the land itself takes a stain. Crops come up the wrong color. Water runs cold and tastes of iron. The dark does not
   haunt such places so much as <em>own</em> them, and it asks a toll of every living soul that lingers, whether they
@@ -4328,7 +4333,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <tbody>
       <tr><td>Soured: a hanging-tree, a salted field, blood spilled in the dark's name</td><td class="c">13</td></tr>
       <tr><td>Blighted: a cult's seat, a haunted claim, a true thin place</td><td class="c">16</td></tr>
-      <tr><td>Unhallowed: a Patron's own ground, the deep dark risen into the land</td><td class="c">20</td></tr>
+      <tr><td>Unhallowed: the Old Dark's own ground, the deep risen into the land</td><td class="c">20</td></tr>
     </tbody>
   </table>
   <p class="note">A ward, a charm, or the right Provision Against the Dark (Chapter X) eases the DC by 2. Ground that is
@@ -4375,7 +4380,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="dropcap lead">There is power in the old country beneath the country, and it can be reached: by the Hexer freely,
   by the Touched a little, by the desperate at ruinous cost. <strong>Signs</strong> are worked acts of will and word. Each one lists its
   <strong>Rank</strong>, its casting time, its price in Nerve or Blood, the save it forces where it forces one, what it
-  does, and its <strong>Backlash</strong>, what the dark exacts when the working slips. There are fifty-five of them here,
+  does, and its <strong>Backlash</strong>, what the dark exacts when the working slips. There are fifty-six of them here,
   across three lists, and no single soul will ever hold more than a handful.</p>
   <p>The <strong>Miracles</strong> are in this chapter too, beginning at <em>The Work of Faith</em>. They are the other
   half of the same subject and the book kept them eighty pages apart for years, which helped nobody: a Sign is taken and
@@ -4416,8 +4421,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>Blood</strong> is the desperate coin. Where a Sign offers the trade you may pay <strong>two Blood for
     each Nerve</strong> instead, and some Signs take Blood and nothing else. Blood spent on a working does not come back
     until you have rested properly; it is not a wound a Sawbones can close.</li>
-    <li><strong>Mark</strong> is the coin you cannot earn back. Rank 5 Signs cost it, some of the Bargain's Signs cost it
-    at any Rank, and nothing in this book gives it back. Six Marks and the character is the Keeper's (Chapter XII).</li>
+    <li><strong>Mark</strong> is the coin you cannot earn back. Most Common and Bargain Signs of Rank 5 and up cost it, two of the Bargain's cost it
+    at Rank 4, the Craft never asks it, and nothing in this book gives it back. Six Marks and the character is the Keeper's (Chapter XII).</li>
   </ul>
   <p class="note" id="ix-sign-dc">Where a Sign forces a save, the DC is the worker's <strong>Sign DC = 10 + half their
   level + RES modifier</strong>. A casting time given in Beats follows the Iron Code (Chapter XI); a Sign that takes an
@@ -4604,7 +4609,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   is noticed, and the debt is entered in a ledger that never forgets. A Miracle is <em>asked for</em>, on the knees, of
   a higher and quieter thing, and now and again it is granted. It costs no Mark and draws no Backlash. It costs the
   pool, and it risks the oldest disappointment there is: a prayer that goes unanswered.</p>
-  <p>Each of the six Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
+  <p>Each of the five Callings of Faith works Miracles. You study and keep a handful, and lean on them, and they are
   ranked and gated exactly as the Signs are.</p>
 
   <h2 id="ix-m-rank">Rank and the Pool</h2>
@@ -4613,7 +4618,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   work any Miracle of a Rank your level allows, and no higher; ask for more than you have earned and the grace simply
   does not come. You begin knowing <strong>two</strong> Miracles and learn another as each new Rank opens to you, to a
   repertoire of six by the height of a frontier life and nine by the end of a very long one.</p>
-  <p class="note">Ranks Six and Seven hold four Miracles apiece and Rank Eight holds three. All three of the Rank Eight
+  <p class="note">Rank Six holds six Miracles, Rank Seven four, and Rank Eight three. All three of the Rank Eight
   Miracles are Common Blessings, open to every Calling of Faith, which is deliberate: at that reach the difference
   between a Padre and a Shaman stops mattering, and what is left is the asking.</p>
   <p><strong>The Pool.</strong> Miracles are paid not in Nerve or Blood but from your Calling's own pool of faith made
@@ -4742,7 +4747,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-riverclose">What the River Closes</h3>
   <p><em>Rank 2 · One minute · 2 Faith.</em> Lay the hurt in running water, or carry the water to the hurt, and ask. The wound heals 2d6 and closes clean: no rot, no fever, no scar worth the name, and no Lasting Injury out of that wound however bad it looked going in. The river does this for anything it likes and holds no particular opinion about people.</p>
   <h3 id="ix-m-pack">Set the Pack On</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Breath.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
+  <p><em>Rank 3 · 1 Beat · 3 Faith.</em> Call whatever hunts this country and point. For one round the creature you named is beset by things that are almost not there: it stands Off-Guard, takes 2d6 at once, and cannot take the Aim. The spirits do not stay, and they will not come twice in one night for the same asking, so choose the moment rather than the enemy.</p>
   <h3 id="ix-m-weather">Turn the Weather</h3>
   <p><em>Rank 3 · One minute · 3 Faith.</em> Coax the sky a step kinder or crueler for the hour: a fog to cover a retreat, a break in the rain, a wind at your back or in the enemy's face. The weather keeps its own counsel; it grants favors and takes no orders.</p>
   <h3 id="ix-m-snare">The Spirit-Snare</h3>
@@ -5032,7 +5037,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <div class="divider"></div>
   <div class="box gold">
     <h4>The Core Roll</h4>
-    <p>d20 + ability mod + proficiency ≥ DC. Beat by 10 or a natural 20 is a critical; miss by 10 or a natural 1 is a critical failure.</p>
+    <p>d20 + ability mod + proficiency ≥ DC. Beat it by 10 for a critical, miss it by 10 for a critical failure. A natural 20 moves any result one step better and a natural 1 one step worse.</p>
   </div>
   <p><strong>Difficulty.</strong> Trivial 10 · Easy 13 · Average 15 · Hard 18 · Very Hard 20 · Punishing 25 · Beyond 30.</p>
   <p><strong>Abilities.</strong> STR, DEX, CON, Wits, Resolve, Presence. Modifier = (score – 10) ÷ 2, rounded down.</p>
@@ -5339,362 +5344,362 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <ul class="ix">
     <li class="ix-hd">A</li>
     <li><a href="#ix-abilities">Abilities, the six</a><span class="pg">21</span></li>
-    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">259</span></li>
-    <li><a href="#advancement">Advancement</a><span class="pg">258</span></li>
-    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">208</span></li>
-    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">154</span></li>
-    <li><a href="#ix-aim-two">Aim, two Strikes against three</a><span class="pg">198</span></li>
-    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">197</span></li>
+    <li><a href="#ix-level-brings">Ability boosts</a><span class="pg">260</span></li>
+    <li><a href="#advancement">Advancement</a><span class="pg">259</span></li>
+    <li><a href="#ix-afflictions">Afflictions, lasting</a><span class="pg">209</span></li>
+    <li><a href="#ix-aid">Aid (Helping)</a><span class="pg">156</span></li>
+    <li><a href="#ix-aim-two">Aim, two Strikes against three</a><span class="pg">199</span></li>
+    <li><a href="#ix-aiming">Aiming &amp; bracing</a><span class="pg">198</span></li>
     <li><a href="#ix-alienist">Alienist (Sawbones)</a><span class="pg">91</span></li>
-    <li><a href="#ix-m-altarcall">Altar Call, the (Miracle)</a><span class="pg">245</span></li>
-    <li><a href="#ix-m-amen">Amen Corner, the (Miracle)</a><span class="pg">244</span></li>
-    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">180</span></li>
-    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">176</span></li>
-    <li><a href="#ix-m-anoint">Anoint the Iron (Miracle)</a><span class="pg">239</span></li>
-    <li><a href="#ix-answering">Answering a working (counter)</a><span class="pg">199</span></li>
-    <li><a href="#ix-armor">Armor</a><span class="pg">174</span></li>
-    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">189</span></li>
-    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">234</span></li>
-    <li><a href="#ix-m-asperges">Asperges Me (Miracle)</a><span class="pg">242</span></li>
+    <li><a href="#ix-m-altarcall">Altar Call, the (Miracle)</a><span class="pg">246</span></li>
+    <li><a href="#ix-m-amen">Amen Corner, the (Miracle)</a><span class="pg">245</span></li>
+    <li><a href="#ix-spec-rounds">Ammunition &amp; specialty rounds</a><span class="pg">181</span></li>
+    <li><a href="#ix-special-ammo">Ammunition, special — silver &amp; blessed</a><span class="pg">177</span></li>
+    <li><a href="#ix-m-anoint">Anoint the Iron (Miracle)</a><span class="pg">240</span></li>
+    <li><a href="#ix-answering">Answering a working (counter)</a><span class="pg">200</span></li>
+    <li><a href="#ix-armor">Armor</a><span class="pg">175</span></li>
+    <li><a href="#ix-artifacts">Artifacts &amp; relics of power</a><span class="pg">190</span></li>
+    <li><a href="#ix-s-askline">Ask the Line (Sign)</a><span class="pg">235</span></li>
+    <li><a href="#ix-m-asperges">Asperges Me (Miracle)</a><span class="pg">243</span></li>
     <li class="ix-hd">B</li>
-    <li><a href="#signs">Backlash</a><span class="pg">217</span></li>
+    <li><a href="#signs">Backlash</a><span class="pg">218</span></li>
     <li><a href="#ix-o-banker">Banker, the (Origin)</a><span class="pg">27</span></li>
-    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">226</span></li>
-    <li><a href="#ix-beats">Beats, the three</a><span class="pg">194</span></li>
-    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">229</span></li>
-    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">173</span></li>
-    <li><a href="#ix-wounds">Bleeding</a><span class="pg">201</span></li>
-    <li><a href="#ix-m-road">Blessing of the Road, the (Miracle)</a><span class="pg">238</span></li>
-    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">201</span></li>
-    <li><a href="#ix-m-bodykeptwhole">Body Kept Whole, The (Miracle)</a><span class="pg">253</span></li>
-    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">192</span></li>
-    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">161</span></li>
-    <li><a href="#ix-m-beastgift">Borrow the Beast's Gift (Miracle)</a><span class="pg">246</span></li>
-    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">223</span></li>
-    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-signs-bargain">Bargain, the (Sign list)</a><span class="pg">227</span></li>
+    <li><a href="#ix-beats">Beats, the three</a><span class="pg">195</span></li>
+    <li><a href="#ix-s-contract">Black Contract, the (Sign)</a><span class="pg">230</span></li>
+    <li><a href="#ix-blades">Blades &amp; bludgeons</a><span class="pg">174</span></li>
+    <li><a href="#ix-wounds">Bleeding</a><span class="pg">202</span></li>
+    <li><a href="#ix-m-road">Blessing of the Road, the (Miracle)</a><span class="pg">239</span></li>
+    <li><a href="#ix-wounds">Blood (hit points)</a><span class="pg">202</span></li>
+    <li><a href="#ix-m-bodykeptwhole">Body Kept Whole, The (Miracle)</a><span class="pg">254</span></li>
+    <li><a href="#ix-rel-fiddle">Bone Fiddle, the (artifact)</a><span class="pg">193</span></li>
+    <li><a href="#ix-e-born-lucky">Born Lucky (Edge)</a><span class="pg">162</span></li>
+    <li><a href="#ix-m-beastgift">Borrow the Beast's Gift (Miracle)</a><span class="pg">247</span></li>
+    <li><a href="#ix-s-breath">Borrowed Breath (Sign)</a><span class="pg">224</span></li>
+    <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">229</span></li>
     <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">46</span></li>
-    <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">251</span></li>
-    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">207</span></li>
-    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">233</span></li>
+    <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">252</span></li>
+    <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">208</span></li>
+    <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">234</span></li>
     <li class="ix-hd">C</li>
-    <li><a href="#ix-m-greatspirit">Call the Great Spirit (Miracle)</a><span class="pg">248</span></li>
-    <li><a href="#ix-m-mourner">Call to the Mourner's Bench (Miracle)</a><span class="pg">244</span></li>
-    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">255</span></li>
-    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">229</span></li>
+    <li><a href="#ix-m-greatspirit">Call the Great Spirit (Miracle)</a><span class="pg">249</span></li>
+    <li><a href="#ix-m-mourner">Call to the Mourner's Bench (Miracle)</a><span class="pg">245</span></li>
+    <li><a href="#ix-r-rain">Calling the Rain (Rite)</a><span class="pg">256</span></li>
+    <li><a href="#ix-s-calling">Calling, the (Sign)</a><span class="pg">230</span></li>
     <li><a href="#faith">Callings of Faith</a><span class="pg">93</span></li>
-    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">124</span></li>
+    <li><a href="#hexer">Callings of the Old Dark</a><span class="pg">125</span></li>
     <li><a href="#callings">Callings, worldly</a><span class="pg">44</span></li>
     <li><a href="#ix-o-wrong">Came Back Wrong (Origin)</a><span class="pg">34</span></li>
-    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">182</span></li>
-    <li><a href="#ix-m-campmeeting">Camp Meeting, the (Miracle)</a><span class="pg">245</span></li>
-    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">190</span></li>
-    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">232</span></li>
+    <li><a href="#ix-camp">Camp &amp; the trail, the</a><span class="pg">183</span></li>
+    <li><a href="#ix-m-campmeeting">Camp Meeting, the (Miracle)</a><span class="pg">246</span></li>
+    <li><a href="#ix-rel-cartographer">Cartographer's Eye, the (artifact)</a><span class="pg">191</span></li>
+    <li><a href="#ix-s-catserrand">Cat's Errand (Sign)</a><span class="pg">233</span></li>
     <li><a href="#character">Character creation</a><span class="pg">18</span></li>
-    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">203</span></li>
-    <li><a href="#ix-s-charged">Charged to Another Account (Sign)</a><span class="pg">228</span></li>
-    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">187</span></li>
+    <li><a href="#ix-charge">Charge, the (mounted)</a><span class="pg">204</span></li>
+    <li><a href="#ix-s-charged">Charged to Another Account (Sign)</a><span class="pg">229</span></li>
+    <li><a href="#ix-charms">Charms &amp; lesser relics</a><span class="pg">188</span></li>
     <li><a href="#ix-checks">Checks, saves &amp; opposed rolls</a><span class="pg">14</span></li>
-    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">189</span></li>
-    <li><a href="#ix-m-cleanwater">Clean Water and Clean Cloth (Miracle)</a><span class="pg">253</span></li>
-    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">181</span></li>
-    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">227</span></li>
-    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">221</span></li>
-    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">161</span></li>
-    <li><a href="#ix-m-list-blessing">Common Blessings, the (Miracles)</a><span class="pg">237</span></li>
-    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">220</span></li>
+    <li><a href="#ix-rel-nail">Church-Door Nail (relic)</a><span class="pg">190</span></li>
+    <li><a href="#ix-m-cleanwater">Clean Water and Clean Cloth (Miracle)</a><span class="pg">254</span></li>
+    <li><a href="#ix-clothing">Clothing &amp; the cold</a><span class="pg">182</span></li>
+    <li><a href="#ix-s-coinpain">Coin of Pain (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-s-coldlamp">Cold Lamp (Sign)</a><span class="pg">222</span></li>
+    <li><a href="#ix-e-cold-read">Cold Read (Edge)</a><span class="pg">162</span></li>
+    <li><a href="#ix-m-list-blessing">Common Blessings, the (Miracles)</a><span class="pg">238</span></li>
+    <li><a href="#ix-signs-common">Common Signs, the</a><span class="pg">221</span></li>
     <li><a href="#ix-compass">Compass, the (alignment)</a><span class="pg">24</span></li>
-    <li><a href="#conditions">Conditions, table of</a><span class="pg">264</span></li>
-    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">191</span></li>
-    <li><a href="#ix-m-killground">Consecrate the Killing Ground (Miracle)</a><span class="pg">251</span></li>
-    <li><a href="#ix-m-list-consecration">Consecrations, the (Miracle list)</a><span class="pg">250</span></li>
+    <li><a href="#conditions">Conditions, table of</a><span class="pg">265</span></li>
+    <li><a href="#ix-rel-cuirass">Conquistador's Cuirass, the (artifact)</a><span class="pg">192</span></li>
+    <li><a href="#ix-m-killground">Consecrate the Killing Ground (Miracle)</a><span class="pg">252</span></li>
+    <li><a href="#ix-m-list-consecration">Consecrations, the (Miracle list)</a><span class="pg">251</span></li>
     <li><a href="#ix-core-roll">Core roll, the</a><span class="pg">13</span></li>
-    <li><a href="#ix-m-covenant">Covenant, the (Miracle)</a><span class="pg">240</span></li>
-    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">197</span></li>
-    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">189</span></li>
-    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">231</span></li>
-    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-m-covenant">Covenant, the (Miracle)</a><span class="pg">241</span></li>
+    <li><a href="#ix-circumstance">Cover &amp; circumstance</a><span class="pg">198</span></li>
+    <li><a href="#ix-rel-tooth">Coyote's Tooth (relic)</a><span class="pg">190</span></li>
+    <li><a href="#ix-signs-craft">Craft, the (Sign list)</a><span class="pg">232</span></li>
+    <li><a href="#ix-s-crimson">Crimson Word, the (Sign)</a><span class="pg">229</span></li>
     <li><a href="#ix-degrees">Critical success &amp; failure</a><span class="pg">14</span></li>
-    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">232</span></li>
-    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">159</span></li>
+    <li><a href="#ix-s-crossing">Crossing the Threshold (Sign)</a><span class="pg">233</span></li>
+    <li><a href="#ix-e-cylinder">Cylinder &amp; Sky (Edge)</a><span class="pg">160</span></li>
     <li class="ix-hd">D</li>
-    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">201</span></li>
-    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">125</span></li>
-    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">159</span></li>
-    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">187</span></li>
-    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">222</span></li>
-    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">201</span></li>
-    <li><a href="#ix-s-debt">Debt Called In, the (Sign)</a><span class="pg">225</span></li>
-    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">225</span></li>
-    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">135</span></li>
-    <li><a href="#ix-reckoning">Defense</a><span class="pg">22</span></li>
+    <li><a href="#ix-dr">Damage Reduction &amp; resistance</a><span class="pg">202</span></li>
+    <li><a href="#ix-c-cultist">Dark Cultist (Calling)</a><span class="pg">126</span></li>
+    <li><a href="#ix-e-dead-eye">Dead Eye (Edge)</a><span class="pg">160</span></li>
+    <li><a href="#ix-rel-compass">Dead Man's Compass (relic)</a><span class="pg">188</span></li>
+    <li><a href="#ix-e-provider">Dead Shot Provider (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-s-deadmans">Deadman's Coat (Sign)</a><span class="pg">223</span></li>
+    <li><a href="#ix-wounds">Death &amp; dying</a><span class="pg">202</span></li>
+    <li><a href="#ix-s-debt">Debt Called In, the (Sign)</a><span class="pg">226</span></li>
+    <li><a href="#ix-s-debt">Debt Collected (Sign)</a><span class="pg">226</span></li>
+    <li><a href="#ix-three-debts">Debts, the three (Old Dark)</a><span class="pg">136</span></li>
+    <li><a href="#ix-reckoning">Defense</a><span class="pg">23</span></li>
     <li><a href="#ix-degrees">Degrees of success</a><span class="pg">14</span></li>
-    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">154</span></li>
+    <li><a href="#ix-demoralize">Demoralize</a><span class="pg">155</span></li>
     <li><a href="#ix-difficulty">Difficulty Classes</a><span class="pg">13</span></li>
-    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">195</span></li>
-    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">207</span></li>
+    <li><a href="#ix-reactions">Dive for Cover (reaction)</a><span class="pg">196</span></li>
+    <li><a href="#ix-nerve-pool">Dread Checks</a><span class="pg">208</span></li>
     <li><a href="#ix-c-drifter">Drifter (Calling)</a><span class="pg">51</span></li>
     <li><a href="#ix-o-drover">Drover, the (Origin)</a><span class="pg">28</span></li>
     <li><a href="#ix-o-drummer">Drummer, the (Origin)</a><span class="pg">28</span></li>
     <li class="ix-hd">E</li>
-    <li><a href="#edges">Edges</a><span class="pg">158</span></li>
-    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">163</span></li>
+    <li><a href="#edges">Edges</a><span class="pg">159</span></li>
+    <li><a href="#calling-edges">Edges of the Callings</a><span class="pg">164</span></li>
     <li><a href="#ix-c-engineer">Engineer (Calling)</a><span class="pg">55</span></li>
-    <li><a href="#play">Example of play</a><span class="pg">262</span></li>
-    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">258</span></li>
-    <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">243</span></li>
+    <li><a href="#play">Example of play</a><span class="pg">263</span></li>
+    <li><a href="#advancement">Experience &amp; levels</a><span class="pg">259</span></li>
+    <li><a href="#ix-m-unction">Extreme Unction (Miracle)</a><span class="pg">244</span></li>
     <li class="ix-hd">F</li>
     <li><a href="#ix-o-gentry">Fallen Gentry, the (Origin)</a><span class="pg">28</span></li>
-    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">131</span></li>
-    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">143</span></li>
-    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">159</span></li>
-    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">172</span></li>
-    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">229</span></li>
-    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">192</span></li>
-    <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">249</span></li>
+    <li><a href="#ix-c-prophet">False Prophet (Calling)</a><span class="pg">132</span></li>
+    <li><a href="#ix-familiar">Familiar (Witch)</a><span class="pg">144</span></li>
+    <li><a href="#ix-e-fan">Fan the Hammer (Edge)</a><span class="pg">160</span></li>
+    <li><a href="#ix-weapon-traits">Fatal die</a><span class="pg">173</span></li>
+    <li><a href="#ix-s-ledger">Feed the Ledger (Sign)</a><span class="pg">230</span></li>
+    <li><a href="#ix-rel-dollar">Ferryman's Dollar, the (artifact)</a><span class="pg">193</span></li>
+    <li><a href="#ix-m-fever">Fever Broken, the (Miracle)</a><span class="pg">250</span></li>
     <li><a href="#ix-ledger">Fight ledger, the (Callings)</a><span class="pg">45</span></li>
-    <li><a href="#ix-firearms">Firearms</a><span class="pg">171</span></li>
+    <li><a href="#ix-firearms">Firearms</a><span class="pg">172</span></li>
     <li><a href="#firstpeoples">First Peoples, the</a><span class="pg">35</span></li>
-    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">160</span></li>
-    <li><a href="#ix-s-foul">Foul the Working (Sign)</a><span class="pg">221</span></li>
-    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">196</span></li>
+    <li><a href="#ix-e-fleet">Fleet (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-s-foul">Foul the Working (Sign)</a><span class="pg">222</span></li>
+    <li><a href="#ix-four-degrees">Four Degrees, in a fight</a><span class="pg">197</span></li>
     <li><a href="#ix-questions">Four Questions, the</a><span class="pg">23</span></li>
     <li><a href="#ix-o-freed">Freed, the (Origin)</a><span class="pg">29</span></li>
-    <li><a href="#ix-frightened">Frightened</a><span class="pg">265</span></li>
-    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">162</span></li>
+    <li><a href="#ix-frightened">Frightened</a><span class="pg">266</span></li>
+    <li><a href="#ix-e-frontier-med">Frontier Medicine (Edge)</a><span class="pg">163</span></li>
     <li class="ix-hd">G</li>
-    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-e-gallows">Gallows Humor (Edge)</a><span class="pg">162</span></li>
     <li><a href="#ix-c-gambler">Gambler (Calling)</a><span class="pg">62</span></li>
-    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">188</span></li>
+    <li><a href="#ix-rel-deck">Gambler's Marked Deck (relic)</a><span class="pg">189</span></li>
     <li><a href="#ix-o-gambler">Gambler, the (Origin)</a><span class="pg">29</span></li>
-    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">155</span></li>
-    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">188</span></li>
-    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">169</span></li>
-    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">227</span></li>
-    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">231</span></li>
-    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">204</span></li>
+    <li><a href="#ix-green-table">Gambling at the green table</a><span class="pg">157</span></li>
+    <li><a href="#ix-rel-spurs">Ghost-Iron Spurs (relic)</a><span class="pg">189</span></li>
+    <li><a href="#goods">Goods &amp; provisions</a><span class="pg">170</span></li>
+    <li><a href="#ix-s-grasping">Grasping Dark, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-s-greenhand">Green Hand, the (Sign)</a><span class="pg">232</span></li>
+    <li><a href="#ix-grievous">Grievous wounds</a><span class="pg">205</span></li>
     <li><a href="#ix-grit">Grit</a><span class="pg">15</span></li>
-    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">159</span></li>
+    <li><a href="#ix-e-calm">Gunfighter's Calm (Edge)</a><span class="pg">160</span></li>
     <li><a href="#ix-c-gunhand">Gunhand (Calling)</a><span class="pg">67</span></li>
     <li class="ix-hd">H</li>
-    <li><a href="#ix-m-handheld">Hand Held (Miracle)</a><span class="pg">252</span></li>
-    <li><a href="#ix-m-clasped">Hands Clasped (Miracle)</a><span class="pg">238</span></li>
-    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">190</span></li>
-    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">187</span></li>
-    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">160</span></li>
-    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">176</span></li>
-    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">234</span></li>
-    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">137</span></li>
-    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">222</span></li>
-    <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">25</span></li>
+    <li><a href="#ix-m-handheld">Hand Held (Miracle)</a><span class="pg">253</span></li>
+    <li><a href="#ix-m-clasped">Hands Clasped (Miracle)</a><span class="pg">239</span></li>
+    <li><a href="#ix-rel-rope">Hanged Man's Rope, the (artifact)</a><span class="pg">191</span></li>
+    <li><a href="#ix-rel-coin">Hangman's Coin (relic)</a><span class="pg">188</span></li>
+    <li><a href="#ix-e-hard-to-kill">Hard to Kill (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-tonics">Healing &amp; tonics</a><span class="pg">177</span></li>
+    <li><a href="#ix-s-hearth">Hearth Unbroken, the (Sign)</a><span class="pg">235</span></li>
+    <li><a href="#ix-e-hedge">Hedge Magic (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-c-hexer">Hexer (Calling)</a><span class="pg">138</span></li>
+    <li><a href="#ix-s-hollow">Hollow Step (Sign)</a><span class="pg">223</span></li>
+    <li><a href="#ix-holy">Holy, unholy &amp; unsanctified</a><span class="pg">26</span></li>
     <li><a href="#ix-o-homesteader">Homesteader, the (Origin)</a><span class="pg">30</span></li>
-    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">178</span></li>
-    <li><a href="#ix-m-hour">Hour Is Not Yours, the (Miracle)</a><span class="pg">240</span></li>
-    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-horse-nerve">Horse's Nerve, a</a><span class="pg">179</span></li>
+    <li><a href="#ix-m-hour">Hour Is Not Yours, the (Miracle)</a><span class="pg">241</span></li>
+    <li><a href="#ix-s-hungering">Hungering Hand, the (Sign)</a><span class="pg">229</span></li>
     <li class="ix-hd">I</li>
-    <li><a href="#ix-beats">Initiative</a><span class="pg">194</span></li>
-    <li><a href="#ix-m-interdict">Interdict, the (Miracle)</a><span class="pg">243</span></li>
-    <li><a href="#conflict">Iron Code, the</a><span class="pg">194</span></li>
-    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">160</span></li>
-    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">191</span></li>
-    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-beats">Initiative</a><span class="pg">195</span></li>
+    <li><a href="#ix-m-interdict">Interdict, the (Miracle)</a><span class="pg">244</span></li>
+    <li><a href="#conflict">Iron Code, the</a><span class="pg">195</span></li>
+    <li><a href="#ix-e-iron-gut">Iron Gut (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-rel-star">Iron Star, the (artifact)</a><span class="pg">192</span></li>
+    <li><a href="#ix-e-iron-will">Iron Will (Edge)</a><span class="pg">162</span></li>
     <li class="ix-hd">K</li>
-    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">197</span></li>
-    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">231</span></li>
+    <li><a href="#ix-aiming">Kickback weapons</a><span class="pg">198</span></li>
+    <li><a href="#ix-s-knotwind">Knot the Wind (Sign)</a><span class="pg">232</span></li>
     <li class="ix-hd">L</li>
     <li><a href="#ix-o-laborer">Laborer, the (Origin)</a><span class="pg">30</span></li>
-    <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">253</span></li>
-    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">204</span></li>
-    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">255</span></li>
-    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">280</span></li>
-    <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">248</span></li>
-    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">227</span></li>
-    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">259</span></li>
-    <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">249</span></li>
-    <li><a href="#ix-m-light">Light Unfailing, a (Miracle)</a><span class="pg">237</span></li>
-    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">221</span></li>
-    <li><a href="#ix-m-litany">Litany of the Saints, the (Miracle)</a><span class="pg">243</span></li>
-    <li><a href="#ix-m-weakness">Litany of Weakness, the (Miracle)</a><span class="pg">250</span></li>
-    <li><a href="#ix-m-list-liturgy">Liturgy, the (Miracle list)</a><span class="pg">242</span></li>
-    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">184</span></li>
-    <li><a href="#ix-m-longmercy">Long Mercy, the (Miracle)</a><span class="pg">250</span></li>
-    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">224</span></li>
-    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">223</span></li>
-    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">208</span></li>
+    <li><a href="#ix-m-lampunquenched">Lamp Unquenched, The (Miracle)</a><span class="pg">254</span></li>
+    <li><a href="#ix-grievous">Lasting Injuries</a><span class="pg">205</span></li>
+    <li><a href="#ix-r-laying">Laying the Dead (Rite)</a><span class="pg">256</span></li>
+    <li><a href="#ledger">Ledger, the (character sheet)</a><span class="pg">281</span></li>
+    <li><a href="#ix-m-lendshape">Lend Them the Shape (Miracle)</a><span class="pg">249</span></li>
+    <li><a href="#ix-s-lender">Lender's Ear, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-level-brings">Levels, what they bring</a><span class="pg">260</span></li>
+    <li><a href="#ix-m-shared">Life Shared, the (Miracle)</a><span class="pg">250</span></li>
+    <li><a href="#ix-m-light">Light Unfailing, a (Miracle)</a><span class="pg">238</span></li>
+    <li><a href="#ix-s-listening">Listening, the (Sign)</a><span class="pg">222</span></li>
+    <li><a href="#ix-m-litany">Litany of the Saints, the (Miracle)</a><span class="pg">244</span></li>
+    <li><a href="#ix-m-weakness">Litany of Weakness, the (Miracle)</a><span class="pg">251</span></li>
+    <li><a href="#ix-m-list-liturgy">Liturgy, the (Miracle list)</a><span class="pg">243</span></li>
+    <li><a href="#ix-livestock">Livestock &amp; conveyances</a><span class="pg">185</span></li>
+    <li><a href="#ix-m-longmercy">Long Mercy, the (Miracle)</a><span class="pg">251</span></li>
+    <li><a href="#ix-s-longnight">Long Night, the (Sign)</a><span class="pg">225</span></li>
+    <li><a href="#ix-s-longwhisper">Long Whisper, the (Sign)</a><span class="pg">224</span></li>
+    <li><a href="#ix-mark">Lost (Mark 6)</a><span class="pg">209</span></li>
     <li class="ix-hd">M</li>
     <li><a href="#ix-o-madam">Madam, the (Origin)</a><span class="pg">31</span></li>
-    <li><a href="#ix-mark">Mark, the</a><span class="pg">208</span></li>
+    <li><a href="#ix-mark">Mark, the</a><span class="pg">209</span></li>
     <li><a href="#ix-c-marshal">Marshal (Calling)</a><span class="pg">71</span></li>
     <li><a href="#ix-time">Measures of time, the</a><span class="pg">16</span></li>
     <li><a href="#ix-c-shaman">Medicine Man, see Shaman (Calling)</a><span class="pg">104</span></li>
-    <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">248</span></li>
-    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">192</span></li>
+    <li><a href="#ix-m-list-mending">Mending, the (Miracle list)</a><span class="pg">249</span></li>
+    <li><a href="#ix-rel-chain">Meridian Chain, the (artifact)</a><span class="pg">193</span></li>
     <li><a href="#mexicanpeoples">Mexican Frontier, the</a><span class="pg">37</span></li>
-    <li><a href="#ix-milestones">Milestones</a><span class="pg">261</span></li>
-    <li><a href="#ix-m-dc">Miracle DC</a><span class="pg">236</span></li>
-    <li><a href="#ix-m-lists">Miracle lists, the six</a><span class="pg">237</span></li>
-    <li><a href="#ix-m-miracle">Miracle Plain, the (Miracle)</a><span class="pg">240</span></li>
-    <li><a href="#miracles">Miracles</a><span class="pg">235</span></li>
-    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">172</span></li>
+    <li><a href="#ix-milestones">Milestones</a><span class="pg">262</span></li>
+    <li><a href="#ix-m-dc">Miracle DC</a><span class="pg">237</span></li>
+    <li><a href="#ix-m-lists">Miracle lists, the six</a><span class="pg">238</span></li>
+    <li><a href="#ix-m-miracle">Miracle Plain, the (Miracle)</a><span class="pg">241</span></li>
+    <li><a href="#miracles">Miracles</a><span class="pg">236</span></li>
+    <li><a href="#ix-weapon-traits">Misfire</a><span class="pg">173</span></li>
     <li><a href="#ix-modifiers">Modifiers</a><span class="pg">22</span></li>
-    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">179</span></li>
+    <li><a href="#ix-more-arms">More arms &amp; powder</a><span class="pg">180</span></li>
     <li><a href="#ix-c-mountain">Mountain Man (Calling)</a><span class="pg">75</span></li>
-    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">201</span></li>
-    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">177</span></li>
-    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">195</span></li>
+    <li><a href="#ix-saddle">Mounted combat</a><span class="pg">202</span></li>
+    <li><a href="#ix-mounts">Mounts &amp; tack</a><span class="pg">178</span></li>
+    <li><a href="#ix-map">Multiple Attack Penalty</a><span class="pg">196</span></li>
     <li class="ix-hd">N</li>
-    <li><a href="#ix-s-nail">Nail and the Name, the (Sign)</a><span class="pg">232</span></li>
-    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">223</span></li>
-    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">207</span></li>
-    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">213</span></li>
+    <li><a href="#ix-s-nail">Nail and the Name, the (Sign)</a><span class="pg">233</span></li>
+    <li><a href="#ix-s-nailshadow">Nail the Shadow (Sign)</a><span class="pg">224</span></li>
+    <li><a href="#ix-nerve-pool">Nerve</a><span class="pg">208</span></li>
+    <li><a href="#ix-recover-nerve">Nerve, recovering</a><span class="pg">214</span></li>
     <li><a href="#ix-o-news">Newspaperman, the (Origin)</a><span class="pg">31</span></li>
-    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">233</span></li>
-    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">204</span></li>
-    <li><a href="#ix-m-notwhile">Not While I Stand (Miracle)</a><span class="pg">238</span></li>
-    <li><a href="#ix-m-nothingcomesin">Nothing Comes In (Miracle)</a><span class="pg">253</span></li>
+    <li><a href="#ix-s-ninefold">Ninefold Knot, the (Sign)</a><span class="pg">234</span></li>
+    <li><a href="#ix-nonlethal">Nonlethal blows</a><span class="pg">205</span></li>
+    <li><a href="#ix-m-notwhile">Not While I Stand (Miracle)</a><span class="pg">239</span></li>
+    <li><a href="#ix-m-nothingcomesin">Nothing Comes In (Miracle)</a><span class="pg">254</span></li>
     <li class="ix-hd">O</li>
-    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">197</span></li>
-    <li><a href="#ix-m-offering">Offering, the (Miracle)</a><span class="pg">246</span></li>
-    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">254</span></li>
-    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">234</span></li>
-    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">229</span></li>
+    <li><a href="#ix-offguard">Off-Guard</a><span class="pg">198</span></li>
+    <li><a href="#ix-m-offering">Offering, the (Miracle)</a><span class="pg">247</span></li>
+    <li><a href="#ix-olddark">Old Dark, the</a><span class="pg">150</span></li>
+    <li><a href="#ix-old-rites">Old Rites, the</a><span class="pg">255</span></li>
+    <li><a href="#ix-s-oldwomans">Old Woman's Bargain, the (Sign)</a><span class="pg">235</span></li>
+    <li><a href="#ix-s-vein">Open the Vein of the World (Sign)</a><span class="pg">230</span></li>
     <li><a href="#ix-checks">Opposed rolls</a><span class="pg">14</span></li>
     <li><a href="#origins">Origins</a><span class="pg">27</span></li>
     <li><a href="#ix-o-outlaw">Outlaw, the (Origin)</a><span class="pg">32</span></li>
     <li class="ix-hd">P</li>
     <li><a href="#ix-c-padre">Padre (Calling)</a><span class="pg">94</span></li>
-    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">191</span></li>
-    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">162</span></li>
+    <li><a href="#ix-rel-lantern">Padre's Lantern, the (artifact)</a><span class="pg">192</span></li>
+    <li><a href="#ix-e-pathfinder">Pathfinder (Edge)</a><span class="pg">163</span></li>
     <li><a href="#ix-pf2e">Pathfinder Second Edition</a><span class="pg">12</span></li>
-    <li><a href="#ix-patrons">Patrons of the Old Dark, the</a><span class="pg">149</span></li>
-    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">190</span></li>
-    <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">245</span></li>
+    <li><a href="#ix-rel-round">Peacemaker's Last Round, the (artifact)</a><span class="pg">191</span></li>
+    <li><a href="#ix-m-pentecost">Pentecost (Miracle)</a><span class="pg">246</span></li>
     <li><a href="#ix-perks">Perks of the Callings</a><span class="pg">44</span></li>
-    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">231</span></li>
-    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">268</span></li>
-    <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">249</span></li>
-    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">159</span></li>
+    <li><a href="#ix-s-poppet">Poppet, the (Sign)</a><span class="pg">232</span></li>
+    <li><a href="#posse">Posse, ready-made (pregenerated characters)</a><span class="pg">269</span></li>
+    <li><a href="#ix-m-poultice">Poultice, the (Miracle)</a><span class="pg">250</span></li>
+    <li><a href="#ix-e-powder">Powder Sense (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-e-reload">Practiced Reload (Edge)</a><span class="pg">160</span></li>
     <li><a href="#ix-c-preacher">Preacher (Calling)</a><span class="pg">99</span></li>
-    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">219</span></li>
+    <li><a href="#ix-sign-price">Price of a Sign (Nerve, Blood, Mark)</a><span class="pg">220</span></li>
     <li><a href="#ix-core-roll">Proficiency</a><span class="pg">13</span></li>
     <li><a href="#ix-c-prospector">Prospector (Calling)</a><span class="pg">81</span></li>
-    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">183</span></li>
-    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">175</span></li>
+    <li><a href="#ix-prov-dark">Provisions against the dark</a><span class="pg">184</span></li>
+    <li><a href="#ix-gear">Provisions, gear &amp; sundries</a><span class="pg">176</span></li>
     <li class="ix-hd">Q</li>
-    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">159</span></li>
-    <li><a href="#quickref">Quick Reference</a><span class="pg">266</span></li>
+    <li><a href="#ix-e-quick-draw">Quick Draw (Edge)</a><span class="pg">160</span></li>
+    <li><a href="#quickref">Quick Reference</a><span class="pg">267</span></li>
     <li class="ix-hd">R</li>
     <li><a href="#ix-o-rail">Railroad Hand, the (Origin)</a><span class="pg">32</span></li>
-    <li><a href="#ix-m-rank">Rank of a Miracle</a><span class="pg">236</span></li>
-    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">218</span></li>
-    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">170</span></li>
-    <li><a href="#ix-reactions">Reactions</a><span class="pg">195</span></li>
-    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">255</span></li>
-    <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">239</span></li>
-    <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">251</span></li>
-    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">224</span></li>
-    <li><a href="#ix-reloading">Reloading</a><span class="pg">198</span></li>
-    <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">244</span></li>
-    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">227</span></li>
-    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">194</span></li>
+    <li><a href="#ix-m-rank">Rank of a Miracle</a><span class="pg">237</span></li>
+    <li><a href="#ix-sign-rank">Rank, Sign</a><span class="pg">219</span></li>
+    <li><a href="#ix-rarity">Rarity — Common, Uncommon &amp; Rare</a><span class="pg">171</span></li>
+    <li><a href="#ix-reactions">Reactions</a><span class="pg">196</span></li>
+    <li><a href="#ix-r-bones">Reading the Bones (Rite)</a><span class="pg">256</span></li>
+    <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">240</span></li>
+    <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">252</span></li>
+    <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">225</span></li>
+    <li><a href="#ix-reloading">Reloading</a><span class="pg">199</span></li>
+    <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">245</span></li>
+    <li><a href="#ix-s-rot">Rot the Wound (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-beats">Rounds &amp; turns</a><span class="pg">195</span></li>
     <li class="ix-hd">S</li>
-    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">201</span></li>
-    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">160</span></li>
-    <li><a href="#ix-safety">Safety at the table</a><span class="pg">213</span></li>
-    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">255</span></li>
-    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">190</span></li>
-    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">188</span></li>
-    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">221</span></li>
-    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">188</span></li>
-    <li><a href="#ix-m-saltline">Salt the Threshold (Miracle)</a><span class="pg">250</span></li>
-    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-holy">Sanctification</a><span class="pg">25</span></li>
+    <li><a href="#ix-saddle">Saddle, fighting from the</a><span class="pg">202</span></li>
+    <li><a href="#ix-e-saddle-born">Saddle-Born (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-safety">Safety at the table</a><span class="pg">214</span></li>
+    <li><a href="#ix-r-sain">Sain, the (Rite)</a><span class="pg">256</span></li>
+    <li><a href="#ix-rel-bell">Saint Dymphna's Bell (artifact)</a><span class="pg">191</span></li>
+    <li><a href="#ix-rel-bone">Saint's Finger-Bone (relic)</a><span class="pg">189</span></li>
+    <li><a href="#ix-s-salt">Salt &amp; Iron (Sign)</a><span class="pg">222</span></li>
+    <li><a href="#ix-rel-salt">Salt of the Forty Martyrs (relic)</a><span class="pg">189</span></li>
+    <li><a href="#ix-m-saltline">Salt the Threshold (Miracle)</a><span class="pg">251</span></li>
+    <li><a href="#ix-e-salt-wise">Salt-Wise (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-holy">Sanctification</a><span class="pg">26</span></li>
     <li><a href="#ix-checks">Saves</a><span class="pg">14</span></li>
     <li><a href="#ix-c-sawbones">Sawbones (Calling)</a><span class="pg">88</span></li>
     <li><a href="#ix-words">Sawbones (the word), <em>see</em> Words of the country</a><span class="pg">17</span></li>
     <li><a href="#ix-scores">Scores, generating the</a><span class="pg">22</span></li>
     <li><a href="#ix-o-scout">Scout, the (Origin)</a><span class="pg">33</span></li>
-    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">184</span></li>
-    <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">249</span></li>
-    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">247</span></li>
+    <li><a href="#ix-services">Services &amp; lodging</a><span class="pg">185</span></li>
+    <li><a href="#ix-m-setbone">Set the Bone (Miracle)</a><span class="pg">250</span></li>
+    <li><a href="#ix-m-pack">Set the Pack On (Miracle)</a><span class="pg">248</span></li>
     <li><a href="#ix-c-shaman">Shaman (Calling)</a><span class="pg">104</span></li>
-    <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">254</span></li>
-    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">219</span></li>
-    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">220</span></li>
-    <li><a href="#ix-m-crossing">Sign of the Cross, the (Miracle)</a><span class="pg">242</span></li>
-    <li><a href="#signs">Signs</a><span class="pg">217</span></li>
-    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">255</span></li>
-    <li><a href="#ix-m-silverround">Silver the Round (Miracle)</a><span class="pg">251</span></li>
-    <li><a href="#ix-c-sister">Sister (Calling)</a><span class="pg">112</span></li>
-    <li><a href="#skills">Skills</a><span class="pg">153</span></li>
-    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">154</span></li>
-    <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">249</span></li>
-    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">200</span></li>
-    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">231</span></li>
-    <li><a href="#ix-reckoning">Speed</a><span class="pg">22</span></li>
-    <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">247</span></li>
-    <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">246</span></li>
-    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">155</span></li>
-    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">159</span></li>
-    <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">237</span></li>
-    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">221</span></li>
-    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-m-notbemoved">She Will Not Be Moved (Miracle)</a><span class="pg">255</span></li>
+    <li><a href="#ix-sign-dc">Sign DC</a><span class="pg">220</span></li>
+    <li><a href="#ix-sign-lists">Sign lists, the three</a><span class="pg">221</span></li>
+    <li><a href="#ix-m-crossing">Sign of the Cross, the (Miracle)</a><span class="pg">243</span></li>
+    <li><a href="#signs">Signs</a><span class="pg">218</span></li>
+    <li><a href="#ix-who-works">Signs, who may work</a><span class="pg">256</span></li>
+    <li><a href="#ix-m-silverround">Silver the Round (Miracle)</a><span class="pg">252</span></li>
+    <li><a href="#ix-c-sister">Sister (Calling)</a><span class="pg">113</span></li>
+    <li><a href="#skills">Skills</a><span class="pg">154</span></li>
+    <li><a href="#ix-using-skills">Skills, using</a><span class="pg">155</span></li>
+    <li><a href="#ix-m-healsleep">Sleep of Healing, the (Miracle)</a><span class="pg">250</span></li>
+    <li><a href="#ix-not-shooting">Some things you do not shoot</a><span class="pg">201</span></li>
+    <li><a href="#ix-s-sourmilk">Sour the Milk (Sign)</a><span class="pg">232</span></li>
+    <li><a href="#ix-reckoning">Speed</a><span class="pg">23</span></li>
+    <li><a href="#ix-m-snare">Spirit-Snare, the (Miracle)</a><span class="pg">248</span></li>
+    <li><a href="#ix-m-list-spirits">Spirits, the (Miracle list)</a><span class="pg">247</span></li>
+    <li><a href="#ix-spoor">Spoor &amp; sign, reading</a><span class="pg">156</span></li>
+    <li><a href="#ix-e-steady">Steady Shot (Edge)</a><span class="pg">160</span></li>
+    <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">238</span></li>
+    <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">222</span></li>
+    <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">162</span></li>
     <li class="ix-hd">T</li>
-    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">214</span></li>
-    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">216</span></li>
+    <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">215</span></li>
+    <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">217</span></li>
     <li><a href="#ix-take-time">Take 10 / Take 20</a><span class="pg">15</span></li>
-    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">222</span></li>
-    <li><a href="#ix-m-tedeum">Te Deum (Miracle)</a><span class="pg">244</span></li>
-    <li><a href="#ix-m-testify">Testify (Miracle)</a><span class="pg">245</span></li>
+    <li><a href="#ix-s-tally">Tally, the (Sign)</a><span class="pg">223</span></li>
+    <li><a href="#ix-m-tedeum">Te Deum (Miracle)</a><span class="pg">245</span></li>
+    <li><a href="#ix-m-testify">Testify (Miracle)</a><span class="pg">246</span></li>
     <li><a href="#ix-truths">Three Truths, the</a><span class="pg">9</span></li>
-    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">159</span></li>
+    <li><a href="#ix-e-throw">Throw the Stick (Edge)</a><span class="pg">160</span></li>
     <li><a href="#ix-tone">Tone, on</a><span class="pg">10</span></li>
-    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">176</span></li>
-    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">182</span></li>
-    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">160</span></li>
-    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">162</span></li>
-    <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">247</span></li>
-    <li><a href="#ix-s-turning">Turning, the (Sign)</a><span class="pg">233</span></li>
-    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">159</span></li>
+    <li><a href="#ix-tonics">Tonics &amp; the Sawbones' trade</a><span class="pg">177</span></li>
+    <li><a href="#ix-tools">Tools of many trades</a><span class="pg">183</span></li>
+    <li><a href="#ix-e-touched">Touched (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-e-rawhide">Tough as Rawhide (Edge)</a><span class="pg">161</span></li>
+    <li><a href="#ix-e-tracker">Tracker (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-m-weather">Turn the Weather (Miracle)</a><span class="pg">248</span></li>
+    <li><a href="#ix-s-turning">Turning, the (Sign)</a><span class="pg">234</span></li>
+    <li><a href="#ix-e-two-gun">Two-Gun (Edge)</a><span class="pg">160</span></li>
     <li class="ix-hd">U</li>
-    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">223</span></li>
-    <li><a href="#ix-m-named">Unclean Named, the (Miracle)</a><span class="pg">239</span></li>
-    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">186</span></li>
+    <li><a href="#ix-s-unburden">Unburdening, the (Sign)</a><span class="pg">224</span></li>
+    <li><a href="#ix-m-named">Unclean Named, the (Miracle)</a><span class="pg">240</span></li>
+    <li><a href="#ix-uncommon">Uncommon goods</a><span class="pg">187</span></li>
     <li><a href="#ix-o-undertaker">Undertaker, the (Origin)</a><span class="pg">33</span></li>
-    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">224</span></li>
-    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">256</span></li>
-    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">161</span></li>
-    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">155</span></li>
+    <li><a href="#ix-s-unmake">Unmake the Working (Sign)</a><span class="pg">225</span></li>
+    <li><a href="#ix-unmarked">Unmarked at the threshold, the</a><span class="pg">257</span></li>
+    <li><a href="#ix-e-unshakable">Unshakable (Edge)</a><span class="pg">162</span></li>
+    <li><a href="#ix-untrained">Untrained skills</a><span class="pg">156</span></li>
     <li class="ix-hd">V</li>
     <li><a href="#ix-o-veteran">Veteran, the (Origin)</a><span class="pg">34</span></li>
-    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">190</span></li>
-    <li><a href="#ix-m-list-vigil">Vigil, the (Miracle list)</a><span class="pg">252</span></li>
-    <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">239</span></li>
-    <li><a href="#ix-m-visitation">Visitation of the Sick (Miracle)</a><span class="pg">243</span></li>
-    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">183</span></li>
+    <li><a href="#ix-rel-vial">Vial from the Weeping Spring (artifact)</a><span class="pg">191</span></li>
+    <li><a href="#ix-m-list-vigil">Vigil, the (Miracle list)</a><span class="pg">253</span></li>
+    <li><a href="#ix-m-vigil">Vigil, the (Miracle)</a><span class="pg">240</span></li>
+    <li><a href="#ix-m-visitation">Visitation of the Sick (Miracle)</a><span class="pg">244</span></li>
+    <li><a href="#ix-vittles">Vittles &amp; comforts</a><span class="pg">184</span></li>
     <li class="ix-hd">W</li>
-    <li><a href="#ix-m-wardbeds">Ward Full of Beds, the (Miracle)</a><span class="pg">254</span></li>
-    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">224</span></li>
-    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">163</span></li>
-    <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">238</span></li>
-    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">255</span></li>
-    <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">252</span></li>
-    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">181</span></li>
-    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">172</span></li>
-    <li><a href="#ix-m-riverclose">What the River Closes (Miracle)</a><span class="pg">247</span></li>
-    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">233</span></li>
-    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">189</span></li>
-    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">141</span></li>
+    <li><a href="#ix-m-wardbeds">Ward Full of Beds, the (Miracle)</a><span class="pg">255</span></li>
+    <li><a href="#ix-s-threshold">Ward of the Threshold (Sign)</a><span class="pg">225</span></li>
+    <li><a href="#ix-e-warded">Warded (Edge)</a><span class="pg">164</span></li>
+    <li><a href="#ix-m-warding">Warding Psalm, the (Miracle)</a><span class="pg">239</span></li>
+    <li><a href="#ix-r-salt">Warding Salt (Rite)</a><span class="pg">256</span></li>
+    <li><a href="#ix-m-watchkept">Watch Kept, The (Miracle)</a><span class="pg">253</span></li>
+    <li><a href="#ix-furniture">Weapon furniture</a><span class="pg">182</span></li>
+    <li><a href="#ix-weapon-traits">Weapon traits</a><span class="pg">173</span></li>
+    <li><a href="#ix-m-riverclose">What the River Closes (Miracle)</a><span class="pg">248</span></li>
+    <li><a href="#ix-s-widow">Widow's Curse, the (Sign)</a><span class="pg">234</span></li>
+    <li><a href="#ix-rel-locket">Widow's Locket (relic)</a><span class="pg">190</span></li>
+    <li><a href="#ix-c-witch">Witch (Calling)</a><span class="pg">142</span></li>
     <li><a href="#ix-c-witchhunter">Witch Hunter (Calling)</a><span class="pg">118</span></li>
-    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">188</span></li>
-    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">220</span></li>
-    <li><a href="#ix-m-smallword">Word to the Small Spirits, a (Miracle)</a><span class="pg">246</span></li>
+    <li><a href="#ix-rel-bottle">Witch-Bottle (relic)</a><span class="pg">189</span></li>
+    <li><a href="#ix-s-witchsight">Witch-Sight (Sign)</a><span class="pg">221</span></li>
+    <li><a href="#ix-m-smallword">Word to the Small Spirits, a (Miracle)</a><span class="pg">247</span></li>
     <li><a href="#ix-words">Words of the country (glossary)</a><span class="pg">19</span></li>
-    <li><a href="#miracles">Work of Faith, The</a><span class="pg">235</span></li>
-    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">201</span></li>
+    <li><a href="#miracles">Work of Faith, The</a><span class="pg">236</span></li>
+    <li><a href="#ix-wounds">Wounds, bleeding &amp; death</a><span class="pg">202</span></li>
     <li class="ix-hd">Y</li>
     <li><a href="#ix-1885">Year of 1885, the</a><span class="pg">9</span></li>
   </ul>

@@ -121,6 +121,61 @@ def night_costs(adventure, labels):
     return "\n".join(out)
 
 
+def fight(adventure, n):
+    """Row `n` of an adventure's fight table as numbers, for the prose that reads the table aloud.
+
+    The tables were generated from 2026-08-16 and the paragraphs under them went on being typed, so
+    by 2026-09-23 all three modules were quoting a harness run two engine changes old ("ten clears in
+    twelve" beside a table that said nine). Prose quotes these now, the way the table does."""
+    _f, _tier, cleared, broke, rounds, ours, theirs = _playtest()[adventure][n]
+    won, reached = (int(x) for x in cleared.split("/"))
+    return {"cleared": won, "reached": reached, "broke": int(broke.split("/")[0]),
+            "rounds": float(rounds), "ours": int(ours.rstrip("%")), "theirs": int(theirs.rstrip("%"))}
+
+
+def night(adventure):
+    """The whole-night summary under an adventure's heading in PLAYTEST.md, as numbers."""
+    text, grab = [], False
+    for line in open(PLAYTEST, encoding="utf-8"):
+        if line.startswith("## "):
+            grab = line[3:].strip() == adventure
+        elif grab:
+            text.append(line)
+    t = "".join(text)
+    def num(pat):
+        m = re.search(pat, t)
+        if not m:
+            raise SystemExit(f"PLAYTEST.md's '{adventure}' summary has no match for {pat!r}.")
+        return m.group(1)
+    return {"finished": int(num(r"on their feet: (\d+) of")),
+            "broke": int(num(r"Broke off and rode out: (\d+)")),
+            "down": int(num(r"Put down to the last soul: (\d+)")),
+            "souls": num(r"Souls down at the end, on average: \*\*([\d.]+) of"),
+            "nerve": num(r"Nerve left across the whole posse, on average: \*\*([\d.]+) of"),
+            "nerve_of": num(r"Nerve left across the whole posse, on average: \*\*[\d.]+ of ([\d.]+)"),
+            "broken": int(num(r"at least one soul broke \(Nerve to 0\): \*\*(\d+)\*\*")),
+            "tended_down": int(num(r"finished standing \*\*\d+ of 12\*\*, put down to the last soul (\d+)"))}
+
+
+_ONES = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+         "fifteen sixteen seventeen eighteen nineteen").split()
+_TENS = "_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()
+
+
+def words(n, cap=False):
+    """0-99 in words, because the modules write their numbers out."""
+    w = _ONES[n] if n < 20 else _TENS[n // 10] + ("-" + _ONES[n % 10] if n % 10 else "")
+    return w[0].upper() + w[1:] if cap else w
+
+
+def odds(pct):
+    """A hit rate the way a Keeper says it at the table: 67 is "two times in three"."""
+    best = min(((n, d) for d in (2, 3, 4, 5, 6, 8, 10) for n in range(1, d)),
+               key=lambda f: (abs(f[0] / f[1] - pct / 100), f[1]))
+    n, d = best
+    return f"{words(n)} time{'s' if n > 1 else ''} in {words(d)}"
+
+
 ROMAN = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
 
 

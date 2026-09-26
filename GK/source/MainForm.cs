@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.53", KeeperBookVer = "2.37", BestiaryVer = "2.24";
+    internal const string PlayerBookVer = "2.56", KeeperBookVer = "2.41", BestiaryVer = "2.27";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -363,7 +363,7 @@ public partial class MainForm : Sheet
         // actually been opened: tabs are lazy, and building it here would defeat that.
         if (RefDeckLength > 0) { BuildRefDeck(); RefShow(0); }
         // A sheet already on the New Soul tab was drawn for the other table. Redraw it for this one,
-        // or a Keeper who hands the laptop to a player leaves a Patron's name on the screen.
+        // or a Keeper who hands the laptop to a player leaves a face's name on the screen.
         if (lastSoul != null && soulLedger != null) ShowSoul(lastSoul);
         if (statusLoaded != null) statusLoaded.Text = Amp(StatusLoadedText());
         Prefs.Save(mode, true);   // a deliberate switch is also a remembered preference
@@ -1792,7 +1792,7 @@ public partial class MainForm : Sheet
     /// A Font holds a native GDI handle, and two places were minting one per event on the hottest
     /// paths in the app: the Dice tab's result card made a fresh headline font on EVERY roll, and
     /// the Bestiary's creature renderer made about thirty per creature, so arrowing down the list
-    /// of 150 spends four and a half thousand handles in a few seconds. Nothing disposed them.
+    /// of 182 spends four and a half thousand handles in a few seconds. Nothing disposed them.
     /// The finalizer does get there eventually, which is why this never showed up in an hour of
     /// testing and is exactly the shape of thing that makes an app go strange at the end of a long
     /// evening, or after a season of them.

@@ -7,10 +7,17 @@
 # a Tier III thing the safe-table rule does NOT refuse, which makes it the opposite lesson from
 # module I. Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
-                            keeper, clock, npc, statblock, found, contents)
+                            keeper, clock, npc, statblock, found, contents,
+                            fight, night, words, odds)
+
+# The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
+_ACT2, _ACT3, _NIGHT = fight("A Face Not His Own", 0), fight("A Face Not His Own", 1), night("A Face Not His Own")
+# "They won't win it by shooting" is said outright below. A harness run that clears Act Three makes
+# it false, and the build should stop rather than print it.
+assert _ACT3["cleared"] == 0, "PLAYTEST.md has a posse clearing the yard; reread Act Three's prose"
 from module_maps import map_html
 
-VERSION = "1.11"
+VERSION = "1.12"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -353,7 +360,7 @@ ACT1 = '''
   ''' + found("The Skin-Walker") + '''
 
   <h2 id="a1-dread">The Dread Check of Act One</h2>
-  <p><strong>Dread Check, DC 15, Will save.</strong> Tier II loss. It fires the first time somebody
+  <p><strong>Dread Check, DC 13, Will save.</strong> Lose 1d4 Nerve. It fires the first time somebody
   calls the hostler by name and he answers to the wrong one. He says &ldquo;Amos&rdquo; is
   fine, or he answers to Cal a half-second late, and then laughs it off so smoothly that the moment
   closes before anyone can put a hand on it.</p>
@@ -397,24 +404,28 @@ ACT2 = '''
   <h2 id="a2-ice">7. The Ice House</h2>
   <p>Locked, and Gant has the key on him and will not give it up for asking. Behind the beef, under
   sacking, are Amos Dell and Cal Mears: both of them, both intact, both wearing the clothes
-  they were taken in, and neither of them marked anywhere a coat would not cover.</p>
+  they were taken in, and neither of them marked anywhere a coat would not cover. They are breathing,
+  slow and as cold as the beef, and they don't wake. Leave them to fetch a lamp or Gant or anybody,
+  and when somebody comes back the sacking is lying flat.</p>
 
-  <p><strong>Dread Check, DC 17, Will save.</strong> Tier II loss, and not for the bodies. It is for the arithmetic
+  <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve, and not for the bodies. It is for the arithmetic
   the posse does standing over them, which is that both of these men were at supper.</p>
 
   <h2 id="a2-tack">8. The Tack Room</h2>
   <p>Eleven feet by nine, one door, hooks and harness on every wall, a lamp on a nail. Whatever the
-  posse has worked out, this is where it stops being talk: the two it has already been inside come
-  off the wall at them, in the dark, in a room too small to back out of.</p>
+  posse has worked out, this is where it stops being talk. The two from under the ice-house sacking,
+  the two it has already been inside, are waiting in here, and they come off the wall at the posse
+  in the dark, in a room too small to back out of. If the posse never opened the ice house, this is
+  how they learn what was in it.</p>
 
   ''' + found("The Possessed") + '''
 
   <p>Full entry under <a href="#dead">What Wears a Face Here</a>. Two of them. It has finished with
-  both bodies and left behind whatever it put in them, and both still wear the faces the posse has
-  been sharing a room with all night.</p>
+  both men and left behind whatever it put in them. They're alive under it, and they wear their own
+  faces, which are the faces the posse has been eating supper across from all night.</p>
 
   ''' + keeper(
-    "<p><strong>The engine says the posse wins this one</strong>: ten clears in twelve, in "
+    "<p><strong>The engine says the posse wins this one</strong>: " + words(_ACT2["cleared"]) + " clears in twelve, in "
     "about two rounds. That's by design. Act Two is the fight this module lets them have, so that "
     "Act Three can be the one it does not. Let it be brutal and fast and let them win it.</p>"
     "<p>If a player refuses to fire on a face they know, that isn't a problem to solve. Let them "
@@ -431,7 +442,7 @@ ACT3 = '''
   <p class="note">Aim for an hour. One Dread Check, one open field, and a sunrise.</p>
 
   <h2 id="a3-tell">9. It Stops Pretending</h2>
-  <p><strong>Dread Check, DC 18, Will save.</strong> Tier III loss. It happens when the last face
+  <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve. It happens when the last face
   comes off, and the module is specific about how: it doesn't tear, and it doesn't melt. The man
   standing in front of them simply stops doing the thousand small things a man does, all at once,
   and goes still in a way nothing alive goes still, and then it isn't wearing anybody at all.</p>
@@ -463,13 +474,13 @@ ACT3 = '''
   ''' + found("The Skin-Walker") + '''
 
   <p>Full entry under <a href="#dead">What Wears a Face Here</a>. Unlike module I, the safe-table
-  rule does <em>not</em> refuse this fight: a 3rd-level posse is Tier 2 and a Skin-Walker is
+  rule does <em>not</em> refuse this fight: a 3rd-level posse is Tier II and a Skin-Walker is
   Tier III, one rung over, which the book calls a hard fight rather than an impossible one. The app
   will seat it on the field without arguing.</p>
 
   ''' + keeper(
-    "<p><strong>And the engine still says they won't win it by shooting.</strong> Twelve runs, "
-    "zero clears, every one of them broken off (see <a href='#cost'>What the Night "
+    "<p><strong>And the engine still says they won't win it by shooting.</strong> " + words(_ACT3["reached"], True) + " "
+    "posses reached it, none cleared it, and " + words(_ACT3["broke"]) + " of them broke it off (see <a href='#cost'>What the Night "
     "Costs</a>). The difference from module I is the reason. Module I's boss had no answer on the "
     "field at all. This one is a fight the posse loses on the numbers by a little, and one "
     "prepared thing flips it. The "
@@ -576,7 +587,7 @@ DEAD = '''
 
   ''' + keeper(
     "<p><strong>On the safe-table rule, and why it is quiet this time.</strong> A Skin-Walker is "
-    "Tier III and a 3rd-level posse is Tier 2 (one rung over, not two), so GritKeeper "
+    "Tier III and a 3rd-level posse is Tier II (one rung over, not two), so GritKeeper "
     "will seat this fight on the field without a word. Module I's Nightwalker was two rungs over and "
     "the app argues about it. The rule hasn't changed; the posse has. That's worth pointing at, "
     "because a table that only ever meets the rule when it refuses something never learns what it is "
@@ -602,10 +613,11 @@ COST = '''
 ''' + night_costs("A Face Not His Own",
       ["The tack room (Act Two)", "The yard at first light (Act Three)"]) + '''
 
-  <p>Nobody died. Across twelve cold runs the posse was never put down to the last soul, not
-  once, and they never finished the night on their feet either. Twelve out of twelve broke
-  off and rode out. Souls down at the end averaged 2.2 of 4, and Nerve finished at 49.6 of a
-  possible 71, with one run in twelve seeing a soul break outright.</p>
+  <p>Across twelve cold runs no posse finished the night on its feet. ''' + words(_NIGHT["broke"], True) + '''
+  broke off and rode out, and ''' + words(_NIGHT["down"]) + ''' were put down to the last soul. Souls down at the
+  end averaged ''' + _NIGHT["souls"] + ''' of 4, and Nerve finished at ''' + _NIGHT["nerve"] + ''' of a possible
+  ''' + _NIGHT["nerve_of"] + ''', ''' + ("with no soul breaking outright in any of them" if not _NIGHT["broken"]
+  else f"with {words(_NIGHT['broken'])} run{'s' if _NIGHT['broken'] > 1 else ''} in twelve seeing a soul break outright") + '''.</p>
 
   <p>That is a very particular shape and it is the shape this module was built for. The Act Two
   fight is a fight the posse wins. The Act Three fight is a fight the posse survives. Giving them
@@ -613,13 +625,14 @@ COST = '''
   between the two rows isn't attrition.</p>
 
   ''' + keeper(
-    "<p><strong>Twenty per cent, against seventy-two.</strong> That's the Act Three row, whole. "
-    "Four souls trading Strikes at rising MAP against Defense 17 land one blow in five, and it "
-    "hits back nearly three times in four. A round and a half of that is the entire fight. Bring "
+    "<p><strong>" + words(_ACT3["ours"], True) + " per cent, against " + words(_ACT3["theirs"]) + ".</strong> "
+    "That's the Act Three row, whole. Four souls trading Strikes at rising MAP against Defense 17 "
+    "land about " + odds(_ACT3["ours"]) + ", and it hits back " + odds(_ACT3["theirs"]) + ". "
+    "A round or so of that is the entire fight. Bring "
     "nothing to the yard, and the yard is a countdown.</p>"
     "<p>Now put one prepared thing in their hands. A mirror off the bunk-room wall costs it its "
     "first round. A line of ash and bone takes the yard away from it. Silver or prayed-over shot "
-    "moves that twenty per cent to something that matters. None of those is a house rule: "
+    "moves that " + words(_ACT3["ours"]) + " per cent to something that matters. None of those is a house rule: "
     "all three are printed in the creature's own entry, three pages back.</p>") + '''
 
   <h2 id="cost-compare">Against Module I</h2>

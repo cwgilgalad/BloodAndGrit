@@ -276,10 +276,10 @@ static class Program
                 Chk(silent == 0, $"GUI: every control on all {wizards} Callings' wizards says what it is");
 
                 // A player's own table picks the Dark Cultist's path by what they want and never
-                // reads who answered (Cole, 2026-09-19). Every word the realized steps show is
-                // collected (captions, list rows, detail panels, hover tips) and none of it may be a
-                // Patron's name. The Keeper's wizard is walked as the control: it has to show all
-                // six, or the walk is not reading what it claims to.
+                // reads which face of the Old Dark answered (Cole, 2026-09-19). Every word the
+                // realized steps show is collected (captions, list rows, detail panels, hover tips)
+                // and none of it may be a face's name. The Keeper's wizard is walked as the control:
+                // it has to show all six, or the walk is not reading what it claims to.
                 var veiled = CharGen.D.callings.First(c => c.subpath?.KeeperSide == true);
                 static string Bare(string n) => n.StartsWith("The ") ? n[4..] : n;
                 var (_, playerSilent, playerSaw) = MainForm.BuildWizardStepsForSelfTest(veiled.name, "The Outlaw", 9, forPlayer: true);
@@ -290,7 +290,7 @@ static class Program
                 if (leaked.Count > 0) Line("       a player's wizard shows: " + string.Join(", ", leaked));
                 if (playerSilent.Count > 0) Line("       a player's wizard has silent controls: " + string.Join("; ", playerSilent));
                 Chk(leaked.Count == 0 && playerSilent.Count == 0 && keeperSees,
-                    $"GUI: a player's wizard offers the {veiled.name}'s wants and names no Patron; a Keeper's names all {veiled.subpath.options.Count}");
+                    $"GUI: a player's wizard offers the {veiled.name}'s wants and names no face; a Keeper's names all {veiled.subpath.options.Count}");
             }
             catch (Exception ux)
             {

@@ -2140,7 +2140,7 @@ public partial class MainForm
         { callingPanel.Visible = false; callingPanel.ResumeLayout(); return; }
 
         // Three sentences rather than two, because a Hexer of the Pact-Sworn can ration nothing at
-        // 3rd level and still owe their Patron, and "Nothing here is rationed" over a Debt card
+        // 3rd level and still owe the Old Dark, and "Nothing here is rationed" over a Debt card
         // reads as the app contradicting itself.
         // Three sentences became four in v1.49.0, for the reason the third was added: an Origin's
         // standing +2 is not rationed either, so "Nothing here is rationed" printed over a card
@@ -2524,7 +2524,7 @@ public partial class MainForm
         {
             Left = 8, Top = 5, Width = CW - 74, Height = 17, UseMnemonic = false,
             // "3 of 3" is worth saying; "4 of 3" is not, and the count is deliberately not clamped:
-            // the Patron collecting is the Keeper's move, not the app's.
+            // the Old Dark collecting is the Keeper's move, not the app's.
             Text = row.Owed > row.Tally.At
                  ? $"{row.Tally.Noun}s: {row.Owed} owed"
                  : $"{row.Tally.Noun}s: {row.Owed} of {row.Tally.At}",
@@ -2562,7 +2562,7 @@ public partial class MainForm
                     + $"{CharGen.TalliesFor(soul).First(r => r.Name == row.Name).Owed} owed.");
             else Nope($"{soul.Name} owes no {row.Tally.Noun} to strike off.");
             RefreshCalling();
-        }, 26, "Strike one off: the Patron collected, or the table read it differently");
+        }, 26, "Strike one off: the Old Dark collected, or the table read it differently");
         strike.Top = 12; strike.Height = 28;
 
         // Placed off their MEASURED widths, right to left, and never off the 26 asked for above.
@@ -3704,8 +3704,8 @@ public partial class MainForm
     }
 
     /// <summary>The Keeper overruling the book. Nothing in Ch. XI walks a death back, and the app
-    /// should not pretend otherwise by letting a heal do it quietly, but a Miracle, a Patron's
-    /// bargain, or a table that simply decided is above the app's pay grade. So it exists, it is
+    /// should not pretend otherwise by letting a heal do it quietly, but a Miracle, a bargain with
+    /// the Old Dark, or a table that simply decided is above the app's pay grade. So it exists, it is
     /// named for what it is, and it is asked about.</summary>
     void Resurrect(Combatant c)
     {

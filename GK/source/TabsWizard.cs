@@ -430,7 +430,7 @@ public partial class MainForm
                     (c.startMark > 0 ? $"Begins at Mark {c.startMark}.\n" : "") +
                     (c.subpath == null ? "" :
                         (forPlayer && c.subpath.KeeperSide
-                            ? "\nAt 3rd level, says what they want from the dark, and the Keeper says who answered:"
+                            ? "\nAt 3rd level, says what they want from the dark, and the Keeper says what face it shows them:"
                             : $"\nAt 3rd level, chooses among the {c.subpath.section}:")
                         + "\n  " + string.Join("\n  ", CharGen.PathChoices(c, forPlayer).Select(p => p.Label)));
             };
@@ -893,7 +893,7 @@ public partial class MainForm
                 // At a player's table a Keeper-side path is picked the way the Player's Book offers
                 // it, by what they want, and the panel below prints that book's own sentence rather
                 // than each option's boon: moving through the list would otherwise read out every
-                // Patron's powers in turn.
+                // face's powers in turn.
                 bool veiled = forPlayer && Cal.subpath.KeeperSide;
                 pathChoices = CharGen.PathChoices(Cal, forPlayer);
                 col.Controls.Add(Cap(veiled ? "What they want from the dark (chosen at 3rd)"
@@ -901,7 +901,7 @@ public partial class MainForm
                 wSubpath = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
                 foreach (var p in pathChoices) wSubpath.Items.Add(p.Label);
                 Tipped(wSubpath, veiled
-                    ? $"At 3rd level the {Cal.name} says what they want from the dark. The Keeper says who answered, "
+                    ? $"At 3rd level the {Cal.name} says what they want from the dark. The Keeper says what face it shows, "
                       + "what it grants and what it wants back."
                     : $"At 3rd level the {Cal.name} narrows to one of the {Cal.subpath.section}. It is chosen once and kept: "
                       + "the boon it grants is printed below as you move through the list.");

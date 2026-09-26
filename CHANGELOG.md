@@ -8,6 +8,356 @@ Desktop\Git repos.)
 
 ---
 
+- **Four slips Cole found in the builders, and new checks for two of them. Books v2.56 / v2.41 /
+  v2.27, the Book of Legends v1.6 (2026-09-25).**
+
+  Cole read the build scripts once the Old Dark was in and sent four findings. The first had already
+  been fixed in the Book of Legends v1.4, and the wording of the second in the Keeper's Book v2.39.
+  The rest are fixed here, with the slips of the same kind that turned up while looking, and the two
+  kinds a script can catch now have a check.
+
+  **The dates.** The field-book note dated "Sept., '85", a year after Ashby stopped writing in the
+  autumn of 1884, is his note on the undertaker's day-book, and v1.4 had already moved it to
+  September '84. The other field notes were read for the same fault, and one had it. The note from
+  the survey camp was dated November '84, later than Ashby's last dated entry (24 October, on the
+  Stage Road), and had Teale moving the line "the week after" he refused the chainmen's petition. The
+  petition is dated 8 October, and the chainman's day-book fills the cut back in and runs the line
+  north on the 9th. The note is October '84 now, Teale has carried the petition "since the eighth",
+  and he moved the line the next morning.
+
+  **The count.** Keeper's v2.39 corrected Ch. XVI to say all three of its legends are in the Book of
+  Legends, but the number was still typed by hand, which is how it came to be wrong in the first
+  place. Ch. XV and XVI now take every count they print from two lists at the top of `CH15`,
+  `XV_POWERS` and `XVI_LEGENDS`: four Powers, three legends, how many of the three the Book of
+  Legends carries and the heading each goes by there. The build stops if a list and its chapter's
+  headings disagree, or if a legend's *What you have to decide* offers more or fewer than four
+  readings. The
+  Book of Legends is built after the Keeper's Book, so the headings on that side are held by a new
+  check in `audit_consistency.py`, which also re-counts what the built Keeper's Book says about the
+  legends and the Powers. Apart from one phrase, given below, the two chapters rebuild word for word.
+
+  **The Trickster.** The Coyote's Tooth, a cursed relic in Ch. X of the Player's Book, was "taken, so
+  the story goes, from the Trickster's own jaw while he slept." That ties a relic to a figure from
+  living Native traditions, and *A Note on What Is Not Here*, a box in the same chapter, promises
+  that no nation's or living faith's sacred objects are laid out as loot in these pages. The story now belongs to a
+  coyote that slipped every trap on the Cimarron for eleven years until a horse thief shot it, and to
+  the thief, who wore the tooth out of two jails before they hanged him. The relic works as it did.
+
+  Cole named two places in the Bestiary that came close to the same line, and there was a third. The
+  Devil's Coyote was "the trickster of the old stories" that "never left". The teamsters say now that
+  the Devil kept a coyote to run his errands on the roads and that it stayed on when he lost interest
+  in the Territories, and its tagline is *the false guide on the trail*. The Grave-Wight kept watch
+  in barrows "no settler dug", the "mounded tombs of a people gone before the first wagon" and "the
+  tombs of vanished peoples". Its barrows are the graves of men buried with their gold now: a Spanish
+  captain's vault under a cairn, a trapper's cache walled up in a cave, the last owner of a lost mine
+  sealed in with the silver. The word *mound* is gone from the entry, and so are its centuries. The
+  third was the ordinary Coyote, "the trickster of the waking world", which is the thief at the edge
+  of the firelight. No number moved in any of them.
+
+  The Bestiary still carries creatures drawn from living Native traditions: the Skin-Walker, the
+  Wendigo and the Wendigo-Touched, the Thunderbird and the Horned Serpent, and some of them appear in
+  the Keeper's Book and in Modules II and III as well. Each of those is a whole entry, and they stay
+  as they are until Cole decides what to do with them.
+
+  **The condition nobody defined.** The Keeper's hazards table left a soul who drank bad laudanum or
+  rotgut "Stupefied", and Appendix B has no such condition. The soul is Fatigued until it sleeps it
+  off now. `audit_consistency.py` let it through because it read only what the Bestiary's stat
+  blocks inflict. Check 6 now reads every table, rule, Keeper's note and module stat block in all
+  seven books for some fifty condition names from the d20 family, most of them Pathfinder's, which is
+  the list a writer who knows that family reaches for without noticing. One of them capitalised in a
+  table cell or in the middle of a sentence counts as a condition, and Appendix B has to define it. A
+  sentence may still open on one, and a name may carry one (the Cursed Man, the Moon-Cursed). A
+  hyphenated name counts as one word, so the check sees Off-Guard whole, and Flat-Footed, the name
+  Pathfinder gave that condition first. It also fails if Appendix B ever defines a condition the
+  list lacks. Its first run found one more. Ch. VII sends the Cold Deep to the first camp after a
+  soul has "Broken at 0 Nerve", with a capital as if broken were a condition, and it is lower case
+  now.
+
+  Both new checks were proved by sabotage, and every file was restored byte for byte after.
+  "Stupefied" put back in the hazards row, "Dazed" in a Keeper's note, "Flat-Footed" in a Module I
+  stat block and "Confused" in the Bestiary's prose each failed the condition check, and a sentence
+  opening on "Stupefied" and a Stupefied Man at Wilcox both passed. A renamed heading in the Book of
+  Legends, "Two of the three" typed into the built Keeper's Book and "the five Powers" typed over
+  "the four Powers" each failed the legends check, and a fourth legend put in `XVI_LEGENDS` with no
+  chapter behind it stopped the build.
+
+  **Two phrases the Old Dark missed.** That sweep searched every book for "Patron", and these two had
+  none. Ch. XV sent the Keeper "into the six (Ch. VII)", and it says the Old Dark now. The Cold Deep's
+  Child was the "spawn of a drowned god", with "something vast and divine and drowned" asleep under
+  the water and "a buried god" behind it. The Old Dark is no god, so the tagline is *spawn of what
+  sleeps below the water*, the lore says the men who fish that water call the thing a god, and the
+  Keeper's note puts "a sleeping piece of the Old Dark" behind the Child.
+
+  **The app** is still v1.59.0 and still unreleased. `creatures.json` was re-extracted from the
+  built Bestiary and diffed, and only the four creatures above changed, in their text. The status bar
+  reads Player's v2.56, Keeper's v2.41 and Bestiary v2.27. Build 0 warnings and 0 errors, smoke
+  16,396 passed.
+
+  `verify_rules.py` runs 2,226 cross-checks and `audit_consistency.py` 113,799, both without drift,
+  and `audit_ai_tells.py --books --strict` is clean. Pages are unchanged: Player's Book 290,
+  Keeper's Book 153, Bestiary 226, Book of Legends 119.
+
+- **The Old Dark: one evil where there were six Patrons. Books v2.55 / v2.40 / v2.26, the Book of
+  Legends v1.5 (2026-09-25).**
+
+  Cole stopped the read-through to make one change across every book and the app. The game's cosmic
+  horror, and the slow burn under all of it, would work better as a single horrifying and evil
+  presence called the Old Dark than as a set of Patrons, and the Callings that deal with the dark should
+  be devoted to it in general, each seeing it as their own intentions and beliefs let them.
+
+  **What it is now.** The Old Dark is one thing. It is ancient and patient and aware, evil the way a man
+  can be evil, which is to say it knows what it's doing, and it means the living harm and can wait a
+  hundred years to do it. It is no god, and the preachers' Devil is somebody else. The six that were
+  Patrons are faces it wears, each shaped by what a soul came to it wanting: a starving man meets the
+  Devourer, a grieving woman the Cold Deep, a prospector the Thing Beneath the Mountain. Each
+  congregation is sure its own face is the true one, and every one of them is feeding the same thing.
+  The Keeper's Book says so in Ch. VII, rebuilt around it under new anchors (`olddark`, `olddark-why`,
+  `olddark-faces`, `olddark-terms`, `olddark-devotions`, `olddark-rockies`), and its *Four things to hold
+  to* box opens now on *It's one.* The four readings of *Why It Answers at All* stand, and so do the
+  four readings of the Rockies, which are now about the Old Dark's people going up the mountains: sent
+  for, going for six unrelated reasons, drawn by the dark coming nearer the surface up there, or driven
+  by something older that has frightened it. None is confirmed, as before.
+
+  **The Callings.** The Dark Cultist is devoted to the Old Dark itself. At 3rd level the player says
+  what they want from it and the Keeper says what face it shows them, and the Gifts at Mark 2, 3 and 4
+  remake her in the image of the face she knows it by. The Hexer borrows from it, and on the third Debt
+  the Old Dark calls it in. A Witch seldom deals with it, because her Craft is older. The False Prophet
+  feeds it through his Gospel, and it comes to the plate wearing whatever face the sermon promised. Four
+  of the Dark Cultist's features took the new name: *Gifts of the Dark*, *The Dark's Ear*, *The Dark
+  Comes* and, in the Gamble rules, *The Dark Smiles*. Not one number moved. Every boon, Debt, DC and
+  step on the Mark reads as it did.
+
+  **What a player may know.** The Player's Book tells them the Old Dark is one presence whose face
+  differs with what its faithful came wanting, and still names no face; its *Patrons of the Old Dark*
+  section is *The Old Dark* now (`ix-olddark`). `verify_rules.py::check_patron_silence` became
+  `check_face_silence` and reads the Player's Book and the Book of Legends as before. A second check,
+  `check_patrons_retired`, fails if the word comes back into any of the seven books, any JSON file the
+  app loads or any C# file under `GK/`, and lets *patron saint* and *patronage* through. Both were
+  proved by sabotage: a face planted in the Player's Book and another in the Book of Legends failed the
+  first; the word planted in the Bestiary, `tables_extra.json`, `names.json` and a UI string in
+  `Tabs.cs` failed the second, and the two ordinary uses beside it passed. `verify_rules.py` runs 2,226
+  cross-checks now, with no drift.
+
+  **The other books.** Keeper's Book v2.40 carries the change through Ch. III, VI, VII and XI, into
+  Perdition Basin, where the padres bound a reaching hand of the Old Dark under the wells and *Keeping
+  the Basin* leaves the Keeper to decide which face it wears and never print it, and into Ch. XV, where
+  the Dread Mother is no face of it. Bestiary v2.26 renames its Tier VIII entry *What the Old Dark Is
+  Afraid Of*, points it at the Rockies readings in Keeper's Ch. VII, and gives the Servant of the Deep
+  Dark and the Whisperer's Mouth the Old Dark to serve. The Book of Legends v1.5 keeps its silence and
+  changes its grammar: its papers had spoken of the things a Hexer deals with, in the plural, and they
+  speak of one thing now. The Cross Timbers letter says before anything else that the Mother is no face
+  of the Old Dark. The modules never named a Patron, and rebuilt byte-identical.
+
+  **The app** is still v1.59.0 and still unreleased. Its New Soul wizard, sheet, tooltips, Debt strip
+  and self-test read the new words; `chargen.json` carries the renamed features and the Dark Cultist's
+  blurb, which `verify_rules.py` holds to the book's opening words; `tables_extra.json` names the Old
+  Dark; and `creatures.json` was re-extracted from the built Bestiary and diffed. The status bar reads
+  Player's v2.55, Keeper's v2.40 and Bestiary v2.26. Build 0 warnings and 0 errors, smoke 16,396 passed.
+
+  The entries below this one say "Patron" wherever they did. They record what shipped at the time, and
+  they stay as written.
+
+  Pages, measured here: Player's Book 290, Keeper's Book 153, Bestiary 226, Book of Legends
+  119.
+
+- **The Book of Legends v1.4 and the Keeper's Book v2.39: eight slips in the papers, and the paragraph
+  that sends the players to them (2026-09-25).**
+
+  The read-through before the P10 sessions took in the Book of Legends as well, and asked it the one
+  question a book of papers can fairly be asked: does a paper contradict itself, or another paper,
+  where nobody in the world meant it to? Witnesses who disagree are the design, and none of that was
+  touched. Nine slips came back, two of them in pages v1.3 had just added or touched. The first of
+  the nine had fixed itself: *A Face Not Their Own* promised four cases and printed three until v1.3
+  gave it the drifter. The other eight are fixed here.
+
+  **A register that disagreed with Module III.** The Register at San Clavo named the three fathers as
+  Blázquez, Ortíz and Salgado and buried Salgado in February 1810. Module III's ledger is Fray
+  Ignacio Salcedo's, written in his own hand in October 1809 and dictated at the end of a long life.
+  A parish register is a primary paper and it has to agree with the module, so it names Salcedo now
+  and buries Blázquez.
+
+  **Dates that ran past the man who wrote them.** The undertaker kept his day-book "thirty-one
+  years" by three separate counts while its heading gave 1868 to 1885, which is seventeen, and
+  Ashby's note on it was dated September '85, a year after he stopped writing. The book runs 1853 to
+  1884 now, its last entries fall in June 1883 and February 1884, and the note is September '84.
+  Ashby's note on the green door in Denver, written a few weeks after the clipping printed beside it,
+  said he had thought better of the afternoon "every year since". It says every day.
+
+  **Things the editor said he had done.** *A Word Before* says that one name in the book was changed
+  and that the page says so. No page did. The Yeager letter says so now, and why. The Ellender store
+  account headed its dollar column "£ s. d.", and it says Amount. The index had no line for One of
+  the Thirty-Six. The note on the New Orleans sanitary inspector called him the only person in the
+  chapter "received anywhere near her" who wrote down what he saw, one page after two women who sat
+  across a table from her, and one of those two was printed. He is the only one who went on
+  somebody else's business, the city's.
+
+  **The chapter that promised not to tell.** *A Face Not Their Own* opens by putting one ordinary
+  bigamy case among its strange ones "so that the reader has the experience of not knowing which".
+  Two glosses told. The drifter's opened "The fourth of the four", which makes the three before it
+  the first three, and the Yeager letter's said "This is the one I warned you about" and then that it
+  had not marked which of four. The drifter no longer numbers itself, and the Yeager gloss says the
+  letter may be the one, out of five. Its heading stays as it was, since that is what the letter looks
+  like, and the note under it already has its doubts.
+
+  **The Keeper's Book v2.39.** Ch. XVI told the Keeper that two of its three legends were in the
+  players' book. All three are, and the paragraph says where to find the two whose names differ: the
+  Outfit under *The Fifth Rider* and the song under *The One About the Weather*. The cloud session
+  saw it in v1.3 and left it for this machine, because it means a Keeper's Book bump and a status-bar
+  sync in the app. The app reads Keeper's v2.39 now, still under v1.59.0, which has not shipped.
+
+  Pages, measured here: Book of Legends 119 (the cloud's font-matched render said 120), Keeper's
+  Book 152.
+
+- **Every book read the way a table reads it, before a die was rolled. Books v2.54 / v2.38 / v2.25,
+  modules v1.10 / v1.12 / v1.12 (2026-09-25).**
+
+  Before twenty-five sessions are played from the books alone, the whole shelf was read through
+  once, asking a single question of every page: could a table do what this says with only this
+  book open? Sixty-one faults came back from the six books here, three of them fixed in two earlier
+  commits. The Book of Legends had nine of its own, which go in with the next entry.
+
+  **Two Callings could not be finished.** The Starting Coin table had sixteen rows for eighteen
+  Callings, so an Engineer or a Sister stopped dead at step 7 of creation. The point-buy method was
+  offered with no costs at all. Both are printed now, and the costs come out at exactly 27 points for
+  the Honest Array, which is how you know they are the right ones.
+
+  **The fifteen levels had not reached every page.** Ch. VIII still ended skill increases at 9th,
+  and it is the only place a player is told when their skills improve. Ch. VII still stopped the
+  Signs at Rank five, the five Callings of Faith learned their last Miracle at 9th, the Hexer and the
+  Witch learned Signs "at each even level" past the point where their tables stop giving them, and
+  the Keeper's Book said there was no need to climb past ten. The Dark Cultist learned a Sign "at each
+  Sign learned", which is a circle.
+
+  **Rules that read two ways.** Nerve came back 1d6 for a safe night and in full after a week of
+  peace in the Player's Book, and 1d4 a night and in full only with a new session in the Keeper's
+  Book. The Player's Book was right, since it is what the app does, and the Keeper's Book points there
+  now. The critical thresholds were written carefully in two places and loosely in four, and the
+  loose copies made any natural 1 a critical failure, so a Gunhand who rolled a 1 and still beat the
+  Defense would jam a Misfire gun on a shot the careful reading calls a plain miss. Every copy says
+  the one rule now, the Keeper's Screen and the Quick Reference included: beat the DC by 10 for a
+  critical, miss it by 10 for a critical failure, and a natural 20 or a natural 1 moves the result one
+  step. "Shaken" was used four times as a condition no book defines; it is Frightened 1 in all four,
+  and in the app's affliction table as well. The unhorsing rule asked for a Ride save in a game with
+  three saves and no Ride among them.
+
+  **Counts the books keep about themselves.** Fifty-five Signs where there are fifty-six, six Callings
+  of Faith where there are five, Rank Six holding "four Miracles apiece" where it holds six, five irons
+  in a table of six, and the Tier scale printed as I to V in three places while the Bestiary prints VI
+  to VIII. Seventeen typed copies of the creature count said 175 or 150 against 182, and one of them
+  is the README inside the zip. The audit that reads the Rank note learned to read it counted Rank by
+  Rank, which is how it has to be written now that Six and Seven differ.
+
+  **The modules were quoting an engine that had moved on.** Every module prints the playtest
+  engine's numbers, and the sentences around the tables were typed by hand the last time the tables
+  changed. Module II said ten clears in twelve beside a table showing nine, and Module III said three
+  in nine beside one. The prose reads its numbers from `PLAYTEST.md` at build time now, from the same
+  rows the tables come from, and a builder refuses to build when a sentence like "not one soul broke"
+  stops being true.
+
+  **Story faults.** Module III's nails gave "in the order they were driven", which would have taken
+  the courtyard nail first; they give from the far wells inward, three gone and four holding, and the
+  courtyard nail is the last. Module II brought both Possessed down off the tack-room wall while their
+  bodies lay in the ice house. Module I opened on "the fourth night of the fourth week" of a dig six
+  weeks old, and Module III's directions put the mission ten miles from Calvary Crossing, where Module
+  I puts it most of a day's ride away. The Dread Checks at DC 15, 17, 18 and 19 are on the ladder now,
+  and each one prints the Nerve it costs where it used to say "Tier II loss", which no book defines.
+
+  The app took the changes that are its own text (the Compulsion affliction, the Veteran's burden, a
+  Miracle's price, the familiar's binding DC, eight Calling features and two ghost stat blocks) under
+  v1.59.0, which has not shipped yet, and its status bar reads the new book numbers. Smoke 16,396
+  passed, self-test 44 of 44.
+- **The Book of Legends v1.3: the organised dark, eight more legends, and a book put in the order of
+  a slow burn (2026-09-24).**
+
+  Cole liked the book and found it short of flair. What he named was the organised dark it only
+  hinted at: the Dread Mother and her covens, Jubilee and Redemption, the Dark Cultists in their own
+  words, and cosmic horror that actually frightens. While that was being written he added eight more
+  (a Hexer whose power comes through one snake's bite, a gathering of vampires, a witch the Table has
+  put a price on, Redemption's business in Mexico, a long black train, a drifter who goes into
+  shadows, a spirit-talker everybody hunts for in Montana, a crossroads nobody comes back from) and
+  two conditions that shaped the rest. Balance all of it. And keep the slow burn, but let the
+  intensity build and build.
+
+  **Four new chapters.** *The Spur to Jubilee* is Redemption as its neighbours see it: the branch
+  time-table with a customs post the United States says does not exist, a porter who has never been
+  let off at the platform and knows exactly which verse of Leviticus the town was named out of, two
+  newspapers that agree to the comma except about three passengers, a letter home about wheat and a
+  stake the stock won't graze past, a Treasury note, a page of the Golden Circle's parcels with two
+  lines ruled for purchases not yet made, and a Mexican collector of customs who has refused to sell
+  them a salt pan four times. *The Long Table* is the covens: a card that asks a house to stand, a
+  seated house's tithe book with an empty column headed *received from the Table*, a witch who
+  answers Ashby's question and will not talk about the children in a letter, two women who sat
+  across from the Mother and describe different women with the same hands, two letters a year apart
+  about a ninth child and what saying no cost, and Mother Harrow, who took a child that was owed and
+  kept it. *There Is Always a Brother* is the Dark Cultists: the sign in a hotel dining room and the
+  man who answered it, a woman happier than she has ever been, somebody's uncle, a prisoner who would
+  not take off his gloves, and something that looked out of a man at a night meeting on the
+  Canadian. *What the Country Stands On* is the cosmic horror, and there is no monster in it: a
+  plain three miles longer going east, a well that breathes against a ton of iron, a street closed
+  because it cannot be put right, four camps in the high country, a crossroads whose four corners
+  measure three hundred and sixty-one and a quarter degrees, and the eclipse of 1878, which one
+  observer says had more stars in it than the chart.
+
+  **The other eight went where they fit, and where a chapter was light.** The drifter is the fourth
+  case in *A Face Not Their Own*, whose opening has promised four since v1.0 and printed three. The
+  rock snake came up with the spoil in *What the Ground Keeps*. The vampires are a hotel's account of
+  a week in which nobody ordered food and six of forty attendants did not collect their wages, in
+  *Hunger*, beside a congregation on the Dismal River that will not let a guest eat alone. The long
+  train is a dispatcher's sheet in *The Dead Do Not Stay Put*, the spirit-talker a guide's handbill
+  and ledger in *Preaching*, Redemption's Mexican business a section of its own chapter, and Mother
+  Harrow a bounty notice in the Trades with no money on it long before she speaks for herself.
+
+  **The order is the arc now.** The book used to run in subject order. It runs as a slow burn: the
+  Basin, where the plot is, then the frauds and the weather, so a reader learns early what a lie
+  sounds like, then chapters that are each a little harder to explain away than the last, up through
+  the Long Table, the faithful and the cosmic chapter to the satchel. Every new thread arrives first
+  as talk. The Long Table is a Kansas City swindle, a skipping rhyme, a bounty poster and a green door
+  before it gets a chapter; Redemption is a land-warrant fraud before it is a country; the eclipse is
+  a lantern lecture by a quack before it is a young woman's letter. Ashby himself is drawn in only at
+  the end. Inside each chapter the papers climb too, and the cosmic chapter was re-set to climb to
+  the eclipse.
+
+  **Balance, measured.** The first drafts made the four new chapters the longest in the book, and an
+  early chapter the longest of all works against a slow burn. They were cut back to their papers,
+  Jubilee from 2,967 words to about 2,350, and the chapters now run three to nine pages, lighter at
+  the front and fuller toward the end. Every paper in the new material that could be read as a
+  confirmation has an editor's note beside it taking some of it back: a card game, a melancholy, a
+  compositor's short line, a chain error, two astronomers who saw a planet that was not there, a man
+  who went to the crossroads to get away from his wife. No Patron is named anywhere in it, and
+  `verify_rules.py` reads the book to hold it there. The editor now says why, in *A Word Before*:
+  where anybody named the thing they serve, the name came out, as Ashby did.
+
+  **Three new kinds of paper**, each a helper and a CSS block: a card (the Table's), a printed
+  leaflet (the cultists' tract), and a banknote, double-ruled like an engraving, whose vignette is a
+  railroad track that runs into a depot and does not come out.
+
+  **Chapter numbers are read off one list.** `ORDER` in the builder carries the sequence, and every
+  numeral, Contents line, running head and "Chapter N" in the prose comes from it through `chref()`.
+  That fixed a stale one on the way past: since the Trades chapter went in, the editor's note on the
+  bigamy letter had been sending readers to the Songs for the Frauds.
+
+  **The front page's count of papers is checked.** README and CLAUDE.md typed "98" in four places and
+  nothing held them to the book. `audit_consistency.py` counts the papers, provenance notes and
+  editor's notes off the built book and fails any typed copy that disagrees. It failed on all six
+  stale figures before they were corrected.
+
+  **Measured with the book's own fonts, in the cloud.** The cloud session's headless browser does not
+  trust the session proxy, so its first renders fell back to system fonts and ran a page long. The
+  fonts were fetched with verification on and served to the browser locally. Rendered that way v1.2
+  comes out at the same 77 pages the laptop measures, so the 120 below should be close to what the
+  laptop gets, and it is the laptop's own print at ship time that goes on the Release. The other books
+  do not match as well from the cloud (the Bestiary prints 220 pages there against 226 here), which is
+  one more reason their PDFs are reprinted on this machine and nowhere else.
+
+  Pages: Book of Legends 120 (was 77), desktop and mobile alike, nothing clipped, no sideways scroll.
+  166 papers (was 98), 89 provenance notes (49), 59 editor's notes (31), about 36,300 words (20,900).
+  Rules 1,741 / 0, consistency 113,642 / 0, diversity 699 / 0, no hard prose tells, and the signals
+  the prose audit watches moved the right way: echo 2.2 to 1.4 per thousand words, negative
+  parallelism 0.1 to 0.0, em dashes 0.4 to 0.2, contractions 8.7 to 9.8. The Keeper's Book is
+  unchanged. Its paragraph about the players' book still says two of its three legends are in it,
+  which was already one short and now undersells it; correcting it means a Keeper's Book bump and an
+  app status-bar sync, so it waits for the laptop.
+
 - **GritKeeper v1.59.0: the same helper written out four times, and five faults a screenshot found
   that no test could (2026-09-23).**
 

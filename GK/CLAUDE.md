@@ -113,7 +113,7 @@ what each tab *is*, plus the decisions already settled.
   roll/event log, and an owner-drawn dice tray settling on the true per-die results from
   `Rules.RollExprFull`. Every die wears its colour (d4 green · d6 blue · d8 orange · d10 white ·
   d12 yellow · d20 red · d100 purple); the roll log is colour-coded by degree (`StyleRollLog`).
-- **Bestiary**: all **175 creatures**, machine-extracted from the rendered Bestiary HTML, so
+- **Bestiary**: all **182 creatures**, machine-extracted from the rendered Bestiary HTML, so
   lore/stats/witness quotes/keeper notes are word-for-word faithful to the book. Search, tier and
   chapter filters, one click to Encounter or Tracker, double-click to pop a creature into its own
   resizable window with A−/A＋ zoom: one window per creature, reused if open, cascading placement.
@@ -136,7 +136,7 @@ what each tab *is*, plus the decisions already settled.
     touches `signs` or a clock.
   - **Signs, Miracles and creature powers are tracked where they land.** A soul offers only what
     is on their sheet; **a creature offers the power its Bestiary `special` line names**
-    (`Rules.ParsePower`, all 150 entries are written "Short name. What it does.", so the parse
+    (`Rules.ParsePower`, all 182 entries are written "Short name. What it does.", so the parse
     depends on that shape holding). `Rules.ParseCost` pulls the printed cost apart, so working a
     Sign spends the real pools. The effect rides on the **target** as `Combatant.Worked`.
     `RoundsLeft = -1` means "until it is ended", which is what the book's "for a scene" is.
@@ -241,7 +241,7 @@ what each tab *is*, plus the decisions already settled.
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash, so failures are never silent. Opens the `Daybook` (and points it at `daybook.txt` under `--verbose`), and folds its dump into both error reports. Also hosts `--selftest`. |
 | **`Daybook.cs`** | The capped record of what the app just did: rolls, checks, session saves/loads, mode switches, generated souls, and **turn handoffs** (who went, on what initiative, who was still to go, the `turn` channel, added in v1.35.0, which is how the ordering fix was proved in the running app rather than only in the test rig), for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
 | `app.ico` / `Assets/emblem.png` | The cover emblem as a multi-size Windows icon (regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded. |
-| `Data/creatures.json` | All 175 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes, no code changes needed. **Embedded into the exe.** |
+| `Data/creatures.json` | All 182 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes, no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful. Never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
 | **`Look.cs`** | What a soul looks like: `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. The two rules that govern it are below, under *What a soul looks like*. |
@@ -466,14 +466,14 @@ v1.42.0 and it covers thirty-one of the hundred and sixteen features.
 
 A **tally** climbs and nothing hands it back. `FeatureTally`, `CharGen.ReadTally`,
 `PartyMember.TallyOwed`, moved only by `TakeTally` and `ForgiveTally`. The book states exactly one:
-the Hexer's Pact-Sworn bargain, *"on your third Debt the Patron calls it in, a demand, and +1
+the Hexer's Pact-Sworn bargain, *"on your third Debt the Old Dark calls it in, a demand, and +1
 Mark."* A sweep of all 116 features and all 56 paths finds no second one, and a smoke test holds
 the data to that so a new Calling cannot put an uncounted card on the strip.
 
 Four decisions already settled:
 
 - **The two stores are separate so that no boundary can reach a Debt.** `RefreshFeatures` walks
-  `FeatureSpent` alone. That is the design, not an oversight: a Debt is owed until the Patron
+  `FeatureSpent` alone. That is the design, not an oversight: a Debt is owed until the Old Dark
   collects it, and the app must never be the reason one silently went away. Six smoke assertions
   walk every cadence and check the count still stands. **This is the recurring-bug class run
   backwards:** the usual fault here is state added late that older reset paths never learned about,
@@ -483,7 +483,7 @@ Four decisions already settled:
   were. The pattern is narrow, *"on your <ordinal> <Capitalised noun>"*, because a
   looser one reads "on your first turn" as a debt, and a counter the app invented is worse than one
   it lacks.
-- **The count is not clamped at the threshold.** Four Debts is a legitimate state; the Patron
+- **The count is not clamped at the threshold.** Four Debts is a legitimate state; the Old Dark
   collecting is the Keeper's move. The card says *"Debts, 4 owed"* past it rather than *"4 of 3"*,
   which is the same number said in a way that reads.
 - **`CharGen.ShortFeatureName` is display only.** A 3rd-level path is keyed section-colon-option so
@@ -512,7 +512,7 @@ Five decisions already settled:
   Blood written onto it on every posse edit, and the beast having a Blood of its own is the entire
   point. Everything that walks the posse asks for a soul and correctly finds nothing here.
 - **The book gives the beast no stat block and the app does not pretend otherwise.** Ch. VII says
-  what the familiar *does*; the Bestiary's 175 entries are horrors, and none of them is a barn cat. `Rules`
+  what the familiar *does*; the Bestiary's 182 entries are horrors, and none of them is a barn cat. `Rules`
   derives a default from figures the book *does* state: Blood a third of its Witch's, **half**
   once she has taken the Familiar-Bound ("grows clever and hardy"), floored at four; Defense hers,
   and two better with the Craft, and the card's tooltip says out loud that this is the app's
@@ -597,9 +597,11 @@ or off-screen and the rules lose nothing by it. Same standing line as the Ch. IV
 ## A player's table sees what the Player's Book prints (v1.58.0)
 
 Since 2026-09-19 the Dark Cultist's Devotions are Keeper-side: the Player's Book offers six wants and
-no Patron names, and `chargen.json` marks the subpath `"printedIn": "keeper"` with a `want` per option
+no face names, and `chargen.json` marks the subpath `"printedIn": "keeper"` with a `want` per option
 and the book's own `playerNote`. The app had been listing the names and every boon to anyone in Player
-mode, through the New Soul wizard and the sheet. The four decisions below are already settled:
+mode, through the New Soul wizard and the sheet. (Since 2026-09-25 the six are faces of one Old Dark
+rather than six Patrons; every name, boon and mechanism below is unchanged, and only the word moved.)
+The four decisions below are already settled:
 
 - **The sheet keeps the name.** `Validate`, `FeaturesAt`, `FeatureSpent` and the tallies are all keyed
   by it, and a Keeper who wants a mismatch (a soul asked for one thing, something else answered) sets
@@ -609,13 +611,13 @@ mode, through the New Soul wizard and the sheet. The four decisions below are al
   `SoulWizard(forPlayer)`, `LedgerView.PlayerView`, `CharGen.Render(sheet, forPlayer)` behind Copy
   sheet and Save PDF. Nothing reads the mode from a static.
 - **A player picking a veiled path reads no boons.** Moving through the list would read out every
-  Patron's powers in turn, so the panel prints `playerNote` instead. Once taken, the sheet shows the
+  face's powers in turn, so the panel prints `playerNote` instead. Once taken, the sheet shows the
   want and the boon's first sentence, which the Keeper's Book says the player gets straight away.
 - **`SetMode` redraws a sheet already on the New Soul tab**, or a Keeper who switches the table to
   a player leaves a name on the screen.
 
 `--selftest` collects every word a player's Dark Cultist wizard shows (captions, list rows, detail
-panels, tooltips; `SoulWizard.Words`) and fails on any Patron name. The Keeper's wizard is walked as
+panels, tooltips; `SoulWizard.Words`) and fails on any face's name. The Keeper's wizard is walked as
 the control and has to show all six, or the walk isn't reading what it claims to, which was proved by sabotage.
 
 ## Ch. IV's encounter ladder is one array (v1.44.0)
@@ -716,7 +718,7 @@ that do render are ▶ ▾ ◀ ▸ ◂ ✕ ＋ ✎ ✦ ✝ ◈ ✚ ✥ ⟲ ⟳ �
 
 Found in the v1.30.0 six-month sweep, in the two hottest paths in the app: the Dice tab's result card
 minted a headline font on **every roll**, and `RenderCreature` about **thirty per creature**, so
-arrowing down the Bestiary's 150 spends ~4,500 GDI handles in seconds. Neither disposed anything.
+arrowing down the Bestiary's 182 spends ~4,500 GDI handles in seconds. Neither disposed anything.
 The finalizer does eventually reclaim them, which is why an hour of testing looks clean and a
 long evening does not, and why this survived every assertion the app has.
 
@@ -865,7 +867,7 @@ a weight changed in a Fill-mode grid is re-measured by `--selftest` rather than 
   there was a real bug here once, a signed band scale with a gap at zero; fixed by moving to an
   ordered 0–3 scale), `RollExprFull` per-die/total agreement, encounter costs, the Nerve ladder,
   model clamping, `INotifyPropertyChanged` firing, serialization round-trips, full data-load checks
-  (175 creatures parse, table merge counts, no duplicates, **every terrain-table entry resolves to
+  (182 creatures parse, table merge counts, no duplicates, **every terrain-table entry resolves to
   a real creature by name**), `CharGen.Assemble` conformance sweeps with junk-choice fuzzing,
   `LevelUp` proved across every calling × ability method × level 1→10, Trail Maps
   generation/SVG/PDF structural + determinism checks, and `TurnClock`. Re-run after any
@@ -1020,7 +1022,7 @@ ordinary `Combatant`s.
 ## Creature attacks (v1.17.0)
 
 A creature on the tracker Strikes with its OWN attacks, parsed from the Bestiary's free-text `attacks`
-line by `CreatureAttack.Parse` in `IronCode.cs` (pure, smoke-tested across all 175 creatures). No
+line by `CreatureAttack.Parse` in `IronCode.cs` (pure, smoke-tested across all 182 creatures). No
 data-format change; the free-text stays the source of truth, like `WeaponTraits`.
 `CombatFlow.StrikeAndApply` has a `CreatureAttack` overload; `IronCode.Strike` takes an optional
 `forceType` so an elemental touch types past worn-armor DR.

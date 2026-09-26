@@ -145,7 +145,7 @@ public class CgSubpath
     public string section { get; set; } public List<CgSubOption> options { get; set; } = new();
     /// <summary>"keeper" when the book that prints these paths is the Keeper's Book. Only the Dark
     /// Cultist's Devotions, since 2026-09-19: the Player's Book offers six wants and no names, and
-    /// the Keeper says who answered. Null means the Player's Book, like every other Calling.</summary>
+    /// the Keeper says which face of the Old Dark answered. Null means the Player's Book, like every other Calling.</summary>
     public string printedIn { get; set; }
     [System.Text.Json.Serialization.JsonIgnore] public bool KeeperSide => printedIn == "keeper";
     /// <summary>What the Player's Book tells a player about a Keeper-side path in place of its
@@ -362,12 +362,12 @@ public readonly struct FeatureLimit
 /// Player's Book the Calling strip had no home for until v1.44.0.
 ///
 /// <para>The Hexer's <b>Pact-Sworn</b> bargain is the whole of it: <i>"Once per scene, turn a
-/// failed Sign or Will save into a success by taking a Debt; on your third Debt the Patron calls
+/// failed Sign or Will save into a success by taking a Debt; on your third Debt the Old Dark calls
 /// it in: a demand, and +1 Mark."</i> The once-a-scene half is a ration and
 /// <see cref="FeatureLimit"/> has counted it since v1.42.0. The Debts are the other half, and they
 /// are a different animal: they accumulate across scenes, across nights, and across the whole
 /// campaign, and nothing in the app's boundary machinery should ever hand one back. A Debt is owed
-/// until the Patron collects it.</para>
+/// until the Old Dark collects it.</para>
 ///
 /// <para>Read out of the feature's own prose, the same discipline <see cref="FeatureLimit"/>
 /// follows and for the same reason: a <c>tally</c> column typed into <c>chargen.json</c> beside
@@ -1643,7 +1643,7 @@ public static class CharGen
     // ============================================================ RENDER (Appendix D pattern)
     /// <summary>The sheet as plain text. <paramref name="forPlayer"/> is for a player's own table,
     /// where a Keeper-side path shows the want the player picked and never the name behind it
-    /// (<see cref="PathLabel"/>); a Keeper's copy names who answered.</summary>
+    /// (<see cref="PathLabel"/>); a Keeper's copy names the face that answered.</summary>
     public static string Render(CharacterSheet s, bool forPlayer = false)
     {
         var cal = D.callings.First(c => c.name == s.Calling);
@@ -1883,7 +1883,7 @@ public static class CharGen
     }
 
     // A tally is the opposite of a ration: it climbs, and no boundary returns it. The book states
-    // one in the shape "on your third Debt the Patron calls it in", so that is what is matched:
+    // one in the shape "on your third Debt the Old Dark calls it in", so that is what is matched:
     // the count, the thing counted, and the sentence it lives in. Deliberately narrow: a looser
     // pattern would start reading "on your first turn" as a debt, and a counter the app invented
     // is worse than a counter it lacks.
@@ -2154,7 +2154,7 @@ public static class CharGen
     /// <summary>What a sheet should call its 3rd-level path for whoever is reading it. A Keeper sees
     /// the name the sheet stores, and so does a player whose path the Player's Book prints. A player
     /// with a Keeper-side path sees the want they picked, because that is all their book gives them:
-    /// a Dark Cultist asks the dark for something and the Keeper says who answered.
+    /// a Dark Cultist asks the dark for something and the Keeper says which face answered.
     ///
     /// <para>Display only, like <see cref="ShortFeatureName"/>. The sheet keeps the name, because
     /// <c>Validate</c>, <c>FeaturesAt</c> and the Tracker's tallies are all keyed by it.</para></summary>
@@ -2513,7 +2513,7 @@ public static class CharGen
         return (owed, owed >= row.Tally.At);
     }
 
-    /// <summary>Strike one off: the Patron collected, or the table read it differently, or it was
+    /// <summary>Strike one off: the Old Dark collected, or the table read it differently, or it was
     /// a mis-click. Never happens on its own: see PartyMember.TallyOwed.</summary>
     public static bool ForgiveTally(PartyMember p, string feature)
     {

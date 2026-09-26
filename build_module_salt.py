@@ -7,10 +7,17 @@
 # before a word was written about how hard it is. The numbers in "What the night costs" came out
 # of GK/playtest and nowhere else.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
-                            keeper, clock, npc, statblock, found, contents)
+                            keeper, clock, npc, statblock, found, contents,
+                            fight, words, odds)
+
+# The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
+_ACT2, _ACT3 = fight("The Salt at Coffin Wells", 0), fight("The Salt at Coffin Wells", 1)
+# The module says in three places that Act Three is not won with guns. If a harness run ever
+# clears it, those sentences are false and the build should say so rather than print them.
+assert _ACT3["cleared"] == 0, "PLAYTEST.md has a posse shooting the Nightwalker down; reread Act Three's prose"
 from module_maps import map_html
 
-VERSION = "1.9"
+VERSION = "1.10"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -134,7 +141,7 @@ TRUTH = '''
 
   <h2 id="truth-clock">The Clock</h2>
   <p>This is the pressure and it should be felt rather than announced. The thing at the mission grows
-  stronger every night it feeds. Tonight is the fourth night of the fourth week and there are four
+  stronger every night it feeds. Tonight is the fourth night of the sixth week and there are four
   nights left in which a stake will still hold it.</p>
 
   ''' + clock("The Fourth Night", 4,
@@ -359,8 +366,8 @@ ACT1 = '''
     "The dirt on four of these is wrong. It is not sunk the way settled ground sinks. It is heaped "
     "out and away, in a ring, the way dirt lies when something has come up through it.") + '''
 
-  <p><strong>Dread Check, DC 13, Will save.</strong> Tier I loss on a failure. This is the table&rsquo;s
-  first, and it's meant to be soft. Call it out loud, name the save, and let a failure sting a
+  <p><strong>Dread Check, DC 13, Will save.</strong> Lose 1 Nerve on a failure, a rung softer than
+  the ladder asks for at this DC. This is the table&rsquo;s first, and it's meant to be soft. Call it out loud, name the save, and let a failure sting a
   little without costing anybody the night.</p>
 
   <h2 id="a1-dogs">4. Small Wrongnesses</h2>
@@ -392,7 +399,7 @@ ACT2 = '''
     "supper is on the table and has been there long enough to have stopped smelling of supper. Four "
     "chairs. Three of them pushed back.") + '''
 
-  <p><strong>Dread Check, DC 16, Will save.</strong> Tier I loss. Nobody has met anything yet. The
+  <p><strong>Dread Check, DC 13, Will save.</strong> Lose 1d4 Nerve. Nobody has met anything yet. The
   house does this on its own.</p>
 
   <p>The house gives up three things to anyone who looks:</p>
@@ -425,7 +432,7 @@ ACT2 = '''
   <p>Hannah Pell is down there, bled thin and half-turned, and she is still herself for now. She knows
   what's happening to her. She asks them to see to it before she stops being able to ask.</p>
 
-  <p><strong>Dread Check, DC 16, Will save.</strong> Tier II loss. This one is meant to cost.</p>
+  <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve. This one is meant to cost.</p>
 
   ''' + readaloud(
     "She has been down here two days and she has thought it all the way through. &ldquo;There is a "
@@ -482,7 +489,7 @@ ACT3 = '''
   and you can say it out loud at the table if it lands.</p>
 
   <h2 id="a3-thing">10. The Thing Out of the Grave</h2>
-  <p><strong>Dread Check, DC 18, Will save.</strong> Tier III loss, and it is its regard that does it
+  <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve, and it is its regard that does it
   rather than its appearance; it looks at each of them in turn, the way a man looks at stock.</p>
 
   ''' + found("The Nightwalker") + '''
@@ -492,7 +499,8 @@ ACT3 = '''
 
   ''' + keeper(
     "<p><strong>This can't be shot down and the module means that literally.</strong> Twelve posses "
-    "were run at this fight on the engine and not one of them won it with guns; see "
+    "were run through this night on the engine, " + words(_ACT3["reached"]) + " of them reached this "
+    "fight, and not one won it with guns; see "
     "<a href=\"#cost\">What the Night Costs</a> for the count. Don't soften the fight to make it "
     "winnable. Make the wall readable instead, and let the answer be a thing they do rather than a "
     "roll they pass. Pin it: the stake is right there in the dirt. Take the head. Burn it. "
@@ -570,7 +578,7 @@ DEAD = '''
 
   ''' + keeper(
     "<p><strong>On the safe-table rule.</strong> A Nightwalker is Tier III and a 1st-level posse is "
-    "Tier 1, which is two Tiers over, so by the Keeper's Book Ch. IV this horror is sign and "
+    "Tier I, which is two Tiers over, so by the Keeper's Book Ch. IV this horror is sign and "
     "spoor rather than a fight, and GritKeeper will offer to put it on the trail instead of the field "
     "if you build it there. That's correct and this module doesn't override it. Act Three isn't a "
     "fight the posse wins by fighting. It's a thing in the room with them while they do the four "
@@ -596,11 +604,12 @@ COST = '''
 ''' + night_costs("The Salt at Coffin Wells",
       ["The dead getting up (Act Two)", "The Nightwalker (Act Three)"]) + '''
 
-  <p>Read the second row and then read it again. Twelve posses, cold and tended both, and the
-  Nightwalker was never once put down by shooting it. Giving the posse back half its Blood between
-  every act changed that count by nothing, which is how you know it isn't an attrition problem.
-  Twelve Strikes a round at rising MAP land about one time in eight against Defense 18, and the thing
-  hits back three times in four.</p>
+  <p>Read the second row and then read it again. ''' + words(_ACT3["reached"], True) + ''' of twelve posses
+  got as far as the grave, and not one of them put the Nightwalker down by shooting it. Giving the
+  posse back half its Blood between every act didn't change that, which is how you know it isn't an
+  attrition problem. Twelve Strikes a round at rising MAP, against Defense 18 and a thing that heals
+  five Blood a turn, land about ''' + odds(_ACT3["ours"]) + ''', and it hits back
+  ''' + odds(_ACT3["theirs"]) + '''.</p>
 
   ''' + keeper(
     "<p><strong>So the module says it plainly: Act Three isn't a fight.</strong> It's a room with "
@@ -610,7 +619,7 @@ COST = '''
     "about.</p>") + '''
 
   <h2 id="cost-act2">On the Act Two fight</h2>
-  <p>Two clears in twelve looks alarming and is not. That row is a posse that only shoots, standing
+  <p>''' + words(_ACT2["cleared"], True) + ''' clears in twelve looks alarming and is not. That row is a posse that only shoots, standing
   in the open, in a yard, against three things that don't stop. The same fight with the barn door
   as a bottleneck, or with the lamp oil used, or with the Marshal arriving on round three, is a fight
   a fresh posse wins comfortably, and every one of those is keyed into <a href="#a2-fight">scene 6</a>
