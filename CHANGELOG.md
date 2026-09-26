@@ -8,6 +8,67 @@ Desktop\Git repos.)
 
 ---
 
+- **Thirty-two new legends in the Book of Legends. The Book of Legends v1.7 (2026-09-26).**
+
+  Cole asked for legends with the game's cosmic dread in them, drawing on The VVitch, Hereditary,
+  Midsommar, Weapons, Talk to Me, Nosferatu, Lake Mungo, Lovecraft, The Twilight Zone, Masters of
+  Horror, Black Mirror, 28 Days Later, Let Me In, Drag Me to Hell and Hokum, and on the range of
+  peoples the game already carries. Cole kept twenty-two of the proposals, turned a hair wreath into a
+  braid, and asked for more from The Twilight Zone and Masters of Horror, each rewritten so that
+  nothing in it sounds like the film or the episode it came from. All thirty-two are in the book now,
+  as papers in the book's own voices: a clerk's letters to his mother, the Cherokee Nation's
+  newspaper, a road house's wager book, a precinct's poll book, a driller's log, a broadside ballad
+  printed twice, a court-martial, a telephone transcript from a flooded mine, a quarantine post's
+  ration return, and a census line that reads *the other one*. The book goes from 166 papers to 289,
+  with 122 provenance notes and 91 editor's notes, and from 119 pages to 172.
+
+  **Where they went.** Twelve chapters took at least one, placed by the slow burn, so the mild ones
+  sit early in the book and the worst late, and each climbs inside its own chapter. The Basin has
+  *Paid in Full*. The Frauds have *The Advocate's Reply*, *What the Collector Was Paid For*, *A
+  Subscription Taken at Hackberry*, *The Wager at Sull's Ferry* and *Nine Plates and One*. The Weather
+  has *Carved in the Aspens* and *What the Lineman Saw*. Paper, Ink & Interest has *Two Censuses*, *The
+  Dead Vote at Salitre* and *The Floor at Two Hundred and Twelve Feet*. The Songs have *Three Times at
+  Keeler's Ford*. The Trades have *The Surgeon Who Saw It Raining*, *Courage Bitters* and *The Man in
+  the Third Cell*. Met on the Road has *The Road Past the Carrow Place*, *The Calendar*, *The Trail the
+  Scouts Wouldn't Take* and *A Trunk on the Eastbound*. The Dead has *Sixty-One Boxes*, *Shake Hands
+  with a Dead Man*, *The Correspondent* and *The Grinder's Wheel*. What the Ground Keeps has *Notes from
+  the Adit*, *The Galvanic Exhibition*, *The Line into Number Four*, *The Night the Lamps Went Out* and
+  *The Back Wall of the Dugout*. Hunger has *The Fort Is Safe*, Preaching has *The Braid* and *The
+  Lindqvist Claim*, and What the Country Stands On has *The Last Days of Plenty*.
+
+  **What the book already promised.** The new papers keep every promise the book makes about itself.
+  *A Word Before* says one name in the book has been changed, so none of these changes a name; a few
+  leave one off, at the asking of whoever gave the paper. The forgery in the Frauds is still the only
+  forgery. Nothing is in Ashby's hand after the autumn of 1884, and what came later came to the
+  editor. The Paper chapter still has no monster in it, every paper in the Trades is by somebody who
+  went toward the thing for money, and the ballad at Keeler's Ford says why it is the one song in its
+  chapter written down on the day. Every legend has an editor's note that takes some of it back (a
+  drunk, a miscount, a caliche pan, a copyist who took work home), and none of them names a face of
+  the Old Dark.
+
+  **Threads.** Two land where the arc wants them. The Nevada dry lake on the Circle's schedule in *The
+  Spur to Jubilee* is sold two chapters earlier, in *The Floor at Two Hundred and Twelve Feet*, at the
+  same 2,240 acres and $3,100 in gold. Karin Lindqvist writes from the north end of Denver one section
+  before the green door. Every new name was checked against all seven books, and any that was already
+  in print, or close to one that was, went in as another.
+
+  **Not added.** The twenty relics from the same proposal carry rules, and this book carries none, so
+  they are not in it. Their place would be the Player's Book, Ch. X, as a change of its own.
+
+  **Still to do.** Three papers speak for a real nation: *The Calendar*, *The Advocate's Reply* and the
+  clerk's letter in *What the Collector Was Paid For*. Somebody from that nation should read them
+  before they ship, and the Calendar's 1879 line, the children sent east to school, is the one to
+  settle first. The Contents fallback numbers in `STATIC_PG` and the 172 pages in CLAUDE.md were
+  measured in the cloud's Chromium with the book's own web fonts loaded. On v1.6 that render agreed
+  with the laptop through Chapter IX and ran a page long after it, so both want measuring again in
+  Edge at the next ship.
+
+  Checks: `verify_rules.py` finds 0 drift in 2,226 cross-checks. `audit_consistency.py` is clean once
+  the front-page counts were brought up. `audit_ai_tells.py --books` finds no hard tells, and the new
+  papers add no two-beat reveals or negative parallels. The book measures 172 pages at desktop and
+  mobile width, with nothing clipped at true scale, no mobile h-scroll, and every Contents and Index
+  anchor resolving, and two builds in a row are byte-identical.
+
 - **Four slips Cole found in the builders, and new checks for two of them. Books v2.56 / v2.41 /
   v2.27, the Book of Legends v1.6 (2026-09-25).**
 
