@@ -8,6 +8,102 @@ Desktop\Git repos.)
 
 ---
 
+- **A double, and the Wendigo of the North. The Book of Legends v1.8 (2026-09-26).**
+
+  Cole asked for two more: a legend about a murderous doppelgänger, and one about the Wendigo of the
+  North with a twist like the one in Heretic. Both are papers now, and the book goes from 289 papers
+  to 301 and from 172 pages to 177.
+
+  **A Claim on a Living Man** is in the Trades, told through an inquiry agent's reports to a life
+  office at Hartford. A widow at Helena claims the insurance on her husband while a man with his face
+  keeps his store and sits at her table. The agent sets down, in order, the hired man who grew to look
+  like the husband over one summer, the dentist who made a second gold crown from a cast of the
+  husband's mouth, and the three people who knew the husband best and died in the six months after
+  the claim was made. By its subject it belongs in A Face Not Their Own, but that chapter says it holds
+  the four stories out of forty that were not bigamy, so the gloss says the file reached the editor
+  after the chapter was made up. The editor's note offers a fall that changed a man, and a confidence
+  man who got as far as the teeth.
+
+  **The Wendigo of the North** is in Hunger. It opens as a lecture: a retired trader tells a St. Paul
+  hall in 1882 how he frightened a starving Ojibway band away from his post with a pair of snowshoes
+  four feet long, and the hall laughs. The post's own winter accounts show fifty-two barrels of flour
+  left in the spring. At the agency a woman of the band says what her people mean by the word: a
+  person who ate the others so that he could go on living, and is never full after. The twist is the
+  one Heretic turns on, that the learned man who explains the monster away is the monster, here in
+  the only sense the people who named it ever meant. A surgeon finds a tapeworm or a cancer, and the
+  trader dies of want in a full larder, which the cancer accounts for.
+
+  **Still to do.** The woman's statement speaks for the Ojibway, so it joins The Calendar, The
+  Advocate's Reply and the clerk's letter on the list of papers somebody from the nation should read
+  before they ship. The page numbers were measured the way v1.7's were, in the cloud with the book's
+  own web fonts, and want measuring again in Edge at the next ship.
+
+  Checks: `verify_rules.py` finds 0 drift. `audit_consistency.py` is clean with the counts brought up.
+  `audit_ai_tells.py --books` finds no hard tells and no new soft findings in either paper. The book
+  measures 177 pages at desktop and mobile width, with nothing clipped at true scale, no mobile
+  h-scroll and every anchor resolving, and two builds in a row are byte-identical.
+
+- **Thirty-two new legends in the Book of Legends. The Book of Legends v1.7 (2026-09-26).**
+
+  Cole asked for legends with the game's cosmic dread in them, drawing on The VVitch, Hereditary,
+  Midsommar, Weapons, Talk to Me, Nosferatu, Lake Mungo, Lovecraft, The Twilight Zone, Masters of
+  Horror, Black Mirror, 28 Days Later, Let Me In, Drag Me to Hell and Hokum, and on the range of
+  peoples the game already carries. Cole kept twenty-two of the proposals, turned a hair wreath into a
+  braid, and asked for more from The Twilight Zone and Masters of Horror, each rewritten so that
+  nothing in it sounds like the film or the episode it came from. All thirty-two are in the book now,
+  as papers in the book's own voices: a clerk's letters to his mother, the Cherokee Nation's
+  newspaper, a road house's wager book, a precinct's poll book, a driller's log, a broadside ballad
+  printed twice, a court-martial, a telephone transcript from a flooded mine, a quarantine post's
+  ration return, and a census line that reads *the other one*. The book goes from 166 papers to 289,
+  with 122 provenance notes and 91 editor's notes, and from 119 pages to 172.
+
+  **Where they went.** Twelve chapters took at least one, placed by the slow burn, so the mild ones
+  sit early in the book and the worst late, and each climbs inside its own chapter. The Basin has
+  *Paid in Full*. The Frauds have *The Advocate's Reply*, *What the Collector Was Paid For*, *A
+  Subscription Taken at Hackberry*, *The Wager at Sull's Ferry* and *Nine Plates and One*. The Weather
+  has *Carved in the Aspens* and *What the Lineman Saw*. Paper, Ink & Interest has *Two Censuses*, *The
+  Dead Vote at Salitre* and *The Floor at Two Hundred and Twelve Feet*. The Songs have *Three Times at
+  Keeler's Ford*. The Trades have *The Surgeon Who Saw It Raining*, *Courage Bitters* and *The Man in
+  the Third Cell*. Met on the Road has *The Road Past the Carrow Place*, *The Calendar*, *The Trail the
+  Scouts Wouldn't Take* and *A Trunk on the Eastbound*. The Dead has *Sixty-One Boxes*, *Shake Hands
+  with a Dead Man*, *The Correspondent* and *The Grinder's Wheel*. What the Ground Keeps has *Notes from
+  the Adit*, *The Galvanic Exhibition*, *The Line into Number Four*, *The Night the Lamps Went Out* and
+  *The Back Wall of the Dugout*. Hunger has *The Fort Is Safe*, Preaching has *The Braid* and *The
+  Lindqvist Claim*, and What the Country Stands On has *The Last Days of Plenty*.
+
+  **What the book already promised.** The new papers keep every promise the book makes about itself.
+  *A Word Before* says one name in the book has been changed, so none of these changes a name; a few
+  leave one off, at the asking of whoever gave the paper. The forgery in the Frauds is still the only
+  forgery. Nothing is in Ashby's hand after the autumn of 1884, and what came later came to the
+  editor. The Paper chapter still has no monster in it, every paper in the Trades is by somebody who
+  went toward the thing for money, and the ballad at Keeler's Ford says why it is the one song in its
+  chapter written down on the day. Every legend has an editor's note that takes some of it back (a
+  drunk, a miscount, a caliche pan, a copyist who took work home), and none of them names a face of
+  the Old Dark.
+
+  **Threads.** Two land where the arc wants them. The Nevada dry lake on the Circle's schedule in *The
+  Spur to Jubilee* is sold two chapters earlier, in *The Floor at Two Hundred and Twelve Feet*, at the
+  same 2,240 acres and $3,100 in gold. Karin Lindqvist writes from the north end of Denver one section
+  before the green door. Every new name was checked against all seven books, and any that was already
+  in print, or close to one that was, went in as another.
+
+  **Not added.** The twenty relics from the same proposal carry rules, and this book carries none, so
+  they are not in it. Their place would be the Player's Book, Ch. X, as a change of its own.
+
+  **Still to do.** Three papers speak for a real nation: *The Calendar*, *The Advocate's Reply* and the
+  clerk's letter in *What the Collector Was Paid For*. Somebody from that nation should read them
+  before they ship, and the Calendar's 1879 line, the children sent east to school, is the one to
+  settle first. The Contents fallback numbers in `STATIC_PG` and the 172 pages in CLAUDE.md were
+  measured in the cloud's Chromium with the book's own web fonts loaded. On v1.6 that render agreed
+  with the laptop through Chapter IX and ran a page long after it, so both want measuring again in
+  Edge at the next ship.
+
+  Checks: `verify_rules.py` finds 0 drift in 2,226 cross-checks. `audit_consistency.py` is clean once
+  the front-page counts were brought up. `audit_ai_tells.py --books` finds no hard tells, and the new
+  papers add no two-beat reveals or negative parallels. The book measures 172 pages at desktop and
+  mobile width, with nothing clipped at true scale, no mobile h-scroll, and every Contents and Index
+  anchor resolving, and two builds in a row are byte-identical.
+
 - **Four slips Cole found in the builders, and new checks for two of them. Books v2.56 / v2.41 /
   v2.27, the Book of Legends v1.6 (2026-09-25).**
 
