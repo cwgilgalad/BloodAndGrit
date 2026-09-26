@@ -25,9 +25,10 @@ What it holds together:
   5. THE GROUNDS: every creature named in the eleven terrain tables must exist, and the Tier in
      parentheses beside it must be that creature's actual Tier. 143 entries, hand-written, each
      one an invitation to mistype a name or misremember a Tier.
-  6. CONDITIONS: every condition a creature inflicts must be defined in the Player's Book
-     Appendix B. A stat block that inflicts something the glossary never names is a rule the
-     table cannot look up.
+  6. CONDITIONS: every condition a stat block, a table or a rule anywhere in the seven books
+     names must be defined in the Player's Book Appendix B. A rule that inflicts something the
+     glossary never names is a rule the table cannot look up. This read only the stat blocks
+     until 2026-09-25, when Cole found the Keeper's hazards table inflicting "Stupefied".
   7. THE BENCHMARKS AGAINST THE POPULATION: the printed Tier row says what a Tier III thing
      should look like; check that the Tier III things look like it. Reported as spread, and
      failed only where a creature sits outside its own Tier's band by more than the neighbouring
@@ -39,6 +40,11 @@ What it holds together:
      other. `creatures.json` is the count; seventeen copies of it sit in prose across eight
      files, including the README that ships inside the zip. Fourteen of them were two
      Bestiary expansions out of date on 2026-09-23 and every check in this repo passed.
+ 10. THE LEGENDS IN BOTH BOOKS: Keeper's Ch. XVI names the Book of Legends heading each of its
+     legends is filed under, and counts how many are there. `build_keeper.py` derives the count
+     and holds its lists to its own headings; the Book of Legends is built after it, so the
+     headings on that side are held here. Ch. XVI once said two of the three were there when
+     all three were.
 
 Usage:
     python audits/audit_consistency.py            # every check
@@ -47,6 +53,7 @@ Usage:
 Reads built books, so build first. Read-only: writes nothing, ever.
 """
 import argparse
+import ast
 import json
 import re
 import sys
@@ -302,8 +309,75 @@ def check_grounds(dig, creatures):
         ok(f"{total} table entries: every name real, every Tier the creature's own")
 
 
+# The names a condition goes by in the d20 family, whether or not this game uses them. Most come
+# from Pathfinder's list, which is the one a writer who knows the family reaches for without
+# noticing. Appendix B's vocabulary is closed and small, so a rule that names one of these and
+# finds it missing from the glossary has invented a condition, and that is the finding. The ones
+# Appendix B defines are listed as well, so that a condition dropped from the glossary is caught
+# everywhere it is still used, and the check fails if the glossary gains one this set lacks. A
+# hyphenated name is one word to the scan: Off-Guard, and Flat-Footed, which is what Pathfinder
+# called it first.
+CONDITION_WORDS = {
+    "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Enfeebled", "Fatigued", "Frightened",
+    "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stunned",
+    "Broken", "Charmed", "Concealed", "Confused", "Controlled", "Cursed", "Dazed", "Dazzled",
+    "Deafened", "Doomed", "Encumbered", "Entangled", "Exhausted", "Fascinated", "Flat-Footed",
+    "Fleeing", "Hidden", "Immobilised", "Immobilized", "Invisible", "Nauseated", "Panicked",
+    "Paralysed", "Paralyzed", "Persistent", "Petrified", "Poisoned", "Quickened", "Restrained",
+    "Shaken", "Staggered", "Stupefied", "Unconscious", "Undetected", "Weakened", "Wounded",
+}
+_TITLE = r"\b([A-Z][a-z]{2,13}(?:-[A-Z][a-z]{1,13})?)\b"
+_OPENS = set(".!?\u2026\"\u201c\u2018'\u201d\u2019\u2014\u2013")
+
+
+def _rules_text(src):
+    """A built book as lines of text, minus its script, style, Contents and Index. A table row's
+    cells are split by TABs, so the scan can tell a cell (rules text from its first word) from a
+    paragraph (which may open on any word it likes). The digest is not used for this because it
+    keeps only paragraphs, list items and tables, and the Keeper's notes and the modules' stat
+    blocks are neither."""
+    src = re.sub(r"<(script|style)\b.*?</\1>", " ", src, flags=re.S | re.I)
+    keep = []
+    for sec in re.split(r"(?=<section\b)", src):
+        sid = re.match(r'<section\b[^>]*\bid="([^"]*)"', sec)
+        h1 = re.search(r'<h1 class="chapter"[^>]*>(.*?)</h1>', sec, re.S)
+        if (sid and sid.group(1) in ("contents", "bookindex")) or (
+                h1 and X.text_of(h1.group(1)) in ("Contents", "Index")):
+            continue
+        keep.append(sec)
+    s = re.sub(r"</?t[hd]\b[^>]*>", "\t", "".join(keep))
+    s = re.sub(r"</?(?:p|li|div|h[1-6]|tr|table|section|ul|ol|br|blockquote)\b[^>]*>", "\n", s)
+    s = X.H.unescape(re.sub(r"<[^>]+>", " ", s))
+    for line in s.split("\n"):
+        if "\t" in line:
+            for cell in line.split("\t"):
+                yield True, re.sub(r"\s+", " ", cell).strip()
+        else:
+            yield False, re.sub(r"\s+", " ", line).strip()
+
+
+def _as_conditions(text, cell):
+    """The condition words a passage uses AS conditions. A word counts when it is capitalised
+    mid-sentence ("is left Stupefied", "Fatigued, then 1d6 Blood"), or anywhere in a table cell;
+    a sentence that opens on "Wounded," is prose. A word joined to a capitalised neighbour by a
+    space, hyphen or slash is part of a name (the Cursed Man, the Moon-Cursed, the Petrified Man
+    at Wilcox, Fledgling / Weakened) and is left alone."""
+    for m in re.finditer(_TITLE, text):
+        w = m.group(1)
+        if w not in CONDITION_WORDS:
+            continue
+        before, after = text[:m.start()], text[m.end():]
+        if (re.match(r"(?: ?[-/] ?| )[A-Z]", after)
+                or re.search(r"[A-Z][\w'\u2019]*(?: ?[-/] ?| )$", before)):
+            continue
+        prev = before.rstrip()
+        if not cell and (not prev or prev[-1] in _OPENS):
+            continue
+        yield w, text[max(0, m.start() - 40):m.end() + 30].strip()
+
+
 def check_conditions(dig, creatures):
-    print("\nConditions: every one a creature inflicts is defined in Appendix B")
+    print("\nConditions: every one a stat block, a table or a rule names is defined in Appendix B")
     defined = []
     for _ch, _sec, tb in X.all_tables(dig["books"]["blood-and-grit.html"]):
         if tb["headers"][:1] == ["Condition"]:
@@ -311,31 +385,46 @@ def check_conditions(dig, creatures):
     if not defined:
         fail("Appendix B's condition table could not be read")
         return
-    # A condition is named in Title Case in a stat block, which is what makes this findable at all.
-    # The vocabulary is closed and small, so the scan looks for the DEFINED names plus a short list
-    # of near-misses: a stat block reading "Staggered" or "Confused" is inventing a condition, and
-    # that is the finding. Free prose elsewhere in the book is not scanned: the glossary governs
-    # stat blocks, and a lore paragraph may say "blinded by the dust" without meaning the rule.
+    # A condition is named in Title Case, which is what makes this findable at all. The stat blocks
+    # are read word by word, as they always were, since every word in one is a rule. The books are
+    # read through _as_conditions, which keeps a sentence's opening word and a name out of it, so
+    # that a lore paragraph may still say "blinded by the dust" and the Bestiary may keep its Cursed
+    # Man. Until 2026-09-25 only the stat blocks were read, and "Stupefied" sat in the Keeper's
+    # hazards table with nothing to find it.
     known = {d.split()[0] for d in defined}
-    invented = {}
-    NEARMISS = {"Staggered", "Confused", "Dazed", "Paralyzed", "Paralysed", "Restrained",
-                "Deafened", "Exhausted", "Enfeebled", "Stupefied", "Doomed", "Petrified",
-                "Immobilized", "Immobilised", "Panicked", "Charmed", "Poisoned", "Cursed"}
-    used = set()
+    unlisted = sorted(known - CONDITION_WORDS)
+    for w in unlisted:
+        fail(f"Appendix B defines \"{w}\" and CONDITION_WORDS does not list it, so the books were "
+             "never read for it. Add it.")
+    invented, used, books = {}, set(), 0
     for c in creatures:
         blob = " ".join([c.get("special", ""), c.get("attacks", ""),
                          c.get("puttingItDown", ""), c.get("mark", "")])
-        for w in re.findall(r"\b([A-Z][a-z]{2,13})\b", blob):
+        for w in re.findall(_TITLE, blob):
             CHECKS[0] += 1
             if w in known:
                 used.add(w)
-            elif w in NEARMISS:
-                invented.setdefault(w, []).append(c["name"])
-    for w, who in sorted(invented.items()):
-        fail(f"\"{w}\" is inflicted by {len(who)} creature(s) ({who[0]}) and is not in Appendix B")
-    if not invented:
-        ok(f"{len(defined)} conditions defined; the {len(used)} the Bestiary inflicts are all among "
-           "them, and no stat block invents one")
+            elif w in CONDITION_WORDS:
+                invented.setdefault(w, []).append(f"the {c['name']} stat block")
+    for name in X.BOOKS:
+        path = ROOT / name
+        if not path.is_file():
+            fail(f"{name} is not built, so its tables and rules went unread")
+            continue
+        books += 1
+        for cell, text in _rules_text(path.read_text(encoding="utf-8")):
+            for w, where in _as_conditions(text, cell):
+                CHECKS[0] += 1
+                if w in known:
+                    used.add(w)
+                else:
+                    invented.setdefault(w, []).append(f"{name}: \u201c{where}\u201d")
+    for w, where in sorted(invented.items()):
+        fail(f"\"{w}\" is named as a condition {len(where)} time(s) and Appendix B does not "
+             f"define it. First at {where[0]}")
+    if not (invented or unlisted):
+        ok(f"{len(defined)} conditions defined; the {len(used)} that the stat blocks and the tables "
+           f"and rules of all {books} books name are all among them, and none invents one")
 
 
 def check_benchmarks(dig, creatures, verbose):
@@ -944,6 +1033,81 @@ def check_book_counts(chargen):
            + ", and the top three Ranks of both ladders")
 
 
+def _keeper_lists():
+    """XV_POWERS and XVI_LEGENDS as build_keeper.py declares them, read without running it."""
+    tree = ast.parse((ROOT / "build_keeper.py").read_text(encoding="utf-8"))
+    out = {}
+    for node in tree.body:
+        if (isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id in ("XV_POWERS", "XVI_LEGENDS")):
+            out[node.targets[0].id] = ast.literal_eval(node.value)
+    return out
+
+
+def check_legends_both_books():
+    print("\nThe legends: Keeper's Ch. XVI against the Book of Legends it sends the Keeper to")
+    lists = _keeper_lists()
+    if set(lists) != {"XV_POWERS", "XVI_LEGENDS"}:
+        fail("build_keeper.py no longer declares XV_POWERS and XVI_LEGENDS where this check can "
+             "read them. Repoint it or take it out.")
+        return
+    missing = [n for n in ("keeper-handbook.html", "legends.html") if not (ROOT / n).is_file()]
+    if missing:
+        fail(f"{' and '.join(missing)} not built, so the legends went unchecked")
+        return
+    keeper = (ROOT / "keeper-handbook.html").read_text(encoding="utf-8")
+    heads = {X.text_of(h) for h in re.findall(r"<h2[^>]*>(.*?)</h2>",
+                                             (ROOT / "legends.html").read_text(encoding="utf-8"),
+                                             re.S)}
+    bad = 0
+    CHECKS[0] += 2
+    written = re.findall(r'<h2 id="(legends-[^"]+)"', keeper)
+    if written != [lg[0] for lg in lists["XVI_LEGENDS"]]:
+        bad += 1
+        fail(f"the built Keeper's Book has legends {written}, and XVI_LEGENDS lists "
+             f"{[lg[0] for lg in lists['XVI_LEGENDS']]}. Rebuild it.")
+    powers = [a for a in re.findall(r'<h2 id="(powers-[^"]+)"', keeper) if a != "powers-together"]
+    if powers != lists["XV_POWERS"]:
+        bad += 1
+        fail(f"the built Keeper's Book has Powers {powers}, and XV_POWERS lists "
+             f"{lists['XV_POWERS']}. Rebuild it.")
+    held = 0
+    for _anchor, here, short, there in lists["XVI_LEGENDS"]:
+        CHECKS[0] += 1
+        if there and there not in heads:
+            bad += 1
+            fail(f"Ch. XVI files {short} under \u201c{there}\u201d in the Book of Legends, and that "
+                 f"book has no heading by that name")
+        elif not there and here in heads:
+            bad += 1
+            fail(f"XVI_LEGENDS says the Book of Legends doesn't carry {short}, and it has a "
+                 f"heading \u201c{here}\u201d")
+        held += bool(there and there in heads)
+    text = _reading("keeper-handbook.html")
+    said = re.findall(r"\b(All|[A-Z][a-z-]+ of the) ([a-z-]+) legends below are in it", text)
+    CHECKS[0] += 1
+    if len(said) != 1:
+        bad += 1
+        fail(f"Ch. XVI's count of the legends in the Book of Legends matched {len(said)} times, "
+             "not once. Repoint this check or take it out.")
+    else:
+        lead, total = said[0]
+        says_held = WORDS.get(total) if lead == "All" else WORDS.get(lead.split()[0].lower())
+        if WORDS.get(total) != len(written) or says_held != held:
+            bad += 1
+            fail(f"Ch. XVI says \u201c{lead} {total} legends below are in it\u201d, and the "
+                 f"Book of Legends carries {held} of the {len(written)}")
+    for n in re.findall(r"\bthe ([a-z-]+) Powers\b", text):
+        CHECKS[0] += 1
+        if n in WORDS and WORDS[n] != len(powers):
+            bad += 1
+            fail(f"the Keeper's Book says \u201cthe {n} Powers\u201d, and Ch. XV has {len(powers)}")
+    if not bad:
+        ok(f"{len(written)} legends, {held} of them in the Book of Legends under the headings "
+           f"Ch. XVI gives, and {len(powers)} Powers, as the Keeper's Book counts them")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -977,6 +1141,7 @@ def main():
     check_creature_count(creatures)
     check_book_counts(json.loads(
         (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
+    check_legends_both_books()
 
     print()
     if FAILURES:

@@ -8,6 +8,95 @@ Desktop\Git repos.)
 
 ---
 
+- **Four slips Cole found in the builders, and new checks for two of them. Books v2.56 / v2.41 /
+  v2.27, the Book of Legends v1.6 (2026-09-25).**
+
+  Cole read the build scripts once the Old Dark was in and sent four findings. The first had already
+  been fixed in the Book of Legends v1.4, and the wording of the second in the Keeper's Book v2.39.
+  The rest are fixed here, with the slips of the same kind that turned up while looking, and the two
+  kinds a script can catch now have a check.
+
+  **The dates.** The field-book note dated "Sept., '85", a year after Ashby stopped writing in the
+  autumn of 1884, is his note on the undertaker's day-book, and v1.4 had already moved it to
+  September '84. The other field notes were read for the same fault, and one had it. The note from
+  the survey camp was dated November '84, later than Ashby's last dated entry (24 October, on the
+  Stage Road), and had Teale moving the line "the week after" he refused the chainmen's petition. The
+  petition is dated 8 October, and the chainman's day-book fills the cut back in and runs the line
+  north on the 9th. The note is October '84 now, Teale has carried the petition "since the eighth",
+  and he moved the line the next morning.
+
+  **The count.** Keeper's v2.39 corrected Ch. XVI to say all three of its legends are in the Book of
+  Legends, but the number was still typed by hand, which is how it came to be wrong in the first
+  place. Ch. XV and XVI now take every count they print from two lists at the top of `CH15`,
+  `XV_POWERS` and `XVI_LEGENDS`: four Powers, three legends, how many of the three the Book of
+  Legends carries and the heading each goes by there. The build stops if a list and its chapter's
+  headings disagree, or if a legend's *What you have to decide* offers more or fewer than four
+  readings. The
+  Book of Legends is built after the Keeper's Book, so the headings on that side are held by a new
+  check in `audit_consistency.py`, which also re-counts what the built Keeper's Book says about the
+  legends and the Powers. Apart from one phrase, given below, the two chapters rebuild word for word.
+
+  **The Trickster.** The Coyote's Tooth, a cursed relic in Ch. X of the Player's Book, was "taken, so
+  the story goes, from the Trickster's own jaw while he slept." That ties a relic to a figure from
+  living Native traditions, and *A Note on What Is Not Here*, a box in the same chapter, promises
+  that no nation's or living faith's sacred objects are laid out as loot in these pages. The story now belongs to a
+  coyote that slipped every trap on the Cimarron for eleven years until a horse thief shot it, and to
+  the thief, who wore the tooth out of two jails before they hanged him. The relic works as it did.
+
+  Cole named two places in the Bestiary that came close to the same line, and there was a third. The
+  Devil's Coyote was "the trickster of the old stories" that "never left". The teamsters say now that
+  the Devil kept a coyote to run his errands on the roads and that it stayed on when he lost interest
+  in the Territories, and its tagline is *the false guide on the trail*. The Grave-Wight kept watch
+  in barrows "no settler dug", the "mounded tombs of a people gone before the first wagon" and "the
+  tombs of vanished peoples". Its barrows are the graves of men buried with their gold now: a Spanish
+  captain's vault under a cairn, a trapper's cache walled up in a cave, the last owner of a lost mine
+  sealed in with the silver. The word *mound* is gone from the entry, and so are its centuries. The
+  third was the ordinary Coyote, "the trickster of the waking world", which is the thief at the edge
+  of the firelight. No number moved in any of them.
+
+  The Bestiary still carries creatures drawn from living Native traditions: the Skin-Walker, the
+  Wendigo and the Wendigo-Touched, the Thunderbird and the Horned Serpent, and some of them appear in
+  the Keeper's Book and in Modules II and III as well. Each of those is a whole entry, and they stay
+  as they are until Cole decides what to do with them.
+
+  **The condition nobody defined.** The Keeper's hazards table left a soul who drank bad laudanum or
+  rotgut "Stupefied", and Appendix B has no such condition. The soul is Fatigued until it sleeps it
+  off now. `audit_consistency.py` let it through because it read only what the Bestiary's stat
+  blocks inflict. Check 6 now reads every table, rule, Keeper's note and module stat block in all
+  seven books for some fifty condition names from the d20 family, most of them Pathfinder's, which is
+  the list a writer who knows that family reaches for without noticing. One of them capitalised in a
+  table cell or in the middle of a sentence counts as a condition, and Appendix B has to define it. A
+  sentence may still open on one, and a name may carry one (the Cursed Man, the Moon-Cursed). A
+  hyphenated name counts as one word, so the check sees Off-Guard whole, and Flat-Footed, the name
+  Pathfinder gave that condition first. It also fails if Appendix B ever defines a condition the
+  list lacks. Its first run found one more. Ch. VII sends the Cold Deep to the first camp after a
+  soul has "Broken at 0 Nerve", with a capital as if broken were a condition, and it is lower case
+  now.
+
+  Both new checks were proved by sabotage, and every file was restored byte for byte after.
+  "Stupefied" put back in the hazards row, "Dazed" in a Keeper's note, "Flat-Footed" in a Module I
+  stat block and "Confused" in the Bestiary's prose each failed the condition check, and a sentence
+  opening on "Stupefied" and a Stupefied Man at Wilcox both passed. A renamed heading in the Book of
+  Legends, "Two of the three" typed into the built Keeper's Book and "the five Powers" typed over
+  "the four Powers" each failed the legends check, and a fourth legend put in `XVI_LEGENDS` with no
+  chapter behind it stopped the build.
+
+  **Two phrases the Old Dark missed.** That sweep searched every book for "Patron", and these two had
+  none. Ch. XV sent the Keeper "into the six (Ch. VII)", and it says the Old Dark now. The Cold Deep's
+  Child was the "spawn of a drowned god", with "something vast and divine and drowned" asleep under
+  the water and "a buried god" behind it. The Old Dark is no god, so the tagline is *spawn of what
+  sleeps below the water*, the lore says the men who fish that water call the thing a god, and the
+  Keeper's note puts "a sleeping piece of the Old Dark" behind the Child.
+
+  **The app** is still v1.59.0 and still unreleased. `creatures.json` was re-extracted from the
+  built Bestiary and diffed, and only the four creatures above changed, in their text. The status bar
+  reads Player's v2.56, Keeper's v2.41 and Bestiary v2.27. Build 0 warnings and 0 errors, smoke
+  16,396 passed.
+
+  `verify_rules.py` runs 2,226 cross-checks and `audit_consistency.py` 113,799, both without drift,
+  and `audit_ai_tells.py --books --strict` is clean. Pages are unchanged: Player's Book 290,
+  Keeper's Book 153, Bestiary 226, Book of Legends 119.
+
 - **The Old Dark: one evil where there were six Patrons. Books v2.55 / v2.40 / v2.26, the Book of
   Legends v1.5 (2026-09-25).**
 

@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.55 · Keeper's Book v2.40 · Bestiary v2.26 ·
+**Current versions: Player's Book v2.56 · Keeper's Book v2.41 · Bestiary v2.27 ·
 GritKeeper app v1.59.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -120,10 +120,10 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.55 | 290 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.40 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.26 | 226 | none (182 creatures) |
-| The Book of Legends | v1.5 | 119 | none (166 documents) |
+| The Player's Book | v2.56 | 290 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.41 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Bestiary | v2.27 | 226 | none (182 creatures) |
+| The Book of Legends | v1.6 | 119 | none (166 documents) |
 | Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
@@ -466,7 +466,7 @@ Read `/ship` as the order to do them in.
 
 ---
 
-## The Player's Book (v2.55) — structure
+## The Player's Book (v2.56) — structure
 
 *(For the chapter and appendix list, read the built book's Contents; it is generated, so this
 doc could only ever lag it. What follows is what the Contents cannot tell you.)*
@@ -521,7 +521,7 @@ rendered `figure.plate img` after moving/adding plates.
 
 ---
 
-## The Keeper's Book (v2.40) — structure
+## The Keeper's Book (v2.41) — structure
 
 Chapters I–XVI plus the Keeper's Screen appendix and a back-of-book Index. Read the built book's
 Contents for the list, which is generated. Three things it won't tell you: **Ch. XIII Perdition
@@ -592,8 +592,13 @@ money. A **legend** has no capital, no seats, no files, and nobody to negotiate 
 is a story the country tells about itself. That is why the Mad Spaniard moved out of XV in v2.30
 (he holds no ground and wants nothing) and why the Gatherings in the Rockies moved out to **Ch.
 VII** (they are cosmology, VII was already citing XV for its own biggest question, which was the giveaway). XV is `CH15`, XVI is `CH16`, and the legends carry `legends`, `legends-spaniard`,
-`legends-outfit`, `legends-song`. If a seventh Power or a fourth legend is ever added, sort it by
-that test and not by subject matter.
+`legends-outfit`, `legends-song`. A fifth Power or a fourth legend is sorted by that test, whatever
+it happens to be about, and it goes into `XV_POWERS` or `XVI_LEGENDS`, the two lists at the top of
+`CH15`. Every count the two chapters print is derived from them: how many Powers, how many legends,
+and how many of the legends the Book of Legends carries and under which headings. The build stops
+if a list and its chapter's headings disagree, and `audit_consistency.py` holds the Book of Legends
+headings to the list, since that book is built after this one. Ch. XVI once said two of its three
+legends were in the Book of Legends when all three were, because the count was typed by hand.
 
 **Chapter epigraphs** are injected by the `_chq` dict at the bottom of `build_keeper.py`
 (via `_inject_quote`, which drops a `quote()` after each chapter's `<div class="divider">`).
@@ -602,7 +607,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.5) — structure & conventions
+## The Book of Legends (v1.6) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -662,7 +667,7 @@ chapter moves the arc, so score it against its neighbours before you do.
 
 ---
 
-## The Bestiary (v2.26) — structure & conventions
+## The Bestiary (v2.27) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,

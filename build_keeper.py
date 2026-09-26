@@ -68,13 +68,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.40 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.40)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.41 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.41)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.40</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.41</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.40 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.41 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -956,7 +956,7 @@ CH6 = f"""<!-- VI -->
       <tr><td>Prairie fire / smoke</td><td>Ref to flee, Fort vs. smoke, DC 16</td><td>1d8 fire; choking and blind</td></tr>
       <tr><td>Snakebite / spider</td><td>Fort, DC 15</td><td>1d6 and Enfeebled; worsens untreated</td></tr>
       <tr><td>Quicksand / bog</td><td>Athletics, DC 15</td><td>Sinks a step each round; rope and aid needed</td></tr>
-      <tr><td>Bad laudanum / rotgut</td><td>Fort, DC 13</td><td>Stupefied; a poor choice in a crisis</td></tr>
+      <tr><td>Bad laudanum / rotgut</td><td>Fort, DC 13</td><td>Fatigued until slept off; a poor choice in a crisis</td></tr>
     </tbody>
   </table>
   <p>A critical failure on any of these costs roughly double, or skips a step toward the worst the hazard can do. And
@@ -1175,7 +1175,7 @@ CH7 = f"""<!-- VII -->
   <h3 id="face-colddeep">The Cold Deep, at the door of hurt</h3>
   <p>It comes to the grieving and the broken, and it never comes during the horror. It comes after: the
   shaking hour past midnight when the thing is over, the day after the funeral, the first camp after a soul has
-  Broken at 0 Nerve. What it offers is relief, an end to the shaking, and relief is the hardest offer a player ever
+  broken at 0 Nerve. What it offers is relief, an end to the shaking, and relief is the hardest offer a player ever
   refuses on behalf of a character who's hurting. Its price is paid in subtraction, and you should run it that way.
   The character stops flinching, then stops weeping, then stops laughing. Roll no dice for any of it. Let the table
   watch a friend go quiet.</p>
@@ -2740,6 +2740,35 @@ CH14 = f"""<!-- XIV -->
 """
 
 # ---------------------------------------------------------------- XV. THE POWERS OF THE TERRITORY
+# The Powers and the legends, in the order Ch. XV and XVI print them. Every count the two chapters
+# print about themselves is made from these lists, and so is the legends epigraph, and the build
+# holds both lists to the headings it actually wrote (after CH16), so a fifth Power or a fourth
+# legend cannot leave a hand-typed "three" behind. Ch. XVI once told the Keeper that two of the
+# three legends were in the Book of Legends when all three were. The last field is the heading the
+# Book of Legends files each one under, or None if that book doesn't carry it; legends.html is built
+# after this book, so `audit_consistency.py` is what holds those headings to it.
+XV_POWERS = ["powers-redemption", "powers-mother", "powers-pinkertons", "powers-money"]
+XVI_LEGENDS = [   # (anchor, heading here, what the prose calls it, heading in the Book of Legends)
+    ("legends-spaniard", "The Mad Spaniard", "the Spaniard", "The Mad Spaniard"),
+    ("legends-outfit", "The Wills Outfit", "the Outfit", "The Fifth Rider"),
+    ("legends-song", "The Weather Song", "the song", "The One About the Weather"),
+]
+_NUMWORD = "zero one two three four five six seven eight nine ten".split()
+N_POWERS, N_LEGENDS = _NUMWORD[len(XV_POWERS)], _NUMWORD[len(XVI_LEGENDS)]
+
+
+def _in_legends_book():
+    """Ch. XVI's sentence on which legends the players' own book carries, and under what name."""
+    held = [lg for lg in XVI_LEGENDS if lg[3]]
+    renamed = [f"{lg[2]} under <em>{lg[3]}</em>" for lg in held if lg[3] != lg[1]]
+    head = (f"All {N_LEGENDS} legends below are in it" if len(held) == len(XVI_LEGENDS)
+            else f"{_NUMWORD[len(held)].capitalize()} of the {N_LEGENDS} legends below are in it")
+    if not renamed:
+        return head
+    return head + ", " + (renamed[0] if len(renamed) == 1
+                          else ", ".join(renamed[:-1]) + " and " + renamed[-1])
+
+
 CH15 = f"""<!-- XV -->
 <section class="page" id="powers">
   {runhead('XV. The Powers of the Territory')}
@@ -2751,7 +2780,7 @@ CH15 = f"""<!-- XV -->
   a complete campaign. What follows is for the table that has been riding a year and has started asking who owns the
   bank that owns the bank.</p>
   <p>Take one thread. Two at the outside. The Territories are frightening in proportion to how much of them is still
-  dark, and a Keeper who lights all four of these lamps at once has built a map instead of a country.</p>
+  dark, and a Keeper who lights all {N_POWERS} of these lamps at once has built a map instead of a country.</p>
   <div class="keeper-note"><span class="kn-tag">What's fixed here, and it's very little</span>The names are fixed,
   because a name your players learn has to keep meaning the same thing. Everything under the names is an offer.
   Contradict any of it. Move Jubilee, hand the Golden Circle&rsquo;s list to somebody who knows what's on it, decide the Long Table
@@ -2881,8 +2910,8 @@ CH15 = f"""<!-- XV -->
   paper. A table that wins this one has done something no amount of shooting could have done.</div>
 
   <h2 id="powers-together">Using More Than One</h2>
-  <p>These four touch, and the touching points are where a long campaign lives, and the best of them reach
-  outside this chapter, into the six (Ch. VII) and the legends (Ch. XVI). The Golden Circle's parcel list is the
+  <p>These {N_POWERS} touch, and the touching points are where a long campaign lives, and the best of them reach
+  outside this chapter, into the Old Dark (Ch. VII) and the legends (Ch. XVI). The Golden Circle's parcel list is the
   Rockies gatherings (Ch. VII) seen from outside by men who have no idea what they are buying. The Mad Spaniard
   (Ch. XVI) turns up in Jubilee and in the Rockies and is remembered in both, and in Jubilee he's remembered from before the town was
   there. The Dread Mother's houses are the only institution in the Territories that has ever turned down Kansas City
@@ -2905,22 +2934,21 @@ CH16 = f"""<!-- XVI -->
   capital. The Long Table has seats. The Agency has files. A legend has no capital, no seats and no files, and it's a
   different kind of thing altogether. It's a story the country tells about itself, and its whole use at your table is
   that your players will hear it long before they meet it, and may never meet it at all.</p>
-  <p>Nothing in this chapter costs a thread. Run all three against any of the four Powers, or against none of them, or
+  <p>Nothing in this chapter costs a thread. Run all {N_LEGENDS} against any of the {N_POWERS} Powers, or against none of them, or
   run one and nothing else, and let a year of play go by with your table arguing about it in the wagon.</p>
   <p><strong>Your players have their own book of this.</strong> The Book of Legends is the Territory's papers as
   anybody at the table may read them: letters, depositions, clippings, a detective agency's file, songs collected off
-  children. All three legends below are in it, the Outfit under <em>The Fifth Rider</em> and the song under <em>The One
-  About the Weather</em>, told by people who were there and who don't agree with each other. Hand out a page
+  children. {_in_legends_book()}, told by people who were there and who don't agree with each other. Hand out a page
   whenever a player's character would have read it, been shown it, or been sold it. Nothing in
   that book is confirmed, its gatherer was wrong in print more than once, and one of its documents is a forgery it
   prints knowing so. It can't give anything away, because it doesn't know anything. What it does is put the talk in
   the players' hands in their own time instead of yours.</p>
-  <div class="keeper-note"><span class="kn-tag">How to run any of the three</span><strong>They arrive as talk.</strong>
+  <div class="keeper-note"><span class="kn-tag">How to run any of the {N_LEGENDS}</span><strong>They arrive as talk.</strong>
   Plant each one at least twice, weeks apart, in bar talk and in the mouths of people with no stake in it, before it
   appears in front of the party at all. A legend that turns up unheralded is only an encounter. <strong>Never confirm
   a reading.</strong> Each entry gives you four. Pick one for yourself, write it on the inside of your screen, and let
   the table stay wrong for years. <strong>Never let two of them explain each other.</strong> The moment the Spaniard is
-  in the song, or the song is about the Outfit, all three collapse into one plot and you've traded three legends for
+  in the song, or the song is about the Outfit, all {N_LEGENDS} collapse into one plot and you've traded {N_LEGENDS} legends for
   one answer. <strong>None of them can be resolved</strong>, and that's what they are for. Nothing here rewards a
   plan. If your players make one anyway, let it fail in an interesting way rather than telling them it cannot
   work.</div>
@@ -3067,11 +3095,25 @@ CH16 = f"""<!-- XVI -->
   the night your players hear a verse about something they did that nobody witnessed, and then you do not
   explain it, and they hear it again in a different county six sessions later.</div>
 
-  <p>These three cost you nothing against the four Powers, but they do cost each other. Two in a campaign is
-  comfortable. Three is a table that has started to believe everything is connected, which is a fine thing to happen
+  <p>These {N_LEGENDS} cost you nothing against the {N_POWERS} Powers, but they do cost each other. Two in a campaign is
+  comfortable. {N_LEGENDS.capitalize()} is a table that has started to believe everything is connected, which is a fine thing to happen
   once and a tiresome thing to happen twice.</p>
 </section>
 """
+
+# The lists at the top of CH15 against the chapters they count. A Power or legend added to the
+# prose and not the list (or the reverse) stops the build here, before any count is wrong in print.
+# Each legend's four readings are held too: "Each entry gives you four" is typed in Ch. XVI's
+# running note, and the four readings are Cole's.
+_powers_written = [a for a in re.findall(r'<h2 id="(powers-[^"]+)"', CH15) if a != "powers-together"]
+assert _powers_written == XV_POWERS, ("Ch. XV's Powers and XV_POWERS disagree", _powers_written)
+_legends_written = re.findall(r'<h2 id="(legends-[^"]+)">(.*?)</h2>', CH16)
+assert _legends_written == [lg[:2] for lg in XVI_LEGENDS], (
+    "Ch. XVI's legends and XVI_LEGENDS disagree", _legends_written)
+for _anchor, *_rest in XVI_LEGENDS:
+    _sec = CH16.split(f'<h2 id="{_anchor}">', 1)[1].split("<h2 ", 1)[0]
+    _decide = _sec.split("<h3>What you have to decide</h3>", 1)[1].split("</ul>", 1)[0]
+    assert _decide.count("<li>") == 4, (f"{_anchor} has {_decide.count('<li>')} readings, not four")
 
 BODY = CONTENTS + CH1 + CH2 + CH3 + CH4 + CH5 + CH6 + CH7 + CH8 + CH9 + CH10 + CH11 + CH12 + CH13 + CH14 + CH15 + CH16 + APX
 
@@ -3099,7 +3141,7 @@ _chq = {
  "basin": ("I've mapped every well in this country and named every town. It's the wells I no longer sleep for. A town is only people. A well is a door, and someone has been leaving them open.", "from the field-books of N. Ashby, naturalist"),
  "screen": ("Everything a Keeper needs mid-night fits on one card. Everything a Keeper fears fits in the pause before the players roll.", "from a Keeper's ledger"),
  "powers": ("I've ridden through two of these and had supper with a third. My advice is the same as my father&rsquo;s: know which one owns the ground you're standing on, and never say the name of a second one while you're standing on it.", "Eb Tuttle, trapper"),
- "legends": ("I've heard all three of these told wrong, and I've heard all three told by men who were there. It's the same telling. That's what I can't get past.", "Delphia Kearse, road house at Sull&rsquo;s Ferry"),
+ "legends": (f"I've heard all {N_LEGENDS} of these told wrong, and I've heard all {N_LEGENDS} told by men who were there. It's the same telling. That's what I can't get past.", "Delphia Kearse, road house at Sull&rsquo;s Ferry"),
 }
 for _cid,(_t,_s) in _chq.items():
     BODY = _inject_quote(BODY, _cid, _t, _s)

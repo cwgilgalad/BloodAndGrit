@@ -30,7 +30,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.5"
+VERSION = "1.6"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -1313,11 +1313,11 @@ CH5 = chapter("ground", "Mines, cuts, diggings, and the things that came up with
      "it in writing so that if the office asks you why the line moved, you have a paper, and it is "
      "our names on it and not yours."),
      sign="[fourteen signatures and one mark]"),
- field("Nov., &rsquo;84", "the survey camp",
-       ["Teale showed it to me himself. He's kept it in his coat since October and it's coming "
-        "apart on the folds.",
-        "He refused it on the day and moved the line the week after and told the office it was the "
-        "grade. He says if he'd granted the petition he'd have had to write down what it was for, "
+ field("Oct., &rsquo;84", "the survey camp",
+       ["Teale showed it to me himself. He's kept it in his coat since the eighth and it's coming "
+        "apart on the folds already.",
+        "He refused it on the day and moved the line the next morning and told the office it was "
+        "the grade. He says if he'd granted the petition he'd have had to write down what it was for, "
         "and there's no line on a survey return for what it was for.",
         "I asked him what he thought was in the fill. He said it was not his business what was in "
         "the fill, and then he said, after a while, that he had been down in the cut on the sixth "

@@ -322,11 +322,11 @@
   "puttingItDown": "Drag it into the sun, or scatter and cleanse its hoard so it has nothing left to keep.",
   "mark": "",
   "lore": [
-   "Older than the territory, older than the towns, there are barrows in the bad lands that no settler dug, mounded tombs of a people gone before the first wagon, with something still keeping watch inside. The Grave-Wight is that keeper: a withered, cold-handed thing wound around a hoard it has guarded past the death of everyone who ever knew its name, drawing strength from the wealth at its back.",
-   "It is strongest in the dark of its mound, surrounded by its trove, and it heals the cold it deals straight back into itself. Drag it into honest sunlight, or take from it the gold and grave-goods that are the source of its strength, and the centuries catch up with it all at once."
+   "Out in the bad lands, far from any church, there are barrows where a man was buried with his gold because he would not be parted from it: a Spanish captain's vault under a cairn of stones, a trapper's cache walled up in a cave, the last owner of a lost mine sealed in with the silver. Something is still keeping watch inside. The Grave-Wight is that keeper: a withered, cold-handed thing wound around a hoard it has guarded past the death of everyone who ever knew its name, drawing strength from the wealth at its back.",
+   "It is strongest in the dark of its barrow, surrounded by its trove, and it heals the cold it deals straight back into itself. Drag it into honest sunlight, or take from it the gold and grave-goods that are the source of its strength, and all its years catch up with it at once."
   ],
-  "found": "Ancient burial mounds and barrows in the deep country, the tombs of vanished peoples, any old grave rich enough to be worth guarding for a few hundred years. Far from town, deep in the dark, down where the air is older.",
-  "keeperNote": "The Grave-Wight is a dungeon boss in the old style, and you should build the dungeon around it. The barrow is its strength (the dark, the close air, the hoard) so the fight turns on changing the conditions : opening the mound to daylight, scattering the trove, denying it the wealth it feeds on. A party that learns to fight the room rather than the wight will win; one that trades cold grips with it in the dark will be drained dry, because every wound it lands heals it. Use the hoard as both lure and weakness: the gold that drew the players in is the very thing keeping the wight alive. Greed brought them down here. Greed is also the lock on the door.",
+  "found": "Cairns, walled-up caves and old vaults in the deep country, the Spanish diggings, a lost mine with its last owner still in it: any old grave rich enough to be worth the guarding. Far from town, deep in the dark, down where the air is older.",
+  "keeperNote": "The Grave-Wight is a dungeon boss in the old style, and you should build the dungeon around it. The barrow is its strength (the dark, the close air, the hoard) so the fight turns on changing the conditions : opening the barrow to daylight, scattering the trove, denying it the wealth it feeds on. A party that learns to fight the room rather than the wight will win; one that trades cold grips with it in the dark will be drained dry, because every wound it lands heals it. Use the hoard as both lure and weakness: the gold that drew the players in is the very thing keeping the wight alive. Greed brought them down here. Greed is also the lock on the door.",
   "witness": ""
  },
  {
@@ -486,7 +486,7 @@
  {
   "name": "The Devil's Coyote",
   "chapter": "Cursed Beasts & Wild Things",
-  "tierText": "Tier I \u00b7 the trickster on the trail",
+  "tierText": "Tier I \u00b7 the false guide on the trail",
   "tier": 1,
   "defense": "14",
   "blood": "12",
@@ -498,7 +498,7 @@
   "puttingItDown": "It cannot cross a line of salt or a running rope of prayer; hold your ground, and it loses interest by dawn.",
   "mark": "",
   "lore": [
-   "The trickster of the old stories never left, and it still finds the whole business of leading men astray richly amusing. The Devil's Coyote is rarely a killer outright; it is a mischief, a will-o'-wisp with fur, a thing that throws false trail-sign and calls in voices you know and leads you in circles until you are lost, alone, and a long way from the fire and the friends who could help you. That is the game. The bite, if it comes to that, is almost an afterthought.",
+   "The teamsters say the Devil kept a coyote to run his errands on the roads, and that when he lost interest in the Territories it stayed on and kept at the work. Whatever it is, it still finds leading men astray richly amusing. The Devil's Coyote is rarely a killer outright; it is a mischief, a will-o'-wisp with fur, a thing that throws false trail-sign and calls in voices you know and leads you in circles until you are lost, alone, and a long way from the fire and the friends who could help you. That is the game. The bite, if it comes to that, is almost an afterthought.",
    "It loves a traveler who is sure of his bearings, a guide who is proud of his skill, a party that splits up. Where it has been working, men ride confidently in exactly the wrong direction, follow voices that call their names from the dark, and end the night much farther from home than they started, and much more afraid."
   ],
   "found": "The trails and open country between settlements, especially at dusk and after dark. It works the over-confident and the lone traveler; it loves a crossroads, a fork, a place where one wrong turn compounds.",
@@ -2092,7 +2092,7 @@
  {
   "name": "The Cold Deep's Child",
   "chapter": "The Old Dark",
-  "tierText": "Tier III \u00b7 spawn of a drowned god",
+  "tierText": "Tier III \u00b7 spawn of what sleeps below the water",
   "tier": 3,
   "defense": "16",
   "blood": "42",
@@ -2104,11 +2104,11 @@
   "puttingItDown": "Salt and fire end the child; but kill it away from deep water, lest its keening bring the rest, or the parent.",
   "mark": "",
   "lore": [
-   "Beneath the deep water (the great lake, the drowned valley, the cold sea-mouth where the river meets something older) something vast and divine and drowned lies sleeping, and it has children. The Cold Deep's Child is one of the lesser spawn: barbed and pale and wrong, swimming fast and crawling onto land to hunt, dangerous enough alone. But it keens. And the keening calls its kin up out of the water, more and more of them, until a single child becomes a drowning tide of them, and if the keening goes on long enough, it may call something far worse than kin.",
+   "Beneath the deep water (the great lake, the drowned valley, the cold sea-mouth where the river meets something older) something vast and drowned lies sleeping, and it has children. The men who fish that water call it a god. The Cold Deep's Child is one of the lesser spawn: barbed and pale and wrong, swimming fast and crawling onto land to hunt, dangerous enough alone. But it keens. And the keening calls its kin up out of the water, more and more of them, until a single child becomes a drowning tide of them, and if the keening goes on long enough, it may call something far worse than kin.",
    "Salt and fire end a child easily enough, one at a time. The danger is the calling. Kill it near the deep water and its dying keen brings the rest boiling up from below, and behind them, perhaps, the slow stirring of the drowned parent that should never, ever be woken. The wisdom is to take the child away from the water first, somewhere its keening calls nothing, and end it where the deep cannot hear it die."
   ],
   "found": "The shores of deep water that hides something vast and sleeping: a great lake, a drowned valley, a cold inlet. The children come ashore to hunt; the parent stays below, and must stay below.",
-  "keeperNote": "The Cold Deep's Child is a swarm-caller with a buried god behind it, and the tactical heart is the keening: kill it near deep water and it summons its kin (and risks waking the parent), so the party must learn to draw it away from the water before finishing it. Where you kill it matters as much as that you kill it. Individually they're manageable (salt and fire), but the calling can escalate a single encounter into a drowning tide, and the implied parent below gives the whole thing a Lovecraftian floor of dread. Run the escalation as a threat the party can prevent by thinking: lure it inland, isolate it, end it where the deep can't hear. Let a party that fights one carelessly at the water's edge face the consequence of the keening bringing more. The sleeping parent should stay a dread implication, never fully seen: the reason you don't want the keening to go on. It pairs with the Devourer's Tongue as the chapter's 'this is only a piece of something vast' threats, this one in water. Use it for coastal or deep-lake horror, and to teach that against the deep dark, where and how you fight can be the difference between a skirmish and an awakening.",
+  "keeperNote": "The Cold Deep's Child is a swarm-caller with a sleeping piece of the Old Dark behind it, and the tactical heart is the keening: kill it near deep water and it summons its kin (and risks waking the parent), so the party must learn to draw it away from the water before finishing it. Where you kill it matters as much as that you kill it. Individually they're manageable (salt and fire), but the calling can escalate a single encounter into a drowning tide, and the implied parent below gives the whole thing a Lovecraftian floor of dread. Run the escalation as a threat the party can prevent by thinking: lure it inland, isolate it, end it where the deep can't hear. Let a party that fights one carelessly at the water's edge face the consequence of the keening bringing more. The sleeping parent should stay a dread implication, never fully seen: the reason you don't want the keening to go on. It pairs with the Devourer's Tongue as the chapter's 'this is only a piece of something vast' threats, this one in water. Use it for coastal or deep-lake horror, and to teach that against the deep dark, where and how you fight can be the difference between a skirmish and an awakening.",
   "witness": ""
  },
  {
@@ -2618,7 +2618,7 @@
  {
   "name": "The Coyote",
   "chapter": "Beasts of the Living World",
-  "tierText": "Tier I \u00b7 the trickster of the waking world",
+  "tierText": "Tier I \u00b7 the thief at the edge of the firelight",
   "tier": 1,
   "defense": "14",
   "blood": "10",
@@ -2630,7 +2630,7 @@
   "puttingItDown": "It's a coyote. A shot, a shout, or a fire turns it; only hunger or madness makes one truly press a man.",
   "mark": "",
   "lore": [
-   "The trickster of the waking world, and mostly a coward with a clever face. A coyote wants the easy meal (the lame calf, the unguarded chickens, the carcass already cooling) and it weighs every risk with a gambler's care. A few may shadow a lone traveler, yipping in the dark to unsettle him, but they rarely commit, and the speech of a gun sends them flowing back into the brush like water. Only hunger past reason, or the froth of madness, makes one truly press a man."
+   "The thief at the edge of the firelight, and mostly a coward with a clever face. A coyote wants the easy meal (the lame calf, the unguarded chickens, the carcass already cooling) and it weighs every risk with a gambler's care. A few may shadow a lone traveler, yipping in the dark to unsettle him, but they rarely commit, and the speech of a gun sends them flowing back into the brush like water. Only hunger past reason, or the froth of madness, makes one truly press a man."
   ],
   "found": "Open range, brush country, and the edges of every settlement; wherever there's carrion, stock, or scraps. Heard far more than seen, especially at dusk and the small hours.",
   "keeperNote": "",
