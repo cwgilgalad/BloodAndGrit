@@ -8,6 +8,41 @@ Desktop\Git repos.)
 
 ---
 
+- **A double, and the Wendigo of the North. The Book of Legends v1.8 (2026-09-26).**
+
+  Cole asked for two more: a legend about a murderous doppelgänger, and one about the Wendigo of the
+  North with a twist like the one in Heretic. Both are papers now, and the book goes from 289 papers
+  to 301 and from 172 pages to 177.
+
+  **A Claim on a Living Man** is in the Trades, told through an inquiry agent's reports to a life
+  office at Hartford. A widow at Helena claims the insurance on her husband while a man with his face
+  keeps his store and sits at her table. The agent sets down, in order, the hired man who grew to look
+  like the husband over one summer, the dentist who made a second gold crown from a cast of the
+  husband's mouth, and the three people who knew the husband best and died in the six months after
+  the claim was made. By its subject it belongs in A Face Not Their Own, but that chapter says it holds
+  the four stories out of forty that were not bigamy, so the gloss says the file reached the editor
+  after the chapter was made up. The editor's note offers a fall that changed a man, and a confidence
+  man who got as far as the teeth.
+
+  **The Wendigo of the North** is in Hunger. It opens as a lecture: a retired trader tells a St. Paul
+  hall in 1882 how he frightened a starving Ojibway band away from his post with a pair of snowshoes
+  four feet long, and the hall laughs. The post's own winter accounts show fifty-two barrels of flour
+  left in the spring. At the agency a woman of the band says what her people mean by the word: a
+  person who ate the others so that he could go on living, and is never full after. The twist is the
+  one Heretic turns on, that the learned man who explains the monster away is the monster, here in
+  the only sense the people who named it ever meant. A surgeon finds a tapeworm or a cancer, and the
+  trader dies of want in a full larder, which the cancer accounts for.
+
+  **Still to do.** The woman's statement speaks for the Ojibway, so it joins The Calendar, The
+  Advocate's Reply and the clerk's letter on the list of papers somebody from the nation should read
+  before they ship. The page numbers were measured the way v1.7's were, in the cloud with the book's
+  own web fonts, and want measuring again in Edge at the next ship.
+
+  Checks: `verify_rules.py` finds 0 drift. `audit_consistency.py` is clean with the counts brought up.
+  `audit_ai_tells.py --books` finds no hard tells and no new soft findings in either paper. The book
+  measures 177 pages at desktop and mobile width, with nothing clipped at true scale, no mobile
+  h-scroll and every anchor resolving, and two builds in a row are byte-identical.
+
 - **Thirty-two new legends in the Book of Legends. The Book of Legends v1.7 (2026-09-26).**
 
   Cole asked for legends with the game's cosmic dread in them, drawing on The VVitch, Hereditary,

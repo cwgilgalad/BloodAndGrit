@@ -30,7 +30,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.7"
+VERSION = "1.8"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -389,14 +389,14 @@ def chapter(anchor, sub, body):
 
 # ---------------------------------------------------------------- Contents
 # The page numbers here are the no-JS fallback and nothing more: the paginator overwrites every one of
-# them from the rendered sheets. Measured for v1.7 in the cloud's Chromium, with the book's own web
+# them from the rendered sheets. Measured for v1.8 in the cloud's Chromium, with the book's own web
 # fonts loaded, because the laptop was not to hand. On v1.6 that render agreed with the laptop's figures
 # to the page through "road" and ran one page long from "dead" on, so re-measure these in the laptop's
 # Edge at the next ship; a render that falls back to system fonts runs longer again.
 STATIC_PG = {"before": 8, "basin": 10, "frauds": 21, "weather": 34, "paper": 40, "jubilee": 50,
-             "faces": 57, "songs": 63, "trades": 71, "road": 82, "dead": 94, "ground": 108,
-             "hunger": 121, "preaching": 130, "longtable": 140, "brother": 148, "depth": 155,
-             "last": 165}
+             "faces": 57, "songs": 63, "trades": 71, "road": 84, "dead": 96, "ground": 110,
+             "hunger": 123, "preaching": 135, "longtable": 145, "brother": 153, "depth": 160,
+             "last": 170}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'
@@ -1442,6 +1442,89 @@ CH4 = chapter("hunger", "Parties that went in with provisions, and what the stor
      "own hands, and I've seen both letters and knew both hands. I don't believe anybody made them write "
      "it. That's the part I'd like you to put in, if you put in any of it."),
      ),
+
+ '  <h2 id="ix-wendigo">The Wendigo of the North</h2>',
+ gloss("A handbill from St. Paul, the newspaper&rsquo;s report of the lecture it advertised, a page of a "
+       "trading post&rsquo;s winter accounts, a statement taken at an agency, a surgeon&rsquo;s note, and "
+       "a paragraph from the same newspaper two years on. The post is at Tamarack Narrows, in the lake "
+       "country on the boundary, and the people who traded there are Ojibway, whom the handbill calls "
+       "Chippewa. Ashby heard the lecture and kept the bill, and spent the next two years collecting the "
+       "rest, for a reason he gives below."),
+ bill([("bl-3", "Market Hall, St. Paul &middot; Thursday Evening, 19 October 1882"),
+       ("bl-1", "THE WENDIGO OF THE NORTH"),
+       ("rule", ""),
+       ("bl-2", "A Superstition of the Chippewa Examined, and its Origin Shown"),
+       ("bl-2", "by MR. ANDREW FLETT,<br>twenty-two winters in charge of the post at Tamarack Narrows"),
+       ("bl-3", "With the Very Snowshoes by which the Monster was Made to Walk"),
+       ("rule", ""),
+       ("bl-3", "Admission 25 cents &middot; The Lecturer will take Questions"),
+      ]),
+ news("THE ST. PAUL LEDGER", "20 October 1882",
+      ["MARKET HALL", "THE WENDIGO EXPLAINED"],
+      ["Mr. Flett&rsquo;s Lecture. A Crowded House", None],
+      ["Mr. Andrew Flett, late of the fur trade, lectured last evening upon the Wendigo, the famine "
+       "spirit of the Chippewa, before a house that filled the hall and the stairs. The lecturer holds "
+       "that every people which ever wintered hungry has had such a creature, and that it is hunger&rsquo;s "
+       "own invention: a name for the look the hungriest man in a camp begins to give his neighbour.",
+       "He then related, to the great entertainment of the house, how in the hard winter of 1880 he cut a "
+       "pair of snowshoes four feet long, walked them twice round the Chippewa camp by night and gave a "
+       "cry from the trees, upon which the band moved its lodges eleven miles off and left the post in "
+       "peace until spring. The snowshoes were passed along the rows.",
+       "Asked from the gallery whether the Chippewa might not have had some cause to fear him, Mr. Flett "
+       "replied that every people must have a devil, and that it is a kindness to give them a small one. "
+       "A lady asked whether the band had been hungry. Mr. Flett said that the band is always hungry in "
+       "February, and so, he confessed, is he, which the house enjoyed."]),
+ field("Oct., &rsquo;82", "St. Paul",
+       ["Went to hear Flett on the Wendigo. He's the best lecturer I've heard west of Chicago, and the "
+        "hall laughed every time he meant it to. The snowshoes came down my row and I held them. Ash, and "
+        "well made, and worn through at the heel, which a pair you've used twice doesn't get.",
+        "He is very thin. At the hotel after, I watched him eat two suppers one after the other, and look "
+        "at the second plate when it was empty the way a man looks at a letter that hasn't said what he "
+        "hoped.",
+        "I didn't like him and I can't say why, which I'm writing down so that I'll have to find out."]),
+ ledger("Winter accounts", "the post at Tamarack Narrows, 1 November 1880 to 1 April 1881",
+        ["", "Flour, bbl.", "Pork, bbl."],
+        [("On hand, 1 November", "#64", "#40"),
+         ("Sold to the band, for furs, at forty marten the barrel", "#7", "#3"),
+         ("Issued to the band on credit", "#0", "#0"),
+         ("Drawn for the factor&rsquo;s own table", "#5", "#4"),
+         ("On hand, 1 April", "#52", "#33"),
+        ],
+        "The accounts balance to the pound. In the column the Company keeps for its officers&rsquo; "
+        "remarks, against the week of 12 January, in Mr. Flett&rsquo;s hand: <em>two young men of the band "
+        "came in to trade, and went on to the north post.</em> The north post has no record of them."),
+ paper("Statement", "a woman of the band, at the agency, May 1881, as the agency&rsquo;s interpreter "
+       "gave it", p(
+     "Eleven of our people died of hunger that winter within a morning&rsquo;s walk of the post. The "
+     "trader had flour. When the wind came from the narrows we could smell his bread.",
+     "He made the tracks. We knew they were his, because a child could see where he had turned round to "
+     "go home. We moved our lodges on account of him, and the tracks had nothing to do with it.",
+     "The white people write that word as if it meant a giant in the woods. That is their meaning. Ours "
+     "is a person who has eaten the others so that he could go on living, and is never full afterwards, "
+     "and grows thinner the more he eats. There was one at the narrows that winter. His lamp burned all "
+     "night.",
+     "Two of our young men went in to trade with him in January. They did not come to the north post. We "
+     "have not said what we think about that, and we are not going to say it here."),
+     sign="[her name, and the interpreter&rsquo;s]"),
+ paper("Surgeon&rsquo;s note", "the settlement below the lakes, June 1881", p(
+     "Mr. A. Flett, factor, aged fifty-one, consults me for loss of flesh. He eats four meals a day, he "
+     "says, and more at night, and he has lost three stone since the autumn. I find nothing in the chest.",
+     "It is a tapeworm, or it is a cancer of the stomach. I have prescribed for the first, and he is to "
+     "come back to me in three months."),
+     sign="[the surgeon&rsquo;s signature]"),
+ news("THE ST. PAUL LEDGER", "11 March 1884",
+      ["DEATH OF A LECTURER"],
+      [None],
+      ["Mr. Andrew Flett, who lectured in this city two winters since upon the superstitions of the "
+       "Chippewa, was found dead on Monday in his rooms on Wabasha Street, where he lived alone. The "
+       "coroner finds that he died of want. His larder, we are informed, was full."]),
+ ednote("The surgeon&rsquo;s cancer of the stomach will account for a man who ate and grew thin, and for a "
+        "man who died of want with a full larder, and I have no quarrel with it. Men go missing between "
+        "one post and the next every winter in that country, and the north post keeps a poor book. I "
+        "would only set down that Mr. Flett told a paying hall, in so many words, that he had frightened "
+        "a starving people away from his flour with a pair of snowshoes, and that the house enjoyed it. "
+        "The woman at the agency told the interpreter what her people mean by the word, and I have "
+        "printed it as she gave it, because it is a better definition than any the dictionaries have"),
 
  '  <h2 id="ix-fortsafe">The Fort Is Safe</h2>',
  gloss("In the autumn of 1882 the grading crews at the Sixmile cut blasted into a seam that came up wet and "
@@ -3033,6 +3116,72 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
         "superintendent wrote to Dr. Whitlock that spring. She told him the man was received in 1851 "
         "from the house&rsquo;s own cellar, which had been dug that summer, and that she hoped the "
         "doctor would not ask her anything further"),
+
+ '  <h2 id="ix-gorham">A Claim on a Living Man</h2>',
+ gloss(f"Three reports from an inquiry agent retained by a life office at Hartford, on a claim made at "
+       f"Helena, in Montana, in 1883, with a page of a dentist&rsquo;s book and a statement he attached "
+       f"to them. By its subject it would sit in {chref('faces')}, but it came to me in 1885, after that "
+       f"chapter was made up, and it is an inquiry agent&rsquo;s file from end to end. He sent it with a "
+       f"note to say that in nineteen years at the work it was the only file he had kept a copy of."),
+ filedoc("Report of the inquiry agent", "claim of Mrs. F. Gorham, Helena, April 1883", [
+     "The claimant is the wife of Mr. Lyman Gorham, merchant, of this city, whose life the company "
+     "insures for $10,000, and she is named in the policy. She states that her husband is dead. She "
+     "states that he died in the mountains south of this city in August of last year, and that the man "
+     "who came home in his place, and has lived in her house since, is somebody else.",
+     "The man in question keeps Mr. Gorham&rsquo;s store and his books, and is taken for Mr. Gorham by "
+     "his clerks, his banker, his pastor and his lodge. I sat with him an hour. He knows the business "
+     "thoroughly and was courteous throughout, and he said he was sorry his wife had troubled the "
+     "company, and asked that the company be gentle with her.",
+     "Mr. Gorham went into the mountains on the 9th of August 1882 with a hired man, Charles Wood, whom "
+     "he had engaged at the hot springs in May. One man came back on the 21st. The body of the other was "
+     "taken up from the foot of a ledge in the canyon of the Tenmile and buried at the county&rsquo;s "
+     "expense as Wood.",
+     "The barber who shaved both men through the summer states that by July he could not tell them apart "
+     "in his chair, and that twice he put Wood&rsquo;s shave on Mr. Gorham&rsquo;s account.",
+ ]),
+ ledger("A page of a dentist&rsquo;s day-book", "Helena, attached to the agent&rsquo;s second report",
+        ["Date", "Patient", "Work", "Paid"],
+        [("11 April 1879", "Mr. L. Gorham", "Gold crown, upper left canine", "#$12.00"),
+         ("19 June 1882", "A gentleman, from a plaster cast he brought with him",
+          "Gold crown, upper left canine, to the cast", "#$12.00"),
+        ],
+        "Against the second entry, in the dentist&rsquo;s hand: <em>the cast is of Mr. Gorham&rsquo;s "
+        "mouth. I know my own work. The gentleman said it was to be a present.</em>"),
+ filedoc("Report of the inquiry agent", "the same claim, October 1883", [
+     "The claimant gives three reasons. Her husband could not abide a height and would not go up the "
+     "store ladder, and the man in her house walked the ridge of the store roof in September to set the "
+     "flashing. Her husband took his coffee black, and this man takes sugar. And her husband, she says, "
+     "was not a kind man.",
+     "The man in her house has a gold crown on the upper left canine, as Mr. Gorham had. The "
+     "coroner&rsquo;s description of the body buried as Wood gives a gold crown on the same tooth. The "
+     "dentist has seen both and says he cannot tell his two crowns apart, having made the second to a "
+     "cast of the first.",
+     "Since the claim was made, three of the people who knew Mr. Gorham best have died: his partner in "
+     "the store, on the cellar stairs, in May; his brother, in the Missouri, in July; and the barber, in "
+     "his own chair, in September, of what the coroner calls a stroke. I have read the three findings. "
+     "Each of them is in order.",
+ ]),
+ filedoc("Report of the inquiry agent", "the same claim, December 1883", [
+     "The company has declined the claim, the insured being alive in his own house on the evidence of "
+     "every witness in Helena but one. I have closed the file.",
+     "The claimant asked me to take down a statement and to attach it to my report whatever the company "
+     "decided, and I undertook to her that I would. It follows.",
+ ]),
+ paper("Statement", "Mrs. F. Gorham, taken down by the agent, Helena, December 1883", p(
+     "He knows everything Lyman knew. He knows the accounts, and the children's birthdays, and what I "
+     "said to Lyman the night our first was born, and he says it back the way Lyman said it. And then "
+     "he's kind to me, and Lyman never was.",
+     "I think he's kind to me because I'm the last one who could tell. I haven't told anybody but you, "
+     "and you haven't believed me, and I think he knows that too."),
+     sign="Frances Gorham"),
+ ednote("A man who has had a bad fall in the mountains very often comes home changed, and the doctors at "
+        "Helena have a name for it. A confidence man who meant to take another man&rsquo;s place would "
+        "begin with the teeth, and the dentist&rsquo;s second crown is the best evidence in the file that "
+        "Charles Wood meant to try, and no evidence at all that he managed it. Three deaths in a year among "
+        "one man&rsquo;s acquaintance in a mining city are three deaths. Mrs. Gorham wrote to me in the "
+        "spring of 1886 to say that her husband is well and very kind, and that she has stopped writing to "
+        "insurance offices. The county has looked for Charles Wood in every record it keeps, and cannot "
+        "find him anywhere before May of 1882"),
 
  '  <h2 id="ix-deputy">A Resignation</h2>',
  gloss("Handed in at a county office and kept by the clerk, who thought it was the best letter he "
@@ -4883,6 +5032,13 @@ LEG_INDEX = [
     ("Flour at the door, a winter of", "ix-lindqvist"),
     ("Plenty, the last days of", "ix-plenty"),
     ("Dream, a town that was one man&rsquo;s", "ix-plenty"),
+    # v1.8 (2026-09-26): a double, and a lecture on the Wendigo
+    ("Claim on a living man, a", "ix-gorham"),
+    ("Double, a widow&rsquo;s claim against her husband&rsquo;s", "ix-gorham"),
+    ("Gold crown, a dentist&rsquo;s second", "ix-gorham"),
+    ("Wendigo of the North, the (a lecture)", "ix-wendigo"),
+    ("Tamarack Narrows, the winter accounts at", "ix-wendigo"),
+    ("Snowshoes four feet long, a pair of", "ix-wendigo"),
 ]
 new_html = build_index(
     new_html, curated=LEG_INDEX, creatures=False,
