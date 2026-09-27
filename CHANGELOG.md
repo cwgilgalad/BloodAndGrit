@@ -8,6 +8,20 @@ Desktop\Git repos.)
 
 ---
 
+- **The PDF audit reads a wrapped Index row (2026-09-26).**
+
+  The release gate failed on the Book of Legends' new print with *sheet 176: a row prints 137 and
+  lands on 166*, and the book was right. The Index row "Missing at Twelve Mile, the county's book of
+  the" is too long for its column, so it wraps and its link box grows to two lines. `audit_pdf.py`
+  paired a row with the digits level with the middle of that box, and for a two-line row the middle
+  falls between the lines, level with the next column's row, whose number is 137. The row prints
+  166, and its link lands on the crossroads papers on page 166.
+
+  The auditor now takes the digits level with any line inside the row's own box, still the nearest
+  to the right, which is what keeps the two columns apart. It was proved both ways before it was
+  trusted: all seven PDFs read exactly as before (1,510 rows, the same count in every book), and a
+  wrong number drawn on the wrapped row, or on its one-line neighbour, is caught. No book changed.
+
 - **A double, and the Wendigo of the North. The Book of Legends v1.8 (2026-09-26).**
 
   Cole asked for two more: a legend about a murderous doppelgänger, and one about the Wendigo of the
