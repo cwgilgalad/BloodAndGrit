@@ -3463,7 +3463,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Prepared doses (a Sawbones' Tonics, or bought dear) take a Beat to administer. Their use, and their abuse, ride together:</p>
   <ul class="dash">
     <li><strong>Antitoxin.</strong> +5 on the next save against a poison or disease, or a fresh save against one already taking hold.</li>
-    <li><strong>Laudanum.</strong> Restores 1d6 Nerve and quiets pain (ignore the penalty of one Lasting Injury for an hour). Lean on it and court the vice: repeated use demands rising Fortitude saves against Drained.</li>
+    <li><strong>Laudanum.</strong> Restores 1d6 Nerve and quiets pain (ignore the penalty of one Lasting Injury for an hour). One dose a scene, and the Fortitude saves that come with a second in a day are in Chapter XII, <em>Recovering Nerve</em>.</li>
     <li><strong>Sedative.</strong> Calms a panicking patient: ends one fright and grants a new save against an Affliction, but renders them Clumsy and slow for ten minutes.</li>
     <li><strong>Stimulant.</strong> Removes Fatigued and suppresses Frightened for one scene; afterward, a DC 13 Fortitude save or take Fatigued.</li>
   </ul>
@@ -4021,9 +4021,18 @@ which is to say the difference between a friend who is wounded and a friend who 
 
   <h2 id="ix-wounds">Wounds, Bleeding, and Death</h2>
   <p>Your <strong>Blood</strong> is your hit points; it is also, plainly, your blood. At <strong>0 Blood</strong> you fall,
-  <strong>Dying</strong> and bleeding, losing 1 Blood each round, until someone stabilizes you or you reach
-  <strong>–CON</strong>, at which point you are dead, and out here dead is dead. A Fortitude save (DC 15) or a Medicine
-  check (DC 15) can stop the bleeding; a point of Grit can keep you upright and acting one round more (Chapter II).</p>
+  <strong>Dying</strong> and bleeding. From there your Blood runs below zero: you lose 1 Blood at each of your turns, and
+  every point of harm that finds you on the ground counts as well. Reach <strong>–CON</strong>, a negative number equal to
+  your CON score (–12 for CON 12), and you are dead, and out here dead is dead.</p>
+  <p>Two things stop the bleeding, each against <strong>DC 15</strong>. At each of your turns, once the Blood is lost, you
+  make a <strong>Fortitude save</strong>, and a friend at your side can spend two Beats on a <strong>Medicine</strong>
+  check. Succeed at either and you are <strong>Stable</strong>: still down and senseless, and bleeding no more. A critical
+  success brings you round on 1 Blood; so do ten quiet minutes once you are stable. Blood put back into a fallen soul
+  counts up from 0, however far below it they had gone. A point of Grit can keep you upright and acting one round more
+  (Chapter II), and you go on bleeding while you stand.</p>
+  <p id="ix-rest"><strong>Rest</strong> is how Blood comes back. A full night unmolested in genuine safety restores Blood
+  equal to your level times your CON modifier (count the modifier as 1 if it is lower); a week of true peace restores
+  all of it. The same night gives back Nerve (Chapter XII, <em>Recovering Nerve</em>).</p>
   <p id="ix-dr"><strong>Damage Reduction (DR)</strong> and <strong>resistance.</strong> Some armor, hides, and unnatural toughness grant <strong>Damage Reduction</strong>: subtract that number from the Blood lost to each qualifying hit, so <em>DR 2 vs blades</em> turns a six-Blood knife wound into four. DR never lowers a hit below zero, and a noted limit (<em>vs blades</em>, <em>vs nonmagical</em>) means it helps only against that source. A creature with <strong>resistance</strong> to a kind of harm (fire, lead, the merely mortal) treats it as steep DR against that source and may shrug such blows off almost wholly; overcoming a resistance, with silver or fire or a blessed weapon, is often most of the fight.</p>
 </section>
 
@@ -4085,7 +4094,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <table>
     <thead><tr><th class="c">d6</th><th>Lasting Injury</th></tr></thead>
     <tbody>
-      <tr><td class="c">1</td><td>Bloody Gash: bleed 1 extra until doctored; a scar to remember it by</td></tr>
+      <tr><td class="c">1</td><td>Bloody Gash: while Dying you lose 2 Blood a turn, not 1, until it is doctored; a scar to remember it by</td></tr>
       <tr><td class="c">2</td><td>Cracked Ribs: –2 on STR and DEX actions until healed</td></tr>
       <tr><td class="c">3</td><td>Maimed Hand: drop what you hold; –4 on tasks needing two good hands</td></tr>
       <tr><td class="c">4</td><td>Lamed Leg: Speed halved until set and rested a week</td></tr>
@@ -4093,6 +4102,9 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td class="c">6</td><td>Gut-Shot: dying at once; survival buys a lifelong frailty</td></tr>
     </tbody>
   </table>
+  <p>Doctoring one (stitching the gash, strapping the ribs, setting the leg) is an hour's work and a
+  <strong>Medicine</strong> check at DC 15; a failure can be tried again after a night. Strapped ribs and a set leg
+  still want a week of rest before they carry you.</p>
 
   <h2 id="ix-nonlethal">Two Kinds of Fighting</h2>
   <p>Not every quarrel ends in a grave. For a barroom scuffle, a wrestling-down, or a pistol-whipping meant to subdue, declare
@@ -4132,10 +4144,11 @@ which is to say the difference between a friend who is wounded and a friend who 
 
 
   <h2 id="ix-nerve-pool">The Nerve Pool</h2>
-  <p>Your maximum Nerve equals your <strong>RES score + your level</strong> (Edges and Callings may raise it). You begin
-  each session at your maximum. When you witness or endure the uncanny, the Keeper calls a <strong>Dread Check</strong>:
-  a Will save against the Dread DC of what you face. Fail, and you lose Nerve; succeed, and you steel yourself, losing none
-  or only a little.</p>
+  <p>Your maximum Nerve equals your <strong>RES score + your level</strong> (Edges and Callings may raise it). Most
+  sessions you begin at your maximum, because most lie a week of peace apart; a session that picks up the same night
+  begins where the last one stopped. When you witness or endure the uncanny, the Keeper calls a <strong>Dread Check</strong>:
+  a Will save against the Dread DC of what you face. Fail, and you lose Nerve; succeed, and you steel yourself and lose
+  none.</p>
   <table>
     <thead><tr><th>The Sight</th><th class="c">Dread DC</th><th>Nerve Lost on a Failed Save</th></tr></thead>
     <tbody>
@@ -4154,7 +4167,8 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p>Lose Nerve and you fray. At low Nerve the Keeper may impose the <strong>Frightened</strong> condition, a status penalty to all your rolls equal to its value, 
   until you steady. Reach <strong>0 Nerve</strong> and you <strong>break</strong>: roll at once on the table below for a
   short, uncontrolled response, and take a lasting Affliction that rides you until it is treated. A broken character stays in play, and
-  becomes dangerous to themselves and to those beside them.</p>
+  becomes dangerous to themselves and to those beside them. Nerve goes no lower than 0: fail another Dread Check
+  while you stand there and you break again, the table once more and another Affliction.</p>
   <table>
     <thead><tr><th class="c">d6</th><th>In the Moment of Breaking</th></tr></thead>
     <tbody>
@@ -4167,8 +4181,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <p id="ix-afflictions"><strong>Lasting Afflictions</strong> are the scars of the mind: a phobia of the dark or the open plain, a compulsion
-  to count or to pray, a palsy of the hands, or the <em>Thousand-Yard Stare</em>, a flatness that costs –2 on Presence and
-  Insight until lifted. They are treated by an Alienist, a Confession, or long safe rest among people who love you, which
+  to count or to pray, a palsy of the hands, or the <em>Long Stare</em>, a flatness that costs –2 whenever folk try to
+  trust you or read you, until it is lifted. They are treated by an Alienist, a Confession, or long safe rest among people who love you, which
   in this country is the rarest medicine of all. (The Keeper's Book carries a full table of them.)</p>
 </section>
 
@@ -4184,7 +4198,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td class="c">1</td><td>A chill others feel near you; dogs will not meet your eye</td></tr>
       <tr><td class="c">2</td><td>Dreams that are not yours; you wake knowing things</td></tr>
       <tr><td class="c">3</td><td>A visible sign: pale eyes, a cold touch, a wound that won't close</td></tr>
-      <tr><td class="c">4</td><td>The uncanny treats you as kin; Dread DCs against you ease</td></tr>
+      <tr><td class="c">4</td><td>The uncanny treats you as kin; +2 on your Dread Checks</td></tr>
       <tr><td class="c">5</td><td>You hunger for something you cannot name; Will saves to resist it</td></tr>
       <tr><td class="c">6</td><td>You are <strong>Lost</strong>. The dark finishes its work; the character becomes the Keeper's</td></tr>
     </tbody>
@@ -4260,7 +4274,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li><strong>The Risen.</strong> Put back together by a hand that should have known better, or
     simply refused by ground that would not take you. <em>You hunger for</em> warmth, company, a reason
     to be upright. <em>Feeding:</em> a night of being treated as a person by somebody who knows what you
-    are. <em>Gift:</em> you are hard to put down. Your death threshold is twice your CON, and the blow
+    are. <em>Gift:</em> you are hard to put down. Your death threshold is twice your CON score (–24 for CON 12), and the blow
     that drops you leaves you on your feet until the end of the round it lands.</li>
     <li><strong>The Sanguine.</strong> What runs in the living is the thing you no longer make. <em>You
     hunger for</em> blood, given or taken. <em>Feeding:</em> you drink, and somebody is less afterward.
@@ -4290,9 +4304,10 @@ which is to say the difference between a friend who is wounded and a friend who 
   <ul class="dash">
     <li><strong>Confession.</strong> Speaking the horror plainly to someone who listens (a Preacher, a friend, a downtime scene) restores 1d6 and may ease an Affliction.</li>
     <li><strong>Safe rest.</strong> A full night unmolested in genuine safety restores 1d6 Nerve; a week of true peace, all of it.</li>
-    <li><strong>The gifts of others.</strong> A Preacher's sermon, a Sawbones' reason, a comrade's grim joke, or a point of Grit can each buy back a measure of steadiness.</li>
-    <li><strong>Whiskey and worse.</strong> A stiff drink steadies the hand now, recover 1d4 Nerve, but lean on it and court a vice, and the Fortitude saves that come with it.</li>
+    <li><strong>The gifts of others.</strong> A Preacher's sermon, a Sawbones' reason, or a comrade's grim joke can each buy back a measure of steadiness; the Calling or Edge says how much. Grit buys none back. Spent to steady your nerve, it holds off one fright's effect until the end of your next turn and leaves the Nerve where it was (Chapter II).</li>
+    <li><strong>Whiskey and worse.</strong> One drink or one dose a scene steadies the hand: whiskey gives back 1d4 Nerve, laudanum 1d6. Each one after the first in a day calls a Fortitude save, DC 12 and 2 more for every one after that, and a failure leaves you Drained 1 until a full night's rest. Lean on it and you court a vice.</li>
   </ul>
+  <p>Rest never comes in the field. Out there, Nerve comes back only from the people beside you or from the bottle.</p>
 
   <div class="box">
     <h3 id="ix-safety">A Second Word on Safety</h3>
@@ -4346,7 +4361,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <tbody>
       <tr><td class="c">1. The Sickening</td><td>The body sours first. You are <strong>Sickened 1</strong> and <strong>Fatigued</strong>; food will not sit and wounds knit slow. The illness lifts a day after you quit the ground.</td></tr>
       <tr><td class="c">2. The Whisper</td><td>It finds a voice. Whenever you would plainly cross the dark (break its work, leave its ground, warn another soul) the Keeper calls a <strong>Will save</strong>; fail, and you hesitate, &ldquo;forget,&rdquo; or talk yourself onto its errand instead.</td></tr>
-      <tr><td class="c">3. The Stain</td><td>It is in you now. The penalties harden, the place reads your wants, and your dreams turn to its purpose; while you remain, Dread DCs ease for the dark and worsen for you.</td></tr>
+      <tr><td class="c">3. The Stain</td><td>It is in you now. The penalties harden, the place reads your wants, and your dreams turn to its purpose; while you remain, you take –2 on every Dread Check.</td></tr>
       <tr><td class="c">4. The Claiming</td><td>Exposed this long, you are all but owned. At <strong>each further Reckoning</strong> you make a Will save or take <strong>+1 Mark</strong> (Chapter XII), and the Mark, once taken, does not wash off when you ride away.</td></tr>
     </tbody>
   </table>
@@ -5010,11 +5025,11 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <table>
     <thead><tr><th>Condition</th><th>Effect</th></tr></thead>
     <tbody>
-      <tr><td>Bleeding</td><td>Lose 1 Blood each round until stabilized</td></tr>
+      <tr><td>Bleeding</td><td>Lose 1 Blood at each of your turns until stabilized</td></tr>
       <tr><td>Blinded</td><td>–4 Defense, –4 most actions, lose DEX to Defense, half Speed</td></tr>
       <tr><td>Clumsy</td><td>–2 on DEX-based Strikes, checks, and Defense</td></tr>
       <tr><td>Drained</td><td>–2 on Fortitude and CON checks, and lose Blood equal to your level, until recovered</td></tr>
-      <tr><td>Dying</td><td>At 0 Blood; unconscious and Bleeding toward –CON and death</td></tr>
+      <tr><td>Dying</td><td>At 0 Blood; senseless and Bleeding, dead at –CON (your CON score); a DC 15 Fortitude save or a friend's Medicine makes you Stable</td></tr>
       <tr><td>Enfeebled</td><td>–2 on STR-based Strikes, damage, and checks; carry half what you could</td></tr>
       <tr><td>Fatigued</td><td>–2 on checks and saves; cannot Aim or run; rest to shed it</td></tr>
       <tr id="ix-frightened"><td>Frightened</td><td>–1 (or worse) on everything; lessens by one step each turn as you master the fear</td></tr>
@@ -5025,6 +5040,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
       <tr><td>Prone</td><td>–4 to melee; +4 to others' ranged against you; rising costs a Beat</td></tr>
       <tr><td>Sickened</td><td>–2 on Strikes, damage, checks, and saves; nausea</td></tr>
       <tr><td>Slowed 1</td><td>Lose one Beat each turn while it lasts; may still defend</td></tr>
+      <tr><td>Stable</td><td>Down and senseless, bleeding no more; you come round on 1 Blood after ten quiet minutes</td></tr>
       <tr><td>Stunned</td><td>Drop what you hold; lose all Beats this round; –2 Defense</td></tr>
     </tbody>
   </table>
@@ -5045,9 +5061,9 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <p><strong>In a Fight (the Iron Code).</strong> Initiative: a Notice check. Each turn has <strong>three Beats</strong>: Strike,
   Stride, Aim/Brace, Interact, Reload, Take Cover. Strike = d20 + attack proficiency + DEX/STR vs Defense. Multiple Attack Penalty
   –5/–10 (Agile –4/–8). Four degrees of success; a crit applies the weapon's Fatal die.</p>
-  <p><strong>Blood.</strong> 0 = Dying and Bleeding. Death at –CON. Half-max in one hit, or any crit, risks a Lasting Injury.</p>
+  <p><strong>Blood.</strong> 0 = Dying: lose 1 a turn until a Fortitude save or a friend's Medicine (DC 15) stops it. Dead at –CON (the score). Half-max in one hit, or any crit, risks a Lasting Injury. A safe night gives back level × CON modifier (minimum 1).</p>
   <p><strong>Grit (3 / session).</strong> Add 1d6 · reroll · shrug off a fright · stay up at 0 Blood · soften a critical failure.</p>
-  <p><strong>Nerve.</strong> Max = RES + level. Failed Dread Check loses Nerve; 0 Nerve breaks you. The Mark has six steps;
+  <p><strong>Nerve.</strong> Max = RES + level. Failed Dread Check loses Nerve; 0 Nerve breaks you. A safe night gives back 1d6, a week of peace all of it. The Mark has six steps;
   the sixth is Lost.</p>
   <div class="quote">
     "Keep your powder dry, your salt close, and your accounts with the dark paid up.

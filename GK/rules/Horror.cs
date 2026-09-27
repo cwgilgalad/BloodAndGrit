@@ -53,8 +53,45 @@ public static class Horror
         return new DreadOutcome(die, will, dreadDc, idx, name, nerve, frightened, steadied, affliction, detail, numb);
     }
 
-    /// <summary>One row of the break table (Ch. XII): when a soul is driven to 0 Nerve, roll a d6;
-    /// on a 6 the clarity is its own wound and the soul gains +1 Mark.</summary>
+    /// <summary>The Mark step at which "the uncanny treats you as kin; +2 on your Dread Checks"
+    /// (Ch. XII, The Mark).</summary>
+    public const int MarkKin = 4;
+
+    /// <summary>The Taint step called the Stain: "while you remain, you take –2 on every Dread
+    /// Check" (Ch. XII, The Taint of the Land).</summary>
+    public const int TaintStain = 3;
+
+    /// <summary>What the Mark and the Taint do to a Dread Check: +2 at Mark 4, –2 at Taint 3. Both
+    /// were printed as a number on the check and neither reached a roll, because both callers
+    /// passed a bare Will. Added to the Will, never taken off the DC, for the reason the Returned's
+    /// +2 is: the DC also picks the Nerve die, and neither of these was meant to move it.
+    ///
+    /// <para>The Stain holds only "while you remain" on the ground, and the app cannot see where
+    /// the posse stands, so it is taken to hold unless the caller says otherwise. A Taint eases a
+    /// step for every three days clear of the ground, so a soul still at 3 has not been away long;
+    /// the Dread dialog asks the Keeper all the same.</para></summary>
+    public static int DreadModifier(PartyMember soul, bool onStainedGround = true)
+        => soul == null ? 0
+         : (soul.Mark >= MarkKin ? 2 : 0) - (onStainedGround && soul.Taint >= TaintStain ? 2 : 0);
+
+    /// <summary>A Dread Check for a posse soul, with everything the soul brings to it read off the
+    /// soul: their Will, the Returned's +2 and the Mark and the Taint. One road, so no caller can
+    /// remember three of the four.</summary>
+    public static DreadOutcome DreadCheck(PartyMember soul, int dreadDc, int? forcedDie = null,
+                                          bool onStainedGround = true)
+        => DreadCheck((soul?.Will ?? 0) + DreadModifier(soul, onStainedGround), dreadDc, forcedDie, soul?.Sheet);
+
+    /// <summary>Whether a Dread Check broke the soul who made it (Ch. XII, Breaking): it cost them
+    /// Nerve, and it left them at 0. The app used to ask only whether the pool read 0 afterward,
+    /// which broke a soul already standing at 0 who had just steeled themselves, and so a success
+    /// cost them an Affliction. Nerve goes no lower than 0, and the book now says what a further
+    /// failure there does: it breaks them again. A soul numbed by the Hunger loses no Nerve and so
+    /// does not break, which is the point of being numb.</summary>
+    public static bool Breaks(DreadOutcome o, int nerveAfter) => o != null && o.NerveLost > 0 && nerveAfter == 0;
+
+    /// <summary>One row of the break table (Ch. XII): when a soul is driven to 0 Nerve, or fails a
+    /// Dread Check while already there, roll a d6; on a 6 the clarity is its own wound and the soul
+    /// gains +1 Mark.</summary>
     public record BreakOutcome(int Roll, bool GainsMark, string Text)
     {
         public string Line => $"Breaks (d6={Roll}): {Text}." + (GainsMark ? " +1 Mark." : "");

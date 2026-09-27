@@ -1870,13 +1870,13 @@ public partial class MainForm
         // table plays straight past.
         foreach (var (who, bleed, died, fell) in Rules.BleedOut(tracker))
         {
-            if (fell) Log($"{who.Name}'s Grit runs out. They go down.");
+            if (fell) Log($"{who.Name}'s round on their feet is over. They go down.");
             if (died)
             {
                 Log($"{who.Name} bleeds out at −{bleed}. Dead, and out here dead is dead.");
                 Daybook.Note("death", $"round {round}: {who.Name} died at −{bleed} of {who.DeathAt}");
                 if (SoulOf(who) is PartyMember lost)
-                    Nope($"{lost.Name} has bled out.\n\nThey reached −{bleed}, which is their CON, and the "
+                    Nope($"{lost.Name} has bled out.\n\nThey reached −{bleed}, where their CON puts the end, and the "
                        + "book is plain about what that means: out here dead is dead.\n\nGive the death its "
                        + "weight (a last word, a turn of silence) before the next scene rides in.");
             }
@@ -3501,11 +3501,16 @@ public partial class MainForm
         // The offer is the posse's; a foe on the ground is simply on the ground.
         if (soul == null) return;
         Log($"{c.Name} falls, dying, and bleeding a Blood a round toward −{c.DeathAt}.");
+        // The Risen are not asked: the Shape keeps them on their feet to the end of the round, and
+        // Grit has nothing to buy until that round is over. The row's menu offers it after.
+        bool risen = Rules.RisenStands(c, soul);
+        if (risen) Log($"{soul.Name} is Risen, and the blow leaves them on their feet to the end of the round.");
 
         // "Should you fall, it carries your spirit to a new dawn, once." Offered at the fall,
         // because the fall is what the book calls a fall, and offered BEFORE the Grit: Grit buys
         // one more round on her feet, and this buys the night.
         if (OfferFamiliarCarry(soul, c)) return;
+        if (risen) { RefreshTracker(); return; }
 
         if (soul.Grit <= 0)
         {
@@ -3808,7 +3813,26 @@ public partial class MainForm
         if (soul == null) { Nope("Dread Checks are for the posse, select a player's soul."); return; }
 
         using var f = new Sheet { Width = 430, Height = 300, Text = $"{soul.Name}: Dread Check", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MinimizeBox = false, MaximizeBox = false, ShowIcon = false, BackColor = Paper };
-        f.Controls.Add(new Label { Left = 16, Top = 14, Width = 390, Text = $"Will save {(soul.Will >= 0 ? "+" : "")}{soul.Will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}." });
+        // The Will the dialog prints is the Will the check rolls: the Returned's +2, the Mark's +2 at
+        // 4 and the Stain's –2 at Taint 3 all ride on it, and a head line that showed the bare Will
+        // would have the Keeper checking the app's arithmetic against a number it never used.
+        // The Stain holds only while the soul is still on the ground, which the app cannot see.
+        CheckBox stained = null;
+        if (soul.Taint >= Horror.TaintStain)
+            stained = new CheckBox { Left = 250, Top = 206, Width = 160, Height = 40, Checked = true,
+                                     Text = "Still on the ground that stained them (–2)" };
+        string Head()
+        {
+            int will = soul.Will + CharGen.DreadBonus(soul.Sheet) + Horror.DreadModifier(soul, stained?.Checked ?? true);
+            return $"Will save {(will >= 0 ? "+" : "")}{will} vs the Dread DC. Nerve now {soul.NerveCur}/{soul.NerveMax}.";
+        }
+        var head = new Label { Left = 16, Top = 14, Width = 390, Text = Head() };
+        f.Controls.Add(head);
+        if (stained != null)
+        {
+            stained.CheckedChanged += (s, e) => head.Text = Head();
+            f.Controls.Add(stained);
+        }
         var dc = new NumericUpDown { Left = 112, Top = 48, Width = 70, Minimum = 5, Maximum = 40, Value = 16 };
         f.Controls.Add(new Label { Left = 16, Top = 51, Width = 92, Text = "Dread DC:" });
         f.Controls.Add(dc);
@@ -3833,7 +3857,10 @@ public partial class MainForm
         f.AcceptButton = check; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
-            ResolveDread(soul, (int)dc.Value, EngineRolls ? null : (int)d20.Value);
+        {
+            ResolveDread(soul, (int)dc.Value, EngineRolls ? null : (int)d20.Value, stained?.Checked ?? true);
+            head.Text = Head();
+        }
     }
 
     /// <summary>One Dread Check, resolved one way, wherever it was called from: the Tracker's
@@ -3845,12 +3872,21 @@ public partial class MainForm
     /// hung the Frightened, never rolled the Affliction a DC-25 failure carries, and never touched
     /// the break table, so the same horror cost a soul twice the Nerve and left no mark on one tab,
     /// and cost the printed Nerve and left a scar on the other. This is the one road now.</summary>
-    void ResolveDread(PartyMember soul, int dc, int? forcedDie)
+    void ResolveDread(PartyMember soul, int dc, int? forcedDie, bool onStainedGround = true)
     {
         if (soul == null) return;
-        var o = Horror.DreadCheck(soul.Will, dc, forcedDie, soul.Sheet);
-        Log($"{soul.Name}: {o.Line}");
+        var o = Horror.DreadCheck(soul, dc, forcedDie, onStainedGround);
         ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
+        ApplyDread(soul, o);
+    }
+
+    /// <summary>What a Dread Check does to the soul who made it, applied one way wherever it was
+    /// rolled. The sign-reading dialog had a copy of its own, and the copy had drifted: it broke a
+    /// soul at 0 Nerve without the Affliction breaking carries, and it handed a null row to the
+    /// Frightened when the reader was not on the field. Two copies of a rule is two rules.</summary>
+    void ApplyDread(PartyMember soul, Horror.DreadOutcome o)
+    {
+        Log($"{soul.Name}: {o.Line}");
         if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
         if (o.Frightened)
         {
@@ -3866,8 +3902,9 @@ public partial class MainForm
         // "1d10 + a lasting Affliction", and breaking at 0 Nerve takes "a lasting Affliction that
         // rides you until it is treated". One d10 is rolled either way: the soul came out of one
         // night changed once, and two modal dialogs back to back for it would be the app arguing
-        // with itself in front of the table.
-        bool broke = soul.NerveCur == 0;
+        // with itself in front of the table. Breaking is the CHECK's doing, not the pool's: a soul
+        // standing at 0 who steels themselves does not break again, and one who fails does.
+        bool broke = Horror.Breaks(o, soul.NerveCur);
         if (broke)
         {
             var bk = Horror.Break();
@@ -4148,18 +4185,9 @@ public partial class MainForm
             // for a Tier I trace, which is a dead rabbit eaten the way rabbits get eaten.
             if (o.DreadDc > 0)
             {
-                var d = Horror.DreadCheck(reader.Will, o.DreadDc,
-                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}), what did the d20 come up?"),
-                    reader.Sheet);
-                Log($"{reader.Name}: {d.Line}");
-                if (d.NerveLost > 0) reader.NerveCur = Math.Max(0, reader.NerveCur - d.NerveLost);
-                if (d.Frightened) ApplyConditionTo(tracker.FirstOrDefault(t => t.IsSoul(reader)), "Frightened 1");
-                if (reader.NerveCur == 0)
-                {
-                    var bk = Horror.Break();
-                    Log($"{reader.Name} {bk.Line}");
-                    if (bk.GainsMark) reader.Mark += 1;
-                }
+                var d = Horror.DreadCheck(reader, o.DreadDc,
+                    AskDie($"{reader.Name}'s Will save against the Dread of it (DC {o.DreadDc}), what did the d20 come up?"));
+                ApplyDread(reader, d);
             }
 
             if (o.FillsClock) sign.SignFilled += 1;

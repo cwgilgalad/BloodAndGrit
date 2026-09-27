@@ -426,7 +426,8 @@ CH3 = f"""<!-- III -->
 
   <h2>Running the Break</h2>
   <p>A character at <strong>0 Nerve</strong> breaks: roll on the Player's Book's table for an uncontrolled response,
-  and they take a lasting Affliction. The thing to remember at the table is that a broken character stays
+  and they take a lasting Affliction. Nerve stops at 0, and a soul who fails another Dread Check while standing there
+  breaks again, the table once more and another Affliction. The thing to remember at the table is that a broken character stays
   in the game and gets dangerous, to themselves and to the souls beside them. Lean into it. A man firing wild
   at the threat and whatever's near it, a woman frozen useless while the dark closes. These are the moments the
   players will remember being scared. But keep it short. Hand control back the moment the immediate response plays
@@ -462,9 +463,11 @@ CH3 = f"""<!-- III -->
   it to them.</div>
 
   <h2>Giving Back Nerve</h2>
-  <p>Nerve does not come back in the field. The Player's Book prints the ways it does come back (Ch. XII,
-  <em>Recovering Nerve</em>): a confession or a full night unmolested in genuine safety for 1d6 apiece, whiskey for
-  1d4 and the start of a vice, and a week of true peace for all of it. That last is why a posse usually sits down to
+  <p>Rest does not come in the field. Out there a sermon, a comrade's joke or a bottle is all that brings Nerve
+  back, and each carries a limit or a price. The Player's Book prints every way it comes back (Ch. XII,
+  <em>Recovering Nerve</em>): a confession or a full night unmolested in genuine safety for 1d6 apiece, one drink a
+  scene for 1d4 (a dose of laudanum 1d6) with a Fortitude save for each one after the first in a day, and a week of
+  true peace for all of it. That last is why a posse usually sits down to
   a new session at full. The time between two reckonings is mostly that week. When the next session picks up the
   same night, it isn't, and they begin where they stopped. You're the one who says whether a night was genuinely
   safe: never in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
@@ -472,7 +475,7 @@ CH3 = f"""<!-- III -->
   <h2>A Night's Worth of Dread &mdash; Worked</h2>
   <p>The hardest thing to feel for, starting out, is how much Nerve a night should cost. Too little and the horror
   never bites; too much and the party breaks in the second scene and spends the climax useless. Here is one full night
-  budgeted for a hard-bitten 2nd-level character starting with <strong>11 Nerve</strong> (RES&nbsp;9 + level&nbsp;2),
+  budgeted for a green 2nd-level hand starting with <strong>11 Nerve</strong> (RES&nbsp;9 + level&nbsp;2),
   to show how it goes:</p>
   <div class="box">
     <h4>The Bleeding of One Eli, Across One Session</h4>
@@ -1782,8 +1785,9 @@ APX = f"""<!-- APPENDIX -->
 
   <div class="twocol">
     <h3>Nerve &amp; Breaking</h3>
-    <p>Max Nerve = RES score + level; full each session. At 0: roll the Break, take an Affliction, stay dangerous in
-    play. Recover only in true safety (1d4), never near the dark.</p>
+    <p>Max Nerve = RES score + level. At 0: roll the Break, take an Affliction, stay dangerous in play; a further
+    failure at 0 breaks again. Recover: a safe night or a confession 1d6, a drink 1d4 and a vice, a week of peace all
+    of it; rest never in the field.</p>
 
     <h3>The Mark (6 steps)</h3>
     <p>Grant for: breaking utterly (the rare roll), reaching for the Old Dark, surviving the deep dark changed. Never

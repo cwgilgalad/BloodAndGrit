@@ -2327,6 +2327,15 @@ public static class CharGen
     public static bool IsReturned(CharacterSheet s)
         => s != null && string.Equals(s.Origin, ReturnedOrigin, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>The Shape whose gift is a doubled death threshold and a last round on its feet.
+    /// Named because two rules turn on it (<see cref="Rules.DeathThresholdFor"/> and
+    /// <see cref="Rules.RisenStands"/>), and read off the sheet rather than the data so it holds
+    /// before chargen.json has loaded.</summary>
+    public const string RisenShape = "The Risen";
+
+    public static bool IsRisen(CharacterSheet s)
+        => IsReturned(s) && string.Equals(s.Shape, RisenShape, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>The four Shapes of Return, read off the Origin that owns them.</summary>
     public static List<CgShape> ShapesOfReturn
         => D?.origins?.FirstOrDefault(o => o.name == ReturnedOrigin)?.shapes ?? new();

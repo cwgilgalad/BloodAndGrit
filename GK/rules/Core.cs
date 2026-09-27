@@ -226,18 +226,29 @@ public class PartyMember : INotifyPropertyChanged
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, Rules.MarkLost); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
-    // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
+    // Zeal…). Empty name and 0 max for the mundane. Refilled by every rest, dawn in the field
+    // included (Rules.Rest), since the pool is prayer and preparation rather than sleep.
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
+
+    // What the bottle has had off this soul (Ch. XII, Whiskey and worse): drinks and doses since
+    // they last slept, whether the Fortitude save that comes after the first has left them
+    // Drained, and whether they have already had their one this scene. Ordinary bound properties
+    // on purpose: the setters call On(), so undo and session.json carry them with no extra wiring.
+    // Every rest clears the first two; every scene boundary clears the third.
+    int _doses; bool _drinkDrained, _dosedScene;
+    public int DosesToday { get => _doses; set { _doses = Math.Max(0, value); On(); } }
+    public bool DrainedByDrink { get => _drinkDrained; set { _drinkDrained = value; On(); } }
+    public bool DosedThisScene { get => _dosedScene; set { _dosedScene = value; On(); } }
 
     /// <summary>What this soul carries out of the bad nights and does not put down: Lasting
     /// Injuries (Ch. XI: "they do not heal with rest alone; they take a Sawbones, time, and
     /// sometimes a graveyard") and Afflictions (Keeper's Book Ch. III: "the scars that stay").
     ///
     /// Both were in the app already and neither could be written down. The Reference deck printed
-    /// the injury table, <see cref="Horror.DreadCheck"/> worked out whether a failure carried an
+    /// the injury table, <see cref="Horror.DreadCheck(int, int, int?, CharacterSheet)"/> worked out whether a failure carried an
     /// Affliction and returned a flag no screen ever read, and a soul had nowhere to put either,
     /// so the one thing the game says is permanent lived on somebody's notepad, in the app whose
     /// whole promise is that nothing has to.</summary>
@@ -266,7 +277,7 @@ public class PartyMember : INotifyPropertyChanged
     ///
     /// <para>Deliberately NOT part of <see cref="FeatureSpent"/>, and the separation is the whole
     /// design. <c>CharGen.RefreshFeatures</c> is the single path a boundary takes to give things
-    /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a long rest and a new session
+    /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a rest and a new session
     /// cannot reach a Debt however they change. A Debt is owed until the Old Dark collects it, and
     /// the app should never be the reason one quietly went away.</para>
     ///
@@ -526,7 +537,8 @@ public class Combatant : INotifyPropertyChanged
     /// <see cref="Down"/> is true and <see cref="Rules.CanAct"/> refuses the turn, so the exception
     /// has to be a fact of its own. Cleared when the round turns over, which is what "one more
     /// round" means. It does not stop the bleeding; the book buys consciousness with it, not
-    /// time.</summary>
+    /// time. The Risen are given the same round free by their Shape (<see cref="Rules.RisenStands"/>),
+    /// and it ends the same way.</summary>
     public bool Upright { get => _upright; set { _upright = value; On(); OnDying(); } }
 
     /// <summary>Knocked senseless rather than killed: brought to 0 Blood by a blow that was
@@ -1387,9 +1399,11 @@ public static class Rules
     public static int RollInitiative(int noticeBonus) => Math.Max(1, Rng.Next(1, 21) + noticeBonus);
 
     /// <summary>Can this one still be handed a turn this round? A trace takes none, someone bleeding
-    /// out takes none, and nobody takes two, unless they have spent Grit to refuse to fall, which
-    /// is the one thing in the book that buys a turn out of a body at 0 Blood (Ch. II). The dead are
-    /// never <see cref="Combatant.Upright"/>; <see cref="RefuseToFall"/> is what keeps that true.
+    /// out takes none, and nobody takes two, unless they have spent Grit to refuse to fall (Ch. II)
+    /// or are Risen and still inside the round that dropped them (Ch. XII): the two things in the
+    /// book that buy a turn out of a body at 0 Blood. The dead are never
+    /// <see cref="Combatant.Upright"/>; <see cref="RefuseToFall"/> and <see cref="RisenStands"/>
+    /// are what keep that true.
     /// </summary>
     public static bool CanAct(Combatant c)
         => c != null && !c.HasActed && !c.IsSign && !c.Dead && (!c.Down || c.Upright);
@@ -1421,10 +1435,14 @@ public static class Rules
     public static int StrengthOf(CharacterSheet s)
         => s?.Scores != null && s.Scores.TryGetValue("STR", out int str) && str > 0 ? str : AverageScore;
 
-    /// <summary>A soul's death threshold: their CON. Returns <see cref="DefaultDeathAt"/> for a soul
-    /// with no sheet, which is every hand-entered row on the Posse tab.</summary>
+    /// <summary>A soul's death threshold: their CON score, or twice it for the Risen, who are "hard
+    /// to put down" (Ch. XII, The Shapes of Return). Returns <see cref="DefaultDeathAt"/> for a
+    /// soul with no sheet, which is every hand-entered row on the Posse tab.</summary>
     public static int DeathThresholdFor(CharacterSheet s)
-        => s?.Scores != null && s.Scores.TryGetValue("CON", out int con) && con > 0 ? con : DefaultDeathAt;
+    {
+        int con = s?.Scores != null && s.Scores.TryGetValue("CON", out int c) && c > 0 ? c : DefaultDeathAt;
+        return CharGen.IsRisen(s) ? con * 2 : con;
+    }
 
     // ---- the Witch's bound beast on the field (Player's Book Ch. VII) ----
     //
@@ -1515,6 +1533,19 @@ public static class Rules
         soul.Grit -= 1;
         c.Upright = true;
         return null;
+    }
+
+    /// <summary>The Risen's gift (Ch. XII, The Shapes of Return): "the blow that drops you leaves
+    /// you on your feet until the end of the round it lands." The same <see cref="Combatant.Upright"/>
+    /// that Grit buys, given by the Shape instead and cleared by the same <see cref="BleedOut"/>, so
+    /// the round it lasts is the round Grit's lasts. Free and not a choice, so nobody is asked.
+    /// Returns whether it took: only a posse soul of that Shape, freshly down and not dead.</summary>
+    public static bool RisenStands(Combatant c, PartyMember soul)
+    {
+        if (c == null || soul == null || c.Dead || !c.Down || c.Upright || !CharGen.IsRisen(soul.Sheet))
+            return false;
+        c.Upright = true;
+        return true;
     }
 
     /// <summary>Stop the bleeding. The book gives a Fortitude save and a Medicine check the same DC,

@@ -308,7 +308,7 @@
           "name": "The Risen",
           "hunger": "Warmth, company, a reason to be upright.",
           "feeding": "A night of being treated as a person by somebody who knows what you are.",
-          "gift": "You are hard to put down: your death threshold is twice your CON, and the blow that drops you leaves you on your feet until the end of the round it lands."
+          "gift": "You are hard to put down: your death threshold is twice your CON score (–24 for CON 12), and the blow that drops you leaves you on your feet until the end of the round it lands."
         },
         {
           "name": "The Sanguine",
