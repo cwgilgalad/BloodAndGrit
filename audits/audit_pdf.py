@@ -78,11 +78,21 @@ def row_number(page, link, words):
     Nearest digits to the RIGHT of the link, on the same line. Nearest matters: the Index is two
     columns, so every row on a line has a neighbour's number a little further right, and taking all
     of them concatenates 180 and 232 into 180232 and reports the whole book as broken. It did.
+
+    "The same line" means level with ANY line of the row, not with the middle of its link. A row too
+    long for its column wraps, its link box grows to two lines, and the middle of that box sits
+    between them, level with nothing of its own and with the next column's row. The Book of Legends'
+    "Missing at Twelve Mile, the county's book of the" prints 166, lands on 166, and was reported
+    as printing 137, its neighbour's number, the first time the book had a row that long.
     """
     r = fitz.Rect(link["from"])
     mid = (r.y0 + r.y1) / 2
-    cand = [w for w in words
-            if abs((w[1] + w[3]) / 2 - mid) < 5 and w[0] > r.x1 - 2 and w[4].isdigit()]
+
+    def level(w):
+        c = (w[1] + w[3]) / 2
+        return abs(c - mid) < 5 or r.y0 <= c <= r.y1
+
+    cand = [w for w in words if level(w) and w[0] > r.x1 - 2 and w[4].isdigit()]
     return int(min(cand, key=lambda w: w[0])[4]) if cand else None
 
 
