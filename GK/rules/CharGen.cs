@@ -261,7 +261,7 @@ public class CharacterSheet
     public bool FamiliarLost { get; set; }                               // it died; the Witch is Sickened until re-bound
     /// <summary>The Familiar-Bound's greater boon has been spent: "should you fall, it carries your
     /// spirit to a new dawn, <em>once</em>". Once ever, and nothing in the app gives it back: not
-    /// a new fight, not a long rest, not a new session. It is stored on the SHEET rather than in
+    /// a new fight, not any rest, not a new session. It is stored on the SHEET rather than in
     /// <see cref="PartyMember.FeatureSpent"/> for exactly that reason: FeatureSpent is a ration and
     /// <see cref="CharGen.RefreshFeatures"/> walks it at every boundary, so a once-in-a-life thing kept
     /// there would quietly come back the first time somebody pressed New fight. Same separation,
@@ -2436,7 +2436,7 @@ public static class CharGen
             FeatureCadence.Turn => $"{feature} is spent for this turn. It comes back on their next one.",
             FeatureCadence.Round => $"{feature} is spent for this round.",
             FeatureCadence.Scene => $"{feature} is spent for this scene, a new fight returns it.",
-            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn, a long rest returns it.",
+            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn. Any rest returns it, a dawn in the field included.",
             FeatureCadence.Trigger => $"{feature} is spent. {row.Limit.Phrase}",
             _ => $"{feature} is spent for the session. Nothing short of the next one returns it.",
         };
@@ -2469,10 +2469,10 @@ public static class CharGen
     }
 
     /// <summary>A boundary has passed: return everything that comes back at or before it. A scene
-    /// returns the turn, round and scene features and leaves the once-a-session ones spent; a long
-    /// rest reaches the dawn ones as well; a new session returns the lot. Answers with how many
-    /// features actually came back, so the caller can say so rather than logging a boundary that
-    /// changed nothing.</summary>
+    /// returns the turn, round and scene features and leaves the once-a-session ones spent; any
+    /// rest (<see cref="Rest.Take"/>) reaches the dawn ones as well; a new session returns the
+    /// lot. Answers with how many features actually came back, so the caller can say so instead
+    /// of logging a boundary that changed nothing.</summary>
     public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
     {
         // FeatureSpent only, on purpose: PartyMember.TallyOwed is a separate store precisely so

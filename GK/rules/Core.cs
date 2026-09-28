@@ -226,18 +226,19 @@ public class PartyMember : INotifyPropertyChanged
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, Rules.MarkLost); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
-    // Zeal…). Empty name and 0 max for the mundane. Refilled by every rest, dawn in the field
-    // included (Rules.Rest), since the pool is prayer and preparation rather than sleep.
+    // Zeal…). Empty name and 0 max for the mundane. Every rest refills it, dawn in the field
+    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed.
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
 
-    // What the bottle has had off this soul (Ch. XII, Whiskey and worse): drinks and doses since
-    // they last slept, whether the Fortitude save that comes after the first has left them
-    // Drained, and whether they have already had their one this scene. Ordinary bound properties
-    // on purpose: the setters call On(), so undo and session.json carry them with no extra wiring.
-    // Every rest clears the first two; every scene boundary clears the third.
+    // What the bottle has had off this soul (Ch. XII, Whiskey and worse): drinks and doses today,
+    // whether the Fortitude save that comes after the first has left them Drained, and whether
+    // they have already had their one this scene. Ordinary bound properties, so the setters call
+    // On() and undo and session.json carry them with no extra wiring. Every rest starts the day's
+    // count again. A safe night or a week lifts the Drained (the book: "until a full night's
+    // rest"), and a dawn in the field leaves it. Every scene boundary clears the third.
     int _doses; bool _drinkDrained, _dosedScene;
     public int DosesToday { get => _doses; set { _doses = Math.Max(0, value); On(); } }
     public bool DrainedByDrink { get => _drinkDrained; set { _drinkDrained = value; On(); } }
@@ -1831,34 +1832,42 @@ public static class Rules
     /// ground with a count running is still on the ground when the shooting stops, and "New fight"
     /// must not quietly make them well. <see cref="Combatant.Upright"/> IS here, because refusing to
     /// fall buys one round and the round is over.</para>
-    public static bool FightResidue(Combatant c)
-        => c != null && (!string.IsNullOrWhiteSpace(c.Conditions) || c.Beats != 3 || c.MapStep != 1
+    public static bool FightResidue(Combatant c) => FightResidue(c, "");
+
+    /// <summary><see cref="FightResidue(Combatant)"/> for a row whose soul carries a condition out
+    /// of every fight (<see cref="Rest.Standing"/>, the bottle's Drained). Wearing exactly that
+    /// is not residue, since the reset would clear it and put it straight back, and a guard that
+    /// offers to clear something that returns is a button that does nothing.</summary>
+    public static bool FightResidue(Combatant c, string standing)
+        => c != null && (!Rest.SameConditions(c.Conditions, standing) || c.Beats != 3 || c.MapStep != 1
             || c.Acting || c.HasActed || c.Upright || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
             || c.Worked is { Count: > 0 }
             // The turn state the Iron Code added: an aim held, a recoil standing, cover pressed to,
             // a reaction spent. All of them are of the fight and none should outlive it.
             || c.Aimed || c.Recoiling || c.ReactionSpent || c.Cover != IronCode.Cover.None);
 
-    /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue"/>
+    /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue(Combatant)"/>
     /// over everyone standing on it.</summary>
     public static bool AnyFightResidue(IEnumerable<Combatant> field)
         => field != null && field.Any(FightResidue);
 
     /// <summary>Wipe everything the last fight left on a survivor: conditions, spent Beats, position
-    /// in the order, and every Sign or Miracle still working on them. Blood is deliberately NOT
-    /// touched: wounds carry between fights, and the Posse tab's Rest is what heals them.
+    /// in the order, and every Sign or Miracle still working on them. Blood is not touched: wounds
+    /// carry between fights, and the Posse tab's Rest ▾ is what heals them. A condition that
+    /// outlasts the fight goes back on after the wipe, when <paramref name="standing"/> names one
+    /// for the row (the Tracker passes <see cref="Rest.Standing"/> for the soul behind it).
     ///
     /// This lives here rather than inline in the Tracker because it is the exact seam a bug walked
     /// through: New fight was written before Worked effects and the sign strip existed, and being UI
     /// code no test could reach it, so it silently stopped resetting everything a fight leaves
     /// behind. Out here the smoke suite holds it to its word.</summary>
-    public static void ResetForNewFight(IEnumerable<Combatant> survivors)
+    public static void ResetForNewFight(IEnumerable<Combatant> survivors, Func<Combatant, string> standing = null)
     {
         if (survivors == null) return;
         foreach (var c in survivors)
         {
             if (c == null) continue;
-            c.Conditions = ""; c.Beats = 3; c.MapStep = 1;
+            c.Conditions = standing?.Invoke(c) ?? ""; c.Beats = 3; c.MapStep = 1;
             c.Acting = false; c.HasActed = false; c.Upright = false;
             // The Iron Code's turn state goes with the rest of it. Senseless and the Gait do NOT:
             // being laid out is a fact about a body and carries between fights exactly as Blood

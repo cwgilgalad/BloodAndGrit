@@ -1101,15 +1101,21 @@ public partial class MainForm
 
         bar.Controls.Add(BarSep());
         // Putting the field back on its feet: what a Keeper reaches for when a scene ENDS, so it
-        // sits at the end of the doing-things row rather than among the combat actions.
+        // sits at the end of the doing-things row rather than among the combat actions. The two
+        // "to full" lines are the Keeper's hand, for a foe brought back or a mistake undone; the
+        // three rests under them are the book's, and they are the Posse tab's Rest ▾ over again.
         bar.Controls.Add(MenuBtn("✚ Restore ▾", 118,
-            "Put Blood (and, for the posse, Nerve) back to full, or stop somebody bleeding out",
+            "Stop somebody bleeding out, set Blood back to full by hand, or rest the posse the way "
+            + "Chapter XI prints it: a dawn in the field, a safe night or a week of peace",
             ($"Stop the bleeding: DC {Rules.StabilizeDc} Fortitude or Medicine", (s, e) => StabilizeDialog()),
             ("-", null),
             ("Selected combatant, Blood to full", (s, e) => RestoreSelected()),
-            ("The posse, Blood, Nerve & pool to full", (s, e) => RestPosse()),
+            ("Everyone on the field, Blood to full", (s, e) => RestoreField()),
             ("-", null),
-            ("Everyone on the field, Blood to full", (s, e) => RestoreField())));
+            ("The posse rests:", null),
+            (RestLabel(RestKind.Dawn), (s, e) => RestPosse(RestKind.Dawn)),
+            (RestLabel(RestKind.Night), (s, e) => RestPosse(RestKind.Night)),
+            (RestLabel(RestKind.Week), (s, e) => RestPosse(RestKind.Week))));
         bar.SetFlowBreak(bar.Controls[bar.Controls.Count - 1], true);
 
         // ---- row 3: the field itself (filling it, ordering it, and clearing it) ----

@@ -4971,5 +4971,222 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
         plain.Subpath != null || !CharGen.Seat(plain).Notes.Contains(" \u00b7  "));
 }
 
+// ---- breaking, and what the Mark and the Taint do to a Dread Check (v1.60.0) ----
+// Breaks used to be "the pool reads 0 afterward", which broke a soul who was already at 0 and had
+// just steeled themselves. The Mark's +2 and the Stain's -2 were printed and reached no roll.
+{
+    var held = Horror.DreadCheck(30, 10, forcedDie: 15);
+    T("break: a soul at 0 who holds does not break", !Horror.Breaks(held, 0));
+    var failed = Horror.DreadCheck(0, 16, forcedDie: 2);
+    T("break: a failure that costs Nerve and lands on 0 breaks", failed.NerveLost > 0 && Horror.Breaks(failed, 0));
+    T("break: and one that leaves Nerve standing does not", !Horror.Breaks(failed, 3));
+    var numbSheet = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    CharGen.TakeHunger(numbSheet, CharGen.HungerNumb);
+    var numbed = Horror.DreadCheck(0, 16, forcedDie: 2, who: numbSheet);
+    T("break: a numb soul loses nothing and so does not break", numbed.Numb && !Horror.Breaks(numbed, 0));
+    T("break: nothing to read, nothing broken", !Horror.Breaks(null, 0));
+
+    T("dread: Mark 4 is +2", Horror.DreadModifier(new PartyMember { Mark = Horror.MarkKin }) == 2);
+    T("dread: Mark 3 is nothing yet", Horror.DreadModifier(new PartyMember { Mark = Horror.MarkKin - 1 }) == 0);
+    T("dread: the Stain is -2 on its ground", Horror.DreadModifier(new PartyMember { Taint = Horror.TaintStain }) == -2);
+    T("dread: and nothing off it",
+        Horror.DreadModifier(new PartyMember { Taint = Horror.TaintStain }, onStainedGround: false) == 0);
+    T("dread: the two cancel", Horror.DreadModifier(new PartyMember { Mark = 4, Taint = 3 }) == 0);
+    T("dread: nobody, nothing", Horror.DreadModifier(null) == 0);
+    var kin = new PartyMember { Name = "Kin", Will = 5, Mark = 4 };
+    T("dread: the Mark reaches the roll", Horror.DreadCheck(kin, 16, forcedDie: 10).Will == 7);
+    var stained = new PartyMember { Name = "Stained", Will = 5, Taint = 3 };
+    T("dread: and so does the Stain", Horror.DreadCheck(stained, 16, forcedDie: 10).Will == 3);
+    T("dread: unless the Keeper says they are clear of it",
+        Horror.DreadCheck(stained, 16, forcedDie: 10, onStainedGround: false).Will == 5);
+    T("dread: the Mark moves the Will and never the DC's Nerve die",
+        Horror.DreadCheck(kin, 16, forcedDie: 10).DreadDc == 16);
+
+    // The Risen: twice the CON to die at, and one more round on their feet.
+    CharacterSheet Returned(string shape) => new()
+        { Origin = CharGen.ReturnedOrigin, Shape = shape, Scores = new() { ["CON"] = 12 } };
+    T("risen: dead at twice the CON", Rules.DeathThresholdFor(Returned(CharGen.RisenShape)) == 24);
+    T("risen: and no other Shape is", Rules.DeathThresholdFor(Returned("The Hollow")) == 12);
+    var risen = new PartyMember { Name = "Eli", Sheet = Returned(CharGen.RisenShape) };
+    var dropped = new Combatant { Name = "Eli", BloodCur = 0, BloodMax = 20, IsPC = true, DeathAt = 24 };
+    T("risen: the blow that drops them leaves them standing", Rules.RisenStands(dropped, risen) && dropped.Upright);
+    T("risen: once, not twice", !Rules.RisenStands(dropped, risen));
+    var hollow = new PartyMember { Name = "Ada", Sheet = Returned("The Hollow") };
+    T("risen: another Shape falls", !Rules.RisenStands(
+        new Combatant { Name = "Ada", BloodCur = 0, BloodMax = 20, IsPC = true, DeathAt = 12 }, hollow));
+    T("risen: a soul still standing has nothing to refuse", !Rules.RisenStands(
+        new Combatant { Name = "Eli", BloodCur = 5, BloodMax = 20, IsPC = true, DeathAt = 24 }, risen));
+}
+
+// ---- rest, and the bottle (v1.60.0) ----
+// The book prints three rests, and until v1.60.0 the app had one that it had made up: Blood and
+// Nerve to full. Each rest is held to what it gives back, and as hard to what it leaves alone.
+{
+    PartyMember Worn(int level = 3, int con = 14) => new()
+    {
+        Name = "Ruth", Level = level, Sheet = new CharacterSheet { Scores = new() { ["CON"] = con } },
+        BloodMax = 30, BloodCur = 5, NerveMax = 12, NerveCur = 2, PoolName = "Faith", PoolMax = 4, PoolCur = 0,
+        Grit = 1, Mark = 2, Taint = 3, DosesToday = 2, DrainedByDrink = true, DosedThisScene = true,
+    };
+
+    var dawn = Worn();
+    var d = Rest.Take(dawn, RestKind.Dawn);
+    T("rest: a dawn in the field fills the pool", dawn.PoolCur == 4 && d.Pool == 4);
+    T("rest: and gives back no Blood and no Nerve", dawn.BloodCur == 5 && dawn.NerveCur == 2 && d.Blood == 0 && d.Nerve == 0);
+    T("rest: it starts the day's drinks again", dawn.DosesToday == 0 && !dawn.DosedThisScene);
+    T("rest: and leaves the bottle's Drained standing", dawn.DrainedByDrink && !d.DrainLifted);
+    T("rest: a dawn eases no Taint", dawn.Taint == 3 && d.TaintEased == 0);
+    T("rest: the dawn's line names the pool", d.Line.Contains("+4 Faith") && !d.Line.Contains("Blood"));
+
+    var night = Worn(level: 3, con: 14);
+    var n = Rest.Take(night, RestKind.Night, nerveDie: 4);
+    T("rest: a safe night gives level times the CON modifier in Blood", night.BloodCur == 11 && n.Blood == 6);
+    T("rest: and the d6 in Nerve", night.NerveCur == 6 && n.Nerve == 4);
+    T("rest: and lifts the bottle's Drained", !night.DrainedByDrink && n.DrainLifted);
+    T("rest: and fills the pool", night.PoolCur == 4);
+    T("rest: and eases no Taint", night.Taint == 3);
+    T("rest: the night's line says what moved", n.Line.Contains("+6 Blood") && n.Line.Contains("+4 Nerve"));
+
+    T("rest: a low CON counts as 1", Rest.NightsBlood(4, -1) == 4 && Rest.NightsBlood(4, 0) == 4);
+    T("rest: level times modifier", Rest.NightsBlood(5, 3) == 15);
+    T("rest: no sheet reads the middle of the scale", Rest.ConMod(null) == 0 && Rest.ConMod(new CharacterSheet()) == 0);
+    var paper = new PartyMember { Name = "Paper", Level = 4, BloodMax = 30, BloodCur = 1, NerveMax = 9, NerveCur = 9 };
+    Rest.Take(paper, RestKind.Night, nerveDie: 3);
+    T("rest: a hand-typed row gets its level in Blood", paper.BloodCur == 5);
+
+    var nearly = Worn();
+    nearly.BloodCur = 28; nearly.NerveCur = 11;
+    Rest.Take(nearly, RestKind.Night, nerveDie: 6);
+    T("rest: a night stops at full", nearly.BloodCur == 30 && nearly.NerveCur == 12);
+
+    var week = Worn();
+    var w = Rest.Take(week, RestKind.Week);
+    T("rest: a week gives back all the Blood and all the Nerve", week.BloodCur == 30 && week.NerveCur == 12);
+    T("rest: and eases the Taint by two", week.Taint == 1 && w.TaintEased == 2);
+    T("rest: and lifts the Drained", !week.DrainedByDrink);
+    var clean = Worn();
+    clean.Taint = 1;
+    Rest.Take(clean, RestKind.Week);
+    T("rest: and never below none", clean.Taint == 0);
+
+    foreach (var kind in new[] { RestKind.Dawn, RestKind.Night, RestKind.Week })
+    {
+        var owing = Worn();
+        owing.TallyOwed["Bargain: Pact-Sworn"] = 2;
+        Rest.Take(owing, kind, nerveDie: 1);
+        T($"rest: a {kind} leaves the Mark, the Grit and the Debts alone",
+            owing.Mark == 2 && owing.Grit == 1 && owing.TallyOwed["Bargain: Pact-Sworn"] == 2);
+    }
+
+    var rested = new PartyMember { Name = "Full", Level = 2, BloodMax = 10, BloodCur = 10, NerveMax = 5, NerveCur = 5 };
+    T("rest: a soul with nothing to give back is told so",
+        Rest.Take(rested, RestKind.Dawn).Line.Contains("nothing to give back"));
+    T("rest: nobody, nothing", Rest.Take(null, RestKind.Week) == null);
+
+    // The Returned heal only by Mending. Their Nerve comes back like anyone's, and a Hunger never.
+    var ret = CharGen.Seat(CharGen.Generate(3, false, null, CharGen.ReturnedOrigin));
+    CharGen.TakeHunger(ret.Sheet, 2);
+    ret.BloodCur = 1; ret.NerveCur = 0;
+    var rn = Rest.Take(ret, RestKind.Night, nerveDie: 3);
+    T("rest: the Returned get no Blood from a night", ret.BloodCur == 1 && rn.Blood == 0);
+    T("rest: but their Nerve comes back", ret.NerveCur == 3);
+    T("rest: and the log says why", rn.Line.Contains("Mending"));
+    Rest.Take(ret, RestKind.Week);
+    T("rest: nor from a week", ret.BloodCur == 1 && ret.NerveCur == ret.NerveMax);
+    T("rest: and no rest hands a Hunger back", ret.Sheet.Hunger == 2);
+    T("rest: a dawn says nothing about Mending", !Rest.Take(ret, RestKind.Dawn).Line.Contains("Mending"));
+
+    // A dawn returns the dawn's features; a week of peace is not a new session.
+    var pro = CharGen.Seat(CharGen.Generate(3, false, "Prospector"));
+    T("rest: Powderman can be spent", CharGen.SpendFeature(pro, "Powderman"));
+    T("rest: and any dawn returns it", Rest.Take(pro, RestKind.Dawn).FeaturesBack == 1 && !pro.FeatureSpent.ContainsKey("Powderman"));
+    var marshal = CharGen.Seat(CharGen.Generate(10, false, "Marshal"));
+    CharGen.SpendFeature(marshal, "Last Stand");
+    Rest.Take(marshal, RestKind.Week);
+    T("rest: a week does not return a session's one great moment", marshal.FeatureSpent.ContainsKey("Last Stand"));
+
+    // Whiskey and laudanum.
+    T("dose: the first in a day calls no save", Rest.DoseDc(0) == 0);
+    T("dose: the second calls Fortitude DC 12", Rest.DoseDc(1) == 12);
+    T("dose: and two more for every one after", Rest.DoseDc(2) == 14 && Rest.DoseDc(3) == 16);
+
+    PartyMember Sober() { var s = Worn(); s.DosesToday = 0; s.DrainedByDrink = false; s.DosedThisScene = false; s.Fort = 2; return s; }
+    var sot = Sober();
+    var first = Rest.TakeDose(sot, laudanum: false, nerveDie: 3);
+    T("dose: the first gives its Nerve and calls no save",
+        first.Nerve == 3 && sot.NerveCur == 5 && first.SaveDc == 0 && !first.Drained);
+    T("dose: its line says only the Nerve", !first.Line.Contains("DC") && first.Line.Contains("a drink"));
+    T("dose: once a scene", Rest.WhyNotDose(sot) != null && Rest.TakeDose(sot, false, nerveDie: 3) == null);
+    T("dose: and the refusal costs nothing", sot.NerveCur == 5 && sot.DosesToday == 1);
+    sot.DosedThisScene = false;
+    int blood0 = sot.BloodCur;
+    var second = Rest.TakeDose(sot, laudanum: true, nerveDie: 2, fortDie: 1);
+    T("dose: a second in the day calls DC 12", second.SaveDc == 12 && second.Line.Contains("laudanum"));
+    T("dose: a failure leaves them Drained and takes their level in Blood",
+        second.Drained && sot.DrainedByDrink && second.BloodLost == 3 && sot.BloodCur == blood0 - 3);
+    T("dose: the Nerve comes back whatever the save", second.Nerve == 2);
+    T("dose: the line names the save and the cost",
+        second.Line.Contains("DC 12") && second.Line.Contains("Drained 1") && second.Line.Contains("3 Blood"));
+    sot.DosedThisScene = false;
+    var third = Rest.TakeDose(sot, false, nerveDie: 1, fortDie: 1);
+    T("dose: a third calls DC 14", third.SaveDc == 14);
+    T("dose: and a second failure takes nothing more", third.Drained && third.BloodLost == 0 && sot.BloodCur == blood0 - 3);
+
+    var steady = Sober();
+    steady.DosesToday = 1;
+    var sat = Rest.TakeDose(steady, false, nerveDie: 2, fortDie: 15);
+    T("dose: a save made sits well", sat.SaveDc == 12 && !sat.Drained && !steady.DrainedByDrink && sat.BloodLost == 0);
+    T("dose: and says so", sat.Line.Contains("sits well"));
+
+    var already = Sober();
+    already.DosesToday = 1;
+    int b0 = already.BloodCur;
+    var elsewhere = Rest.TakeDose(already, false, nerveDie: 1, fortDie: 1, alreadyDrained: true);
+    T("dose: a soul Drained by something else loses no more Blood",
+        elsewhere.Drained && elsewhere.BloodLost == 0 && already.BloodCur == b0);
+
+    var brim = Sober();
+    brim.NerveCur = 11;
+    T("dose: Nerve stops at its maximum", Rest.TakeDose(brim, true, nerveDie: 6).Nerve == 1 && brim.NerveCur == 12);
+    T("dose: nobody is refused by name", Rest.WhyNotDose(null) != null && Rest.TakeDose(null, false) == null);
+
+    var drunk = Sober();
+    Rest.TakeDose(drunk, false, nerveDie: 1);
+    drunk.DosedThisScene = false;
+    Rest.TakeDose(drunk, false, nerveDie: 1, fortDie: 1);
+    Rest.Take(drunk, RestKind.Night, nerveDie: 1);
+    T("dose: a safe night starts the count again and lifts the Drained",
+        drunk.DosesToday == 0 && !drunk.DrainedByDrink && Rest.TakeDose(drunk, false, nerveDie: 1).SaveDc == 0);
+
+    // The Tracker's conditions line: the worse Drained holds, and a night lifts only the bottle's.
+    T("drain: added where none shows", Rest.WithDrinkDrain("Frightened 1") == "Frightened 1, Drained 1");
+    T("drain: a deeper Drained holds", Rest.WithDrinkDrain("Drained 2, Sickened 1") == "Drained 2, Sickened 1");
+    T("drain: lifting takes the bottle's own", Rest.WithoutDrinkDrain("Frightened 1, Drained 1") == "Frightened 1");
+    T("drain: and leaves a deeper one", Rest.WithoutDrinkDrain("Drained 2") == "Drained 2");
+    T("drain: an empty line", Rest.WithDrinkDrain(null) == "Drained 1" && Rest.WithoutDrinkDrain(null) == "");
+    T("drain: any value shows", Rest.ShowsDrained("Drained 3") && !Rest.ShowsDrained("Frightened 1") && !Rest.ShowsDrained(null));
+
+    // The bottle's Drained outlasts the fight. New fight clears the conditions and puts it back,
+    // and the guard in front of it must not count it as residue, or the button offers to clear a
+    // thing that comes straight back.
+    var tippler = Sober();
+    T("standing: a sober soul carries nothing", Rest.Standing(tippler) == "" && Rest.Standing(null) == "");
+    tippler.DrainedByDrink = true;
+    T("standing: the bottle's Drained carries", Rest.Standing(tippler) == "Drained 1");
+    T("standing: the same conditions in any order",
+        Rest.SameConditions("Frightened 1, Drained 1", "drained 1,Frightened 1") && Rest.SameConditions(null, "")
+        && !Rest.SameConditions("Drained 1", "") && !Rest.SameConditions("Drained 1", "Drained 2"));
+    var sway = new Combatant { Name = "Tippler", IsPC = true, BloodCur = 9, BloodMax = 12, Conditions = "Drained 1" };
+    T("standing: wearing only what carries is no residue", !Rules.FightResidue(sway, "Drained 1"));
+    T("standing: but the plain check still sees it", Rules.FightResidue(sway));
+    sway.Conditions = "Frightened 1, Drained 1";
+    T("standing: anything more is residue", Rules.FightResidue(sway, "Drained 1"));
+    Rules.ResetForNewFight(new[] { sway }, c => Rest.Standing(tippler));
+    T("standing: the reset clears the fight and keeps the bottle",
+        sway.Conditions == "Drained 1" && !Rules.FightResidue(sway, Rest.Standing(tippler)) && sway.BloodCur == 9);
+    Rules.ResetForNewFight(new[] { sway });
+    T("standing: with nobody named, the reset clears it all", sway.Conditions == "");
+}
+
 Console.WriteLine($"\n{pass} passed, {fail} failed");
 return fail == 0 ? 0 : 1;
