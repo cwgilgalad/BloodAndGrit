@@ -61,6 +61,7 @@ BOOKS = [
     ("keeper-handbook.html",  "Blood-and-Grit-Keepers-Book.pdf"),
     ("bestiary.html",         "Blood-and-Grit-Bestiary.pdf"),
     ("legends.html",          "Blood-and-Grit-Book-of-Legends.pdf"),
+    ("legends-companion.html", "Blood-and-Grit-Legends-Companion.pdf"),
     # the three adventures, in module order rather than filename order
     ("module-salt-at-coffin-wells.html",  "Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf"),
     ("module-a-face-not-his-own.html",    "Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf"),

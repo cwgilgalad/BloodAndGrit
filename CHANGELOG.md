@@ -8,6 +8,66 @@ Desktop\Git repos.)
 
 ---
 
+- **The Legends Companion, a fifth book, for the Keeper. The Legends Companion v1.0 (2026-09-29).**
+
+  Cole asked for a Keeper's companion to the Book of Legends: the story behind every section of
+  every chapter, told whole, consistent with the lore, tied together where the stories touch, and
+  left open enough that a Keeper can make something of it at the table. It's built by
+  `build_legends_companion.py` into `legends-companion.html`, 263 pages and about 74,000 words.
+
+  **What's in it.** Each of the Book of Legends' 115 sections gets an entry, and the satchel at the
+  back gets eight more, one for each thing Ashby left in it. An entry runs the same way every time:
+  who's in it, what happened (the complete story, told plainly for the Keeper), what's left open
+  (one question and three or four answers, none of them marked right), a note on running it, the
+  Bestiary creatures it uses with their Tiers, and the other entries it's tied to. Each chapter opens
+  with a page on what its papers are hiding between them. The front matter gives the Keeper what the
+  editor won't say about Ashby, four ways his story can end, a timeline read off the entries' own
+  dates, and a map of the threads that run through more than one chapter. The stories the papers
+  were drawn from are the spine of each entry, retold in the game's own country; as in the Book of
+  Legends, no source is named.
+
+  **What it keeps.** The Old Dark is one presence and the companion never lets it be seen to want.
+  It's a Keeper's book, so a face may be named where the Keeper's Book already names it, but the face
+  under Perdition Basin never is, and the three Ch. XVI legends keep their four readings apiece and
+  never explain each other. The four papers that speak for a real nation carry the same request here
+  as in the Book of Legends, and the sentence that names them is built from one list, count and all.
+
+  **Nothing is typed twice.** The chapter list, every section title, the chapter numerals and the
+  anchors are read out of the built `legends.html`; every Keeper's Book cross-reference is read out of
+  `keeper-handbook.html` and fails the build if the anchor is gone; every creature is looked up in
+  `GK/rules/Data/creatures.json` and a name that doesn't resolve stops the build with suggestions.
+  The build also stops if a section has no entry, if an entry names a section that isn't there, if a
+  chapter has no opening page, or if any internal link is dead.
+
+  **`book_shell.py`.** The Book of Legends' builder said a fifth book should lift the shell transform
+  out of the builders, and this is the fifth. The seven cover strings, the two epigraph swaps and the
+  splice now live in one module, and the Keeper's Book, the Bestiary and the Book of Legends import it.
+  All three rebuilt byte-identical to what they were before the move. Each builder keeps its own CSS.
+
+  **Wired in.** `make_pdf.py` prints it as `Blood-and-Grit-Legends-Companion.pdf`, `make_bundles.py`
+  puts it in the books zip, `update_readme.py` carries its version, and the auditors that list the
+  books (`verify_all`, `verify_release`, `verify_rules`, `audit_ai_tells`, `audit_idempotent_build`,
+  `audit_pdf`, `extract_rules`) read it. README's *Read* link points at the Release asset, which
+  won't exist until the next ship puts it there.
+
+  **Still to do.** No release was cut. Page numbers were measured in the cloud with the book's own web
+  fonts and want measuring again in Edge. The four real-nation entries want the same reader as the
+  papers they stand behind.
+
+  Checks: the companion measures 263 pages at desktop and mobile width with nothing clipped at true
+  scale, no mobile h-scroll, and all 146 Contents lines and 338 Index entries resolving. Two builds in
+  a row are byte-identical. `audit_ai_tells.py` finds no hard tells in it and it passes `--strict`.
+  `verify_rules.py` finds 0 drift and no retired word. The PDF prints 263 pages against 263 sheets,
+  with all 1,605 links made explicit.
+
+  **`audit_pdf.py` reads a line of cross-references.** The companion's first print failed it four
+  times with *a row prints 1878*, and the book was right. Its entries string links along a line, and
+  "A Well That Breathes (Chapter XVI) · The Eclipse of 1878" puts a year inside the next link's
+  title, which the auditor took for the first link's page number. A printed page number is plain
+  text in every book, so the auditor no longer reads digits that sit inside another link. Proved
+  both ways: the seven other PDFs read exactly as before (1,510 rows, the same count in every book),
+  and a wrong number drawn beside a Contents row and beside an Index row is caught.
+
 - **The PDF audit reads a wrapped Index row (2026-09-26).**
 
   The release gate failed on the Book of Legends' new print with *sheet 176: a row prints 137 and

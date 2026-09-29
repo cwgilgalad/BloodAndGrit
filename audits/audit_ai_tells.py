@@ -79,6 +79,7 @@ DEFAULT_DOCS = ["README.md", "CLAUDE.md", "GK/CLAUDE.md", "CHANGELOG.md", "NOTIC
 # cadence tells are about SHAPE, not vocabulary, and shape does not care what century the diction
 # comes from. Sixteen negative-parallelism constructions were sitting in here unexamined.
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
+         "legends-companion.html",
          "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
          "module-what-the-water-answers.html"]
 

@@ -19,12 +19,11 @@ TWO RULES THIS BOOK IS HELD TO.
      says which one is. Where a document could be read as a confirmation, another document nearby
      takes it back. The Keeper's Book has the answers and does not print them either.
 
-WHY THIS BUILDER CARRIES ITS OWN COPY OF THE SHELL TRANSFORM. `build_keeper.py` and
-`build_bestiary.py` do the same, because each is a one-of-a-kind book, while the three modules
-share `modules_common.py`. This is the THIRD copy, which is one more than a pattern needs. If a
-fifth book is ever made, lift the transform out of all three into `book_shell.py` and let the CSS
-stay per-book: the transform is genuinely shared, the CSS genuinely is not (this book has no stat
-blocks and wants none).
+THE SHELL TRANSFORM LIVES IN book_shell.py (2026-09-29). This builder carried its own copy
+until then, the third after build_keeper.py and build_bestiary.py, and said that a fifth book should
+lift it out of all three and leave the CSS per-book. The Keeper's Companion to the Book of Legends
+was the fifth, so the cover swap, the epigraphs and the splice are shared now and the CSS is still
+here: this book has no stat blocks and wants none.
 """
 import re
 
@@ -161,43 +160,29 @@ H = H.replace(_SF_OLD, _SF_NEW, 1)
 
 
 # ---------------------------------------------------------------- cover / meta retext
-# The Player's Book version is read off the shell rather than typed here. See build_keeper.py for
-# what typing it cost, twice.
-_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
-_meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->",
-  f"<!-- Blood & Grit — The Book of Legends · Version {VERSION} -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>",
-  f"<title>Blood &amp; Grit — The Book of Legends (v{VERSION})</title>"),
- ('<div class="kicker">Being a Field Manual for the Living</div>',
-  '<div class="kicker">Being Such Papers as the Country Has Kept</div>'),
- ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Book of Legends</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>',
-  f'<div class="t-tiny">Gathered in the Territories · Edition of 1885 · Version {VERSION}</div>'),
- ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>',
-  '<div class="t-tiny">Letters, depositions, clippings, songs &amp; sworn lies, set down as they were found</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>',
-  f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Book of Legends · Version {VERSION} · For Any Hand at the Table</p>'),
-]
-for a, b in _meta:
-    assert a in H, "the Player's Book cover no longer carries: " + a[:70]
-    H = H.replace(a, b, 1)
+# The swap lives in book_shell.py since 2026-09-29, when a fifth book was made and the transform
+# this builder carried as its third copy came out of all three. The Player's Book version is read
+# off the shell there. See build_keeper.py for what typing it cost, twice.
+import book_shell
+H = book_shell.retext_cover(
+    H,
+    comment=f"<!-- Blood & Grit — The Book of Legends · Version {VERSION} -->",
+    title=f"<title>Blood &amp; Grit — The Book of Legends (v{VERSION})</title>",
+    kicker='<div class="kicker">Being Such Papers as the Country Has Kept</div>',
+    foot='<div class="t-foot">The Book of Legends</div>',
+    tiny=f'<div class="t-tiny">Gathered in the Territories · Edition of 1885 · Version {VERSION}</div>',
+    tiny2='<div class="t-tiny">Letters, depositions, clippings, songs &amp; sworn lies, set down as they were found</div>',
+    note=f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Book of Legends · Version {VERSION} · For Any Hand at the Table</p>',
+)
 
-_q_old1 = ('"We came west to be made new, and found instead that the country was older\n'
-           '    than newness, older than God, and had been waiting a long while in the quiet for company."\n'
-           '    <span class="src">— from the burned journal of Eliza Hart, Surveyor</span>')
 _q_new1 = ('"I have put down what I was told, in the words I was told it in. Where two people told me\n'
            '    different I have put down both, and where I believed neither I have said so, and gone on."\n'
            '    <span class="src">— N. Ashby, from the front of the third field-book</span>')
-_q_old2 = ('"Keep your powder dry, your salt close, and your accounts with the dark paid up.\n'
-           '    The country settles every debt in the end."\n'
-           '    <span class="src">— a saying common to the trail, author unknown</span>')
 _q_new2 = ('"Everybody out here has a story and not one of them will swear to it. That is not because\n'
            '    they are liars. It is because they were there."\n'
            '    <span class="src">— Adelia Cruz, who keeps the peace at Coffin Wells</span>')
-for a, b in [(_q_old1, _q_new1), (_q_old2, _q_new2)]:
-    if a in H:
-        H = H.replace(a, b, 1)
+H = book_shell.swap_epigraphs(H, [(book_shell.PLAYER_EPIGRAPH_1, _q_new1),
+                                   (book_shell.PLAYER_EPIGRAPH_2, _q_new2)])
 
 
 # ---------------------------------------------------------------- page furniture
@@ -4848,13 +4833,7 @@ CHAPTERS = [BODIES[anchor] for anchor, _t, _r in ORDER]
 
 BODY = CONTENTS + BEFORE + "".join(CHAPTERS)
 
-start_marker = "<!-- ===================== CONTENTS ===================== -->"
-si = H.find(start_marker)
-assert si != -1, "contents marker not found"
-sci = H.find("<script>")
-assert sci != -1
-assert H.rfind("</div>", si, sci) != -1
-new_html = H[:si] + BODY + "\n</div>\n" + H[sci:]
+new_html = book_shell.splice(H, BODY)
 
 from nav_tools import add_detailed_toc, build_index, assert_css_vars
 
