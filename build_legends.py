@@ -30,7 +30,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.8"
+VERSION = "1.9"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -40,17 +40,17 @@ _css = """
      page frame, the rules, the labels and the stat blocks; the cover is untouched. */
   :root{ --accent:#3f4a63; --accent-d:#333c50; }
   /* ---- The Book of Legends: papers ---- */
-  .paper{ margin:1.25em 0 1.45em; padding:10px 14px 12px; background:#efe6cf; border:1px solid var(--rule); }
+  .paper{ margin:1.05em 0 1.2em; padding:9px 14px 10px; background:#efe6cf; border:1px solid var(--rule); }
   .paper > .pa-head{ display:flex; justify-content:space-between; gap:12px; align-items:baseline;
                      border-bottom:1.5px solid var(--accent-d); padding-bottom:4px; margin-bottom:7px; }
   .paper .pa-kind{ font-variant:small-caps; letter-spacing:.07em; font-weight:700; color:var(--blood-d); font-size:12.5px; white-space:nowrap; }
   .paper .pa-src{ font-style:italic; color:var(--ink-soft); font-size:12.5px; text-align:right; }
-  .paper p{ margin:.42em 0; font-size:14.4px; line-height:1.45; text-indent:0; }
+  .paper p{ margin:.34em 0; font-size:14.4px; line-height:1.4; text-indent:0; }
   .paper p.pa-sign{ text-align:right; font-style:italic; margin-top:.7em; }
   .paper p.pa-ps{ font-size:13.6px; font-style:italic; }
   /* A letter: a hand, on paper somebody paid for. */
   .paper.letter{ background:#f2ead6; border-left:3px solid var(--accent-d); }
-  .paper.letter p{ font-size:14.6px; line-height:1.5; }
+  .paper.letter p{ font-size:14.6px; line-height:1.43; }
   /* A wire: capitals, no punctuation the operator was not paid for. */
   .paper.wire{ background:#ece4cc; }
   .paper.wire p{ font-family:'Courier New',Courier,monospace; font-size:13px; line-height:1.55;
@@ -86,7 +86,7 @@ _css = """
   .paper.song p.v em{ font-style:normal; }
   /* An account book. Numbers, and one line that is not about money. */
   .paper.ledger table{ width:100%; border-collapse:collapse; font-size:13.2px; margin:.3em 0; }
-  .paper.ledger th{ text-align:left; font-variant:small-caps; letter-spacing:.05em; color:var(--shade);
+  .paper.ledger th{ background:none; text-align:left; font-variant:small-caps; letter-spacing:.05em; color:var(--shade);
                     border-bottom:1.5px solid var(--accent-d); padding:3px 6px; }
   .paper.ledger td{ border-bottom:1px solid var(--rule); padding:3px 6px; }
   .paper.ledger td.n{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
@@ -95,12 +95,12 @@ _css = """
   .paper.field p{ font-size:14px; line-height:1.42; }
   .paper.field .fb-when{ font-variant:small-caps; letter-spacing:.06em; font-weight:700; color:var(--blood-d); }
   /* Where a paper came from, in the editor's hand. */
-  .gloss{ font-size:13.4px; line-height:1.44; font-style:italic; color:var(--ink-soft);
-          margin:1.1em 0 .35em; padding-left:11px; border-left:3px solid var(--accent-d); }
+  .gloss{ font-size:13.4px; line-height:1.4; font-style:italic; color:var(--ink-soft);
+          margin:.95em 0 .3em; padding-left:11px; border-left:3px solid var(--accent-d); }
   .gloss .gl-tag{ font-variant:small-caps; font-style:normal; letter-spacing:.07em; font-weight:700;
                   color:var(--shade); margin-right:.4em; }
   /* The editor, interrupting. Square brackets, because that is what they mean in a printed text. */
-  .ednote{ font-size:13.4px; line-height:1.42; color:var(--ink-soft); margin:.5em 0 1.1em; }
+  .ednote{ font-size:13.4px; line-height:1.38; color:var(--ink-soft); margin:.45em 0 .95em; }
   .ednote .ed{ font-variant:small-caps; letter-spacing:.06em; font-weight:700; color:var(--shade); }
   /* A card: a few lines on stiff paper, the size of a calling card, set in the middle of the page. */
   .paper.card{ max-width:25em; margin-left:auto; margin-right:auto; background:#f4ecd8;
@@ -130,6 +130,28 @@ _css = """
   .paper.scrip p.sc-vig{ font-size:12.6px; color:var(--ink-soft); }
   .paper.scrip p.sc-foot{ font-variant:small-caps; letter-spacing:.07em; font-size:12px; }
   .paper.scrip .sc-serial{ font-family:'Courier New',Courier,monospace; font-variant:normal; color:var(--blood-d); }
+  /* An Army paper and its endorsements: each office's note under a dashed rule, the signer set right. */
+  .paper.endorse p.en{ font-size:13.2px; margin:.45em 0 0; padding-top:.35em; border-top:1px dashed var(--rule); }
+  .paper.endorse .en-no{ font-variant:small-caps; letter-spacing:.05em; font-weight:700; color:var(--shade); }
+  .paper.endorse .en-at{ font-style:italic; }
+  .paper.endorse .en-by{ display:block; text-align:right; font-style:italic; color:var(--ink-soft); }
+  /* A printed form: the print in small capitals, the hand in italic on a dotted line. */
+  .paper.form{ background:#f1e9d4; }
+  .paper.form p.fm-title{ text-align:center; font-variant:small-caps; letter-spacing:.08em; font-weight:700;
+                          font-size:14px; margin:.15em 0 .45em; }
+  .paper.form p.fm-row{ margin:.26em 0; }
+  .paper.form .fm-l{ font-variant:small-caps; letter-spacing:.04em; font-size:13px; color:var(--ink-soft); }
+  .paper.form .fm-v{ font-style:italic; border-bottom:1px dotted var(--ink-soft); padding:0 .25em; }
+  .paper.form p.fm-foot{ font-size:12.5px; color:var(--ink-soft); font-variant:small-caps; letter-spacing:.05em;
+                         border-top:1px solid var(--rule); padding-top:4px; margin-top:.55em; }
+  /* v1.9: set a little tighter, the way a printer sets a book that has outgrown its signatures. The
+     section heads sit closer to their papers, and the Contents runs in two columns like the Index. */
+  h2{ font-size:24px; margin:1.2em 0 .28em; }
+  .toc2{ columns:2; column-gap:26px; }
+  .toc2 li.ch{ font-size:14px; padding:.4em 0 1px; }
+  .toc2 li.sub{ padding:0 0 1px 16px; font-size:12.2px; line-height:1.32; }
+  .ix li{ padding:0 0 1px; }
+  .ix li.ix-hd{ margin-top:.42em; }
   /* The Book of Legends cover: a fourth sibling, dusk-blue ground and a faded indigo keyline. */
   .title-page{ background:#0b1018; box-shadow:0 0 0 4px #0b1018 inset, 0 0 0 5px rgba(96,122,166,.9) inset, 0 14px 40px rgba(0,0,0,.66); }
   .title-page .t-foot{ color:#9db3d6; }
@@ -155,9 +177,68 @@ assert H.count(_TOOBIG_OLD) == 1, "the paginator's creature branch has moved"
 H = H.replace(_TOOBIG_OLD, _TOOBIG_NEW, 1)
 
 _SF_OLD = "        if(b.classList.contains('creature')) return b.children.length>1;"
-_SF_NEW = _SF_OLD + "\n        if(b.classList.contains('paper')) return b.children.length>2;"
+_SF_NEW = _SF_OLD + ("\n        if(b.classList.contains('paper')) return b.children.length>2 || "
+                     "(function(){var t=b.querySelector(':scope > table > tbody'); return !!t && t.rows.length>2;})();")
 assert H.count(_SF_OLD) == 1, "the paginator's split-fill list has moved"
 H = H.replace(_SF_OLD, _SF_NEW, 1)
+
+# A ledger is a paper whose body is one table, and until v1.9 a table inside a paper could not be
+# split, so every account book, poll book and register moved whole and left a third of a page behind
+# it. That was the largest single source of blank paper in the book. A printer runs a ledger on to the
+# next page with its column heads repeated; the paper's own head already says "(cont.)" there.
+_TBL_OLD = ("        /* a long paragraph-like child can split at a word boundary to fill\n"
+            "           the remaining gap before the fragment carries forward */")
+_TBL_NEW = (r"""        /* a ledger's table can run on to the next fragment, its column heads repeated */
+        if(item.tagName==='TABLE' && item.tBodies.length && item.tBodies[0].rows.length>1){
+          var tb0=item.tBodies[0], th0=item.tHead, trs=[].slice.call(tb0.rows);
+          for(var z=0;z<trs.length;z++){ tb0.removeChild(trs[z]); }
+          var curTB=tb0, curT=item, tp=0, ti=0;
+          function nextT(){
+            curBox=_mkFrag(box, head);
+            var nt=item.cloneNode(false); if(th0) nt.appendChild(th0.cloneNode(true));
+            var ntb=document.createElement('tbody'); nt.appendChild(ntb);
+            curBox.appendChild(nt); curT=nt; curTB=ntb; tp=0;
+          }
+          while(ti<trs.length){
+            curTB.appendChild(trs[ti]);
+            if(fits(cur.content,max)){ ti++; tp++; placed++; continue; }
+            if(tp>1){ curTB.removeChild(trs[ti]); nextT(); }
+            else if(placed>0 || notAlone){
+              /* one row alone at the foot of a page is a widow: carry the table over whole */
+              for(var r=curTB.rows.length-1;r>=0;r--){ ti--; curTB.removeChild(curTB.rows[r]); }
+              ti++;
+              if(curT.parentNode) curT.parentNode.removeChild(curT);
+              if(head && curBox===box && curBox.children.length===1 && curBox.firstElementChild===head){
+                /* only the paper's own head would stay behind, so the paper goes over whole */
+                if(box.parentNode) box.parentNode.removeChild(box);
+                fresh(); cur.content.appendChild(box);
+                var nt3=item.cloneNode(false); if(th0) nt3.appendChild(th0.cloneNode(true));
+                var ntb3=document.createElement('tbody'); nt3.appendChild(ntb3); box.appendChild(nt3);
+                curBox=box; curT=nt3; curTB=ntb3; tp=0;
+              } else { nextT(); }
+              notAlone=false;
+            } else { ti++; tp++; placed++; }
+          }
+          i++; placed++; justRetried=false; continue;
+        }
+""" + _TBL_OLD)
+assert H.count(_TBL_OLD) == 1, "the paginator's paragraph-split branch has moved"
+H = H.replace(_TBL_OLD, _TBL_NEW, 1)
+
+# A letter's signature never goes over the page alone. The paginator carried a sign-off by itself on
+# to the next page as a "(cont.)" fragment holding two initials, which a printer would call a widow
+# and set back; the last paragraph goes over with it instead.
+_SIGN_OLD = ("        if(placed>0 && !justRetried){\n"
+             "          curBox.removeChild(item);\n"
+             "          var carry=pullTrailingHeads(curBox);\n")
+_SIGN_NEW = _SIGN_OLD + (
+    "          /* a signature never goes over alone: the paragraph above it goes with it */\n"
+    "          if(item.classList && item.classList.contains('pa-sign') && !carry.length && curBox.children.length>2){\n"
+    "            var lastP=curBox.lastElementChild;\n"
+    "            if(lastP && lastP.tagName==='P'){ curBox.removeChild(lastP); carry.unshift(lastP); }\n"
+    "          }\n")
+assert H.count(_SIGN_OLD) == 1, "the paginator's carry-forward branch has moved"
+H = H.replace(_SIGN_OLD, _SIGN_NEW, 1)
 
 
 # ---------------------------------------------------------------- cover / meta retext
@@ -317,6 +398,32 @@ def scrip(src, issuer, figure, value, promise, vignette, foot):
     return paper("Banknote", src, [note], cls="scrip")
 
 
+def ordinal(n):
+    return {1: "1st", 2: "2nd", 3: "3rd"}.get(n, f"{n}th")
+
+
+def endorse(kind, src, paras, marks, sign=None):
+    """An Army paper and what became of it on the way up. Each office writes its endorsement under the
+    last one and sends it on, until an office writes File. `marks` is (office and date, text, signer)."""
+    body = list(p(*paras))
+    if sign:
+        body.append(f'<p class="pa-sign">{sign}</p>')
+    for n, (where, text, by) in enumerate(marks, 1):
+        body.append(f'<p class="en"><span class="en-no">{ordinal(n)} endorsement.</span> '
+                    f'<span class="en-at">{where}.</span> {text} <span class="en-by">{by}</span></p>')
+    return paper(kind, src, body, cls="endorse")
+
+
+def form(kind, src, title, rows, foot=None):
+    """A printed form with its blanks filled in by hand: the print is roman and the hand is italic."""
+    body = [f'<p class="fm-title">{title}</p>']
+    body += [f'<p class="fm-row"><span class="fm-l">{label}</span> <span class="fm-v">{value}</span></p>'
+             for label, value in rows]
+    if foot:
+        body.append(f'<p class="fm-foot">{foot}</p>')
+    return paper(kind, src, body, cls="form")
+
+
 # ---------------------------------------------------------------- the order of the book
 # The order lives here and nowhere else. A chapter's numeral, its Contents line, its running head and
 # every "Chapter N" in the prose are read off this list. The book has been renumbered twice: once when
@@ -333,6 +440,13 @@ def scrip(src, issuer, figure, value, promise, vignette, foot):
 # as a fraud and comes back later at full strength (the Long Table four times before its own chapter:
 # a swindle, a skipping rhyme, a bounty, a green door), and Ashby himself is drawn in only in the last
 # three chapters. Move a chapter and you move the arc.
+#
+# v1.9 (Cole, 2026-09-29) put two chapters in. RESPECTFULLY FORWARDED, the government's papers and the
+# Agency's, goes straight after Jubilee, because it is the dullest paper in the book and because a
+# country that says it exists wants the answer from Washington beside it. PER THE LIST, the Golden
+# Circle, goes straight before the Long Table, so that the two organised powers stand together near
+# the top of the arc: the men who buy the ground, then the women who keep the houses, then the
+# faithful. Redemption is public and shows up early and everywhere; the Circle inside it arrives late.
 ORDER = [
     # anchor       title                                        running head
     ("basin",     "Papers of the Basin",                       "Papers of the Basin"),
@@ -340,6 +454,7 @@ ORDER = [
     ("weather",   "Weather, and Things Taken for Weather",      "Weather"),
     ("paper",     "Paper, Ink &amp; Interest",                  "Paper, Ink &amp; Interest"),
     ("jubilee",   "The Spur to Jubilee",                        "The Spur to Jubilee"),
+    ("forwarded", "Respectfully Forwarded",                     "Respectfully Forwarded"),
     ("faces",     "A Face Not Their Own",                       "A Face Not Their Own"),
     ("songs",     "Songs &amp; Sayings of the Territory",       "Songs &amp; Sayings"),
     ("trades",    "Them That Make a Living At It",              "The Trades"),
@@ -348,6 +463,7 @@ ORDER = [
     ("ground",    "What the Ground Keeps",                      "What the Ground Keeps"),
     ("hunger",    "Hunger",                                     "Hunger"),
     ("preaching", "Preaching",                                  "Preaching"),
+    ("circle",    "Per the List",                               "Per the List"),
     ("longtable", "The Long Table",                             "The Long Table"),
     ("brother",   "There Is Always a Brother",                  "There Is Always a Brother"),
     ("depth",     "What the Country Stands On",                 "What the Country Stands On"),
@@ -389,14 +505,13 @@ def chapter(anchor, sub, body):
 
 # ---------------------------------------------------------------- Contents
 # The page numbers here are the no-JS fallback and nothing more: the paginator overwrites every one of
-# them from the rendered sheets. Measured for v1.8 in the cloud's Chromium, with the book's own web
-# fonts loaded, because the laptop was not to hand. On v1.6 that render agreed with the laptop's figures
-# to the page through "road" and ran one page long from "dead" on, so re-measure these in the laptop's
-# Edge at the next ship; a render that falls back to system fonts runs longer again.
-STATIC_PG = {"before": 8, "basin": 10, "frauds": 21, "weather": 34, "paper": 40, "jubilee": 50,
-             "faces": 57, "songs": 63, "trades": 71, "road": 84, "dead": 96, "ground": 110,
-             "hunger": 123, "preaching": 135, "longtable": 145, "brother": 153, "depth": 160,
-             "last": 170}
+# them from the rendered sheets. Measured for v1.9 in the cloud's Chromium, with the book's own web
+# fonts loaded, because the laptop was not to hand. That render matched the laptop's page count on v1.8
+# (177), so these should hold, but re-measure them in the laptop's Edge at the next ship.
+STATIC_PG = {"before": 6, "basin": 8, "frauds": 19, "weather": 33, "paper": 40, "jubilee": 50,
+             "forwarded": 59, "faces": 70, "songs": 77, "trades": 85, "road": 97, "dead": 110,
+             "ground": 124, "hunger": 137, "preaching": 150, "circle": 162, "longtable": 166,
+             "brother": 176, "depth": 186, "last": 196}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'
@@ -630,6 +745,25 @@ CH1 = chapter("basin", "One county, and everything written about it.", "\n".join
      "said why and I have not asked him. I would of filled it in myself."),
      ),
 
+ '  <h2 id="ix-twosections">Two Sections on the Mesa</h2>',
+ gloss("From the field notes of a deputy surveyor under contract to the government, who ran the lines "
+       "of two sections on the Painted Mesa in 1883 for a buyer whose name he was not told."),
+ paper("Field notes", "a deputy surveyor, the Painted Mesa, April 1883", p(
+     "<strong>April 9.</strong> Set the southwest corner of the first section. Stone, 12 by 8 by 6 "
+     "inches, marked on four faces. The purchaser&rsquo;s agent present, a Mr. Purcell. Paid to date, "
+     "in gold.",
+     "<strong>April 10.</strong> Ran the west line north 80 chains. Grass, no water. Four persons of the "
+     "people on the mesa came and stood at the line and watched. They had no objection they would state. "
+     "They asked me to write down that they had watched, and I have.",
+     "<strong>April 12.</strong> Second section, the same. Seven persons watched. The same request, and "
+     "the same entry.",
+     "<strong>April 13.</strong> Mr. Purcell asked whether the stakes would stand. I told him they would "
+     "stand as long as anybody left them. He said that was all that was wanted.")),
+ ednote("Nothing in the instructions to deputy surveyors provides for writing down who watched. He did it "
+        "at every line he ran on the mesa, eleven entries in all, and the Surveyor General&rsquo;s office "
+        "struck every one of them out of the fair copy as having nothing to do with the survey. His field "
+        "book still has them"),
+
  '  <h2 id="ix-paidinfull">Paid in Full</h2>',
  gloss("Three letters from a young man to his mother, a page from the back of a ledger, and an "
        "examiner&rsquo;s note. The mother gave Ashby the letters at Topeka in September 1884, in the "
@@ -703,6 +837,23 @@ CH1 = chapter("basin", "One county, and everything written about it.", "\n".join
         "section. That July she found a collar stud at the lip of the well, and she keeps it in a cup "
         "on her dresser and would not sell it to me. The receipt was not on the wall when Mr. Colley "
         "came. It was in the ledger, folded small, and it is in his file still. I have not unfolded it"),
+
+ '  <h2 id="ix-coyle">The Marshal&rsquo;s Day-Book</h2>',
+ gloss("Two pages of the day-book Marshal T. Coyle has kept at Calvary Crossing for nine years. He let "
+       "Ashby copy them in 1883, and read this page before it was set, and asked for one thing: the struck "
+       "line is printed struck, and what is under it is not printed."),
+ paper("Day-book", "the marshal&rsquo;s office, Calvary Crossing, 1883", p(
+     "<strong>May 26.</strong> Drunk and disorderly, one, fined. Dog complaint, Front Street, settled.",
+     "<strong>May 29.</strong> Mrs. Kirby, Coffin Wells, reports the Dunbar well gone sour, the third "
+     "since Easter. Rode down. Tasted it. Sour. Advised hauling from the town well.",
+     "<strong>June 12.</strong> Wrote to the county for two deputies.",
+     "<strong>June 26.</strong> County declines the deputies, citing the dry.",
+     "<strong>Aug. 20.</strong> <s>The Dunbar well is not bad water. I stood at it an hour after dark "
+     "and</s>",
+     "<strong>Aug. 21.</strong> Horse stolen, Saltlick road. Recovered same day.")),
+ ednote("Mr. Coyle asked me to say that he struck the line the next morning and not that night, and that "
+        "a man who keeps the only book in a county has to be careful what he makes true by writing it "
+        "down. I have said it"),
 
  '  <h2 id="ix-pell">The Pell Place</h2>',
  gloss("The Pell homestead is nine miles down the river from Calvary Crossing and has been empty "
@@ -930,6 +1081,32 @@ CH2 = chapter("dead", "Burials that did not take, and the paperwork they generat
         "had been wrong twice in thirty-one years, and that he screws every one he is not sure of, "
         "and that is why he has only been wrong twice."]),
 
+ '  <h2 id="ix-evergreen">The Evergreen Burial Society</h2>',
+ gloss("The printed rules of a mutual burial society at Omaha, sent to Ashby by the widow of a member, and "
+       "an item from an Omaha paper about the society&rsquo;s secretary, two years later."),
+ tract("Omaha, 1879", "Rules of the Evergreen Mutual Burial Society", [
+     "Article 1. The Society is formed so that no member shall lie in the ground longer than need be.",
+     "Article 2. Every member dying in good standing is buried at the Society&rsquo;s charge, in the "
+     "Society&rsquo;s ground, by the Society&rsquo;s own people, and the family is put to no trouble after "
+     "the first night.",
+     "Article 3. No member shall lie in the ground more than one night.",
+     "Article 4. The family is asked not to visit the Society&rsquo;s ground. The Society keeps it.",
+     "Article 5. What a member wished for in life, the Society will see to after."],
+     "Dues ten cents the week &middot; members in good standing only"),
+ news("THE DOUGLAS COUNTY BEACON", "14 March 1881",
+      ["GHOULS AT OMAHA", "THE BURIAL SOCIETY A BLIND"],
+      ["Subjects Sold to a Medical College", None],
+      ["The secretary of the so-called Evergreen Mutual Burial Society was arrested on Tuesday on the "
+       "information of a sexton, and the society&rsquo;s ground on the Florence road was found to contain "
+       "forty-one coffins and no occupants. The police believe the society to have been a blind for the "
+       "traffic in subjects to the medical colleges, which pay well and ask little.",
+       "The secretary, a Mr. Olney, declined to make any statement except that every member had been "
+       "buried according to the rules."]),
+ ednote("The medical college at Omaha, to which I wrote, says it received eleven subjects from Mr. Olney in "
+        "three years and paid for them. The society buried forty-one. Mr. Olney served two years and has "
+        "not been seen at Omaha since, and I would ask the reader to hold the two numbers side by side and "
+        "add nothing to them"),
+
  '  <h2 id="ix-handshake">Shake Hands with a Dead Man</h2>',
  gloss("The Last Chance saloon at Caldwell, on the Kansas line, kept a dead man in a glass case in the "
        "summer of 1882, with a hole cut in the side so that his right hand came through, and the cowhands "
@@ -1141,13 +1318,15 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
  """  <p>Every county in the Territories has one of these stories and most of them are about
   bigamy. A man turns up somewhere he is not supposed to be, under a name that is not the one on his
   church roll, and the explanation is nearly always that he has a second wife and a first wife and
-  a schedule. I have read forty of these and thirty-six were exactly that.</p>
-  <p>The four that were not are in this chapter, with one of the thirty-six put in among them, so
+  a schedule. I have read %%FACES_READ%% of these and thirty-six were exactly that.</p>
+  <p>The %%FACES_NOT%% that were not are in this chapter, with one of the thirty-six put in among them, so
   that the reader has the experience of not knowing which.</p>""",
 
  '  <h2 id="ix-agency">The Agency File on Cyrus Teal</h2>',
- gloss("A copy of a detective agency&rsquo;s summary file, of the kind an agency sells to a client "
-       "at the close of a matter. How Ashby came by it is not recorded and I have not enquired."),
+ gloss(f"A copy of a summary file of Pinkerton&rsquo;s National Detective Agency, of the kind the Agency "
+       f"sells a private client at the close of a matter. The initials at its foot are those of the "
+       f"operative whose first report is in {chref('forwarded')}. How Ashby came by it is not recorded and "
+       f"I have not enquired."),
  filedoc("Agency file", "matter of C. Teal, closed",
          ["Subject presents as a commercial traveller in agricultural implements, aged about "
           "forty, of good address and no fixed residence. Employed by Renfro &amp; Sons of Kansas "
@@ -1165,7 +1344,7 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
           "since November and produces a church roll and three neighbours in support. This office "
           "considers the Topeka woman to be mistaken as to dates, women in such matters commonly "
           "being so.",
-          "Matter closed. Recovery not recommended. Fee rendered."]),
+          "Matter closed. Recovery not recommended. Fee rendered. W. F. K."]),
  ednote("Paragraph 5 is the whole file in one line. Three neighbours and a church roll were set "
         "against an operative&rsquo;s opinion about women, and the operative&rsquo;s opinion won, "
         "and the client paid for it. I print this chapter partly because the Agency is very good at "
@@ -1202,6 +1381,32 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
       "written down the pleasant part and left out the whistling part, and I want the whistling "
       "part written down."),
  ], closing="[The coroner directed that the last answer be recorded in full. Verdict: heart.]"),
+
+ '  <h2 id="ix-crailtrial">The Trial of a Witch Hunter</h2>',
+ gloss(f"From the transcript of a trial for manslaughter at Las Vegas, in New Mexico, in 1880. The "
+       f"defendant is the man whose meeting is minuted in {chref('frauds')}. The witness is the dead "
+       "man&rsquo;s widow."),
+ depo("the territorial court at Las Vegas", "October 1880", [
+     ("You were married to the deceased, Josiah Merriam, how long?", "Nine years."),
+     ("Did the defendant come to your house on the 2nd of August?",
+      "Yes, sir. He came in the afternoon and sat on the porch and asked for my husband."),
+     ("What did he say to your husband?",
+      "He said, you are not Josiah Merriam. My husband laughed and asked him who he was, then, and Mr. "
+      "Crail said, I have your name written down, and one true thing about you, and I will tell you what "
+      "it is. He said it very low, and my husband stopped laughing."),
+     ("What did he say?", "I didn&rsquo;t hear it."),
+     ("And then?", "My husband went for the shotgun, and Mr. Crail shot him on the stairs."),
+     ("Mrs. Merriam, was the man on the stairs your husband?", "Yes, sir."),
+     ("You are certain.", "He was my husband nine years."),
+     ("Is there anything more you wish to tell the court?",
+      "Only that since the spring he had stopped going down to the creek. He fished it every Sunday of "
+      "his life, and he wouldn&rsquo;t cross it even on the bridge. I thought it was his leg."),
+ ], closing="[Verdict of the jury, not guilty. The foreman told the court that the jury believed the "
+            "widow, and believed the defendant, and could not make the two agree.]"),
+ ednote("The one true thing, Crail told Ashby, was that the man on the stairs would not cross running "
+        "water on foot. A great many men will not, for a great many reasons. Mrs. Merriam married again in "
+        "1882. Her husband fishes, and she goes down to the creek with him every Sunday and watches him "
+        "cross"),
 
  '  <h2 id="ix-mirror">What the Photographer Would Not Print</h2>',
  gloss("A bill of account and a letter attached to it, from a portrait photographer at a territorial "
@@ -1272,7 +1477,7 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
  '  <h2 id="ix-thirtysix">One of the Thirty-Six</h2>',
  gloss("A letter from a woman at Dodge to a woman at Trinidad, forwarded twice, ending up in a "
        "lawyer&rsquo;s file and thence to Ashby. It may be the one I warned you about in the opening "
-       "of this chapter. I have not marked which of the five that is, and I am not going to."),
+       "of this chapter. I have not marked which of the %%FACES_ALL%% that is, and I am not going to."),
  paper("Letter", "Dodge City, 7 March", p(
      "Mrs. Yeager,",
      "You do not know me and I am sorry to be the one. The man you married in November is my "
@@ -1292,6 +1497,16 @@ CH3 = chapter("faces", "People who were not who they were, and the professionals
         "is only that I noticed. Yeager is not the name on the envelope. It is the one name in this "
         "book I have changed, and I changed it because Mrs. Puckett asked me to and nobody else did"),
 ]))
+
+# The opening's counts are read off the chapter itself. v1.9 put a sixth case in and left the opening
+# saying four and five, which is the drift every typed count in this project has come to in the end.
+_n_faces = CH3.count('<h2 id=')
+_NUMW = "zero one two three four five six seven eight nine ten".split()
+_FORTIES = dict(zip(range(40, 50), ["forty"] + [f"forty-{w}" for w in _NUMW[1:10]]))
+CH3 = (CH3.replace("%%FACES_READ%%", _FORTIES[35 + _n_faces])
+          .replace("%%FACES_NOT%%", _NUMW[_n_faces - 1])
+          .replace("%%FACES_ALL%%", _NUMW[_n_faces]))
+assert "%%FACES" not in CH3
 
 
 # ================================================================ Hunger
@@ -1397,6 +1612,26 @@ CH4 = chapter("hunger", "Parties that went in with provisions, and what the stor
         "The account stops on 16 December. On the back of the last sheet, in the same hand: "
         "<em>we are none of us hungry. That is what I cannot get anybody to attend to. Nobody in "
         "this house has been hungry since November and the flour is going.</em>"),
+
+ '  <h2 id="ix-township">The One Township</h2>',
+ gloss("From a county relief committee&rsquo;s report in Dakota, in the hard winter of 1880, when the "
+       "trains stopped for four months and every township asked for flour but one."),
+ filedoc("Report of the relief committee", "a Dakota county, to the Governor, March 1881", [
+     "The committee visited all eleven townships between the 3rd and the 19th of February, by sledge.",
+     "Ten townships are in want. The committee distributed flour, coal and seed wheat as far as it had "
+     "them, and the particulars are attached.",
+     "In Township 112 the committee found the stock in good flesh, the cellars full, fresh meat on every "
+     "table and no family in want. The township asked for nothing.",
+     "The people of Township 112 are a religious body who came together out of Ohio in 1878. The committee "
+     "was received with great kindness and fed, and was invited to stay for their meeting that evening. The "
+     "committee declined, having ten townships to visit.",
+     "The committee has no explanation to offer for the condition of Township 112 and does not think one "
+     "is required."]),
+ ednote("In the margin of the chairman&rsquo;s own copy, beside the fourth paragraph, is written "
+        "<em>they asked us what we wanted</em>. The county&rsquo;s books show that Township 112 had a good "
+        "harvest in 1880 and stacked its hay early. The families sold up together in 1883 and went west, "
+        "and the people who bought the farms say the cellars are dug deeper than a cellar needs to be. "
+        "Cellars on the Dakota prairie are dug deep for the cyclones"),
 
  '  <h2 id="ix-hotel">A Week at the Hot Springs House</h2>',
  gloss("Three papers about one week in November 1881 at a hotel at a hot springs in the Colorado "
@@ -1525,6 +1760,36 @@ CH4 = chapter("hunger", "Parties that went in with provisions, and what the stor
         "a starving people away from his flour with a pair of snowshoes, and that the house enjoyed it. "
         "The woman at the agency told the interpreter what her people mean by the word, and I have "
         "printed it as she gave it, because it is a better definition than any the dictionaries have"),
+
+ '  <h2 id="ix-tempe">What She Gave for Him</h2>',
+ gloss("From a woman on the Big Sioux, in Dakota, to her mother in Iowa, about a bonesetter out of the "
+       "Cumberland mountains who has set every bone in that township. The physician who attended the man "
+       "afterward wrote the note that follows for me, in 1886."),
+ paper("Letter", "the Big Sioux, Dakota, 29 December 1880", p(
+     "Dear Mother,",
+     "Clem is alive. I&rsquo;ll say that first because I didn&rsquo;t believe it myself for two days.",
+     "He went out to the stack on the 20th in the blizzard with the rope tied to the door, and the rope "
+     "came back without him. The boys found him in the morning against the fence forty rods off, stiff, "
+     "Mother, and cold all through, with his eyes open and snow in them. They carried him in and laid him "
+     "in the front room.",
+     "Aunt Tempe came on the 21st through all of it on foot. She sent everybody out but me and sat with "
+     "him the night and said his name. That was all I saw her do. She said it over and over, the way "
+     "you&rsquo;d call a dog in, for hours, and at about four in the morning she stopped and said "
+     "<em>there</em>, and he breathed.",
+     "He&rsquo;s weak and he&rsquo;s lost two toes, but he&rsquo;s himself, all of him.",
+     "She won&rsquo;t take anything for it. She said what it cost wasn&rsquo;t money and it was already "
+     "paid. At church on Sunday she stood through the hymns with her mouth shut and the tears running "
+     "down, and Mrs. Birch says she hasn&rsquo;t sung a note since Christmas, and she used to lead the "
+     "singing."),
+     cls="letter", sign="Your loving daughter, Prue"),
+ paper("A physician&rsquo;s note", "written for the editor, 1886", p(
+     "I attended Mr. C. in January for frostbite, and took off two toes. I do not doubt he was very cold. "
+     "Every school of medicine teaches that no man is dead until he is warm and dead, and men have been "
+     "brought back after many hours in the snow by nothing but warmth and time and somebody sitting by "
+     "them. I do not think a name had anything to do with it.",
+     "I have heard the woman in question speak since, and I will say that her voice is not what it "
+     "was."),
+     sign="M.D."),
 
  '  <h2 id="ix-fortsafe">The Fort Is Safe</h2>',
  gloss("In the autumn of 1882 the grading crews at the Sixmile cut blasted into a seam that came up wet and "
@@ -1664,6 +1929,29 @@ CH5 = chapter("ground", "Mines, cuts, diggings, and the things that came up with
  ednote("It was kept. All thirty-one were kept, and bound, and the Board went on overruling him for "
         "another four months, and the letter that closes the file is from a different "
         "superintendent"),
+
+ '  <h2 id="ix-ore">They Didn&rsquo;t Want the Ore</h2>',
+ gloss("A letter from a prospector in the Castle Dome district above Yuma to his brother at Prescott, who "
+       "gave it to Ashby in 1884 because, he said, his brother had never before in his life been paid for a "
+       "thing he didn&rsquo;t understand."),
+ paper("Letter", "the Castle Dome district, Arizona, March 1883", p(
+     "Dear Will,",
+     "I&rsquo;ve sold the Lucky Sixteen, and I&rsquo;ve been paid, and I&rsquo;m writing to tell you before "
+     "I drink it.",
+     "A gentleman came up from Jubilee with two men and a mule and asked to see the claim. He looked at "
+     "the vein and the assay and said it was a fair assay, and then he offered me four times what the "
+     "claim is worth, in gold, and I had it in my hand inside the hour.",
+     "Then his men went down the shaft and brought up the ore I had on the dump, a season&rsquo;s work, "
+     "good galena, and spread it on the ground where the rain will take it, and drove a stake in the middle "
+     "of the claim with a number on it. Thirty-one.",
+     "I asked him what he meant to do with a mine if he didn&rsquo;t want the ore. He said he didn&rsquo;t "
+     "want a mine. I asked him what he did want, and he said <em>this</em>, and laid his hand flat on the "
+     "ground the way you would on a horse.",
+     "I&rsquo;m going to Tucson. Come down and help me spend it."),
+     cls="letter", sign="Hiram"),
+ ednote(f"The schedule of parcels in {chref('jubilee')} has a line with the name cut out of the page: forty "
+        "acres, nine thousand dollars in gold. The Lucky Sixteen is not forty acres. It is twenty, and I "
+        "will not pretend it fits"),
 
  '  <h2 id="ix-veinwork">The Thing in the Spoil</h2>',
  gloss("A single sheet, torn from a shift book, sold to Ashby by a man who said he had taken it out "
@@ -2200,6 +2488,48 @@ CH6 = chapter("road", "Travellers nobody could place, and the details they got w
         "new to the country might not. The six troopers who did not come back are carried on the rolls "
         "as deserters to Mexico"),
 
+ '  <h2 id="ix-tenth">A Sergeant of the Tenth</h2>',
+ gloss("Three letters from a first sergeant of the Tenth Cavalry, whose troop was sent in the spring of "
+       "1885 to a camp on the Colorado to watch the river and the branch, to his wife at Nicodemus. They "
+       "came to me and not to Ashby. His wife lent them, and asked that his name be printed in full "
+       "because he is proud of it, and so is she."),
+ paper("Letter", "camp on the Colorado, 11 May 1885", p(
+     "Dear Minnie,",
+     "They&rsquo;ve sent two troops of us to sit on this river and look at a country the Army says "
+     "isn&rsquo;t there. Orders are we&rsquo;re not to cross, not to speak to their patrols, and not to "
+     "take notice of their flag. So every morning at reveille sixty of us don&rsquo;t take notice of it "
+     "together while they run it up across the water, and I will say the men in grey keep better time "
+     "than our bugler.",
+     "I&rsquo;ve seen the town from the bluff. It&rsquo;s handsome. I&rsquo;m told there&rsquo;s nobody "
+     "like us in it and I believe it. They look at us across the water like we were weather."),
+     cls="letter", sign="Your husband, Isom"),
+ paper("Letter", "the same camp, 20 June 1885", p(
+     "Dear Minnie,",
+     "A freighter came in with a complaint that a patrol of theirs stopped him at the tanks on our side, "
+     "forty miles south, and asked for his papers, very polite. The lieutenant sent it up. It came back "
+     "yesterday endorsed that there is no report of any such patrol.",
+     "I&rsquo;ve been in the Army nine years and that&rsquo;s the first time I&rsquo;ve been told in writing "
+     "what I didn&rsquo;t see. The lieutenant says put it in my book, so I have."),
+     cls="letter", sign="Isom"),
+ paper("Letter", "the same camp, 2 September 1885", p(
+     "Minnie,",
+     "We had a queer night on patrol and I want to tell it to you before I tell anybody else.",
+     "Eight of us were riding the sand hills west of the branch at two in the morning, where nobody lives "
+     "and nothing walks, and a man came walking east out of them on foot. New boots, a good coat, no hat, "
+     "no water, no horse. He asked me very civil which way was the river. I asked him where he&rsquo;d "
+     "come from and he said Jubilee, and that it was the first time in eleven years anybody had asked him "
+     "anything.",
+     "We gave him water and put him up behind Corporal Mayes and brought him in. In the morning he was gone "
+     "out of the guardhouse, and the sentry says he never passed him. His tracks went back west into the "
+     "sand hills. The boots were small for a man his size.",
+     "You know I&rsquo;m not a fanciful man. I&rsquo;m writing it down so I&rsquo;ll know I told you."),
+     cls="letter", sign="Isom"),
+ ednote("The lieutenant&rsquo;s report for that night says the patrol brought in a deserter from the "
+        "militia across the river, who was escorted to Yuma next day and handed to the civil authorities. "
+        "The civil authorities at Yuma have no record of him. First Sergeant Isom Fairley has served "
+        "eleven years and means to serve thirty, and his wife tells me he reads the Jubilee papers when he "
+        "can get them, to see what the country that isn&rsquo;t there is doing"),
+
  '  <h2 id="ix-fifth">The Fifth Rider</h2>',
  gloss("Every poster says five. Every count says four. That's all the legend is, and it has "
        "been going twenty-odd years, and the papers below are the ones Ashby thought were the least "
@@ -2384,40 +2714,6 @@ CH7 = chapter("paper", "Debts, deeds, wills and the fine print. The worst chapte
         "the executor to say what it is. The daughter who read this chapter told me the clause is "
         "in her own will, in the same words, and that she has never been told either"),
 
- '  <h2 id="ix-censuses">Two Censuses</h2>',
- gloss("Three sheets on one household in an upper valley, and nothing else. Ashby copied the two "
-       "sheets of 1880 from the county&rsquo;s duplicates in 1883, and wrote in the margin of his copy "
-       "that somebody ought to look at the next census. I did."),
- ledger("Population schedule, tenth census", "an upper valley, June 1880",
-        ["Name", "Relation to head", "Age", "Occupation"],
-        [("Pardee, Amos", "Head, widower", "#64", "Farmer"),
-         ("Pardee, Mercy", "Daughter", "#26", "Keeping house"),
-         ("Pardee, Luther", "Grandson", "#1", "&mdash;"),
-        ]),
- ledger("Agricultural schedule, tenth census", "the same farm, June 1880",
-        ["Live stock", "Number"],
-        [("Neat cattle on hand, 1 June 1880", "#12"),
-         ("Purchased in 1879", "#140"),
-         ("Sold living in 1879", "#0"),
-         ("Slaughtered in 1879", "#0"),
-         ("Died, strayed or stolen and not recovered, 1879", "#128"),
-        ]),
- ledger("Territorial census", "the same household, 1885",
-        ["Name", "Relation to head", "Age", "Occupation"],
-        [("Pardee, Amos", "Head", "#69", "Farmer"),
-         ("Pardee, Mercy", "Daughter", "#31", "Keeping house"),
-         ("Pardee, Luther", "Grandson", "#6", "At school"),
-         ("&mdash;", "<em>the other one</em>", "", ""),
-        ],
-        "The fourth line is in a different ink, and the columns after the second are empty. In the "
-        "margin, in the enumerator&rsquo;s hand: <em>Head insisted it be counted. I have put down what I "
-        "was told. I did not see it.</em>"),
- ednote("Enumerators were paid by the head, and the man who took the valley in 1885 was let go the "
-        "next year for padding his returns in another township, so a fourth line in his book proves "
-        "very little. Ashby&rsquo;s sum in the margin of the 1880 sheet reads <em>140 bought, 12 on "
-        "hand, none sold, none eaten.</em> I have asked in that valley, and nobody who sold cattle "
-        "there in 1879 remembers selling any to Mr. Pardee"),
-
  '  <h2 id="ix-foreclosure">A Good Month at a Small Bank</h2>',
  gloss("A page from a bank&rsquo;s own summary of a quarter, of the sort a country house sends to "
        "its correspondent in a city. Entirely routine."),
@@ -2436,6 +2732,34 @@ CH7 = chapter("paper", "Debts, deeds, wills and the fine print. The worst chapte
         "getting its water back and nobody else&rsquo;s is, and the house has written down that it "
         "does not know why. I believe that they do not know why. That is the part I would ask a "
         "reader to sit with"),
+
+ '  <h2 id="ix-emigrants">Emigrants Wanted</h2>',
+ gloss("A circular of the Treasury of Redemption, posted in the spring of 1880 at railroad depots across "
+       "Texas and Georgia and in the landings of the river steamers. One was mailed back to the agent at "
+       "Galveston from Nicodemus, in Kansas, with an answer written on the back. The agent kept it, and his "
+       "widow sold it to Ashby."),
+ bill([("bl-3", "To the People of the South"), ("bl-1", "LAND IN REDEMPTION"), ("rule", ""),
+       ("bl-2", "Wheat land at the Treasury&rsquo;s valuation &middot; water by the ditch &middot; "
+                "schools and a seminary"),
+       ("bl-2", "A country where no man is asked to apologise for his father"),
+       ("rule", ""),
+       ("bl-3", "Passage by the Jubilee branch from Yuma &middot; papers furnished to the right sort"),
+       ("bl-3", "Apply to the agent of emigration at Galveston")]),
+ paper("Written on the back", "Nicodemus, Graham County, Kansas, June 1880", p(
+     "Sir,",
+     "One of these came to us wrapped round a pound of nails from the store at Ellis, and I have read it "
+     "to the school, as it seemed to me a thing the children ought to know about.",
+     "Some of us came here from Kentucky in &rsquo;77 and some from Mississippi last year, and the ones "
+     "from Mississippi know your word. When the men there took the government back in &rsquo;75 they "
+     "called it redeeming the state. The ones among us who could read saw it in the papers every week, "
+     "and the ones who couldn&rsquo;t saw it at night. That is why this town is here.",
+     "You&rsquo;ll be glad to hear we have wheat too, and a school and two churches, and nobody here has "
+     "to be the right sort to get his papers. We are the right sort already. We did it ourselves, in "
+     "dugouts, the first winter.",
+     "I return your circular so you&rsquo;ll not be short one. Don&rsquo;t send another."),
+     cls="letter", sign="Thos. Wickliffe, for the town"),
+ ednote("The Treasury printed the circular for three more springs. The line about the right sort was "
+        "taken out of the second printing and put back into the third"),
 
  '  <h2 id="ix-salitre">The Dead Vote at Salitre</h2>',
  gloss("Salitre is the Mexican town below the copper works, and Tennant is the company&rsquo;s town "
@@ -2524,6 +2848,28 @@ CH7 = chapter("paper", "Debts, deeds, wills and the fine print. The worst chapte
         "a proper answer and tells you nothing, and is the only answer anybody has ever got about "
         "these dinners"),
 
+ '  <h2 id="ix-sixes">Redemption Sixes</h2>',
+ gloss("A bond of the Treasury of Redemption, and a letter from a bank at Kansas City to a gentleman at "
+       "Atlanta who had asked whether it would carry them. He gave Ashby both, having decided not to buy."),
+ form("Bond", "the Treasury of Redemption, series of 1881", "Six per Cent Land Bond &middot; One Hundred "
+      "Dollars", [
+          ("Payable to", "the bearer"),
+          ("Interest", "six per cent, in gold, at Jubilee, the first of January and of July"),
+          ("Redeemable", "in gold coin, or in land at the Treasury&rsquo;s own valuation, at the "
+                         "Treasury&rsquo;s choice"),
+          ("Secured by", "the lands of the Treasury, which are listed at Jubilee and may be seen there")],
+      "No. 2211 &middot; signed for the Treasury"),
+ paper("Letter", "a bank at Kansas City, to a gentleman at Atlanta, 1882", p(
+     "Dear Sir,",
+     "We are not in a position to carry these at present.",
+     "We would add, for your private information, that they have been offered to this bank four times "
+     "this year, each time by a different gentleman and each time at a better price, and that none of "
+     "the gentlemen appeared to mind in the least whether we bought."),
+     sign="Cashier"),
+ ednote(f"The lands of the Treasury may be seen at Jubilee, as the bond says, by anybody with papers. The "
+        f"only list of them I have seen is in {chref('jubilee')}, and I would not lend a dollar against any "
+        "line of it"),
+
  '  <h2 id="ix-floor">The Floor at Two Hundred and Twelve Feet</h2>',
  gloss("Papers of a cattle company that bored for water on a dry lake in Nevada in 1883, copied at "
        "Winnemucca from the company&rsquo;s file and the county&rsquo;s. They end in a deed, which is "
@@ -2574,9 +2920,9 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
 
  """  <p>I want to be careful here and I will say why. There is more real religion in this country
   than there is anything else, and most of it is a tired man on a horse riding a circuit of two
-  hundred miles for forty dollars a year. Nothing in this chapter is about that man, except the
-  letters in the middle of it, which are, and which I have put in so that the chapter is
-  not only about the other kind.</p>
+  hundred miles for forty dollars a year, or a priest in a mining camp with the road closed. Nothing
+  in this chapter is about those two, except the letters near the start of it, which are, and which I
+  have put in so that the chapter is not only about the other kind.</p>
   <p>The other kind is rarer than the papers make it look. It leaves more paper because it sells
   tickets.</p>""",
 
@@ -2676,6 +3022,44 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
         "recording the date and the cause, which was his heart, at a ford, in the rain, at "
         "sixty-one. There is no legend in these four letters and that is why they are in this "
         "book"),
+
+ '  <h2 id="ix-faculties">Faculties for the Rite</h2>',
+ gloss("Letters between the priest of a mining camp in the San Juan and the chancery of his diocese, in the "
+       "winter of 1881, and a page of his parish register. They came to me from the priest, who has since "
+       "been moved to another parish and asked that the camp not be named."),
+ paper("Letter", "the pastor, to the Chancellor, 4 November 1881", p(
+     "Very Reverend Father,",
+     "I write to ask of His Lordship the faculty to perform the Rite of Exorcism, according to the Roman "
+     "Ritual, over a woman of this parish, M. R., aged twenty-two, married, a communicant.",
+     "I have observed the signs the Ritual names. She speaks a tongue she has not learned, which a Cornish "
+     "miner of this camp tells me is Cornish, and very old. She knows what is said in the next room. She "
+     "cannot bear the Sacrament near her, and at the Elevation she turns her face to the wall. Her "
+     "husband, who is not devout, has asked me for this on his knees.",
+     "I am aware that the Ritual cautions against credulity. I have been cautious for seven weeks."),
+     sign="Your obedient servant in Christ, A. R., pastor"),
+ paper("Letter", "the Chancellor, in reply, 19 November 1881", p(
+     "Reverend and dear Father,",
+     "His Lordship has considered your letter and directs me to say that he does not grant the faculty. "
+     "In His Lordship&rsquo;s judgment the woman is ill, and her illness is a matter for a physician and "
+     "for your prayers. His Lordship reminds you that the Rite may not be performed without his leave."),
+     sign="Chancellor"),
+ paper("Letter", "the pastor, to the Chancellor, 30 November 1881", p(
+     "Very Reverend Father,",
+     "I performed the Rite on the night of the 27th, without the faculty, and I ask His Lordship for "
+     "whatever penance he thinks fit. I will do it gladly.",
+     "I could not wait for a physician. The nearest is at Silverton and the road is closed, and on the "
+     "26th she stood at the foot of her children&rsquo;s bed and told them, in English, the day each of "
+     "them would die."),
+     sign="A. R."),
+ ledger("Parish register", "the same parish, November and December 1881", ["Date", "Entry", "Name"],
+        [("27 Nov.", "<em>Ritus exorcismi, sine facultate</em>", "M. R."),
+         ("4 Dec.", "Communion", "M. R."),
+         ("11 Dec.", "Communion", "M. R."),
+         ("18 Dec.", "Mass for the pastor&rsquo;s intention", "&ndash;")]),
+ ednote("The physician at Silverton saw M. R. in the spring and found her well, and says a nervous illness "
+        "of that kind often passes by itself in a winter, when a woman is shut indoors with her family and "
+        "has their attention. The pastor did his penance, a retreat of thirty days, and was moved the next "
+        "year. He tells me he would do it again, and that nobody has asked him to"),
 
  '  <h2 id="ix-belts">The Spirit-Talker in the Belts</h2>',
  gloss("Everybody in Montana knows somebody who went up into the Big Belt Mountains to find the "
@@ -2841,6 +3225,28 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
         "come a long way to ask about money like everybody else, and would I like some coffee. I "
         "would. It was very good coffee and I learned nothing and I have thought better of the "
         "afternoon every day since."]),
+ '  <h2 id="ix-landismine">The Land Is Mine</h2>',
+ gloss("A sermon preached in the chapel of the seminary at Jubilee in the spring of 1883, taken down in "
+       "shorthand by a Methodist elder from Tucson who had gone up the branch on papers to hear what was "
+       "preached there. His note is under it."),
+ paper("A sermon, from shorthand", "the seminary chapel, Jubilee, 1883", p(
+     "The text is the twenty-fifth of Leviticus, the twenty-third verse. <em>The land shall not be sold for "
+     "ever: for the land is mine; for ye are strangers and sojourners with me.</em>",
+     "Brethren, they call us land-grabbers at Washington, and I receive it. We buy land. We will go on "
+     "buying it. And every parcel we buy we buy for Him who says in this verse that the land is His, and we "
+     "hold it for Him and plant nothing on it, because it is not ours to plant.",
+     "The world asks why we buy ground we do not farm. The world has not read the verse. The land is His. "
+     "We are keeping it until He comes for it.",
+     "And when He comes, He will know it by the stakes.")),
+ paper("Note", "the elder, under his transcription", p(
+     "The preacher did not say whom he meant by He, and the congregation did not seem to need telling.",
+     "I have preached on the twenty-fifth of Leviticus myself, and I have always gone on to the verse the "
+     "preacher at Jubilee left out, the tenth, which is the one about proclaiming liberty throughout all "
+     "the land unto all the inhabitants thereof. It is the verse the town is named for. I listened for it "
+     "for an hour and it never came."),
+     sign="T. Winship, elder"),
+ ednote(f"It is the verse the porter on the branch in {chref('jubilee')} learned from his mother. I set the "
+        "two side by side because I cannot improve on either"),
 ]))
 
 
@@ -2895,6 +3301,35 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
      "this year. Everybody in that house is well."),
      cls="letter", sign="J. T."),
 
+ '  <h2 id="ix-terms">Terms</h2>',
+ gloss("Three papers from the witch-hunting trade, which is a trade whatever else it is: the card A. Crail "
+       "leaves at livery barns, a county&rsquo;s voucher paying him out of the road fund, and a letter of "
+       "his to a younger man in the same line, who sent it to Ashby after Crail stopped answering him."),
+ card("A card", "left at livery barns, 1878 to 1884", [
+     "<strong>A. CRAIL</strong>", "Salt &middot; Iron &middot; Fire &middot; the Name", None,
+     "Graves salted, per grave, two dollars", "A house cleared, ten dollars and found",
+     "A well read, five dollars", "Names written down, no charge", None,
+     "<em>Nothing found, nothing owed.</em>"]),
+ form("Voucher", "a county board in Kansas, 1879", "Claim Allowed out of the Road Fund", [
+     ("Claimant", "A. Crail"), ("For", "abating a nuisance at the Kessel well, Township 9"),
+     ("Amount", "twenty-five dollars"), ("Remarks", "Well in use again. Mrs. Kessel satisfied.")],
+     "Allowed by the board, three members present"),
+ paper("Letter", "A. Crail, to a younger man in the trade, 1882", p(
+     "Sam,",
+     "You ask me how a man chooses. I&rsquo;ll tell you what I did and you can do the opposite.",
+     "Pick one kind and learn it all the way down. A man who hunts everything knows a little about all of "
+     "it, and a little is what gets you killed. I did the dead eleven years, and I can salt a grave in the "
+     "dark with one hand. Then I did the things that wear men, six years, and that is the hardest work "
+     "there is, because you must be right, and I wasn&rsquo;t always.",
+     "Now I do the houses. You&rsquo;ll ask me why and I&rsquo;ll tell you when you&rsquo;re older, or "
+     "when I am. Don&rsquo;t follow me into it. They are the only quarry I ever had that was kinder than I "
+     "am, and it doesn&rsquo;t help.",
+     "Keep your book. Don&rsquo;t cross a name out in a hurry. There are two ways to cross one out, and "
+     "you&rsquo;ll want to be sure which one you used."),
+     cls="letter", sign="A. C."),
+ ednote("The county paid for a well in use again. A well on the Plains that has gone bad in a dry summer "
+        "is as often as not sweet the next spring, whoever is paid for it"),
+
  '  <h2 id="ix-sawbones">A Doctor&rsquo;s Case Notes</h2>',
  gloss("Four entries on one patient from a country doctor&rsquo;s case book. Printed with the "
        "consent of the doctor, who is living, and who asked that the patient be called B."),
@@ -2916,47 +3351,6 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
      "have given it to him. I am a physician and not a priest and I have been sitting here an hour "
      "wondering whether that is a defence."),
      ),
-
- '  <h2 id="ix-surgeon">The Surgeon Who Saw It Raining</h2>',
- gloss("Three letters from a contract surgeon at a four-company post on the Pecos to his sister at "
-       "Baltimore, and the endorsement his commanding officer wrote on the file. The sister sent them to "
-       "me with a note of her own, which asks only that I say her brother was not a drinking man. I have "
-       "said it."),
- paper("Letter", "a post on the Pecos, 7 July 1883", p(
-     "My dear Kate,",
-     "The heat is beyond anything. The thermometer on the infirmary porch stood at a hundred and four "
-     "yesterday, and I have given up the waistcoat, and you may tell Mother so or not as you think best.",
-     "A curious thing. A trooper of B Company came in on Monday with a cut hand, and he stood on my "
-     "floor soaked to the skin, his hair plastered down and the water running off his chin and pooling "
-     "round his boots, and neither he nor the steward remarked on it. I dressed the hand and said "
-     "nothing. When he had gone the floor was dry.",
-     "He was killed on Thursday, when his horse went over on him in a dry arroyo. I set it down because "
-     "I set everything down for you, and it will make a better story at Christmas than the heat."),
-     cls="letter", sign="Your affectionate brother, Philip"),
- paper("Letter", "the same post, 30 September 1883", p(
-     "My dear Kate,",
-     "Four more since July. The post trader. A lieutenant of D Company, at mess. The sutler&rsquo;s "
-     "girl, who was nine. A teamster I did not know. Each of them wet to the skin in a dry country, in "
-     "front of me, and each of them dead inside the week, and nobody sees the water but me.",
-     "I have asked for a transfer and been refused. I have thought of resigning. If I resign I shall "
-     "only see it in Baltimore."),
-     cls="letter", sign="Philip"),
- paper("Letter", "the same post, 11 November 1883, before breakfast", p(
-     "Kate,",
-     "B and D Companies rode out at first light after horse thieves, sixty men with the major, and every "
-     "man in the column was wet through, officers and all, sixty of them riding out into the sun with "
-     "the water running off their horses.",
-     "I am going after them to tell them. I cannot think what else to do."),
-     cls="letter", sign="P."),
- paper("Endorsement on the file", "the commanding officer, December 1883", p(
-     "The detachment returned on the 20th without loss, having recovered the stock.",
-     "Acting Assistant Surgeon Aske left the post without leave on the 11th, alone, and was found "
-     "drowned on the 14th at Horsehead Crossing, where the river was running eighteen inches. The "
-     "surgeon was given to fancies, and I am informed to drink, and the matter is closed."),
-     ),
- ednote("I have been through the post&rsquo;s returns for that half-year. The deaths in them are the "
-        "ordinary number for a post of four companies on the Pecos in a hot summer, and the five he "
-        "wrote about are among them, and so is he"),
 
  '  <h2 id="ix-hexer">A Letter About an Arrangement</h2>',
  gloss("Given to Ashby by the woman who wrote it, who was alive when this book went to press and "
@@ -3050,6 +3444,23 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
         "the five were acquitted at Cheyenne in March. The bitters are mostly gentian and whisky. I "
         "bought a bottle at Cheyenne and drank a glass of it, and it steadied my hand, and I have not "
         "drunk another"),
+
+ '  <h2 id="ix-route">A Drummer&rsquo;s Route Book</h2>',
+ gloss("A page of the route book of a travelling man for a St. Louis house in bitters, liniment and soap, "
+       "who worked the Kansas and Colorado towns for six years and let Ashby copy one page in 1883. The "
+       "last three columns have no heads in the book, and I have not supplied any."),
+ ledger("Route book", "a travelling man, the spring route of 1882",
+        ["Town", "Ordered", "", "", ""],
+        [("Salina", "2 gro. bitters, 1 gro. soap", "Mrs. Rudd", "rest", "any"),
+         ("Ellsworth", "1 gro. bitters", "H. Lamb, barber", "know", "not with Hays"),
+         ("Hays City", "3 gro. liniment", "the new doctor", "eat", "not with Ellsworth"),
+         ("Wallace", "&ndash;", "the agent at the depot", "keep", "any"),
+         ("Kit Carson", "1 gro. soap", "Mrs. Varney", "loved", "not with Wallace"),
+         ("Pueblo", "4 gro. bitters", "two, not speaking", "rich, know", "not with each other"),
+        ]),
+ ednote("The travelling man is alive and sells soap and nothing else now. He says the third column is the "
+        "man or woman in each town who would stand a stranger a drink, and the fourth is what they drank. I "
+        "asked him what a man drinks that is called <em>keep</em>. He said I had not been to Wallace"),
 
  '  <h2 id="ix-scout">A Tracker&rsquo;s Evidence</h2>',
  gloss("Given at an inquest. The witness is a hunter of forty years&rsquo; standing who was "
@@ -3326,6 +3737,29 @@ CH9 = chapter("weather", "The sky, which is the biggest liar in the Territories.
         "cuts for Ashby, says the hand is the same from 1869 to 1882, and the only other hand in the "
         "grove is the son&rsquo;s"),
 
+ '  <h2 id="ix-signal">Phenomenon Not Provided For</h2>',
+ gloss("The Army keeps the country&rsquo;s weather. Every signal station is kept by an enlisted man of the "
+       "Signal Service, who reads the instruments three times a day and wires them to Washington. One "
+       "station&rsquo;s journal in the Panhandle, and a circular sent to every station eleven weeks after."),
+ paper("Station journal", "a signal station in the Panhandle, 3 August 1882", p(
+     "<strong>7 a.m.</strong> Bar. 27.41. Ther. 71. Wind S., light. Clear.",
+     "<strong>3 p.m.</strong> Bar. 27.39. Ther. 94. Wind S., fresh. Clear.",
+     "<strong>3.40 p.m.</strong> Barometer fell sixty hundredths in a quarter of an hour and rose again "
+     "to 27.40. No wind. No cloud. The birds left the stable roof together and did not come back that day. "
+     "The station dog would not come out from under the steps until morning. Every man at the post "
+     "put his hands to his ears, as in a railroad cut.",
+     "<strong>11 p.m.</strong> Bar. 27.42. Clear. The observer respectfully notes the above as a "
+     "phenomenon not provided for in the Instructions."),
+     sign="Private, Signal Service, observer"),
+ paper("Circular", "Office of the Chief Signal Officer, Washington, October 1882", p(
+     "Observers will confine the remarks column of the station journal to the phenomena provided for in "
+     "the Instructions. Remarks upon the conduct of animals, and upon the sensations of observers, will "
+     "not be forwarded.")),
+ ednote("A mercury barometer that is knocked will do a good many things, and a station on the Plains is "
+        "knocked by every train and every norther. The two other stations within a hundred miles show the "
+        "same fall in the same quarter of an hour, and neither observer wrote a word about it, which the "
+        "circular, when it came, would have approved"),
+
  '  <h2 id="ix-lineman">What the Lineman Saw</h2>',
  gloss("A telegraph company&rsquo;s accident report, and three letters from the lineman it is about "
        "to his brother at Council Bluffs, who sent them to Ashby in the summer of 1884 after reading a "
@@ -3398,6 +3832,9 @@ CH10 = chapter("songs", "What people sing, and what they say without thinking ab
      "<em>If the dogs won&rsquo;t go in, you have got what you came for and you can go home.</em>",
      "<em>The country keeps books.</em>",
      "<em>Give the long train the main line, and don&rsquo;t count the cars.</em> (Railroad men, in four counties.)",
+     "<em>Chicago never sleeps, and Washington never wakes.</em>",
+     "<em>The Jubilee train runs full going up.</em> (Yuma, and nowhere else.)",
+     "<em>A brother will stand you supper. Ask him what&rsquo;s for breakfast.</em>",
      "<em>Two is a coincidence, three is a road, and four is somebody&rsquo;s business.</em>"),
      ),
  field("undated", "the back of the ninth field-book",
@@ -3430,6 +3867,23 @@ CH10 = chapter("songs", "What people sing, and what they say without thinking ab
      "at nine and start again at one, and when I asked them why, they looked at me as though I were "
      "simple."),
      cls="letter", sign="H. Crandall"),
+
+ '  <h2 id="ix-muster">The Saturday Muster</h2>',
+ gloss("What the militia at Jubilee marches to on Saturdays, taken down at Yuma from a man who had "
+       "marched to it, and what the section hands at Yuma sing to the same tune when the branch train "
+       "goes up. Both came to Ashby the same afternoon, which is the only way I would print either."),
+ song("The Saturday Muster", [
+     ["We kept the day when the day was lost,", "we kept the word we gave,",
+      "we kept the land at the Treasury&rsquo;s cost", "and we kept the flag from the grave."],
+     ["Turn out, turn out, the square is swept,", "the old man&rsquo;s on the grey;",
+      "what&rsquo;s bought is bought and what&rsquo;s kept is kept,", "and nobody goes away."]],
+     "as it is marched to at Jubilee"),
+ song("The same tune, at Yuma", [
+     ["The branch goes up full of gentlemen", "and comes back down with the bag;",
+      "the Collector swears there&rsquo;s no such town,", "so who&rsquo;s that flying the flag?"],
+     ["Turn out, turn out, the square is swept,", "the old man&rsquo;s on the grey;",
+      "they&rsquo;ve bought the ground where their grandpas slept", "and they&rsquo;re buying the rest today."]],
+     "as the section hands sing it"),
 
  '  <h2 id="ix-keelers">Three Times at Keeler&rsquo;s Ford</h2>',
  gloss("The one song in this chapter that was written down on the day, because a printer was paid to "
@@ -3820,6 +4274,37 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
  ednote("I asked Mrs. Kearse whether anybody had written back to ask him what he missed. She said the "
         "boys had talked it over one evening and decided they did not want to know"),
 
+ '  <h2 id="ix-lookeddoor">Somebody Looked at the Door</h2>',
+ gloss("The minutes of a meeting called at the schoolhouse at Harlan&rsquo;s Ford, Kansas, in March "
+       "1876, and a letter to Ashby eight years afterward from the man the meeting was called to hear."),
+ paper("Minutes", "a public meeting, the schoolhouse at Harlan&rsquo;s Ford, 14 March 1876", p(
+     "Called to order at seven by the Reverend Mr. Gaunt, forty-one present, to hear Mr. A. Crail on the "
+     "troubles lately suffered in the township.",
+     "Mr. Crail stated that he is a hunter of witches and of such things as wear men, and has been so for "
+     "twenty years, and that he would make no accusation, it being his practice to make none.",
+     "He then stood some minutes before the meeting without speaking. Mrs. Ione Dorn, widow, rose "
+     "and looked toward the door.",
+     "On the motion of Mr. Hesketh it was resolved that Mrs. Dorn be requested to leave the township, and "
+     "that the township pay her fare to Kansas City. Carried, thirty-six to four, Mr. Crail not voting.",
+     "Minutes taken by the clerk, J. Amery.")),
+ paper("Letter", "A. Crail, to Ashby, 1884", p(
+     "Sir,",
+     "You ask me about Harlan&rsquo;s Ford. I&rsquo;ll tell you what I&rsquo;ve told nobody. Two people "
+     "looked at the door that night. Mrs. Dorn looked because her husband&rsquo;s brother was outside "
+     "with the team, and he&rsquo;d been drinking, and she was afraid for the horses. I learned that the "
+     "next day, when she was already on the cars.",
+     "The other one looked before she did, and didn&rsquo;t get up, and wrote down afterward that she had. "
+     "He is still the clerk there. I&rsquo;ve been through that town four times since and I haven&rsquo;t "
+     "been able to make up my mind, and I make up my mind for a living.",
+     "You&rsquo;ll want to know why I didn&rsquo;t say so at the meeting. I&rsquo;ve asked myself. I think "
+     "I was right about the room and I wanted to be right about the woman, and a man can&rsquo;t always "
+     "tell those apart with forty people watching him."),
+     cls="letter", sign="A. Crail"),
+ ednote("Mrs. Dorn keeps a boarding house at Kansas City and has done well, and did not care to discuss "
+        "the township. Mr. Amery has kept the minutes at Harlan&rsquo;s Ford for sixteen years without a "
+        "complaint. He read this page before it was set, and asked me only to correct the spelling of his "
+        "name"),
+
  '  <h2 id="ix-haunting">The Haunting at the Trice House</h2>',
  gloss("Confessed in full, in writing, by the man who did it, who was paid nine dollars a week for "
        "eleven weeks and considered it honest work."),
@@ -4066,6 +4551,25 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
      "got off."),
      ps="[Ashby&rsquo;s note: he asked that his name be printed, and it is Henry Pruitt.]"),
 
+ '  <h2 id="ix-river">Papers at the River</h2>',
+ gloss("What a passenger is given at the river when his papers are found in order, and what a teamster "
+       "who hauls for the Treasury says about it. He keeps his four in a cigar box at Yuma."),
+ form("Certificate of admission", "the customs post at the river, 1883", "Redemption &middot; Admitted at "
+      "the River", [
+          ("Name", "Orrin Bagby, teamster"), ("Born", "Marion County, Georgia"),
+          ("Father&rsquo;s service", "4th Georgia, Company C"), ("Business", "Freight for the Treasury"),
+          ("Admitted for", "three days"), ("Remarks", "Known")],
+      "The bearer will surrender this paper at the river going down &middot; it is not good twice"),
+ paper("Account", "the teamster, taken down at Yuma, 1883", p(
+     "They ask where you were born and who your father was and what he did in the war, and they write it "
+     "down. That&rsquo;s the only place anybody asks. Once you&rsquo;re through the river nobody says a word "
+     "to you about the war again, because they know.",
+     "I&rsquo;ve seen a man turned back whose father said all his life he was in the Fourth Georgia, and "
+     "the gentleman looked in a book and said there was no such man in it, and he was very sorry.",
+     "The paper says it isn&rsquo;t good twice and it isn&rsquo;t. They write me a new one every time, "
+     "the same, and every time the gentleman looks at me like he&rsquo;s never seen me before. The fourth "
+     "time I asked him didn&rsquo;t he remember me. He said, we remember everybody.")),
+
  '  <h2 id="ix-twopapers">Two Newspapers That Agree</h2>',
  gloss("Jubilee has two newspapers, owned by two men who are said not to speak to each other. These "
        "are from one week of October 1882, from a subscriber at Yuma who takes both and reads one."),
@@ -4089,6 +4593,28 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
         "train nine passengers going up and says nothing about who came down, because nobody at Yuma "
         "counts. I would not make anything of a compositor&rsquo;s short line, and I ask the reader not "
         "to. I only report that I could not find the three"),
+
+ '  <h2 id="ix-lady">A Week at Jubilee</h2>',
+ gloss("From a book of travels by an Englishwoman who went up the branch in 1883 on papers a cousin at "
+       "Savannah got for her. It was printed at London and not here. What she copied off the customs "
+       "house wall follows it."),
+ paper("From a printed book", "<em>A Lady&rsquo;s Year in the Far West</em>, London, 1884", p(
+     "I confess I had been prepared to dislike it, and I found it the most agreeable town I saw after "
+     "leaving Philadelphia. The streets are watered twice a day and the gardens are a marvel. Every "
+     "gentleman raises his hat, and every lady I was presented to asked after my passage, my health and "
+     "my opinion of the Queen, in that order, and listened to the answers.",
+     "The men go armed as a matter of course, the clergy among them. On Saturday every man in the town "
+     "turns out in the square in grey and is drilled for two hours by an old gentleman on a grey horse. I "
+     "was assured that it is a kind of cricket.",
+     "One thing I did not like, and I have thought about it more than anything else I saw in America. In "
+     "a week I did not see one person of colour, which after Savannah I found remarkable, and when I "
+     "remarked on it my hostess told me, very kindly, that they had all gone to Kansas, where they were "
+     "happier. She said it as one says the swallows have gone. I have no reason to think her unkind. I "
+     "think she believed it.")),
+ paper("Painted on the wall of the customs house", "as the same hand copied it", p(
+     "<em>We, the people of Redemption, having kept the day and the land and the word, and having been "
+     "kept waiting, do ordain this Constitution, that what was ours be ours again, and that what is "
+     "bought be kept.</em>")),
 
  '  <h2 id="ix-letterhome">A Letter Home</h2>',
  gloss("Written from Jubilee by a woman to her sister in Georgia. The sister carried it west in 1883 "
@@ -4206,8 +4732,8 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
 # ================================================================ The Long Table
 CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman in New Orleans nobody has seen.", "\n".join([
 
- f"""  <p>{chref('preaching')} ended at a green door, and a reader will want every green door in the
-  Territories to open onto this chapter. Ashby wanted it too. The house at Denver told him that
+ f"""  <p>The houses in {chref('preaching')} take women in behind a green door, and a reader will want every
+  green door in the Territories to open onto this chapter. Ashby wanted it too. The house at Denver told him that
   anybody may paint a door green, and I have since found two that were painted by Methodists, so I
   would ask the reader to keep the two chapters a little apart.</p>
   <p>This one is about a table. From the bayou parishes to the Sierra there are covens that share no
@@ -4281,6 +4807,30 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "because everybody does."),
      cls="letter", sign="[signed, and the name withheld at her request]"),
 
+ '  <h2 id="ix-sister">Across the River</h2>',
+ gloss("A letter from a Sister of a nursing order at a mining camp in Colorado to the Mother Superior of "
+       "her order, in 1882. The order let me print it on condition that neither the camp nor the Sister be "
+       "named, and let me with some reluctance."),
+ paper("Letter", "a mission of the Sisters, a mining camp in Colorado, February 1882", p(
+     "Reverend Mother,",
+     "The fever is going out of the camp, thank God. We have lost four in the last month and none of them "
+     "children, and Sister Bernadette is on her feet again.",
+     "I must tell you of the house across the river, because the miners speak of it to us as though it "
+     "were another convent, and I think you should know what they mean.",
+     "It is a house of women, six or seven, who take in anybody. They nursed the fever as we did and lost "
+     "fewer. Their house is cleaner than ours and their food better, and the women who come out of it are "
+     "well and grateful, and some of them come to Mass. I went across in January when we ran short of "
+     "quinine, and they gave me all I asked for and would not be paid, and asked after our dead by name.",
+     "They asked me for nothing, Reverend Mother. I have been trying for a month to find the difference "
+     "between their work and ours, and I cannot find it in the work. The miners say the difference is in "
+     "what they ask for afterward, years afterward. I do not know what that means and they will not tell a "
+     "Sister.",
+     "I pray for them every night. I do not know whether that is charity or fear."),
+     cls="letter", sign="Your daughter in Christ, Sr. M. A."),
+ ednote("The order tells me the Sister is well and teaching in the East, and that she has asked, through "
+        "her superior, that I add one line: that when Sister Bernadette died in 1884 the house across the river "
+        "sent flowers, and that nobody had told them she was ill"),
+
  '  <h2 id="ix-hear">Going Down to Hear Her</h2>',
  gloss("Witches talk about going down to New Orleans to hear her the way other people talk about a "
        "pilgrimage they mean to make and keep not making. Here is a woman whose aunt went, two women "
@@ -4324,6 +4874,19 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
         "chapter who went near her on somebody else&rsquo;s business, the city&rsquo;s, and wrote down "
         "what he saw. He saw a courtyard"),
 
+ '  <h2 id="ix-notours">Not at Our Table</h2>',
+ gloss("Ashby asked the house in the Cross Timbers that answered his first question whether the Table had "
+       "any dealings with the people who call each other brother and sister. This is all of the answer."),
+ paper("Letter", "the Cross Timbers, Texas, 1883", p(
+     "Mr. Ashby,",
+     "No. We don&rsquo;t sit with them, and they don&rsquo;t ask.",
+     "They think the thing they love loves them back. We have kept houses a long time and we&rsquo;ve "
+     "never once thought that about anything, including each other.",
+     "When one of theirs comes to one of our doors in trouble we take her in, the same as anybody. We have "
+     "buried a good many of them. They are always very grateful and they never come back, and I&rsquo;ve "
+     "never known which of those two to be sorrier about."),
+     cls="letter", sign="[the same hand]"),
+
  '  <h2 id="ix-ninth">The Ninth Child</h2>',
  gloss("Two letters from a woman on the Neches, in the piney woods of Texas, to her sister, written a "
        "year apart. Her family had been kept by a house for three generations, and the letters are "
@@ -4365,6 +4928,36 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
         "not describe to a court. I have not asked the daughter who read that chapter whether she has "
         "read this one, and I am not going to"),
 
+ '  <h2 id="ix-namebook">The Book With Names in It</h2>',
+ gloss(f"A leaf torn from a small book bound in oilcloth, and an account given to Ashby by a midwife of a "
+       f"house on the Sabine. The leaf was left for Ashby at the hotel at Fort Worth by a woman of a seated "
+       f"house, folded round a note. The hand on the leaf is the hand on A. Crail&rsquo;s card in "
+       f"{chref('trades')}."),
+ paper("A leaf of a book", "A. Crail&rsquo;s, undated", p(
+     "<s>The thing in the Kessel well. It drinks at dusk and only then.</s>",
+     "<s>Josiah Merriam, who is not. He will not cross running water on foot.</s>",
+     "The woman at the Hagar place. She cannot say her own name aloud.",
+     "<s>The house at Opelousas. It keeps nine families and asks the ninth.</s>",
+     "<s>The house at Lampasas. Z. Harrow keeps it.</s>",
+     "The house on the Sabine. It will not turn anybody away, and it knows it.",
+     "The house at the ford on the Neches. It is owed a child this September.")),
+ paper("Note", "folded round the leaf", p("He left this with us. He will want it back."),
+       sign="[unsigned]"),
+ paper("Account", "a midwife of the house on the Sabine, given to Ashby in 1884", p(
+     "He came on a Tuesday in the rain with a lamp in his hand, and stood in the door, and said what he "
+     "was, the way they do.",
+     "We had a girl upstairs in the ninth hour of a hard labour. I told him so, and I told him he could "
+     "do what he&rsquo;d come for when she was delivered and not before, and went back up.",
+     "He waited in the kitchen seven hours. I could hear him turning the pages of his book. When the child "
+     "came I went down and told him it was a girl and they were both well, and he sat a minute, and then "
+     "he asked me what her name was going to be, and I told him.",
+     "He wrote something in the book and went out into the rain. The next spring a dollar came for the "
+     "child in a letter with no name on it.")),
+ ednote(f"There are two ways to cross a name out of the book, he told a younger man in the trade, and the "
+        f"leaf does not say which he used for any of the four. The house at Opelousas is the one whose card "
+        f"is at the head of this chapter. The house at Lampasas was struck through after Mrs. Harrow left "
+        f"it, if the ink is anything to go by, and she left it of her own accord"),
+
  '  <h2 id="ix-harrow">Mother Harrow</h2>',
  gloss(f"The notice in {chref('trades')} offers no money for her, and every bounty man in Texas has read "
        "it. The first letter was left for Ashby at the hotel at Tascosa, and nobody at the desk "
@@ -4398,6 +4991,25 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
         "riding behind her. The notice was still up on a post at Fort Worth when I passed through in "
         "1886, and somebody had written under it in pencil, <em>she is not alone</em>. I do not know "
         "which side wrote it or what they meant by it"),
+ '  <h2 id="ix-commission">A Commission</h2>',
+ gloss(f"The notice for Mother Harrow in {chref('trades')} asks that word be left with any midwife. This was "
+       f"left with one at Denison in the spring of 1885, and she sent it on to the house at Fort Worth, "
+       f"which sent me a copy and kept the letter."),
+ paper("Letter", "left with a midwife at Denison, April 1885", p(
+     "To the Table,",
+     "Your notice says there is no money on her. I don&rsquo;t want money.",
+     "I&rsquo;ve hunted your houses six years and you know my name, so I&rsquo;ll not waste yours. "
+     "I&rsquo;ll find Zilpha Harrow for you. I know the country she&rsquo;s in and I know what she went down "
+     "and got, which is more than your bounty men know, and I&rsquo;m not afraid of her, which is more than "
+     "you are.",
+     "My price is the name of the house that kept my mother, and what it was paid, and when, and where the "
+     "child it was paid with is buried, if it is.",
+     "You&rsquo;ll find me at the wagon yard at Denison until the first of May."),
+     cls="letter", sign="A. Crail"),
+ ednote("The house at Fort Worth will not say whether the Table answered him. Crail was seen at Tascosa that "
+        "June, a week behind Mrs. Harrow and riding the same way. Nobody at Tascosa has seen either of them "
+        "since. The pencil under the notice at Fort Worth, which says she is not alone, is in a hand I have "
+        "set beside his card, and I cannot say it is his and I cannot say it is not"),
 ]))
 
 
@@ -4416,7 +5028,11 @@ CH_BROTHER = chapter("brother", "People who went looking for the dark, and were 
   <p>Every one of them had a name for what they served, and no two of the names agreed, and I have
   taken all of them out, which was Ashby&rsquo;s rule before it was mine. A name in a book is a door
   left open, he wrote on the flyleaf of the fifth field-book, and he had enough on his conscience
-  without that.</p>""",
+  without that.</p>
+  <p>The saloons talk about them as one church. Every congregation I have met is sure the thing that
+  answered it is the only thing that ever answered anybody, and is sorry for the rest, and a few are sorry
+  with rifles. I think the fourth column of the travelling man&rsquo;s route book in {chref('trades')} is
+  what each town&rsquo;s brother came wanting. He still says it is what they drank.</p>""",
 
  '  <h2 id="ix-tract">A Word to Those Who Are Tired</h2>',
  gloss("A leaflet left in the passages of boarding-houses in four towns on the Denver and Rio Grande in "
@@ -4461,6 +5077,29 @@ CH_BROTHER = chapter("brother", "People who went looking for the dark, and were 
         "what his brother-in-law did for a living, and I have wondered since whether the answer was "
         "cards"),
 
+ '  <h2 id="ix-creeds">Two Creeds</h2>',
+ gloss("Two creeds, from two congregations in one town on the Arkansas that bury their dead in separate "
+       "grounds. Each gave Ashby its creed so that he would see how wrong the other was."),
+ tract("the first congregation, 1882", "What We Hold", [
+     "We hold that it heard us when nobody else would.",
+     "We hold that it is the only one that ever has.",
+     "Those who say they have heard it heard something else.",
+     "We hold that [a name, taken out] is its name.",
+     "We pray for the others, who are mistaken.",
+     "We hold that it is patient, and that we will be kept."],
+     "Printed for the congregation &middot; not for sale"),
+ tract("the second congregation, 1882", "What We Hold", [
+     "We hold that it heard us when nobody else would.",
+     "We hold that it is the only one that ever has.",
+     "Those who say they have heard it heard something else.",
+     "We hold that [a name, taken out] is its name.",
+     "We pray for the others, who are mistaken.",
+     "We hold that it is patient, and that we will be kept."],
+     "Printed for the congregation &middot; not for sale"),
+ ednote("The two differ in one word, the name in the fourth line, and the two names have not a letter in "
+        "common. I have taken both out, which leaves the papers the same. I think it is the most important "
+        "thing in this chapter, and I cannot say why"),
+
  '  <h2 id="ix-gloves">The Prisoner&rsquo;s Gloves</h2>',
  gloss("From the transcript of a hearing at a territorial court on a charge of unlawful burial. The "
        "prisoner had buried his hired man on his own place without notice to the coroner, dug him up "
@@ -4489,6 +5128,22 @@ CH_BROTHER = chapter("brother", "People who went looking for the dark, and were 
         "ordinary as mine, and I have not been able to decide whether that is the end of this story or "
         "the part of it I was meant to see"),
 
+ '  <h2 id="ix-congregations">A Letter Between Congregations</h2>',
+ gloss("From a woman at Trinidad to a man at Las Animas. They answered the same sign at the same hotel on "
+       "the same night in 1882, and found out over the pie that they did not keep the same faith."),
+ paper("Letter", "Trinidad, Colorado, 1882", p(
+     "Dear Mr. Ledyard,",
+     "It was a great pleasure to meet you on Thursday, and I hope you will forgive me what I said over the "
+     "pie. I was surprised. I had never met one of you, and I had supposed you would look different.",
+     "I want you to know I bear you no ill will. You have been deceived, and it is not your fault, and it "
+     "may not be too late. What answered you in your trouble was not what answered me in mine, whatever it "
+     "told you, and when the time comes it will not know you.",
+     "I will pray for you to the true one. I hope you will not think me forward if I say I have already "
+     "begun."),
+     cls="letter", sign="Yours in sincere friendship, Mrs. E. Loring"),
+ ednote("He tells me he wrote back the same day in very nearly the same words. They exchange cards at "
+        "Christmas"),
+
  '  <h2 id="ix-glad">A Letter From a Happy Woman</h2>',
  gloss("From a homestead on the Republican River to the writer&rsquo;s sister in Iowa, who sent it to "
        "Ashby in answer to a notice in the Omaha paper, with a note of her own pinned to it."),
@@ -4516,6 +5171,25 @@ CH_BROTHER = chapter("brother", "People who went looking for the dark, and were 
  ednote("A physician at Omaha who read both for me says the calm of the letter is a common thing in a "
         "deep melancholy, and that the marks are very likely something the woman did to herself. I would "
         "like very much for him to be right"),
+
+ '  <h2 id="ix-partners">A Quarrel Between Brothers</h2>',
+ gloss("An inquest at a silver camp in the Wet Mountains in 1883. The dead man and the witness were "
+       "partners in a claim, and belonged, the camp says, to two churches without a building between them."),
+ depo("an inquest, a camp in the Wet Mountains", "May 1883", [
+     ("You shot the deceased.", "Yes."),
+     ("Had you quarrelled?", "Not until that night."),
+     ("Over the claim?", "No, sir. We never had a word about the claim in four years."),
+     ("Over what, then?",
+      "He told me what answered him. I&rsquo;d never asked and he&rsquo;d never said, and that night we had "
+      "some whiskey and he said it, and I said it wasn&rsquo;t so, and he said the same about mine."),
+     ("And then?", "He went for his gun, and I was quicker."),
+     ("Do you regret it?",
+      "I&rsquo;m sorry he&rsquo;s dead. He was a good partner. But he served the wrong one, sir, and "
+      "he&rsquo;d want me to say so, and he&rsquo;d have said the same over me."),
+ ], closing="[Verdict, justifiable homicide, the deceased having drawn first.]"),
+ ednote("Everybody else in the camp says it was the claim, whatever he says, and the claim was worth a good "
+        "deal. He sold it that summer for a fair price and went to work for wages at the smelter, which a man "
+        "who had killed his partner for a claim would not do. Or would"),
 
  '  <h2 id="ix-uncle">Somebody&rsquo;s Uncle</h2>',
  gloss("Every town has a version of this story, and it is always about somebody&rsquo;s uncle. These two "
@@ -4547,6 +5221,32 @@ CH_BROTHER = chapter("brother", "People who went looking for the dark, and were 
      "question in it and never posted it, and he answered the question.",
      "The newspaper man was married in January. His wife has a cough."),
      sign="[name withheld]"),
+
+ '  <h2 id="ix-asked">What the Brother Asked For</h2>',
+ gloss("From a harness-maker at Dodge, who had seen Ashby&rsquo;s notice in the Kansas papers asking for "
+       "accounts of the sign."),
+ paper("Letter", "Dodge City, 1884", p(
+     "Sir,",
+     "I came to Dodge in &rsquo;73 with forty cents and a bad hand. I turned my cup down at supper because "
+     "a man on the cars told me to, and the brother sat down across from me the second night, the way you "
+     "say, and paid for my supper and got me a place with a saddler by the Monday. I&rsquo;ve had my own "
+     "shop since &rsquo;76, and a wife and four children and a brick front.",
+     "He never asked me for anything. Eleven years. I&rsquo;d see him every week and he&rsquo;d nod and "
+     "I&rsquo;d nod.",
+     "In March he came in at closing and asked me for the loan of my hands for an afternoon. That&rsquo;s "
+     "what he said. The loan of them, and he&rsquo;d give them back.",
+     "I said yes. I don&rsquo;t know why. I think I&rsquo;d been waiting eleven years to be asked something "
+     "and I&rsquo;d have said yes to anything.",
+     "I lost the afternoon. My wife says I was home for supper and pleasant, and after supper I sat down "
+     "and did the quarter&rsquo;s accounts, which I haven&rsquo;t done myself in years, and they balanced to "
+     "the cent. My hands were clean. There&rsquo;s a cut across the right palm I didn&rsquo;t have that "
+     "morning, healed over, like it was a year old.",
+     "He nods to me in the street the same as ever. I want to know what they did with them. I don&rsquo;t "
+     "ever want to know."),
+     sign="[name withheld]"),
+ ednote("The French physicians have a name for a man who goes about his business for an afternoon and "
+        "remembers none of it, and they find it in men who work too hard and in men who drink, and he tells "
+        "me he is both. His bank has been over that quarter&rsquo;s accounts, and they are correct"),
 
  '  <h2 id="ix-vessel">What Looked Out of Him</h2>',
  gloss("An account given before a justice at Tascosa by a cowhand who had been at a night meeting on the "
@@ -4609,9 +5309,10 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
         "exceeded. Farrow&rsquo;s party paced it both ways as well, to check him, and got his figures"),
 
  '  <h2 id="ix-gatherings">Four Camps in the High Country</h2>',
- gloss("A report from a detective agency&rsquo;s Denver office to its head office, and returned. The "
-       "operative kept a fair copy and gave it to Ashby at Pueblo, where he had been sent afterwards, "
-       "which he called a reassignment and his wife called something else."),
+ gloss(f"A report from the Agency&rsquo;s Denver office to its head office at Chicago, and returned. The "
+       f"operative is W. F. K., whose first report is in {chref('forwarded')}, and this engagement was a "
+       f"private one, for a mining company. He kept a fair copy and gave it to Ashby at Pueblo, where he "
+       f"had been sent afterwards, which he called a reassignment and his wife called something else."),
  filedoc("Operative&rsquo;s report", "Denver office, June 1884", [
      "Engaged by a mining company to learn who was trespassing on a claim above Leadville, this "
      "operative has spent eleven weeks in the high country.",
@@ -4633,7 +5334,7 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
      "<strong>NOT CREDIBLE.</strong> The operative will confine himself to the matter he was engaged on. "
      "Transfer to the Pueblo office from the first of the month."),
      ),
- ednote("The trespass was never established. The company that engaged the agency owns the claim, so it "
+ ednote("The trespass was never established. The company that engaged the Agency owns the claim, so it "
         "hired a detective to find out who was sinking a shaft it was paying for. I cannot make that come "
         "out any way that is not frightening or stupid. The operative, who has thought about it longer "
         "than I have, says it is both"),
@@ -4835,6 +5536,437 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
         "too much. She was "
         "married in May. Her teacher says she is well and has three children, and keeps the blinds down "
         "at night, which a great many people do"),
+ '  <h2 id="ix-ashbyfile">The Agency&rsquo;s File on N. Ashby</h2>',
+ gloss(f"A summary file of the Agency, opened under the Department of Justice&rsquo;s contract that is "
+       f"described in {chref('circle')}. The Agency does not give its files to editors. This came to me in "
+       f"1886 from W. F. K., who by then had left the Agency, with a note of his own."),
+ filedoc("Agency file", "matter of N. Ashby, under the Department&rsquo;s contract, closed", [
+     "Subject is a naturalist of no fixed residence, about forty-five, eleven years in the Territories, who "
+     "collects the papers, letters and talk of the country, and pays for them.",
+     "Subject came to the Agency&rsquo;s notice in September 1884, when the Land Office reported him asking "
+     "at three district offices after cash entries by agents of principals not named, and it was learned "
+     "that he had bought at Yuma a page of what purports to be a schedule of such entries.",
+     "Subject is known to this operative, having met him at Pueblo in the summer of 1884, and was found "
+     "candid, careful and without political connection.",
+     "Subject was last seen on the stage road below Saltlick Station, in Perdition Basin, on the 24th of "
+     "October, riding toward Calvary Crossing.",
+     "The railroad sold a second-class ticket in subject&rsquo;s name for the Jubilee branch, to be used on "
+     "the 3rd of November. Subject was not on that train, nor on any train.",
+     "Subject not located.",
+     "File closed at the request of the Department, 2 February 1885. W. F. K."]),
+ paper("Note", "W. F. Kinnear, to the editor, 1886", p(
+     "Sir,",
+     "This is his file. You may print it. The Agency won&rsquo;t like it, and I&rsquo;m not with the "
+     "Agency any more.",
+     "I&rsquo;ll add what isn&rsquo;t in it. The Department didn&rsquo;t close the file because he "
+     "couldn&rsquo;t be found. It closed it the week after I asked to go down to the basin and look for him "
+     "myself.",
+     "And you may tell your readers that paragraph 7 of my report from the high country is still my "
+     "opinion."),
+     sign="W. F. Kinnear"),
+ ednote("Paragraph 7 of his report, earlier in this chapter, is that all four camps are waiting for the same "
+        "thing. I wrote to the Department of Justice, which answers that it has no record of any matter "
+        "concerning Mr. Ashby. I have the file in front of me as I write"),
+]))
+
+
+# ================================================================ Respectfully Forwarded
+CH_FORWARDED = chapter("forwarded", "What Washington and Chicago were told, and what they did about it.", "\n".join([
+
+ f"""  <p>Everything in this chapter was written for somebody in an office. Most of it was read there and
+  some of it was answered. To look at, it is the dullest chapter in the book, and I have put it early for
+  that reason.</p>
+  <p>Two kinds of office sent it. One is the government at Washington: the War Department and its posts,
+  the Land Office, the Post Office, the Patent Office, and the Department of Justice with its marshals.
+  The other is Chicago, which is what everybody in the Territories calls Pinkerton&rsquo;s National
+  Detective Agency. The two are nearer each other than most people know. The Department of Justice has no
+  detectives of its own, so when Washington wants a thing looked into, and will not send a marshal or a
+  regiment to look at it, it engages the Agency by contract, at so much a day and expenses. The
+  Agency&rsquo;s operatives in this book are working for the government when their reports say so, and for
+  a railroad or a mine when they say that.</p>
+  <p><em>Respectfully forwarded</em> is what an officer writes on a paper when he sends it up to the office
+  above his. Most of these went up that way, one office at a time, until somebody wrote <em>File</em>.</p>""",
+
+ '  <h2 id="ix-principles">General Principles</h2>',
+ gloss("The Department of Justice&rsquo;s letter engaging the Agency, the card the Agency gives every "
+       "client, and a report by an operative who turns up three more times in this book. The letter and "
+       "the report are from his own papers. The card hangs in every railroad office in Denver."),
+ paper("Letter", "the Department of Justice, Washington, to the Agency at Chicago, March 1881", p(
+     "Sir,",
+     "The Secretary of War having advised this Department of repeated thefts of government horses and "
+     "mules from posts in the Department of the Missouri, and the Department having no officers of its "
+     "own suited to the inquiry, the Agency is engaged to make it, at the rates of its printed schedule, "
+     "accounts to be rendered monthly to this office.",
+     "The Agency will report to the Department and to no other person. The United States Marshal for the "
+     "district will make such arrests as the Agency&rsquo;s operatives advise."),
+     sign="For the Attorney General, the Chief Clerk"),
+ card("A card", "Pinkerton&rsquo;s National Detective Agency", [
+     "<strong>General Principles</strong>", None,
+     "The Agency does not accept rewards.",
+     "The Agency does not undertake matters of divorce,<br>nor inquire into the private conduct of public officers.",
+     "The Agency reports what its operatives have seen,<br>and marks as opinion what they have not.",
+     "The Agency works for the client who engages it.", None,
+     "<em>We never sleep.</em>"]),
+ filedoc("Operative&rsquo;s report", "Denver office, to the Department of Justice, May 1881", [
+     "Engaged under the Department&rsquo;s contract of March, this operative took employment as a "
+     "hostler at Fort Lyon on the 2nd of April.",
+     "The thefts are made by three men, one of them a teamster in the post&rsquo;s own employ. They drive "
+     "the stock off at night to a ranch on the Purgatoire, run the brands over, and sell at Trinidad.",
+     "Nineteen head recovered. Three men held by the Marshal on this operative&rsquo;s information.",
+     "Matter closed eleven days after the operative&rsquo;s arrival. Account rendered. W. F. K."]),
+ ednote("I print it because it is the last report of his in this book that ends where it was supposed "
+        "to, and a reader ought to see what he was like at his work before meeting the rest of it"),
+
+ '  <h2 id="ix-censuses">Two Censuses</h2>',
+ gloss("Three sheets on one household in an upper valley, and nothing else. Ashby copied the two "
+       "sheets of 1880 from the county&rsquo;s duplicates in 1883, and wrote in the margin of his copy "
+       "that somebody ought to look at the next census. I did."),
+ ledger("Population schedule, tenth census", "an upper valley, June 1880",
+        ["Name", "Relation to head", "Age", "Occupation"],
+        [("Pardee, Amos", "Head, widower", "#64", "Farmer"),
+         ("Pardee, Mercy", "Daughter", "#26", "Keeping house"),
+         ("Pardee, Luther", "Grandson", "#1", "&mdash;"),
+        ]),
+ ledger("Agricultural schedule, tenth census", "the same farm, June 1880",
+        ["Live stock", "Number"],
+        [("Neat cattle on hand, 1 June 1880", "#12"),
+         ("Purchased in 1879", "#140"),
+         ("Sold living in 1879", "#0"),
+         ("Slaughtered in 1879", "#0"),
+         ("Died, strayed or stolen and not recovered, 1879", "#128"),
+        ]),
+ ledger("Territorial census", "the same household, 1885",
+        ["Name", "Relation to head", "Age", "Occupation"],
+        [("Pardee, Amos", "Head", "#69", "Farmer"),
+         ("Pardee, Mercy", "Daughter", "#31", "Keeping house"),
+         ("Pardee, Luther", "Grandson", "#6", "At school"),
+         ("&mdash;", "<em>the other one</em>", "", ""),
+        ],
+        "The fourth line is in a different ink, and the columns after the second are empty. In the "
+        "margin, in the enumerator&rsquo;s hand: <em>Head insisted it be counted. I have put down what I "
+        "was told. I did not see it.</em>"),
+ ednote("Enumerators were paid by the head, and the man who took the valley in 1885 was let go the "
+        "next year for padding his returns in another township, so a fourth line in his book proves "
+        "very little. Ashby&rsquo;s sum in the margin of the 1880 sheet reads <em>140 bought, 12 on "
+        "hand, none sold, none eaten.</em> I have asked in that valley, and nobody who sold cattle "
+        "there in 1879 remembers selling any to Mr. Pardee"),
+
+ '  <h2 id="ix-patent">An Application Refused</h2>',
+ gloss("An inventor at Leadville applied for letters patent in 1882. The specification, the examiner&rsquo;s "
+       "letter and the inventor&rsquo;s answer came to me from his widow, with drawings I have not printed."),
+ paper("Specification", "application for letters patent, filed at Washington, 1882", p(
+     "Be it known that I, EMMETT VAIL, of Leadville, in the county of Lake and State of Colorado, have "
+     "invented a new and useful Improvement in Lamps for Mines and Other Dark Places, of which the "
+     "following is a specification.",
+     "Every miner knows that a lamp carried into certain workings gives less light than it gave at the "
+     "collar of the shaft, though the air is good and the wick is sound. The object of my invention is a "
+     "lamp whose light is not diminished by the place it is carried into.",
+     "I claim: first, a lamp as described, its flame shielded by a gauze of the metal named in the "
+     "drawings, in the proportions shown, which are essential; and second, in such a lamp, the "
+     "arrangement by which any thing present in its light is shown, whether or not that thing is "
+     "otherwise visible.")),
+ paper("Letter", "the examiner, Patent Office, to the applicant", p(
+     "Sir,",
+     "The first claim is rejected as describing an effect and not a means. The Office is not informed "
+     "that any workings diminish the light of a sound lamp in good air, and it cannot allow a claim to "
+     "the remedy of a condition not shown to exist. The second claim is rejected as inoperative.",
+     "The applicant is invited to furnish a working model, whereupon the application will be "
+     "reconsidered."),
+     sign="Examiner"),
+ paper("Letter", "the applicant, in reply", p(
+     "Sir,",
+     "There is one lamp. It goes down with the night shift at the three-hundred level, and the men on "
+     "that shift won't go down without it, and I will not take it off them to send it to Washington.",
+     "I withdraw the application. You may keep the fee."),
+     sign="E. Vail"),
+ ednote("His widow says it looked like any safety lamp, with a gauze of some grey metal he never named, "
+        "and that it went down every night for four years and came up every morning. It was not among his "
+        "effects. The shift boss says one of that shift took it with him when he left the camp, and would "
+        "not tell me which one"),
+
+ '  <h2 id="ix-feebill">A Deputy Marshal&rsquo;s Fee Bill</h2>',
+ gloss("The account of a deputy United States marshal as he rendered it to the Department of Justice, "
+       "which pays its deputies by the service and by the mile and keeps examiners to see that it pays for "
+       "nothing else. The examiner&rsquo;s note is in red ink on the original."),
+ ledger("Account of fees and mileage", "a deputy marshal, Western District of Arkansas, June 1883",
+        ["Item", "Service", "Amount"],
+        [("1", "Serving warrant, U.S. v. Jas. Lockhart, larceny in the Nations", "#$2.00"),
+         ("2", "Mileage, Fort Smith to the Kiamichi, 212 miles at six cents", "#$12.72"),
+         ("3", "Pursuit of the defendant, the Kiamichi to Red River, nine days, with one posseman", "#$36.00"),
+         ("4", "Mileage returning with prisoner, 240 miles at ten cents", "#$24.00"),
+         ("5", "Feeding prisoner, six days", "#$4.50"),
+        ],
+        "Sworn and subscribed before the Commissioner, 30 June 1883. H. Fenwick, Deputy."),
+ paper("Examiner&rsquo;s note", "in red ink, across the account", p(
+     "Items 3 to 5 disallowed. The Department&rsquo;s records show the defendant Lockhart deceased at "
+     "Fort Smith on 11 March 1883, and the warrant issued 19 May. Pursuit of a party deceased is not a "
+     "proper charge, and there is no provision for feeding one. Items 1 and 2 allowed. The deputy was not "
+     "to know.")),
+ paper("Letter", "the deputy, to the Department", p(
+     "Sir,",
+     "I don't dispute the Department&rsquo;s records. I helped bury him in March, which is how I knew "
+     "his face on the Kiamichi in May. I brought in what I found, and the jailer will tell you what he fed "
+     "it.",
+     "I would be obliged for items 3 to 5, or for the Department&rsquo;s advice on what I ought to have "
+     "done instead."),
+     sign="H. Fenwick"),
+ ednote("The jail book at Fort Smith for that week shows a prisoner received from Deputy Fenwick and, two "
+        "days after, the same prisoner <em>released to the deputy</em>, with no name given for either. He was "
+        "paid for items 1 and 2. He served eleven more years, and his returns are the neatest in the "
+        "district"),
+
+ '  <h2 id="ix-landoffice">A Land Office Letter</h2>',
+ gloss("From the register of a land office in the Territories to the Commissioner of the General Land "
+       "Office at Washington, with the Commissioner&rsquo;s answer. The register asked that his district "
+       "not be named. Two of the tracts he writes about are in this book already."),
+ paper("Letter", "the register, to the Commissioner, October 1883", p(
+     "Sir,",
+     "I beg to report that in the quarter just ended this office received cash entries on eleven tracts, "
+     "every one by the same agent, for principals he declined to name, and every one paid in gold coin. "
+     "None of the tracts would support a family.",
+     "Two of them are on a mesa where a people is living who have been there, they say, since before the "
+     "Spaniards, and who have filed nothing with this office because nobody told them it was required. "
+     "The man who speaks for them came to the office in person to ask on whose behalf the land was being "
+     "bought. I could not tell him.",
+     "I ask the Office&rsquo;s instruction whether entries of this character are to be received."),
+     sign="Register"),
+ paper("Letter", "the Commissioner, in reply", p(
+     "Sir,",
+     "The Office is not concerned with a purchaser&rsquo;s motives, nor with any occupancy of which it "
+     "has no record. The entries will be received."),
+     sign="Commissioner"),
+ ednote(f"The two tracts on the mesa are the second and third lines of the schedule of parcels in "
+        f"{chref('jubilee')}. The register resigned the next spring and keeps a store now. He told me the man "
+        "who speaks for them came into the office once more, a year later, and asked nothing. He stood a "
+        "while in front of the plat on the wall, and thanked the register, and went home"),
+
+ '  <h2 id="ix-deadletters">The Dead Letter Office</h2>',
+ gloss("The Dead Letter Office at Washington opens every letter that can be neither delivered nor returned, "
+       "to find a name inside to send it back to. A clerk there sent Ashby one page of a quarter&rsquo;s "
+       "return, and a letter, because he had written to ask how many letters went to Jubilee."),
+ ledger("Quarterly return", "the Dead Letter Office, quarter ending 30 September 1883",
+        ["Addressed to", "Received", "Disposition"],
+        [("Jubilee, Cal., or Jubilee, Ariz.", "#311", "Opened; 289 returned to writers, 22 no writer found"),
+         ("Jubilee, Redemption", "#94", "The same"),
+         ("Persons &ldquo;at the river, the Customs&rdquo;", "#12", "The same"),
+         ("&ldquo;The Mother,&rdquo; New Orleans", "#58", "Not opened, by standing order"),
+        ]),
+ paper("Letter", "a clerk of the Dead Letter Office, to Ashby, 1883", p(
+     "Dear Sir,",
+     "You asked how many, and the return will tell you. It will not tell you that nearly all of them are "
+     "from mothers, and that nearly all of them say the same thing: that the writer has not had a line "
+     "since he went, and would he write once, only to say he is well.",
+     "We open them to find the writer, and we send them back. There is no post office at Jubilee in the "
+     "United States and there cannot be one, there being no Jubilee. The railroad carries a bag up the "
+     "branch for the town, and we are not permitted to put anything in it.",
+     "As to the last line of the return, I cannot tell you whose order it is. It was the standing order "
+     "when I came into the office in 1874, and the woman who trained me said it was the standing order "
+     "when she came."),
+     sign="A. T."),
+ ednote("The railroad says its bag goes up the branch full and comes down with the town&rsquo;s letters, "
+        "and that nobody has ever asked it to carry one in from outside. I asked the railroad whether the "
+        "bag that comes down is ever lighter than the one that went up, and the railroad declined to "
+        "discuss its mails"),
+
+ '  <h2 id="ix-noinformation">No Information</h2>',
+ gloss("Two papers of the War Department, a year apart: a captain&rsquo;s report from Fort Yuma, which "
+       "went up through three headquarters and took an endorsement at each, and the Secretary of "
+       "War&rsquo;s answer to a member of Congress. A clerk in the Adjutant General&rsquo;s office copied "
+       "both for Ashby in 1884 and asked for nothing, which in that office is remarkable."),
+ endorse("Report of a scout", "Fort Yuma, Cal., 14 April 1882", [
+     "Sir, I have the honor to report that in obedience to orders I proceeded with a detachment of fifteen "
+     "men up the California side of the river to the point where the railroad branch leaves the main "
+     "line, and some distance beyond.",
+     "At the river crossing of the branch stands a customs house of brick, with a flag over it I did not "
+     "recognize, and four armed men in grey, who asked the detachment for its papers. I declined to show "
+     "any, and they did not insist.",
+     "The town beyond has perhaps eight thousand persons, laid out in blocks, with churches, a bank, two "
+     "printing offices, and a square in which about two hundred men were drilling with rifles. The "
+     "irrigated fields are the best I have seen in the Territory. The detachment was not invited to enter "
+     "the town, and did not attempt it.",
+     "I respectfully request instructions as to the attitude to be observed toward this community, which "
+     "describes itself on the wall of its customs house as a nation."],
+     [("Fort Yuma, 15 April 1882", "Respectfully forwarded.", "Major, commanding the post"),
+      ("Headquarters, Department of Arizona, 2 May 1882",
+       "Respectfully forwarded. There are no troops in this Department to spare for the lower river.",
+       "Brigadier General, commanding"),
+      ("Headquarters, Division of the Pacific, San Francisco, 20 May 1882",
+       "Respectfully forwarded to the Adjutant General of the Army.", "Major General, commanding"),
+      ("War Department, Washington, 14 June 1882", "File. No action.", "[initialled]")],
+     sign="Captain, commanding the detachment"),
+ paper("Letter", "the Secretary of War, to a member of Congress, 3 May 1883", p(
+     "Sir,",
+     "In reply to your letter of the 20th ultimo, inquiring whether any armed body describing itself as a "
+     "government has established itself upon the lower Colorado, I have the honor to inform you that the "
+     "Department has no information of any organized community at the place described."),
+     sign="Very respectfully, your obedient servant, the Secretary of War"),
+ ednote("The captain&rsquo;s report had lain in the Department&rsquo;s files eleven months when the "
+        "Secretary signed that. I do not say the Secretary lied. The report had been filed, and a paper that "
+        "has been filed is not information. The Army gave up the post at Fort Yuma the following year, for "
+        "reasons of economy"),
+
+ '  <h2 id="ix-salt">Salt, Forty Wagons</h2>',
+ gloss("A requisition from the four-company post on the Pecos whose surgeon wrote the letters that follow, "
+       "the Quartermaster General&rsquo;s question about it, and the post commander&rsquo;s answer, which is "
+       "one sentence long and was accepted."),
+ form("Requisition", "Quartermaster&rsquo;s Department, a post on the Pecos, 1880",
+      "Special Requisition for Stores", [
+          ("Article", "Salt, coarse"), ("Quantity", "Forty wagon loads"),
+          ("For what purpose", "For the use of the post"), ("Remarks", "Urgent")],
+      "Approved by the commanding officer"),
+ paper("Letter", "the Quartermaster General, to the post", p(
+     "The Quartermaster General observes that forty wagon loads of salt is some eleven years&rsquo; "
+     "allowance for a post of four companies, and requests that the purpose be stated more "
+     "particularly.")),
+ paper("Endorsed on the same letter, and returned", "the post commander", p(
+     "For the preservation of the post."),
+     sign="Major, commanding"),
+ ednote("The requisition was filled that August. A post uses a good deal of salt, since the horses must "
+        "have it and the beef is packed in it. I asked two old quartermasters whether they had ever known "
+        "forty wagons of it go to one post. One of them laughed. The other asked me which post"),
+
+ '  <h2 id="ix-surgeon">The Surgeon Who Saw It Raining</h2>',
+ gloss("Three letters from a contract surgeon at a four-company post on the Pecos to his sister at "
+       "Baltimore, and the endorsement his commanding officer wrote on the file. The sister sent them to "
+       "me with a note of her own, which asks only that I say her brother was not a drinking man. I have "
+       "said it."),
+ paper("Letter", "a post on the Pecos, 7 July 1883", p(
+     "My dear Kate,",
+     "The heat is beyond anything. The thermometer on the infirmary porch stood at a hundred and four "
+     "yesterday, and I have given up the waistcoat, and you may tell Mother so or not as you think best.",
+     "A curious thing. A trooper of B Company came in on Monday with a cut hand, and he stood on my "
+     "floor soaked to the skin, his hair plastered down and the water running off his chin and pooling "
+     "round his boots, and neither he nor the steward remarked on it. I dressed the hand and said "
+     "nothing. When he had gone the floor was dry.",
+     "He was killed on Thursday, when his horse went over on him in a dry arroyo. I set it down because "
+     "I set everything down for you, and it will make a better story at Christmas than the heat."),
+     cls="letter", sign="Your affectionate brother, Philip"),
+ paper("Letter", "the same post, 30 September 1883", p(
+     "My dear Kate,",
+     "Four more since July. The post trader. A lieutenant of D Company, at mess. The sutler&rsquo;s "
+     "girl, who was nine. A teamster I did not know. Each of them wet to the skin in a dry country, in "
+     "front of me, and each of them dead inside the week, and nobody sees the water but me.",
+     "I have asked for a transfer and been refused. I have thought of resigning. If I resign I shall "
+     "only see it in Baltimore."),
+     cls="letter", sign="Philip"),
+ paper("Letter", "the same post, 11 November 1883, before breakfast", p(
+     "Kate,",
+     "B and D Companies rode out at first light after horse thieves, sixty men with the major, and every "
+     "man in the column was wet through, officers and all, sixty of them riding out into the sun with "
+     "the water running off their horses.",
+     "I am going after them to tell them. I cannot think what else to do."),
+     cls="letter", sign="P."),
+ paper("Endorsement on the file", "the commanding officer, December 1883", p(
+     "The detachment returned on the 20th without loss, having recovered the stock.",
+     "Acting Assistant Surgeon Aske left the post without leave on the 11th, alone, and was found "
+     "drowned on the 14th at Horsehead Crossing, where the river was running eighteen inches. The "
+     "surgeon was given to fancies, and I am informed to drink, and the matter is closed."),
+     ),
+ ednote("I have been through the post&rsquo;s returns for that half-year. The deaths in them are the "
+        "ordinary number for a post of four companies on the Pecos in a hot summer, and the five he "
+        "wrote about are among them, and so is he"),
+]))
+
+
+# ================================================================ Per the List
+CH_CIRCLE = chapter("circle", "The Golden Circle, which sits at Jubilee and buys what it is told to.", "\n".join([
+
+ f"""  <p>{chref('jubilee')} was Redemption as its neighbours see it, and everybody sees it, because it has
+  never hidden anything it could print. This chapter is the part it does not print. It is short, because
+  there is not much of it, and what there is was hard to come by.</p>
+  <p>The Circle, which is the Golden Circle, sits at Jubilee and is older than the country it sits in.
+  It buys land. Everybody at Jubilee knows that and most of them are proud of it. What they do not know,
+  and what I do not know either, is who decides which land.</p>""",
+
+ '  <h2 id="ix-committee">The Committee on Lands</h2>',
+ gloss("Extracts from the minutes of the Circle&rsquo;s committee on lands, 1882 to 1884, copied out by "
+       "the clerk who kept them, whose statement is at the end of this chapter. I have left out the "
+       "routine, which is most of it."),
+ paper("Minutes", "the Committee on Lands, Jubilee", p(
+     "<strong>4 March 1882.</strong> Present, the Chairman and six. The list was received and read. Moved "
+     "that the Treasury offer the list price for every parcel on it. Carried without debate.",
+     "<strong>2 September 1882.</strong> Mr. Sallis reports the dry lake in Nevada taken, and the three "
+     "bores capped, as the list required.",
+     "<strong>6 January 1883.</strong> Mr. Quarles asked from whom the list is received. The Chair ruled "
+     "the question out of order. Mr. Quarles asked that his question be minuted, and it is.",
+     "<strong>3 February 1883.</strong> Mr. Quarles absent.",
+     "<strong>3 March 1883.</strong> The list was received and read. It contains one parcel not listed "
+     "before, the quarter section of Mr. Quarles on the Muchacho road. Moved that the Treasury offer the "
+     "list price. Carried without debate.",
+     "<strong>5 April 1884.</strong> The agent reports parties encamped on parcel No. 4, the slope above "
+     "Leadville. Resolved that they are not to be disturbed, nor spoken to, nor charged rent.")),
+ ednote("Mr. Quarles died of a pneumonia in the February, and the physician who attended him belongs to "
+        "nothing, so far as I can learn, but the Odd Fellows. His widow was paid for the quarter section in "
+        "the Treasury&rsquo;s gold, and she tells me the Circle has been very kind"),
+
+ '  <h2 id="ix-degree">A Card of the Second Degree</h2>',
+ gloss("Found in a Bible bought at an auction of a dead man&rsquo;s effects at Tucson in 1884. The first "
+       "degree of the Circle is said to be the soldiers, and the third the statesmen. The second, which "
+       "buys, is this one."),
+ card("A card", "found in a Bible at Tucson", [
+     "K. G. C.", None,
+     "<strong>The Second Degree</strong>", "Of the True Faith", None,
+     "The bearer is of the Committee on Lands,<br>and may be shown the list.", None,
+     "<em>What is bought is kept.</em>"]),
+ ednote(f"The Knights of the Golden Circle were a society of the fifties that meant to make one slave "
+        f"country of every shore of the Gulf of Mexico, and most people will tell you they died in the war. "
+        f"The motto is the last line of the preamble on the customs house wall in {chref('jubilee')}. The "
+        "man whose Bible it was had farmed near Tucson for twenty years and had never been to Jubilee, "
+        "according to his neighbours, who were sure of it"),
+
+ '  <h2 id="ix-lookedat">I Should Like to Be Told</h2>',
+ gloss(f"The Circle&rsquo;s agent in Perdition Basin, writing to the committee, and the committee&rsquo;s "
+       f"answer, from the clerk&rsquo;s copy book. The two sections he writes about are the ones whose "
+       f"survey is in {chref('basin')}."),
+ paper("Letter", "C. D. Purcell, at Calvary Crossing, to the committee, June 1883", p(
+     "Gentlemen,",
+     "I have your instruction of the 2nd, to go out to the two sections on the mesa and look at them. I "
+     "have looked at them. I have been out four times.",
+     "There is nothing on them. The stakes are where they were driven. The grass inside the lines is the "
+     "same grass as outside them, and the stock will not cross the line of the survey, though there is no "
+     "fence and nothing to show where it runs. The people who live on the mesa come and stand at the edge "
+     "of the section while I am there, and do not speak to me, and go when I go.",
+     "I have looked. I should like to be told what I am looking for."),
+     sign="C. D. Purcell"),
+ paper("Letter", "the committee, in reply", p(
+     "Sir, you are to look at them. The committee does not require a report.")),
+ ednote("The committee has sent him the same instruction every quarter since, and he has gone out every "
+        "time. His daughter says that the last time he went he could no longer sit a horse and went in a "
+        "buggy, and that when he came home he said only that it was the same"),
+
+ '  <h2 id="ix-clerk">The Man Who Left</h2>',
+ gloss("A statement taken at Pueblo in November 1884 by W. F. K. of the Agency, working under a contract "
+       "of the Department of Justice for an inquiry into cash entries of public land by agents of "
+       "principals not named. The man is the clerk who kept the minutes above. The operative&rsquo;s "
+       "note and the Department&rsquo;s endorsement are on the back."),
+ paper("Statement", "taken at Pueblo, 12 November 1884", p(
+     "I was clerk to the committee on lands three years. I kept the minutes and the copy book.",
+     "Nobody on the committee knows where the list comes from. It comes in the Treasury&rsquo;s bag on "
+     "the first Saturday of the month, in a hand none of us knows, on a paper that isn&rsquo;t sold at "
+     "Jubilee. The Chairman reads it out and we buy what&rsquo;s on it.",
+     "The Chairman doesn&rsquo;t know either. I asked him once when we were alone, and he said, "
+     "&lsquo;Lewis, it&rsquo;s strategic,&rsquo; and then he said, &lsquo;I don&rsquo;t know,&rsquo; and "
+     "asked me not to minute it.",
+     "I came out through the sand hills on foot, at night, following the stakes the railroad&rsquo;s "
+     "surveyors left. Everybody says it can&rsquo;t be done. It took me four nights and I didn&rsquo;t "
+     "see a living thing.",
+     "I came up here because parcel No. 4 is up here and I wanted to see one of them with my own eyes "
+     "before I told anybody. I&rsquo;ve seen it. I&rsquo;d like to go home now."),
+     sign="Lewis Imbrie"),
+ filedoc("Operative&rsquo;s note", "on the back of the statement", [
+     "Taken under the Department&rsquo;s contract of September, inquiry into cash entries of public land.",
+     "Subject credible as to matters within his own knowledge.",
+     "Subject took the train for Yuma on the 20th, of his own accord, with a ticket for the branch. "
+     "W. F. K."]),
+ paper("Endorsement", "the Department of Justice, December 1884", p(
+     "Received. The community referred to is not recognized by the United States. File.")),
+ ednote("He went back. The railroad does not discuss its passengers, so I cannot say whether he arrived. "
+        "The operative asked him why he was going back, and he said that the list had come the week before "
+        "he left, and his own house was not on it, and he would like to be at home when it was"),
+
+ """  <p>Everybody who has read this chapter in proof has asked me who writes the list. I do not know. I have
+  come to believe that nobody at Jubilee knows either, and that the Circle has been buying land for thirty
+  years for a hand it has never seen, and calling it strategy, because a man has to call it something.</p>""",
 ]))
 
 
@@ -4842,7 +5974,7 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
 BODIES = {"basin": CH1, "dead": CH2, "faces": CH3, "hunger": CH4, "ground": CH5, "road": CH6,
           "paper": CH7, "preaching": CH8, "trades": CH9T, "weather": CH9, "songs": CH10,
           "frauds": CH11, "last": CH12, "jubilee": CH_JUBILEE, "longtable": CH_LONGTABLE,
-          "brother": CH_BROTHER, "depth": CH_DEPTH}
+          "brother": CH_BROTHER, "depth": CH_DEPTH, "forwarded": CH_FORWARDED, "circle": CH_CIRCLE}
 assert set(BODIES) == set(NUM), "ORDER and the chapters written disagree"
 CHAPTERS = [BODIES[anchor] for anchor, _t, _r in ORDER]
 
@@ -5039,6 +6171,74 @@ LEG_INDEX = [
     ("Wendigo of the North, the (a lecture)", "ix-wendigo"),
     ("Tamarack Narrows, the winter accounts at", "ix-wendigo"),
     ("Snowshoes four feet long, a pair of", "ix-wendigo"),
+    # v1.9 (2026-09-29): the Callings, Redemption in the open, the Circle, the cultists at odds,
+    # Washington and the Agency
+    ("Surveyor, a deputy, and who watched him", "ix-twosections"),
+    ("Mesa, two sections staked on the", "ix-twosections"),
+    ("Coyle, Marshal T., his day-book", "ix-coyle"),
+    ("Day-book, a marshal&rsquo;s, with a line struck", "ix-coyle"),
+    ("Door, somebody looked at the", "ix-lookeddoor"),
+    ("Crail, A., witch hunter", "ix-lookeddoor"),
+    ("Harlan&rsquo;s Ford, a meeting at", "ix-lookeddoor"),
+    ("Signal Service, a station journal of the", "ix-signal"),
+    ("Barometer, a fall not provided for", "ix-signal"),
+    ("Emigrants wanted, a circular for Redemption", "ix-emigrants"),
+    ("Nicodemus, an answer from", "ix-emigrants"),
+    ("Bond, a Redemption six per cent", "ix-sixes"),
+    ("Admission at the river, a certificate of", "ix-river"),
+    ("Teamster, papers issued to a", "ix-river"),
+    ("Jubilee, an Englishwoman&rsquo;s week at", "ix-lady"),
+    ("Constitution of Redemption, the preamble of the", "ix-lady"),
+    ("Pinkerton&rsquo;s, the principles of", "ix-principles"),
+    ("Department of Justice, the Agency engaged by the", "ix-principles"),
+    ("Horse thieves at Fort Lyon", "ix-principles"),
+    ("Patent, an application for a, refused", "ix-patent"),
+    ("Lamp for dark places, a", "ix-patent"),
+    ("Fee bill, a deputy marshal&rsquo;s", "ix-feebill"),
+    ("Land Office, a letter to the", "ix-landoffice"),
+    ("Dead Letter Office, the", "ix-deadletters"),
+    ("Letters to Jubilee, undelivered", "ix-deadletters"),
+    ("No information, the War Department has", "ix-noinformation"),
+    ("Fort Yuma, a captain&rsquo;s report from", "ix-noinformation"),
+    ("Salt, forty wagons of", "ix-salt"),
+    ("Witch hunter, the trial of a", "ix-crailtrial"),
+    ("Merriam, Josiah, who was not", "ix-crailtrial"),
+    ("Muster, the Saturday, and its parody", "ix-muster"),
+    ("Terms of a witch hunter, the", "ix-terms"),
+    ("Road fund, a witch hunter paid from the", "ix-terms"),
+    ("Route book, a travelling man&rsquo;s", "ix-route"),
+    ("Tenth Cavalry, a sergeant of the", "ix-tenth"),
+    ("Sand hills, a man who walked out of the", "ix-tenth"),
+    ("Evergreen Burial Society, the", "ix-evergreen"),
+    ("Ore, a buyer who did not want the", "ix-ore"),
+    ("Lucky Sixteen, the", "ix-ore"),
+    ("Township 112", "ix-township"),
+    ("Relief committee, a Dakota", "ix-township"),
+    ("Bonesetter, what a, gave", "ix-tempe"),
+    ("Frozen man called back, a", "ix-tempe"),
+    ("Exorcism, a rite without faculties", "ix-faculties"),
+    ("Priest in the San Juan, a", "ix-faculties"),
+    ("Land is mine, the (a sermon at Jubilee)", "ix-landismine"),
+    ("Leviticus, the verse left out of", "ix-landismine"),
+    ("Sister, a letter from a", "ix-sister"),
+    ("House across the river, the", "ix-sister"),
+    ("Table, why it will not sit with the faithful", "ix-notours"),
+    ("Book with names in it, the", "ix-namebook"),
+    ("Midwife on the Sabine, a", "ix-namebook"),
+    ("Commission, a witch hunter&rsquo;s", "ix-commission"),
+    ("Creeds, two", "ix-creeds"),
+    ("Congregations, a letter between", "ix-congregations"),
+    ("Partners, a quarrel between", "ix-partners"),
+    ("Hands, the loan of a man&rsquo;s", "ix-asked"),
+    ("Ashby, the Agency&rsquo;s file on", "ix-ashbyfile"),
+    ("Kinnear, W. F., operative", "ix-ashbyfile"),
+    ("Golden Circle, a card of the", "ix-degree"),
+    ("Knights of the Golden Circle", "ix-degree"),
+    ("Committee on Lands, the minutes of the", "ix-committee"),
+    ("Quarles, the quarter section of Mr.", "ix-committee"),
+    ("Looked at, two sections that are", "ix-lookedat"),
+    ("Clerk who left Jubilee, the", "ix-clerk"),
+    ("List, who writes the", "ix-clerk"),
 ]
 new_html = build_index(
     new_html, curated=LEG_INDEX, creatures=False,
