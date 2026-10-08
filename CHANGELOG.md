@@ -19,7 +19,7 @@ Desktop\Git repos.)
   **What was waiting.** The Book of Legends v1.9, written in another session on 2026-09-29, had never been merged,
   and neither had the Legends Companion. Both are merged here, and v1.9 had already done half of the first ask and
   a good part of the third (Washington's papers, the Golden Circle, Redemption in the open). This release builds
-  on it, and books-v1.17 ships v1.9 and v1.10 together.
+  on it, and books-v1.17 will ship v1.9 and v1.10 together.
 
   **Every Calling.** Four papers went in for the Callings v1.9 hadn't reached, each in a different chapter. The
   Gunhand is *The Sure-Hand Cordial* in the Frauds: two gunmen drink a peddler's cordial that's water and gentian
@@ -79,11 +79,11 @@ Desktop\Git repos.)
   reads the first word to the right of a link and counts it only if it's a number. The seven other PDFs read
   exactly as before, row for row, and a wrong number drawn beside a row in four of the books is still caught.
 
-  **The six unchanged PDFs ride forward.** The Player's Book, the Keeper's Book, the Bestiary and the three
-  modules are byte-identical to what books-v1.16 and modules-v1.13 shipped, and the cloud's Chromium paginates
-  them a few pages differently from the laptop's Edge (the Player's Book prints 298 here and 290 there). So the
-  Release carries their laptop prints from the last Release, unchanged, and fresh prints only of the two books
-  that moved. GritKeeper and the modules zip are carried forward the same way.
+  **The release is the laptop's.** Everything up to the tag is on `main`. The cloud's GitHub access refuses a
+  tag push with a 403, so books-v1.17 is tagged and published from the laptop, and the roadmap in `CLAUDE.md`
+  has the steps. Print the PDFs there too: the Player's Book, the Keeper's Book, the Bestiary and the modules are
+  byte-identical to what books-v1.16 and modules-v1.13 shipped, and the cloud's Chromium paginates them a few
+  pages differently from Edge (the Player's Book prints 298 pages in the cloud and 290 on the laptop).
 
   Checks: `verify_rules.py` 0 drift in 2,227 cross-checks. `audit_ai_tells.py` finds no hard tells in either
   book and passes `--strict`; burstiness 1.15 and 1.40, em dashes 0.1 and 0.0 per thousand words. The Book of

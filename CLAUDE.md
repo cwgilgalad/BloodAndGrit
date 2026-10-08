@@ -136,7 +136,7 @@ every page number live via the paginator, exactly like the original TOC. New in 
 worked sample county, **Perdition Basin** (`perdition_map.py` draws its two-layer SVG map, a
 clean player map and a secrets-annotated Keeper map, from one shared coordinate model).
 
-‡ Measured in the cloud's Chromium with the books' own web fonts, on 2026-10-08, for books-v1.17. That render
+‡ Measured in the cloud's Chromium with the books' own web fonts, on 2026-10-08. That render
 agreed with the laptop's Edge on the Book of Legends v1.8 (177), but re-measure both in Edge at the next ship.
 
 † Page counts as rendered on the user's Windows laptop (Edge/Chromium, July 2026). **Pagination
@@ -951,12 +951,24 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 ## Roadmap / open threads (not yet built)
 
-- **FIRST, NEXT SESSION ON THE LAPTOP: carry the Book of Legends v1.9 and v1.10 into the other books and
+- **FIRST, ON THE LAPTOP: cut books-v1.17 (2026-10-08).** Cole asked for a release in the cloud session
+  that wrote the Book of Legends v1.10 and the Legends Companion v1.1. Everything up to the tag is done and
+  on `main`: the gate is green but for the two checks that need .NET (playtest, build), and nothing under
+  `GK/` moved but a README line. The cloud's GitHub access refuses a tag push with a 403, so the tag and the
+  Release are the laptop's. The walk is `/ship books` from step 5: `python make_pdf.py` (all eight, in Edge;
+  the Book of Legends should print 225 pages and the companion 352, or a few either side), `python
+  tools/make_bundles.py books`, the release notes (*a draft, RELEASE_NOTES_books-v1.17.md, was sent to Cole from the cloud
+  session*), `git tag -a
+  books-v1.17`, `gh release create books-v1.17` with all eleven assets (GritKeeper.zip and
+  BloodAndGrit-Modules.zip as they are on the current page), delete the gritkeeper-v1.59.0 page with
+  `--cleanup-tag=false`, and `python tools/release_index.py`. Then strike this item.
+
+- **NEXT, ON THE LAPTOP: carry the Book of Legends v1.9 and v1.10 into the other books and
   GritKeeper (Cole, 2026-09-29; v1.10 added 2026-10-08).** Cole approved a proposal in the cloud session
   that built Legends v1.9 and asked for the rest of it to wait, with this as the priority. Both versions
-  shipped in books-v1.17 with the Legends Companion, and both changed only the Book of Legends and the
-  companion, because any Keeper's or Player's Book bump is a signed GritKeeper patch and the cloud can't
-  sign. What the other books and the app need, so that all of them tell the same country:
+  are merged and ship in books-v1.17 with the Legends Companion, and both changed only the Book of Legends
+  and the companion, because any Keeper's or Player's Book bump is a signed GritKeeper patch and the cloud
+  can't sign. What the other books and the app need, so that all of them tell the same country:
   1. **Keeper's Book Ch. XV, the Army as a fifth Power.** *The Army* (with Washington behind it) passes
      the Powers test: it owns the posts, wants a quiet frontier and would rather not see Redemption, and
      can be joined, bought or fought. Running notes: the Tenth is the regiment sent first; the salt
@@ -1012,7 +1024,7 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 - ~~**A Book of Legends**~~, **DONE (v1.0 2026-09-19, v1.8 2026-09-26).** A separate book of the
   Territory's legends, drawing on all three core books.
 - ~~**A Keeper's companion to the Book of Legends**~~, **DONE (Legends Companion v1.0, 2026-09-29;
-  v1.1 shipped in books-v1.17, 2026-10-08).** The story behind every section, for the Keeper.
+  v1.1 merged 2026-10-08 and shipping in books-v1.17).** The story behind every section, for the Keeper.
 - **Discord / online play**: proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
@@ -1066,7 +1078,7 @@ change them all:
   corrected, so the doc and the repo disagreed until somebody read both.)*
 - **One Release page carries the whole game, as of 2026-08-27.** It holds eleven assets: the three
   zips and the eight PDFs loose beside them (the Book of Legends joined as its own PDF on Cole's word,
-  2026-09-21, and the Legends Companion first shipped in books-v1.17 on 2026-10-08). A ship tags whatever
+  2026-09-21, and the Legends Companion first ships in books-v1.17). A ship tags whatever
   component moved, creates the new
   page with **every asset attached including the parts that did not change**, and deletes the page it
   supersedes. *(This replaced three per-component pages and the step that went with them: GitHub
