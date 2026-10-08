@@ -42,7 +42,7 @@ import re
 import book_shell
 from pag_patch import patch_paginator
 
-VERSION = "1.0"
+VERSION = "1.1"
 
 H = book_shell.load()
 H = patch_paginator(H)
@@ -118,6 +118,8 @@ def _read(path):
 LEG_HTML = _read("legends.html")
 KB_HTML = _read("keeper-handbook.html")
 CREATURES = {c["name"]: c for c in json.load(open("GK/rules/Data/creatures.json", encoding="utf-8"))}
+# The eighteen Callings, in the Player's Book's order, read off the data the app and the book both check against.
+CALLINGS = [c["name"] for c in json.load(open("GK/rules/Data/chargen.json", encoding="utf-8"))["callings"]]
 
 _CH_RE = re.compile(r'<section class="page" id="([a-z0-9-]+)">\s*<div class="runhead"><span class="l">Blood '
                     r'&amp; Grit</span><span>([^<]+)</span></div>\s*<h1 class="chapter">([IVXLC]+)\. ([^<]+)</h1>'
@@ -223,7 +225,7 @@ SATCHEL = []
 
 
 def entry(slug, *, story, open=(), table="", people=(), places=(), creatures=(), threads=(), when=(),
-          title=None):
+          callings=(), title=None):
     """One story behind one section.
 
     story     : the complete story, as the Keeper holds it (blank lines between paragraphs)
@@ -234,13 +236,16 @@ def entry(slug, *, story, open=(), table="", people=(), places=(), creatures=(),
     creatures : exact Bestiary names; each is checked and its Tier read from the data
     threads   : other entries (by slug) this one shares a thread with
     when      : (year, what happened) pairs for the timeline
+    callings  : the Player's Book Callings this story gives a way in for; each must be a Calling in chargen.json
     title     : only for the satchel's entries, which have no section in the Book of Legends
     """
     for n in creatures:
         creature(n)
+    for c in callings:
+        assert c in CALLINGS, f"{slug}: no Calling called {c!r}; the Callings are {CALLINGS}"
     rec = dict(slug=slug, story=paras(story), open=list(open), table=paras(table), people=list(people),
                places=list(places), creatures=list(creatures), threads=list(threads), when=list(when),
-               title=title)
+               callings=list(callings), title=title)
     if title is None:
         assert slug not in E, f"two entries for {slug}"
         E[slug] = rec
@@ -256,7 +261,7 @@ def intro(anchor, text):
     CH_INTRO[anchor] = paras(text)
 
 
-# ================================================================ I. Papers of the Basin
+# ================================================================ Papers of the Basin
 intro("basin", """
 Every paper in this chapter is about the county you may already be running. The Keeper's Book gives
 you Perdition Basin whole in [[kb:basin]], and the three modules each tell one night in it. The
@@ -490,6 +495,7 @@ badly, and is ashamed of the last line the clerk wanted struck.
 """)
 
 entry("survey",
+      callings=["Engineer"],
       people=["Teale, Mr. (chief of party)", "Dowd brothers, the"],
       places=["San Clavo, Mission of", "the survey's cut"],
       creatures=["The Veinwork", "Servant of the Deep Dark"],
@@ -536,6 +542,44 @@ A survey party is the easiest way to put players on the basin's ground with a re
 be hired as guards, as chainmen, or as the men Teale sends to find the Dowds. The cut is the doorway
 the Keeper's Book promises for the Veinwork at 9th level and above. At lower levels run nothing out of
 it at all. Let the chainmen refuse to work beside it and let the players decide whether to look.
+""")
+
+entry("twosections",
+      people=["Purcell, C. D.", "a deputy surveyor", "the people of the Painted Mesa"],
+      places=["Painted Mesa, the", "Calvary Crossing"],
+      creatures=["The Parcel"],
+      threads=["mesa", "gold", "landoffice", "lookedat", "committee"],
+      when=[(1883, "A deputy surveyor runs the lines of two sections on the Painted Mesa in April for C. D. Purcell, "
+                   "paid in gold")],
+      story="""
+The two sections are the second and third lines of the Circle's page in [[ref:gold]], and the man who stood by while
+their corners went in is C. D. Purcell, the Circle's agent in Perdition Basin. He paid the deputy surveyor in gold, as
+the list required, and never told him who the purchaser was, because he didn't know either. Purcell's instruction was
+to see the lines run and the stones set and nothing more. The list cares about the corners. It has no interest in the
+grass.
+
+The deputy was an honest man under a government contract who did his work properly and wrote down one thing his
+instructions didn't provide for: that people of the mesa came and stood at every line he ran, and asked that their
+watching be written down. He did it eleven times. The Surveyor General's office struck every entry out of the fair
+copy, so the record Washington keeps says the land was surveyed with nobody there, and the deputy's own field book,
+which nobody at Washington reads, says otherwise.
+
+What the mesa people meant by the request is theirs, and this book doesn't guess at it. What it did is plain from the
+outsiders' side of the page. It put the people on the land into the one paper that would last, watching it being sold
+and not agreeing. Ashby understood that, and so did the man in the office who struck it out.
+""",
+      open=[("What does the list want with the mesa's ground?",
+             ["The same thing it wants with every other line, and the Bestiary's Parcel is the slow way to find out.",
+              "The mesa's spring is the one water in the basin that never failed, and the list wants the ground round "
+              "it held by somebody who isn't looking after it."]),
+            ("Does the deputy surveyor matter again?",
+             ["He kept his field book, and it's the best evidence anybody has that the survey was run over people who "
+              "objected. A posse that means to fight the Circle in a courtroom wants him.",
+              "No. He went back east in 1884 and doesn't answer letters about the mesa."])],
+      table="""
+The deputy's field book is a thing a posse can find, at his widow's or in a land-office lumber room, and it's worth
+more in a courtroom than a rifle is on the mesa. Keep the mesa people as people. If a posse goes up there, they meet
+neighbours who'd rather be left alone about it, and who have every reason.
 """)
 
 entry("paidinfull",
@@ -595,6 +639,46 @@ to the bank's correspondents, the file is there, and the Tallyman knows exactly 
 at all times. Mrs. Dennard is still on her section. She'll give the players coffee, won't sell them
 the stud, and will look at each of them for a moment the way a clerk looks at a column before he adds
 it.
+""")
+
+entry("coyle",
+      callings=["Marshal"],
+      people=["Coyle, T. (marshal)*", "Kirby, Mrs."],
+      places=["Calvary Crossing", "Coffin Wells", "the Dunbar well", "Saltlick road"],
+      creatures=["The Thing in the Well"],
+      threads=["water", "swarm", "deputy", "forgery", "satchel-wells", "understanding"],
+      when=[(1883, "Marshal Coyle stands at the Dunbar well an hour after dark on 20 August, writes a line in his "
+                   "day-book, and strikes it the next morning")],
+      story="""
+T. Coyle has kept the only book in the county for nine years, and he believes something about it that he'd never say to
+the county commissioners: that what he writes there becomes the county's account of itself, and that an account is a
+kind of fence. He writes the drunks and the dogs and the stolen horses because those keep the county ordinary. The 20th
+of August 1883 is the one night he wrote down something that wasn't ordinary, and in the morning he struck it,
+carefully, so that it would stay struck and still be there.
+
+He went to the Dunbar well after dark because the water had tasted of a penny for three months and the county had
+refused him his deputies. He stood at the lip an hour. The Dunbar is one of the seven the padres blessed, the third to
+fail that spring, and what was failing in it was the nail. What he saw or heard is under the line. Coyle asked that it
+not be printed, and the editor kept the bargain.
+
+He isn't superstitious. He's a careful officer who has learned, from nine years of keeping a county's only book, that
+a thing written down is easier to find again, and he didn't want anybody finding that one. The amended report on the
+burying ground in [[ref:swarm]] is the same man doing the same thing in a hurry. [[kb:basin-crossing]] has him.
+""",
+      open=[("What's under the struck line?",
+             ["The water climbed the stones toward his lamp, against the pull of anything, and settled, and he wrote "
+              "the word and and couldn't think what came after it.",
+              "His own name, said up out of the well in his mother's voice, which he would never write down whole.",
+              "Nothing at all, and that's why he struck it. He stood an hour and heard nothing, and he'd begun to write "
+              "that the nothing was listening."]),
+            ("Is he right about books?",
+             ["The Book of Legends never says. The retired clerk in [[ref:understanding]] says the old hands at "
+              "Washington believe the same of a whole country, and Coyle has never met a Washington clerk in his life.",
+              "He's right about his own. A posse that reads his day-book finds the county as he chose to keep it, and "
+              "the struck line is the one door he left ajar."])],
+      table="""
+Coyle is the most useful man in the basin and the most tired. A posse that earns his trust might be shown what's under
+the strike. Decide what it says before they ask, and let him look at them a long while before he turns the book round.
 """)
 
 entry("pell",
@@ -694,7 +778,7 @@ he counted four.
 """)
 
 
-# ================================================================ II. Frauds, Errors & Honest Mistakes
+# ================================================================ Frauds, Errors & Honest Mistakes
 intro("frauds", """
 The editor put the frauds second so a reader would learn what a lie sounds like early, and a Keeper
 should use them the same way. Most of what's behind this chapter is exactly what it looks like: a
@@ -878,13 +962,13 @@ entry("seats",
       places=["Kansas City", "Walnut Street, Kansas City"],
       creatures=[],
       threads=["ninechairs", "witch", "stand", "houses"],
-      when=[(1884, "Mrs. Adaline Rusk is bound over at Kansas City for selling seats at the Long Table")],
+      when=[(1884, "Mrs. Adaline Rusk is bound over at Kansas City for selling seats at a long table")],
       story="""
 Adaline Rusk was a widow on Broadway with a good address and no income, and in the winter of 1883 she
 hired a girl out of Louisiana to do the heavy work. The girl was sixteen and homesick, and one night in
-the kitchen she told her mistress about the women at home who kept the birthing house by the bayou, and
-the Table they had a chair at, and the Mother in New Orleans. She told it the way a girl tells about
-home, and she didn't know she'd said anything that mattered.
+the kitchen, frightened by a fever in the house, she said that her family had a seat at the long table
+and would be looked after, and then wouldn't say another word about it, however she was asked. She'd
+grown up in a family kept by a house, and she'd said the one thing such families never say.
 
 Mrs. Rusk made the rest up at the same kitchen table. A seat at the Long Table, fifty dollars, a card
 printed on Walnut Street, and the assurance that the purchaser's family would be looked after in any
@@ -894,13 +978,14 @@ money back, and nine of them wouldn't take it.
 They kept the seats because nothing bad had happened to any of them since, which is true of most
 families in most years, and because a card that says you're looked after is a comfort worth fifty
 dollars to a woman who has buried children. The letter from New Orleans came six weeks after the court
-report, and New Orleans is a long way from a Kansas City police court column. Somebody read it there
-inside a month. The servant girl was gone from the Rusk house by then, sent for by her people, and
+report, and it says there is no such table, which is what the houses always say, and that nobody sells
+seats at it, which is what they mean. New Orleans is a long way from a Kansas City police court column.
+Somebody read it there inside a month. The servant girl was gone from the Rusk house by then, sent for by her people, and
 nobody in Kansas City saw her go.
 """,
       open=[("What did the Table do about it?",
-             ["Nothing more than the letter. It dislikes being lied about and it said so, and a Table that "
-              "punished every fool who used its name would have no time for anything else.",
+             ["Nothing more than the letter. It dislikes being talked about and it said so, in the only way it "
+              "ever says anything, which is to deny it.",
               "It honoured the nine seats. A seated house in Kansas City has had those nine families on its "
               "books since the spring, because the Table doesn't like being called a liar and would rather "
               "make a lie true than let it stand.",
@@ -954,6 +1039,7 @@ it before they meet the family will have forty wrong ideas and one useful one.
 """)
 
 entry("hackberry",
+      callings=["False Prophet"],
       people=["Loftus, Rev. Cyprian", "Birdsall, Mrs. Ada", "Crouch, J.", "Ewell, Jas.", "Gault child, the",
               "Tolley, the Misses", "Hale, Dr. Wm.", "the sexton at Hackberry"],
       places=["Hackberry", "Globe"],
@@ -1000,6 +1086,7 @@ east either way, if your Keeper's heart can stand it.
 """)
 
 entry("wager",
+      callings=["Gunhand", "Gambler"],
       people=["Kearse, Mrs. Delphia", "Rudge, Tom", "Whitley, Hob", "Baird, Abner", "Marsh, J.",
               "the Vogel boys"],
       places=["Sull's Ferry"],
@@ -1038,6 +1125,78 @@ Hob Whitley is the posse's to find: a sober, tired man in an Oregon lumber camp 
 who knows exactly how far behind him the thing is and will pay well to have it put down. The Revenant's
 own entry says how. Mrs. Kearse keeps the wager book behind the bar and will show it to anybody, and the
 grave at Sull's Ferry is still smooth.
+""")
+
+entry("cordial",
+      people=["Penrose, Asa", "Sorrell, Dell", "Tabor, Dr. Orville", "Morrow, Dr."],
+      places=["Coldwater, Kansas", "Avilla"],
+      creatures=["The Mesmerist", "The Drunk with a Gun"],
+      callings=["Gunhand"],
+      threads=["wager", "keelers", "partners"],
+      when=[(1884, "Asa Penrose and Dell Sorrell meet on Main Street at Coldwater in June and shoot each other through the "
+                   "right hand")],
+      story="""
+Asa Penrose was a gunhand of the cattle towns in the seventies, quick enough that men paid to see him and young men rode
+in to try him, and by 1880 he was a drunk at the Lone Star bar in a county that kept telling him who he'd been. Dell
+Sorrell was twenty and wanted to find out. Dr. Orville Tabor came through with a wagon on the Friday and sold a cordial that
+promised any man the hand he had at twenty, for as long as he needed it.
+
+The cordial is what the druggist says it is: water, whisky, gentian, burnt sugar and capsicum. Both men bought it
+because each needed the other to think he'd taken something, and they drank it at the same wagon without a word. On the
+street each looked at the other's right hand, the way a man does when he means to see the draw, and each aimed where he
+was looking. The doctor dressed two hands that will never close again, and neither man has been in a fight since.
+
+Penrose's own reading is the honest one and the best: for ten seconds two frightened men decided not to kill anybody.
+The ham at Christmas says he believes it.
+""",
+      open=[("Was Dr. Tabor only a fraud?",
+             ["Yes. He sells the same bottle in every county, and most nights nobody draws, and he's gone by Sunday.",
+              "No. He's the Bestiary's Mesmerist, and the cordial is his excuse for a long look into each man's eyes "
+              "across the wagon tail. He sets where a man will aim. Why he chose the hands is the question a posse "
+              "would have to ask him.",
+              "He sells it in towns where somebody is about to be killed, and he can tell which towns those are. The "
+              "cordial saves nobody. He does, when he can, and charges a dollar for it."])],
+      table="""
+A gunhand in the posse will hear about Asa Penrose in every saloon from Dodge to Tascosa, and some young man in every one
+of them will want to try the gunhand the way Sorrell tried Penrose. If Dr. Tabor's wagon is in town that week, so much the
+better. The Bestiary's Drunk with a Gun is what Penrose was before the Saturday, and that's a fight nobody wins.
+""")
+
+entry("lookeddoor",
+      people=["Crail, A.", "Dorn, Ione", "Amery, J.", "Gaunt, the Reverend Mr."],
+      places=["Harlan's Ford, Kansas", "Kansas City"],
+      creatures=["The Possessed"],
+      callings=["Witch Hunter"],
+      threads=["terms", "crailtrial", "namebook", "commission", "degree"],
+      when=[(1876, "A. Crail stands silent before a town meeting at Harlan's Ford in March, and the widow Dorn is voted "
+                   "out of the township")],
+      story="""
+A. Crail was twenty years in the trade by 1876, and Harlan's Ford had sent for him because cattle were dying, a child
+had stopped speaking, and three wells had gone hard. His practice was to make no accusation and stand in front of a room
+until somebody looked at the door. It works more often than a reader would like. A thing wearing a man knows what a
+witch hunter is, and a room full of frightened people will watch the door for it.
+
+Two people looked. The widow Dorn looked because her brother-in-law was drunk outside with her team and she was afraid
+for the horses, and that's all of it. J. Amery, the clerk, looked first, didn't get up, and wrote in the minutes that she
+had. Crail saw both and spoke for neither. He was right about the room, as he says, and wanted to be right about the
+woman.
+
+What Amery is, this book leaves to the Keeper. The minutes are the township's memory, and he has kept them sixteen years
+without a complaint. If something wears him, it learned early that the man who writes the record decides what happened,
+and it has made Harlan's Ford a very orderly township.
+""",
+      open=[("What is J. Amery?",
+             ["Worn. Something has had him since before 1876, and the dying cattle and the silent child were its work, "
+              "and it has been careful ever since. Crail has been back four times and can't make up his mind, because "
+              "it's better at being a clerk than Amery ever was.",
+              "A man. He wanted the Dorn quarter section, which joins his, and the township sold it to him the next "
+              "spring.",
+              "A frightened man who looked at the door because everybody looks at the door, and wrote down the "
+              "widow's name because he couldn't write his own."])],
+      table="""
+Harlan's Ford is a quiet township with very good minutes. A posse sent there on any errand will find the clerk helpful,
+courteous, and the only man in the county who remembers everything. Let them notice that the minutes for March 1876 are
+the only page in his hand that has been written over.
 """)
 
 entry("haunting",
@@ -1160,7 +1319,7 @@ he'll say, and he'll say it kindly.
 """)
 
 
-# ================================================================ III. Weather, and Things Taken for Weather
+# ================================================================ Weather, and Things Taken for Weather
 intro("weather", """
 The sky does more killing in the Territories than everything in the Bestiary put together, and the
 editor put the weather third so the tall tales would come early. Run this chapter as weather first.
@@ -1299,6 +1458,42 @@ them find the grove and the counts, and a black dog on the ridge working a band 
 it. What they do about it is theirs. The only wrong answer is a gun.
 """)
 
+entry("signal",
+      people=["a private of the Signal Service", "the Chief Signal Officer"],
+      places=["the Panhandle", "Washington"],
+      creatures=[],
+      threads=["breathing", "llano", "plate", "noinformation"],
+      when=[(1882, "On 3 August a signal station in the Panhandle records the barometer falling sixty hundredths in a "
+                   "quarter of an hour, with no wind and no cloud"),
+            (1882, "In October the Chief Signal Officer tells every station to stop remarking on animals and on how "
+                   "the observers felt")],
+      story="""
+On the afternoon of the 3rd of August 1882 something under the Staked Plain drew a breath. The barometer at a signal
+station in the Panhandle fell sixty hundredths and rose again inside a quarter of an hour, which no weather does, and the
+two other stations within a hundred miles recorded the same fall at the same minute. The birds left, the dog went under
+the steps, and every man at the post put his hands over his ears as if a train were in a cut.
+
+Three weeks later a well-borer in the Neutral Strip broke into a hollow at three hundred and forty feet that breathes
+four minutes in and four minutes out, and he capped it on the eleventh day because the breath had turned warm and then
+wet ([[ref:breathing]]). The two papers are a hundred miles and many pages apart in the Book of Legends, and nobody but
+the Keeper has set them side by side.
+
+The private did his duty and wrote it down, and Washington sent every station a circular telling it not to. It covers up
+nothing in particular. It's the Army keeping its weather tidy, and the effect is the same: the only instruments in the
+Territories that might have measured the size of the thing under the plain were told to stop mentioning it.
+""",
+      open=[("What drew the breath?",
+             ["What's under the Llano, which is the size of the country and asleep, and the well in the Neutral Strip "
+              "is the nearest thing it has to a mouth. [[kb:olddark]] has the rest of it, and never says.",
+              "A meteor that burst over the Staked Plain in full daylight and was never seen for the sun, which would "
+              "move the glass and frighten the birds and leave nothing to find.",
+              "Nothing. A train knocked all three barometers at once. The Keeper is welcome to believe it."])],
+      table="""
+The private is still in the Signal Service and would be glad to talk to anybody who doesn't laugh. His station journal
+for 1882 has three more remarks the circular would never have forwarded, and he copied them into a book of his own
+before he obeyed it.
+""")
+
 entry("lineman",
       people=["Keough, Dan", "Keough, Tom (his brother)", "the woman in the kitchen"],
       places=["Rock Creek", "Laramie", "Rawlins", "Council Bluffs"],
@@ -1342,7 +1537,7 @@ the Keeper's choice above. Choose it before they knock.
 """)
 
 
-# ================================================================ IV. Paper, Ink & Interest
+# ================================================================ Paper, Ink & Interest
 intro("paper", """
 The editor calls this the worst chapter in the book and is right, and the reason is that there's
 almost nothing behind these papers that a Keeper has to supply. The clauses are real. The will was
@@ -1492,6 +1687,367 @@ the road from school, who is polite and has read more than they have and knows w
 the one to talk to. She hasn't been asked anything by anybody in six years.
 """)
 
+entry("enumerators",
+      people=["Tullis, Amos", "the supervisor of census, Southern District of California", "a gentleman from Jubilee"],
+      places=["San Diego", "Jubilee"],
+      creatures=[],
+      threads=["censuses", "river", "understanding", "noinformation", "plenty"],
+      when=[(1880, "Paragraph 41a tells the census not to count anybody beyond the branch's crossing of the lower "
+                   "Colorado; Amos Tullis goes up the branch anyway and counts eight thousand four hundred and twelve"),
+            (1881, "Amos Tullis burns his Jubilee schedules after a gentleman from Jubilee asks to buy them")],
+      story="""
+Paragraph 41 is the census's ordinary rule, and 41a is the exception that unmakes a town: no persons beyond the crossing
+of the branch, no inquiry, no schedules received or paid for. It went to one district in the country. The Census Office
+never said why, because it didn't have to. A paragraph is a paragraph.
+
+Amos Tullis went up the branch on his own account in June 1880 and counted every soul at Jubilee who'd answer him, and
+every soul did, politely, as Jubilee does everything. His supervisor returned the schedules unpaid. In 1881 a gentleman
+from Jubilee came to his house at San Diego and offered a dollar a sheet, and when Tullis refused, the gentleman said it
+didn't matter, because the Census Office had already refused on Jubilee's behalf. The two governments wanted one thing:
+that Jubilee be counted by nobody but itself.
+
+Tullis burned them that night. He's an honest man and couldn't say why, and the reason is the one the old clerks at
+Washington believe in [[ref:understanding]]: he didn't want to be the only place they were written down. Being the only
+record of a thing is a weight in this country, and he felt it before he knew what it was.
+""",
+      open=[("Why does Jubilee not want to be counted?",
+             ["A census is how a government says a place is its own. Jubilee would rather be missing than be part of "
+              "San Diego County.",
+              "Because the Circle's list is a count of its own, and the people on it are what a census would number. "
+              "Nobody at the Treasury could say more than that."]),
+            ("Did he burn all of them?",
+             ["Yes, every sheet.",
+              "All but one, the sheet for the block round the seminary, which he couldn't make himself put in the "
+              "stove, and still has."])],
+      table="""
+Tullis is a quiet clerk at San Diego with a story he's told once, to Ashby. A posse that needs to know who lived in Jubilee
+in 1880 needs the one sheet he kept, if the Keeper lets him keep it. Every name on it is somebody the country remembers
+and Washington doesn't.
+""")
+
+entry("patent",
+      people=["Vail, Emmett", "an examiner of the Patent Office", "Vail, Mrs. (his widow)"],
+      places=["Leadville", "Washington"],
+      creatures=["The Tommyknocker", "The Veinwork"],
+      callings=["Engineer"],
+      threads=["lamps", "adit", "assay", "veinwork", "sanclavo"],
+      when=[(1882, "Emmett Vail of Leadville applies to patent a lamp that shows what's in the dark, and withdraws when "
+                   "asked for a working model")],
+      story="""
+Emmett Vail was a mine engineer at Leadville who noticed what every miner knows and no engineer writes down: a lamp carried
+into certain workings gives less light than it gave at the collar, in good air, with a sound wick. He set out to build a
+lamp the place couldn't dim, and he did it with a gauze of one metal in one proportion, and the drawings name the metal,
+and it's silver. The padres at San Clavo would have understood the choice ([[ref:sanclavo]]).
+
+The second claim is the one that made the examiner call it inoperative: in its light, anything present is shown. The
+night shift at the three-hundred level carried it every night for four years and came up every morning, and in all that
+time it showed them things in the drifts that the shift never mentioned to anybody above ground. That's why they wouldn't
+go down without it, and why Vail wouldn't send it to Washington as a model.
+
+The Patent Office's letter is the government's answer to a good deal in this book. The Office isn't informed that the
+condition exists, so it can't allow a remedy for it. Washington is consistent. It doesn't patent a lamp for a dark it has
+never recorded.
+""",
+      open=[("Where is the lamp?",
+             ["With the shift's oldest hand, who left the camp after Vail died and went to the Blue Tinaja country, "
+              "where the notes on the rock ([[ref:adit]]) stopped coming the same year.",
+              "In a mine nobody will name, at the three-hundred level, still going down every night, because the man "
+              "who took it couldn't work without it either."]),
+            ("What does it show?",
+             ["The Bestiary's Tommyknockers, plainly, and most miners would be glad to see them.",
+              "Whatever is in the drift, and in the men. The shift learned not to hold it up to each other's faces."])],
+      table="""
+An Engineer in the posse is the one who'll understand Vail's drawings, and his widow has the drawings. Building a second
+lamp is a fine long project for a table that likes to make things. Decide what it shows before anybody lights it, and show
+it once.
+""")
+
+entry("feebill",
+      people=["Fenwick, H. (deputy marshal)", "Lockhart, Jas.", "the jailer at Fort Smith",
+              "an examiner of the Department of Justice"],
+      places=["Fort Smith", "the Kiamichi", "the Red River"],
+      creatures=["The Revenant", "The Risen"],
+      callings=["Marshal"],
+      threads=["returned", "swarm", "claim", "undertaker"],
+      when=[(1883, "Jas. Lockhart dies at Fort Smith in March; Deputy Marshal H. Fenwick serves a warrant on him on the "
+                   "Kiamichi in May and brings him in")],
+      story="""
+Jas. Lockhart died at Fort Smith in March 1883 of a fever, and H. Fenwick helped bury him. A warrant for larceny was issued
+in May by a clerk who hadn't been told, and Fenwick was given it, and rode two hundred miles to the Kiamichi, and found
+Lockhart there, and knew his face because he'd shovelled dirt onto it.
+
+Fenwick is a deputy United States marshal of the Western District, which pays by the service and the mile, and he did his
+duty. He pursued the defendant nine days to the Red River with one posseman, took him, and brought him back. The jailer
+fed what he brought in for two days. Then the jail released the same prisoner to the deputy, with no name given for
+either, and Fenwick rode out with it and came back without it, and the Department disallowed every item that would admit
+it had happened.
+
+What Lockhart was is the Keeper's to decide, and the Bestiary has two things that fit. Fenwick knows what he did on the
+third day and will tell a posse that's earned it. He served eleven more years, and his returns are the neatest in the
+district, because he learned that summer how little a return can hold.
+""",
+      open=[("What came back from the ground at Fort Smith?",
+             ["The Bestiary's Revenant: Lockhart, with a grievance, going back to settle it.",
+              "A Risen, with no grievance at all, walking the way it walked in life, and stealing the way it stole."]),
+            ("What did Fenwick do with it?",
+             ["Took it back to the burying ground on the third night, put it in again with salt and his own iron, and "
+              "sat up with it.",
+              "Took it to somebody who knew better than he did what to do, and paid them out of his own pocket, which is "
+              "why he wanted items 3 to 5."])],
+      table="""
+Fenwick is a fine Marshal for a posse to ride with, and the best man in the book to teach a new Marshal what the job is out
+here. Bring him a warrant on a man who's dead and he'll take it without a word, and ask only for a second posseman.
+""")
+
+entry("landoffice",
+      people=["the register of a land office (later a storekeeper)", "the Commissioner of the General Land Office",
+              "the man who speaks for the people of the mesa"],
+      places=["Painted Mesa, the", "Washington"],
+      creatures=["The Parcel"],
+      threads=["twosections", "gold", "mesa", "lookedat", "understanding"],
+      when=[(1883, "A territorial land office takes eleven cash entries in gold from one agent; the Commissioner rules "
+                   "that he isn't concerned with a purchaser's motives")],
+      story="""
+Eleven tracts in a quarter, every one by the same agent, every one in gold, none of them able to support a family. The
+register was an honest man and wrote to Washington to ask whether entries like that should be received. Two of the tracts
+were on the Painted Mesa, under a people who had been there before the Spaniards and had filed nothing, because nobody had
+told them it was required.
+
+The Commissioner's answer is the whole chapter's policy in two sentences. The Office isn't concerned with motives, and it
+isn't concerned with any occupancy it has no record of. A government that won't write a thing down can't be asked to
+protect it. The people on the mesa, who are on no paper at Washington, are as invisible there as the country on the
+Colorado that's buying their ground: unrecorded for opposite reasons and to the same effect. The Circle's agent pays in
+gold through the gap between them.
+
+The register resigned the next spring. The man who speaks for the mesa came into the office once more, a year later, stood
+in front of the plat on the wall, and asked nothing. What he was thinking is his, and this book leaves it there.
+""",
+      open=[("What does the register know?",
+             ["The agent's name, which was Purcell, and the name of the bank that sent Purcell the money, which was at "
+              "Kansas City.",
+              "That the other nine tracts lie in a ring when you draw them on a large enough map, and that he drew "
+              "them, and put the map in his stove."])],
+      table="""
+The register keeps a store now, and he'll talk land law with a posse for an hour and the mesa for a minute. Keep the mesa
+people as the Book of Legends keeps them: neighbours with a spring and every reason to want to be left alone, who watched
+the stakes go in and asked to have their watching written down.
+""")
+
+entry("plate",
+      people=["Kroll (an engraver)", "Cadwell &amp; Lowry, publishers of maps"],
+      places=["Chicago", "Siding No. 4", "Jubilee"],
+      creatures=[],
+      threads=["novel", "spur", "remarks", "understanding", "enumerators"],
+      when=[(1882, "A Chicago map house has its engraver take Jubilee and the branch beyond Siding No. 4 off the plate of "
+                   "Southern California and Arizona")],
+      story="""
+The map house had a plate of Southern California and Arizona with Jubilee on it, laid out in blocks, with the branch
+running in from the river and the word Customs at the crossing. In March 1882 the General Land Office let it be known that
+it wouldn't take a map that showed them, and school boards take only the maps the Land Office takes, so the house had Kroll
+stipple the town into desert and run the branch out to the water tank at Siding No. 4, where it stops.
+
+Kroll did good work both times. He couldn't move the river and said so, and every map of that country printed since shows a
+railroad laying forty miles of track to a water tank in the sand. Children learn their geography from those maps. A child
+born after 1882 will grow up without ever having seen Jubilee on paper, and that is one of the ways a country everybody
+knows about becomes a country nobody remembers.
+
+The three street names in pencil in the margin of the old proof are the engraver's, written the day he took them off the
+plate. He didn't trust himself to remember them, and he was right not to.
+""",
+      open=[("What are the three streets?",
+             ["Leviticus Street, Straughan Street and Treasury Row, and the last runs straight to the seminary.",
+              "Three names the engraver couldn't afterwards remember writing, in a hand his son says isn't quite his."])],
+      table="""
+The before-proof is a treasure for a posse that needs a plan of Jubilee, and the engraver's son has it. Give it to the
+players as a handout, streets in pencil. Then let them buy a current map at Yuma and lay it beside the proof.
+""")
+
+entry("deadletters",
+      people=["A. T. (a clerk of the Dead Letter Office)", "the mothers who write to Jubilee"],
+      places=["Washington", "Jubilee", "New Orleans"],
+      creatures=["The Dread Mother"],
+      threads=["hear", "seats", "noinformation", "novel", "spur"],
+      when=[(1883, "The Dead Letter Office opens the quarter's letters addressed to Jubilee and returns them; the letters "
+                   "to the Mother at New Orleans go unopened, by standing order")],
+      story="""
+Two silences sit on one page of the Dead Letter Office's return. The letters to Jubilee are opened and sent back, because
+there's no Jubilee to deliver them to and the railroad's bag isn't the government's. Nearly all of them are from mothers,
+and nearly all of them ask the same thing, and the clerk who wrote to Ashby has read hundreds.
+
+The railroad carries the town's own bag up and down, and the town decides what goes in it. Jubilee reads its people's
+letters coming and going, and a letter home that says the wrong thing doesn't arrive. That's why the mothers aren't
+answered. Washington returns their letters and Jubilee wouldn't let the answers out, and between the two governments a
+young man who went up the branch in 1879 has gone silent.
+
+The last line of the return is a different matter. Letters to the Mother at New Orleans aren't opened, by a standing order
+older than 1874, which nobody at the office can trace. [[kb:powers-mother]] has the Dread Mother, and this book won't say
+how a woman in a courtyard below Canal Street comes to have a standing order in the Post Office Department. A great many
+families have been kept alive by her houses, and some of them went to Washington and did well.
+""",
+      open=[("Who gave the standing order?",
+             ["A Postmaster General's wife, whose first child was delivered by a house in the bayou parishes in the "
+              "fifties, and who asked.",
+              "Nobody living. It was given in the fever year of 1853 by a clerk who opened one, and it has been copied "
+              "into every new instruction book since, because no clerk dares be the one who leaves it out."])],
+      table="""
+A posse that needs to get a letter to a son in Jubilee will learn quickly that the Post Office can't and the railroad won't.
+A letter addressed to the Mother is stranger. It arrives, and sometimes it's answered, and the answer is never in writing.
+""")
+
+entry("noinformation",
+      people=["a captain of the Fort Yuma garrison", "the Secretary of War", "a member of Congress",
+              "a clerk of the Adjutant General's office"],
+      places=["Fort Yuma", "the Customs Post at the river", "Jubilee", "San Francisco", "Washington"],
+      creatures=[],
+      threads=["understanding", "remarks", "tenth", "spur", "enumerators"],
+      when=[(1882, "A captain from Fort Yuma reports a nation on the lower Colorado in April; in June the War Department "
+                   "endorses the report File. No action."),
+            (1883, "The Secretary of War tells a member of Congress that the Department has no information of any "
+                   "organized community there")],
+      story="""
+The captain rode up the California side with fifteen men and saw everything: the brick customs house, the flag, four men in
+grey who asked for papers and didn't insist, a town of eight thousand, a square full of drilling riflemen, the best fields
+in the Territory. He wrote it down properly and asked for instructions. The report went up through three headquarters and
+each one forwarded it, and at Washington somebody initialled File. No action.
+
+Eleven months later the Secretary of War told a member of Congress that the Department had no information. That was true in
+the Department's own sense, because a paper that has been filed isn't information; information is what's on a desk. The
+Army gave up the post at Fort Yuma the year after, for reasons of economy, which were also true.
+
+This is the silence working the way [[ref:understanding]] says it works. Nobody decides to hide a country. The Army decides,
+each time, not to be the office that sees it, and the paper goes up until it reaches the one office that can write File, and
+there it stops.
+""",
+      open=[("Who initialled File?",
+             ["The chief clerk of the Adjutant General's office, on a word he'd had in a cloakroom. He's the retired "
+              "clerk of [[ref:understanding]], and his letter to the editor is as near as he'll come to confessing it.",
+              "Nobody living. The initials are a clerk's who died in 1883, and the clerk who copied the report for Ashby "
+              "asked for nothing because of what he'd found in the file next to it."]),
+            ("What became of the captain?",
+             ["He's still serving, at a post in Dakota, and keeps a copy of his report in his trunk.",
+              "He was retired for his health in 1883, and his health was perfectly good."])],
+      table="""
+The captain is the Army officer a posse can find who has seen Jubilee with his own eyes and put it in writing. He'll say
+nothing in public. He'll say a great deal to a posse that brings him proof somebody else has seen it too.
+""")
+
+entry("remarks",
+      people=["Calder, J. P.*", "his private secretary", "the Speaker of the House"],
+      places=["Washington", "Atchison, Kansas", "Kansas City"],
+      creatures=[],
+      threads=["understanding", "sixes", "noinformation", "degree", "novel"],
+      when=[(1882, "Representative J. P. Calder of Kansas speaks nine minutes on the lower Colorado in February; his "
+                   "remarks are revised eleven times and withdrawn in July")],
+      story="""
+J. P. Calder was a Kansas Republican and a Union veteran who couldn't stand it, and on the 9th of February 1882 he asked the
+House for five minutes and took nine. He said what the captain's report had said and more: a Confederacy in arms on the
+Colorado, the same war in a new coat, and every member in the room knew it. The House was as quiet as his secretary ever
+heard it.
+
+Members revise their remarks before the Record prints them, and Calder revised his eleven times. Gentlemen came to the
+boarding-house from both sides of the aisle, from the War Department, and one from Kansas City, all of them civil, and
+each draft was shorter than the one before. What they told him was always the same: what was settled in 1877 was settled
+whole, and pulling at one corner pulls the rest out after it. The end of Reconstruction, the disputed election and the
+river were one bargain, and a man who reopened the river reopened the South.
+
+He withdrew the last draft and wasn't returned at the next election. The Record prints every word of that session down to
+the duty on hides, and its only nine minutes of silence are his.
+""",
+      open=[("Did anybody keep the speech?",
+             ["His secretary took it down in shorthand, and the shorthand book is the only full account. He has it still "
+              "and would part with it to somebody who meant to use it.",
+              "Calder burned his drafts and the secretary's book with them, and all that's left is what the secretary "
+              "remembers, which is the phrase about the new coat."]),
+            ("Who was the gentleman from Kansas City?",
+             ["A man holding a great many Redemption Sixes ([[ref:sixes]]).",
+              "A man of the Circle's third degree ([[ref:degree]]), the statesmen, with a house in Kansas City and a "
+              "seat on a railroad board, who is in nobody's book."])],
+      table="""
+Calder keeps a hardware store at Atchison and doesn't discuss politics. A posse that comes into his store with a reason to
+will find the angriest man in Kansas, kept in a drawer. His secretary is the easier contact, and he has the shorthand.
+""")
+
+entry("understanding",
+      people=["a clerk of the War Department (retired)", "the gentlemen at Wormley's"],
+      places=["Washington", "Wormley's hotel", "Plenty, Colorado"],
+      creatures=[],
+      threads=["remarks", "noinformation", "enumerators", "plate", "novel", "plenty", "coyle", "sixes"],
+      when=[(1877, "The conference at Wormley's hotel settles the disputed election; the retired clerk was told it "
+                   "settled the lower Colorado too"),
+            (1886, "A retired clerk of the War Department writes to the editor to explain why Washington won't see "
+                   "Redemption")],
+      story="""
+This is the paper that answers the players' question, written by the one man in the book who was close enough to the
+machinery to say how it runs. It isn't a conspiracy, he says, and he's right. It's a policy, and a policy at Washington is
+mostly the absence of a paper.
+
+His three reasons are true in the Keeper's hands as much as in his. A country Washington doesn't recognise can't be at war
+with it, and Washington can't lose to it, and the Army would rather not find out. The bargain that ended Reconstruction in
+1877 was struck in a hotel and never written down, and he heard from men in the room that it left the river alone. And the
+Treasury of Redemption pays its interest in gold, on the day, to men whose names a posse would know ([[ref:sixes]]).
+
+His fourth thing, which he says is no reason, matters most to this game. The old clerks at Washington believe that a place
+left unwritten at Washington for a generation isn't there afterward, for anybody. He doesn't believe it. He points at Plenty
+([[ref:plenty]]), whose post office was discontinued in 1881 and whose creditors can't find it. In this country the belief
+is older than Washington. Marshal Coyle keeps his day-book by it ([[ref:coyle]]), the keeper at the mission keeps the count
+by it, and the saying in [[ref:sayings]] is that the country keeps books. Washington is running the oldest rule in the
+Territories backward, and it may be working.
+
+So, if the Keeper wants a reason why nobody today has heard of Redemption, here it is. Everybody in the Territories knew
+about it in 1884. Washington never wrote it down, the maps were redrawn, the novels changed, the census never counted it, and
+the Record kept nine minutes of silence. By the time the boys who'd read the first edition were old men there was nothing
+on any shelf to say it had been there, and the country, which keeps books, had nothing in its books either.
+""",
+      open=[("What becomes of Redemption in the end?",
+             ["The forgetting is only paper. Redemption goes on as long as the Circle's list does, and when the list is "
+              "finished the country goes wherever the list was taking it, and Washington's silence means nobody ever "
+              "asks where. The Keeper decides what the list is for ([[ref:gold]]).",
+              "The forgetting works. A generation after the last paper is filed, Jubilee is a townsite like Plenty: "
+              "watered streets, gardens, a seminary, nobody in it, and no sign of a removal. Its people went where "
+              "unwritten places go.",
+              "It ends the ordinary way, in a war nobody calls one, some time after 1890, when a President who owes "
+              "nothing to 1877 sends the Army. The papers about that are filed too, and the fire that took most of the "
+              "census of 1890 took what was left.",
+              "A posse ends it. Everything in this chapter is evidence somebody kept: Tullis's sheet, Kroll's proof, "
+              "Calder's shorthand, the captain's copy. A table that puts them in one place in front of one honest office "
+              "makes Redemption real at Washington, and has to live with what Washington does next."])],
+      table="""
+This letter is the thing to give a player who asks why they've never read about Redemption in a history book. It answers in
+the game's own voice and leaves room. The fourth way above makes a fine second-year campaign for a posse that has met
+Kinnear, Calder's secretary and the captain: gathering the record of a country two governments want unwritten, and deciding
+whether to deliver it.
+""")
+
+entry("salt",
+      people=["the major commanding a post on the Pecos", "the Quartermaster General"],
+      places=["a post on the Pecos", "Horsehead Crossing"],
+      creatures=[],
+      threads=["surgeon", "walker", "claim", "fortsafe"],
+      when=[(1880, "A four-company post on the Pecos requisitions forty wagon loads of salt for the preservation of the "
+                   "post, and gets them")],
+      story="""
+The post on the Pecos was built in 1878 on a stretch of river the Army's own guides had told it not to build on, and by 1880
+the major commanding it knew why. He couldn't put that in a requisition, so he asked for forty wagons of salt and wrote that
+it was for the preservation of the post, which was exactly true. The Quartermaster General filled it. The old quartermaster
+who asked the editor which post had seen a requisition like it before, from the same major, two years later.
+
+The salt went down in a ring round the post, under the edge of the parade ground, and twice round the post cemetery. It held
+three summers, and the surgeon's letters ([[ref:surgeon]]) begin the summer a new well was dug through it. The drowned men he
+saw in a dry country were the river's, and the river at Horsehead Crossing was taking people before the Army came. It took a
+horse-breaker named Wes in October 1883 ([[ref:walker]]), or he says it did.
+
+The major is the only officer in the book who acted on what he saw instead of filing it, and he did it by filing something
+else.
+""",
+      open=[("What's in the river at Horsehead?",
+             ["The Long Trail's ford: a place where the dead are walked across, and the living drown in the press of them.",
+              "Nothing at all. Horsehead is a bad ford with a bad bottom on the worst river in Texas, and a man who sees "
+              "drowned men in a dry country is seeing the ford in his own head."])],
+      table="""
+The salt ring makes a set piece: a posse at the post the night it has to be laid again before dark. A Witch Hunter will know
+at once what the requisition means. A Marshal will know what it cost the major to write it.
+""")
+
 entry("foreclosure",
       people=["Vane, Josiah", "Drayton (of Kansas City)"],
       places=["Vane Banking House, the", "Coffin Wells"],
@@ -1532,7 +2088,42 @@ the sum the editor did: eleven of thirty-one, against six of six. Then sell them
 sweet well at a very good price. Whichever answer you picked, living on it is how they find out.
 """)
 
+entry("emigrants",
+      people=["Wickliffe, Thos.", "the agent of emigration at Galveston"],
+      places=["Nicodemus, Kansas", "Galveston", "Ellis, Kansas"],
+      creatures=[],
+      threads=["warrants", "letterhome", "lady", "tenth", "river"],
+      when=[(1880, "The Treasury of Redemption posts its circular To the People of the South at depots across Texas and "
+                   "Georgia; one comes back from Nicodemus with an answer on its back")],
+      story="""
+The circular is Redemption's recruiting, and it went up every spring at depots and landings across Texas and Georgia,
+and it worked. Most of the people at Jubilee came out on one. It offers wheat land, water by the ditch, a seminary, and a
+country where no man is asked to apologise for his father, and it says plainly, to anybody who knows the word, what it
+means by the right sort.
+
+The people at Nicodemus knew the word. They'd come to Kansas from Kentucky in 1877 and from Mississippi in 1879, and the
+ones from Mississippi had seen what redeeming a state meant in 1875. Thomas Wickliffe read the circular to the school and
+sent it back to Galveston with the town's answer. The line about the right sort came out of the second printing and went
+back into the third, because the Treasury found that leaving it out brought it the wrong letters.
+
+There's nothing behind the Nicodemus answer that this book has any business inventing. It's a town that built itself in
+dugouts the first winter and has a school and two churches and wheat, and it said so. The story here is on the other side
+of the paper: the agent at Galveston, who kept the only answer that ever came back.
+""",
+      open=[("Why did the agent keep it?",
+             ["Shame, of a kind he never named. He resigned the agency in 1883, and his widow says he read the back of "
+              "the circular more often than he ever read the front.",
+              "Because it was an address. The Treasury keeps account of every place that writes back, and a town that "
+              "answers is a town Jubilee remembers."])],
+      table="""
+Nicodemus is a real town and its people are people, and a posse that rides through it meets farmers, a schoolteacher and
+two churches, and nothing in this game is waiting there. The agent at Galveston is where the Redemption story goes, and
+his successor still posts the circular every spring. First Sergeant Isom Fairley's wife lives at Nicodemus
+([[ref:tenth]]), and her husband is watching the river the circular invites people across.
+""")
+
 entry("salitre",
+      callings=["Padre"],
       people=["Varela, Anselmo", "Varela, Mrs.", "Holcomb, Mr.", "the priest at Salitre",
               "the widows of Salitre", "Baca, Refugio", "Lucero, Tom&aacute;s", "Montoya, Juan de Dios"],
       places=["Salitre", "Tennant"],
@@ -1615,6 +2206,77 @@ the Coronado as waiters on the night of the twelfth dinner. What they do in that
 campaign spends a year arriving at, and nothing in it can be shot.
 """)
 
+entry("paradise",
+      people=["Lacey, J. B. (Jack)*", "Lacey, Ned", "the man who keeps the hotel at Paradise"],
+      places=["Paradise", "Charleston, Arizona", "Natchez"],
+      creatures=["The Tinhorn", "The Crossroads Man"],
+      callings=["Gambler"],
+      threads=["correspondent", "handshake", "wager", "crossroads"],
+      when=[(1881, "Jack Lacey is shot at a table in the Bon Ton saloon at Charleston, Arizona, with a card in his "
+                   "sleeve"),
+            (1882, "Letters in Jack Lacey's hand begin to reach his brother at Natchez from a camp called Paradise")],
+      story="""
+Jack Lacey was a sporting man out of Natchez and a good one, which means he cheated well and lost when it paid to, and on
+the 4th of May 1881 a miner at Charleston caught a card in his sleeve and shot him across the table. The coroner found
+it justifiable, and he was buried at the county's charge.
+
+In July of 1882 his brother had the first letter. Paradise has a good hotel and a game every night, and the men pay in
+coin and laugh and pay again, and Jack hasn't lost a hand. By March he'd thrown away full houses and played without
+looking, and it came up for him every time, and a game he couldn't lose had become a room he couldn't leave. The man who
+keeps the hotel told him where he was, kindly, in the words of every man who ever caught him cheating.
+
+This book won't say whether Jack Lacey is dead. If he is, Paradise is his, the place a cheat would most want and least
+be able to stand, and the hotelkeeper is the only honest man in it. If he isn't, he's a gambler with debts who let a
+stranger be buried under his name and has a friend at Charleston to post his letters, and the second letter is a man who
+has found out what a run of luck costs when it doesn't end.
+""",
+      open=[("Where is Paradise?",
+             ["Nowhere a horse can go. The letters come because Jack can't stop telling his brother when he's winning, "
+              "and whatever keeps the hotel lets them through because somebody ought to know.",
+              "A real camp in the Dragoons that took the name in 1882, run by men who bought Lacey's debts and keep him "
+              "at the tables because he makes them money. He isn't dead. He's owned.",
+              "Behind the Crossroads Man's door. Lacey went to a crossroads in 1880 and asked never to lose, and was "
+              "shot the next spring because the bargain never said anything about being caught."])],
+      table="""
+Ned Lacey will hire a posse to find his brother and pay well, because Jack's last letter frightened him. Every road that
+seems to reach Paradise reaches a camp with a good hotel and a friendly game, and a gambler in the posse will win there
+more than they should. Stop them before the third night. The Bestiary's Tinhorn is who they'll meet at the first table,
+and he's the only man at Paradise who ever loses.
+""")
+
+entry("sixes",
+      people=["the cashier of a bank at Kansas City", "a gentleman at Atlanta"],
+      places=["Kansas City", "Atlanta", "Jubilee"],
+      creatures=["The Ledger of the Territory"],
+      threads=["understanding", "kansas", "gold", "remarks", "warrants"],
+      when=[(1881, "The Treasury of Redemption issues its Six per Cent Land Bonds"),
+            (1882, "A Kansas City bank is offered Redemption Sixes four times in a year, each time cheaper, each time "
+                   "by a different gentleman")],
+      story="""
+The Treasury doesn't need the money. It pays for land in gold it already has, and the bonds raise very little, which is
+why the gentlemen offering them at Kansas City didn't mind whether the bank bought. The bonds are for putting into hands.
+Every Redemption Six in a safe at Boston or Atlanta or Kansas City is a gentleman with a reason to hope the country on the
+Colorado goes on paying, and the Treasury pays, in gold, at Jubilee, every January and July, on the day.
+
+The four gentlemen came cheaper each time because the price was never the point. They were finding out which banks would
+carry Jubilee paper, and the cashier's letter is the answer from one that wouldn't. The ones that would are the reason a
+member of Congress revised his remarks to nothing in [[ref:remarks]], and they're the third reason the retired clerk
+gives in [[ref:understanding]].
+
+The bond can be redeemed in land at the Treasury's own valuation, at the Treasury's choice. Nobody has ever asked for
+land. A holder who did would be offered a parcel from the list, and would find, like the woman in [[ref:letterhome]],
+that the stock won't graze past the stake.
+""",
+      open=[("Who holds the Sixes?",
+             ["Men whose names a posse would know, at Washington and Kansas City and in two Southern statehouses. The "
+              "Treasury has the list and would part with it for nothing in this world.",
+              "Fewer than the silence needs. The fear of who might hold them does more than the bonds do."])],
+      table="""
+A Redemption Six in a dead man's papers is a better clue than a Jubilee banknote, because somebody paid real money for
+it. The Bestiary's Ledger of the Territory is what the bonds belong to, and it can't be shot. A posse that wants to hurt
+Redemption without a war could do worse than find out who'd lose money if it fell, and tell them.
+""")
+
 entry("floor",
       people=["Mulhall, A. (driller)", "Iverson (on the engine)", "Beckwith, J. (geologist)",
               "Sallis, E. (agent)"],
@@ -1660,7 +2322,7 @@ like this one is broken, and it's in a courthouse.
 """)
 
 
-# ================================================================ V. The Spur to Jubilee
+# ================================================================ The Spur to Jubilee
 intro("jubilee", """
 Redemption is a Power, and [[kb:powers-redemption]] has it whole: the country on the California line
 that means to be a second Confederacy, its capital at Jubilee, its militia in grey, and the Golden
@@ -1671,6 +2333,13 @@ two newspapers, a letter home, a banknote, a pilot's account.
 The stories behind them hold to the Keeper's Book's one hard rule about the Circle: its officers don't
 know why the parcels matter, and somebody hands them a list. Nothing below says who. Several entries
 offer ways to decide, and they're the same offers, because it's one decision.
+
+Redemption is also the most widely known thing in the Book of Legends, and that's by design. The Yuma papers
+print its arrivals and the Texas papers its circulars, every depot on the Southern Pacific sings about it, and a
+ten-cent novel about it sold sixty thousand copies ([[ref:novel]]). Play it that way. Everybody a posse meets west of
+the Pecos has an opinion about Jubilee and half of them have a cousin there, which is the opposite of the houses in
+[[ch:longtable]], where nobody will say the name. [[ch:forwarded]] is why none of it was written down anywhere it
+would last.
 
 Redemption is built on a cause, and the cause is slavery's, and nothing here softens that. The people
 in it can be courteous, well fed and kind to a stranger's children, and the country is still what it
@@ -1719,6 +2388,38 @@ best evidence in the Territories about what Jubilee does with visitors. He'd sha
 to use it. He hasn't met anybody yet.
 """)
 
+entry("river",
+      people=["Bagby, Orrin", "the gentleman at the customs post"],
+      places=["the Customs Post at the river", "Yuma", "Marion County, Georgia"],
+      creatures=[],
+      threads=["spur", "emigrants", "warrants", "twopapers", "enumerators"],
+      when=[(1883, "Orrin Bagby, teamster for the Treasury, is admitted at the river for the fourth time and asks "
+                   "whether he's remembered")],
+      story="""
+The customs post at the river keeps the book that Washington doesn't. When the Confederate government fell in 1865 its
+muster rolls went north in boxes, and the War Department has them still and lends them to pension clerks. Jubilee has a
+copy of its own, made over ten years by men who went through every county courthouse and every regimental reunion in the
+South, and the gentleman at the post looks in it for every passenger's father. A man whose father is in the right
+regiment is admitted. A man whose father said all his life he was in the Fourth Georgia and isn't on the roll is turned
+back with real sorrow.
+
+Orrin Bagby hauls freight for the Treasury and has been admitted four times, and each time the gentleman wrote him a new
+paper and looked at him as if he'd never seen him. He has. Remarks: Known. The country remembers everybody it means to
+keep, and it does it on paper, and it's the only government on the river that does.
+
+That's the joke the editor never quite makes. Washington keeps no record of Redemption at all, and Redemption keeps a
+record of every man who ever came to its door, and of his father.
+""",
+      open=[("What's in the book besides fathers?",
+             ["Everybody who was turned back, and why, and where they went next. The Circle reads it once a year.",
+              "The Union men too. The book has a second half for the men who fought on the other side, and nobody is "
+              "ever admitted from it, and the gentleman reads it as carefully as the first."])],
+      table="""
+A posse that wants into Jubilee needs a father in the book. A forged ancestor makes a fine heist, and Bagby is the man who
+knows how the gentleman checks. Play the gentleman at the post as the most courteous man the posse will ever meet, and let
+them feel how much he already knows.
+""")
+
 entry("twopapers",
       people=["the owners of the Jubilee Standard and the Redemption Clarion", "a visitor from the States",
               "the three without papers"],
@@ -1754,6 +2455,74 @@ customs house's word for anybody who goes out of the country's books.
 The woman looking for her husband is the thread a posse can pull. Her sister at Yuma is still waiting for a
 letter, and will hire anybody going up with papers to ask after her. The customs house will answer politely
 that the lady was returned, and produce a ticket stub to show it.
+""")
+
+entry("lady",
+      people=["an Englishwoman (the author of A Lady's Year in the Far West)", "her hostess at Jubilee",
+              "her cousin at Savannah"],
+      places=["Jubilee", "Savannah", "London"],
+      creatures=[],
+      threads=["emigrants", "novel", "degree", "spur", "muster"],
+      when=[(1883, "An Englishwoman spends a week at Jubilee on papers from a cousin at Savannah"),
+            (1884, "Her book is published at London; no American house will print it")],
+      story="""
+The Englishwoman saw Redemption the way Redemption wants to be seen: watered streets, gardens, men who raise their hats, a
+drill in the square on Saturday that her hosts called a kind of cricket. She wrote it fairly and liked it, and then she
+wrote the paragraph that matters, about not seeing one person of colour in a week, and about her hostess, who said they'd
+all gone to Kansas where they were happier, the way one says the swallows have gone.
+
+Some went to Kansas. The rest of that story belongs to 1873, when the first party came in and the families already farming
+the bottom land, freedmen most of them, who'd come west after the war, were told to leave, and some of them didn't, and the
+town was laid out over the place where that ended. Nobody at Jubilee talks about 1873. The hostess believes in the swallows,
+and that belief is the most important thing the country has taught its own people.
+
+The book was printed at London and not here. A New York house took it, read the chapter on Jubilee, and gave it back, and
+so did the next. That's one of the slow ways a country gets left out of the books, and nobody had to order it.
+""",
+      open=[("What happened in 1873?",
+             ["What the Keeper decides, and it should be as bad as the country's cause, because the country's cause was "
+              "that bad. Nothing here softens it.",
+              "Somebody wrote it down. The chainman in [[ref:spring]] came in with the first party and came out in "
+              "1883, for reasons he asked Ashby not to print."])],
+      table="""
+The customs-house preamble is the best single thing to put in a player's hand about what Redemption is. It's polite, it's
+printed, and it says exactly what it means. Let the players meet a hostess like this one and like her. They'll remember
+liking her when they learn the rest.
+""")
+
+entry("novel",
+      people=["Dorrance, Capt. Hale (the author)", "the Fireside Ten-Cent Library"],
+      places=["Brooklyn", "Tucson", "Salt Lake City", "Jubilee"],
+      creatures=[],
+      threads=["remarks", "plate", "understanding", "deadletters", "lady"],
+      when=[(1882, "The Grey Riders of Jubilee sells sixty thousand copies in four months"),
+            (1883, "The Post Office Department questions the Fireside Ten-Cent Library's second-class rate; the second "
+                   "edition moves Jubilee to Zion City")],
+      story="""
+The first edition was the most widely read thing ever printed about Redemption, and it was a ten-cent romance written in
+Brooklyn from the Yuma papers and a week at the depot. Every boy in Kansas knew the grey riders and the flag beyond the
+river. In the author's book they lose, which is the only part he made up.
+
+The Post Office's lever was the second-class rate, which a story paper can't live without. Nobody at the Department ever
+wrote that Redemption doesn't exist. Somebody wrote that matter respecting a pretended government upon the territory of
+the United States raised a question about the rate, and the firm understood. In the second edition the country is the
+Desert Republic, the river is the Gila, and the riders are Mormons, and the boys who came along after 1883 only ever had
+that one.
+
+This is how the forgetting works, and the next chapter of the Book of Legends is full of it. Nobody suppresses Redemption.
+A rate is reviewed, a plate is re-engraved, a member revises his remarks, and in thirty years the only people who remember
+the grey riders will be old men who once carried a ten-cent book in a hip pocket.
+""",
+      open=[("Who asked the Post Office?",
+             ["The Department, on a word from the War Department, as policy.",
+              "A gentleman holding Redemption Sixes ([[ref:sixes]]), who didn't like a novel in which his interest "
+              "loses.",
+              "Jubilee, through its friends at Washington. The country doesn't mind being written about. It minds "
+              "losing."])],
+      table="""
+A first edition of The Grey Riders of Jubilee is a cheap and lovely prop, and a dealer at Tucson sells it under the
+counter. A posse heading for Jubilee will have read it as children, and every grey uniform on the platform will look like
+the cover.
 """)
 
 entry("letterhome",
@@ -1888,7 +2657,62 @@ would need. Getting that proof out of the river country alive is a campaign's wo
 """)
 
 
-# ================================================================ VI. A Face Not Their Own
+
+# ================================================================ Respectfully Forwarded
+intro("forwarded", """
+This chapter is Washington's, and it's where the Book of Legends answers a question the players will ask sooner or later:
+if there's a second Confederacy on the Colorado, why has nobody heard of it? The papers' answer is that everybody in the
+Territories has heard of it, and that the government of the United States has spent ten years arranging not to.
+[[kb:powers-redemption]] says the United States doesn't admit Redemption exists and has no present appetite for removing
+it. These are the papers that show how a government declines to admit a thing, one office at a time, and
+[[ref:understanding]] says why.
+
+Two other threads begin here. W. F. Kinnear, an operative of Pinkerton's working under the Department of Justice's
+contract, files his first report in [[ref:principles]] and runs the length of the book to [[ref:ashbyfile]]. And the Army
+is here too, as officers who see a great deal and are told in writing what they didn't see.
+
+None of the Washington papers is a lie, and that matters at the table. A posse that goes to Washington to expose
+Redemption will find nobody who lied to them, nothing on file that says anything, and a great many courteous men who
+can't help.
+""")
+
+entry("principles",
+      people=["Kinnear, W. F.*", "the Chief Clerk of the Department of Justice"],
+      places=["Fort Lyon", "the Purgatoire", "Trinidad", "Chicago", "Denver"],
+      creatures=[],
+      threads=["agency", "gatherings", "clerk", "ashbyfile"],
+      when=[(1881, "The Department of Justice engages Pinkerton's to look into stolen Army horses, and W. F. Kinnear "
+                   "closes the matter in eleven days")],
+      story="""
+The Department of Justice has no detectives of its own, so when Washington wants a thing looked into and won't send a
+marshal or a regiment, it hires the Agency by contract at so much a day. That arrangement is real history, and the Book
+of Legends keeps it plain: the Agency's operatives are working for the government when their reports say so.
+
+W. F. Kinnear is the operative, and this is the last of his reports in the book that ends where it was meant to. He was a
+hostler at Fort Lyon for eleven days and found three horse thieves, and the Marshal took them, and the account was
+rendered. He's good at the work, careful, and honest in the way the Agency's card means it: he reports what he saw and
+marks the rest as opinion.
+
+Every paper of his after this one is about something his card has no column for. He decides Cyrus Teal is two men
+([[ref:agency]]), which is the right answer for a report. He's sent into the high country on a private engagement and
+comes back with four camps waiting for the same thing ([[ref:gatherings]]), and Chicago writes NOT CREDIBLE and sends him
+to Pueblo. He takes the Circle's runaway clerk's statement ([[ref:clerk]]) under a Department contract and watches the
+Department write File on it. He opens a file on Ashby and asks to go and look for him, and the Department closes it the
+next week ([[ref:ashbyfile]]). By 1886 he's left the Agency.
+""",
+      open=[("Where does Kinnear end up?",
+             ["In Perdition Basin, looking for Ashby on his own account, with his savings and his copy of the "
+              "high-country report.",
+              "In Jubilee. Somebody there would like a man who knows how Washington files things, and pays in gold.",
+              "At home at Pueblo with his wife, who called the reassignment what it was and has had him back since."])],
+      table="""
+Kinnear is the operative [[kb:powers-pinkertons]] promises: the man who was right about the players and wrong about the
+world. He can be the posse's opponent early and its best friend late, and the turn should come the day he sees something
+his card has no column for. He'll never lie in a report, which makes him dangerous to a posse with secrets and invaluable
+to one without.
+""")
+
+# ================================================================ A Face Not Their Own
 intro("faces", """
 The editor warns that thirty-six of forty of these stories are bigamy and that one of the thirty-six is
 mixed in with the four that aren't. That's true, and the entry below says which. The other four are
@@ -1902,10 +2726,10 @@ around it prefer it.
 """)
 
 entry("agency",
-      people=["Teal, Cyrus", "Teal, Mrs. (at Topeka)", "the man at the implement office", "an Agency operative"],
+      people=["Teal, Cyrus", "Teal, Mrs. (at Topeka)", "the man at the implement office", "Kinnear, W. F."],
       places=["Coffin Wells", "Calvary Crossing", "Topeka", "Kansas City"],
       creatures=["The Fetch"],
-      threads=["gorham", "fifth", "water", "gatherings"],
+      threads=["gorham", "fifth", "water", "gatherings", "principles"],
       when=[(1882, "Cyrus Teal of Renfro &amp; Sons falls ill at Topeka in November and stays home"),
             (1883, "Teal is seen at Coffin Wells and at Calvary Crossing on the same day, the 3rd")]
       ,
@@ -1937,8 +2761,8 @@ where it chose not to believe a church roll over an operative, and the editor's 
               "the one on the road is Teal, looking for his way home."])],
       table="""
 An implement drummer is the easiest face in the basin to meet twice in a day. Let the posse do business with Teal
-at Coffin Wells in the morning and pass him on the Crossing road at noon going the other way. The operative who
-wrote the file is a good man and a stubborn one and he'll still be on the matter, off the books, if the posse
+at Coffin Wells in the morning and pass him on the Crossing road at noon going the other way. W. F. Kinnear, who
+wrote the file, is a good man and a stubborn one, and he'll still be on the matter, off the books, if the posse
 asks.
 """)
 
@@ -1976,6 +2800,40 @@ Run it as the Keeper's Book runs Saltlick in daylight: a road ranch full of hand
 and a cook who has already found the giveaway and wants a witness. Ask the players to whistle. A player who asks
 somebody at Gurley's to whistle has found the whole method, and should be made to pay for asking in the wrong
 company.
+""")
+
+entry("crailtrial",
+      people=["Crail, A.", "Merriam, Josiah", "Merriam, Mrs. (his widow, married again)"],
+      places=["Las Vegas, New Mexico"],
+      creatures=["The Possessed"],
+      callings=["Witch Hunter"],
+      threads=["lookeddoor", "terms", "namebook", "commission", "fivewives"],
+      when=[(1880, "A. Crail shoots Josiah Merriam on his own stairs in August and is acquitted of manslaughter at Las "
+                   "Vegas in October")],
+      story="""
+Crail did the things that wear men for six years, and the Merriam house was one of the last. He went because of the creek.
+Josiah Merriam had fished it every Sunday of his life and since the spring wouldn't cross it, even on the bridge. Crail
+sat on the porch and told him he wasn't Josiah Merriam, that he had one true thing written down about him, and said it
+low. Merriam went for the shotgun and Crail shot him on the stairs.
+
+The jury believed the widow, who'd known her husband nine years, and believed Crail, who'd known his trade twenty, and
+couldn't make the two agree, which is the honest verdict. Mrs. Merriam married again in 1882. Her second husband fishes,
+and she watches him cross every Sunday, which is the most eloquent thing in the trial and the one thing the court never
+heard.
+
+The Book of Legends doesn't settle it, and neither does this. A thing that wears a man wears his face, his habits and his
+wife's trust, and keeps a few small refusals it can't help. A man with a bad leg and a fear of drowning won't cross a creek
+either.
+""",
+      open=[("Was Merriam worn?",
+             ["Yes, since the spring. Something came up out of the creek and wore him, and couldn't go back across "
+              "running water, and Crail was right.",
+              "No. Merriam went through the ice in February and nearly drowned and never told his wife, and he went for "
+              "the shotgun because a stranger on his porch knew it."])],
+      table="""
+This is the Witch Hunter's trade with no answer at the end of it, and a Witch Hunter in the posse should read it as a
+warning. Run the Bestiary's Possessed as Crail believed it to be, and let the posse be the jury: give them every reason to
+shoot, and every reason not to.
 """)
 
 entry("mirror",
@@ -2089,7 +2947,7 @@ not a joke. The editor didn't print them as one.
 """)
 
 
-# ================================================================ VII. Songs & Sayings of the Territory
+# ================================================================ Songs & Sayings of the Territory
 intro("songs", """
 A song is the only paper in the Book of Legends nobody wrote down at the time, and that makes this the
 chapter where the Keeper has the most room. Three of the four entries have a real story behind them and
@@ -2107,7 +2965,7 @@ entry("sayings",
       people=[],
       places=[],
       creatures=["The Tallyman"],
-      threads=["collector", "ninechairs", "paidinfull", "blacktrain", "fifth", "notice"],
+      threads=["collector", "ninechairs", "paidinfull", "blacktrain", "fifth", "notice", "understanding", "spur"],
       when=[],
       story="""
 Every saying on Ashby's list is somebody's advice with the reason worn off it, and a Keeper who knows the reasons
@@ -2121,9 +2979,17 @@ do the counting ([[ref:notice]], where Mother Harrow asks every man she meets). 
 <em>A sweet well that was dry last year is a neighbour</em>: drovers out of Perdition Basin carried that one north, and
 they meant it exactly. <em>Pay a man the day he works. Pay anything else the day after</em>: because a debt to
 something that isn't a man gathers interest by the night, and the day after is the soonest you'll know what you owe.
-<em>The country keeps books</em>: see [[ref:paidinfull]]. <em>Give the long train the main line</em>: railroad men,
-and see [[ref:blacktrain]]. <em>Two is a coincidence, three is a road, four is somebody's business</em>: a lawman's
-saying, from the days before anybody had a word for a pattern.
+<em>The country keeps books</em>: see [[ref:paidinfull]], and the old clerks at Washington in [[ref:understanding]],
+who believe the same rule run backward. <em>Give the long train the main line</em>: railroad men, and see
+[[ref:blacktrain]]. <em>Two is a coincidence, three is a road, four is somebody's business</em>: a lawman's saying, from
+the days before anybody had a word for a pattern.
+
+Five of the sayings are about the powers, and they're the ones every town knows. <em>Chicago never sleeps, and
+Washington never wakes</em> is the Agency's motto and the government's habit in one line ([[ref:principles]],
+[[ref:noinformation]]). <em>The Jubilee train runs full going up</em>, <em>gone up the branch</em> and <em>civil as
+Jubilee</em> are what the Southwest says about Redemption every day of the week, which is the measure of how much
+everybody knows about it ([[ref:spur]]). <em>A brother will stand you supper. Ask him what's for breakfast</em> is the
+faithful, and see [[ref:sign]].
 
 <em>Count the horses</em> is the one nobody can gloss, and it shouldn't be glossed at the table either. It's in nine
 counties. It's what a man says to his son before the boy rides with strangers. Where it came from is the Keeper's.
@@ -2177,7 +3043,37 @@ tell a table that the Long Table is real long before anybody from it is met, and
 stops at nine should get a look from the girls.
 """)
 
+entry("muster",
+      people=["Straughan, Colonel (the old gentleman on the grey)", "the section hands at Yuma"],
+      places=["Jubilee", "Yuma"],
+      creatures=[],
+      threads=["spring", "lady", "gold", "spur", "clerk", "tenth"],
+      when=[(1883, "The Saturday Muster and its parody are taken down at Yuma on the same afternoon")],
+      story="""
+The Saturday Muster is what the militia marches to, and every line of it is the country's creed in a tune a child can
+learn: the day, the word, the land, the flag, and a refrain that ends with nobody going away. The old man on the grey is
+Colonel Straughan, who led the first party in to the spring in 1873 ([[ref:spring]]) and drills the square two hours every
+Saturday. The town calls him the old man, and the visitors call it cricket.
+
+The section hands at Yuma sing it back at the branch train in their own words, and their words are better, as section
+hands' words usually are. The Collector swears there's no such town, so who's flying the flag? Every town on the Southern
+Pacific knows that verse. It's the whole of Washington's silence and its failure in four lines, sung by men laying track.
+
+Nobody goes away is the line to hold on to. No return ticket is sold at Yuma. A clerk walked out through the sand hills and
+went back ([[ref:clerk]]). A man walked out to the Tenth's patrol and was gone from the guardhouse by morning
+([[ref:tenth]]).
+""",
+      open=[("Is the Colonel the preacher the women talk about?",
+             ["No. He's a soldier, and he believes every word, and he has never once wondered who writes the list.",
+              "He's the only man in Jubilee old enough to have met the preacher, if there was one, at the spring in "
+              "1873, and he told a San Diego paper he didn't recall any such man."])],
+      table="""
+Have the section gang sing the parody at a posse on the platform at Yuma while the branch train fills with gentlemen. Then
+put the real one in the mouths of children on the Jubilee side, and let the posse hear the difference.
+""")
+
 entry("keelers",
+      callings=["Gunhand"],
       people=["Standish, Eli", "Oakes, Reuben", "Oakes, Sarah", "Horne, Jno. (carpenter)",
               "Garland, W. P. (sheriff)", "the printer at Keeler's Ford", "Crandall, Miss Harriet"],
       places=["Keeler's Ford"],
@@ -2263,7 +3159,7 @@ sort eleven hundred verses, and she'd want you to take your time.
 """)
 
 
-# ================================================================ VIII. Them That Make a Living At It
+# ================================================================ Them That Make a Living At It
 intro("trades", """
 Everybody in this chapter goes toward the thing by choice and files a return afterwards, and the returns
 are honest in the way trade paper is honest: they say what was done and leave out why. The stories behind
@@ -2277,6 +3173,7 @@ has been dealing with the dark should read this chapter and see what it looks li
 """)
 
 entry("claim",
+      callings=["Bounty Hunter"],
       people=["the bounty man", "the county clerk", "warrant 41"],
       places=["Calvary Crossing"],
       creatures=["The Nightwalker", "The Blood-Thin", "The Risen"],
@@ -2316,15 +3213,18 @@ county, because he pays for what the county won't, and he'll want a favour back,
 """)
 
 entry("notice",
+      callings=["Bounty Hunter"],
       people=["Harrow, Zilpha (Mother Harrow)", "J. T. (a man in the bounty trade)", "a man out of Denison"],
       places=["Fort Smith", "Lampasas", "Denison", "Fort Worth"],
       creatures=[],
-      threads=["harrow", "ninth", "will", "sayings"],
+      threads=["harrow", "ninth", "will", "sayings", "commission"],
       when=[(1879, "Mother Harrow stands a bounty man a drink at Lampasas and asks his mother's name"),
-            (1884, "The Table's notice for Zilpha Harrow goes up on walls from Fort Smith to El Paso in the spring")],
+            (1884, "A notice for Zilpha Harrow, with no sender's name on it, goes up on walls from Fort Smith to El Paso "
+                   "in the spring")],
       story="""
-The notice is how the Long Table hunts, and J. T. read it right. There's no money on it because the Table doesn't
-pay. It becomes obliged. A man who brings word of Zilpha Harrow will be looked after, and his house will be kept, and
+The notice is how the Long Table hunts, and J. T. read it right. It has no sender's name and no printer's, and nobody in
+a saloon will say who put it up, because the houses don't put their name on paper. There's no money on it because the
+houses don't pay. A kindness becomes owed. A man who brings word of Zilpha Harrow will be looked after, and his house will be kept, and
 his wife will have easy births and his children will come through the fevers, and in three generations somebody
 polite will knock at his grandson's door with the dates. That's what being owed by the Table is. It's the arrangement
 in [[ref:will]], begun for a favour instead of a birth.
@@ -2349,7 +3249,43 @@ quiet. If a player takes it down, the obligation starts that night: their luck t
 table should understand exactly what's been bought before anybody at the Table says a word.
 """)
 
+entry("terms",
+      people=["Crail, A.*", "Sam (a younger man in the trade)", "Kessel, Mrs."],
+      places=["the Kessel well, Township 9, Kansas"],
+      creatures=["The Thing in the Well"],
+      callings=["Witch Hunter"],
+      threads=["lookeddoor", "crailtrial", "namebook", "commission", "notice"],
+      when=[(1879, "A Kansas county pays A. Crail twenty-five dollars out of the road fund for abating a nuisance at the "
+                   "Kessel well"),
+            (1882, "Crail writes to a younger witch hunter that he has given up the things that wear men and now does "
+                   "the houses")],
+      story="""
+A. Crail is the best witch hunter in the Book of Legends and the most honest about what the work costs. His card prices the
+trade like a carpenter's: graves salted at two dollars, a house cleared at ten, a well read at five, names written down for
+nothing, and nothing owed if nothing's found. He hunted the dead for eleven years and the things that wear men for six, and
+the county paid him out of the road fund for the Kessel well because a well in use again is a road expense.
+
+By 1882 he does the houses. His letter to Sam won't say why, and the reason is in [[ref:commission]]: a house kept his
+mother, and was paid for keeping her, and paid with a child, and Crail wants the house's name, and the price, and the
+grave. He hunts the houses one at a time with a book of names, and they're the only quarry he ever had that was kinder than
+he is.
+
+The two ways to cross a name out are the key to his book ([[ref:namebook]]). One line through means the thing is finished.
+A second line, crossed the other way, means he let it go. Sam is the only man he ever told, and Crail stopped answering him
+because Sam asked which way he'd crossed out the house on the Sabine.
+""",
+      open=[("Was Crail the child?",
+             ["Yes. He was the ninth, and his mother said no, and the house stopped answering her door, and she died in "
+              "a hard confinement the next winter with nobody to go to.",
+              "No. His sister was the ninth, and the house took her, and his mother never spoke of it, and Crail found "
+              "the girl's name in a house's book in 1876."])],
+      table="""
+Crail's card is the best handout in the book for a Witch Hunter player: it's the trade as a trade. Crail himself is a good
+mentor and a dangerous one. He'll take a posse's Witch Hunter on a job and watch how they cross out a name.
+""")
+
 entry("sawbones",
+      callings=["Sawbones"],
       people=["the country doctor", "B. (a labourer)"],
       places=[],
       creatures=["Dark Cultist & the Hollow Prophet", "The Cursed Man"],
@@ -2387,6 +3323,7 @@ meet, because he's decent, and he's grateful, and he'd do it again.
 """)
 
 entry("surgeon",
+      callings=["Sawbones"],
       people=["Aske, Philip (acting assistant surgeon)", "Aske, Kate (his sister)", "the commanding officer",
               "the sutler's girl"],
       places=["a post on the Pecos", "Horsehead Crossing", "Baltimore"],
@@ -2424,6 +3361,7 @@ ride out after somebody wet, remember Horsehead Crossing.
 """)
 
 entry("hexer",
+      callings=["Hexer"],
       people=["the letter-writer (a mother)", "her daughter"],
       places=[],
       creatures=["The Tallyman"],
@@ -2461,6 +3399,7 @@ whether to pay it for her, fight it, or find the Tallyman's ledger and read her 
 """)
 
 entry("contract",
+      callings=["Gunhand"],
       people=["a cattle company's district agent", "eleven stock inspectors"],
       places=["Kansas City"],
       creatures=["The Regulators", "The Cattle Baron's Men", "The Hired Gun"],
@@ -2494,6 +3433,7 @@ players can't out-shoot their way past, because the company pays for another ele
 """)
 
 entry("bitters",
+      callings=["Gunhand"],
       people=["Ransome, Dr.", "Tolland, Ezra", "Weller, Dutch", "the company's attorney", "the priest at Fort Collins"],
       places=["Cheyenne", "the Clear Fork", "Fort Collins"],
       creatures=["The Mesmerist", "The Regulators", "The Revenant"],
@@ -2534,7 +3474,43 @@ the hand and settle the conscience, and a player who drinks one before a fight s
 remember it very clearly, in somebody else's words.
 """)
 
+entry("route",
+      people=["a travelling man for a St. Louis house", "Rudd, Mrs.", "Lamb, H. (barber)", "Varney, Mrs.",
+              "the agent at the depot at Wallace"],
+      places=["Salina", "Ellsworth", "Hays City", "Wallace", "Kit Carson", "Pueblo"],
+      creatures=["Dark Cultist & the Hollow Prophet"],
+      callings=["Dark Cultist"],
+      threads=["tract", "sign", "creeds", "congregations", "partners", "asked"],
+      when=[(1882, "A travelling man works his spring route through Kansas and Colorado, and writes a word beside a name "
+                   "in every town")],
+      story="""
+The third column is the brother or sister in each town, the one who keeps the faith and stands a stranger supper on the
+second night. The fourth is what each came wanting, which the drummer calls what they drank, and the words are the six
+wants the tract in [[ref:tract]] offers: rest is to stop hurting, know is to know, eat is never to go hungry, keep is to
+keep somebody out of the grave, loved is to be loved, and rich is rich. The last column is the one that should frighten a
+Keeper: which towns won't sit with which.
+
+[[kb:olddark-devotions]] pairs each want with the face that answers it, and [[kb:olddark]] has the rule this page shows at
+work: two congregations at each other's throats are two hands of one body. Hays eats and Ellsworth knows, and they won't
+sit together. Pueblo has two who don't speak, one rich and one knowing. Salina and Wallace won't sit with anybody. Every
+one of them is feeding the same thing.
+
+The travelling man is a brother himself. He sells soap now and nothing else, and he told the editor the columns were about
+drink because that's what he tells everybody. Wallace is the town that drinks keep, and the agent at the depot is the one
+he won't talk about.
+""",
+      open=[("What does the agent at Wallace keep?",
+             ["Somebody out of the grave, as the want says: his wife, who died in 1879 and still keeps his house.",
+              "The road. The Long Trail's people keep the dead moving, and Wallace is where the long train "
+              "([[ref:blacktrain]]) takes water."])],
+      table="""
+The route book is a map a posse can ride: a brother in every town, what each one wants, and who'd sell out whom. A Dark
+Cultist in the posse would know some of these people. Use it to show that the faithful are everywhere and never together,
+which is the most frightening thing about them and the most useful.
+""")
+
 entry("scout",
+      callings=["Drifter", "Mountain Man"],
       people=["the tracker", "the missing man's family"],
       places=[],
       creatures=["The Long Trail's End", "The Hidebehind"],
@@ -2568,6 +3544,43 @@ was beside it for three miles, and a man can't be beside that for three miles.
 The tracker is a man a posse should hire and trust. Give the players his account first, and then, a session later,
 give them a second track at forty yards off their own left hand at dusk, not closing, not hurrying. Don't roll
 anything. Ask what they do. The only mistake is to run.
+""")
+
+entry("trapper",
+      people=["an old trapper at Fort Hall", "Rourke, Jas. (Jim)"],
+      places=["Fort Hall", "a fork of the Salmon"],
+      creatures=["The Hidebehind", "The Great Bear"],
+      callings=["Mountain Man"],
+      threads=["scout", "dugout", "fortclark", "carrow"],
+      when=[(1853, "Jim Rourke is killed at his camp on a fork of the Salmon in October while his partner pulls the "
+                   "traps")],
+      story="""
+Two trappers worked a fork of the Salmon in the autumn of 1853, in country nobody else trapped, which they took for luck.
+Something came to their camp the second evening and tore it up and walked round the fire on two feet, and every time they
+followed its track into the timber it went behind a tree and didn't come out the other side. They agreed to go. One went
+up the creek to pull the traps. Jim Rourke stayed to break camp, and when his partner came down at dark Jim was dead by the
+fire log with his neck broken and four marks in his throat, and the packs untouched.
+
+The Bestiary's Hidebehind keeps a tree, a shadow or your own companion between itself and your eyes, and takes the one who
+works alone. Rourke was a man who looked round, and it came in behind him the whole way without once being in his sight.
+That's the horror the trapper has carried thirty years: there was nothing Jim could have done, because there was never
+anything to see.
+
+The editor's grizzly is the other reading, and a good one. A bear will tear up a camp and stand, a frightened man will see a
+man's walk in a bear's track, and the story has been told of four men in four ranges. The tally in Rourke's hand is what the
+editor can't explain away, and the trapper gave it up the day he finished telling it.
+""",
+      open=[("What killed Jim Rourke?",
+             ["The Hidebehind, which still keeps that timber, and no trapper has worked it since.",
+              "The Bestiary's Great Bear, a grizzly old enough to have learned that men look round, which is worse in "
+              "its way.",
+              "The partner. A man who killed his partner in the timber has a reason to give the tally away thirty years "
+              "later, and the story got told of four men in four ranges because the first man to tell it needed "
+              "something to tell it around."])],
+      table="""
+A Mountain Man in the posse has heard this story at every fort in the high country and has an opinion. The Hidebehind's
+entry says the fight is geometry and light, and this camp is where to teach it: ring the fire, stand back to back, and keep
+to open ground, the way the old man does now.
 """)
 
 entry("thirdcell",
@@ -2661,6 +3674,7 @@ be charming, and she'll watch the players the whole time to see if they can tell
 """)
 
 entry("deputy",
+      callings=["Marshal"],
       people=["the deputy (unnamed)", "Coyle, T. (marshal)", "the county commissioners"],
       places=["Calvary Crossing"],
       creatures=["The Risen", "The Blood-Thin"],
@@ -2697,7 +3711,7 @@ show them the gate. He won't open it for them either.
 """)
 
 
-# ================================================================ IX. Met on the Road
+# ================================================================ Met on the Road
 intro("road", """
 Half this chapter is the Mad Spaniard, and [[kb:legends-spaniard]] is where he lives: his name, what
 happened on the Llano in 1541, how to run him, and the four things he might be, one of which the Keeper
@@ -2794,6 +3808,43 @@ dipper in her hand, and the bucket was dry, and she'd gone on west with him.
 A posse on the old military road on the night of 19 October meets the walkers, and there's nothing to fight. The
 courtesy is to stand aside, take your hat off, and leave water at a gate. A player who asks a walker a question gets
 the walker's name and the name of the herd he left and where, and nothing else.
+""")
+
+entry("walker",
+      people=["Talbot, Wes", "Talbot, L. (his sister)", "the man ahead on the road"],
+      places=["Horsehead Crossing", "Fort Stockton", "Fort Davis", "El Paso", "Yuma", "San Angelo"],
+      creatures=["The Long Trail's End", "The Hitchhiker"],
+      callings=["Drifter"],
+      threads=["salt", "surgeon", "carrow", "wrongdetail", "trunk"],
+      when=[(1883, "Wes Talbot crosses the Pecos at Horsehead on 1 October; a body is taken from the river below the "
+                   "crossing on the 3rd and buried as his"),
+            (1883, "Wes Talbot wires his sister from Yuma on 24 October")],
+      story="""
+Wes Talbot was a horse-breaker who drifted for work, and he crossed the Pecos at Horsehead on the 1st of October 1883 with
+the river up and mean, and the river took him. The body that came out below the crossing on the 3rd was his, the dun came
+out alive with his saddle on, and the freighter who'd crossed with him said so. He was buried at Fort Stockton, and his
+sister had the news inside the week.
+
+He didn't know. He went on west the way a drifter does, writing to his sister from every town, and every day there was a
+man on foot ahead of him on the road with his hand up for a ride, a man he rode hard to leave and passed again seventy miles
+on. The man wasn't looking at Wes. He was looking down the road behind him for somebody who hadn't come yet, because Wes
+hadn't stopped yet. At Yuma Wes wired home and had the answer, and went out that evening to the sign at the edge of town,
+and stopped.
+
+The Bestiary's Long Trail's End was meant to be a kindness: a guide for the dead, walking a day ahead, patient and certain.
+This is the kindness still working, for once. Wes refused him all the way across Texas, as a living man would, and he
+waited.
+""",
+      open=[("Was Wes Talbot dead?",
+             ["Yes, from the 1st of October. The letters are the only thing a drowned man ever sent home from the road, "
+              "and the dun in the livery at Fort Stockton is the proof.",
+              "No. A drifter with debts let a drowned stranger be buried under his name and bought another dun at El "
+              "Paso, and the man on the road is the Long Trail's End come early for a living man, which is its broken "
+              "bargain. Either way, he's gone with it now."])],
+      table="""
+A Drifter in the posse should meet the man ahead on the road some night, with his hand up, and have to decide whether to
+stop. The Bestiary's Hitchhiker is the gentle version of the same road, and its remedy is the same: take them where they're
+going. Nobody has ever asked the man ahead where that is.
 """)
 
 entry("spaniard",
@@ -2939,7 +3990,48 @@ follow anything in Texas they ask, and he'll tell them, once, plainly, which tra
 A table that has learned to listen to that is a table that lives.
 """)
 
+entry("tenth",
+      people=["Fairley, Isom (first sergeant)*", "Fairley, Minnie", "Mayes, Corporal", "a man who walked out of Jubilee"],
+      places=["a camp on the Colorado", "Nicodemus, Kansas", "the sand hills", "Yuma"],
+      creatures=[],
+      callings=["Marshal"],
+      threads=["emigrants", "noinformation", "clerk", "spur", "muster", "twopapers"],
+      when=[(1885, "Two troops of the Tenth Cavalry are sent in the spring to a camp on the Colorado to watch the river "
+                   "and the branch"),
+            (1885, "A patrol of the Tenth brings in a man who walked out of Jubilee across the sand hills in September; "
+                   "by morning he's gone")],
+      story="""
+The Army's answer to the captain's report came three years late and two troops strong. The Tenth Cavalry was sent to sit on
+the river and watch a country the Army says isn't there, under orders not to cross, not to speak to its patrols, and not to
+take notice of its flag. Isom Fairley is first sergeant of one of the troops, nine years in, with his wife at Nicodemus,
+and he knows exactly whom the country across the water was built against. They look at the Tenth like weather.
+
+His letters are what a good soldier sees and puts in his book: the flag at reveille, a patrol on the United States side
+denied in writing, and the man who walked east out of the sand hills at two in the morning in new boots with no water, who
+said he'd come from Jubilee and that it was the first time in eleven years anybody had asked him anything. He was gone from
+the guardhouse by morning, and his tracks went back west.
+
+He was one of the people the two newspapers can't find ([[ref:twopapers]]), returned years ago and kept, and he walked out
+through the sand hills the way the clerk did ([[ref:clerk]]), and went back the way the clerk did. Nobody leaves Jubilee.
+The boots were small for him because they weren't his.
+""",
+      open=[("Why did he go back?",
+             ["For the same reason the clerk did: the list had a line with his name on it, or would, and he wanted to be "
+              "at home when it came.",
+              "He was taken back. Something at Jubilee goes out at night to bring home what walks away, and it leaves no "
+              "tracks of its own, only the boots."]),
+            ("Does the Tenth ever cross?",
+             ["Not in this decade. The order comes from a desk that has written File on everything else.",
+              "Once, in 1886, on a lieutenant's word after a patrol went missing, and the report of it is the only paper "
+              "about the river the Army has ever lost."])],
+      table="""
+First Sergeant Fairley is a fine Marshal for a posse to know: proud, careful, and posted on the one line in the Territories
+where the Army faces the thing it won't name. Play the Tenth as soldiers doing a hard job with dignity, never as anybody's
+prop. A posse that wants to cross the river will have to get past them, and shouldn't want to.
+""")
+
 entry("fifth",
+      callings=["Gunhand"],
       people=["Kell, Absalom", "Rainey, Dob", "Rainey, Ida", "Tuck, Ferris", "Wills, Tom",
               "Otey, J. (stage driver)", "the paymaster's clerk"],
       places=["Coffin Wells", "Calvary Crossing", "the draw below Saltlick"],
@@ -3022,7 +4114,7 @@ the Keeper should let the players make it without help.
 """)
 
 
-# ================================================================ X. The Dead Do Not Stay Put
+# ================================================================ The Dead Do Not Stay Put
 intro("dead", """
 The editor calls this the dullest chapter in the book and kept it that way, and the stories behind it
 are the most varied: a county's drownings in dry fords, a boy home from the river, a bundle of bones sent
@@ -3215,7 +4307,40 @@ somebody he trusts. Ask him what decides it and he'll say the damp. Ask him agai
 and he'll pour them a drink and tell them about the time he was wrong.
 """)
 
+entry("evergreen",
+      people=["Olney, Mr. (secretary of the Evergreen Society)", "a sexton at Omaha", "the widow of a member"],
+      places=["Omaha", "the Florence road"],
+      creatures=["The Risen"],
+      callings=["Dark Cultist"],
+      threads=["gatherings", "braid", "hotel", "boxes", "handshake"],
+      when=[(1879, "The Evergreen Mutual Burial Society prints its rules at Omaha"),
+            (1881, "The Society's ground on the Florence road is found to hold forty-one coffins and no occupants")],
+      story="""
+The Evergreen Society was a congregation of the faithful who had asked, every one of them, to cheat the grave, and the rules
+say so to anybody who reads them knowing what to look for. No member lies in the ground more than one night. The family is
+put to no trouble after the first. What a member wished for in life, the Society sees to after. The want is the Long
+Trail's, and [[kb:olddark-devotions]] has the face that answers it.
+
+Mr. Olney was the secretary, and he was also selling bodies to the medical college, eleven in three years. The other thirty
+got up after their one night in the Society's ground on the Florence road and walked, and Olney's people walked them west to
+the high country, where a revival that leaves Denver every spring comes home about forty short ([[ref:gatherings]]). Not
+all of the forty are from Denver.
+
+The newspaper's ghouls are true, and they're the smaller part. Olney sold the eleven because the eleven didn't get up, and a
+secretary has accounts to keep.
+""",
+      open=[("Why didn't the eleven get up?",
+             ["Their families visited the ground against Article 4, and a grave that's watched stays a grave.",
+              "They hadn't wished for anything in life worth seeing to after. The Society only raises those who wanted "
+              "something."])],
+      table="""
+A burial society's leaflet is the most innocent paper a posse can find, and this is the most useful, because a member's
+widow in any town might still have one. Run it as a slow discovery: the posse digs up a dead friend's coffin to prove a
+point, and finds it empty and clean.
+""")
+
 entry("handshake",
+      callings=["Gambler"],
       people=["Sayre, Joel", "Tulley, Wm.", "Clara (Joel's sister)", "the dealer at the Last Chance",
               "the proprietor of the Last Chance"],
       places=["Caldwell", "the Last Chance saloon", "Wichita", "Sedalia", "Ogallala"],
@@ -3255,6 +4380,7 @@ them it's all the boys do. Burying Tulley is the kind of errand a posse remember
 """)
 
 entry("swarm",
+      callings=["Marshal"],
       people=["Coyle, T. (marshal)", "Laidlaw, Mr.", "the county commissioners"],
       places=["Calvary Crossing", "the old burying ground (north side)"],
       creatures=["The Gravecaller", "The Risen", "The Boneyard Host"],
@@ -3406,7 +4532,7 @@ counts. Whether a player gets off, or waves, is the night.
 """)
 
 
-# ================================================================ XI. What the Ground Keeps
+# ================================================================ What the Ground Keeps
 intro("ground", """
 Mining country writes everything down because every foot of it is property, and the papers in this
 chapter are the best evidence in the book that the ground under the Territories is not all rock. The
@@ -3421,6 +4547,7 @@ it at all, and it's the worst.
 """)
 
 entry("assay",
+      callings=["Engineer"],
       people=["the superintendent", "the assayer", "the Board's secretary"],
       places=["a silver mine (working today)", "the east drift, No. 4 level"],
       creatures=["The Veinwork", "The Tommyknocker"],
@@ -3452,6 +4579,37 @@ and the last letter in the file is from a different superintendent.
 The mine is working today and the company has lawyers. A posse can be hired by the old superintendent to get the men
 out of the east drift, or by the company to find out why its costs are what they are. The Veinwork's entry says what can
 be done, and it's walling the drift off forever, and the Board will never agree to that at four hundred ounces.
+""")
+
+entry("ore",
+      people=["Hiram (a prospector)", "Will (his brother at Prescott)", "a gentleman from Jubilee"],
+      places=["the Castle Dome district", "the Lucky Sixteen claim", "Tucson", "Prescott"],
+      creatures=["The Parcel"],
+      callings=["Prospector"],
+      threads=["gold", "committee", "floor", "assay", "sixes", "lookedat"],
+      when=[(1883, "A gentleman from Jubilee buys the Lucky Sixteen in the Castle Dome district for four times its "
+                   "worth, spreads its ore for the rain, and drives stake No. 31")],
+      story="""
+Hiram is a prospector with a fair claim and a season's galena on the dump, and a gentleman came up from Jubilee with two men
+and a mule and bought it for four times what it was worth, in gold, and then had his men bring the ore up and spread it
+where the rain would take it. He drove a stake with a number, thirty-one, and when Hiram asked what he wanted if he didn't
+want a mine, he laid his hand flat on the ground.
+
+The number matters. The page of the Circle's schedule in [[ref:gold]] has nine lines, and the stake says thirty-one, so the
+page is one of several and the list is longer than anybody at Yuma thought. The Lucky Sixteen isn't the forty acres with its
+name cut out, and the editor's right that it doesn't fit. It's a line from a later page.
+
+The gentleman didn't want the ore because the list wants nothing that comes out of the ground. It wants the ground left as
+it is, held, and looked at ([[ref:lookedat]]). The hand on the ground was a man feeling for something under it, the way
+you'd feel a horse's flank for its breathing.
+""",
+      open=[("What did he feel under his hand?",
+             ["Nothing, and he was disappointed, and the stake went in anyway because the list said so.",
+              "Warmth. Every staked parcel is a little warmer than the ground round it, and the Circle's men are taught to "
+              "feel for it."])],
+      table="""
+A Prospector in the posse will be offered four times what a claim is worth by a polite gentleman sooner or later, and should
+be made to wonder why. Let them sell. Then let them watch the ore go out in the rain.
 """)
 
 entry("veinwork",
@@ -3491,6 +4649,7 @@ decide about. If they open it, the Veinwork's entry says what the rock does next
 """)
 
 entry("cut",
+      callings=["Engineer"],
       people=["Teale, Mr. (chief of party)", "fourteen chainmen", "the man who made his mark"],
       places=["San Clavo, Mission of", "the survey's cut", "the survey camp"],
       creatures=[],
@@ -3525,6 +4684,7 @@ he'll answer a straight question about the fill in a straight way, once, and the
 """)
 
 entry("adit",
+      callings=["Engineer", "Prospector"],
       people=["Penhale, William", "Lyle, E. (superintendent)", "the Gallagher boy", "the Gallagher boy's mother"],
       places=["Blue Tinaja", "the Widow's Mite", "the old Spanish adit"],
       creatures=["The Tommyknocker"],
@@ -3564,6 +4724,7 @@ down at Blue Tinaja. He'll take them, and he'll stop at the second level to read
 """)
 
 entry("rocksnake",
+      callings=["Hexer"],
       people=["Cass, Prof. Abner", "a well-digger near Pueblo", "a physician at Trinidad", "the physician's wife"],
       places=["Pueblo", "Trinidad"],
       creatures=["The Rattlewyrm", "The Hexer"],
@@ -3643,6 +4804,7 @@ says how Mabry's kind are ended, if he's found at it again.
 """)
 
 entry("numberfour",
+      callings=["Engineer"],
       people=["Treloar, Jory", "Treloar, Mrs.", "Pugh, Emrys", "the company's engineer", "the nine in the Number Four"],
       places=["a copper mine in the high country", "the Number Four", "the engine house"],
       creatures=["The Answering Voice", "The Cold Deep's Child"],
@@ -3683,6 +4845,7 @@ in front of a table, with a familiar voice at the other end telling them it's ea
 """)
 
 entry("lamps",
+      callings=["Padre"],
       people=["Tobin, Walter", "Tobin, Mary", "Pryce, Mrs. Agnes (born Tobin)", "Keane, Father", "the physician at "
               "Cinnabar Flat", "the nineteen"],
       places=["Cinnabar Flat"],
@@ -3758,7 +4921,7 @@ The Keeper decides what happens if they do, and should decide it before anybody 
 """)
 
 
-# ================================================================ XII. Hunger
+# ================================================================ Hunger
 intro("hunger", """
 The editor said the accounts are the worst of the book and meant this chapter. Every story behind it is
 about what people eat when there isn't enough, and three of them are the face [[kb:olddark-faces]]
@@ -3889,6 +5052,38 @@ put them in a basin homestead for a night, and have somebody wake at three to fi
 dark, with their eyes shut.
 """)
 
+entry("township",
+      people=["the relief committee of a Dakota county", "the people of Township 112"],
+      places=["Township 112, Dakota", "Ohio"],
+      creatures=["Dark Cultist & the Hollow Prophet", "The Glutton"],
+      callings=["Dark Cultist"],
+      threads=["supper", "ellender", "glutton", "evergreen", "route"],
+      when=[(1878, "A religious body comes together out of Ohio and settles Township 112 in Dakota"),
+            (1881, "In the hard winter the relief committee finds Township 112 well fed and asking for nothing")],
+      story="""
+Township 112 is a congregation of the faithful who asked never to go hungry again, and in the hard winter of 1880, when the
+trains stopped for four months and ten townships were eating their seed wheat, they had fresh meat on every table. The
+committee was received kindly and fed and invited to the evening meeting, and declined, and the chairman wrote in his own
+margin what they'd been asked at the door: what they wanted.
+
+The want is the Devourer's, and that face answers the way it answers everybody, with exactly what was asked and nothing that
+was meant. The stock was fat because the township fed it, and the cellars were dug deeper than a cellar needs because that's
+where the township kept the rest of what it fed on. Nobody in Township 112 went hungry. A good many people round it went
+missing, in a winter when people went missing anyway.
+
+The township sold up together in 1883 and went west, as such congregations do once they've eaten a district thin, and the
+people who bought the farms complain only about the depth of the cellars.
+""",
+      open=[("Where did they go?",
+             ["To the Dismal River, where a settlement of sixty eats every meal together and won't let anybody eat alone "
+              "([[ref:supper]]).",
+              "Up into the mountains, where the high-country camps are gathering ([[ref:gatherings]]), and some of the "
+              "three hundred who wintered above the Boulder River in good flesh were theirs."])],
+      table="""
+This is the Devourer at its most respectable: farmers, a meeting house, hospitality. A posse snowed in among them in a hard
+winter will be fed very well and asked, kindly, what they want, and the right answer is nothing.
+""")
+
 entry("hotel",
       people=["Prine, J.", "the manager of the Hot Springs House", "the forty attendants", "the six who went east",
               "the lady from St. Louis"],
@@ -3972,6 +5167,38 @@ it's a white man at a post with flour, and a hall in St. Paul that laughed. If a
 has a new factor and the band has its own business, and neither owes the posse anything.
 """)
 
+entry("tempe",
+      people=["Tempe, Aunt (a bonesetter)*", "Clem", "Prue (Clem's wife)", "Birch, Mrs."],
+      places=["the Big Sioux, Dakota", "the Cumberland mountains"],
+      creatures=[],
+      callings=["Shaman"],
+      threads=["belts", "glad", "returned", "ninth"],
+      when=[(1880, "Clem freezes against a fence in the December blizzard on the Big Sioux; Aunt Tempe calls him back by "
+                   "his name through the night of the 21st")],
+      story="""
+Aunt Tempe is a bonesetter out of the Cumberland mountains who has set every bone in that township and been paid in eggs and
+quilts, and she's what the Player's Book calls a Shaman: somebody who learned early that the country is crowded. When Clem
+froze against the fence and was carried in stiff, with snow in his eyes, she walked through the blizzard and sat with him a
+night and called his name, over and over, the way you call a dog in, until something gave him back.
+
+What she paid with was her singing. She led the hymns at church every Sunday for twenty years, and since Christmas she stands
+through them with her mouth shut and the tears running. She told Prue the cost wasn't money and was already paid, and that's
+exactly true. Whatever she called Clem back from wanted a voice in trade, and she had a good one.
+
+The physician's account is the honest alternative, and the editor would like it to be the answer: a frozen man isn't dead
+until he's warm and dead, and warmth and time and somebody sitting by him have brought men back after hours in the snow.
+Tempe's own view is that she did what she was taught, and would do it again for anybody in the township, and can't, because
+she only had the one voice.
+""",
+      open=[("Is Clem all himself?",
+             ["Yes, all of him, as his wife says, less two toes.",
+              "All but one small thing his wife hasn't noticed and Tempe has: he doesn't sing either now, and he used to "
+              "stand beside her."])],
+      table="""
+A Shaman in the posse is the one who'll understand what Tempe paid and ask what it went to. She's a fine mentor for one:
+she'll teach the calling and charge nothing, and warn them about the price in one sentence, and say no more.
+""")
+
 entry("fortsafe",
       people=["Lau Chung", "the first sergeant of a troop of the Tenth Cavalry", "the company's police",
               "the construction department", "the nine at the cut"],
@@ -4015,6 +5242,7 @@ company sends when somebody starts asking to dig it up.
 """)
 
 entry("thirst",
+      callings=["Sawbones"],
       people=["an assistant surgeon, U.S.A.", "the four men in the dry camp"],
       places=["the Badlands south of Perdition Basin", "the South well", "the seep at the head of the draw"],
       creatures=["The Thirst", "The Thing in the Well"],
@@ -4050,7 +5278,7 @@ a quartermaster's store at the Crossing, and a map folded to the right sheet. Th
 """)
 
 
-# ================================================================ XIII. Preaching
+# ================================================================ Preaching
 intro("preaching", """
 The editor was careful here and a Keeper should be too. Most religion in the Territories is a tired man on
 a horse riding two hundred miles for forty dollars a year, and one of these six papers is that man, with
@@ -4065,6 +5293,7 @@ says, for people and in public, and never with a gun.
 """)
 
 entry("revival",
+      callings=["False Prophet"],
       people=["Cassie (a letter-writer)", "Ann (her sister in Missouri)", "Trice, Mrs.", "Bevill girl, the",
               "Gilliam, Mr.", "the preacher of the Good Revival"],
       places=["a town in the southern counties (since renamed)"],
@@ -4104,6 +5333,7 @@ a printing press. Give the players one preacher who's decent all the way through
 """)
 
 entry("circuit",
+      callings=["Preacher"],
       people=["Teague, Rev. A.", "the presiding elder", "Cardoza family"],
       places=["Perdition Basin, the southern end of the circuit", "the Cardoza place", "the lower river"],
       creatures=[],
@@ -4141,7 +5371,44 @@ in the county who will sit with a posse and ask them what they need without want
 Keeper who makes him anything else has wasted the only one of him in the book.
 """)
 
+entry("faculties",
+      people=["A. R. (a pastor in the San Juan)*", "M. R.", "the Chancellor of the diocese", "a Cornish miner"],
+      places=["a mining camp in the San Juan", "Silverton"],
+      creatures=["The Possessed", "The Tommyknocker"],
+      callings=["Padre"],
+      threads=["circuit", "lamps", "patent", "adit", "uncle"],
+      when=[(1881, "A pastor in the San Juan asks his bishop in November for the faculty to exorcise a young married "
+                   "woman of the parish, is refused, and performs the rite without it on the 27th")],
+      story="""
+The pastor is what the Player's Book calls a Padre: one tired man at the end of a closed road, with eighteen hundred years
+behind him and a Ritual he has read very carefully. He waited seven weeks and wrote for the faculty, and the bishop refused
+it, as bishops usually do, and the pastor performed the rite anyway on the night of the 27th, because on the 26th M. R. had
+stood at the foot of her children's bed and told them the days they'd die.
+
+She spoke Cornish, the old Cornish of the mines, which a Cornish miner in the camp could only half follow. The camp is built
+over workings older than the camp, dug in the fifties by Cornishmen who brought their knockers with them, and something down
+there had learned the language from them and come up into a woman who'd never heard it. The Rite was the Church's, and it
+worked, and she took communion the next two Sundays.
+
+The physician at Silverton saw her in the spring and found her well, and his explanation, a nervous illness of a winter
+indoors, is the one the diocese prefers. The pastor did his thirty days' penance and was moved, and he'd do it again, and
+nobody has asked him to. Yet.
+""",
+      open=[("What spoke Cornish?",
+             ["Something the Cornish knockers kept down in the old workings, older than they are, which learned their "
+              "tongue from them, and which the Bestiary's Tommyknockers have been keeping in.",
+              "The woman's own illness, speaking words she'd heard through the floor of a company house from miners at "
+              "their supper, without knowing she'd heard them."]),
+            ("Were the children's days right?",
+             ["The first child's was, in 1884, and the mother hasn't let the others out of her sight since.",
+              "None has come yet, and the eldest is fourteen."])],
+      table="""
+A Padre in the posse will meet this question at least once: the faculty, or the person in front of you. Make the bishop
+reasonable, the road closed, and the woman's voice speaking a language from under the floor.
+""")
+
 entry("belts",
+      callings=["Shaman"],
       people=["the guide at White Sulphur Springs", "the guide's mother", "a merchant of Butte", "his son",
               "a woman from New Orleans", "the spirit-talker"],
       places=["the Big Belt Mountains", "White Sulphur Springs", "Butte", "Helena"],
@@ -4299,20 +5566,217 @@ brought her.
 """)
 
 
-# ================================================================ XIV. The Long Table
+entry("landismine",
+      people=["a preacher at the seminary of Jubilee", "Winship, T. (a Methodist elder from Tucson)"],
+      places=["Jubilee", "Tucson"],
+      creatures=["The Sermon Made Flesh", "The Parcel"],
+      callings=["Preacher", "False Prophet"],
+      threads=["clerk", "spur", "gold", "committee", "lookedat", "degree"],
+      when=[(1883, "A Methodist elder from Tucson takes down in shorthand a sermon on Leviticus 25 preached in the "
+                   "seminary chapel at Jubilee")],
+      story="""
+The sermon is the most honest thing anybody at Jubilee ever said about the land. The Circle buys ground and plants nothing
+on it because the land is His, and they're keeping it till He comes for it, and He'll know it by the stakes. The
+congregation didn't need telling who He was, and the elder from Tucson listened an hour for the tenth verse, the one about
+liberty that the town is named for, and it never came.
+
+The preacher belongs to the seminary. Whether he's the preacher the women at Jubilee talk about ([[ref:clerk]]), the one who
+was there before the town was and promised the first families the country as it was before the war, is the question this
+book leaves open. If he is, the Circle answers to a False Prophet, and He in the sermon is the face the sermon promised, and
+[[kb:olddark]] says what a False Prophet's congregation feeds: the Old Dark comes to the plate wearing the face the sermon
+promised.
+
+The elder's note is the best thing in the chapter. A preacher who knows his Leviticus leaves out the tenth verse knowing
+exactly what he's doing, and a congregation that names its town for that verse and doesn't notice it's missing has been
+taught not to notice.
+""",
+      open=[("Who is He?",
+             ["The Lord, sincerely. The seminary believes it's keeping God's land for God, and the horror is the "
+              "theology, not anything under it.",
+              "The list-maker, whoever writes the list, whom the preacher has never met and calls by the only name big "
+              "enough.",
+              "What the stakes are staking. The Bestiary's Sermon Made Flesh is a creed that grew a body, and a country "
+              "that has preached one sermon every Sunday for eleven years has given it a great many mouths."]),
+            ("Is the seminary's preacher the women's preacher?",
+             ["Yes. He's the False Prophet the faintest rumour says runs the Circle, and he has never once been seen to "
+              "eat.",
+              "No. He's a young man trained at the seminary who believes it, and the women's preacher is somebody older "
+              "whom he has never met either."])],
+      table="""
+A Preacher in the posse who hears this sermon will hear the missing verse, and so should the player. A False Prophet in the
+posse will hear something else: a man doing their work better than they do. Either can be the one who asks the preacher,
+after the service, where the tenth verse went.
+""")
+
+
+# ================================================================ Per the List
+intro("circle", """
+The Golden Circle is the thing inside Redemption, and [[kb:powers-redemption]] has it: an older society with an older name,
+buying particular parcels at prices that make no sense and putting nothing on any of them, for a list its officers didn't
+write. Its leadership doesn't know why the parcels matter. Somebody hands them the list and tells them it's strategic.
+
+The Book of Legends gives the Circle a chapter of its own, late and short, after the country has been in the open for ten
+chapters. That's the arc working: Redemption is the thing everybody knows, and the Circle is the thing nobody at Jubilee
+could tell you. The four papers are the committee that buys, a card of its second degree, its agent in Perdition Basin,
+and the clerk who walked out.
+
+The faintest story in the Book of Legends is in [[ref:clerk]]: that the Circle answers to a preacher who was at Jubilee
+before the town was, and who promised the first families the country as it was before the war. Keep it that faint. One
+clerk said it, the women at Jubilee tell it and never twice the same one, and the editor nearly left it out. The entries
+below offer it as one way to hold who writes the list, beside the others, and pick none.
+""")
+
+entry("committee",
+      people=["Quarles, Mr.", "Sallis, E.", "the Chairman of the Committee on Lands", "Quarles, Mrs. (his widow)"],
+      places=["Jubilee", "the Muchacho road", "above Leadville"],
+      creatures=["The Parcel"],
+      threads=["gold", "floor", "clerk", "degree", "lookedat", "gatherings"],
+      when=[(1883, "Mr. Quarles asks the Committee on Lands in January who sends the list; in February he dies; in March "
+                   "his own quarter section is on it")],
+      story="""
+The Committee on Lands is the Circle's second degree at work, and its minutes are as dull as minutes are. The list comes and
+is read, and the Treasury offers the list price. Mr. Sallis reports the dry lake in Nevada taken and the bores capped
+([[ref:floor]]). In January 1883 Mr. Quarles asked where the list comes from, and the Chair ruled the question out of order,
+and Quarles asked that it be minuted, and it was.
+
+In February Quarles was absent. He died of a pneumonia, attended by a physician who belongs to nothing but the Odd Fellows,
+and in March the list had a new parcel on it, Quarles's own quarter section on the Muchacho road. The widow was paid in gold,
+and the Circle has been very kind to her.
+
+This book doesn't say the list killed Quarles for asking. It says the list knew where Quarles's ground was before the
+committee did, and that every member who heard the March minutes read understood the lesson, whatever it was.
+""",
+      open=[("Did the list kill him?",
+             ["No. He was going to die, and the list knew it, and wanted his ground the month it would come cheapest.",
+              "Yes, in the only way it kills anybody: it named his land, and a man whose land is named begins to die of "
+              "whatever happens to be going about."])],
+      table="""
+The minutes are the Circle at its most respectable, and a posse that gets a look at them should be bored by the routine and
+chilled by one line. The resolution about the parties encamped on parcel No. 4 is the hook into [[ref:gatherings]].
+""")
+
+entry("degree",
+      people=["a farmer near Tucson (the card's owner)", "the Knights of the Golden Circle"],
+      places=["Tucson", "Jubilee"],
+      creatures=[],
+      threads=["committee", "remarks", "lady", "landismine", "kansas", "lookeddoor"],
+      when=[(1884, "A card of the Circle's second degree turns up in a dead farmer's Bible at an auction at Tucson")],
+      story="""
+The Knights of the Golden Circle were real, a society of the fifties that meant to make one slave country of every shore of
+the Gulf of Mexico, and most people will tell you they died in the war. In this game they didn't. They went quiet and kept
+their castles in a hundred towns that never heard of Jubilee, and when Redemption was founded the Circle came west to live
+inside it. It's older than the country it lives in.
+
+The degrees are the old ones. The first is the soldiers, the militia in grey. The second buys, and holds the card, and may
+be shown the list. The third is the statesmen, and the statesmen aren't at Jubilee. They're in two Southern statehouses, in
+Kansas City, and at Washington, and they're part of the reason a member of Congress revised himself to nothing
+([[ref:remarks]]).
+
+The farmer near Tucson was of the second degree for twenty years and never went to Jubilee, which his neighbours were sure
+of, and they were right. The Circle doesn't need its buyers at Jubilee. It needs them in every county where the list has a
+line.
+""",
+      open=[("Who else in the Territories holds a card?",
+             ["A bank officer at Coffin Wells, which would explain a good deal about the Vane Interest's correspondents.",
+              "A county clerk in every county on the list, and one of them is the clerk at Harlan's Ford "
+              "([[ref:lookeddoor]]), who keeps the minutes there."])],
+      table="""
+A card of the second degree in a dead man's Bible is the best way for a posse to learn that the Circle is everywhere. Let
+them find it at an auction, and let the auctioneer have sold three others like it that year.
+""")
+
+entry("lookedat",
+      people=["Purcell, C. D.*", "Purcell's daughter", "the committee"],
+      places=["Calvary Crossing", "Painted Mesa, the"],
+      creatures=["The Parcel"],
+      threads=["twosections", "landoffice", "mesa", "committee", "satchel-note"],
+      when=[(1883, "C. D. Purcell, the Circle's agent in Perdition Basin, writes in June asking to be told what he's "
+                   "looking for on the two mesa sections; he's told only to look")],
+      story="""
+Purcell is the Circle's agent at Calvary Crossing, an honest, puzzled man who saw the lines run on the mesa
+([[ref:twosections]]) and has been sent every quarter since to look at the two sections. There's nothing on them. The stock
+won't cross a line nobody can see. The people of the mesa come and stand at the edge while he's there, and go when he goes.
+
+The committee doesn't need a report, because the looking is what it wants. A parcel on the list is held by being looked at,
+the way the wells in the basin are held by being counted ([[ref:satchel-note]]), and somebody has to be the eyes. The
+committee picked a man who wouldn't understand what he was doing, because a man who understood would stop. Purcell went every
+quarter until he couldn't sit a horse, and then went in a buggy.
+
+Why the mesa people stand at the edge is theirs, and this book doesn't say what it means to them. From Purcell's side of the
+line it looks like what it is: one watch kept against another.
+""",
+      open=[("What happens when Purcell stops?",
+             ["The committee sends another man, and the new man sees something on the first day that Purcell never saw in "
+              "four years, because Purcell was the right man.",
+              "Nothing, as long as the people of the mesa are still standing at the edge. Their watch was always the one "
+              "that mattered."])],
+      table="""
+Purcell is a gentle, worn-out man, and a posse can learn more from him in an afternoon than from the rest of the Circle.
+Don't make him a villain. Make him the most frightened man in the basin who doesn't know he should be.
+""")
+
+entry("clerk",
+      people=["Imbrie, Lewis*", "Kinnear, W. F.", "the Chairman of the Committee on Lands"],
+      places=["Pueblo", "the sand hills", "above Leadville", "Jubilee"],
+      creatures=["The Sermon Made Flesh"],
+      callings=["False Prophet"],
+      threads=["committee", "landismine", "principles", "tenth", "muster", "gatherings"],
+      when=[(1884, "Lewis Imbrie, clerk to the Committee on Lands, walks out through the sand hills, gives W. F. Kinnear a "
+                   "statement at Pueblo in November, and takes the train back to Jubilee")],
+      story="""
+Lewis Imbrie kept the committee's minutes three years and never learned where the list came from, and neither did the
+Chairman, who said it was strategic and then said he didn't know. Imbrie walked out through the sand hills at night on the
+railroad surveyors' stakes, which everybody says can't be done, and came to Pueblo to see parcel No. 4 with his own eyes,
+and saw it, and gave Kinnear a statement under the Department's contract. The Department wrote File.
+
+He told Kinnear one more thing, and it's the faintest story in the Book of Legends. The women at Jubilee say, never twice
+the same one, that the Circle answers to a preacher who was at Jubilee before the town was, and who promised the first
+families the country as it was before the war, every man in his place and everybody else in theirs. Nobody Imbrie knew had
+seen him. Nobody would say she hadn't.
+
+Then he went home, because the list had come the week before he left, and his house wasn't on it, and he wanted to be there
+when it was.
+""",
+      open=[("Who writes the list?",
+             ["The preacher: a False Prophet who has fed the Old Dark at Jubilee since before there was a Jubilee, and the "
+              "list is the plate he fills. [[kb:prophet-plate]] has what that costs a country.",
+              "Nobody at Jubilee. The list comes from outside, as the clerk says, on paper not sold there, and the "
+              "preacher is a story the town grew because a town built on a promise needs somebody who made it.",
+              "The same hand as in [[ref:gold]]: something that keeps correspondents instead of ground, and the preacher "
+              "is one of its correspondents, and believes he's its master."]),
+            ("Did Imbrie get home?",
+             ["Yes, and his house went on the list in the spring, and he was there.",
+              "The railroad won't say. The Tenth's patrol brought a man in out of the sand hills a year later "
+              "([[ref:tenth]]), and his boots were small for him."])],
+      table="""
+Imbrie's statement is the one paper a posse can carry to anybody at Washington, because a Pinkerton took it under a federal
+contract, and they'll find it has already been filed. Let them hear the preacher story once, from a woman at Yuma who
+changes the subject. Never let them meet him unless the Keeper has decided he exists, and decided it in writing.
+""")
+
+# ================================================================ Nobody's Mother (the Long Table)
 intro("longtable", """
 The Dread Mother is a Power, and [[kb:powers-mother]] has her: covens that share no rite and acknowledge one
-woman in New Orleans, a federation called the Long Table, houses that are seated or asked to stand, a tithe
-twice a year and a truthful answer, springs kept and births managed and the only medicine for forty miles,
-and a price paid a child at a time by families who never agreed to it. The Keeper's Book says to keep her at
-the far end of a long hallway and never on stage. Nothing here brings her closer.
+woman in New Orleans, an arrangement they call the Long Table among themselves, houses that are seated or asked
+to stand, a tithe twice a year and a truthful answer, springs kept and births managed and the only medicine for
+forty miles, and a price paid a child at a time by families who never agreed to it. The Keeper's Book says to
+keep her at the far end of a long hallway and never on stage. Nothing here brings her closer.
+
+The Book of Legends calls this chapter Nobody's Mother, after the skipping rhyme in [[ref:ninechairs]], and keeps
+the Table as quiet as the houses keep it. Among themselves the houses say the Long Table. On paper they never do.
+Of every paper in the chapter that came from a house, the table is written down in one letter, and its writer
+asked for it back ([[ref:witch]]); the builder of the Book of Legends checks that this stays true. Everywhere else
+the name is what outsiders say: a Kansas City court, the bounty men, a witch hunter, the saloons. Keep it that way
+at the table. A player should hear the words Long Table from a bounty man or from Crail long before a woman of a
+house will so much as nod at them, and she never will.
 
 What the papers show is the hallway. The stories behind them are the houses, one at a time, and the one
 thing the Keeper's Book leaves the Keeper to decide is what the ninth children are for. [[ref:will]] offers
-two ways to hold it, and whichever the Keeper picks should be used everywhere the Table appears.
+two ways to hold it, and whichever the Keeper picks should be used everywhere the houses appear.
 """)
 
 entry("stand",
+      callings=["Witch"],
       people=["the woman of the house on the Bayou Courtableau"],
       places=["Opelousas, Louisiana", "the Bayou Courtableau"],
       creatures=[],
@@ -4346,6 +5810,7 @@ in four years. The card is in her sewing box. She'll show it to somebody who ask
 """)
 
 entry("tithe",
+      callings=["Witch"],
       people=["M. C.", "R. C.", "a man in Placerville", "his wife"],
       places=["Grass Valley", "Placerville"],
       creatures=[],
@@ -4365,8 +5830,9 @@ that winter with her face broken. Nothing happened. M. C. died that summer and t
 burying. R. C. sent the same name in the spring of 1877, and that summer the Placerville paper reported the death of a man who beat
 his wife, which isn't an unusual item in any paper.
 
-The column headed <em>received from the Table</em> is empty for seven years because what the Table sends back isn't entered. Nobody
-in a house writes down that a man in Placerville died. In the autumn of 1880 R. C. sent honey and asked for nothing, and sent it
+The houses don't write the Table's name, even in their own books. Both columns are headed with a drawing instead, an oblong with
+its chairs down both sides, too many to count by lamplight, and the facing column adds only the word <em>from</em>. It's empty
+for seven years because what the Table sends back isn't entered. Nobody in a house writes down that a man in Placerville died. In the autumn of 1880 R. C. sent honey and asked for nothing, and sent it
 anyway, because she had begun to understand what the column would have held.
 """,
       open=[("Did the Table kill the man in Placerville?",
@@ -4384,10 +5850,11 @@ woman from Placerville still lives near Grass Valley, and she might be the servi
 """)
 
 entry("witch",
+      callings=["Witch"],
       people=["the witch of the Cross Timbers (name withheld)", "her grandmother's grandmother"],
       places=["the Cross Timbers, Texas", "the Trinity"],
       creatures=["The Witch"],
-      threads=["will", "ninth", "harrow", "afraid", "ninechairs"],
+      threads=["will", "ninth", "harrow", "afraid", "ninechairs", "notours", "seats"],
       when=[(1882, "A witch in the Cross Timbers answers Ashby's question about the Table by return of post")],
       story="""
 She keeps a birthing house on the Trinity, and the roof doesn't leak, and no woman has died in it in eleven years, and the county
@@ -4395,7 +5862,10 @@ doctor sends her the ones he can't manage. She's a seated woman of a line that h
 grandmother's grandmother, and she has sat in it twice, and she'd as soon not sit in it a third time, because the second time was
 to be asked a question about her own sister.
 
-Everything in her letter is true and she wrote it to be read. The Mother is no face of the Old Dark, nobody asks her for anything,
+Everything in her letter is true, and she wrote it on a bad night, the week she'd been asked about her sister, to the one
+outsider who had asked her a straight question. A month later, rested, she asked for it back, because a letter is a thing that
+lasts and a house doesn't write the Table down. Ashby sent it back and kept his copy, and the copy is the only paper from a house
+anywhere in the Book of Legends that names the table. The Mother is no face of the Old Dark, nobody asks her for anything,
 and a woman who tried to pray to her would be put out in the road. What a house owes is a hearing, something twice a year, and a
 true answer. She knows how many chairs there are and bet on the number in her head while she wrote the letter and wouldn't put it
 on paper, and a Keeper who has decided on nine should let her have been right.
@@ -4409,16 +5879,52 @@ supper, and he wouldn't have liked it, and he'd have stayed.
               "she'd have asked him for a truthful answer of his own.",
               "That she was a ninth child herself, and was taken at two, and was loved, and has never once wished to go back "
               "to the family she was taken from, and that that's the worst of it."]),
-            ("Why did she answer at all?",
-             ["Because the Table told her to. It wanted its side in the book.",
-              "Because she liked his question, and nobody had asked it straight in forty years."])],
+            ("Why did she answer at all, and then ask for it back?",
+             ["She'd been asked about her sister that week, and wanted one person outside to know what a house is. When "
+              "she'd slept, she remembered what a house owes.",
+              "Because she liked his question, and nobody had asked it straight in forty years. The house asked for the "
+              "letter back, not her, and she wrote the second note in its words."])],
       table="""
 She's the Long Table's face for any posse that needs one, and she should be played the way she writes: courteous, dry, entirely
 unafraid, and kind to anybody in trouble. Sit down with her and she'll talk about the children, and the players won't like it,
 and they'll stay to supper anyhow, because everybody does.
 """)
 
+entry("sister",
+      people=["Sr. M. A.", "Bernadette, Sister", "the women of the house across the river"],
+      places=["a mining camp in Colorado"],
+      creatures=["The Dread Mother"],
+      callings=["Sister"],
+      threads=["houses", "hear", "ninth", "witch", "notours"],
+      when=[(1882, "A Sister of a nursing order at a Colorado mining camp writes to her Mother Superior about the house of "
+                   "women across the river"),
+            (1884, "Sister Bernadette dies; the house across the river sends flowers before anybody has told it she was "
+                   "ill")],
+      story="""
+Sr. M. A. is what the Player's Book calls a Sister: sent by her order where the diocese wouldn't go, to nurse a fever in a
+mining camp, and good at it. The house across the river is a seated house of six or seven women, and it nursed the same
+fever and lost fewer, and gave her quinine and wouldn't be paid, and asked after the order's dead by name.
+
+She's honest enough to say she can't find the difference in the work, and the difference isn't in the work. The house is
+kept by the arrangement [[kb:powers-mother]] describes, and the price is generational and paid by people who never agreed to
+it. The miners know the difference is in what the house asks for afterward, years afterward. They won't tell a Sister,
+because they're frightened of the house and fond of it at once, which is how everybody near one feels.
+
+The flowers in 1884 are the most secret thing in the chapter. A house knew a Sister was going to die before her own order
+did, and sent flowers the morning of it, out of courtesy.
+""",
+      open=[("What will the house ask the order for?",
+             ["Nothing. The order isn't kept by the house and owes it nothing, and the house knows it, which is why it can "
+              "afford to be generous.",
+              "A Sister. In twenty years the order will have a house of its own at that camp, one of its novices will have "
+              "been born across the river, and the house will ask her to come home."])],
+      table="""
+A Sister in the posse is the right soul to cross the river with an empty quinine bottle and come back troubled. Play the
+house exactly as she found it: clean, kind, competent, asking nothing. The horror arrives years later, in a letter.
+""")
+
 entry("hear",
+      callings=["Witch"],
       people=["a woman of a house in Missouri", "her aunt", "a woman at Natchez", "the sanitary inspector, Second District"],
       places=["New Orleans", "below Canal Street", "Hermann, Missouri", "Natchez"],
       creatures=["The Dread Mother"],
@@ -4451,6 +5957,33 @@ fever that year.
 Don't send a posse down to hear her. If a player ever goes, run it as the Missouri aunt's trip: nine weeks, a courtyard, a single
 question from somebody whose face they can't hold, and a truthful answer the player has to give at the table, out loud. Then let
 the rest of the party notice the small thing that's different.
+""")
+
+entry("notours",
+      people=["a woman who keeps a house in the Cross Timbers"],
+      places=["the Cross Timbers, Texas"],
+      creatures=["The Dread Mother", "Dark Cultist & the Hollow Prophet"],
+      callings=["Witch"],
+      threads=["witch", "creeds", "congregations", "glad", "tract"],
+      when=[(1883, "The house in the Cross Timbers answers Ashby once more: the houses don't sit with the faithful")],
+      story="""
+This is the same woman who wrote the only letter that names the table, and asked for it back ([[ref:witch]]), and her second
+answer doesn't use the word. The houses don't sit with the brothers and sisters, and the faithful don't ask. The difference
+she gives is the clearest line in the Book of Legends between the two kinds of people who deal with the dark: the faithful
+think the thing they love loves them back, and the houses have never once thought that about anything.
+
+[[kb:powers-mother]] says nobody prays to the Mother and nothing is granted in her name. The houses aren't the Old Dark's,
+and they know what it is. They bury the faithful who come to their doors in trouble, and are thanked, and never see them
+again.
+""",
+      open=[("Why do the faithful never come back?",
+             ["Because the houses keep what they bury, and a brother buried by a house stays buried, which is the one thing "
+              "the faithful can't bear.",
+              "Because they're ashamed. A sister who went to a house for help was helped by the only people in the country "
+              "who never pretended the dark loved her."])],
+      table="""
+A Witch in the posse should feel the line this letter draws, and a Dark Cultist in the posse should feel it from the other
+side. Put the two of them at a house's door together on a bad night, and let the house take one of them in.
 """)
 
 entry("ninth",
@@ -4489,11 +6022,43 @@ on the porch with its hat off, and the posse is in the room. It's kind to the ch
 temptation to end it with a gun should be enormous and should be wrong.
 """)
 
+entry("namebook",
+      people=["Crail, A.", "a midwife of the house on the Sabine", "a woman of a seated house at Fort Worth"],
+      places=["the Sabine", "Fort Worth", "Opelousas", "Lampasas", "the Neches"],
+      creatures=["The Dread Mother", "The Thing in the Well"],
+      callings=["Witch Hunter", "Witch"],
+      threads=["terms", "commission", "harrow", "ninth", "stand", "crailtrial"],
+      when=[(1884, "A leaf of A. Crail's book of names is left for Ashby at the hotel at Fort Worth by a woman of a seated "
+                   "house")],
+      story="""
+The leaf is Crail's, torn from the oilcloth book he carries, and the house at Fort Worth left it for Ashby because Crail had
+left the book with the house, and the house wanted somebody outside to see what he knew. Every line is right. The thing in
+the Kessel well drinks at dusk. Josiah Merriam was not. The house at Opelousas keeps nine families and asks the ninth, and
+it's the house whose card opens the chapter. Z. Harrow kept Lampasas. The house on the Neches was owed a child that
+September, and the family said no ([[ref:ninth]]).
+
+The midwife on the Sabine is the line that matters. Crail came in the rain with a lamp to finish the house, and she made him
+wait seven hours in the kitchen until a girl was delivered, and he asked the child's name and wrote it down and went out. A
+dollar came the next spring. That's one of his two ways of crossing a name out, and the house knows which.
+
+He left his book with a seated house because he was about to go after Mother Harrow for them ([[ref:commission]]), and a
+hunter who might not come back leaves his book with the people he'll have to trust.
+""",
+      open=[("Which way did he cross out the Sabine?",
+             ["The kind way. The girl's name is in the book now under the house's, and Crail sends a dollar every spring.",
+              "Neither, yet. The house is struck once, which means unfinished, and the dollar is a hunter paying for the time "
+              "he's letting it run."])],
+      table="""
+Crail's book is an extraordinary thing for a posse to hold: every line a place to go and a judgment to check. The house at
+Fort Worth has it now, and will lend it to a posse that's going after Crail, or after Harrow, and wants it back.
+""")
+
 entry("harrow",
+      callings=["Witch", "Hexer"],
       people=["Harrow, Zilpha (Mother Harrow)*", "the boy", "a woman of a seated house at Fort Worth"],
       places=["Lampasas", "Tascosa", "Fort Worth"],
       creatures=["The Witch", "The Hexer", "The Ninth Child"],
-      threads=["notice", "ninth", "will", "witch", "afraid"],
+      threads=["notice", "ninth", "will", "witch", "afraid", "commission", "namebook"],
       when=[(1879, "In her fortieth year keeping a house at Lampasas, Zilpha Harrow asks what the children are for"),
             (1884, "Mother Harrow leaves a letter for Ashby at the hotel at Tascosa"),
             (1885, "Mother Harrow is seen at Tascosa with a crow and a boy of about nine")]
@@ -4524,12 +6089,49 @@ neither can this book.
               "The boy."])],
       table="""
 Mother Harrow is the Long Table's great open question walking around on a horse, and a posse that meets her will be asked their
-mothers' names and told they're good names. If they take the notice down, they're obliged to the Table. If they help her, they're
-obliged to whatever she went down and got. The Keeper should let them see both bills before they choose.
+mothers' names and told they're good names. If they take the notice down, a kindness is owed them, by people who keep very good
+books. If they help her, they're obliged to whatever she went down and got. The Keeper should let them see both bills before they choose.
 """)
 
 
-# ================================================================ XV. There Is Always a Brother
+entry("commission",
+      people=["Crail, A.", "Harrow, Zilpha (Mother Harrow)", "a midwife at Denison"],
+      places=["Denison", "Tascosa", "Fort Worth"],
+      creatures=["The Dread Mother", "The Tallyman"],
+      callings=["Witch Hunter"],
+      threads=["notice", "harrow", "terms", "namebook", "ninth"],
+      when=[(1885, "A. Crail leaves a letter with a midwife at Denison in April offering to find Mother Harrow, for the "
+                   "name of the house that kept his mother; in June he's seen at Tascosa a week behind her")],
+      story="""
+Crail answered the notice with no money on it ([[ref:notice]]) because he wants something only a house can give: the name of
+the house that kept his mother, what it was paid, when, and where the child it was paid with is buried. He has hunted the
+houses six years for that answer, this is the first time the houses have asked the country for help, and he's the only man
+in the country who isn't afraid of Harrow.
+
+He knows what Harrow went down and got, and so does the reader of [[ref:harrow]]. When her mother's craft wasn't enough to
+hide a boy from the houses, she reached for something her line never taught her, and a Witch who does that has done what a
+Hexer does. Crail has hunted the things that wear men and the houses both, and he's the one hunter who can follow her into
+both.
+
+Whether the houses answered is left open. Crail was at Tascosa in June a week behind Harrow, neither has been seen since, and
+the pencil under the notice at Fort Worth says she is not alone.
+""",
+      open=[("Did the houses pay his price?",
+             ["Yes. They gave him the name, and it was the house on the Neches, and the child was his sister, and she "
+              "isn't buried anywhere.",
+              "No. They don't sell their dead, even for Harrow, and Crail went after her anyway, because he wanted to see "
+              "what she had."]),
+            ("At Tascosa, who is following whom?",
+             ["Crail is following Harrow, as the houses asked.",
+              "Harrow is leading him. She wants a witch hunter who knows what she borrowed, to end it when the boy is "
+              "safe, and she knew the houses would send the best one."])],
+      table="""
+This is where the houses' thread and the Witch Hunter's thread tie, and it makes a fine climax for a posse with a Witch and a
+Witch Hunter in it. Put the posse at Tascosa a week behind Crail, and make them choose a side before they know what Harrow is
+carrying.
+""")
+
+# ================================================================ There Is Always a Brother
 intro("brother", """
 This is the Old Dark from the inside, and the papers were written by people who were glad of it. The
 Keeper's Book is plain about who they are: the Dark Cultist devoted to the Old Dark itself, who wants a
@@ -4543,6 +6145,7 @@ in the room.
 """)
 
 entry("tract",
+      callings=["Dark Cultist"],
       people=["the man who paid in coin", "the printer at Pueblo"],
       places=["Pueblo", "the Denver and Rio Grande towns"],
       creatures=["Dark Cultist & the Hollow Prophet"],
@@ -4577,6 +6180,7 @@ has told you exactly what they hold dearest.
 """)
 
 entry("sign",
+      callings=["Dark Cultist"],
       people=["Ashby, N.", "a teamster at the Crossing", "the teamster's brother-in-law",
               "the man with a clerk's hands"],
       places=["the hotel at Trinidad", "Calvary Crossing"],
@@ -4610,7 +6214,37 @@ Ashby: nothing the first night, a stranger the second, a question, a paid supper
 Let them wait.
 """)
 
+entry("creeds",
+      people=["two congregations on the Arkansas"],
+      places=["a town on the Arkansas"],
+      creatures=["Dark Cultist & the Hollow Prophet"],
+      callings=["Dark Cultist"],
+      threads=["congregations", "partners", "route", "notours"],
+      when=[(1882, "Two congregations of the faithful in one town on the Arkansas give Ashby their creeds so he'll see how "
+                   "wrong the other is")],
+      story="""
+Two congregations in one town on the Arkansas bury their dead in separate grounds and won't speak, and each gave Ashby its
+creed so that he'd see the other's error. The creeds are word for word the same except for the name in the fourth line, and
+the two names haven't a letter in common. The editor took both out, as Ashby's rule required, and the two papers became one.
+
+The two names are two faces of the Old Dark, and [[kb:olddark]] has the rule this shows: there are no six rivals, and two
+cults at each other's throats are two hands of one body. Each congregation is sure its face is the only one that ever
+answered anybody. Both are feeding the same thing, and it keeps them apart, because a divided faithful is easier to keep.
+
+The editor says it's the most important thing in the chapter and can't say why. The Keeper can: it's the one paper in the
+Book of Legends where the players can see with their own eyes that the faces are one.
+""",
+      open=[("Which two faces?",
+             ["The Keeper's choice. The obvious pair is the Devourer and the Red Sermon, a fat congregation and a loud one, "
+              "in one cattle town.",
+              "Leave it where the editor did. A posse that learns both names has learned too much."])],
+      table="""
+Hand the players the two creeds side by side and say nothing. A table that notices is ready for the first rule in
+[[kb:olddark]]. A table that doesn't will believe the next congregation it meets.
+""")
+
 entry("gloves",
+      callings=["Dark Cultist"],
       people=["the prisoner (a storekeeper at Cheyenne since)", "his hired man", "the territorial court"],
       places=["a territorial court", "Cheyenne"],
       creatures=["Dark Cultist & the Hollow Prophet"],
@@ -4647,7 +6281,35 @@ grateful for the court's patience, and entirely unafraid, and willing to tell th
 he'll name politely.
 """)
 
+entry("congregations",
+      people=["Loring, Mrs. E.", "Ledyard, Mr."],
+      places=["Trinidad", "Las Animas"],
+      creatures=[],
+      callings=["Dark Cultist"],
+      threads=["creeds", "sign", "partners", "route"],
+      when=[(1882, "Mrs. Loring and Mr. Ledyard answer the same sign at the same hotel on the same night, and find out "
+                   "over the pie that they don't keep the same faith")],
+      story="""
+Mrs. Loring and Mr. Ledyard both turned their cups down at the hotel at Trinidad on the same night and met over supper, as
+the sign arranges ([[ref:sign]]), and found out over the pie that the thing that answered her wasn't, in her view, the thing
+that answered him. Her letter is the kindest paper in the chapter and the most frightening, because she means every word of
+it: he's been deceived, it may not be too late, and she's praying to the true one for him.
+
+He wrote back the same day in nearly the same words. They exchange cards at Christmas. Neither will ever learn from the other
+that they pray to the same thing, because each is sure and both are wrong in the same way, and the Old Dark is perfectly
+content to be prayed to twice.
+""",
+      open=[("Does it stay at cards?",
+             ["Yes, for thirty years, and their congregations never learn they're friends.",
+              "No. One of their congregations finds the cards, and [[ref:partners]] is what that looks like in a mining "
+              "camp."])],
+      table="""
+This is the gentle version of the faithful at odds, and a posse should meet it before they meet the other one. Two kind
+people who'd die for each other's error make a better scene than two who'd kill for it.
+""")
+
 entry("glad",
+      callings=["Dark Cultist"],
       people=["Hattie (on the Republican)", "Ostrander, Mary", "Will (Hattie's husband)", "Sam and Joe (her sons)"],
       places=["the Republican River, Nebraska", "Iowa"],
       creatures=["Dark Cultist & the Hollow Prophet", "The Cold Deep's Child"],
@@ -4683,7 +6345,37 @@ character is grieving will be offered, gently, somewhere to sit. The Keeper's Bo
 the shaking hour past midnight. This cell is very good at knowing when that is.
 """)
 
+entry("partners",
+      people=["a miner of the Wet Mountains (the witness)", "his partner (the deceased)"],
+      places=["a silver camp in the Wet Mountains"],
+      creatures=["Dark Cultist & the Hollow Prophet"],
+      callings=["Dark Cultist"],
+      threads=["creeds", "congregations", "cordial", "route"],
+      when=[(1883, "In May a miner in the Wet Mountains shoots his partner of four years in a quarrel over which face "
+                   "answered them")],
+      story="""
+Two partners worked a silver claim four years without a word about it, and both were of the faithful, of two congregations
+without a building between them. One night over whiskey the partner said what had answered him, and the witness said it
+wasn't so, and the partner said the same about his, and went for his gun, and the witness was quicker.
+
+The camp says it was the claim, because a claim is a thing a camp understands. The witness sold it that summer for a fair
+price and went to work at the smelter for wages, which a man who'd killed for a claim wouldn't do. He killed for the face.
+He's sorry the partner's dead, and certain he served the wrong one, and says the partner would want him to say so.
+
+This is [[kb:olddark]]'s two hands of one body at their worst. The thing they both served lost nothing by it.
+""",
+      open=[("What did the witness win?",
+             ["Nothing, and he knows it. He has begun to wonder, at the smelter, why the thing that answered him didn't "
+              "seem to mind.",
+              "His partner. Something has answered him in his partner's voice since May, and it's kinder than it's ever "
+              "been."])],
+      table="""
+A Dark Cultist in the posse with a friend of another congregation should hear this inquest read aloud, and so should the
+friend. It's the scene [[ref:congregations]] is one Christmas card away from.
+""")
+
 entry("uncle",
+      callings=["Dark Cultist"],
       people=["the old gentleman (the uncle)", "his nephew", "his late wife (the aunt)", "the Ledger's reporter"],
       places=["the asylum at Cheyenne", "the feed store"],
       creatures=["The Whisperer's Mouth"],
@@ -4721,7 +6413,42 @@ he'll be right every time, and then he'll tell one of them something they didn't
 silence it and not to listen for the rest, and a player who listens should be allowed to.
 """)
 
+entry("asked",
+      people=["a harness-maker at Dodge City", "the brother at Dodge"],
+      places=["Dodge City"],
+      creatures=[],
+      callings=["Dark Cultist"],
+      threads=["sign", "route", "gloves", "committee", "clerk"],
+      when=[(1873, "A man with forty cents and a bad hand turns his cup down at Dodge, and the brother finds him work by "
+                   "the Monday"),
+            (1884, "In March the brother asks the harness-maker for the loan of his hands for an afternoon")],
+      story="""
+The harness-maker came to Dodge in 1873 with forty cents, turned his cup down, and the brother sat down across from him the
+second night and found him a place with a saddler. He has had his own shop since 1876, a brick front and four children, and
+the brother has nodded to him every week for eleven years and asked for nothing. In March of 1884 he asked to borrow his
+hands for an afternoon, and the harness-maker said yes, because he'd been waiting eleven years to be asked anything.
+
+He lost the afternoon. He was home for supper and pleasant, and did the quarter's accounts after, and they balanced to the
+cent, and there's a cut across his right palm a year healed. That's all the Book of Legends will say, and it's what the
+faithful are like: a kindness that waits eleven years and then asks for something small and enormous.
+
+What the hands did is the Keeper's. They were wanted because they were his and nobody else's: a harness-maker's hands,
+steady and strong, and known in Dodge.
+""",
+      open=[("What did the hands do?",
+             ["Wrote. A page in a hand nobody at Jubilee knows, which came in the Treasury's bag that April, because the "
+              "list is never written twice in the same hand ([[ref:clerk]]).",
+              "Dug. A grave in the right place for a body moved from the wrong one, the way the man in [[ref:gloves]] "
+              "was told where.",
+              "Held a child still for an hour while something was done that needed holding, and the cut is where the "
+              "child bit."])],
+      table="""
+Every Dark Cultist in the posse has a brother who did them a kindness once. Let the brother ask for something small one
+evening, years in, and see whether the player says yes.
+""")
+
 entry("vessel",
+      callings=["Dark Cultist"],
       people=["the cowhand", "the man they called Brother", "the justice at Tascosa", "a Methodist elder at Mobeetie"],
       places=["the Canadian River", "Tascosa", "Mobeetie"],
       creatures=["The Possessed", "The Whisperer's Mouth"],
@@ -4757,7 +6484,7 @@ you what they hold dearest, and the dark was listening, and so were you.
 """)
 
 
-# ================================================================ XVI. What the Country Stands On
+# ================================================================ What the Country Stands On
 intro("depth", """
 Ashby kept these in an oilcloth and called them his deep papers, and they're about size: how far a plain runs,
 how deep a well goes, how many stars there are, how big a crossroads is inside. Two of them are the Keeper's
@@ -4805,17 +6532,17 @@ nothing else should happen. A Keeper who adds anything to the extra three miles 
 """)
 
 entry("gatherings",
-      people=["the operative (transferred to Pueblo)", "his wife", "the head office at Chicago"],
+      people=["Kinnear, W. F.", "his wife", "the head office at Chicago"],
       places=["above the Boulder River, Montana", "Denver", "a dry lake in the Sawatch", "above Leadville"],
       creatures=[],
-      threads=["gold", "afraid", "floor", "vessel", "hotel", "belts"],
+      threads=["gold", "afraid", "floor", "vessel", "hotel", "belts", "evergreen", "principles", "ashbyfile"],
       when=[(1884, "An Agency operative files a report from Denver in June on four camps in the high country; Chicago "
                    "returns it NOT CREDIBLE and transfers him")],
       story="""
 This is the Keeper's Book's own open question, told by the one man who has seen more of it than anybody, and [[kb:olddark-rockies]]
 has the four readings. This entry doesn't pick one and doesn't lean.
 
-The operative was engaged by a mining company to learn who was trespassing on a claim above Leadville, and he spent eleven weeks in the
+W. F. Kinnear was engaged by a mining company to learn who was trespassing on a claim above Leadville, and he spent eleven weeks in the
 high country following the question wherever it went, and it went to all four camps. A congregation out of Montana wintered above the
 Boulder River three hundred strong and came down in good flesh. A revival leaves Denver every spring and comes home about forty short,
 and nobody in Denver reports the forty missing. Nine men camped nine weeks at a dry lake in the Sawatch and swept the bed in rings, and
@@ -4831,11 +6558,11 @@ and his wife calls it something else.
       open=[("Which reading?",
              ["[[kb:olddark-rockies]] has four and asks the Keeper to pick one, write it inside the screen, or leave it unpicked "
               "and let the players' guesses settle it late. This book offers nothing beyond them."]),
-            ("What does the operative believe?",
-             ["That all four are waiting for the same thing, which is the one sentence in his report he'd take back if he "
-              "could, because it's the only one he can't prove.",
-              "Nothing any more. He's at Pueblo, and he files very ordinary reports, and he keeps a copy of the one they "
-              "returned."])],
+            ("What does Kinnear believe?",
+             ["That all four are waiting for the same thing. He wrote it in 1884, and wrote in 1886, after he'd left the "
+              "Agency, that it was still his opinion ([[ref:ashbyfile]]).",
+              "That the shaft above Leadville is what the other three are waiting on, which he left out of the report "
+              "because he couldn't prove it."])],
       table="""
 [[kb:powers-together]] promises that the Pinkerton assigned to a posse will have compiled a better account of the gatherings than the
 players have by the end, and won't be believed by a soul in Chicago. This is that man. Let the players find him at Pueblo when they have
@@ -4843,6 +6570,7 @@ three of the four camps and need the fourth.
 """)
 
 entry("afraid",
+      callings=["Witch"],
       people=["a seated house in the Wind River country", "a seated house on the Brazos"],
       places=["the Wind River country", "the Brazos"],
       creatures=["What the Old Dark Is Afraid Of"],
@@ -4854,8 +6582,8 @@ agree with itself about this, which is the most important thing a Keeper can lea
 houses are old enough to have opinions of their own and to insult each other in writing.
 
 The Wind River house says yes. The Old Dark's people have been going up into the mountains in bunches for four years with nobody telling
-them to, the way cattle go up a draw ahead of weather, and the Table has been saying since before the railroad reached Denver that
-something has frightened it. That's the fourth of the Keeper's Book's readings of the gatherings, and the Bestiary's entry called What the
+them to, the way cattle go up a draw ahead of weather, and the old women have been saying since before the railroad reached Denver that
+something has frightened it. Neither letter writes the Table's name, which is how the houses keep it. That's the fourth of the Keeper's Book's readings of the gatherings, and the Bestiary's entry called What the
 Old Dark Is Afraid Of is written thin for exactly that reason: it's one reading out of four.
 
 The Brazos house says the Wind River woman is a fool from a house that should have been asked to stand years ago. Nothing down there is
@@ -4951,6 +6679,7 @@ sit up in her rooms and find out who's calling.
 """)
 
 entry("plenty",
+      callings=["Prospector"],
       people=["Wickersham, Abel", "Lamar, T.", "Voight, G.", "Fitch, Justice", "Cady, Mrs.", "the three hundred and twelve"],
       places=["Plenty, Colorado", "the San Juan country", "Durango", "Denver"],
       creatures=["The Unmade"],
@@ -5071,7 +6800,42 @@ whether that's true. A woman with three children who has kept the blinds down fo
 """)
 
 
-# ================================================================ XVII. The Last of the Satchel
+entry("ashbyfile",
+      people=["Ashby, N.", "Kinnear, W. F."],
+      places=["Saltlick Station", "Calvary Crossing", "Pueblo", "Yuma"],
+      creatures=[],
+      threads=["principles", "gold", "satchel-ticket", "satchel-road", "clerk", "understanding"],
+      when=[(1884, "The Land Office reports Ashby in September for asking after cash entries by unnamed principals, and "
+                   "the Department of Justice opens a file on him"),
+            (1885, "The Department closes the Agency's file on Ashby in February, the week after Kinnear asks to go and "
+                   "look for him")],
+      story="""
+Ashby came to the Agency's notice the way anybody does who starts writing Redemption down. He asked three land offices about
+cash entries by agents of principals not named, he'd bought a page of the Circle's schedule at Yuma, and the Land Office
+reported him to the Department, which engaged the Agency. Kinnear had met him at Pueblo in the summer and liked him, and
+found him candid, careful and without political connection, which in a file is a compliment.
+
+The file is the last thing Washington wrote about Ashby, and it ends the way its papers about Redemption end. When Kinnear
+asked to go down to the basin and look for him, the Department closed the file, and when the editor wrote to the Department
+it had no record of the matter. Ashby was writing down a country two governments wanted unwritten, and the Department did to
+him what it does to the country.
+
+That puts a fifth reading beside the four in [[ref:gatherer]], and it's the plainest: Ashby was made to disappear, by
+Jubilee or by Washington, because he was about to print what everybody knew. The editor printed it anyway, and the editor's
+book is the one record nobody filed.
+""",
+      open=[("Was Ashby removed?",
+             ["No. The four readings in [[ref:gatherer]] stand, and the Department closed the file because it closes every "
+              "file that points at the river.",
+              "Yes. The ticket for the branch was bought in his name by somebody else, and he never rode the train because "
+              "he'd been taken off the Stage Road below Saltlick the night before, by men in grey a long way from "
+              "home."])],
+      table="""
+Kinnear's note is the Agency's own man saying the Agency was wrong. If the posse has met Kinnear, this is where they find out
+what he's been doing since he left, and he'll want them to come with him.
+""")
+
+# ================================================================ The Last of the Satchel
 intro("last", """
 The satchel came to the editor through a lawyer at the Crossing in the spring of 1886 with two lines of
 instruction, and the chapter prints what was in it in the order it was in. It has no sections, so the
@@ -5331,10 +7095,24 @@ def front(anchor, title, sub, text):
 # ship; the count and the titles in "Before You Open It" are read off this list and the Book of Legends.
 REAL_NATIONS = [("calendar", ""), ("advocate", ""), ("collector", "the clerk's letter in "),
                 ("wendigo", "the statement of the Ojibway woman in ")]
+# Three more papers speak from real history, and two are about the Painted Mesa, whose people stand in for a real
+# nation (Book of Legends v1.9). They are listed the same way, so the sentence that names them can't drift either.
+REAL_HISTORY = [("emigrants", "the answer from Nicodemus in "), ("tenth", "the first sergeant's letters in ")]
+MESA_PAPERS = [("twosections", ""), ("landoffice", "")]
 _SPELL = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
+
+
+def _list(pairs):
+    items = [f"{lead}<em>{SEC_TITLE[s]}</em>" for s, lead in pairs]
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
 _real = [f"{lead}<em>{SEC_TITLE[s]}</em>" for s, lead in REAL_NATIONS]
 _REAL_SENTENCE = (f"{_SPELL[len(_real)]} papers in the Book of Legends speak for real nations: "
-                  + ", ".join(_real[:-1]) + ", and " + _real[-1] + ".")
+                  + ", ".join(_real[:-1]) + ", and " + _real[-1] + ". "
+                  + f"{_SPELL[len(REAL_HISTORY)]} more speak from real history: {_list(REAL_HISTORY)}. And "
+                  + f"{spell(len(MESA_PAPERS))} are about the Painted Mesa, whose people stand in for a real nation: "
+                  + f"{_list(MESA_PAPERS)}.")
 
 front("before", "Before You Open It", "What this book is for, and the rules it keeps.", """
 The Book of Legends is the Territory's talk, set down on paper by people who were there and didn't agree, and
@@ -5363,6 +7141,11 @@ what the Long Table's ninth children are for. It offers ways to hold each one. I
 <strong>Your table outranks both.</strong> Where your players have already played a night a paper describes, what
 they did is what happened, and the paper is wrong the way papers generally are. The Book of Legends' dates are
 the papers' dates, and they'll bend to yours.
+
+<strong>Redemption is loud and the houses are quiet.</strong> Everybody in the Territories knows about Jubilee, and
+[[ch:forwarded]] shows how Washington arranged to forget it anyway, one office at a time; [[ref:understanding]] says
+why, and offers ways for it to end. The houses of the Long Table never write their own name down, and the Book of
+Legends holds them to that. Run the two that way and the contrast does a good deal of the setting's work.
 
 <strong>The three legends never explain each other.</strong> [[kb:legends]] makes that a rule for the Mad Spaniard,
 the Wills Outfit and the Weather Song, and every entry here that touches one of them holds it.
@@ -5439,24 +7222,42 @@ def _threads_body():
          "The Mad Spaniard's nights, and the wrong detail that's never quite wrong. [[kb:legends-spaniard]] has the man.",
          ["saltlick", "wrongdetail", "spaniard", "calendar", "spring", "collector", "satchel-road"]),
         ("The Long Table and its ninth children",
-         "Houses, tithes, a rhyme that stops at nine, and the families who say yes and no.",
-         ["will", "ninechairs", "seats", "notice", "stand", "tithe", "witch", "hear", "ninth", "harrow", "lindqvist",
-          "houses", "afraid"]),
+         "Houses, tithes, a rhyme that stops at nine, and the families who say yes and no. None of the houses ever "
+         "writes the name down.",
+         ["will", "ninechairs", "seats", "notice", "stand", "tithe", "witch", "sister", "hear", "notours", "ninth",
+          "namebook", "harrow", "commission", "lindqvist", "houses", "afraid", "deadletters"]),
+        ("Redemption in the open, and Washington's silence",
+         "The thing everybody in the Territories knew about, and the slow, regular way it was left out of the books.",
+         ["warrants", "emigrants", "sixes", "spur", "river", "twopapers", "lady", "novel", "letterhome", "muster",
+          "sayings", "enumerators", "plate", "deadletters", "noinformation", "remarks", "understanding", "tenth",
+          "ashbyfile"]),
         ("The Golden Circle's list",
-         "Parcels bought by men who don't know why, on a page with two lines still to fill.",
-         ["gold", "floor", "mesa", "letterhome", "otherdoor", "gatherings", "crossroads", "breathing", "eclipse"]),
+         "Parcels bought by men who don't know why, on a page with two lines still to fill, and the faintest rumour "
+         "of who fills it.",
+         ["gold", "floor", "mesa", "twosections", "landoffice", "letterhome", "otherdoor", "ore", "landismine",
+          "committee", "degree", "lookedat", "clerk", "gatherings", "crossroads", "breathing", "eclipse"]),
+        ("W. F. Kinnear of the Agency",
+         "A Pinkerton working under the Department of Justice's contract, right about people and wrong about the world.",
+         ["principles", "agency", "gatherings", "clerk", "ashbyfile"]),
+        ("A. Crail, witch hunter",
+         "Twenty years in the trade, a book of names, and a price only a house can pay.",
+         ["lookeddoor", "terms", "crailtrial", "namebook", "commission", "notice"]),
         ("The faithful",
-         "People who went looking for the dark and were glad of it, and what each of them wanted.",
-         ["tract", "sign", "gloves", "glad", "uncle", "vessel", "braid", "sawbones", "hexer", "supper", "revival"]),
+         "People who went looking for the dark and were glad of it, and what each of them wanted. Everywhere, and never "
+         "together.",
+         ["tract", "sign", "route", "creeds", "gloves", "congregations", "glad", "partners", "uncle", "asked", "vessel",
+          "township", "evergreen", "braid", "sawbones", "hexer", "supper", "revival"]),
         ("The Long Trail's roads",
-         "Walkers, a long train, a dead column, and the courtesies the living keep.",
-         ["carrow", "blacktrain", "fortclark", "undertaker", "surgeon", "scout", "returned", "wager"]),
+         "Walkers, a long train, a dead column, a ford that takes people, and the courtesies the living keep.",
+         ["carrow", "walker", "salt", "blacktrain", "fortclark", "feebill", "undertaker", "surgeon", "scout",
+          "returned", "wager"]),
         ("Things the ground keeps sealed",
          "A man in a hollow in the rock, a snake in the stone, a finger in a safe, a floor, a long room, a breath.",
          ["thirdcell", "rocksnake", "veinwork", "floor", "dugout", "breathing", "adit", "assay"]),
         ("Witnesses nobody asks",
          "The people in the papers who saw the most and are asked the least. Each is worth a posse's time.",
-         ["saltlick", "fifth", "swarm", "deputy", "circuit", "spur", "fortsafe", "numberfour"]),
+         ["saltlick", "fifth", "swarm", "deputy", "circuit", "spur", "fortsafe", "numberfour", "enumerators",
+          "tenth", "landoffice"]),
     ]
     out = ["  <p>Ashby's arrangement of the papers is by subject, and the editor's is by slow burn, and neither shows "
            "the threads that run across the chapters. These do. [[kb:powers-together]] warns that two threads make a "
@@ -5552,6 +7353,9 @@ def render_entry(rec, title, here):
     if rec["creatures"]:
         crs = " &middot; ".join(f"{cr_display(n)} (Tier {_ROMAN[creature(n)['tier']]})" for n in rec["creatures"])
         out.append(f'  <p class="lc-foot"><span class="t">From the Bestiary</span>{crs}</p>')
+    if rec["callings"]:
+        out.append(f'  <p class="lc-foot"><span class="t">A way in for</span>'
+                   f'{" &middot; ".join("the " + c for c in rec["callings"])}</p>')
     if rec["threads"]:
         links = " &middot; ".join(expand(f"[[ref:{t}]]", here) for t in rec["threads"])
         out.append(f'  <p class="lc-foot"><span class="t">Threads</span>{links}</p>')
@@ -5610,6 +7414,24 @@ def run_html():
             f'</th></tr></thead><tbody>{trs}</tbody></table>'), len(order)
 
 
+def callings_html():
+    """Every Calling, in the Player's Book's order, and the stories that give a player of it a way in.
+
+    Cole, 2026-10-08: most if not all of the Callings should be represented throughout the legends. This is the check
+    and the proof: a Calling with no story stops the build."""
+    by = {c: [] for c in CALLINGS}
+    for rec in ALL_RECS:
+        for c in rec["callings"]:
+            by[c].append(rec["slug"])
+    bare = [c for c in CALLINGS if not by[c]]
+    assert not bare, f"Callings with no story in the Book of Legends: {bare}"
+    chapters = {ENTRY_CHAPTER[s] for c in CALLINGS for s in by[c]}
+    trs = "".join(f'<tr><td>The {c}</td><td class="e">{" &middot; ".join(ref_short(s) for s in by[c])}</td></tr>'
+                  for c in CALLINGS)
+    return (f'<table class="lc-run"><thead><tr><th>The Calling</th><th>The stories with a way in for it</th></tr>'
+            f'</thead><tbody>{trs}</tbody></table>'), len(chapters)
+
+
 def front_html(anchor):
     f = FRONT[anchor]
     body = f["body"]() if callable(f["body"]) else "\n".join(f"  <p>{expand(p)}</p>" for p in paras(f["body"]))
@@ -5628,7 +7450,8 @@ FRONT_ORDER = [a for a in ("before", "gatherer", "years", "threads") if a in FRO
 _toc = "\n".join(
     [f'    <li><a href="#{a}">{FRONT[a]["title"]}</a><span class="pg">0</span></li>' for a in FRONT_ORDER] +
     [f'    <li><a href="#{c["anchor"]}">{c["num"]}. {c["title"]}</a><span class="pg">0</span></li>' for c in LEG] +
-    ['    <li><a href="#whattorun">Appendix: What to Run</a><span class="pg">0</span></li>'])
+    ['    <li><a href="#whattorun">Appendix: What to Run</a><span class="pg">0</span></li>',
+     '    <li><a href="#everycalling">Appendix: A Legend for Every Calling</a><span class="pg">0</span></li>'])
 N_ENTRIES = len(ALL_RECS)
 CONTENTS = f"""<!-- ===================== COMPANION CONTENTS ===================== -->
 <section class="page" id="contents">
@@ -5662,8 +7485,24 @@ APPENDIX = f'''
 </section>
 '''.replace("[[kb:odds]]", kb("odds"))
 
+_calling_table, N_CALLING_CHAPTERS = callings_html()
+APPENDIX_CALLINGS = f'''
+<section class="page" id="everycalling">
+  {runhead('Appendix: A Legend for Every Calling')}
+  <h1 class="chapter">Appendix: A Legend for Every Calling</h1>
+  <p class="chapter-sub">For each of the Player's Book's Callings, the stories a player of it can walk into.</p>
+  <div class="divider"></div>
+  <p>Every one of the {spell(len(CALLINGS))} Callings in the Player's Book has at least one story in the Book of
+  Legends with somebody of that trade at the centre of it, and between them they run through {spell(N_CALLING_CHAPTERS)}
+  of its chapters. Use the list the way the stories mean it: a player should hear the story that belongs to their
+  Calling as talk, in a saloon or at a fort, long before anybody at the table reads a word of the papers. Each entry
+  says at its foot which Callings it gives a way in for.</p>
+  {_calling_table}
+</section>
+'''
+
 BODY = (CONTENTS + "".join(front_html(a) for a in FRONT_ORDER) + "".join(chapter_html(c) for c in LEG)
-        + APPENDIX)
+        + APPENDIX + APPENDIX_CALLINGS)
 
 new_html = book_shell.splice(H, BODY)
 
@@ -5694,5 +7533,6 @@ assert DRAFT or not _dead, f"links to nothing: {_dead[:10]}"
 
 open("legends-companion.html", "w", encoding="utf-8").write(new_html)
 print(f"legends-companion.html: entries {len(E)} of {len(SEC_TITLE)} sections + {len(SATCHEL)} satchel "
-      f"| Bestiary entries used {N_RUN} | index {len(IX)} | size {len(new_html)}"
+      f"| Bestiary entries used {N_RUN} | Callings {len(CALLINGS)} across {N_CALLING_CHAPTERS} chapters "
+      f"| index {len(IX)} | size {len(new_html)}"
       + (f" | DRAFT, {len(_missing)} sections still to write" if DRAFT else ""))

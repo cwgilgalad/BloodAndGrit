@@ -29,7 +29,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.9"
+VERSION = "1.10"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -449,7 +449,7 @@ ORDER = [
     ("hunger",    "Hunger",                                     "Hunger"),
     ("preaching", "Preaching",                                  "Preaching"),
     ("circle",    "Per the List",                               "Per the List"),
-    ("longtable", "The Long Table",                             "The Long Table"),
+    ("longtable", "Nobody&rsquo;s Mother",                      "Nobody&rsquo;s Mother"),
     ("brother",   "There Is Always a Brother",                  "There Is Always a Brother"),
     ("depth",     "What the Country Stands On",                 "What the Country Stands On"),
     ("last",      "The Last of the Satchel",                    "The Last of the Satchel"),
@@ -490,13 +490,13 @@ def chapter(anchor, sub, body):
 
 # ---------------------------------------------------------------- Contents
 # The page numbers here are the no-JS fallback and nothing more: the paginator overwrites every one of
-# them from the rendered sheets. Measured for v1.9 in the cloud's Chromium, with the book's own web
+# them from the rendered sheets. Measured for v1.10 in the cloud's Chromium, with the book's own web
 # fonts loaded, because the laptop was not to hand. That render matched the laptop's page count on v1.8
 # (177), so these should hold, but re-measure them in the laptop's Edge at the next ship.
-STATIC_PG = {"before": 6, "basin": 8, "frauds": 19, "weather": 33, "paper": 40, "jubilee": 50,
-             "forwarded": 59, "faces": 70, "songs": 77, "trades": 85, "road": 97, "dead": 110,
-             "ground": 124, "hunger": 137, "preaching": 150, "circle": 162, "longtable": 166,
-             "brother": 176, "depth": 186, "last": 196}
+STATIC_PG = {"before": 6, "basin": 8, "frauds": 20, "weather": 36, "paper": 43, "jubilee": 55,
+             "forwarded": 65, "faces": 82, "songs": 89, "trades": 98, "road": 112, "dead": 127,
+             "ground": 141, "hunger": 155, "preaching": 168, "circle": 180, "longtable": 185,
+             "brother": 196, "depth": 206, "last": 217}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'
@@ -2341,6 +2341,54 @@ CH6 = chapter("road", "Travellers nobody could place, and the details they got w
         "a dipper will turn in the wind. Her sister&rsquo;s covering letter says only that Letitia was "
         "the most sensible woman she ever knew"),
 
+ '  <h2 id="ix-walker">The Man Ahead on the Road</h2>',
+ gloss("Four letters from a horse-breaker who rode west from the Pecos to Yuma in the autumn of 1883 "
+       "looking for work, written to his sister at San Angelo, and two telegrams between them. She sent "
+       "them to Ashby after reading his notice in the Texas papers, and asked that her brother be called by "
+       "his first name, which is Wes."),
+ paper("Letter", "Fort Stockton, Texas, 2 October 1883", p(
+     "Sis,",
+     "Crossed the Pecos at Horsehead yesterday. River was up and mean and I near lost the dun. Going on "
+     "west, there's work in the Davis Mountains they say.",
+     "Passed a man on foot below the crossing this morning, standing by the road with his hand up the way a "
+     "man holds it when he wants a ride. Grey coat. I didn't stop. A man on foot in that country is either "
+     "a thief or trouble."),
+     cls="letter", sign="Wes"),
+ paper("Letter", "Fort Davis, 5 October 1883", p(
+     "Sis,",
+     "No work here. Saw the same man again today, seventy miles on, by the road, same coat, same hand up. I "
+     "rode hard all day and passed nobody, and there he was. He doesn't look at me. He looks down the road "
+     "behind me, like he's waiting on somebody else. Going on to El Paso."),
+     cls="letter", sign="Wes"),
+ paper("Letter", "El Paso, 11 October 1883", p(
+     "Sis,",
+     "He was at the river this morning, and again at the top of the pass. I put the dun into a lope past "
+     "him and looked back, and he was still standing there with his hand up, only this time he'd turned to "
+     "watch me go.",
+     "I'm writing it to you because I don't want to say it in a saloon."),
+     cls="letter", sign="Wes"),
+ wire("Yuma, 24 October 1883", ["TO MISS L. TALBOT SAN ANGELO",
+                                "ARRIVED YUMA ALL WELL STOP WHY NO LETTER STOP WES"]),
+ wire("San Angelo, 25 October 1883", ["TO WES TALBOT YUMA",
+                                      "WHO IS THIS STOP MY BROTHER DROWNED HORSEHEAD CROSSING FIRST OF "
+                                      "MONTH STOP BURIED FORT STOCKTON STOP DO NOT WIRE AGAIN STOP "
+                                      "L TALBOT"]),
+ paper("Letter", "Yuma, 26 October 1883", p(
+     "Sis,",
+     "I got your wire. I've read it more times than I'll say.",
+     "I went out to the road this evening and he was there, by the sign at the edge of town, with his hand "
+     "up. This time I stopped. He said, very kind, that he'd been waiting on me since the Pecos, and was I "
+     "ready, because he was going my way. I said I'd write to you first. He said he'd wait.",
+     "Don't let them tell you it was the river that was hard. I didn't feel a thing."),
+     cls="letter", sign="Wes"),
+ ednote("The body buried at Fort Stockton was taken out of the Pecos below Horsehead on the 3rd, after "
+        "some days in the water, and buried as Wes Talbot on the word of a freighter who had crossed with him "
+        "and on the dun horse, which came out of the river alive with his saddle on it and was kept at the "
+        "livery at Fort Stockton until it was sold in November for its keep. A man on the drift who wants to "
+        "be quit of something has no better chance than a drowned stranger and a horse that will swear to "
+        "him, and there is more than one dun in Texas. The letters are in his hand, Miss Talbot says. The "
+        "last has a Yuma postmark of the 27th. Nobody of that name has been seen at Yuma since"),
+
  '  <h2 id="ix-spaniard">The Mad Spaniard</h2>',
  gloss("Four hundred miles of road know this one and nobody uses a name for him. Ashby has eleven "
        "accounts and I have printed two, with the chronicle extract that people in the mining camps "
@@ -2833,6 +2881,55 @@ CH7 = chapter("paper", "Debts, deeds, wills and the fine print. The worst chapte
         "a proper answer and tells you nothing, and is the only answer anybody has ever got about "
         "these dinners"),
 
+ '  <h2 id="ix-paradise">A Run of Luck at Paradise</h2>',
+ gloss("A page of a gambler&rsquo;s book of winnings, two of his letters to his brother at Natchez, and "
+       "a coroner&rsquo;s finding from the year before the first letter. The brother sent all four to "
+       "Ashby after a notice in a Memphis paper, with a note to say he had been told he was a fool to keep "
+       "them and meant to go on doing it."),
+ ledger("Book of winnings", "kept by J. B. Lacey, Paradise, 1882",
+        ["Night", "Game", "Won", "Lost"],
+        [("2 June", "Faro, dealing", "#$212.00", "&mdash;"),
+         ("3 June", "Poker, the back room", "#$640.00", "&mdash;"),
+         ("4 June", "Faro, punting against the house", "#$95.50", "&mdash;"),
+         ("11 Aug.", "Monte, for the pleasure of it", "#$31.00", "&mdash;"),
+         ("19 Oct.", "Poker, honest", "#$402.00", "&mdash;"),
+         ("31 Dec.", "Poker, drunk", "#$1,180.00", "&mdash;"),
+        ],
+        "Every night of the year is entered, in the same hand. The column headed <em>Lost</em> has a dash "
+        "in every line, ruled carefully with a straight-edge, as though he enjoyed doing it at first."),
+ paper("Letter", "Paradise, Arizona Territory, July 1882", p(
+     "Dear Ned,",
+     "Found a camp at last that's worth the ride. Paradise is the name and it suits it. A good hotel, a "
+     "game every night, and the miners pay in coin and don't mind losing it to a man who dresses well. I "
+     "haven't lost a night since I got in. You'll say that's a lie, so I'm sending a page of the book, and "
+     "you can see for yourself.",
+     "They're the friendliest people I ever took money from. Nobody here has called me a cheat once."),
+     cls="letter", sign="Your brother, Jack"),
+ paper("Letter", "the same, March 1883", p(
+     "Ned,",
+     "Three hundred nights and not one losing hand. I gave up dealing seconds in October because there was "
+     "no call for it, and I still don't lose. I've tried to. I've bet against myself and played drunk and "
+     "played without looking and thrown away a full house, and the cards come up for me every time, and "
+     "the men at the table laugh and pay.",
+     "A game you can't lose isn't a game. It's a room.",
+     "I went to the man who keeps the hotel and asked him how I'd get to some camp where a man can lose a "
+     "hand of cards. He was very kind about it. He said I'd been told where I was going years ago, by "
+     "every man who ever caught me with a card where it shouldn't be, and that every one of them had said "
+     "it to my face, and I ought to have listened.",
+     "Write to me. Nobody here does."),
+     cls="letter", sign="Jack"),
+ paper("Coroner&rsquo;s finding", "Charleston, Arizona Territory, 5 May 1881", p(
+     "1. J. B. Lacey, of Natchez, by profession a gambler, dead of a pistol wound received the night "
+     "before at a table in the Bon Ton saloon.",
+     "2. The wound was given by a party who accused the deceased of cheating. A card was found in the "
+     "deceased&rsquo;s left sleeve. Justifiable homicide.")),
+ ednote("The Post Office has had no office called Paradise in that Territory, and the two letters came to "
+        "Natchez with a stamp on each and no postmark. A gambler who owes as much as Mr. Lacey owed has every "
+        "reason to want to be thought dead, and another to want his brother to know he is not, and a friend "
+        "at Charleston could have posted the letters and the page. I put that to the brother. He said that "
+        "Jack had never in his life been able to keep from telling him when he was winning, and that this "
+        "was the first time it had read like a complaint"),
+
  '  <h2 id="ix-sixes">Redemption Sixes</h2>',
  gloss("A bond of the Treasury of Redemption, and a letter from a bank at Kansas City to a gentleman at "
        "Atlanta who had asked whether it would carry them. He gave Ashby both, having decided not to buy."),
@@ -3262,9 +3359,9 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
 
  '  <h2 id="ix-notice">A Notice With No Money on It</h2>',
  gloss("Posted on the walls of livery barns and saloons from Fort Smith to El Paso in the spring of "
-       "1884, and taken down by nobody. Ashby had one off a post at Fort Worth, and a letter about it "
-       "from a man in the bounty trade."),
- bill([("bl-3", "Notice"), ("bl-1", "THE TABLE WILL BE OBLIGED"), ("rule", ""),
+       "1884, and taken down by nobody. It has no printer&rsquo;s name on it and no sender&rsquo;s. Ashby "
+       "had one off a post at Fort Worth, and a letter about it from a man in the bounty trade."),
+ bill([("bl-3", "Notice"), ("bl-1", "A KINDNESS WILL BE OWED"), ("rule", ""),
        ("bl-2", "to whoever brings word of"),
        ("bl-1", "ZILPHA HARROW"),
        ("bl-2", "called Mother Harrow, who kept a house at Lampasas<br>and does not keep it now"),
@@ -3278,7 +3375,9 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
  paper("Letter", "a man in the bounty trade, to Ashby, from Fort Smith", p(
      "Ashby,",
      "Yes, I've seen it. Every man in my line has. There's no money on it, and half the men I know "
-     "laughed and the other half went quiet, and you can tell which half has been in the trade longer.",
+     "laughed and the other half went quiet, and you can tell which half has been in the trade longer. "
+     "Nobody will tell you who put it up. The ones who know won't say it in a saloon, and I'm not going "
+     "to say it in a letter.",
      "I'm not taking it. I'm more afraid of being owed by those women than of anything Mother Harrow "
      "could do to me, and I've met her. She stood me a drink at Lampasas in &rsquo;79 and asked me my "
      "mother's name, and I told her, and she said it was a good name and I was to keep it.",
@@ -3477,6 +3576,46 @@ CH9T = chapter("trades", "Papers from people whose work is the work.", "\n".join
       "doing this forty years and I have never once before said to a family that I don't know, "
       "and I said it to this family on the 16th and I'm saying it here."),
  ], closing="[The court thanked the witness for his plainness. Verdict: exposure.]"),
+
+ '  <h2 id="ix-trapper">The Last Camp on the Salmon</h2>',
+ gloss("An old trapper&rsquo;s account of the last season he trapped, taken down by Ashby at Fort Hall "
+       "in the summer of 1883, and a page of the tally his partner kept, which the trapper had carried in "
+       "his possibles bag for thirty years and gave to Ashby when he had finished telling it."),
+ ledger("Tally of plews", "kept by Jas. Rourke, the head of a fork of the Salmon, autumn 1853",
+        ["Day", "Traps set", "Beaver taken"],
+        [("Oct. 2", "#6", "#4"),
+         ("Oct. 3", "#6", "#5"),
+         ("Oct. 4", "#6", "#3, camp tore up"),
+         ("Oct. 5", "#6", "#0, camp tore up again, the tracks"),
+         ("Oct. 6", "", ""),
+        ],
+        "The last line has its date and nothing after it. The tally is in the dead man&rsquo;s hand "
+        "throughout."),
+ paper("Account", "a trapper, taken down by Ashby at Fort Hall, 1883", p(
+     "We were trapping the head of a little fork off the Salmon, Jim Rourke and me, in &rsquo;53, in "
+     "country nobody else trapped, which we took for luck.",
+     "The second evening we came back to camp and it was torn up. The lean-to down and the packs scattered "
+     "and tracks all round it. Jim said bear. I said bears don't walk on two feet all the way round a fire. "
+     "He said a bear will stand. I said a bear don't walk standing.",
+     "We built the fire up and sat with our backs to it. In the night I heard it in the timber, going round "
+     "us, and the smell came down on the wind, and it wasn't bear. The next day the same. The tracks went "
+     "round the camp and off into the timber, and every time we followed them they went behind a tree and "
+     "we never once saw where they came out.",
+     "We agreed to pull the traps and go. Jim stayed to break camp and I went up the creek for the traps, "
+     "and it took me till near dark. When I came down I called him and he didn't answer. He was by the fire "
+     "log, on his face, with his neck broke and four marks in the side of his throat. The packs weren't "
+     "touched.",
+     "The tracks came out of the timber behind where he sat and went back into it. Whatever it was had kept "
+     "a tree between itself and him the whole way in, and he never looked round, and he was a man who "
+     "looked round.",
+     "I left everything but the rifle and went down the creek in the dark, and I didn't stop till morning. "
+     "I haven't been in timber since. I hunt open ground, what I hunt.")),
+ ednote("A grizzly will tear up a camp, and a man who has been frightened for three days will put a "
+        "man&rsquo;s walk in its tracks. Four marks in a throat are a bear&rsquo;s as easily as anything "
+        "else&rsquo;s. I have heard this story told of four different men in four different ranges, and two "
+        "of the four told it to me as having happened to them, so I would not swear it happened to this one "
+        "either. He had the tally, though, and he gave it to Ashby the way a man hands over a thing he has "
+        "finished carrying"),
 
  '  <h2 id="ix-thirdcell">The Man in the Third Cell</h2>',
  gloss("From the papers of the superintendent of an asylum in California founded in the first years of "
@@ -3819,6 +3958,9 @@ CH10 = chapter("songs", "What people sing, and what they say without thinking ab
      "<em>Give the long train the main line, and don&rsquo;t count the cars.</em> (Railroad men, in four counties.)",
      "<em>Chicago never sleeps, and Washington never wakes.</em>",
      "<em>The Jubilee train runs full going up.</em> (Yuma, and nowhere else.)",
+     "<em>Gone up the branch.</em> (Of a man who has left his debts. Tucson, San Diego and every town on "
+     "the Southern Pacific.)",
+     "<em>Civil as Jubilee.</em> (Not a compliment, anywhere west of the Pecos.)",
      "<em>A brother will stand you supper. Ask him what&rsquo;s for breakfast.</em>",
      "<em>Two is a coincidence, three is a road, and four is somebody&rsquo;s business.</em>"),
      ),
@@ -4123,7 +4265,7 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
      "with me."),
      sign="[signed, and witnessed]"),
 
- '  <h2 id="ix-seats">Seats at the Long Table, Fifty Dollars</h2>',
+ '  <h2 id="ix-seats">A Seat at the Table, Fifty Dollars</h2>',
  gloss("From the police court column of a Kansas City paper, and a letter the court had six weeks "
        "later, which the clerk showed Ashby because, he said, it was the only letter he had ever had "
        "from New Orleans that was not about cotton."),
@@ -4132,17 +4274,22 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
       ["Ladies of This City Relieved of Fifty Dollars Apiece", None],
       ["Mrs. Adaline Rusk, a widow, of Broadway, was bound over yesterday on a charge of obtaining "
        "money by false pretences, it being alleged that she sold to eleven ladies of this city, at fifty "
-       "dollars apiece, what she called a seat at the Long Table, with a printed card and the assurance "
-       "that the purchaser&rsquo;s family would be looked after in any trouble.",
-       "Mrs. Rusk made a full statement. She had heard of the Long Table from a servant girl out of "
-       "Louisiana, made the rest of it up at her kitchen table, and had the cards printed on Walnut "
-       "Street. She expressed her regret and offered to repay every lady in full. The court was told "
-       "that nine of the eleven have declined to take the money back, preferring to keep the seat."]),
+       "dollars apiece, what she called &ldquo;a seat at the long table,&rdquo; with a printed card and "
+       "the assurance that the purchaser&rsquo;s family would be looked after in any trouble.",
+       "Mrs. Rusk made a full statement. She had the words from a servant girl out of Louisiana, who "
+       "would not tell her what they meant, and she made the rest of it up at her kitchen table and had "
+       "the cards printed on Walnut Street. She expressed her regret and offered to repay every lady in "
+       "full. The court was told that nine of the eleven have declined to take the money back, "
+       "preferring to keep the seat. Asked what table, the ladies declined to say."]),
  paper("Letter to the clerk of the police court", "New Orleans, June 1884", p(
      "Sir,",
-     "The Table does not sell seats, and would be obliged if the newspapers said so.",
+     "There is no such table, and nobody sells seats at it.",
      "With thanks for your trouble in the matter."),
      sign="[unsigned]"),
+ ednote("The servant girl could not be found, and Mrs. Rusk paid her fine and moved to St. Joseph. The "
+        "clerk kept the letter because it was the only one he ever had from New Orleans that was not about "
+        "cotton. I print it among the frauds because it is one. There are a good many denials in this book, "
+        "and this is the only one that corrects the price in the same line"),
 
  '  <h2 id="ix-collector">What the Collector Was Paid For</h2>',
  gloss("A passage from a volume on the myths of the Plains nations, printed at Washington in 1882 by "
@@ -4258,6 +4405,55 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
      cls="letter"),
  ednote("I asked Mrs. Kearse whether anybody had written back to ask him what he missed. She said the "
         "boys had talked it over one evening and decided they did not want to know"),
+
+ '  <h2 id="ix-cordial">The Sure-Hand Cordial</h2>',
+ gloss("A handbill, an item from a Kansas paper, a druggist&rsquo;s analysis made for the county "
+       "attorney, and a letter from one of the two men in the item. The handbill and the analysis are "
+       "in the county&rsquo;s file at Coldwater. The letter came to me."),
+ bill([("bl-3", "One Night Only, at the Wagon Yard"), ("rule", ""),
+       ("bl-1", "DR. ORVILLE TABOR&rsquo;S SURE-HAND CORDIAL"),
+       ("bl-2", "Ten Seconds of Perfect Nerve"),
+       ("rule", ""),
+       ("bl-3", "One dose, taken neat, gives any man the hand he had at twenty,<br>for as long as he "
+                "needs it and not a moment longer"),
+       ("bl-3", "Not for habitual use &middot; One dollar the bottle &middot; None sold to minors"),
+      ]),
+ news("THE COMANCHE COUNTY CHIEF", "Coldwater, Kansas, 16 June 1884",
+      ["A MEETING ON MAIN STREET", "TWO HANDS DRESSED"],
+      ["Two Gentlemen Settle a Difference, and Neither Is Satisfied", None],
+      ["Mr. Asa Penrose, whose name was one to conjure with in the cattle towns ten years since and who "
+       "has lately been better known at the Lone Star bar, and Mr. Dell Sorrell, a young gentleman of this "
+       "county who had been heard to say he would like to see how good Mr. Penrose had been, met on Main "
+       "Street on Saturday at four o&rsquo;clock, by arrangement, before a good many of our citizens.",
+       "Both drew and both fired, so near together that the two reports were taken for one. Mr. Penrose "
+       "was hit in the right hand, and so was Mr. Sorrell, and neither of them anywhere else. Dr. Morrow has "
+       "dressed both hands, and tells us that neither gentleman will close his right hand on anything "
+       "again. Both were seen at the wagon yard on the Friday evening, where a gentleman was selling a "
+       "cordial."]),
+ paper("Analysis", "a druggist at Coldwater, for the county attorney, July 1884", p(
+     "The bottle marked <em>Sure-Hand Cordial</em> contains water, about one part in five of whisky, "
+     "gentian, burnt sugar and a little capsicum. There is nothing in it that would steady a hand, and the "
+     "capsicum would make a man&rsquo;s eyes water. Value as a medicine, nothing. As a drink, about "
+     "fifteen cents.")),
+ paper("Letter", "Asa Penrose, to the editor, from Avilla, 1885", p(
+     "Sir,",
+     "You ask if I'm sorry. I was drunk four years before that Saturday and I haven't been since, so make "
+     "what you like of it.",
+     "I bought the bottle because I'd have bought anything. The boy bought one because he'd seen me buy "
+     "mine. We drank it standing at the same wagon, and I knew him and he knew me, and neither of us said "
+     "a word.",
+     "On the street I looked at his hand and he looked at mine, and I knew the way you know a horse is "
+     "going to shy that he was going to aim there. I don't know why I aimed there too. I've thought since "
+     "that the cordial was water and the ten seconds were our own, and that for ten seconds two men who'd "
+     "been drinking to get their nerve up both decided not to kill anybody.",
+     "Sorrell keeps the store at Avilla now and writes with his left hand. So do I. He sends me a ham at "
+     "Christmas."),
+     cls="letter", sign="A. Penrose"),
+ ednote("Nobody found Dr. Tabor. The county charged him in his absence with selling a medicine under a "
+        "false name, which he had. Two frightened men who have been told the same lie will very often "
+        "aim at the same place, and the right hand is where a man is looking when he means to see the "
+        "other man draw. The cordial is a fraud and belongs in this chapter. I am less sure about the ten "
+        "seconds"),
 
  '  <h2 id="ix-lookeddoor">Somebody Looked at the Door</h2>',
  gloss("The minutes of a meeting called at the schoolhouse at Harlan&rsquo;s Ford, Kansas, in March "
@@ -4494,6 +4690,14 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
   bank, two newspapers and a flag I am not going to describe. Its capital is a town of nine thousand
   called Jubilee. For eleven years it has said in print, and on the wall of its own customs house,
   that it means to be a second Confederacy, and nobody who has been there thinks it is joking.</p>
+  <p>Everybody in the Territories knows about it. The Yuma and Tucson papers print its arrivals every
+  week and the Texas papers print its circulars every spring. There is a song about it at every depot on
+  the Southern Pacific and a novel about it at every news-stand, and a man who says he has never heard of
+  Jubilee is lying or comes from Boston, and the men from Boston have generally read the novel. I make a
+  point of it because of the chapter after this one, in which the government of the United States is
+  asked about Redemption in one office after another and answers each time that it is not there. Of
+  everything in this book it is the thing most people knew in 1884, and I would not bet that anybody
+  will know it in fifty years.</p>
   <p>I have not been. Neither had Ashby, though he meant to go, and his ticket is in {chref('last')}.
   What follows came to him across counters at Yuma and by post, from people who went in and came out
   again. It has the fault that every paper of that kind has. It was written by people who were let
@@ -4600,6 +4804,37 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
      "<em>We, the people of Redemption, having kept the day and the land and the word, and having been "
      "kept waiting, do ordain this Constitution, that what was ours be ours again, and that what is "
      "bought be kept.</em>")),
+
+ '  <h2 id="ix-novel">Ten Cents at Any News-Stand</h2>',
+ gloss("An advertisement from the back page of a New York story paper, and a letter to me from the man "
+       "who wrote the novel it advertises, under a captain&rsquo;s name he never held. I have both "
+       "editions of the novel, and they are not the same book."),
+ bill([("bl-3", "Now Ready &middot; No. 214 of the Fireside Ten-Cent Library"), ("rule", ""),
+       ("bl-1", "THE GREY RIDERS OF JUBILEE"),
+       ("bl-2", "or, The Flag Beyond the River"),
+       ("bl-3", "A Romance of the New Confederacy, by Capt. Hale Dorrance"),
+       ("rule", ""),
+       ("bl-3", "Sold by every news-dealer in the United States &middot; Ten cents &middot; Sent post-paid "
+                "on receipt of price"),
+      ]),
+ paper("Letter", "the author, to the editor, from Brooklyn, 1886", p(
+     "Sir,",
+     "You ask about the second edition. The first sold sixty thousand in four months, which was more than "
+     "anything I wrote before or since, and every boy in Kansas had it in his hip pocket. I got it out of "
+     "the papers and a week at Yuma. Jubilee is as I wrote it, except that in my book the grey riders lose.",
+     "In the spring of 1883 the firm had a letter from the Post Office Department. A library that printed "
+     "matter respecting a pretended government upon the territory of the United States could not go on being "
+     "carried at the second-class rate, and a ten-cent library that pays the third-class rate is out of "
+     "business by the summer. The firm sent for me the same afternoon.",
+     "In the second edition Jubilee is Zion City and Redemption is the Desert Republic, the river is the "
+     "Gila, and the grey riders are Mormons, which nobody in the firm thought was in poor taste. It sold "
+     "eleven thousand. The boys who'd read the first didn't believe a word of the second, and the boys who "
+     "came after only ever had the second, and they believe it to this day."),
+     cls="letter", sign="the author, who wrote as Capt. Hale Dorrance"),
+ ednote("The Post Office Department will not say it wrote any such letter, and the firm will not say it "
+        "did not. A gentleman at Salt Lake City wrote to the firm about the Mormons, and the firm sent him a "
+        "copy of the first edition with its compliments. I bought my own first edition in 1886 at a "
+        "news-stand in Tucson, where the dealer keeps it under the counter and sells it for a quarter"),
 
  '  <h2 id="ix-letterhome">A Letter Home</h2>',
  gloss("Written from Jubilee by a woman to her sister in Georgia. The sister carried it west in 1883 "
@@ -4715,20 +4950,29 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
 
 
 # ================================================================ The Long Table
-CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman in New Orleans nobody has seen.", "\n".join([
+CH_LONGTABLE = chapter("longtable", "Houses that take women in, and what they will not write down.", "\n".join([
 
  f"""  <p>The houses in {chref('preaching')} take women in behind a green door, and a reader will want every
   green door in the Territories to open onto this chapter. Ashby wanted it too. The house at Denver told him that
   anybody may paint a door green, and I have since found two that were painted by Methodists, so I
   would ask the reader to keep the two chapters a little apart.</p>
-  <p>This one is about a table. From the bayou parishes to the Sierra there are covens that share no
-  rite and no enemy, and every one of them says it has a chair at the same table, and that the table
-  is kept by a woman in New Orleans. They call her the Mother when they call
-  her anything, and the Dread Mother when they are talking to somebody like me. Every one of them will
-  tell you, before she tells you anything else, that the Mother is not the thing a Hexer deals
-  with, or any part of it. Nothing is granted in her name. Nobody prays to her. What she has, they say, is
-  authority, and I have come to think that is a harder thing to sit across from than an
-  appetite.</p>""",
+  <p>This chapter has given me more trouble than the rest of the book together, and very little of the
+  trouble was finding the papers. It was keeping them. Two houses lent Ashby papers and asked for them back
+  by the next post. One woman asked for her own letter back after he had copied it. A fourth paper was
+  withdrawn by the woman who gave it, the week before this chapter was set, and I have honoured that and
+  will not say what it was. What is left is what the women who keep these houses were willing to have
+  printed, and what other people said about them, and it is not much.</p>
+  <p>What it comes to is this, and I set it down as hearsay because that is all it is. From the bayou
+  parishes to the Sierra there are houses of women, covens if you like the word and they do not, that
+  share no rite and no enemy. Outsiders say that every one of them has a chair at one long table, and
+  that the table is kept by a woman in New Orleans. The bounty men and the saloons call it the Long Table,
+  and her the Dread Mother. The houses do not call it anything, on paper. Of all the papers in this
+  chapter that came from somebody who keeps one, the table is written down in exactly one letter, and the
+  woman who wrote it asked for it back.</p>
+  <p>They will tell you one thing before anything else, when they tell you anything: that the woman in
+  New Orleans is not the thing a Hexer deals with, or any part of it. Nothing is granted in her name.
+  Nobody prays to her. What she has, they say, is authority, and I have come to think that is a harder
+  thing to sit across from than an appetite.</p>""",
 
  '  <h2 id="ix-stand">Asked to Stand</h2>',
  gloss("A card about the size of a calling card, found in a sewing box among the effects of a woman at "
@@ -4739,7 +4983,7 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "The house on the Bayou Courtableau",
      "is asked to stand.",
      None,
-     "The Table is obliged to it for forty-one years."]),
+     "It is thanked for forty-one years."]),
  ednote("What follows being asked to stand is not discussed by anybody who would know, and I have "
         "stopped asking. The woman at Opelousas was living in 1885, in a house on the same bayou. She "
         "kept chickens, and nobody in the parish would buy an egg from her"),
@@ -4747,9 +4991,12 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
  '  <h2 id="ix-tithe">What a House Sends Twice a Year</h2>',
  gloss("A page from an account book kept by a house in the Sierra above Grass Valley, which is seated "
        "and says so on the flyleaf. The house lent Ashby the book for one night and asked for it back "
-       "at breakfast, and he copied what he could by lamplight."),
+       "at breakfast, and he copied what he could by lamplight. The second column has no word over it. "
+       "It is headed with a drawing: a long oblong, with short strokes down both sides of it, too many to "
+       "count by lamplight. Ashby took it for a table and its chairs. He did not ask, and the house did "
+       "not say."),
  ledger("Account book", "a house above Grass Valley, 1874 to 1880",
-        ["Half-year", "Sent to the Table", "By whose hand"],
+        ["Half-year", "Sent", "By whose hand"],
         [("Lady Day, 1874", "Honey, the first taking, four pounds", "M. C."),
          ("Michaelmas, 1874", "$3.40, and a truthful answer, given", "M. C."),
          ("Lady Day, 1875", "A lock of hair from each child born in the house since Michaelmas, "
@@ -4760,16 +5007,17 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
          ("Lady Day, 1877", "Honey, four pounds, and the same name again", "R. C."),
          ("Michaelmas, 1880", "Honey. Nothing asked for, and sent anyway", "R. C."),
         ],
-        "On the facing page of every opening is a column headed <em>received from the Table</em>. It "
-        "is ruled, and for seven years it is empty."),
+        "On the facing page of every opening is a column headed with the same drawing and the word "
+        "<em>from</em>. It is ruled, and for seven years it is empty."),
  ednote("A man in Placerville was named twice. The Placerville paper for the summer of 1877 reports the "
         "death of a man who beat his wife, which is not an unusual item in any paper, and I have not been "
         "able to learn his name"),
 
  '  <h2 id="ix-witch">A Witch Answers a Question</h2>',
  gloss("Ashby wrote to a woman in the Cross Timbers who was said to keep a house, and asked her straight "
-       "out what the Table was. She answered by return, which surprised him. She signed it, and asked "
-       "that her name be left off, and it has been."),
+       "out about the table he kept hearing of in saloons. She answered by return, which surprised him. "
+       "She signed it, and asked that her name be left off, and it has been. Her second letter came a "
+       "month after the first."),
  paper("Letter", "the Cross Timbers, Texas, 1882", p(
      "Mr. Ashby,",
      "You asked a straight question and I'll give you as straight an answer as I'm able to, which won't "
@@ -4791,6 +5039,17 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "down and I'll talk about them, and you won't like it, and you'll stay to supper after anyhow, "
      "because everybody does."),
      cls="letter", sign="[signed, and the name withheld at her request]"),
+ paper("Letter", "the Cross Timbers, Texas, a month later", p(
+     "Mr. Ashby,",
+     "Send me back my letter. I wrote it on a bad night and said more than I should, and I'd be "
+     "obliged."),
+     cls="letter", sign="[the same hand]"),
+ ednote("Ashby had copied the first letter the evening it came, as he copied everything, and he sent it "
+        "back by return. The copy is what is printed here, and I have thought a good deal about whether "
+        "that was honest of him, and printed it anyway. She answered him once more, the next year, and "
+        "that answer is a little further on and does not use the word. When I went to the Trinity in 1886 "
+        "there was a birthing house on it, and the roof did not leak, and nobody in it had heard of Ashby "
+        "or of any letter"),
 
  '  <h2 id="ix-sister">Across the River</h2>',
  gloss("A letter from a Sister of a nursing order at a mining camp in Colorado to the Mother Superior of "
@@ -4859,8 +5118,8 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
         "chapter who went near her on somebody else&rsquo;s business, the city&rsquo;s, and wrote down "
         "what he saw. He saw a courtyard"),
 
- '  <h2 id="ix-notours">Not at Our Table</h2>',
- gloss("Ashby asked the house in the Cross Timbers that answered his first question whether the Table had "
+ '  <h2 id="ix-notours">Not With Them</h2>',
+ gloss("Ashby asked the house in the Cross Timbers that answered his first question whether the houses had "
        "any dealings with the people who call each other brother and sister. This is all of the answer."),
  paper("Letter", "the Cross Timbers, Texas, 1883", p(
      "Mr. Ashby,",
@@ -4954,22 +5213,22 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "it from me than from them.",
      "They'll tell you I reached for something my line never taught me. I did. They'll tell you I took "
      "a child that wasn't owed. I didn't. I took one that was, and I kept it from them.",
-     "Forty years I kept a house for the Table and never once asked what the children were for. In the "
+     "Forty years I kept a house for them and never once asked what the children were for. In the "
      "fortieth year I asked. I'm not going to write down what I was told. I'll tell you that I went "
      "home that night and took the one that was due in the morning, a boy of four, and put him on my "
      "horse in front of me and rode.",
      "Nothing I had from my mother was going to be enough to keep him from them, so I went and got "
      "something that was. I know what it'll cost me. I did the sums before I asked. He's nine now and "
      "he reads.",
-     "Tell your readers the Table will be obliged to whoever finds me. Tell them to think about what it "
-     "is to have that lot obliged to you."),
+     "Tell your readers a kindness will be owed to whoever finds me. Tell them to think about what it "
+     "is to be owed one by that lot."),
      cls="letter", sign="Z. H."),
  paper("Letter", "a woman of a seated house at Fort Worth, 1885", p(
      "She has told you she saved a child. Ask her where the child is.",
      "We have the boy's dates, and what he was owed to, and she has neither. Whatever she went down and "
      "got to hide him with is not a thing that keeps a boy. It keeps what it is given.",
-     "The Table does not hunt its own for sport. It asked her to stand and she will not, and that is all "
-     "I will write, except that I knew her forty years and taught her to set a bone."),
+     "We do not hunt our own for sport. She was asked to stand and she will not, and that is all I will "
+     "write, except that I knew her forty years and taught her to set a bone."),
      cls="letter", sign="[unsigned]"),
  ednote("The two letters cannot both be right and I have no way to choose between them. Mother Harrow "
         "was seen at Tascosa in the summer of 1885 with a crow on her saddle and a boy of about nine "
@@ -4991,7 +5250,7 @@ CH_LONGTABLE = chapter("longtable", "Covens, the houses they keep, and a woman i
      "child it was paid with is buried, if it is.",
      "You&rsquo;ll find me at the wagon yard at Denison until the first of May."),
      cls="letter", sign="A. Crail"),
- ednote("The house at Fort Worth will not say whether the Table answered him. Crail was seen at Tascosa that "
+ ednote("The house at Fort Worth will not say whether anybody answered him. Crail was seen at Tascosa that "
         "June, a week behind Mrs. Harrow and riding the same way. Nobody at Tascosa has seen either of them "
         "since. The pencil under the notice at Fort Worth, which says she is not alone, is in a hand I have "
         "set beside his card, and I cannot say it is his and I cannot say it is not"),
@@ -5332,8 +5591,8 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
      "For four years the ones who serve it have been going up into the mountains in bunches, and "
      "nobody told them to go. You watch cattle go up a draw ahead of weather and not one of them could "
      "tell you why, and every one of them is right.",
-     "Something has frightened it. The Table has been saying so since before your railroad got to "
-     "Denver, and nobody listens to the Table about anything but babies."),
+     "Something has frightened it. The old women have been saying so since before your railroad got to "
+     "Denver, and nobody listens to old women about anything but babies."),
      cls="letter", sign="[a house in the Wind River country]"),
  paper("Letter", "a house on the Brazos", p(
      "Whoever told you that is a fool from a house that ought to have been asked to stand years ago, and "
@@ -5569,6 +5828,13 @@ CH_FORWARDED = chapter("forwarded", "What Washington and Chicago were told, and 
   regiment to look at it, it engages the Agency by contract, at so much a day and expenses. The
   Agency&rsquo;s operatives in this book are working for the government when their reports say so, and for
   a railroad or a mine when they say that.</p>
+  <p>One country turns up in this chapter more often than any other, and it is not the United States.
+  Every office here was asked about Redemption at least once, by a captain or a clerk or a member of
+  Congress or a mother, and each one answered in its own way that it had no information, or wrote
+  <em>File</em> on the question, or sent the letter back. None of them lied, so far as I can find. A paper
+  that has been filed is not information, and a place that has no post office cannot be written to. I
+  have set those papers in among the others, as they came, so that a reader can watch a country being
+  left out of the books one office at a time.</p>
   <p><em>Respectfully forwarded</em> is what an officer writes on a paper when he sends it up to the office
   above his. Most of these went up that way, one office at a time, until somebody wrote <em>File</em>.</p>""",
 
@@ -5635,6 +5901,38 @@ CH_FORWARDED = chapter("forwarded", "What Washington and Chicago were told, and 
         "very little. Ashby&rsquo;s sum in the margin of the 1880 sheet reads <em>140 bought, 12 on "
         "hand, none sold, none eaten.</em> I have asked in that valley, and nobody who sold cattle "
         "there in 1879 remembers selling any to Mr. Pardee"),
+
+ '  <h2 id="ix-enumerators">Not to Be Enumerated</h2>',
+ gloss("Two paragraphs from the printed instructions the Census Office sent its supervisors in 1880, a "
+       "supervisor&rsquo;s letter to the Superintendent of the Census about one of his enumerators, and a "
+       "note from the enumerator, who kept a copy of the letter and sold it to Ashby at San Diego for the "
+       "price of a dinner."),
+ paper("Printed instructions", "Census Office, Washington, to supervisors of the tenth census, 1880", p(
+     "<strong>41.</strong> Persons found residing upon the public lands beyond the line of any organized "
+     "civil division will be enumerated with the nearest division, and the fact noted.",
+     "<strong>41a.</strong> Supervisors for the Southern District of California will instruct their "
+     "enumerators that no persons are to be enumerated beyond the crossing of the railroad branch upon the "
+     "lower Colorado, there being no civil division in that place to return them under. Enumerators will "
+     "not inquire into the matter. No schedules from that quarter will be received or paid for.")),
+ paper("Letter", "the supervisor, to the Superintendent of the Census, July 1880", p(
+     "Sir,",
+     "I have to report that Mr. Amos Tullis, enumerator for the eastern townships of the county, went up "
+     "the branch on his own account in June, contrary to paragraph 41a, which had been read to him twice, "
+     "and came back with schedules for eight thousand four hundred and twelve persons. He says that was "
+     "every soul at Jubilee who would answer him, and that every soul answered.",
+     "I have returned the schedules to him unpaid, as the paragraph directs. He asks that I forward his "
+     "account notwithstanding. I forward it, and do not recommend it."),
+     sign="Supervisor of Census, Southern District of California"),
+ paper("Note", "Amos Tullis, to Ashby, San Diego, 1884", p(
+     "You have the copy. I'd have given you the schedules themselves, but I burned them in &rsquo;81. A "
+     "gentleman from Jubilee came to my house and asked for them, very civil, and offered me a dollar a "
+     "sheet. I said no. He thanked me and said it didn't signify, because the Census Office had already "
+     "said no on his behalf.",
+     "I burned them that night. I don't know why. I think I didn't want to be the only place they were "
+     "written down.")),
+ ednote("The published returns of the tenth census give that part of the county no inhabitants. Mr. "
+        "Tullis&rsquo;s figure is within a few hundred of the captain&rsquo;s guess further on in this "
+        "chapter, and the captain did not count, and Mr. Tullis did"),
 
  '  <h2 id="ix-patent">An Application Refused</h2>',
  gloss("An inventor at Leadville applied for letters patent in 1882. The specification, the examiner&rsquo;s "
@@ -5725,6 +6023,31 @@ CH_FORWARDED = chapter("forwarded", "What Washington and Chicago were told, and 
         "who speaks for them came into the office once more, a year later, and asked nothing. He stood a "
         "while in front of the plat on the wall, and thanked the register, and went home"),
 
+ '  <h2 id="ix-plate">Taken Off the Plate</h2>',
+ gloss("Two letters between a map house at Chicago and its engraver. The engraver&rsquo;s son sold them "
+       "to Ashby, with a proof of the plate as it was before and another as it was after."),
+ paper("Letter", "Cadwell &amp; Lowry, publishers of maps, Chicago, to their engraver, March 1882", p(
+     "Mr. Kroll,",
+     "Before the spring printing please take off the plate of Southern California and Arizona the town of "
+     "Jubilee, the branch railway beyond the water tank at Siding No. 4, and the words <em>Redemption</em> "
+     "and <em>Customs</em> wherever they appear, and stipple the ground to match the desert round it.",
+     "The General Land Office will not take a map that shows them, and the school boards will not take a "
+     "map the Land Office will not. We are sorry to put you to the trouble after the work you did on the "
+     "town."),
+     sign="Cadwell &amp; Lowry"),
+ paper("Letter", "the engraver, in reply", p(
+     "Gentlemen,",
+     "Done, and the proof enclosed. I have stippled the town and the fields and run the branch out into the "
+     "desert as far as the tank, where it stops.",
+     "I have left the river where it was. I can&rsquo;t move the river."),
+     sign="Kroll"),
+ ednote("Every map of that country I have been able to buy since 1882, from four houses, shows the branch "
+        "running out to a water tank in the sand and stopping there, and a railroad does not lay forty "
+        "miles of track to a water tank. The proof of the plate before is the only printed map I have seen "
+        "with the town on it. The streets are laid out in blocks, and somebody at the engraver&rsquo;s has "
+        "written the names of three of them in the margin in pencil, as a man does when he is afraid of "
+        "forgetting them"),
+
  '  <h2 id="ix-deadletters">The Dead Letter Office</h2>',
  gloss("The Dead Letter Office at Washington opens every letter that can be neither delivered nor returned, "
        "to find a name inside to send it back to. A clerk there sent Ashby one page of a quarter&rsquo;s "
@@ -5789,6 +6112,77 @@ CH_FORWARDED = chapter("forwarded", "What Washington and Chicago were told, and 
         "Secretary signed that. I do not say the Secretary lied. The report had been filed, and a paper that "
         "has been filed is not information. The Army gave up the post at Fort Yuma the following year, for "
         "reasons of economy"),
+
+ '  <h2 id="ix-remarks">His Remarks Will Appear</h2>',
+ gloss("Two entries from the Congressional Record for the first session of the Forty-Seventh Congress, "
+       "five months apart, and a letter to Ashby from the member&rsquo;s private secretary, who had left his "
+       "employ by then. Members of the House may revise their remarks before the Record prints them, and "
+       "nearly all of them do."),
+ paper("From the Congressional Record", "House of Representatives, 9 February 1882", p(
+     "Mr. CALDER. Mr. Speaker, I ask the indulgence of the House for five minutes upon a matter concerning "
+     "the lower Colorado, and an armed body there which describes itself as a nation.",
+     "The SPEAKER. Is there objection? [After a pause.] The Chair hears none.",
+     "Mr. CALDER addressed the House. [His remarks will appear hereafter.]")),
+ paper("From the Congressional Record", "the Appendix, 3 July 1882", p(
+     "Remarks of Hon. J. P. CALDER, of Kansas, in the House of Representatives, February 9, 1882. "
+     "[Withdrawn by the member.]")),
+ paper("Letter", "Mr. Calder&rsquo;s secretary, formerly, to Ashby, 1884", p(
+     "Sir,",
+     "You ask what Mr. Calder said. He spoke nine minutes, not five, and the House was as quiet as I have "
+     "ever heard it, and I took it down. He said that there is a Confederacy on the Colorado, in arms, under "
+     "a flag, which in his words is the same war in a new coat; that the Army knows it, and the Department "
+     "knows it, and the members on both sides of the aisle know it; and that he would like the House to "
+     "say so.",
+     "He revised his remarks eleven times between February and June. Gentlemen came to see him at the "
+     "boarding-house, from both sides and from the Department, and one from Kansas City, and every one of "
+     "them was civil, and every draft was shorter. The last said only that he had risen to call attention to "
+     "the lower Colorado. He read it over at the window for a long while, and then he wrote "
+     "<em>Withdrawn</em> across it.",
+     "I asked him what the gentlemen had said to him. He said they had all said the same thing in different "
+     "words: that what was settled in &rsquo;77 was settled whole, and a man who pulled at one corner of it "
+     "would pull the rest out after.",
+     "He was not returned at the next election. He keeps a hardware store at Atchison, and I am told he "
+     "does not discuss politics."),
+     cls="letter", sign="[his secretary, formerly]"),
+ ednote("A member who is persuaded by his friends to say less is no great wonder at Washington. The Record "
+        "for that session prints its debates down to the last word on the duty on hides, and these are the "
+        "only nine minutes in it that it does not print"),
+
+ '  <h2 id="ix-understanding">Why, Since You Ask</h2>',
+ gloss("A letter to me in 1886 from a man who was a clerk of the War Department for twenty-four years, "
+       "the last eight of them in the office through which the captain&rsquo;s report above went up on its "
+       "way to <em>File</em>. He asked that his name be left off. He did not ask that anything else be."),
+ paper("Letter", "a clerk of the War Department, retired, to the editor, 1886", p(
+     "Sir,",
+     "You ask why Washington will not see it. I will answer you plainly, because I have left Washington and "
+     "do not mean to go back.",
+     "It is not a conspiracy. Nobody in that city ever sat down and decided to hide a country. It is a "
+     "policy, and like every policy at Washington it is mostly the absence of a paper. These are the "
+     "reasons I heard given in eight years, put in the order I heard them most often.",
+     "First. A nation the United States does not recognise cannot be at war with the United States, and the "
+     "United States cannot lose to it. To send the Army is to admit there is something to send it against. "
+     "To send the Army and fail, in that country, against those men, with the Southern members watching, "
+     "does not bear thinking of, and nobody at the Department thinks of it.",
+     "Second. What was settled at the end of the last unpleasantness was settled whole, and some of it was "
+     "never written down. I have heard it said, by men who were in the room, that the gentlemen who met at "
+     "Wormley&rsquo;s hotel in &rsquo;77 to finish the business of the election agreed among other things "
+     "that a certain community on the lower Colorado would keep to its side of the river and that "
+     "Washington would not trouble to look across it. I have never seen a paper that says so. In that city "
+     "that is how you know a thing was agreed.",
+     "Third. The Treasury of Redemption pays its interest in gold, on the day, and a good deal of it is paid "
+     "to gentlemen whose names you would know.",
+     "There is a fourth thing, which is no reason, and which I set down only because you are an editor and "
+     "will know what to do with it, which is nothing. The old clerks in that city say among themselves that "
+     "a place which has not been written down at Washington for a generation is not there afterward, "
+     "anywhere, for anybody. I do not believe it. I would only point out that the post office at Plenty, in "
+     "Colorado, was discontinued in the summer of 1881, and that I have since met two of that camp&rsquo;s "
+     "creditors, and neither of them can find it."),
+     cls="letter", sign="[no signature, at his request]"),
+ ednote(f"The hotel is Wormley&rsquo;s, on Fifteenth Street, and the meeting there in February 1877 is in "
+        f"every history of that winter. Nothing about the Colorado is in any of them, which the writer would "
+        f"say proves his point and I would say proves nothing. Plenty is in {chref('depth')}. I wrote to the "
+        f"War Department to ask whether the writer had been employed there. It replies that it has no record "
+        f"of the matter"),
 
  '  <h2 id="ix-salt">Salt, Forty Wagons</h2>',
  gloss("A requisition from the four-company post on the Pecos whose surgeon wrote the letters that follow, "
@@ -5932,6 +6326,12 @@ CH_CIRCLE = chapter("circle", "The Golden Circle, which sits at Jubilee and buys
      "The Chairman doesn&rsquo;t know either. I asked him once when we were alone, and he said, "
      "&lsquo;Lewis, it&rsquo;s strategic,&rsquo; and then he said, &lsquo;I don&rsquo;t know,&rsquo; and "
      "asked me not to minute it.",
+     "There&rsquo;s a story in the town, and I&rsquo;ll tell it because you&rsquo;ll hear it anyhow. The "
+     "women tell it, and never the same one twice. They say the Circle answers to a preacher who was at "
+     "Jubilee before the town was, and who promised the first families that when the list is finished "
+     "the country will be the way it was before the war, every man in his place and everybody else in "
+     "theirs. I never met anybody who&rsquo;d seen him. I never met anybody who&rsquo;d say she "
+     "hadn&rsquo;t.",
      "I came out through the sand hills on foot, at night, following the stakes the railroad&rsquo;s "
      "surveyors left. Everybody says it can&rsquo;t be done. It took me four nights and I didn&rsquo;t "
      "see a living thing.",
@@ -5951,8 +6351,32 @@ CH_CIRCLE = chapter("circle", "The Golden Circle, which sits at Jubilee and buys
 
  """  <p>Everybody who has read this chapter in proof has asked me who writes the list. I do not know. I have
   come to believe that nobody at Jubilee knows either, and that the Circle has been buying land for thirty
-  years for a hand it has never seen, and calling it strategy, because a man has to call it something.</p>""",
+  years for a hand it has never seen, and calling it strategy, because a man has to call it something.</p>
+  <p>Mr. Imbrie&rsquo;s preacher is the faintest thing in this book. I would have left him out if Mr.
+  Imbrie had not told him to an officer of the Agency, who wrote him down, which is more than anybody at
+  Jubilee has done. A town that was built on a promise will find out sooner or later that it has a
+  prophet who made it, whether or not there was ever anybody there.</p>""",
 ]))
+
+
+# ---------------------------------------------------------------- the houses keep it off paper
+# Cole, 2026-10-08: keep the detail of the Long Table and make it more secret. The chapter says so in its
+# own opening: of the papers that came from somebody who keeps a house, the table is written down in exactly
+# one letter, and its writer asked for it back. Outsiders may name it (a witch hunter, a court, the saloons);
+# the houses never do. So every paper in the chapter that writes the word is listed here by its source line,
+# and a paper that starts writing it fails the build until somebody decides which side of that line it is on.
+_TABLE_ALLOWED = {
+    "the Cross Timbers, Texas, 1882",           # the one letter, and its writer asked for it back
+    "left with a midwife at Denison, April 1885",  # A. Crail, who is an outsider and a hunter
+}
+_table_papers = set()
+for _m in re.finditer(r'<div class="paper[^"]*">\s*<div class="pa-head"><span class="pa-kind">.*?</span>'
+                      r'<span class="pa-src">(.*?)</span></div>(.*?)\n</div>', CH_LONGTABLE, re.S):
+    if re.search(r"\bTable\b", _m.group(2)):
+        _table_papers.add(_m.group(1))
+assert _table_papers == _TABLE_ALLOWED, (
+    f"the houses keep the table off paper; these papers in {chref('longtable')} now write it: "
+    f"{sorted(_table_papers - _TABLE_ALLOWED)}; and these no longer do: {sorted(_TABLE_ALLOWED - _table_papers)}")
 
 
 # ================================================================ assemble
@@ -6025,7 +6449,7 @@ LEG_INDEX = [
     ("Brother, there is always a", "brother"),
     ("Circle, a page of the Golden", "ix-gold"),
     ("Cultists, papers written by (see Brother)", "brother"),
-    ("Dread Mother, the (see the Long Table)", "longtable"),
+    ("Dread Mother, the (see Nobody&rsquo;s Mother)", "longtable"),
     ("Eclipse of 1878, the", "ix-eclipse"),
     ("Fever year, a house in the (New Orleans)", "ix-hear"),
     ("Gatherings, four camps in the high country", "ix-gatherings"),
@@ -6041,8 +6465,8 @@ LEG_INDEX = [
     ("Jubilee, a letter home from", "ix-letterhome"),
     ("Land warrants on Redemption", "ix-warrants"),
     ("Llano, longer going east", "ix-llano"),
-    ("Long Table, the", "longtable"),
-    ("Long Table, seats at the, sold", "ix-seats"),
+    ("Long Table, the, as the saloons say", "longtable"),
+    ("Table, a seat at the, sold", "ix-seats"),
     ("Long train, the", "ix-blacktrain"),
     ("Mexico, and the river door to Jubilee", "ix-otherdoor"),
     ("Nine chairs (a skipping rhyme)", "ix-ninechairs"),
@@ -6201,7 +6625,7 @@ LEG_INDEX = [
     ("Leviticus, the verse left out of", "ix-landismine"),
     ("Sister, a letter from a", "ix-sister"),
     ("House across the river, the", "ix-sister"),
-    ("Table, why it will not sit with the faithful", "ix-notours"),
+    ("Houses, why they will not sit with the faithful", "ix-notours"),
     ("Book with names in it, the", "ix-namebook"),
     ("Midwife on the Sabine, a", "ix-namebook"),
     ("Commission, a witch hunter&rsquo;s", "ix-commission"),

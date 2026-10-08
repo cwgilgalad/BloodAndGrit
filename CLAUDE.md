@@ -123,8 +123,8 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.56 | 290 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.41 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.27 | 226 | none (182 creatures) |
-| The Book of Legends | v1.9 | 204 | none (375 documents) |
-| The Legends Companion | v1.0 | 263‡ | none (a story behind every section of the Book of Legends) |
+| The Book of Legends | v1.10 | 225‡ | none (403 documents) |
+| The Legends Companion | v1.1 | 352‡ | none (a story behind every section of the Book of Legends) |
 | Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
@@ -136,8 +136,8 @@ every page number live via the paginator, exactly like the original TOC. New in 
 worked sample county, **Perdition Basin** (`perdition_map.py` draws its two-layer SVG map, a
 clean player map and a secrets-annotated Keeper map, from one shared coordinate model).
 
-‡ Measured in the cloud's Chromium on 2026-09-29, the day the book was written; re-measure it in Edge at the
-next ship.
+‡ Measured in the cloud's Chromium with the books' own web fonts, on 2026-10-08, for books-v1.17. That render
+agreed with the laptop's Edge on the Book of Legends v1.8 (177), but re-measure both in Edge at the next ship.
 
 † Page counts as rendered on the user's Windows laptop (Edge/Chromium, July 2026). **Pagination
 is environment-dependent:** the Linux/cloud environment that measured earlier counts (163/73/130)
@@ -183,7 +183,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 375 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 403 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
 | **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -618,7 +618,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.9) — structure & conventions
+## The Book of Legends (v1.10) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -688,10 +688,34 @@ chapter moves the arc, so score it against its neighbours before you do.
   the read-before-shipping list above: the answer from Nicodemus in *Emigrants Wanted*, the letters of
   the Tenth Cavalry's first sergeant, and the two Painted Mesa papers (the deputy surveyor's notes and the
   land office letter), since the Mesa people stand in for a real nation.
+- **v1.10 (Cole, 2026-10-08): every Calling, a quieter Long Table, and Washington's silence.** Three
+  rules came out of it, and each is held by something that runs.
+  **Every Calling has a story.** Four papers went in for the Callings v1.9 hadn't reached (the Gunhand,
+  the Gambler, the Mountain Man, the Drifter), each in a different chapter. The Legends Companion tags
+  every entry with the Callings it gives a way in for and stops its build if any Calling in
+  `chargen.json` has none, so a paper cut from this book that was a Calling's only story is caught there.
+  **The houses never write the table down.** The chapter is *Nobody's Mother* now, not *The Long Table*,
+  and its opening says the houses lent papers and asked for them back. Outsiders say Long Table: the
+  bounty men, the saloons, a Kansas City court, A. Crail. The houses don't, on paper, with one exception
+  printed with its writer's request to have it back. `_TABLE_ALLOWED` in the builder lists the two papers
+  in the chapter allowed to write the word, and any other fails the build. A new house paper that needs
+  the Table says "them", or draws it (the tithe book heads its columns with a drawing of an oblong and its
+  chairs), or leaves it out. Keep all the detail; it is the naming that the houses won't do.
+  **Redemption is the loudest thing in the book, and Washington writes none of it down.** Everybody in
+  the Territories knows about Jubilee (the papers, the songs, a dime novel that sold sixty thousand), and
+  *Respectfully Forwarded* shows the forgetting done one office at a time: the census told not to count
+  it, the map plate re-engraved, the Record's nine minutes of silence, the Post Office and the second-class
+  rate, *File. No action.* *Why, Since You Ask* is the in-world answer to why nobody today has heard of it.
+  Keep both halves: anything new about Redemption should be something everybody knew, and anything
+  new from Washington should be a perfectly regular way of not seeing it. Nobody at Washington lies.
+  **The preacher stays faint.** One clerk tells it, the women at Jubilee tell it and never twice the same
+  one, and the editor nearly left it out: the Circle answers to a preacher who promised the country as it
+  was before the war. It is the only hint in the book that a False Prophet runs the Golden Circle, and it
+  must stay a hint. Never confirm it here.
 - **No face of the Old Dark is named.** `verify_rules.py::check_face_silence` fails the build if one
   ever is, and it was proved by sabotage the day the book was written and again on 2026-09-25, when
   the Patrons became faces.
-- **Counted, not remembered.** `375` documents, `163` provenance notes, `127` editor's notes: the
+- **Counted, not remembered.** `403` documents, `172` provenance notes, `138` editor's notes: the
   builder prints those counts, and `audit_consistency.py` holds every copy this file and README type
   to the built book. (This bullet used to say nothing else in the repo typed them, while README and
   two rows of this file typed the 98.)
@@ -721,7 +745,7 @@ chapter moves the arc, so score it against its neighbours before you do.
 
 ---
 
-## The Legends Companion (v1.0) — structure & conventions
+## The Legends Companion (v1.1) — structure & conventions
 
 The Keeper's Companion to the Book of Legends, written 2026-09-29 on Cole's request for "the stories
 behind each of the sections in each chapter", told complete, consistent with the lore, tied to each
@@ -766,6 +790,17 @@ three parts:
   horror film and television, folklore and history, and each companion entry follows its source's
   arc retold in the game's lore. The book never names a source, for the reason the Book of Legends
   gives: each one was rewritten so none sounds like it.
+
+**Every Calling has a way in (v1.1).** Each entry's `callings=` names the Player's Book Callings it gives a
+player a way into, checked against `chargen.json`. *Appendix: A Legend for Every Calling* is generated from
+those tags, and the build stops if any Calling has no story. A new entry with somebody of a trade at its
+centre should carry the tag.
+
+**Redemption is loud and the houses are quiet.** *Before You Open It* says so, and the entries keep it: the
+whole Southwest talks about Jubilee and Washington has arranged to forget it (*Why, Since You Ask* has the
+Keeper's answer to why nobody remembers Redemption, with four ways it can end and none picked), while the
+houses never put the Table's name on paper. The entries say Long Table freely, because the companion is
+Keeper-side; what they tell the Keeper to do at the table is keep it out of every house's mouth.
 
 **Nothing structural is typed.** Keeper's Book chapters are written `[[kb:anchor]]`, Book of Legends
 chapters `[[ch:anchor]]`, and links to another entry `[[ref:slug]]`, and the build resolves all three
@@ -916,11 +951,12 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 ## Roadmap / open threads (not yet built)
 
-- **FIRST, NEXT SESSION: carry the Book of Legends v1.9 into the other books and GritKeeper (Cole,
-  2026-09-29).** Cole approved a proposal in the cloud session that built Legends v1.9 and asked for
-  the rest of it to wait for a session after his weekly usage resets, with this as the priority. v1.9
-  changed only the Book of Legends. What the other books and the app need, so that all of them tell
-  the same country:
+- **FIRST, NEXT SESSION ON THE LAPTOP: carry the Book of Legends v1.9 and v1.10 into the other books and
+  GritKeeper (Cole, 2026-09-29; v1.10 added 2026-10-08).** Cole approved a proposal in the cloud session
+  that built Legends v1.9 and asked for the rest of it to wait, with this as the priority. Both versions
+  shipped in books-v1.17 with the Legends Companion, and both changed only the Book of Legends and the
+  companion, because any Keeper's or Player's Book bump is a signed GritKeeper patch and the cloud can't
+  sign. What the other books and the app need, so that all of them tell the same country:
   1. **Keeper's Book Ch. XV, the Army as a fifth Power.** *The Army* (with Washington behind it) passes
      the Powers test: it owns the posts, wants a quiet frontier and would rather not see Redemption, and
      can be joined, bought or fought. Running notes: the Tenth is the regiment sent first; the salt
@@ -937,6 +973,18 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
      at Yuma, patrols on United States ground, the seminary's sermon on Leviticus 25), and the Committee
      on Lands, which buys what the list says and does not know who writes it. Keep it the same list the
      Keeper's *Running it* note already describes.
+  3a. **Keeper's Book Ch. XV, Washington's silence (v1.10).** A paragraph under Redemption on why the United
+     States won't see it, matching the retired clerk in the Book of Legends' *Why, Since You Ask*: a country
+     it doesn't recognise can't be at war with it; what was settled at Wormley's in 1877 left the river alone;
+     the Treasury pays its interest in gold to men you'd know; and the old clerks' belief that a place left
+     unwritten for a generation stops being there. Say plainly that this is the answer to a player who asks
+     why history never mentions Redemption, and point at the companion's four endings.
+  3b. **Keeper's Book Ch. XV, the Circle's preacher (v1.10).** One sentence in the Circle's *Running it*: the
+     faintest rumour says the Circle answers to a preacher who promised the country as it was before the war,
+     which makes a False Prophet one of the ways to hold who writes the list. Rumour only, as the Book of
+     Legends keeps it.
+  3c. **Keeper's Book Ch. XV, the Dread Mother (v1.10).** Add that the houses never write the Table's name
+     down, which the Book of Legends now holds as a build rule, so a Keeper keeps it out of their mouths.
   4. **Keeper's Book Ch. VII, *When Two Congregations Meet*,** a d6 under the *two hands of one body*
      rule, for the cultists at odds that the Book of Legends now shows.
   5. **Player's Book glossary, *Pinkerton*.** It says the Agency is hired by railroads, mine owners and
@@ -946,8 +994,9 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
      re-mirror `GritKeeper/` and rezip, on the laptop. Read the Reference tab for any text quoting Ch.
      XV. The Bestiary's two proposed stat blocks (*An Agency Man*, *The Grey*) were declined, so
      `creatures.json` does not move.
-  7. **Measure the Book of Legends in Edge.** v1.9's 204 pages and its fallback Contents numbers were
-     measured in the cloud's Chromium with the book's own fonts, which agreed with the laptop on v1.8.
+  7. **Measure the Book of Legends and the Legends Companion in Edge.** The Legends' 225 pages and its
+     fallback Contents numbers, and the companion's 352, were measured in the cloud's Chromium with the
+     books' own fonts, which agreed with the laptop on v1.8.
 
 - ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
@@ -962,8 +1011,8 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   county out by Ground, and one list of places feeds the Player's Book and all three modules.
 - ~~**A Book of Legends**~~, **DONE (v1.0 2026-09-19, v1.8 2026-09-26).** A separate book of the
   Territory's legends, drawing on all three core books.
-- ~~**A Keeper's companion to the Book of Legends**~~, **DONE (Legends Companion v1.0, 2026-09-29).**
-  The story behind every section, for the Keeper. Not yet on a Release page; it ships with the next.
+- ~~**A Keeper's companion to the Book of Legends**~~, **DONE (Legends Companion v1.0, 2026-09-29;
+  v1.1 shipped in books-v1.17, 2026-10-08).** The story behind every section, for the Keeper.
 - **Discord / online play**: proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
@@ -1015,11 +1064,10 @@ change them all:
   tag with no page. It held for ten days. On 2026-08-19 thirty-four release pages carrying 1.9 GB of
   zips nobody downloads were deleted, the history moved to `RELEASES.md`, and this bullet was not
   corrected, so the doc and the repo disagreed until somebody read both.)*
-- **One Release page carries the whole game, as of 2026-08-27.** It holds eleven assets from the
-  next ship on: the three zips and the eight PDFs loose beside them (the Book of Legends joined as
-  its own PDF on Cole's word, 2026-09-21, and the Legends Companion was written on 2026-09-29 and
-  first ships with the release after that; until then the Release page carries ten and README's
-  Companion link waits for it). A ship tags whatever component moved, creates the new
+- **One Release page carries the whole game, as of 2026-08-27.** It holds eleven assets: the three
+  zips and the eight PDFs loose beside them (the Book of Legends joined as its own PDF on Cole's word,
+  2026-09-21, and the Legends Companion first shipped in books-v1.17 on 2026-10-08). A ship tags whatever
+  component moved, creates the new
   page with **every asset attached including the parts that did not change**, and deletes the page it
   supersedes. *(This replaced three per-component pages and the step that went with them: GitHub
   gives `Latest` to whatever was published most recently, and `README.md` aims its download button

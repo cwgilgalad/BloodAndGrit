@@ -8,6 +8,77 @@ Desktop\Git repos.)
 
 ---
 
+- **Every Calling, a quieter Long Table, and why nobody remembers Redemption. The Book of Legends v1.10 and the
+  Legends Companion v1.1 (2026-10-08).**
+
+  Cole asked for three things in the Book of Legends and a release. Most if not all of the Callings should be
+  represented throughout it. The Long Table should keep all its detail and seem a good deal more secret. And
+  Redemption should be the thing people know about, far more than the Long Table, with a reason in the lore why
+  nobody has heard of it today: the federal government covering it up, using whatever the game's own lore allows.
+
+  **What was waiting.** The Book of Legends v1.9, written in another session on 2026-09-29, had never been merged,
+  and neither had the Legends Companion. Both are merged here, and v1.9 had already done half of the first ask and
+  a good part of the third (Washington's papers, the Golden Circle, Redemption in the open). This release builds
+  on it, and books-v1.17 ships v1.9 and v1.10 together.
+
+  **Every Calling.** Four papers went in for the Callings v1.9 hadn't reached, each in a different chapter. The
+  Gunhand is *The Sure-Hand Cordial* in the Frauds: two gunmen drink a peddler's cordial that's water and gentian
+  and shoot each other through the right hand. The Gambler is *A Run of Luck at Paradise*, in Paper, Ink &amp;
+  Interest: a cheat shot at Charleston in 1881 writes home in 1882 from a camp where he can't lose. The Mountain
+  Man is *The Last Camp on the Salmon* in the Trades, a trapper's partner killed by something that kept a tree
+  between itself and him. The Drifter is *The Man Ahead on the Road*: a horse-breaker rides from the Pecos to
+  Yuma, passing the same man on foot every day, and wires home to learn he drowned at Horsehead Crossing. The
+  Legends Companion now tags each entry with the Callings it gives a way in for, prints *Appendix: A Legend for
+  Every Calling*, and stops the build if any of the eighteen in `chargen.json` has no story. They run through
+  sixteen chapters.
+
+  **A quieter Long Table.** The chapter is now *Nobody's Mother*, after the skipping rhyme. Its opening says the
+  houses lent papers and asked for them back, and that the bounty men and the saloons say Long Table and the houses
+  never write it down. That's now true of every paper. The one letter that names the table is followed by its
+  writer's note a month later asking for it back. The notice for Mother Harrow carries no sender and reads *A
+  KINDNESS WILL BE OWED*. The letter from New Orleans to the Kansas City police court says there's no such table and
+  nobody sells seats at it. The tithe book heads its columns with a drawing instead of a word. The card asking a
+  house to stand, Mother Harrow's letter, the Fort Worth letter and the Wind River letter all lost the name, and
+  nothing else in them changed. `build_legends.py` lists the two papers in the chapter allowed to write *Table*
+  (that letter, and A. Crail's, who is an outsider) and fails the build on any other. Sabotage proved it.
+
+  **Redemption, known to everybody and written down nowhere.** Jubilee's chapter now opens by saying everybody in
+  the Territories knows about it, and Songs &amp; Sayings has *gone up the branch* and *civil as Jubilee*. *Ten Cents
+  at Any News-Stand* is a dime novel that sold sixty thousand copies, until the Post Office questioned the story
+  paper's second-class rate and the second edition turned Jubilee into Zion City. Respectfully Forwarded gains
+  four papers on how the forgetting is done. The census tells its enumerators not to count Jubilee, and the one
+  who did burns his sheets. A Chicago map house takes the town off its plate and runs the branch out to a water
+  tank. A Kansas congressman revises his remarks eleven times and withdraws them. Then a retired War Department
+  clerk explains the policy. A country Washington doesn't recognise can't be at war with it. What was settled at
+  Wormley's hotel in 1877 left the river alone. Redemption pays its interest in gold to men you'd know. And the old
+  clerks believe a place unwritten for a generation stops being there, which is the game's own rule about books run
+  backward. The chapter's opening and closing say what the papers add up to. Per the List gains the faintest
+  rumour in the book: the women at Jubilee say the Circle answers to a preacher who promised them the country as it
+  was before the war.
+
+  **The Legends Companion v1.1** has forty-eight new entries, thirty-nine for the v1.9 sections and nine for
+  these, plus openings for the two new chapters. *Why, Since You Ask* is where the Keeper gets the answer to
+  why nobody remembers Redemption, with four ways it can end, and none picked. The entries v1.9 and v1.10 changed
+  underneath have been rewritten to match (the seats, the notice, the tithe book, the witch's letter, Mother Harrow,
+  the Wind River house, W. F. Kinnear's two files, the sayings). The front matter gains the Kinnear, Crail and
+  Redemption threads, and its real-nation sentence now also names the papers that speak from real history.
+
+  **Names.** Every new name was checked against the seven books. Dell Grady became Dell Sorrell, because the
+  Keeper's Book has a Grady in a name table, and Dr. Elias Tabor became Dr. Orville Tabor, because the prose audit
+  lists Elias among the names a model reaches for.
+
+  **Still to do.** The Keeper's Book and the Player's Book haven't caught up with v1.9 or v1.10, and the roadmap in
+  `CLAUDE.md` now lists what each needs, including Ch. XV's half of Washington's silence. Any Keeper's or Player's
+  Book bump moves the status bar, which is a signed GritKeeper patch and the laptop's work. The papers that speak for
+  real nations or from real history want their readers before they're relied on. Page counts are the cloud's and
+  want measuring in Edge.
+
+  Checks: `verify_rules.py` 0 drift in 2,227 cross-checks. `audit_ai_tells.py` finds no hard tells in either
+  book and passes `--strict`; burstiness 1.15 and 1.40, em dashes 0.1 and 0.0 per thousand words. The Book of
+  Legends measures 225 pages (204 before) and the companion 352 (263 before), both at desktop and mobile width,
+  with nothing clipped at true scale, no mobile h-scroll, and every Contents line and Index entry resolving. Both
+  rebuild byte-identical.
+
 - **The Legends Companion, a fifth book, for the Keeper. The Legends Companion v1.0 (2026-09-29).**
 
   Cole asked for a Keeper's companion to the Book of Legends: the story behind every section of
