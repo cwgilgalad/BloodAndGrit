@@ -68,6 +68,78 @@ Desktop\Git repos.)
   both ways: the seven other PDFs read exactly as before (1,510 rows, the same count in every book),
   and a wrong number drawn beside a Contents row and beside an Index row is caught.
 
+- **The Callings, Redemption in the open, the cultists at odds, and Washington. The Book of Legends
+  v1.9 (2026-09-29).**
+
+  Cole read v1.8 and found the book thin on seven Callings (the Engineer, the Padre, the Sister, the
+  Prospector, the Shaman, the Marshal and above all the Witch Hunter), on Redemption, which he wants as
+  present as the Long Table and a good deal less secret, on the Dark Cultists, who should be everywhere
+  and never together, and on the United States government, the cavalry and the Pinkertons. He approved a
+  proposal of seventeen items for this book and asked that the Keeper's Book, the Player's Book and
+  GritKeeper follow in a later session; what they need is written at the top of the roadmap in
+  `CLAUDE.md`. Seventy-four papers went in, the book goes from 301 papers to 375 and from seventeen
+  chapters to nineteen, and it comes to 204 pages, not the 240 the proposal estimated.
+
+  **Two new chapters.** *Respectfully Forwarded* goes straight after Jubilee: the Department of
+  Justice engaging Pinkerton's by contract (it has no detectives of its own, which is true of the
+  period, and Cole asked that the Agency's federal work be explicit), the Agency's printed principles, a
+  census, a patent refused for a lamp that shows what is there, a deputy marshal's fee bill for pursuing
+  a man who was already dead, a land office told it is not concerned with a purchaser's motives, the
+  Dead Letter Office and its letters to Jubilee, a captain's report on Jubilee endorsed up the chain to
+  *File. No action.* a year before the Secretary of War told Congress he had no information, forty
+  wagons of salt, and the surgeon on the Pecos, moved in from the Trades. *Per the List* goes straight
+  before the Long Table: the Golden Circle's degree card, the minutes of its Committee on Lands (the
+  member who asked where the list comes from found his own quarter section on it), its agent in
+  Perdition Basin who would like to be told what he is looking at, and the committee's clerk, who walked
+  out through the sand hills, told a Pinkerton operative that nobody at Jubilee knows who writes the
+  list, and went back.
+
+  **Three threads the length of the book.** A. Crail, a witch hunter, is a town meeting in the Frauds
+  where somebody looked at the door, a card of rates and a letter on choosing a quarry in the Trades, a
+  manslaughter trial in the Faces, and in the Long Table a leaf of his book of names and his answer to
+  the Table's notice on Mother Harrow, whose price is the name of the house that kept his mother. W. F.
+  Kinnear of the Agency runs from a horse-thief report under the Justice Department's contract to the
+  Teal file, the four camps, the Circle's clerk and, at the end of the cosmic chapter, the Agency's file
+  on Ashby, closed by the Department the week after he asked to go and look for him. Redemption is in
+  the open before the Circle gets a chapter: two sections staked on the Painted Mesa, a recruiting
+  circular with the answer written on its back at Nicodemus, a bond, a certificate of admission, an
+  Englishwoman's week at Jubilee, a marching song and its parody, a claim bought for everything but the
+  ore, a sermon on Leviticus 25, and a sergeant of the Tenth watching the line.
+
+  **The Callings, and the cultists.** The Padre asks his bishop for the rite and does it without; the
+  Sister writes about the house across the river that does her order's work and asks for nothing; the
+  Shaman is a bonesetter who called a frozen man back and has not sung since; the Marshal is Coyle's
+  own day-book with a line struck through; the Engineer is the lamp; the Prospector is the ore. The
+  cultists are a drummer's route book with a word beside a name in every town, a burial society, a
+  township that was fat in the hard winter, two creeds identical but for the name I took out of each, a
+  kind letter between two congregations, a partner shot for serving the wrong one, and a saddler at
+  Dodge who lent a brother his hands for an afternoon.
+
+  **Set for the page count.** Cole asked for everything a good publisher would do to stay short of 240
+  pages. A ledger now runs on to the next page with its column heads repeated (a paginator patch in the
+  builder; every table in a paper used to move whole and strand a third of a page), the detailed
+  Contents is in two columns, and the papers are set a little closer. On the v1.8 text alone that was
+  177 pages down to 166. The ledger heads, which the shell's table style had been printing dark on dark,
+  got the ruled look their CSS meant them to have, and a letter's signature is no longer carried over
+  a page by itself: the paginator had set two initials on a fresh page as a "(cont.)" of their own,
+  and the last paragraph now goes over with them. *A Face Not Their Own* now counts its own cases,
+  because the new trial made its typed "four" wrong, and the Long Table no longer says the chapter
+  before it ended at a green door.
+
+  **Still to do.** The other books and GritKeeper, as above. Three papers speak from real history and
+  want the same read as the four already listed: the answer from Nicodemus, the sergeant of the Tenth,
+  and the two Painted Mesa papers. The page count was measured in the cloud with the book's own fonts.
+
+  Checks: `verify_rules.py` finds 0 drift in 2,226 cross-checks, and no face of the Old Dark is named
+  anywhere in the book. `audit_consistency.py` is clean in 132,244, with the new counts in README and
+  `CLAUDE.md` held to the built book. `audit_ai_tells.py --books` finds no hard tells, and the book
+  reads 1.17 for burstiness and 0.1 em dashes per thousand words. It measures 204 pages at desktop and
+  at mobile width, with nothing clipped at true scale, no mobile h-scroll, and all 175 Contents lines
+  and 244 Index entries resolving; every ledger row prints exactly once, no signature goes over alone,
+  and all ten artifacts rebuild byte-identical. `verify_all.py --quick` passes once the tags are
+  fetched into the cloud's shallow clone. The app build and the playtest harness need .NET, which the
+  cloud does not have, and nothing under `GK/` changed.
+
 - **The PDF audit reads a wrapped Index row (2026-09-26).**
 
   The release gate failed on the Book of Legends' new print with *sheet 176: a row prints 137 and

@@ -123,7 +123,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.56 | 290 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.41 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.27 | 226 | none (182 creatures) |
-| The Book of Legends | v1.8 | 177 | none (301 documents) |
+| The Book of Legends | v1.9 | 204 | none (375 documents) |
 | The Legends Companion | v1.0 | 263‡ | none (a story behind every section of the Book of Legends) |
 | Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
@@ -183,7 +183,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 301 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 375 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
 | **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -618,7 +618,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.8) — structure & conventions
+## The Book of Legends (v1.9) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -628,9 +628,14 @@ list, which is generated.
 **The order is a slow burn, and it is set in one place (Cole, 2026-09-24).** `ORDER` in
 `build_legends.py` holds the chapters in sequence, and every numeral, Contents line, running head
 and "Chapter N" in the prose is read off it through `chref()`. Nothing in the book types a chapter
-number any more. That matters, because the book has been renumbered twice: once when the Trades
-chapter went in (which left an editor's note pointing at the wrong chapter for three versions), and
-again in v1.3. The Basin opens it because the plot lives there. The frauds and the weather come
+number any more. That matters, because the book has been renumbered three times: once when the Trades
+chapter went in (which left an editor's note pointing at the wrong chapter for three versions), again
+in v1.3, and again in v1.9, when *Respectfully Forwarded* (Washington's papers and the Agency's) went
+in straight after Jubilee and *Per the List* (the Golden Circle) straight before the Long Table. The
+v1.9 renumbering still broke two sentences that had no numeral in them: the Long Table's opening said
+the chapter before it "ended at a green door", and *A Face Not Their Own* said it held four cases when
+it held five. Read a chapter's opening and closing lines after you move anything near it; they are
+where a chapter describes its neighbours. The Basin opens it because the plot lives there. The frauds and the weather come
 straight after, so a reader learns what a lie sounds like early. From there each chapter is a little
 harder to explain away than the last, up through the Long Table, the Dark Cultists' own papers and
 the cosmic chapter, to the satchel. Two habits carry the burn and should be kept: **every thread is
@@ -668,18 +673,47 @@ chapter moves the arc, so score it against its neighbours before you do.
   For*, and the Ojibway woman's statement in *The Wendigo of the North*. Have somebody from the nation
   in question read each before it ships. The Calendar's 1879 line, the children sent east to school,
   is the one to settle first.
+- **v1.9 (Cole, 2026-09-29) gave the underused Callings, Redemption, the Dark Cultists and the
+  government their share.** Seventy-four papers went in. Three threads run the length of the book, and
+  a later session should keep each one consistent: **A. Crail**, a witch hunter met at a town meeting in
+  the Frauds, then in the Trades, on trial in the Faces, and last in the Long Table, where his book of
+  names and his answer to the Table's notice on Mother Harrow are; **W. F. K.** (Kinnear), a Pinkerton
+  operative whose reports run from a Department of Justice contract in *Respectfully Forwarded* through
+  the Teal file, the four camps, the Circle's runaway clerk, to the Agency's file on Ashby at the end of
+  *What the Country Stands On*; and **Redemption in the open**, planted in the Basin, Paper, Songs,
+  Trades and Ground chapters before the Circle gets its own. **The Pinkertons work for the federal
+  government in this book, by contract, and say so** (Cole's word): the Department of Justice has no
+  detectives of its own and hires the Agency, which is historically true of the 1870s and '80s. Keep
+  that explicit in anything that adds to the Agency. Three more papers speak from real history and join
+  the read-before-shipping list above: the answer from Nicodemus in *Emigrants Wanted*, the letters of
+  the Tenth Cavalry's first sergeant, and the two Painted Mesa papers (the deputy surveyor's notes and the
+  land office letter), since the Mesa people stand in for a real nation.
 - **No face of the Old Dark is named.** `verify_rules.py::check_face_silence` fails the build if one
   ever is, and it was proved by sabotage the day the book was written and again on 2026-09-25, when
   the Patrons became faces.
-- **Counted, not remembered.** `301` documents, `124` provenance notes, `93` editor's notes: the
+- **Counted, not remembered.** `375` documents, `163` provenance notes, `127` editor's notes: the
   builder prints those counts, and `audit_consistency.py` holds every copy this file and README type
   to the built book. (This bullet used to say nothing else in the repo typed them, while README and
   two rows of this file typed the 98.)
 - The document helpers (`paper`, `news`, `wire`, `depo`, `filedoc`, `bill`, `song`, `ledger`,
-  `field`, and since v1.3 `card`, `tract` and `scrip`) each generate one kind of paper. Add a kind
-  by adding a helper and a CSS block, not by hand-writing markup into a chapter. A kind that must
-  never be split across a page (a card, a banknote) puts its whole body in one inner box, because
-  the paginator only splits a `.paper` with more than two children.
+  `field`, since v1.3 `card`, `tract` and `scrip`, and since v1.9 `endorse` (an Army paper with its
+  chain of endorsements) and `form` (a printed form, the print roman and the hand italic)) each
+  generate one kind of paper. Add a kind by adding a helper and a CSS block, not by hand-writing
+  markup into a chapter. A kind that must never be split across a page (a card, a banknote) puts its
+  whole body in one inner box, because the paginator only splits a `.paper` with more than two
+  children.
+- **Set for the page count (v1.9).** Cole asked for everything a good publisher would do to keep the
+  book short of 240 pages. It came to three things, and together they took the v1.8 text from 177
+  pages to 166 before a paper was added, and the v1.9 book to 204. First, **a ledger runs on to the next
+  page with its column heads repeated**: the paginator patch in the builder splits a table inside a
+  paper by rows, and until then every account book and register moved whole and stranded a third of a
+  page behind it. Second, **the detailed Contents is set in two columns**, like the Index. Third, the
+  papers are set a little closer (leading, the space between papers, section heads at 24px). The
+  ledger heads also got the light, ruled look their CSS always meant them to have; the shell's
+  table style had been printing them dark on dark. And **a signature never goes over a page alone**:
+  when a letter's sign-off is what does not fit, the paragraph above it goes over with it. What is left are chapters whose last page is a third full, and
+  pulling those back means cutting about 250 words a chapter, which is an editor's call and was not
+  made.
 - **The face silence has an in-world reason now.** The editor says in *A Word Before* that where
   anybody named the thing they serve, the name came out, as Ashby did. Keep it that way: a paper
   may call it the Old Dark, "the thing" or "what she served", never by a face's name a player could
@@ -881,6 +915,39 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 
 ## Roadmap / open threads (not yet built)
+
+- **FIRST, NEXT SESSION: carry the Book of Legends v1.9 into the other books and GritKeeper (Cole,
+  2026-09-29).** Cole approved a proposal in the cloud session that built Legends v1.9 and asked for
+  the rest of it to wait for a session after his weekly usage resets, with this as the priority. v1.9
+  changed only the Book of Legends. What the other books and the app need, so that all of them tell
+  the same country:
+  1. **Keeper's Book Ch. XV, the Army as a fifth Power.** *The Army* (with Washington behind it) passes
+     the Powers test: it owns the posts, wants a quiet frontier and would rather not see Redemption, and
+     can be joined, bought or fought. Running notes: the Tenth is the regiment sent first; the salt
+     requisition and the Fort Yuma report forwarded to *File. No action.* are in the Book of Legends;
+     the Agency is paid to see what the Army is ordered not to. Be as plain about what that quiet
+     frontier costs the nations as the Player's Book's Peoples sections are. Add it to `XV_POWERS`, and
+     derive *"All four is a setting sourcebook"*, which is still typed, from `N_POWERS`.
+  2. **Keeper's Book Ch. XV, the Pinkertons work for the federal government.** Cole's word: make it
+     explicit. The Department of Justice has no detectives of its own and engages the Agency by
+     contract; railroads and mines hire it too. Name **W. F. Kinnear**, the operative whose reports run
+     through the Book of Legends, so a Keeper can bring him to the table.
+  3. **Keeper's Book Ch. XV, Redemption's reach and the Circle's list.** A paragraph on how Redemption
+     shows itself outside its line (circulars in Texas and Georgia, bonds offered at Kansas City, scrip
+     at Yuma, patrols on United States ground, the seminary's sermon on Leviticus 25), and the Committee
+     on Lands, which buys what the list says and does not know who writes it. Keep it the same list the
+     Keeper's *Running it* note already describes.
+  4. **Keeper's Book Ch. VII, *When Two Congregations Meet*,** a d6 under the *two hands of one body*
+     rule, for the cultists at odds that the Book of Legends now shows.
+  5. **Player's Book glossary, *Pinkerton*.** It says the Agency is hired by railroads, mine owners and
+     anybody else; add the Department of Justice.
+  6. **GritKeeper.** A Keeper's or Player's Book bump moves `KeeperBookVer` / `PlayerBookVer` in
+     `GK/source/MainForm.cs` and the version lines `update_readme.py` writes; then build, smoke, publish,
+     re-mirror `GritKeeper/` and rezip, on the laptop. Read the Reference tab for any text quoting Ch.
+     XV. The Bestiary's two proposed stat blocks (*An Agency Man*, *The Grey*) were declined, so
+     `creatures.json` does not move.
+  7. **Measure the Book of Legends in Edge.** v1.9's 204 pages and its fallback Contents numbers were
+     measured in the cloud's Chromium with the book's own fonts, which agreed with the laptop on v1.8.
 
 - ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
