@@ -105,8 +105,14 @@ def row_number(page, link, words):
         cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
         return any(o.x0 <= cx <= o.x1 and o.y0 <= cy <= o.y1 for o in others)
 
-    cand = [w for w in words if level(w) and w[0] > r.x1 - 2 and w[4].isdigit() and not linked(w)]
-    return int(min(cand, key=lambda w: w[0])[4]) if cand else None
+    # And the number is the very next word after the link. A Contents or Index row has nothing between its
+    # link and its number but a drawn leader; a cross-reference in prose has words. The companion's v1.1
+    # printed "Ashby (Chapter XVIII)). By 1886 he's left the Agency." and the year was read as a page.
+    cand = [w for w in words if level(w) and w[0] > r.x1 - 2 and not linked(w)]
+    if not cand:
+        return None
+    nearest = min(cand, key=lambda w: w[0])
+    return int(nearest[4]) if nearest[4].isdigit() else None
 
 
 

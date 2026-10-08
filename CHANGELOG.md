@@ -73,11 +73,25 @@ Desktop\Git repos.)
   real nations or from real history want their readers before they're relied on. Page counts are the cloud's and
   want measuring in Edge.
 
+  **`audit_pdf.py` takes only the next word as a row's number.** The companion's print failed it once more with *a
+  row prints 1886*, on a prose line that reads "File on N. Ashby (Chapter XVIII)). By 1886 he's left the Agency."
+  A Contents or Index row has nothing between its link and its number but a drawn leader, so the auditor now
+  reads the first word to the right of a link and counts it only if it's a number. The seven other PDFs read
+  exactly as before, row for row, and a wrong number drawn beside a row in four of the books is still caught.
+
+  **The six unchanged PDFs ride forward.** The Player's Book, the Keeper's Book, the Bestiary and the three
+  modules are byte-identical to what books-v1.16 and modules-v1.13 shipped, and the cloud's Chromium paginates
+  them a few pages differently from the laptop's Edge (the Player's Book prints 298 here and 290 there). So the
+  Release carries their laptop prints from the last Release, unchanged, and fresh prints only of the two books
+  that moved. GritKeeper and the modules zip are carried forward the same way.
+
   Checks: `verify_rules.py` 0 drift in 2,227 cross-checks. `audit_ai_tells.py` finds no hard tells in either
   book and passes `--strict`; burstiness 1.15 and 1.40, em dashes 0.1 and 0.0 per thousand words. The Book of
   Legends measures 225 pages (204 before) and the companion 352 (263 before), both at desktop and mobile width,
-  with nothing clipped at true scale, no mobile h-scroll, and every Contents line and Index entry resolving. Both
-  rebuild byte-identical.
+  with nothing clipped at true scale, no mobile h-scroll, and every Contents line and Index entry resolving. All
+  eleven built artifacts rebuild byte-identical, `audit_consistency.py` is clean in 176,940 cross-checks, and
+  `audit_pdf.py` reads 2,257 numbered rows across the eight PDFs, every one landing where it says. The playtest
+  check and the app build need .NET, which the cloud doesn't have; nothing under `GK/` but a README line moved.
 
 - **The Legends Companion, a fifth book, for the Keeper. The Legends Companion v1.0 (2026-09-29).**
 
