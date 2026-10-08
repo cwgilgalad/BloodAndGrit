@@ -58,6 +58,7 @@ def current_versions() -> dict:
         # The Legends builder stamps a VERSION constant rather than a cover line, the same
         # shape the three module builders use.
         "Book of Legends": _find("build_legends.py", r'VERSION = "([\d.]+)"'),
+        "Legends Companion": _find("build_legends_companion.py", r'VERSION = "([\d.]+)"'),
         "Module I": _find("build_module_salt.py", r'VERSION = "([\d.]+)"'),
         "Module II": _find("build_module_face.py", r'VERSION = "([\d.]+)"'),
         "Module III": _find("build_module_water.py", r'VERSION = "([\d.]+)"'),
@@ -94,6 +95,10 @@ CLAIMS = [
     ("CLAUDE.md", r"\| Module II: A Face Not His Own \| v[\d.]+ \|"),
     ("CLAUDE.md", r"\| Module III: What the Water Answers \| v[\d.]+ \|"),
     ("CLAUDE.md", r"## The Book of Legends \(v[^)]*\)"),
+    # The Legends Companion (2026-09-29): its row in the book table and its own section heading,
+    # written with their spans the day the book was, rather than four weeks later.
+    ("CLAUDE.md", r"\| The Legends Companion \| v[\d.]+ \|"),
+    ("CLAUDE.md", r"## The Legends Companion \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Player's Book \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Keeper's Book \(v[^)]*\)"),
     ("CLAUDE.md", r"## The Bestiary \(v[^)]*\)"),
@@ -119,6 +124,7 @@ TOKENS = [
     (rf"(Keeper's Book v){NUM}", "Keeper's Book"),
     (rf"(Bestiary v){NUM}", "Bestiary"),
     (rf"(Book of Legends v){NUM}", "Book of Legends"),
+    (rf"(Legends Companion v){NUM}", "Legends Companion"),
     (rf"(GritKeeper app v){NUM}", "GritKeeper"),
     (rf"(## GritKeeper \(v){NUM}", "GritKeeper"),
     (rf"(\*\*App version ){NUM}", "GritKeeper"),
@@ -131,6 +137,8 @@ TOKENS = [
     (rf"(## The Keeper's Book \(v){NUM}", "Keeper's Book"),
     (rf"(## The Bestiary \(v){NUM}", "Bestiary"),
     (rf"(## The Book of Legends \(v){NUM}", "Book of Legends"),
+    (rf"(\| The Legends Companion \| v){NUM}", "Legends Companion"),
+    (rf"(## The Legends Companion \(v){NUM}", "Legends Companion"),
     (rf"(\| Module I: The Salt at Coffin Wells \| v){NUM}", "Module I"),
     (rf"(\| Module II: A Face Not His Own \| v){NUM}", "Module II"),
     (rf"(\| Module III: What the Water Answers \| v){NUM}", "Module III"),

@@ -8,6 +8,223 @@ Desktop\Git repos.)
 
 ---
 
+- **Every Calling, a quieter Long Table, and why nobody remembers Redemption. The Book of Legends v1.10 and the
+  Legends Companion v1.1 (2026-10-08).**
+
+  Cole asked for three things in the Book of Legends and a release. Most if not all of the Callings should be
+  represented throughout it. The Long Table should keep all its detail and seem a good deal more secret. And
+  Redemption should be the thing people know about, far more than the Long Table, with a reason in the lore why
+  nobody has heard of it today: the federal government covering it up, using whatever the game's own lore allows.
+
+  **What was waiting.** The Book of Legends v1.9, written in another session on 2026-09-29, had never been merged,
+  and neither had the Legends Companion. Both are merged here, and v1.9 had already done half of the first ask and
+  a good part of the third (Washington's papers, the Golden Circle, Redemption in the open). This release builds
+  on it, and books-v1.17 ships v1.9 and v1.10 together.
+
+  **Every Calling.** Four papers went in for the Callings v1.9 hadn't reached, each in a different chapter. The
+  Gunhand is *The Sure-Hand Cordial* in the Frauds: two gunmen drink a peddler's cordial that's water and gentian
+  and shoot each other through the right hand. The Gambler is *A Run of Luck at Paradise*, in Paper, Ink &amp;
+  Interest: a cheat shot at Charleston in 1881 writes home in 1882 from a camp where he can't lose. The Mountain
+  Man is *The Last Camp on the Salmon* in the Trades, a trapper's partner killed by something that kept a tree
+  between itself and him. The Drifter is *The Man Ahead on the Road*: a horse-breaker rides from the Pecos to
+  Yuma, passing the same man on foot every day, and wires home to learn he drowned at Horsehead Crossing. The
+  Legends Companion now tags each entry with the Callings it gives a way in for, prints *Appendix: A Legend for
+  Every Calling*, and stops the build if any of the eighteen in `chargen.json` has no story. They run through
+  sixteen chapters.
+
+  **A quieter Long Table.** The chapter is now *Nobody's Mother*, after the skipping rhyme. Its opening says the
+  houses lent papers and asked for them back, and that the bounty men and the saloons say Long Table and the houses
+  never write it down. That's now true of every paper. The one letter that names the table is followed by its
+  writer's note a month later asking for it back. The notice for Mother Harrow carries no sender and reads *A
+  KINDNESS WILL BE OWED*. The letter from New Orleans to the Kansas City police court says there's no such table and
+  nobody sells seats at it. The tithe book heads its columns with a drawing instead of a word. The card asking a
+  house to stand, Mother Harrow's letter, the Fort Worth letter and the Wind River letter all lost the name, and
+  nothing else in them changed. `build_legends.py` lists the two papers in the chapter allowed to write *Table*
+  (that letter, and A. Crail's, who is an outsider) and fails the build on any other. Sabotage proved it.
+
+  **Redemption, known to everybody and written down nowhere.** Jubilee's chapter now opens by saying everybody in
+  the Territories knows about it, and Songs &amp; Sayings has *gone up the branch* and *civil as Jubilee*. *Ten Cents
+  at Any News-Stand* is a dime novel that sold sixty thousand copies, until the Post Office questioned the story
+  paper's second-class rate and the second edition turned Jubilee into Zion City. Respectfully Forwarded gains
+  four papers on how the forgetting is done. The census tells its enumerators not to count Jubilee, and the one
+  who did burns his sheets. A Chicago map house takes the town off its plate and runs the branch out to a water
+  tank. A Kansas congressman revises his remarks eleven times and withdraws them. Then a retired War Department
+  clerk explains the policy. A country Washington doesn't recognise can't be at war with it. What was settled at
+  Wormley's hotel in 1877 left the river alone. Redemption pays its interest in gold to men you'd know. And the old
+  clerks believe a place unwritten for a generation stops being there, which is the game's own rule about books run
+  backward. The chapter's opening and closing say what the papers add up to. Per the List gains the faintest
+  rumour in the book: the women at Jubilee say the Circle answers to a preacher who promised them the country as it
+  was before the war.
+
+  **The Legends Companion v1.1** has forty-eight new entries, thirty-nine for the v1.9 sections and nine for
+  these, plus openings for the two new chapters. *Why, Since You Ask* is where the Keeper gets the answer to
+  why nobody remembers Redemption, with four ways it can end, and none picked. The entries v1.9 and v1.10 changed
+  underneath have been rewritten to match (the seats, the notice, the tithe book, the witch's letter, Mother Harrow,
+  the Wind River house, W. F. Kinnear's two files, the sayings). The front matter gains the Kinnear, Crail and
+  Redemption threads, and its real-nation sentence now also names the papers that speak from real history.
+
+  **Names.** Every new name was checked against the seven books. Dell Grady became Dell Sorrell, because the
+  Keeper's Book has a Grady in a name table, and Dr. Elias Tabor became Dr. Orville Tabor, because the prose audit
+  lists Elias among the names a model reaches for.
+
+  **Still to do.** The Keeper's Book and the Player's Book haven't caught up with v1.9 or v1.10, and the roadmap in
+  `CLAUDE.md` now lists what each needs, including Ch. XV's half of Washington's silence. Any Keeper's or Player's
+  Book bump moves the status bar, which is a signed GritKeeper patch and the laptop's work. The papers that speak for
+  real nations or from real history want their readers before they're relied on. Page counts are the cloud's and
+  want measuring in Edge.
+
+  **`audit_pdf.py` takes only the next word as a row's number.** The companion's print failed it once more with *a
+  row prints 1886*, on a prose line that reads "File on N. Ashby (Chapter XVIII)). By 1886 he's left the Agency."
+  A Contents or Index row has nothing between its link and its number but a drawn leader, so the auditor now
+  reads the first word to the right of a link and counts it only if it's a number. The seven other PDFs read
+  exactly as before, row for row, and a wrong number drawn beside a row in four of the books is still caught.
+
+  **The six unchanged PDFs ride forward.** The Player's Book, the Keeper's Book, the Bestiary and the three
+  modules are byte-identical to what books-v1.16 and modules-v1.13 shipped, and the cloud's Chromium paginates
+  them a few pages differently from the laptop's Edge (the Player's Book prints 298 here and 290 there). So the
+  Release carries their laptop prints from the last Release, unchanged, and fresh prints only of the two books
+  that moved. GritKeeper and the modules zip are carried forward the same way.
+
+  Checks: `verify_rules.py` 0 drift in 2,227 cross-checks. `audit_ai_tells.py` finds no hard tells in either
+  book and passes `--strict`; burstiness 1.15 and 1.40, em dashes 0.1 and 0.0 per thousand words. The Book of
+  Legends measures 225 pages (204 before) and the companion 352 (263 before), both at desktop and mobile width,
+  with nothing clipped at true scale, no mobile h-scroll, and every Contents line and Index entry resolving. All
+  eleven built artifacts rebuild byte-identical, `audit_consistency.py` is clean in 176,940 cross-checks, and
+  `audit_pdf.py` reads 2,257 numbered rows across the eight PDFs, every one landing where it says. The playtest
+  check and the app build need .NET, which the cloud doesn't have; nothing under `GK/` but a README line moved.
+
+- **The Legends Companion, a fifth book, for the Keeper. The Legends Companion v1.0 (2026-09-29).**
+
+  Cole asked for a Keeper's companion to the Book of Legends: the story behind every section of
+  every chapter, told whole, consistent with the lore, tied together where the stories touch, and
+  left open enough that a Keeper can make something of it at the table. It's built by
+  `build_legends_companion.py` into `legends-companion.html`, 263 pages and about 74,000 words.
+
+  **What's in it.** Each of the Book of Legends' 115 sections gets an entry, and the satchel at the
+  back gets eight more, one for each thing Ashby left in it. An entry runs the same way every time:
+  who's in it, what happened (the complete story, told plainly for the Keeper), what's left open
+  (one question and three or four answers, none of them marked right), a note on running it, the
+  Bestiary creatures it uses with their Tiers, and the other entries it's tied to. Each chapter opens
+  with a page on what its papers are hiding between them. The front matter gives the Keeper what the
+  editor won't say about Ashby, four ways his story can end, a timeline read off the entries' own
+  dates, and a map of the threads that run through more than one chapter. The stories the papers
+  were drawn from are the spine of each entry, retold in the game's own country; as in the Book of
+  Legends, no source is named.
+
+  **What it keeps.** The Old Dark is one presence and the companion never lets it be seen to want.
+  It's a Keeper's book, so a face may be named where the Keeper's Book already names it, but the face
+  under Perdition Basin never is, and the three Ch. XVI legends keep their four readings apiece and
+  never explain each other. The four papers that speak for a real nation carry the same request here
+  as in the Book of Legends, and the sentence that names them is built from one list, count and all.
+
+  **Nothing is typed twice.** The chapter list, every section title, the chapter numerals and the
+  anchors are read out of the built `legends.html`; every Keeper's Book cross-reference is read out of
+  `keeper-handbook.html` and fails the build if the anchor is gone; every creature is looked up in
+  `GK/rules/Data/creatures.json` and a name that doesn't resolve stops the build with suggestions.
+  The build also stops if a section has no entry, if an entry names a section that isn't there, if a
+  chapter has no opening page, or if any internal link is dead.
+
+  **`book_shell.py`.** The Book of Legends' builder said a fifth book should lift the shell transform
+  out of the builders, and this is the fifth. The seven cover strings, the two epigraph swaps and the
+  splice now live in one module, and the Keeper's Book, the Bestiary and the Book of Legends import it.
+  All three rebuilt byte-identical to what they were before the move. Each builder keeps its own CSS.
+
+  **Wired in.** `make_pdf.py` prints it as `Blood-and-Grit-Legends-Companion.pdf`, `make_bundles.py`
+  puts it in the books zip, `update_readme.py` carries its version, and the auditors that list the
+  books (`verify_all`, `verify_release`, `verify_rules`, `audit_ai_tells`, `audit_idempotent_build`,
+  `audit_pdf`, `extract_rules`) read it. README's *Read* link points at the Release asset, which
+  won't exist until the next ship puts it there.
+
+  **Still to do.** No release was cut. Page numbers were measured in the cloud with the book's own web
+  fonts and want measuring again in Edge. The four real-nation entries want the same reader as the
+  papers they stand behind.
+
+  Checks: the companion measures 263 pages at desktop and mobile width with nothing clipped at true
+  scale, no mobile h-scroll, and all 146 Contents lines and 338 Index entries resolving. Two builds in
+  a row are byte-identical. `audit_ai_tells.py` finds no hard tells in it and it passes `--strict`.
+  `verify_rules.py` finds 0 drift and no retired word. The PDF prints 263 pages against 263 sheets,
+  with all 1,605 links made explicit.
+
+  **`audit_pdf.py` reads a line of cross-references.** The companion's first print failed it four
+  times with *a row prints 1878*, and the book was right. Its entries string links along a line, and
+  "A Well That Breathes (Chapter XVI) · The Eclipse of 1878" puts a year inside the next link's
+  title, which the auditor took for the first link's page number. A printed page number is plain
+  text in every book, so the auditor no longer reads digits that sit inside another link. Proved
+  both ways: the seven other PDFs read exactly as before (1,510 rows, the same count in every book),
+  and a wrong number drawn beside a Contents row and beside an Index row is caught.
+
+- **The Callings, Redemption in the open, the cultists at odds, and Washington. The Book of Legends
+  v1.9 (2026-09-29).**
+
+  Cole read v1.8 and found the book thin on seven Callings (the Engineer, the Padre, the Sister, the
+  Prospector, the Shaman, the Marshal and above all the Witch Hunter), on Redemption, which he wants as
+  present as the Long Table and a good deal less secret, on the Dark Cultists, who should be everywhere
+  and never together, and on the United States government, the cavalry and the Pinkertons. He approved a
+  proposal of seventeen items for this book and asked that the Keeper's Book, the Player's Book and
+  GritKeeper follow in a later session; what they need is written at the top of the roadmap in
+  `CLAUDE.md`. Seventy-four papers went in, the book goes from 301 papers to 375 and from seventeen
+  chapters to nineteen, and it comes to 204 pages, not the 240 the proposal estimated.
+
+  **Two new chapters.** *Respectfully Forwarded* goes straight after Jubilee: the Department of
+  Justice engaging Pinkerton's by contract (it has no detectives of its own, which is true of the
+  period, and Cole asked that the Agency's federal work be explicit), the Agency's printed principles, a
+  census, a patent refused for a lamp that shows what is there, a deputy marshal's fee bill for pursuing
+  a man who was already dead, a land office told it is not concerned with a purchaser's motives, the
+  Dead Letter Office and its letters to Jubilee, a captain's report on Jubilee endorsed up the chain to
+  *File. No action.* a year before the Secretary of War told Congress he had no information, forty
+  wagons of salt, and the surgeon on the Pecos, moved in from the Trades. *Per the List* goes straight
+  before the Long Table: the Golden Circle's degree card, the minutes of its Committee on Lands (the
+  member who asked where the list comes from found his own quarter section on it), its agent in
+  Perdition Basin who would like to be told what he is looking at, and the committee's clerk, who walked
+  out through the sand hills, told a Pinkerton operative that nobody at Jubilee knows who writes the
+  list, and went back.
+
+  **Three threads the length of the book.** A. Crail, a witch hunter, is a town meeting in the Frauds
+  where somebody looked at the door, a card of rates and a letter on choosing a quarry in the Trades, a
+  manslaughter trial in the Faces, and in the Long Table a leaf of his book of names and his answer to
+  the Table's notice on Mother Harrow, whose price is the name of the house that kept his mother. W. F.
+  Kinnear of the Agency runs from a horse-thief report under the Justice Department's contract to the
+  Teal file, the four camps, the Circle's clerk and, at the end of the cosmic chapter, the Agency's file
+  on Ashby, closed by the Department the week after he asked to go and look for him. Redemption is in
+  the open before the Circle gets a chapter: two sections staked on the Painted Mesa, a recruiting
+  circular with the answer written on its back at Nicodemus, a bond, a certificate of admission, an
+  Englishwoman's week at Jubilee, a marching song and its parody, a claim bought for everything but the
+  ore, a sermon on Leviticus 25, and a sergeant of the Tenth watching the line.
+
+  **The Callings, and the cultists.** The Padre asks his bishop for the rite and does it without; the
+  Sister writes about the house across the river that does her order's work and asks for nothing; the
+  Shaman is a bonesetter who called a frozen man back and has not sung since; the Marshal is Coyle's
+  own day-book with a line struck through; the Engineer is the lamp; the Prospector is the ore. The
+  cultists are a drummer's route book with a word beside a name in every town, a burial society, a
+  township that was fat in the hard winter, two creeds identical but for the name I took out of each, a
+  kind letter between two congregations, a partner shot for serving the wrong one, and a saddler at
+  Dodge who lent a brother his hands for an afternoon.
+
+  **Set for the page count.** Cole asked for everything a good publisher would do to stay short of 240
+  pages. A ledger now runs on to the next page with its column heads repeated (a paginator patch in the
+  builder; every table in a paper used to move whole and strand a third of a page), the detailed
+  Contents is in two columns, and the papers are set a little closer. On the v1.8 text alone that was
+  177 pages down to 166. The ledger heads, which the shell's table style had been printing dark on dark,
+  got the ruled look their CSS meant them to have, and a letter's signature is no longer carried over
+  a page by itself: the paginator had set two initials on a fresh page as a "(cont.)" of their own,
+  and the last paragraph now goes over with them. *A Face Not Their Own* now counts its own cases,
+  because the new trial made its typed "four" wrong, and the Long Table no longer says the chapter
+  before it ended at a green door.
+
+  **Still to do.** The other books and GritKeeper, as above. Three papers speak from real history and
+  want the same read as the four already listed: the answer from Nicodemus, the sergeant of the Tenth,
+  and the two Painted Mesa papers. The page count was measured in the cloud with the book's own fonts.
+
+  Checks: `verify_rules.py` finds 0 drift in 2,226 cross-checks, and no face of the Old Dark is named
+  anywhere in the book. `audit_consistency.py` is clean in 132,244, with the new counts in README and
+  `CLAUDE.md` held to the built book. `audit_ai_tells.py --books` finds no hard tells, and the book
+  reads 1.17 for burstiness and 0.1 em dashes per thousand words. It measures 204 pages at desktop and
+  at mobile width, with nothing clipped at true scale, no mobile h-scroll, and all 175 Contents lines
+  and 244 Index entries resolving; every ledger row prints exactly once, no signature goes over alone,
+  and all ten artifacts rebuild byte-identical. `verify_all.py --quick` passes once the tags are
+  fetched into the cloud's shallow clone. The app build and the playtest harness need .NET, which the
+  cloud does not have, and nothing under `GK/` changed.
+
 - **The PDF audit reads a wrapped Index row (2026-09-26).**
 
   The release gate failed on the Book of Legends' new print with *sheet 176: a row prints 137 and

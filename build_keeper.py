@@ -60,41 +60,30 @@ _css = """
 </style>"""
 if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
-# The Player's Book version is read off the shell rather than typed here. It was typed
-# until 2026-08-20, and every bump then had to be repeated by hand in build_keeper.py,
-# build_bestiary.py and modules_common.py in lockstep. That was missed on v2.26 and
-# again on v2.27, and each time a companion book or all three modules built wearing the
-# Player's Book's own title. Derived, the cascade cannot be missed because there is
-# nothing left to remember.
-_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
-_meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.41 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.41)</title>"),
- ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
- ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.41</div>'),
- ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.41 · For the Keeper Alone</p>'),
-]
-for a, b in _meta:
-    # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
-    # shipped three modules wearing the Player's Book title. Say so instead of guessing.
-    assert a in H, "the Player's Book cover no longer carries: " + a[:70]
-    H = H.replace(a, b, 1)
+# The cover, the title bar and the two epigraphs are swapped by book_shell.py, which every
+# one-of-a-kind book shares since 2026-09-29. The Player's Book version is read off the shell
+# there rather than typed here. It was typed until 2026-08-20, and every bump then had to be
+# repeated by hand in build_keeper.py, build_bestiary.py and modules_common.py in lockstep.
+# That was missed on v2.26 and again on v2.27, and each time a companion book or all three
+# modules built wearing the Player's Book's own title.
+import book_shell
+H = book_shell.retext_cover(
+    H,
+    comment="<!-- Blood & Grit — The Keeper's Book · Version 2.41 -->",
+    title="<title>Blood &amp; Grit — The Keeper's Book (v2.41)</title>",
+    kicker='<div class="kicker">For the Eyes of the Keeper Alone</div>',
+    foot='<div class="t-foot">The Keeper\'s Book</div>',
+    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.41</div>',
+    tiny2='<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>',
+    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.41 · For the Keeper Alone</p>',
+)
 
 # replace the two carried-over Player's epigraph quotes with Keeper-specific ones
-import re as _re
-def _set_epigraph(s, mt, text, srcline):
-    pat = _re.compile(r'<div class="quote" style="margin-top:'+mt+r';">.*?</div>', _re.DOTALL)
-    new = ('<div class="quote" style="margin-top:'+mt+';">\n    '+text+
-           '\n    <span class="src">\u2014 '+srcline+'</span>\n  </div>')
-    s2,n = pat.subn(new, s, count=1); assert n==1, "epi "+mt
-    return s2
-H = _set_epigraph(H, "120px",
+H = book_shell.set_epigraph(H, "120px",
     '"Someone at every fire must keep the watch while the rest dream of grass and gold.\n'
     '    I&rsquo;ve kept it so long I&rsquo;ve forgotten how to look at a sunset and see only the sun."',
     "attributed to a keeper of the old tales, the name worn from the page")
-H = _set_epigraph(H, "90px",
+H = book_shell.set_epigraph(H, "90px",
     '"The trick was never the frightening: any fool with a candle can frighten. The trick is the\n'
     '    fairness: letting them see, the breath before the dark takes them, the one turn they shouldn&rsquo;t have taken."',
     "from the margins of a Keeper's ledger")
@@ -3147,17 +3136,8 @@ for _cid,(_t,_s) in _chq.items():
     BODY = _inject_quote(BODY, _cid, _t, _s)
 
 
-# ---- splice: replace from the contents marker to the closing </div> before <script> ----
-start_marker = "<!-- ===================== CONTENTS ===================== -->"
-si = H.find(start_marker)
-assert si != -1, "contents marker not found"
-# find the closing of the book div right before <script>
-sci = H.find("<script>")
-assert sci != -1
-div_close = H.rfind("</div>", si, sci)
-assert div_close != -1, "book closing div not found"
-
-new_html = H[:si] + BODY + "\n</div>\n" + H[sci:]
+# ---- splice: the body replaces the shell's, from its Contents marker to the book's closing div ----
+new_html = book_shell.splice(H, BODY)
 
 from nav_tools import add_detailed_toc, build_index, assert_css_vars
 KEEP_INDEX = [

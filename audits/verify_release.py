@@ -193,6 +193,7 @@ BUILT = {
     "Keeper's Book": ("keeper-handbook.html",                "build_keeper.py"),
     "Bestiary":      ("bestiary.html",                       "build_bestiary.py"),
     "Book of Legends": ("legends.html",                      "build_legends.py"),
+    "Legends Companion": ("legends-companion.html",          "build_legends_companion.py"),
     "Module I":      ("module-salt-at-coffin-wells.html",    "build_module_salt.py"),
     "Module II":     ("module-a-face-not-his-own.html",      "build_module_face.py"),
     "Module III":    ("module-what-the-water-answers.html",  "build_module_water.py"),

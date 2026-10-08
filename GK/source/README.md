@@ -37,7 +37,7 @@ your Documents, a USB stick). GritKeeper saves the table beside its own exe (`se
 
 **What it is not.** GritKeeper is a Windows desktop program and only that. It does not run
 on macOS, Linux, a phone or a tablet; there is no browser version; and it does not connect
-players over a network: one machine at the table, usually the Keeper's. (The four books
+players over a network: one machine at the table, usually the Keeper's. (The five books
 are PDFs, which open on anything, phone included. It is the app that is Windows-only, not
 the game.)
 
