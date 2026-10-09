@@ -42,7 +42,7 @@ import re
 import book_shell
 from pag_patch import patch_paginator
 
-VERSION = "1.1"
+VERSION = "1.2"
 
 H = book_shell.load()
 H = patch_paginator(H)
@@ -73,6 +73,10 @@ _css = """
   p.lc-foot{ font-size:13.2px; line-height:1.42; margin:.35em 0; text-indent:0; color:var(--ink-soft); }
   p.lc-foot .t{ font-variant:small-caps; letter-spacing:.07em; font-weight:700; color:var(--shade); margin-right:.35em; }
   p.lc-foot + p.lc-foot{ margin-top:.1em; }
+  /* The turn: a run-in label in one paragraph, so the label can never be stranded at a page foot. */
+  p.lc-turn{ margin:.7em 0 .3em; text-indent:0; }
+  p.lc-turn .t{ font-variant:small-caps; letter-spacing:.08em; font-weight:700; color:var(--blood-d); font-size:13px;
+                margin-right:.45em; }
   p.lc-rule{ border-top:1px solid var(--rule); margin:1.2em 0 0; padding:0; height:0; }
   a.lc-ref{ color:inherit; text-decoration:none; border-bottom:1px dotted var(--accent-d); }
   /* The two generated tables run long, so they are set tighter than the shell's tables. */
@@ -310,13 +314,22 @@ wouldn't have the padres at their spring, and the padres, for once, did as they 
 that summer and the order went home, all but one man.
 
 The count on the inside of the back board is the keepers'. After 1811 the register was left in its
-tin box where anybody could find it, because nobody steals a parish register, and the one person
-walking the circuit each season wrote a single figure on the board: how many nails were holding when
-the round was done. Seven, for most of seventy years. Six, once, and then seven again the season
-after, when a keeper re-drove a nail that had let go. The last figure is a seven gone over twice as
-if the pen ran dry, and the hand is Esperanza R&iacute;os's, in the March before she died. Ashby is
-the first outsider who ever read the number and asked what it counted, and his note in the satchel
-is the right question.
+tin box where anybody could find it, because nobody steals a parish register, and a keeper wrote on
+the board only when the number of nails holding changed. Seven, in the hand of the man who stayed,
+the year after the fire. Six, in the winter of 1857, when one of the wells the county re-dug in the
+fifties was moved and its nail let go in the old hole. Seven again under it, gone over twice as if
+the pen ran dry, in the hand of a woman of fifty-five who'd had the hammer five years and went down
+the old hole after it herself. That's
+Esperanza R&iacute;os, and it's the last figure on the board. Ashby read it in the winter of 1881 and
+asked what it counted, the first outsider who ever did, and his note in the satchel is the right
+question.
+
+Nobody wrote the six that the spring of 1882 called for, when Josiah Vane pulled the Coffin Wells
+nail (Module I). Esperanza walked to Coffin Wells every season after, and stood at it, and the ledger
+Module III prints says <em>seven wells walked</em> in her hand that last March, which is a true
+sentence about walking. Her last word wasn't written on this board. It's on the back board of the
+other book, the ledger, in April 1883. The keepers used the same place in both books for the one thing
+they couldn't say aloud, and a table that has read both has seen it twice.
 """,
       open=[("What happened on 9 May 1811?",
              ["Salcedo sat down to record a death and couldn't make himself write whose. It was one of "
@@ -343,7 +356,7 @@ ever wrote, and a player who picks up the hammer in Module III is the next hand 
 """)
 
 entry("water",
-      people=["A. (a letter-writer at Coffin Wells)", "Kirby, Mrs.", "Cruz, Adelia", "Renfro family",
+      people=["A. (a letter-writer at Coffin Wells)", "Kirby, Mrs.", "Cruz, Adelia (marshal at Coffin Wells)", "Renfro family",
               "Dunbar family", "Vane, Josiah", "Drayton (of Kansas City)"],
       places=["Coffin Wells", "Fort Marcy, the weather office at"],
       creatures=["The Thing in the Well", "The Drowned", "The Drought-Bringer"],
@@ -355,9 +368,10 @@ A. is Tom's wife, and Tom keeps the smithy at Coffin Wells, which is why he has 
 with and why he has less time for the shop every week. She's a sensible woman writing to her sister
 about the only news there is. By the end of May 1883 three homestead wells in the district have gone
 over: flat first, then a penny taste, then the stock won't drink. That order is the order the thing
-under the basin comes up in. The flatness is the water table losing its hold on the nail; the penny
-is what the silver tastes like when it stops holding anything; after that the well belongs to
-something else.
+under the basin comes up in. None of the three is one of the padres' seven. They're homestead wells
+dug in the sixties, and they drink from the same ground as the nearest nail. The flatness is that
+ground letting go; the penny is the nail's own silver coming through the water once it stops holding
+anything; after that the well belongs to something else.
 
 The Coffin Wells nail had been out since the spring before, when Josiah Vane dug up the wrong grave
 (Module I). A ring can carry one broken well for a season if somebody is walking the rest of it, and
@@ -367,8 +381,8 @@ letter.
 
 The Renfro boy was nine and healthy in April. He drank from the Renfro well through the flat week,
 before anybody noticed the taste, and what killed him in May was water in the lungs in a dry house.
-Adelia Cruz has been out to the homesteads twice because the doctor at the Crossing calls it fever
-and she has seen the bodies, and they're wet. That's why she isn't sleeping. Mrs. Kirby has been at
+Adelia Cruz, who keeps the peace at Coffin Wells, has been out to the homesteads twice because the
+doctor at the Crossing calls it fever and she has seen the bodies, and they're wet. That's why she isn't sleeping. Mrs. Kirby has been at
 Coffin Wells longest and didn't answer A. because she knows a well that goes over doesn't come back
 on its own, and she has decided that knowing is her business.
 
@@ -379,8 +393,9 @@ dry ones, and a general drought is a thing a bank in Kansas City can price. A co
 bad one at a time is not.
 """,
       open=[("What does Mrs. Kirby know, and how?",
-             ["She was married to the keeper before Esperanza, and walked the circuit beside him for "
-              "eleven years, and has never told a soul.",
+             ["She was married to the keeper before Esperanza, and for eleven years she held his lamp at the "
+              "lip of every well and was never once let down one, because the thing knows who's been coming. "
+              "She has never told a soul.",
               "She's a woman of a seated house ([[ch:longtable]]) and her house keeps the account of the "
               "basin's water the way it keeps births.",
               "She knows nothing at all except what seventy years of wells have taught her, which is "
@@ -444,7 +459,7 @@ hours are somebody else's. Behind him, at a distance the players may never close
 """)
 
 entry("mesa",
-      people=["Hollis (a freighter and interpreter)", "Painted Mesa people, the"],
+      people=["Deakin, Hollis (a freighter and interpreter)", "Painted Mesa people, the"],
       places=["Painted Mesa, the", "Painted spring, the", "Calvary Crossing"],
       creatures=[],
       threads=["sanclavo", "survey", "cut", "gold", "letterhome"],
@@ -491,7 +506,9 @@ There is no monster behind this paper and there mustn't be one. The Bestiary's o
 basin puts "no table" beside the Painted Mesa, and this entry keeps that. Play the Mesa people the way
 [[kb:basin-mesa]] asks: names, disagreements, an elder who counsels caution and a rider who doesn't.
 Hollis the freighter is a useful man to meet first. He interpreted for the court, knows he did it
-badly, and is ashamed of the last line the clerk wanted struck.
+badly, and is ashamed of the last line the clerk wanted struck. He's Hollis Deakin, the man who hauls
+water in Module III, and by that summer he'll have seen something on the road at dusk that he hasn't
+told anybody about either.
 """)
 
 entry("survey",
@@ -646,7 +663,7 @@ entry("coyle",
       people=["Coyle, T. (marshal)*", "Kirby, Mrs."],
       places=["Calvary Crossing", "Coffin Wells", "the Dunbar well", "Saltlick road"],
       creatures=["The Thing in the Well"],
-      threads=["water", "swarm", "deputy", "forgery", "satchel-wells", "understanding"],
+      threads=["water", "swarm", "deputy", "forgery", "satchel-wells", "satchel-crandall", "understanding"],
       when=[(1883, "Marshal Coyle stands at the Dunbar well an hour after dark on 20 August, writes a line in his "
                    "day-book, and strikes it the next morning")],
       story="""
@@ -657,9 +674,13 @@ of August 1883 is the one night he wrote down something that wasn't ordinary, an
 carefully, so that it would stay struck and still be there.
 
 He went to the Dunbar well after dark because the water had tasted of a penny for three months and the county had
-refused him his deputies. He stood at the lip an hour. The Dunbar is one of the seven the padres blessed, the third to
-fail that spring, and what was failing in it was the nail. What he saw or heard is under the line. Coyle asked that it
-not be printed, and the editor kept the bargain.
+refused him his deputies. He stood at the lip an hour. The Dunbar isn't one of the padres' seven. It's a homestead well
+a mile from the Coffin Wells nail, the third to go that spring, and what was coming up through it came the long way round,
+from the hole Vane left. What he saw or heard is under the line. Coyle asked that it
+not be printed, and the editor kept the bargain. Years later the editor asked him one question about that night,
+whether he'd taken a lamp, and told him why: Miss Crandall has a verse about a marshal at the Crossing who carried a
+light and put neither down that night, and her earliest copy of it is from 1881. Coyle said a man doesn't stand at a
+well after dark without one, and he hasn't spoken to the editor since ([[ref:satchel-crandall]]).
 
 He isn't superstitious. He's a careful officer who has learned, from nine years of keeping a county's only book, that
 a thing written down is easier to find again, and he didn't want anybody finding that one. The amended report on the
@@ -682,7 +703,7 @@ the strike. Decide what it says before they ask, and let him look at them a long
 """)
 
 entry("pell",
-      people=["Pell, Hannah", "Pell, Tom", "Pell child, the", "Coyle, T. (marshal)", "Cruz, Adelia"],
+      people=["Pell, Hannah", "Pell, Tom", "Pell child, the", "Coyle, T. (marshal)", "Cruz, Adelia (marshal at Coffin Wells)"],
       places=["Pell place, the", "Calvary Crossing, the schoolhouse at"],
       creatures=["The Blood-Thin", "The Risen", "The Nightwalker"],
       threads=["pellnews", "forgery", "sanclavo", "weathersong"],
@@ -831,44 +852,44 @@ their mouths shut.
 """)
 
 entry("hiddenstars",
-      people=["Deane, Prof. T. W.", "the schoolmistress at Hays"],
-      places=["Hays"],
+      people=["Deane, Prof. T. W.*", "the schoolmistress at Hays"],
+      places=["Hays", "Topeka", "Abilene"],
       creatures=["The Eye Between Stars"],
-      threads=["eclipse", "giant"],
+      threads=["eclipse", "remembered", "giant"],
       when=[(1879, "'Professor' Deane lectures on the Hidden Stars through the Kansas towns in the winter "
                    "after the eclipse")],
       story="""
-T. W. Deane was a patent-medicine man who'd lost his wagon in a card game at Topeka in the week of the
-eclipse of July 1878, and he spent that week in Topeka reading about the eclipse in the papers, which
-is the only reason he knew there'd been one. By the winter he had a magic lantern, a box of glass slides
-and a lecture. The Hidden Stars are the Pleiades printed backwards, with four more stars inked on each
-chart by hand wherever Deane thought there was room. He sold the charts at fifty cents at the door and
-cleared about nine dollars a night in towns that had nothing else to do in January.
+T. W. Deane was a patent-medicine man between wagons, and he spent the week of the eclipse of July 1878 in the
+cells at Topeka over a horse he'd been lent and hadn't given back. The police there photographed him, which is
+how the schoolmistress at Hays could write that he'd never been with any expedition. By the winter he had a magic
+lantern, a box of glass slides and a lecture. The Hidden Stars are the Pleiades printed backwards with four more
+stars inked on each chart by hand, and he sold the charts at fifty cents at the door in nine Kansas towns that had
+nothing else to do in January. Ashby bought one at Abilene and kept it, and the editor has it.
 
-The schoolmistress at Hays knew her stars and wrote to the paper, which didn't print her, and she
-wrote to Topeka, which did send a photograph. Deane left Hays on the morning train. He's selling
-something else in Nebraska now.
+That much is fraud, and the schoolmistress caught it. What she didn't know, and what nobody knew until the editor
+sat across from him at Lansing in 1886 ([[ref:remembered]]), is where the chart came from. At three in the
+afternoon on the 29th of July the light went yellow in the Topeka cells, and when it came right Deane had drawn
+it on the wall by his bunk and didn't remember doing it. He copied it on his cuff and sold it for four years. He
+stopped in 1882, because his hand kept putting the four nearer the seven.
 
-The part that isn't a fraud is small and it's the schoolmistress's third paragraph. Nine of her pupils
-bought charts and three of them haven't slept well since. Deane inked his four extra stars by hand, a
-few seconds on each chart, and on most of the charts he sold they fall anywhere at all. On a handful
-they fall in the same four places, near together, in a little crooked line, and a girl who saw the
-sun go out at Denver in 1878 could have told him where he'd put them ([[ref:eclipse]]). Deane never
-saw that girl's chart and couldn't have. He'd tell you he put the dots where the paper was clean.
+The schoolmistress's third paragraph is the other honest thing in the paper. Nine of her pupils bought charts
+and three haven't slept well since, and two of the three had seen the eclipse at Denver with their fathers. She
+burned her own chart in the spring of 1882, the same spring Deane stopped drawing his.
 """,
-      open=[("Why do Deane's four stars fall in the same place on some charts?",
-             ["Chance. Four dots on a small chart land close together often enough, and three children "
+      open=[("Why do the four stand where they stand?",
+             ["Chance, and a liar's story told for tobacco. Four dots land where the paper's clean, and children "
               "who've been told there are stars you can't see will lie awake looking for them.",
-              "Deane's hand knew something Deane didn't, and on the charts where the four fall together, "
-              "they're a corner of the arrangement the eclipse showed.",
-              "The four stars moved on the paper after the charts were sold. Ask the three children where "
-              "they were when they bought them, and where they are now."])],
+              "Deane's hand knew something Deane didn't. The charts he sold in 1879 have the four where there was "
+              "room, and the ones he sold in 1881 have them a little nearer, and a posse that finds one of each can "
+              "see it.",
+              "The four moved on the paper after the charts were sold. Ask the three children where they keep "
+              "theirs."])],
       table="""
-A chart is a good handout for a table that's heard of the eclipse. Give the players one with the four
-stars scattered and one with the four close together, and don't say which came from Hays. If you're
-running [[ref:eclipse]] as more than a letter, the three sleepless children at Hays are eleven or
-twelve by now, and at least one of them has started drawing the same four stars in the margins of her
-copybook.
+A chart is a good handout and a cheap one. Give the players one early, as a joke out of the Frauds, and let
+them carry it for months. Later, if they can lay hands on a second one from a later town, the four are nearer,
+and they'll find that out by laying one on the other, which is what the editor does at the end of the book
+([[ref:remembered]]). If you're running [[ref:eclipse]] as more than a letter, the three sleepless children at
+Hays are eleven or twelve now, and one of them has started drawing the four in the margins of her copybook.
 """)
 
 entry("advocate",
@@ -1128,16 +1149,16 @@ grave at Sull's Ferry is still smooth.
 """)
 
 entry("cordial",
-      people=["Penrose, Asa", "Sorrell, Dell", "Tabor, Dr. Orville", "Morrow, Dr."],
+      people=["Penrose, Lute", "Sorrell, Lon", "Tabor, Dr. Orville", "Morrow, Dr."],
       places=["Coldwater, Kansas", "Avilla"],
       creatures=["The Mesmerist", "The Drunk with a Gun"],
       callings=["Gunhand"],
       threads=["wager", "keelers", "partners"],
-      when=[(1884, "Asa Penrose and Dell Sorrell meet on Main Street at Coldwater in June and shoot each other through the "
+      when=[(1884, "Lute Penrose and Lon Sorrell meet on Main Street at Coldwater in June and shoot each other through the "
                    "right hand")],
       story="""
-Asa Penrose was a gunhand of the cattle towns in the seventies, quick enough that men paid to see him and young men rode
-in to try him, and by 1880 he was a drunk at the Lone Star bar in a county that kept telling him who he'd been. Dell
+Lute Penrose was a gunhand of the cattle towns in the seventies, quick enough that men paid to see him and young men rode
+in to try him, and by 1880 he was a drunk at the Lone Star bar in a county that kept telling him who he'd been. Lon
 Sorrell was twenty and wanted to find out. Dr. Orville Tabor came through with a wagon on the Friday and sold a cordial that
 promised any man the hand he had at twenty, for as long as he needed it.
 
@@ -1157,7 +1178,7 @@ The ham at Christmas says he believes it.
               "He sells it in towns where somebody is about to be killed, and he can tell which towns those are. The "
               "cordial saves nobody. He does, when he can, and charges a dollar for it."])],
       table="""
-A gunhand in the posse will hear about Asa Penrose in every saloon from Dodge to Tascosa, and some young man in every one
+A gunhand in the posse will hear about Lute Penrose in every saloon from Dodge to Tascosa, and some young man in every one
 of them will want to try the gunhand the way Sorrell tried Penrose. If Dr. Tabor's wagon is in town that week, so much the
 better. The Bestiary's Drunk with a Gun is what Penrose was before the Saturday, and that's a fight nobody wins.
 """)
@@ -2125,7 +2146,7 @@ his successor still posts the circular every spring. First Sergeant Isom Fairley
 entry("salitre",
       callings=["Padre"],
       people=["Varela, Anselmo", "Varela, Mrs.", "Holcomb, Mr.", "the priest at Salitre",
-              "the widows of Salitre", "Baca, Refugio", "Lucero, Tom&aacute;s", "Montoya, Juan de Dios"],
+              "the widows of Salitre", "Olgu&iacute;n, Refugio", "Lucero, Tom&aacute;s", "Montoya, Juan de Dios"],
       places=["Salitre", "Tennant"],
       creatures=[],
       threads=["kansas", "keelers", "fortsafe"],
@@ -2348,7 +2369,7 @@ to sit with, and it should be.
 """)
 
 entry("spur",
-      people=["Pruitt, Henry", "Pruitt, Henry (his mother)"],
+      people=["Gaither, Henry", "Gaither, Henry (his mother)"],
       places=["Yuma", "Jubilee", "the Customs Post at the river", "Muchacho Junction"],
       creatures=[],
       threads=["twopapers", "letterhome", "warrants", "otherdoor"],
@@ -2360,14 +2381,14 @@ what gets a passenger past the Collector at Yuma without questions. The customs 
 Redemption's. So are the forty minutes. The line about return tickets is the most honest thing on the sheet:
 you can't buy your way back from Yuma, because Jubilee decides who leaves.
 
-Henry Pruitt has been a porter on the branch six days a week for two years. He's the one man on the train who
+Henry Gaither has been a porter on the branch six days a week for two years. He's the one man on the train who
 was born free of what the country on the other side of the river means to put back, and the condition of his
 job is that he never sets foot on the Jubilee platform. He took it for eleven dollars a month and four at home,
 and he takes the whole ride with his eyes open. The gentlemen on the train are the politest he's ever carried,
 and every one of them is armed, and every one of them looks him in the eye when they say the name of their
 town, and he knows the verse better than they do.
 
-What Pruitt has that nobody else has is the count. He doesn't count cars. He counts people: how many get on at
+What Gaither has that nobody else has is the count. He doesn't count cars. He counts people: how many get on at
 Yuma, how many step down at the river and come back aboard, how many step down at Jubilee, and how many ride
 the up train home. He's kept it in his head for two years, the way his mother taught him to keep things that
 might be taken off paper. The numbers going up and the numbers coming down don't match, and the difference
@@ -2376,13 +2397,13 @@ isn't small.
       open=[("Is it true that the only way in is by rail?",
              ["[[kb:powers-redemption]] leaves this to the Keeper and so does this book. [[ref:otherdoor]] "
               "is the river's answer, and a pilot has another.",
-              "Pruitt thinks so. He's watched the sand hills out of the window for two years and never seen a "
+              "Gaither thinks so. He's watched the sand hills out of the window for two years and never seen a "
               "track on them."]),
             ("Where are the people who don't come back down?",
              ["Living in Jubilee, having been admitted and stayed, which is what most of them came for.",
               "Some of them. The rest are the ones [[ref:twopapers]] can't find."])],
       table="""
-Henry Pruitt is a man, not a clue, and the posse should meet him that way: a tired, careful porter with a family
+Henry Gaither is a man, not a clue, and the posse should meet him that way: a tired, careful porter with a family
 at Yuma, who'll say more to a passenger who treats him as one than to anybody with a notebook. His count is the
 best evidence in the Territories about what Jubilee does with visitors. He'd share it with somebody he trusted
 to use it. He hasn't met anybody yet.
@@ -2449,7 +2470,7 @@ customs house's word for anybody who goes out of the country's books.
              ["To work. The Circle has ground to dig and grade, and a man with no papers has no one to write to.",
               "Nowhere. There's a gravel pit two miles up the branch from Siding No. 4, and the militia drills "
               "near it on the Saturdays nobody visits.",
-              "One of them came back to Yuma a month later on foot, over the sand hills, which nobody does, and "
+              "One of them came back to Yuma a month later on foot, down the river bottom, which nobody does, and "
               "won't say how."])],
       table="""
 The woman looking for her husband is the thread a posse can pull. Her sister at Yuma is still waiting for a
@@ -3992,13 +4013,13 @@ A table that has learned to listen to that is a table that lives.
 
 entry("tenth",
       people=["Fairley, Isom (first sergeant)*", "Fairley, Minnie", "Mayes, Corporal", "a man who walked out of Jubilee"],
-      places=["a camp on the Colorado", "Nicodemus, Kansas", "the sand hills", "Yuma"],
+      places=["a camp on the Colorado", "Nicodemus, Kansas", "Yuma"],
       creatures=[],
       callings=["Marshal"],
       threads=["emigrants", "noinformation", "clerk", "spur", "muster", "twopapers"],
       when=[(1885, "Two troops of the Tenth Cavalry are sent in the spring to a camp on the Colorado to watch the river "
                    "and the branch"),
-            (1885, "A patrol of the Tenth brings in a man who walked out of Jubilee across the sand hills in September; "
+            (1885, "A patrol of the Tenth brings in a man who waded the river out of Jubilee in September; "
                    "by morning he's gone")],
       story="""
 The Army's answer to the captain's report came three years late and two troops strong. The Tenth Cavalry was sent to sit on
@@ -4007,13 +4028,14 @@ take notice of its flag. Isom Fairley is first sergeant of one of the troops, ni
 and he knows exactly whom the country across the water was built against. They look at the Tenth like weather.
 
 His letters are what a good soldier sees and puts in his book: the flag at reveille, a patrol on the United States side
-denied in writing, and the man who walked east out of the sand hills at two in the morning in new boots with no water, who
-said he'd come from Jubilee and that it was the first time in eleven years anybody had asked him anything. He was gone from
-the guardhouse by morning, and his tracks went back west.
+denied in writing, and the man who came up out of the river on the Tenth's own bank at two in the morning, wet to the
+shoulders in new boots and not shivering, and asked whether he was across. He said he'd come from Jubilee and that it was
+the first time in eleven years anybody had asked him anything. He was gone from the guardhouse by morning, and his tracks
+went back down the bank and into the water.
 
 He was one of the people the two newspapers can't find ([[ref:twopapers]]), returned years ago and kept, and he walked out
-through the sand hills the way the clerk did ([[ref:clerk]]), and went back the way the clerk did. Nobody leaves Jubilee.
-The boots were small for him because they weren't his.
+the way the clerk did ([[ref:clerk]]), by the one door nobody watches, and went back the way the clerk did. Nobody leaves
+Jubilee. The boots were small for him because they weren't his.
 """,
       open=[("Why did he go back?",
              ["For the same reason the clerk did: the list had a line with his name on it, or would, and he wanted to be "
@@ -4034,7 +4056,7 @@ entry("fifth",
       callings=["Gunhand"],
       people=["Kell, Absalom", "Rainey, Dob", "Rainey, Ida", "Tuck, Ferris", "Wills, Tom",
               "Otey, J. (stage driver)", "the paymaster's clerk"],
-      places=["Coffin Wells", "Calvary Crossing", "the draw below Saltlick"],
+      places=["Coffin Wells", "Calvary Crossing", "the Coffin Wells road"],
       creatures=["Road Agents", "The Outlaw Gang"],
       threads=["saltlick", "vane", "survey", "sayings"],
       when=[(1883, "The Wills Outfit takes the Coffin Wells district payroll on 4 September and the down coach's "
@@ -4051,7 +4073,7 @@ held the door. Ida wore her brother's coat and nobody looked at her twice, which
 twenty-four, was in the street with the horses, and couldn't stop himself looking at the fifth rider.
 
 The clerk counted five twice because counting was something to do and can describe four of them to the life. The next day
-the Outfit took the down coach's box at the draw below Saltlick to muddy the trail, and J. Otey and his guard counted four
+the Outfit took the down coach's box at a draw on the Coffin Wells road, below the station, to muddy the trail, and J. Otey and his guard counted four
 and will swear it in court, and six passengers counted five and two of them describe the fifth in the same words. The
 driver and the guard are paid to look at the road. What they didn't see is the question the Keeper's Book leaves the
 players to argue over at the fire.
@@ -4231,13 +4253,13 @@ and he'll ask them, once, what they think was buried.
 """)
 
 entry("returned",
-      people=["Ettie (on the lower river)", "Asa (her son)", "Ned", "Teague, Rev. A.", "Ettie's mother"],
+      people=["Ettie (on the lower river)", "Asa (her son)", "Ned", "Fentress, Rev. A.", "Ettie's mother"],
       places=["the lower river", "the bar"],
       creatures=["The Drowned"],
       threads=["coroner", "circuit", "water", "boxes"],
       when=[],
       story="""
-The lower river is the Calvary's lower reach in Perdition Basin, and the Reverend Teague who said the words over the bar is
+The lower river is the Calvary's lower reach in Perdition Basin, and the Reverend Fentress who said the words over the bar is
 the circuit rider whose letters are in [[ref:circuit]]. Asa was fourteen and crossing at the bar with the mule when the river
 took him in water his mother had seen lower a hundred times. He was one of the year's two. The padres' ledger would have had
 his name in its right-hand column if anybody had still been keeping it.
@@ -4764,24 +4786,24 @@ been in that tent says the same.
 """)
 
 entry("galvanic",
-      people=["Mabry, Dr. Lucius", "Rees, Owen", "Rees, David", "Walt (a miner)", "Bess (Walt's wife)",
+      people=["Varick, Dr. Lucius", "Rees, Owen", "Rees, David", "Walt (a miner)", "Bess (Walt's wife)",
               "the camp physician", "the doctor's boy assistant"],
       places=["Silver Cliff", "the Horn shaft", "Galena, Illinois", "Colorado Springs"],
       creatures=["The Resurrectionist", "The Risen"],
       threads=["handshake", "numberfour", "assay"],
-      when=[(1880, "Owen Rees, dead in the Horn shaft since June, dances at Dr. Mabry's galvanic exhibition at Silver Cliff "
+      when=[(1880, "Owen Rees, dead in the Horn shaft since June, dances at Dr. Varick's galvanic exhibition at Silver Cliff "
                    "in August and walks out on the third night")],
       story="""
-Lucius Mabry had a battery, a wagon, a lecture on animal electricity, and a contract with Owen Rees, who'd sold himself in
-April for five dollars, for after, and spent it the same night. Rees fell in the Horn shaft in June and Mabry kept him on ice
+Lucius Varick had a battery, a wagon, a lecture on animal electricity, and a contract with Owen Rees, who'd sold himself in
+April for five dollars, for after, and spent it the same night. Rees fell in the Horn shaft in June and Varick kept him on ice
 for three weeks and put him on the stage at the Miners' Hall for fifty cents a head. On the first two nights it was exactly
 what the camp physician says it was: Galvani's frog's leg, scaled up to a man, and an outrage.
 
-Mabry was more than a showman. He'd been a body-snatcher at Philadelphia for the colleges before he came west, and he'd learned
+Varick was more than a showman. He'd been a body-snatcher at Philadelphia for the colleges before he came west, and he'd learned
 there what the Bestiary's Resurrectionist learns, that the dead handled carelessly enough can be made to sit up. He didn't
 believe it himself. He believed in the battery. On the third night he put more of the battery on than he had before, and what
 got up and danced a jig was Owen Rees, and when the wires came off he went on, and walked out of the hall by the front door,
-and Mabry went bankrupt on a schedule that lists him as not recovered.
+and Varick went bankrupt on a schedule that lists him as not recovered.
 
 The boy assistant's black curtain was real, and it was for the first two nights, when a man of the same build walked out
 behind it at the end of each show to make the crowd believe it. On the third night the man of the same build was standing
@@ -4792,15 +4814,15 @@ in, facing up the hill toward the Horn shaft. Owen was going back to where he di
              ["At the bottom of the Horn shaft, where he fell, and the men who work it hear somebody dancing on the "
               "sump's planking at the change of shift.",
               "Still walking. He didn't go into the shaft. He's walking the camps, and a battery would make him dance again.",
-              "Nowhere. The boy is lying, the curtain worked three nights, and Mabry sold the body to a college to pay a "
+              "Nowhere. The boy is lying, the curtain worked three nights, and Varick sold the body to a college to pay a "
               "debt, and David saw a man who looked like his brother."]),
-            ("What became of Mabry?",
+            ("What became of Varick?",
              ["He's at Leadville under another name with a new battery, and he believes in it now.",
               "Dead. Owen came for the five dollars."])],
       table="""
 The county book has Owen's death and no burial, and David Rees wants that line filled. A posse that brings Owen down out of
 the hills and puts him in the ground has done a thing the whole camp will stand them a drink for. The Resurrectionist's entry
-says how Mabry's kind are ended, if he's found at it again.
+says how Varick's kind are ended, if he's found at it again.
 """)
 
 entry("numberfour",
@@ -5085,7 +5107,7 @@ winter will be fed very well and asked, kindly, what they want, and the right an
 """)
 
 entry("hotel",
-      people=["Prine, J.", "the manager of the Hot Springs House", "the forty attendants", "the six who went east",
+      people=["Lusby, J.", "the manager of the Hot Springs House", "the forty attendants", "the six who went east",
               "the lady from St. Louis"],
       places=["the Hot Springs House", "the Colorado mountains", "Denver"],
       creatures=["The Old Blood", "The Coffin-Rider", "The Day-Man"],
@@ -5095,7 +5117,7 @@ entry("hotel",
       story="""
 The party was eleven of the old blood-drinking dead, travelling east from California to somewhere they didn't say, and they
 travel the way the careful ones do: by freight, in crates, with their ground in the crates with them, and a living man to sign
-for everything. J. Prine is that man. He's a Day-Man in the Bestiary's sense, fifty, courteous, very well paid, and he has
+for everything. J. Lusby is that man. He's a Day-Man in the Bestiary's sense, fifty, courteous, very well paid, and he has
 arranged this kind of week in six towns in four years.
 
 They took a hot springs hotel because the ground at a hot spring is warm and they'd been cold in the crates. They nailed the west
@@ -5119,7 +5141,7 @@ The account-giver is right that nobody made them. The old ones had been asking e
               "East, in the direction everything in these papers seems to be going that decade, and a Keeper who has the "
               "Rockies gatherings in play can decide whether the party turned north at Denver."])],
       table="""
-The best way to use this is Prine: a pleasant, efficient man who arrives in the players' town with gold and a letter of
+The best way to use this is Lusby: a pleasant, efficient man who arrives in the players' town with gold and a letter of
 engagement, and needs forty willing people for a week. A posse that takes the job at three dollars the night will be well treated
 and very tired, and will have to decide on the sixth night what to do about the question they're asked.
 """)
@@ -5334,13 +5356,13 @@ a printing press. Give the players one preacher who's decent all the way through
 
 entry("circuit",
       callings=["Preacher"],
-      people=["Teague, Rev. A.", "the presiding elder", "Cardoza family"],
+      people=["Fentress, Rev. A.", "the presiding elder", "Cardoza family"],
       places=["Perdition Basin, the southern end of the circuit", "the Cardoza place", "the lower river"],
       creatures=[],
       threads=["returned", "coroner", "cut", "sanclavo"],
       when=[],
       story="""
-There's no legend in these four letters and none should be added. The Reverend A. Teague rode a Methodist circuit of two
+There's no legend in these four letters and none should be added. The Reverend A. Fentress rode a Methodist circuit of two
 hundred and ten miles for eleven years and two hundred and forty for nine more, buried more than he baptised, married almost
 nobody, asked his elder for a horse in plain words, and died of his heart at a ford in the rain at sixty-one. He's the tired
 man on the horse the editor wanted in this chapter, and he's here so it isn't only about the other kind.
@@ -5352,12 +5374,12 @@ dead, and never once in eleven years asked him what anything meant. They'd been 
 arrangement that costs one or two a year, and a person who knows exactly what one thing means doesn't need anything else
 explained, and can't bear to ask.
 
-Teague felt it and couldn't name it and wouldn't write a report on a feeling. So he asked to keep the southern end when the
+Fentress felt it and couldn't name it and wouldn't write a report on a feeling. So he asked to keep the southern end when the
 district was divided, because that's what a good man does when something is wrong and he can't tell what: he keeps going
 there. The Cardoza boys came out to meet him the day his mare died because they'd been watching for him, the way the
 basin watches for the ones who walk its circuits.
 """,
-      open=[("Did Teague ever learn what the basin was keeping?",
+      open=[("Did Fentress ever learn what the basin was keeping?",
              ["No, and that's the right ending. He rode beside a second circuit for twenty years without knowing it was there.",
               "Once, at a ford, from Esperanza R&iacute;os, and he never wrote it to his elder and rode the southern end "
               "nine more years because of it."]),
@@ -5366,7 +5388,7 @@ basin watches for the ones who walk its circuits.
               "The same thing, at a ford, and a basin Keeper may note that the coroner at the Crossing entered it that year "
               "beside one other."])],
       table="""
-If the players meet Teague he's a tired, funny, decent old man on a good horse his elder bought him, and he's the one person
+If the players meet Fentress he's a tired, funny, decent old man on a good horse his elder bought him, and he's the one person
 in the county who will sit with a posse and ask them what they need without wanting anything. Let him be exactly that. A
 Keeper who makes him anything else has wasted the only one of him in the book.
 """)
@@ -5746,7 +5768,7 @@ when it was.
               "is one of its correspondents, and believes he's its master."]),
             ("Did Imbrie get home?",
              ["Yes, and his house went on the list in the spring, and he was there.",
-              "The railroad won't say. The Tenth's patrol brought a man in out of the sand hills a year later "
+              "The railroad won't say. The Tenth's patrol brought a man in out of the river a year later "
               "([[ref:tenth]]), and his boots were small for him."])],
       table="""
 Imbrie's statement is the one paper a posse can carry to anybody at Washington, because a Pinkerton took it under a federal
@@ -6562,7 +6584,9 @@ and his wife calls it something else.
              ["That all four are waiting for the same thing. He wrote it in 1884, and wrote in 1886, after he'd left the "
               "Agency, that it was still his opinion ([[ref:ashbyfile]]).",
               "That the shaft above Leadville is what the other three are waiting on, which he left out of the report "
-              "because he couldn't prove it."])],
+              "because he couldn't prove it.",
+              "That they're waiting for four of something else, and he has a tracing of four stars in his pocketbook "
+              "that he got from the editor and has never shown his wife ([[ref:remembered]])."])],
       table="""
 [[kb:powers-together]] promises that the Pinkerton assigned to a posse will have compiled a better account of the gatherings than the
 players have by the end, and won't be believed by a soul in Chicago. This is that man. Let the players find him at Pueblo when they have
@@ -6764,10 +6788,10 @@ the proof that refusing works, and a player who reads it before they go has a be
 """)
 
 entry("eclipse",
-      people=["the former pupil (name cut away)", "Loomis, Miss", "the astronomers at Separation and Denver"],
+      people=["the former pupil (name cut away)", "Hebard, Miss", "the astronomers at Separation and Denver"],
       places=["Denver", "Separation"],
       creatures=["The Eye Between Stars", "The Star-Spawn"],
-      threads=["hiddenstars", "gold", "gatherings", "bird"],
+      threads=["hiddenstars", "remembered", "gold", "gatherings", "bird"],
       when=[(1878, "The shadow of the moon crosses the Territories on 29 July; a college party of young women observes at Denver"),
             (1884, "A former pupil writes to her teacher, before her May wedding, about what she saw in the eclipse")]
       ,
@@ -6783,7 +6807,8 @@ two minutes and forty seconds, with the sun put out, the sky was open on the sid
 size of the arrangement looked back and noticed the small bright thing that was her.
 
 She drew the chart, because she couldn't remember the rest, and she's tried every night for six years, and she thinks she's about to. She
-married in May and has three children and keeps the blinds down at night, which a great many people do. Her teacher cut her signature off
+married in May and has two children and keeps the blinds down at night, which a great many people do. In the spring after her wedding
+she did remember, and [[ref:remembered]] is what she sent. Her teacher cut her signature off
 the letter before she sent it to Ashby, and was right to. The Eye forgets small bright things slowly, and it helps not to be written down.
 """,
       open=[("What is the arrangement?",
@@ -6795,16 +6820,73 @@ the letter before she sent it to Ashby, and was right to. The Eye forgets small 
              ["Her children draw it too, the next morning, without being shown.",
               "The blinds won't help. The Eye's entry says to close the sky and pray it forgets."])],
       table="""
-Miss Loomis will tell a posse the former pupil's married name if they convince her they mean no harm, and they should think hard about
-whether that's true. A woman with three children who has kept the blinds down for six years has earned the right not to be asked.
+Miss Hebard will tell a posse the former pupil's married name if they convince her they mean no harm, and they should think hard about
+whether that's true. A woman with two children who has kept the blinds down for six years has earned the right not to be asked.
 """)
 
+
+entry("remembered",
+      people=["the former pupil (name cut away)", "Hebard, Miss", "the schoolmistress at Hays",
+              "Deane, Prof. T. W.", "Kinnear, W. F."],
+      places=["Lansing, Kansas", "Topeka", "Hays"],
+      creatures=["The Eye Between Stars"],
+      threads=["eclipse", "hiddenstars", "gatherings", "ashbyfile", "satchel-page"],
+      when=[(1878, "In the cells at Topeka on 29 July, T. W. Deane draws the Seven Sisters backward and four more on "
+                   "the wall by his bunk, and doesn't remember doing it"),
+            (1885, "The former pupil's sheet reaches Miss Hebard in April: four stars drawn once a year from 1879, each "
+                   "year nearer the seven"),
+            (1886, "The editor takes Deane's statement at the penitentiary at Lansing in March")],
+      story="""
+This is the paper the Book of Legends was building towards, and the Keeper should know exactly how much it proves,
+which is nothing at all.
+
+Four things are on the page. A fraud in a Topeka cell drew a chart he can't remember drawing, at the hour the shadow
+crossed Denver, five hundred miles off. A young woman at Denver saw a sky with more in it than a sky has, spent six
+years remembering it, and what she remembered was his chart. The four stars Deane put in ink "where there was room"
+have moved on her sheet every year since, each year a little nearer the seven, and there's one more mark at the end
+of each line with no year beside it. And Deane stopped drawing his own chart in 1882 because his hand kept putting
+the four nearer, and he kept scratching them out.
+
+Every one of those has a sober cause standing beside it, and the editor lists them: the chart was on sale in her
+college's town that winter, Deane is a liar talking for tobacco, two children in nine who'd seen an eclipse is no
+great share, and four is a small number. The editor believes the causes, and then lays one sheet on the other against a lamp,
+and the seven agree to the width of the pencil.
+
+What's under the causes is the cosmic end of the game. Whatever the arrangement is, the sky is a corner of it, it's
+near, and on the word of two frightened people who never met it's coming nearer at about the rate a careful hand can
+draw in a year. The two astronomers' four unexplained stars, Deane's four in ink, the four on her sheet and Kinnear's
+four camps in the high country, every one of them waiting: the book never says they're the same four. Kinnear counted
+them and asked for a tracing, and in his note to the editor he says his seventh paragraph is still his opinion
+([[ref:ashbyfile]]).
+""",
+      open=[("Are they the same four?",
+             ["No. Four is a small number, and the book is full of things in fours. A Keeper who wants the cosmic end "
+              "of the game left as weather leaves it here, and the sheet is a frightened woman's memory of a "
+              "fifty-cent chart.",
+              "Yes, and it's what the camps are waiting for: the first reading of [[kb:olddark-rockies]], the figure "
+              "the camps make on one map, seen from its other side.",
+              "Yes, and it's what's driving the Old Dark's faithful up into the mountains, which is the fourth reading: "
+              "something older is coming in, and the thing the players have spent a campaign surviving is "
+              "frightened of it."]),
+            ("What's the mark with no year?",
+             ["1885, and nothing happened. She drew it because a line wants an end.",
+              "The year the four arrive. Pick it, write it inside the screen, and never say it.",
+              "It isn't a year. It's where her hand stopped because it wouldn't go any nearer."])],
+      table="""
+Spend this one last. It should come after the players have carried Deane's chart from [[ref:hiddenstars]] for months
+as a joke, and after they've met Kinnear or heard of his four camps. Hand over the sheet with the four short lines on
+it and say nothing at all. If somebody lays it on Deane's chart, let them. If nobody does, never point.
+
+Deane is at Lansing until 1889 and will talk for a pound of tobacco. He won't draw the chart for any money. Kinnear
+has the tracing in his pocketbook, and if the posse finds him he'll show it to them and ask what they make of it,
+because he'd very much like to be told he's wrong.
+""")
 
 entry("ashbyfile",
       people=["Ashby, N.", "Kinnear, W. F."],
       places=["Saltlick Station", "Calvary Crossing", "Pueblo", "Yuma"],
       creatures=[],
-      threads=["principles", "gold", "satchel-ticket", "satchel-road", "clerk", "understanding"],
+      threads=["principles", "gold", "remembered", "satchel-ticket", "satchel-road", "clerk", "understanding"],
       when=[(1884, "The Land Office reports Ashby in September for asking after cash entries by unnamed principals, and "
                    "the Department of Justice opens a file on him"),
             (1885, "The Department closes the Agency's file on Ashby in February, the week after Kinnear asks to go and "
@@ -6814,6 +6896,10 @@ Ashby came to the Agency's notice the way anybody does who starts writing Redemp
 cash entries by agents of principals not named, he'd bought a page of the Circle's schedule at Yuma, and the Land Office
 reported him to the Department, which engaged the Agency. Kinnear had met him at Pueblo in the summer and liked him, and
 found him candid, careful and without political connection, which in a file is a compliment.
+
+Kinnear's seventh paragraph from the high country, that all four camps are waiting for the same thing, is the one he
+says is still his opinion, and by the time he wrote that he had the editor's tracing of four stars in his pocketbook
+([[ref:remembered]]). He doesn't connect the two in writing. He doesn't need to.
 
 The file is the last thing Washington wrote about Ashby, and it ends the way its papers about Redemption end. When Kinnear
 asked to go down to the basin and look for him, the Department closed the file, and when the editor wrote to the Department
@@ -6950,10 +7036,10 @@ ticket where he went.
              ["No. He stayed in the basin.",
               "Yes, by the river door the pilot described, which doesn't need a ticket, and he's one of the ones the two "
               "newspapers can't find.",
-              "Yes, on the 3rd, with a second ticket, and Henry Pruitt remembers a naturalist with a notebook who got off at "
+              "Yes, on the 3rd, with a second ticket, and Henry Gaither remembers a naturalist with a notebook who got off at "
               "Jubilee and didn't come back down."])],
       table="""
-Henry Pruitt is the man to ask. He counts everybody. If Ashby rode the branch, Pruitt knows which day, and what Ashby said to him.
+Henry Gaither is the man to ask. He counts everybody. If Ashby rode the branch, Gaither knows which day, and what Ashby said to him.
 """)
 
 entry("satchel-cup", title="The Second Cup",
@@ -6972,25 +7058,37 @@ The one who lives at the mission ground is whoever is keeping the ring that Octo
 near the courtyard nail, which is the first driven and the one over the thing. The visitor is somebody who comes regularly and washes up.
 It isn't the man on the road, who takes nothing and would leave the cup dry. Ashby was right not to ask. A keeping that's widely known is
 eventually dug up, and a keeper who knows she's being watched stops.
+
+The editor went out once, in the spring of 1886, by daylight, with a man from the Crossing who wouldn't get down from
+the wagon, and that's the last paragraph of the Book of Legends. There were three cups on the stone by then. Two were
+washed and turned down, and the third was the right way up with water in it, which is the custom of the country for a
+guest who is expected. The editor didn't drink it, and didn't ask who keeps the count, for Ashby's reason. A Keeper can let
+that third cup be an old courtesy, or let it mean that somebody at the mission ground knew a book was being made and
+who was making it.
 """,
       open=[("Who comes to drink?",
              ["The keeper of the Painted spring, from the mesa, and the two keepers have been sitting together once a season for "
               "seventy years, which is the Keeper's Book's question about who taught whom, answered over coffee.",
               "Rosal&iacute;a Cardoza, riding out from the Cardoza place to learn the round.",
-              "Mrs. Kirby, from Coffin Wells, who walked the circuit once herself."]),
+              "Mrs. Kirby, from Coffin Wells, who held a keeper's lamp at every well on the circuit once."]),
             ("Who lives there?",
              ["Whoever took up the hammer, the same answer as [[ref:satchel-wells]].",
-              "Ashby, after the 24th. He never says the cup is his, because it wasn't yet."])],
+              "Ashby, after the 24th. He never says the cup is his, because it wasn't yet."]),
+            ("Who was the third cup for?",
+             ["Anybody. It's the custom, as the man in the wagon told the editor, and he's lived in the basin all his life.",
+              "The editor. Somebody at the mission ground knew the satchel had gone to a lawyer and who'd come for it.",
+              "Ashby, and it's filled every day."])],
       table="""
-If the players go out to the mission ground, they'll find two cups on the stone. If they wait, they'll meet the visitor. What they say to
-the visitor decides whether the keeper ever speaks to them.
+If the players go out to the mission ground, they'll find the cups on the stone, one more than there are people living
+there, and one of them the right way up. If they wait, they'll meet the visitor. What they say to the visitor decides
+whether the keeper ever speaks to them, and whether the cup is for one of them.
 """)
 
 entry("satchel-crandall", title="Forty-One Is Now Thirty-Eight",
       people=["Crandall, Miss Harriet", "Ashby, N."],
       places=[],
       creatures=[],
-      threads=["weathersong", "keelers", "ninechairs"],
+      threads=["weathersong", "coyle", "keelers", "ninechairs"],
       when=[(1884, "Miss Crandall writes Ashby on 19 October that three unattached verses have attached themselves to later "
                    "events; the letter is never opened"),
             (1886, "Miss Crandall's unattached verses stand at thirty-one")]
@@ -7007,10 +7105,23 @@ the work, and the figure is thirty-one, and she's asked that her caution be prin
 
 This is the Weather Song, and [[kb:legends-song]] still holds. Miss Crandall is drawing no conclusion, and the Keeper shouldn't draw one at the
 table either.
+
+The editor drew one, nearly, and the note under her letter is where. The second of her three unattached verses is a marshal at the Crossing
+who carried a light and put neither down that night, and her earliest copy is from the autumn of 1881. Coyle's day-book has him at the
+Dunbar well an hour after dark on the 20th of August 1883 and a line struck the next morning ([[ref:coyle]]). The editor asked Coyle about
+the lamp, and Coyle hasn't spoken to the editor since. Miss Crandall answered by return, for the first time in their correspondence, to say there's
+a Crossing in every county in the West, and kept the verse on her list. Those are the two most careful people in the book, and both of them
+flinched.
 """,
       open=[("What would Ashby have written back?",
              ["That she wasn't a fool, and that he'd met somebody on the road who got one thing wrong and wasn't wrong.",
-              "Nothing. He'd have gone to see her."])],
+              "Nothing. He'd have gone to see her."]),
+            ("Is the marshal's verse Coyle's night?",
+             ["No. There's a Crossing in every county, and a verse that names none can be made to fit any.",
+              "Yes, and it's the only one of her list anybody can check without a county paper, because the book that would "
+              "have printed it is Coyle's, and he struck the line.",
+              "Yes, and the verse is what's under the strike: he didn't put the lamp down and he didn't stop being the "
+              "marshal, and in the morning he was still both, and he can't say how he got home."])],
       table="""
 Miss Crandall is the best-sourced witness in the Territories and the most careful, and she's looking for somebody to tell her she's wrong.
 A posse that brings her a verse they heard before the thing it's about happened will get a very long letter back, and her friendship.
@@ -7069,8 +7180,8 @@ not a man who has seen it. By the end of October 1884 Ashby had seen the wells c
 again. What he was going to write after "not the same as" is the sentence the Keeper holds.
 """,
       open=[("What was on the other half of the page?",
-             ["Not the same as it never stopping: it has, once, this year, and the wells went out from the mission in the order "
-              "the padres drove them in reverse.",
+             ["Not the same as it never stopping: it has, once, this year, and the wells went from the edge of the ring inward, "
+              "the padres' order run backward.",
               "Not the same as knowing what's under there, and he'd found out, and tore it off.",
               "A name. The one who took the hammer after Esperanza, and Ashby tore it off so it couldn't be read."]),
             ("Who tore it?",
@@ -7081,6 +7192,193 @@ Don't let the players find the other half. Let them find the satchel, and the to
 sentence the way it'll argue about everything else in this book. Somebody at the table will finish it out loud, eventually, and the
 Keeper should listen very carefully to how.
 """)
+
+
+# ================================================================ THE TURNS
+# Every entry names its turn: the one line in the papers where the ordinary stops being enough to hold the detail,
+# and how to land it at a table (Cole, 2026-10-09: build the legends "like a crescendo"). One per entry, as
+# "slug | turn", one to a line. The build stops if an entry has no turn or a turn has no entry, the same way it
+# holds the Callings, so a story added later can't arrive without one.
+TURNS_TEXT = """
+sanclavo | The count on the back board. Hand the register over as a register, and the turn comes when a player asks what a count is doing in a parish book and nobody at the table can say yet. Don't help them.
+water | Mrs. Kirby not answering. A. hears it as rudeness, and the turn is a player hearing it as knowledge. Of the three stages, describe the last one at the table: the stock won't drink.
+vane | "Unless the wells come back." It's Ashby's last line and it only lands once the players know the wells are failing, so give them the slip after [[ref:water]] and never before.
+mesa | "Because we look after it." The court hasn't an hour, and the turn is the hour nobody heard. Play the witness plainly and let the players work out afterwards that the most important answer in the county was cut for time.
+survey | Teale filling the cut back in himself. The smell is the hook, and the turn is a man with a schedule paying for three hundred feet of extra line and not saying why.
+twosections | "They asked me to write down that they had watched." The turn is the fair copy, where the Surveyor General's office struck out every one of those entries, so the record says the land was surveyed with nobody on it.
+paidinfull | Two knives on the washstand. Let the table laugh at the receipt pinned behind the counter in the first letter; the ledger page does the turn by itself, with interest on a schoolboy's knife from 1866.
+coyle | The struck line, printed struck. Read the day-book aloud in the marshal's flat voice and stop on the last word, "and". Don't fill the silence after it.
+pell | Counting up to seven. Have a child sing the rhyme cheerfully before anybody at the table knows what the Pell place was. The turn is Ashby's line that four people in the county know about the cellar.
+saltlick | "I heard myself agreeing with him." The wrong name isn't the fright; the fright is that Jane agreed. If you run the stranger at the stove, get one small thing wrong about a character's family and see whether the player corrects you.
+giant | "Nobody has ever looked at the toes." There's no turn here, and that's its use. It's the first paper a table can solve, so let them solve it fast and feel clever, because the papers after it are built to take that feeling away.
+hiddenstars | The four in ink. As a fraud it's a joke, and the turn comes two hundred pages later, in [[ref:remembered]], when the players already own the chart.
+advocate | The second item, one down the page. The first teaches the table to laugh at Kansas, and the turn is the Advocate not laughing at the extra man at the ford. The sentence the English left out is for the players to find.
+warrants | "They blamed the country for it and never once blamed me." The forger confesses, and the turn is who forgave him: men who wanted Redemption to take them in.
+seats | "There is no such table, and nobody sells seats at it." Read the unsigned letter once, flatly, and let the players notice that a letter nobody asked for came from New Orleans to correct a swindle's price.
+collector | The aunt's last sentence, the one the nephew wasn't supposed to put in: the man on the road gets one thing wrong because people have been feeding him wrong names for a hundred years.
+hackberry | The child's grave. Two of the three graves that settled belong to the biggest subscribers, which is satire. The third belongs to a family on nobody's list, which isn't.
+wager | "Tell the boys I missed." The raked ring is the picture and the letter from Oregon is the turn. Never say what he was shooting at.
+cordial | "I am less sure about the ten seconds." Penrose's letter is a kind one, and the editor's last line turns it: two drunks spared each other, or something in a fifteen-cent bottle decided where they'd aim.
+lookeddoor | The clerk who looked at the door first. The minutes read as a witch hunt, and the turn is Crail admitting the wrong woman went, and the man who wrote the minutes asking only that his name be spelled right.
+haunting | "I never done the crying." A full confession with one reservation. Let the players catch every trick in it, then give them the crying on a night the man who confessed was twenty-two miles off.
+plates | The honest print. Rend's trick is explained in court and the table relaxes; Pease's cabinet print, made three weeks before the girl drowned, is the turn. The tenth plate in a drawer is the last line.
+forgery | "There were seven." The forgery is worthless, and the turn is Ashby's arithmetic: it came four months before the rhyme. Let a player do the dates.
+norther | "Stopped, the way a man stops talking when somebody comes in." The drover explains the sound and stood listening anyway. The turn is Arthur, who has said it was the wire every day since.
+bird | The measured shadow. Two comic accounts first; the third is the only one with a figure in it, and no bird. Let a player ask what made the shadow, and have nobody answer.
+aspens | The dog. The count in the bark goes down every year, and the turn is Beltza working a band alone in 1881 and the herder at Boise saying the hand is the same from 1869 to 1882.
+signal | The circular. The observer's entry is strange, and the turn is Washington's reply that the remarks column will no longer mention animals or observers. It's the first office in the book that decides not to see.
+lineman | "I'm going across." The kitchen with blue shelves is a gift until the window across the yard. Read the last letter slowly and don't say where he went.
+clause | "Four notes should have produced at least one argument." The clause is void, and the turn is the lawyer who stops laughing. Nobody has been brought a case under it because nobody it was used on was left to bring one.
+will | "The clause is in her own will." The court scene is cold, and the editor's last line makes it current. Spend it when a player character turns out to have a ninth child somewhere in the family tree.
+foreclosure | "Improving." A row of figures and one word. Hand the summary to the player who reads accounts, and let them find that the only land getting its water back is the bank's.
+emigrants | "Don't send another." Wickliffe's answer is the strongest voice in its chapter. The turn is the editor's last line, about the right sort coming out of one printing and going back into the next.
+salitre | The thirty-eighth signature. The widows account for thirty-seven names, and the turn is Anselmo's, written out in full by a man who'd only just learned how. Read the commissioners' third finding aloud.
+kansas | "There were seventeen at table." A society note, until the man at the foot counts. Never tell the players who the seventeenth was.
+paradise | "A game you can't lose isn't a game. It's a room." In Jack's first letter he's winning and in the second he's sorry about it. The coroner's finding, dated the year before, is the turn, so hand it over last.
+sixes | "None of the gentlemen appeared to mind in the least whether we bought." Money that doesn't care whether it's lent. Spend it on a player who's sure Redemption is broke.
+floor | The geologist's second letter. The first asks for three more bores and a diamond drill; the second, a month later, withdraws the request. Something changed his mind, and the deed says who was waiting to buy.
+spur | "Return tickets are not sold at Yuma." The time-table is the hook and the turn at once. The porter's account is the warmth that makes it worse.
+river | "We remember everybody." Let a player be admitted at the river twice and greeted as a stranger both times.
+twopapers | Nine up, three returned. Hand over both papers and the Yuma figure and wait for a player to subtract.
+lady | "She said it as one says the swallows have gone." The travel book charms for three paragraphs, and the turn is a missing people mentioned kindly. Then the customs house wall.
+novel | The second edition. Sixty thousand boys read the true book and their younger brothers read the false one and believe it. It's Washington's silence done by the Post Office, and the table should hear it before [[ref:understanding]] explains why.
+letterhome | The stake the stock won't graze past. The letter is happy and the turn is one sentence in the middle of it. Leave the table on the school reader's last answer.
+gold | "Somebody told him there would be nine." Two ruled lines with nothing in them. The turn is Ashby's: nobody rules lines for what he hasn't bought unless he's been told to.
+otherdoor | "He asked me the name of my boat." The crates are the hook; the turn is the salt pan at the head of the Gulf, asked for a fourth time and in gold. Let the players put it beside the two lines marked not yet.
+principles | "We never sleep." Kinnear's first report closes in eleven days, and the turn is the editor's note that it's the last of his that ends where it was supposed to. Bring him in competent so the rest of his papers cost something.
+censuses | "Head insisted it be counted." The turn is the fourth line in 1885, the other one, with every column after the second left empty.
+enumerators | "I didn't want to be the only place they were written down." The turn is the gentleman from Jubilee who didn't need the sheets, because the Census Office had already refused them on his behalf.
+patent | "There is one lamp." The examiner wants a model and the inventor won't take the lamp off the night shift. The second claim, anything in its light whether or not it's otherwise visible, is the turn, and the lamp has since left camp with somebody.
+feebill | "The jailer will tell you what he fed it." Red ink disallows the pursuit of a dead man, and the turn is the deputy's answer: he helped bury Lockhart in March. Pay him for items one and two and keep a straight face.
+landoffice | The man from the mesa in front of the plat. The Commissioner's answer is the turn on paper; his second visit, a year later, asking nothing, is the turn in person.
+plate | "I can't move the river." The engraver takes out a town and leaves the water, and the branch runs forty miles to a tank in the sand. The pencilled street names in the margin of the old proof are the last beat.
+deadletters | "Not opened, by standing order." Hand over the return and let a player read down to the last line. Nobody can date the order.
+noinformation | "File. No action." Read the four endorsements aloud, slowly, as a chain. The turn is the Secretary's letter eleven months later. Nobody lied.
+remarks | "His remarks will appear hereafter." Nine minutes the Record never printed. The turn is the secretary's paragraph about every draft being shorter, and Withdrawn written across the last.
+understanding | The fourth thing, which is no reason. The clerk's three reasons are politics; the fourth, that a place unwritten for a generation stops being there for anybody, is the turn, and Plenty is its proof.
+salt | "For the preservation of the post." Eleven years of salt in one summer and a one-sentence answer. Let a player ask the old quartermaster's question: which post?
+surgeon | "And so is he." The wet men are the hook. The turn is the endorsement, drowned in eighteen inches of water, and the editor's last clause putting him among the ordinary deaths.
+agency | Two towns twenty-seven miles apart on the same day. The Agency concludes there are two men, and Ashby's interview turns it: the witness remembers the one stranger the Agency says he invented, and can't describe the other.
+fivewives | "He couldn't whistle." The pleasantness is the tell nobody reports. Play the cook insisting on the whistling until the coroner writes it down.
+crailtrial | "He wouldn't cross it even on the bridge." The widow swears her husband was her husband, and the turn is the creek. Her new husband fishes, and she watches him cross.
+mirror | "Before I had said why, that it was the hands." The extra joint is the picture. The turn is that the man in the chair already knew.
+drifter | "I want it on the book that I looked." Three witnesses, one town, one week. Play the boy who walked home and didn't run; the jailer sober ever since is the last line.
+thirtysix | "A very restful liar to live with." This is the plain bigamist, probably, and the turn is that he's described in the same words as everything else in the chapter. Never say which of the six is the ordinary one.
+sayings | "Count the horses." Give the sayings out as table talk all campaign, one at a time, from different mouths. The turn comes late, when a player notices an NPC's habit is one of them and nobody can say why.
+ninechairs | The girls stop at nine. Play the rhyme in a schoolyard behind another scene and never explain the count.
+muster | "Nobody goes away." The muster song is proud. The turn is the section hands singing the same tune at Yuma with the ground bought where their grandpas slept.
+keelers | The verse left at the printer's door in a clean copy. A trap that falls for the sack and not the man is the hook, and the new verse is the turn. Never say who wrote it.
+weathersong | The wrong grammar in the third line, identical in every county. Crandall's discipline is the comfort and that line is the turn. Hum the song, never read it, and let a player hear a verse about their own homestead.
+claim | "Warrant 41 is a live man." Read the expense claim like a clerk, line by line. The turn is two pencil notes: digging for a living man, and the salt allowed, do not query, see me.
+notice | "His wife is having a very easy time of it this year." A bounty with no money on it is a saloon joke, and the turn is J. T.'s last paragraph. Being owed by the houses looks exactly like luck.
+terms | "There are two ways to cross one out." Crail's card is a tradesman's price list. The turn is the letter's last line, and the second way is never explained.
+sawbones | "Whether that is a defence." The mark grows and the patient gets healthier, and the turn is a certificate of sound mind he wants for himself, to read later. Give it to a Sawbones player and let them be the doctor who signs.
+hexer | "It was attentive." No terms, no paper, and a bill that comes every fourth week of October. The turn is the last sentence: she'd do it again tomorrow, and calls it arithmetic.
+contract | "The difference is not for inspecting stock." A blank form that confesses in its first sentence. Read it aloud the way a clerk would and let the players catch it.
+bitters | "No cowhand ever said aforesaid in his life." Five affidavits word for word, then the coroner's nine, then the sixth man who poured his dose in the grass. The editor's glass of bitters steadying his hand is the last beat.
+route | Keep. Let a player work out that the headless columns are a drinker in each town and what they drank, and that the man at Wallace drinks keep.
+scout | "It does not hurry, not one step of it." The man's track starts to hurry and the other one doesn't, for a mile and a half. Let a tracker player read the ground for themselves.
+trapper | "Whatever it was had kept a tree between itself and him the whole way in." The torn camp is a bear until the tracks walk upright round the fire. The tally's last line, a date and nothing after it in the dead man's hand, is the turn.
+thirdcell | The four notices. A humane doctor lets a courteous old man go, and the turn is the newspaper columns: the oldest settler in each town dead the day after an old gentleman in a suit that didn't fit him came through, a town at a time, east.
+gorham | "He's kind to me because I'm the last one who could tell." Three reports build a case and close it. The turn is the dentist's second crown, made to a cast, and the editor's last line: no Charles Wood in any record before May 1882.
+deputy | "There was something at the place." A resignation over pay that isn't over pay. The turn is a man at a gate for a quarter of an hour who rode back and wrote "nothing" in the book, and his line about the marshal carrying his.
+wrongdetail | "I have a sister called Margaret." Three wrong details, each one right about somebody dead or somebody not yet. The Odom girl's is the turn: the cottonwood is on her place.
+carrow | "The bucket was dry." Walkers at the gate every 19th of October, and her husband among them in '83. The neighbour boy's note is the turn.
+walker | "I didn't feel a thing." The man in the grey coat is waiting for somebody behind him. Read the two telegrams aloud one after the other; the sister's is the turn.
+spaniard | "He begged my pardon for the delay." Three true things at supper, then a widow's two hours and an apology for a delay nobody can name. She wishes she'd asked what delay. Don't let your players ask either.
+calendar | There's no turn to land here and the Keeper shouldn't make one: it's the keeper's calendar, and the 1879 line is to be read as it's written and left. The man in the iron hat is the only part of it that belongs to this chapter.
+spring | "The spring would be good for eleven years." The turn is the chainman leaving in the eleventh year and not wanting to know, and a covered well on the north side that nobody has drawn from.
+fortclark | "Some that were never in Texas." A sergeant who'll follow anything refuses one trail. The turn is the struck line in the lieutenant's report and six troopers carried as deserters to Mexico.
+tenth | "He asked me very civil whether he was across." The orders and the denied patrol are the slow part. The turn is the man out of the river who hadn't been asked anything in eleven years, and the boots that were too small.
+fifth | "I could draw you the other four." Let the players count. The turn is Otey's: the people who count four are the ones paid to count.
+trunk | "Taken in." A pump-tender paying in gold of 1834, a girl nobody sees by day, and a boy who suddenly knows the Hard Winter of 1780. The Bible leaf is the turn, and its fifth line ruled and empty, and the ticket paid in half eagles of 1834.
+coroner | "See 88, and see 41." The returns are a list and the turn is in the margin, a coroner quietly connecting drownings at one bend and a ford that was dry. Let a player follow the cross-references.
+pellnews | "The arithmetic in this notice does not work." Five in the family, three accounted for, two to the river, and a surviving child. Hand it over and let a player count.
+boxes | "Do not come home." Sixty on the register and sixty-one received. The turn is his mother's letter: she buried him, she knows he's well, and he's not to come home.
+returned | "He don't like the lamp." A mother's joy that her son walked up from the river. Never play Asa as a monster; play the two of them at two in the morning.
+undertaker | "He has only been wrong twice." The italics, the screws and the stone. The turn is the last answer, and the arithmetic behind it: forty-nine screwed, wrong twice.
+evergreen | Forty-one coffins and eleven subjects. A body-snatching scandal explains it until the college says what it paid for. Hold the two numbers side by side and add nothing, as the editor asks.
+handshake | "Wm. Tulley, labourer, about fifty." Joel signs a name he shouldn't know, and the poor farm's burial book is the turn. Hand it over last.
+swarm | "No one asked what kind." Read the first report aloud, then the amended one, and stop on the spade.
+correspondent | "The last is in my handwriting." The firm is a cruel trade and the dead man's confession about Chillicothe turns out true. The turn is the widow's last letter, and the copyist's kinder explanation after it.
+grinder | "He named the four." A bell at dusk and sharp knives, then cousins who won't stop bleeding, then Brother Pike's statement. The congregation dismissed without a hymn is where to stop.
+blacktrain | "The engine carried the number 17." A black train is an owner's private car until its number. The section foreman's rules are the handout: give it the main line, take your cap off, never count the cars.
+assay | Candles at eleven times the average. Run the letters as correspondence the posse carries between the superintendent and the Board, each one costlier, and let the turn be the reason he won't write down.
+ore | "He laid his hand flat on the ground the way you would on a horse." A buyer who doesn't want the ore. The turn is the stake with a number on it, and the editor refusing to make the acreage fit.
+veinwork | "I would like it on the book that I have not opened the safe." A jointed thing that moves on a locked desk. The three "nothing to report" lines are the turn; read them at an even pace.
+cut | "There's no line on a survey return for what it was for." The chainmen's petition is decency itself. The turn is Teale, forty-one, unafraid since the war, saying he went down into the cut and came up.
+adit | "Three of them dated after the blast." Penhale wrote the first notes himself. The turn is the one he found in his own pencil about a drift he'd never been in.
+rocksnake | "He has worked out how many bites he has left." A medicine show with a real snake and a real price. The turn is the editor at Pueblo in 1885, watched the whole time by a snake with a notch in its rattle.
+galvanic | "I called him, and he did not turn round." The bankruptcy schedule's "not recovered" is the turn, and the brother on the road at the edge of camp is the last picture.
+numberfour | "All well. Don't come down." The engineer explains voices on a wet line. The turn is the question he hasn't asked: did anybody at Number Two know Mrs. Treloar's name?
+lamps | "The coroner's jury was twelve of them." Blue flames are gas and the Tobin lamps burned yellow because the house stands on the outcrop. The turn is the nine-year-old's last line. The horror here is the town.
+dugout | "Whether the people were waiting for anybody in particular." A hole in loess that can't stand open. The surveyor's second letter is the turn, and Tilly's one question is the last line.
+ellender | "They starved forty feet from six hundred pounds of bacon." The arithmetic is dull on purpose. The turn is the survivor's letter: in December they stopped talking about food, and when a man from below said wagon, all four turned round.
+supper | "I mention it only in case it is catching." Sixty well-fed people who won't let anybody eat alone and don't say grace. The turn is the drummer, hungry ever since.
+glutton | "We are none of us hungry." The flour climbs and the lock isn't touched. Hand over the accounts and let a player find the line that says Ned's brother is stopping.
+township | "They asked us what we wanted." A township in plenty in the hard winter. The turn is the note in the chairman's margin, and the cellars dug deeper than a cellar needs to be.
+hotel | "Six did not call for their wages." Linen changed nightly, no lamps, no food, and crates by the freight. The turn is the attendant: two of the six wrote home in their own hands and nobody made them.
+wendigo | "His lamp burned all night." This paper speaks for a nation, so keep the woman's statement as she gave it and put the fright where it belongs, on Flett, a lecturer's joke about snowshoes and a man who died of want with a full larder.
+tempe | "She hasn't sung a note since Christmas." A man brought back by his name, and a price nobody saw paid. The turn is the physician's last sentence.
+fortsafe | "The ration return is the one nobody read aloud." So read it aloud, week by week, and stop at the last line: discharged, a hundred and thirty, no destination, and the wagons back empty the same day.
+thirst | "Two canteens, one of them full." Four men, a marked map, two and a half miles, and a stoppered canteen three feet off. Don't explain it. The editor can't, and says it's the paper he thinks about.
+revival | "Four have died." Nobody ill in eleven months and four well in the morning and dead by night. The turn is the second letter: you can't go to your neighbour and say we are all of us well.
+circuit | "No one there has ever asked me what anything means." There's no legend in these letters and none should be added. The quiet turn is a district that never asks about doctrine, and two boys who came out to meet him because he was late.
+faculties | "The day each of them would die." A bishop says illness and a priest disobeys him. The turn is the parish register: the rite without the faculty, and Communion twice after it.
+belts | "It was not the thing I had come about." The guide's book is a ledger of disappointments, and the turn is the merchant: the spirit-talker told him what was really wrong with him, and he's been attending to it since.
+braid | "Bring the box. You are expected." A family braid with the living in it. The turn is Jennie's strand moved down to the end where the dead are, and nobody had touched the box.
+lindqvist | "I did not pay their account at the store." Kari Brekke left the flour and the wood. The turn is that somebody else paid in gold and took Karin.
+houses | "Does not take money from anybody who has asked what it is for." Charity that turns down four thousand dollars. The turn is the coffee, and Ashby learning nothing and thinking better of the afternoon every day.
+landismine | "He will know it by the stakes." A sermon on Leviticus that leaves out the tenth verse. The turn is the elder listening an hour for the verse the town is named for.
+committee | "Mr. Quarles absent." Read the minutes in order with their dates: a question minuted, an absence, and his own quarter section on the next list.
+degree | "What is bought is kept." A card in a dead farmer's Bible. The turn is the motto, which is the last line of the preamble on the customs house wall, in the Bible of a man who never went to Jubilee.
+lookedat | "I should like to be told what I am looking for." The committee doesn't need a report. The turn is the daughter: at the end he went out in a buggy because he couldn't sit a horse, and it was the same.
+clerk | "He would like to be at home when it was." The clerk walks out through the sand hills and goes back. The preacher is told once and stays faint; the turn is why the clerk went home.
+stand | "Is asked to stand." Three lines on a card. The turn is the parish: nobody will buy an egg from her.
+tithe | "The name of a man in Placerville." Honey, salt, hair and a name. The turn is the name sent twice, and the man dead in the summer of 1877. The column headed "from", ruled and empty for seven years, is the last beat.
+witch | "Send me back my letter." The one house paper that writes the table down, and its writer asked for it back. The turn is the editor at the Trinity in 1886, where nobody has heard of any letter.
+sister | The flowers. A Sister can't find the difference in the work. The turn is the editor's last line: the house across the river sent flowers when Sister Bernadette died, and nobody had told them she was ill.
+hear | "You'd know the hands." Two descriptions that agree on nothing but the hands. The turn is the inspector's courtyard in the fever of 1878, with the shutters closed.
+notours | "They think the thing they love loves them back." Three lines from a house about the brothers and sisters, and the turn is the last one: the grateful never come back.
+ninth | "It had stopped at the Garzas' on the way to introduce itself." A polite caller with every date right. The turn is the second letter: no harm came to them, the house at the ford doesn't answer its door any more, and the Garza baby died on the Tuesday.
+namebook | "It is owed a child this September." A witch hunter's book of names. The turn is the midwife: he waited seven hours in her kitchen, asked the girl's name, and a dollar came the next spring.
+harrow | "Ask her where the child is." Two letters that can't both be right. The turn is the pencil under the notice at Fort Worth: she is not alone.
+commission | "The name of the house that kept my mother." A witch hunter's price. Let the players work out from it what Crail is to the houses; never say it for them.
+tract | "You will only be the first in your family." A leaflet anybody could pick up. Leave one in a boarding-house passage the players use and let them find the last line for themselves.
+sign | "I have been waiting four years for him to." A cup turned down and a mare reshod overnight. The turn is the steadier hand under the entry, Ashby four years later, still waiting to be asked.
+creeds | "Not a letter in common." Two creeds identical but for a name. The turn is that taking the names out leaves the same paper twice.
+gloves | "I have been all right since the spring of '73." A courteous prisoner who won't take off his gloves. The turn is the editor buying coffee from him in 1886, ordinary hands, and not being able to decide.
+congregations | "When the time comes it will not know you." A polite letter of pity between two of the faithful. The turn is the editor's line: they exchange cards at Christmas.
+glad | "I would give a good deal to have her sad again." A happy letter that's the worst paper in the chapter. The turn is the sister's note pinned to it.
+partners | "He served the wrong one, sir." A shooting over faith between partners of four years. The turn is the editor's two last words.
+uncle | "His wife has a cough." A comic paragraph about a lunatic who's always right. The turn is the nephew's last line.
+asked | "The loan of my hands for an afternoon." Eleven years and never asked for anything. The turn is the cut across the palm, healed like it was a year old, and the quarter's accounts balanced to the cent.
+vessel | "There's nothing in it that's against the law, is there." The cowhand's question is the turn. The elder's note about Cane Ridge takes nothing back, and isn't meant to.
+llano | "I am not going to run it a third time." Three miles and twenty-eight chains. Run a crossing of the Llano that takes a day longer east than west, and let the players' own count do it.
+gatherings | "All four are waiting for the same thing." Paragraph seven, stamped NOT CREDIBLE. The turn is the editor's: the company hired a detective to find out who was sinking a shaft it was paying for.
+afraid | "A frightened thing can be dealt with." Let the players argue for the Wind River house, then read them the last line from the Brazos.
+breathing | "The draws are getting longer." The professor's first letter explains blowing wells; his second, after he's seen it, asks not to be quoted. The barometer by his bed is the last line.
+street | "Her own name called from under the floor, in her own voice." Shadows that fall toward the sun are the hook. Mr. Doane dissenting because it's only a street, and elected mayor since, is the sting.
+plenty | "Nothing in the camp that is not as it should be." A man who dreamed a town sells his share for a dollar. The turn is the census of 1885, no inhabitants and no sign of removal, and Wickersham, who hasn't dreamed since.
+crossroads | "Three hundred and sixty-one degrees and a quarter." Every date within two days of a solstice or an equinox. Farr's letter is the comfort, and the deputy's badge pinned to the signpost is the turn.
+eclipse | "I think I am about to." She saw too much and drew what she could remember. The turn is that she's still trying, and the blinds.
+remembered | His four are where there was room; hers start there in 1879 and go in. Let the players lay the sheets together themselves. The turn is theirs, and it's the last one in the book that is.
+ashbyfile | "Subject not located." The Department closes the file the week Kinnear asks to go and look. The turn is the editor's last line: the Department has no record of the matter, and he has the file in front of him.
+satchel-instruction | "There is no ending. Do not supply one." Read the two lines before anything else in the satchel, and keep to them yourself.
+satchel-wells | "She said yes." Wells coming back is good news, and four faces at four doors say otherwise. Mrs. Kirby's yes is the turn.
+satchel-note | "And how long between." Ashby is asking for the clock. Give the note to a player as their own idea.
+satchel-ticket | Not punched. A ticket for the 3rd of November in a satchel that was at the lawyer's by then. Let a player count the days.
+satchel-cup | The third cup. Two cups in Ashby's time and three in the editor's, one of them the right way up with water in it. The turn is who it was set out for.
+satchel-crandall | The unbroken seal. She's sorting the other way now, and he never read it. The rest of the turn is in the editor's note: the marshal's lamp.
+satchel-road | "He said: no." Ashby catches the wrong detail at last. Stop on the word and never gloss it.
+satchel-page | "Which is not the same as." Don't finish the sentence. Somebody at the table will, and that's the end of the book.
+"""
+TURNS = {}
+for _line in TURNS_TEXT.strip().splitlines():
+    _slug, _sep, _text = _line.partition(" | ")
+    assert _sep and _text.strip(), f"a turn with no text: {_line[:60]!r}"
+    assert _slug not in TURNS, f"two turns for {_slug}"
+    TURNS[_slug] = _text.strip()
 
 
 # ================================================================ FRONT MATTER
@@ -7121,11 +7419,13 @@ has an entry here under the same title, in the same order, under the same chapte
 one book can open the other at the same place. The last chapter of the Book of Legends has no sections, so its
 entries here take their titles from what was in the satchel.
 
-Each entry has three parts. <strong>What happened</strong> is the story behind the papers, told whole, as the
+Each entry has four parts. <strong>What happened</strong> is the story behind the papers, told whole, as the
 Keeper should hold it: who did what, why the papers get it wrong, and what the one sentence the editor couldn't
 dismiss was pointing at. <strong>Left open</strong> is what this book won't settle, with two or three ways to
-hold each question. Pick one, write it inside your screen, and don't say it. <strong>At the table</strong> is
-a way to put the story in front of players and what to run when it gets there. Under the heading is who's in it,
+hold each question. Pick one, write it inside your screen, and don't say it. <strong>The turn</strong> is the
+line in the papers where the ordinary stops being enough, and how to land it; [[ref:build]] says why every
+entry has one. <strong>At the table</strong> is a way to put the story in front of players and what to run when
+it gets there. Under the heading is who's in it,
 and at the foot are the Bestiary entries it uses and the other papers it shares a thread with.
 
 The rules this book keeps come from the Keeper's Book.
@@ -7202,6 +7502,74 @@ came to care about it; or one of the people in the book, which would explain a g
 to doubt.
 """)
 
+front("build", "How the Book Builds", "Five movements, three meetings, and where to land them.", """
+The Book of Legends is arranged to get worse, and its editor says so on the first page. A Keeper can borrow that plan
+whole. This section sets out how the book climbs, where it pays off what it planted, and how to run the same climb at
+a table. The Keeper's Book still outranks all of it: nothing in the climb settles a question it leaves open.
+
+<strong>Five movements and a coda.</strong> Read the chapters in five runs.
+
+<em>What can be explained</em>, [[ch:basin]] to [[ch:weather]]. Every paper has a sober cause standing beside it, and
+most of the time the cause is right. The frauds come second so the reader learns what a lie sounds like early. In each
+chapter one thing is left over (the seven in the forgery, the crying at the Trice house, the window across the yard)
+and those leftovers are the only horror in the opening. They're enough.
+
+<em>What was written down</em>, [[ch:paper]] to [[ch:forwarded]]. Paper, money and offices, and nothing walks. The
+fright here is the country's own: a clause nobody could enforce and nobody ever contested, a will that won't say what a
+ninth child is for, a census told not to count a town, a map plate stippled over. A people can be taken out of the record
+by perfectly regular means, and the book shows it done one office at a time.
+
+<em>What walks</em>, [[ch:faces]] to [[ch:preaching]]. Now things are met: on roads, at supper, in shafts, at the foot
+of a bed. It's the long middle and it's where most tables will live. Every paper still carries its take-back, and the
+take-backs get thinner.
+
+<em>Who keeps it</em>, [[ch:circle]] to [[ch:brother]]. The dark has institutions. A committee buys land for a hand it
+has never seen, houses keep a table and its accounts, and congregations find each other by a cup turned down at supper
+and are glad of it. This is the run that frightens a table that's learned to handle monsters, because these people have
+manners and nobody can shoot an arrangement.
+
+<em>How big it is</em>, [[ch:depth]]. No monsters at all: a plain longer going east, a well that breathes, a street where
+shadows fall toward the sun, and the sky. The editor says this chapter is in Ashby's order because no other order would
+end anywhere else.
+
+<em>The coda</em>, [[ch:last]]. One man, a satchel, a cup, a road at four in the morning, and a sentence that stops.
+
+<strong>Three meetings.</strong> Three threads are planted early, in papers that seem to have nothing to do with each
+other, and meet late. They're the book's jaw-drops, and they work because the reader has been carrying the first paper
+for a long time before the second arrives.
+
+<em>The Count.</em> Seven: the count on the register's back board ([[ref:sanclavo]]), the children's rhyme
+([[ref:pell]]), the forgery's "there were seven" ([[ref:forgery]]), and the third of Miss Crandall's unattached verses,
+which the editor won't discuss. It pays off in the torn page ([[ref:satchel-page]]) and in Module III, where the players
+learn what's being counted.
+
+<em>The Song.</em> Marshal Coyle's struck line at the Dunbar well ([[ref:coyle]]) and the second of Miss Crandall's
+unattached verses ([[ref:weathersong]]): a marshal at the Crossing who carried a light and put neither down that night,
+taken down two years before. They meet in the editor's note in the satchel ([[ref:satchel-crandall]]), where the two
+most careful people in the book both flinch.
+
+<em>The Shape.</em> Professor Deane's fifty-cent chart ([[ref:hiddenstars]]), the eclipse of 1878 ([[ref:eclipse]]) and
+Kinnear's four camps ([[ref:gatherings]]) meet in [[ref:remembered]], where a frightened woman's sheet and a fraud's chart
+turn out to be one sky and the four stars on hers come nearer every year. It's the cosmic end of the game and it confirms
+nothing: the editor lists every sober cause first, and believes them.
+
+<strong>Running the climb.</strong> Pace a campaign the way the book is paced. Spend the papers that can be explained
+early, while the table is still learning what a lie sounds like, and let the players solve a few. Keep the ones that
+explain nothing for later, because they cost more every time. Don't spend a paper from the last two runs in the first half
+of a campaign, and never spend [[ref:remembered]] until the players have carried Deane's chart for months as a joke.
+
+For a meeting to land, the players have to own the first paper. Hand it over early, let them file it, and say nothing.
+When the second arrives, hand it over and say nothing again. The moment a player lays one on the other, or says the
+connection out loud, is the moment, and the Keeper's whole job is to have kept quiet long enough for it to be theirs.
+
+<strong>How one legend turns.</strong> Nearly every paper in the Book of Legends is built the same way, which is why
+every entry here names its turn. There's an ordinary surface (a form, a price, a date, a polite letter), and one detail
+in it that's wrong. Then there's the turn, the line where the ordinary stops being able to hold the detail. Then comes
+the take-back, an editor's note with a sober cause in it, followed by a last sentence the cause can't quite reach. Run a
+legend at the table in that order. Don't lead with the detail and don't explain the turn. Let an NPC who believes it say
+the take-back out loud, and let the last sentence hang.
+""")
+
 front("years", "The Years in the Papers", "Every dated thing behind the Book of Legends, in order.",
       lambda: ("  <p>The table below is built from the entries themselves, so it can't disagree with them. It holds the "
                "papers' own dates. A Keeper who has moved Perdition Basin's Haunted Year, or anything else, should trust "
@@ -7215,6 +7583,14 @@ def _threads_body():
          "and Module III carry the truth; these carry the county's side of it.",
          ["sanclavo", "water", "pell", "forgery", "foreclosure", "coroner", "returned", "circuit", "glutton", "thirst",
           "satchel-wells", "satchel-note", "satchel-cup", "satchel-page"]),
+        ("The marshal's lamp",
+         "A struck line in a day-book, a verse taken down two years before it, and the two most careful people in the "
+         "book flinching at once. [[ref:build]] calls it the Song.",
+         ["coyle", "weathersong", "satchel-crandall", "deputy", "swarm"]),
+        ("Four stars",
+         "A fraud's fifty-cent chart, an afternoon at Denver, a sheet that comes nearer every year, and four camps "
+         "waiting in the high country. [[ref:build]] calls it the Shape, and it confirms nothing.",
+         ["hiddenstars", "eclipse", "remembered", "gatherings", "ashbyfile", "afraid"]),
         ("The Vane Interest and Kansas City's paper",
          "A bank at Coffin Wells, its correspondents, and the clauses and dinners behind them.",
          ["vane", "water", "paidinfull", "foreclosure", "clause", "kansas", "contract", "houses", "fifth"]),
@@ -7347,6 +7723,7 @@ def render_entry(rec, title, here):
             out.append(f'  <h5 class="lc-q">{expand(q, here)}</h5>')
             items = "".join(f"<li>{expand(o, here)}</li>" for o in opts)
             out.append(f'  <ul class="dash lc-opts">{items}</ul>')
+    out.append(f'  <p class="lc-turn"><span class="t">The turn</span>{expand(TURNS[slug], here)}</p>')
     if rec["table"]:
         body = "".join(f"<p>{expand(p, here)}</p>" for p in rec["table"])
         out.append(f'  <div class="keeper-note"><span class="kn-tag">At the table</span>{body}</div>')
@@ -7383,6 +7760,10 @@ def chapter_html(c):
 
 
 ALL_RECS = [E[s] for c in LEG for s, _t in c["sections"] if s in E] + SATCHEL
+_no_turn = [r["slug"] for r in ALL_RECS if r["slug"] not in TURNS]
+_stray = sorted(set(TURNS) - {r["slug"] for r in ALL_RECS})
+assert not _no_turn, f"entries with no turn: {_no_turn}"
+assert not _stray, f"turns with no entry: {_stray}"
 
 
 def ref_short(slug):
@@ -7446,7 +7827,7 @@ def front_html(anchor):
 '''
 
 
-FRONT_ORDER = [a for a in ("before", "gatherer", "years", "threads") if a in FRONT]
+FRONT_ORDER = [a for a in ("before", "gatherer", "build", "years", "threads") if a in FRONT]
 _toc = "\n".join(
     [f'    <li><a href="#{a}">{FRONT[a]["title"]}</a><span class="pg">0</span></li>' for a in FRONT_ORDER] +
     [f'    <li><a href="#{c["anchor"]}">{c["num"]}. {c["title"]}</a><span class="pg">0</span></li>' for c in LEG] +

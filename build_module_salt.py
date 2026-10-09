@@ -17,7 +17,7 @@ _ACT2, _ACT3 = fight("The Salt at Coffin Wells", 0), fight("The Salt at Coffin W
 assert _ACT3["cleared"] == 0, "PLAYTEST.md has a posse shooting the Nightwalker down; reread Act Three's prose"
 from module_maps import map_html
 
-VERSION = "1.10"
+VERSION = "1.11"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(
@@ -35,7 +35,7 @@ H = shell(
     epigraphs=[
         ('"A banker will tell you a debt is a number. It&rsquo;s not. It&rsquo;s a thing you&rsquo;ve promised,\n'
          '    and out here the things you promise come to collect in person."\n'
-         '    <span class="src">— Marshal Adelia Cruz, Calvary Crossing</span>'),
+         '    <span class="src">— Marshal Adelia Cruz, Coffin Wells</span>'),
         ('"They buried Tom Pell on the Tuesday. He was home by the Friday, and he was hungry,\n'
          '    and I haven&rsquo;t slept since."\n'
          '    <span class="src">— Hannah Pell, deposition taken at Coffin Wells</span>'),

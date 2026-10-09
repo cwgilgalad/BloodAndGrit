@@ -8,6 +8,78 @@ Desktop\Git repos.)
 
 ---
 
+- **The legends checked against everything else, and built to a crescendo. The Book of Legends v1.11, the Legends
+  Companion v1.2 and Module I v1.11 (2026-10-09).**
+
+  Cole asked for two things. The legends should be consistent with all the other material and the software, with
+  the usual audits run. And if there's a way to approach them as a horror writer would, building and building to a
+  crescendo that leaves the reader's jaw on the floor, every legend in both books should get that treatment,
+  reaching the game's pitch of existential, supernatural and cosmic horror.
+
+  **What disagreed, and how it was settled.** Every Basin paper was read against Keeper's Book Ch. XIII, the three
+  modules and `perdition_map.RIDER_KNOWS`, and every name in the Legends against the six other books. The Legends had
+  Saltlick on the road between the Crossing and Coffin Wells, which can't be, since Saltlick is a hard day north and
+  east and Coffin Wells a day south and west; the coach now comes down the north line and goes on to the Crossing. The
+  Pell place was nine miles below the Crossing and is now eleven miles out of Coffin Wells, where Module I has it. A
+  patrol of the Tenth was riding the sand hills west of the branch, which is Redemption's side of the river and against
+  its orders; it rides its own bank now, and the man from Jubilee wades over to it. The companion called the Dunbar one
+  of the padres' seven wells (it's a homestead well), credited the last figure on the register's back board to
+  Esperanza Ríos in 1883 when Ashby read the board in the winter of 1881 (it's hers from 1857, when she went down after a
+  nail at fifty-five), and had Mrs. Kirby walking the circuit beside a keeper, which Module III's single keeper rules out
+  (she held his lamp). The Wills Outfit's coach job moved to the Coffin Wells road, where a day's ride can reach it.
+
+  Six names were already somebody else's. The circuit rider who dies in the Legends was A. Teague, the surname of the
+  Player's Book's example Preacher, and is A. Fentress. Dr. Lucius Mabry had the Player's Book Sawbones' surname and is
+  Varick, J. Prine had the Bestiary's and is J. Lusby, Henry Pruitt had a Keeper's widow's and is Henry Gaither, Refugio
+  Baca was a line in the Keeper's table of names and is Refugio Olguín, and Miss Loomis is Miss Hebard. Inside the
+  Legends, two Asas and two Dells became one of each: the gunmen at Coldwater are Lute Penrose and Lon Sorrell. The
+  court interpreter Hollis is now, on purpose, Module III's Hollis Deakin. One capitalised MABRY on a handbill got past
+  the first rename and was caught on the read-through. Module I's epigraph signed Marshal Adelia Cruz from Calvary
+  Crossing, and the Player's and Keeper's Books both have her keeping the peace at Coffin Wells, so Module I is v1.11
+  with one line changed.
+
+  `audit_consistency.py` gained check 11, which reads every person the companion indexes and fails on a surname another
+  book uses unless `SHARED_SURNAMES` lists it with what the connection means (fourteen do). `BASIN_RETIRED` gained four
+  patterns and the new check holds the Tenth to its own bank. Sabotage proved both: the old name, the old relay, the
+  Dunbar and the sand hills each put back once, and each failed. One disagreement is outside the Legends and is left for
+  the laptop: Module III's first nail is in the courtyard well, and Keeper's Ch. XIII puts the master nail in the altar
+  stone over the Mission spring.
+
+  **The crescendo.** The papers were already built to turn, every one of them, so the pass is architectural. The book
+  now builds in five runs (what can be explained, what was written down, what walks, who keeps it, and how big it is) and
+  three threads planted far apart meet late. *The Count* is the seven. *The Song* is the second of Miss Crandall's
+  unattached verses, a marshal at the Crossing who carried a light and put neither down that night: her earliest copy is
+  from 1881, Coyle's struck line at the Dunbar well is August 1883, and the editor's note under her unopened letter in the
+  satchel puts them together. Coyle, asked whether he took a lamp, hasn't spoken to the editor since, and Miss Crandall
+  answered by return for the first time in their correspondence. *The Shape* is a new paper, *What She Remembered*, after
+  the eclipse in Ch. XVIII. The eclipse observer's remembered sky reaches her teacher in 1885, and it's Professor Deane's
+  fifty-cent chart from the Frauds chapter, with the four stars he inked "where there was room" drawn once a year and
+  nearer every year. The schoolmistress at Hays says two of her three sleepless pupils had seen the eclipse. Deane, at
+  the penitentiary at Lansing, says he drew the chart on a cell wall at Topeka at the hour the shadow crossed Denver and
+  doesn't remember doing it, and stopped drawing it because his hand kept moving the four in. The editor sets out every
+  sober cause first and believes them, then lays one sheet on the other against a lamp, and Kinnear asks for a tracing.
+  It settles nothing: it fits the first and second readings of the Rockies gatherings in Keeper's Ch. VII.
+
+  The editor slips as the book goes on. *A Word Before* now says the last two chapters are in Ashby's order, Ch. XVIII's
+  opening says every order the editor tried ended on the same papers, and the book ends with the editor at the mission
+  ground in 1886, three cups on the stone and the third set right way up with water in it. The Hidden Stars gloss now
+  says Ashby bought the chart and the editor has it, so the payoff has its plant.
+
+  **The Legends Companion v1.2** names the turn of every one of its 172 entries: the line where the ordinary stops being
+  able to hold the detail, and how to land it at a table. The build stops if an entry has none. A new front section, *How
+  the Book Builds*, sets out the five runs, the three meetings and how to pace a campaign the way the book is paced, and
+  *Threads That Cross the Book* has the two new meetings. *What She Remembered* has its entry, *The Hidden Stars* was
+  rewritten to Deane's own account, and the Coyle, Crandall and second-cup entries carry the new notes. The eclipse
+  observer, married in May 1884, now has two children rather than three.
+
+  **Figures.** The Book of Legends: 406 papers, 173 provenance notes, 139 editor's notes, 227 pages. The companion: 377
+  pages. Both measure clean at desktop and mobile (parity, 0 clip, 0 h-scroll) and print to PDFs whose 2,264 Contents and
+  Index rows all land where they say. Rules 2,227 cross-checks and consistency 181,480, no drift in either. The strict
+  prose audit caught one hard tell in a turn ("boasts"), now fixed, and passes.
+
+  **The release is still the laptop's.** books-v1.17 now carries these, and Module I's line means a modules-v1.14 tag
+  goes with it. CLAUDE.md's roadmap has the walk.
+
 - **Every Calling, a quieter Long Table, and why nobody remembers Redemption. The Book of Legends v1.10 and the
   Legends Companion v1.1 (2026-10-08).**
 
