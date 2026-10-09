@@ -29,7 +29,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.10"
+VERSION = "1.11"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -496,7 +496,7 @@ def chapter(anchor, sub, body):
 STATIC_PG = {"before": 6, "basin": 8, "frauds": 20, "weather": 36, "paper": 43, "jubilee": 55,
              "forwarded": 65, "faces": 82, "songs": 89, "trades": 98, "road": 112, "dead": 127,
              "ground": 141, "hunger": 155, "preaching": 168, "circle": 180, "longtable": 185,
-             "brother": 196, "depth": 206, "last": 217}
+             "brother": 196, "depth": 206, "last": 219}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'
@@ -560,9 +560,10 @@ BEFORE = f'''
   asked me to print a single sentence, which I have. Another asked me, very politely, whether I was
   sure. Where anybody named the thing they serve, I have taken the name out, as Ashby did.</p>
   <p>Ashby stopped writing in the autumn of 1884. {chref('last')} is what was in the satchel, in
-  the order it was in, and I have added nothing to it and taken nothing out. The rest is in an order
-  of my own, which is that it gets worse. The frauds come early so that a reader will know what a lie
-  sounds like before the book runs out of them. There is no conclusion.</p>
+  the order it was in, and I have added nothing to it and taken nothing out. {chref('depth')} is in
+  his order as well, and I will say why when we get there. The rest is in an order of my own, which
+  is that it gets worse. The frauds come early so that a reader will know what a lie sounds like
+  before the book runs out of them. There is no conclusion.</p>
   <p class="note">A note on how to use this at a table: any page of this book can be handed to a
   player as a thing their character has read, been shown, or been sold. It is written to be handed
   over. What the Keeper knows about any of it lives in the Keeper's Book, and the Keeper is not
@@ -841,8 +842,8 @@ CH1 = chapter("basin", "One county, and everything written about it.", "\n".join
         "down. I have said it"),
 
  '  <h2 id="ix-pell">The Pell Place</h2>',
- gloss("The Pell homestead is nine miles down the river from Calvary Crossing and has been empty "
-       f"since 1882. What happened there was in the papers at the time and {chref('dead')} has the "
+ gloss("The Pell homestead is eleven miles out of Coffin Wells, south, down a track off the road, "
+       f"and has been empty since 1882. What happened there was in the papers at the time and {chref('dead')} has the "
        "clipping. What follows is not about what happened. It is about the rhyme."),
  song("as the children at Calvary Crossing sing it", [
      ["Who&rsquo;s in the barn, who&rsquo;s in the barn,",
@@ -868,19 +869,19 @@ CH1 = chapter("basin", "One county, and everything written about it.", "\n".join
         "number seven"),
 
  '  <h2 id="ix-saltlick">Two Nights at Saltlick</h2>',
- gloss("The same night, or two nights, at the stage relay on the road between the Crossing and "
-       "Coffin Wells. The first is the driver&rsquo;s report to the line, which he was paid to "
+ gloss("The same night, or two nights, at the stage relay on the north road, a hard day above "
+       "the Crossing. The first is the driver&rsquo;s report to the line, which he was paid to "
        "write. The second is from a passenger&rsquo;s letter, written to her husband the next day, "
        "and came to Ashby through the woman herself, who thought the whole business was funny."),
  paper("Report to the line", "Overland &amp; Territorial, 3 January 1884", p(
      "Down coach, the 2nd, arrived Saltlick 8.40 in the evening, four hours behind on account of "
-     "the ford. Changed team. Stationmaster reports the near well low and drawing muddy, which I "
+     "drifts on the north line. Changed team. Stationmaster reports the near well low and drawing muddy, which I "
      "have reported before.",
      "One passenger delayed our departure by twenty minutes and I have entered the delay against "
      "the company rather than the passenger as she was in distress. Departed 9.20 and arrived "
-     "Coffin Wells 1.10 in the morning without further incident."),
+     "Calvary Crossing 4.50 in the morning without further incident."),
      sign="J. Otey, driver"),
- paper("Letter", "Coffin Wells, 3 January 1884", p(
+ paper("Letter", "Calvary Crossing, 3 January 1884", p(
      "&hellip; and I wouldn't have written any of it down except you'll hear it from Cousin Ruth "
      "in a worse shape than it happened, so here it is straight.",
      "There was a man at the relay who came in off the road after us and sat by the stove and did "
@@ -943,8 +944,8 @@ CH2 = chapter("dead", "Burials that did not take, and the paperwork they generat
  news("THE CALVARY CROSSING BANNER", "18 April 1882",
       ["SHOCKING AFFAIR DOWN THE RIVER", "THE PELL FAMILY"],
       ["Three Dead and the House Standing Empty", "Marshal Coyle Attends"],
-      ["A distressing business has come to light at the Pell homestead, nine miles below this "
-       "town, where on Tuesday last Mr. Coyle, our marshal, was called by a neighbour and found "
+      ["A distressing business has come to light at the Pell homestead, eleven miles beyond Coffin "
+       "Wells, where on Tuesday last Mr. Coyle, our marshal, was called by a neighbour and found "
        "the place deserted and the stock unwatered.",
        "Of the family of five, three are accounted for and lie now in the ground at this place. "
        "Mrs. Pell was found in the house. The two younger children are supposed to have gone to "
@@ -1013,7 +1014,7 @@ CH2 = chapter("dead", "Burials that did not take, and the paperwork they generat
      "Mother, the river took Asa on the Thursday. He was crossing at the bar with the mule and the "
      "water was not high, you have seen it lower a hundred times, and it took him anyhow. We looked "
      "four days. Ned found the mule.",
-     "There's nothing to bury and that's the part I can't manage. Reverend Teague came out and "
+     "There's nothing to bury and that's the part I can't manage. Reverend Fentress came out and "
      "was kind and said the words over the bar, which was good of him, and I stood there and "
      "thought, this is a river and I'm saying goodbye to a river.",
      "Do not come. The roads are bad and you would only be sad in a different house."),
@@ -1635,7 +1636,7 @@ CH4 = chapter("hunger", "Parties that went in with provisions, and what the stor
      "You will engage forty persons of the town, at three dollars the night, to attend my principals in "
      "the evenings. They must be in good health. They must be willing. My principals are very "
      "particular about the second."),
-     cls="letter", sign="Yr. obt. servant, J. Prine, for the party"),
+     cls="letter", sign="Yr. obt. servant, J. Lusby, for the party"),
  ledger("House account", "the Hot Springs House, week of 20 November 1881",
         ["Item", "Ordered", "Note"],
         [("Provisions for the party", "none", "&mdash;"),
@@ -2084,7 +2085,7 @@ CH5 = chapter("ground", "Mines, cuts, diggings, and the things that came up with
  bill([("bl-3", "Three Nights at the Miners&rsquo; Hall"), ("bl-1", "THE DEAD MADE TO DANCE"),
        ("rule", ""),
        ("bl-2", "A Lecture on Animal Electricity"),
-       ("bl-2", "by DR. LUCIUS MABRY, Electrician"),
+       ("bl-2", "by DR. LUCIUS VARICK, Electrician"),
        ("bl-3", "with a Demonstration upon a Subject lately deceased,<br>for the Advancement of Science"),
        ("rule", ""),
        ("bl-3", "Admission 50 cents &middot; Ladies are advised not to attend"),
@@ -2102,7 +2103,7 @@ CH5 = chapter("ground", "Mines, cuts, diggings, and the things that came up with
  paper("Letter to the editor", "the camp physician, Silver Cliff, August 1880", p(
      "Sir,",
      "Signor Galvani made a frog&rsquo;s leg kick with a battery a hundred years ago, and there is no more "
-     "to Dr. Mabry&rsquo;s exhibition than that, except that the subject is a man of this camp three weeks "
+     "to Dr. Varick&rsquo;s exhibition than that, except that the subject is a man of this camp three weeks "
      "dead and kept on ice, and the audience is paying fifty cents. I call it an outrage, and I would call "
      "it so if the man had no friends. He had a great many."),
      sign="[the physician&rsquo;s signature]"),
@@ -2547,14 +2548,14 @@ CH6 = chapter("road", "Travellers nobody could place, and the details they got w
  paper("Letter", "the same camp, 2 September 1885", p(
      "Minnie,",
      "We had a queer night on patrol and I want to tell it to you before I tell anybody else.",
-     "Eight of us were riding the sand hills west of the branch at two in the morning, where nobody lives "
-     "and nothing walks, and a man came walking east out of them on foot. New boots, a good coat, no hat, "
-     "no water, no horse. He asked me very civil which way was the river. I asked him where he&rsquo;d "
-     "come from and he said Jubilee, and that it was the first time in eleven years anybody had asked him "
-     "anything.",
-     "We gave him water and put him up behind Corporal Mayes and brought him in. In the morning he was gone "
-     "out of the guardhouse, and the sentry says he never passed him. His tracks went back west into the "
-     "sand hills. The boots were small for a man his size.",
+     "Eight of us were riding the river bottom on our own side at two in the morning, below the camp where "
+     "nobody lives and nothing walks, and a man came up out of the water on foot. He&rsquo;d waded it, "
+     "where the freighters won&rsquo;t. New boots, a good coat, no hat, no horse, wet to the shoulders and "
+     "not shivering. He asked me very civil whether he was across. I asked him where he&rsquo;d come from "
+     "and he said Jubilee, and that it was the first time in eleven years anybody had asked him anything.",
+     "We put a blanket on him and put him up behind Corporal Mayes and brought him in. In the morning he was "
+     "gone out of the guardhouse, and the sentry says he never passed him. His tracks went back down the "
+     "bank and into the river. The boots were small for a man his size.",
      "You know I&rsquo;m not a fanciful man. I&rsquo;m writing it down so I&rsquo;ll know I told you."),
      cls="letter", sign="Isom"),
  ednote("The lieutenant&rsquo;s report for that night says the patrol brought in a deserter from the "
@@ -2803,7 +2804,7 @@ CH7 = chapter("paper", "Debts, deeds, wills and the fine print. The worst chapte
        "on the election, with a song at the end of it."),
  ledger("Poll book", "Salitre precinct, 6 November 1883",
         ["No.", "Voter", "Signed or marked"],
-        [("#96", "Refugio Baca", "his mark"),
+        [("#96", "Refugio Olgu&iacute;n", "his mark"),
          ("#97", "Tom&aacute;s Lucero", "signed"),
          ("#98", "Juan de Dios Montoya", "his mark"),
          ("&hellip;", "thirty-four further names", "&hellip;"),
@@ -3070,7 +3071,7 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
      "I need a horse. I am not going to dress it up. The mare is eleven and she has done six "
      "thousand miles on this circuit and she is finished, and I would rather ask you than borrow "
      "from the congregations, who have less than I have."),
-     cls="letter", sign="Yr. brother in Christ, A. Teague"),
+     cls="letter", sign="Yr. brother in Christ, A. Fentress"),
  paper("Letter", "to the presiding elder, October", p(
      "Dear Brother,",
      "You ask about the reports from the southern end of the circuit and I will answer plainly "
@@ -3084,7 +3085,7 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
      "the stock and their dead and they will sing until midnight, and no one there has ever asked "
      "me what anything means.",
      "My own people ask me twice a visit and generally about hell."),
-     cls="letter", sign="A. Teague"),
+     cls="letter", sign="A. Fentress"),
  paper("Letter", "to the presiding elder, January", p(
      "Dear Brother,",
      "The mare died at the ford on the 3rd. I walked the last nine miles and was met halfway by "
@@ -3092,14 +3093,14 @@ CH8 = chapter("preaching", "Revivals, circuit riders, and houses that take women
      "knowing except that I was.",
      "I am told the district is to be divided. I would ask to keep the southern end if it is "
      "divided, and I know what I wrote in October, and that is the reason I am asking."),
-     cls="letter", sign="A. Teague"),
+     cls="letter", sign="A. Fentress"),
  paper("Letter", "to the presiding elder, the following March", p(
      "Dear Brother,",
      "Kept the southern end. Nine appointments, two hundred and forty miles now.",
      "Nothing to report. I have decided that nothing to report is a thing worth writing down every "
      "quarter, so that when there is something, you will see it against eleven years of nothing.",
      "The new horse is a good one and I am obliged to you."),
-     cls="letter", sign="A. Teague"),
+     cls="letter", sign="A. Fentress"),
  ednote("He rode it another nine years. The bundle ends with a note from the elder&rsquo;s office "
         "recording the date and the cause, which was his heart, at a ford, in the rain, at "
         "sixty-one. There is no legend in these four letters and that is why they are in this "
@@ -4193,7 +4194,9 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
 
  '  <h2 id="ix-hiddenstars">The Hidden Stars, Twenty-Five Cents</h2>',
  gloss("A handbill for a lecture that went round the Kansas towns in the winter after the eclipse of "
-       "1878, and a letter from the one person in the audience at Hays who knew anything about stars."),
+       "1878, and a letter from the one person in the audience at Hays who knew anything about stars. "
+       "Ashby bought the chart at Abilene for fifty cents and kept it folded in the back of the second "
+       "field-book, and I have it."),
  bill([("bl-3", "One Night Only &middot; the Opera House"), ("bl-1", "THE HIDDEN STARS"), ("rule", ""),
        ("bl-2", "PROF. T. W. DEANE, late of the Eclipse Expedition,"),
        ("bl-2", "will show by the Magic Lantern the Stars that are seen<br>only when the Sun is put out"),
@@ -4421,8 +4424,8 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
  news("THE COMANCHE COUNTY CHIEF", "Coldwater, Kansas, 16 June 1884",
       ["A MEETING ON MAIN STREET", "TWO HANDS DRESSED"],
       ["Two Gentlemen Settle a Difference, and Neither Is Satisfied", None],
-      ["Mr. Asa Penrose, whose name was one to conjure with in the cattle towns ten years since and who "
-       "has lately been better known at the Lone Star bar, and Mr. Dell Sorrell, a young gentleman of this "
+      ["Mr. Lute Penrose, whose name was one to conjure with in the cattle towns ten years since and who "
+       "has lately been better known at the Lone Star bar, and Mr. Lon Sorrell, a young gentleman of this "
        "county who had been heard to say he would like to see how good Mr. Penrose had been, met on Main "
        "Street on Saturday at four o&rsquo;clock, by arrangement, before a good many of our citizens.",
        "Both drew and both fired, so near together that the two reports were taken for one. Mr. Penrose "
@@ -4435,7 +4438,7 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
      "gentian, burnt sugar and a little capsicum. There is nothing in it that would steady a hand, and the "
      "capsicum would make a man&rsquo;s eyes water. Value as a medicine, nothing. As a drink, about "
      "fifteen cents.")),
- paper("Letter", "Asa Penrose, to the editor, from Avilla, 1885", p(
+ paper("Letter", "Lute Penrose, to the editor, from Avilla, 1885", p(
      "Sir,",
      "You ask if I'm sorry. I was drunk four years before that Saturday and I haven't been since, so make "
      "what you like of it.",
@@ -4448,7 +4451,7 @@ CH11 = chapter("frauds", "The ones that came apart, and the one that did not.", 
      "been drinking to get their nerve up both decided not to kill anybody.",
      "Sorrell keeps the store at Avilla now and writes with his left hand. So do I. He sends me a ham at "
      "Christmas."),
-     cls="letter", sign="A. Penrose"),
+     cls="letter", sign="L. Penrose"),
  ednote("Nobody found Dr. Tabor. The county charged him in his absence with selling a medicine under a "
         "false name, which he had. Two frightened men who have been told the same lie will very often "
         "aim at the same place, and the right hand is where a man is looking when he means to see the "
@@ -4647,7 +4650,16 @@ CH12 = chapter("last", "What was in it, in the order it was in.", "\n".join([
      cls="letter", sign="H. Crandall"),
  ednote("The seal was not broken. I have written to Miss Crandall, who is well, and who has asked "
         "that the letter be printed, and who has asked me to say that she has continued the work "
-        "and that the figure today is thirty-one"),
+        f"and that the figure today is thirty-one. When I wrote to her I asked about the second of the three "
+        f"verses printed in {chref('songs')}, the one about the marshal at the Crossing who carried a light "
+        f"and put neither down that night. Mr. Coyle&rsquo;s day-book in {chref('basin')} has him at a well an "
+        f"hour after dark on the 20th of August 1883, and a line he struck the next morning. I asked him "
+        f"whether he had taken a lamp. He said a man does not stand at a well after dark without one, and "
+        f"asked why I wanted to know, and I told him, and he has not spoken to me since. Miss Crandall&rsquo;s "
+        f"earliest copy of the verse was taken down in the autumn of 1881. She answered by return, which she "
+        f"has never done before, to say that the verse does not name a county and that there is a Crossing "
+        f"in every county in the West. That is so. She has not taken it off her list. Of the third verse I "
+        f"have nothing to say, and I am glad of it"),
  field("24 Oct., &rsquo;84", "the Stage Road, below Saltlick",
        ["Met somebody on the road about four in the morning and I'm going to write it down "
         "properly for once instead of collecting it off somebody else.",
@@ -4677,7 +4689,13 @@ CH12 = chapter("last", "What was in it, in the order it was in.", "\n".join([
  f'''  <p class="note">There is no Chapter {roman(len(ORDER) + 1)}. Ashby&rsquo;s own numbering went to
   thirteen in every one of the eleven field-books, and he never gave a reason. Mine goes past it,
   because the papers would not go into thirteen, and I will admit that I did it with some
-  reluctance and cannot tell you why either.</p>''',
+  reluctance and cannot tell you why either.</p>
+  <p class="note">I went out to the mission ground once, in the spring of 1886, by daylight, with a man
+  from the Crossing who would not get down from the wagon. There were three cups on the stone. Two were
+  washed and turned down. The third was the right way up with water in it, and I am told it is the
+  custom of the country to leave one out for a guest who is expected. I did not drink it. I have been
+  asked since whether I know who keeps the count now. I do not, and I did not ask, for Ashby&rsquo;s
+  reason.</p>''',
 ]))
 
 
@@ -4738,7 +4756,7 @@ CH_JUBILEE = chapter("jubilee", "A country the government says is not there, and
      "when they say it to you on the platform they look you in the eye the whole time.",
      "I ride it because the pay is good and I have four at home. I'd like it in your book that I never "
      "got off."),
-     ps="[Ashby&rsquo;s note: he asked that his name be printed, and it is Henry Pruitt.]"),
+     ps="[Ashby&rsquo;s note: he asked that his name be printed, and it is Henry Gaither.]"),
 
  '  <h2 id="ix-river">Papers at the River</h2>',
  gloss("What a passenger is given at the river when his papers are found in order, and what a teamster "
@@ -5527,7 +5545,12 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
   once he has measured and the figure will not come out.</p>
   <p>The saloons call what is supposed to be at the bottom of all of it the Old Dark. They tell six
   kinds of story about the face it shows the people it answers, and never agree on the sixth. Ashby
-  thought the counting was a comfort. I have printed what he kept and left the count alone.</p>""",
+  thought the counting was a comfort. I have printed what he kept and left the count alone.</p>
+  <p>I said at the front of this book that this chapter is in Ashby&rsquo;s order and not mine. I spent
+  most of a winter trying to put these papers in the order of the rest of the book, the dull first and
+  the worst last, and every order I tried came out at the same two papers at the end, so I have left
+  them as he kept them in the oilcloth. I am not going to pretend that means anything. Anybody who has
+  been inside one book for four years will find a design in the way their own drawer shuts.</p>""",
 
  '  <h2 id="ix-llano">The Llano Is Longer Going East</h2>',
  gloss("From the field-book of a deputy surveyor who ran a line across the Staked Plain for a land "
@@ -5756,7 +5779,7 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
        "went to Denver. This is from one of them to her teacher, six years afterwards, and the teacher "
        "sent it to Ashby because, she said, he would at least not laugh."),
  paper("Letter", "to her teacher, from a former pupil, 1884", p(
-     "Dear Miss Loomis,",
+     "Dear Miss Hebard,",
      "You will remember that my task at Denver was the stars near the sun: to sketch every star I could "
      "see in the quarter below it during the two minutes and forty seconds, so that the gentlemen looking "
      "for the new planet would have a chart to set theirs against. I did it. I have my sketch still. You "
@@ -5778,8 +5801,72 @@ CH_DEPTH = chapter("depth", "Plains, wells and one afternoon&rsquo;s sky, and th
         "Denver, and within a few years nobody believed either of them; each, it is held, saw two stars "
         "he had not expected. This young woman is the only observer I know of who claimed to have seen "
         "too much. She was "
-        "married in May. Her teacher says she is well and has three children, and keeps the blinds down "
+        "married in May. Her teacher says she is well and has two children, and keeps the blinds down "
         "at night, which a great many people do"),
+
+ '  <h2 id="ix-remembered">What She Remembered</h2>',
+ gloss(f"Ashby had gone by the time any of this came, so it came to me: a letter from Miss Hebard in "
+       f"the spring of 1885, about a sheet that reached her with nothing else in the envelope; a letter "
+       f"from the schoolmistress at Hays whose first letter is in {chref('frauds')}; and a statement I "
+       f"took from Professor Deane himself, at the penitentiary at Lansing, for a pound of tobacco."),
+ paper("Letter", "Miss E. Hebard, to the editor, April 1885", p(
+     "Sir,",
+     "Mr. Ashby is not answering his letters, and I am told you have his papers, so this comes to you.",
+     "She has remembered. It came this morning in a plain envelope, postmarked from the town she married "
+     "into, with one sheet in it and nothing else. I have taught the stars to young women for thirty "
+     "years and I do not want it in my house.",
+     "Seven of the points are close together, and they are the Seven Sisters as any child knows them, "
+     "only turned about as if in a glass. Four more are set apart from the seven. She has drawn each of "
+     "the four six times over, small, in a line, and written a year beside each, from 1879 to 1884, and "
+     "every year is a little nearer the seven than the year before.",
+     "There is one mark more at the end of each line, nearer still. It has no year beside it.",
+     "I have not answered her. She asked me not to."),
+     cls="letter", sign="Yrs., E. Hebard"),
+ paper("Letter", "the schoolmistress at Hays, to the editor, 1886", p(
+     "Sir,",
+     "I have your letter and I will answer it once.",
+     "You ask after the three of my pupils who bought Professor Deane&rsquo;s chart and did not sleep "
+     "well afterward. Two of the three had been taken to Denver by their fathers in the July before, to "
+     "see the eclipse, as a good many families were that summer. I have thought very hard about the "
+     "third and I cannot remember, and I would rather you did not write to her.",
+     "I said at the time that his stars were the Seven Sisters printed backward, and I say so still. "
+     "Since you ask what became of my own copy, I burned it in the spring of 1882. I had begun to see it "
+     "when I shut my eyes, and I am a sensible woman and I do not keep a thing that does that."),
+     cls="letter", sign="Yrs., a subscriber"),
+ paper("Statement", "T. W. Deane, taken down at the penitentiary at Lansing, March 1886", p(
+     "I was never with any expedition, and I&rsquo;ll tell you so the same as I told the police at "
+     "Topeka.",
+     "I was in the cells at Topeka on the 29th of July in &rsquo;78, over a horse I&rsquo;d been lent and "
+     "hadn&rsquo;t got round to giving back, and about three in the afternoon the light went wrong. It "
+     "went yellow, the way it does before hail, and every man in the cells stopped talking at once, which "
+     "in a Topeka lock-up is a thing I never heard before or since. I had a stub of pencil. When the light "
+     "came right there was a drawing on the wall by my bunk, and I&rsquo;d made it, and I don&rsquo;t "
+     "remember making it. The Seven Sisters the wrong way round, and four more.",
+     "The turnkey made me scrub it off. I copied it on my cuff first. I&rsquo;d wanted a lecture for a "
+     "year and there it was, and I had it printed, and I sold it in nine towns at fifty cents, and I "
+     "won&rsquo;t say I&rsquo;m sorry for the money.",
+     "I put the four where there was room. That&rsquo;s what the lady at Hays wrote to the paper and "
+     "it&rsquo;s true. It was true the first time.",
+     "I haven&rsquo;t drawn it since &rsquo;82. Every time I drew it the four wanted to go in closer to "
+     "the seven, and my hand would put them there, and I&rsquo;d scratch them out and put them back where "
+     "there was room, and on the next one my hand would do it again. A man can stop doing a thing. I "
+     "stopped.",
+     "You tell the lady at Hays I&rsquo;m sorry about her girls."),
+     ),
+ ednote("I will give the explanation first, because there is one and it is a good one. Deane&rsquo;s "
+        "chart went round the Kansas towns the winter after the eclipse, and Miss Hebard&rsquo;s college "
+        "is in one of those towns. A young woman who spends six years trying to remember a thing will at "
+        "last remember the nearest thing to hand, and the nearest thing to hand that winter, for a great "
+        "many young people in Kansas, was a chart at fifty cents. Deane is a liar by trade and was talking "
+        "to somebody who had brought him tobacco. Two pupils in nine who had seen the eclipse is no great "
+        "share, in a summer when every family that could find the fare went to see it. I have set all of "
+        "that down and I believe it. I have also laid her sheet over his chart, against a lamp. The seven "
+        "agree to the width of the pencil. His four are where he says he put them, where there was room. "
+        "Hers start there in 1879 and go in. The two astronomers who were laughed at for their planet "
+        "reported two stars apiece that afternoon, one at Separation and one at Denver, which makes four, "
+        "and nobody has been able to make the four agree with each other or with anything in the "
+        "catalogue. When I showed the sheet to Mr. Kinnear he counted the four and said nothing at all, "
+        "and asked whether he might have a tracing. I gave him one"),
  '  <h2 id="ix-ashbyfile">The Agency&rsquo;s File on N. Ashby</h2>',
  gloss(f"A summary file of the Agency, opened under the Department of Justice&rsquo;s contract that is "
        f"described in {chref('circle')}. The Agency does not give its files to editors. This came to me in "
@@ -6451,6 +6538,8 @@ LEG_INDEX = [
     ("Cultists, papers written by (see Brother)", "brother"),
     ("Dread Mother, the (see Nobody&rsquo;s Mother)", "longtable"),
     ("Eclipse of 1878, the", "ix-eclipse"),
+    ("Eclipse, what an observer of it remembered", "ix-remembered"),
+    ("Deane, Professor, at the penitentiary", "ix-remembered"),
     ("Fever year, a house in the (New Orleans)", "ix-hear"),
     ("Gatherings, four camps in the high country", "ix-gatherings"),
     ("Gloves, the prisoner&rsquo;s", "ix-gloves"),

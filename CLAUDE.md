@@ -123,9 +123,9 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.56 | 290 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.41 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.27 | 226 | none (182 creatures) |
-| The Book of Legends | v1.10 | 225‡ | none (403 documents) |
-| The Legends Companion | v1.1 | 352‡ | none (a story behind every section of the Book of Legends) |
-| Module I: The Salt at Coffin Wells | v1.10 | 36 | one inline SVG map, downloadable |
+| The Book of Legends | v1.11 | 227‡ | none (406 documents) |
+| The Legends Companion | v1.2 | 377‡ | none (a story behind every section of the Book of Legends, and its turn) |
+| Module I: The Salt at Coffin Wells | v1.11 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
 
@@ -183,7 +183,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_player.py`** | Player's Book. Edit this. The whole book's HTML lives inside as the embedded raw string `SRC` (~350 KB; any images are `src="assets/…"` refs, not base64, currently only the cover emblem). The build drops in the Perdition map, grows the detailed Contents, inlines referenced assets → the self-contained `blood-and-grit.html` (idempotent). `measure_index.py` patches the static Index numbers directly into `SRC`. Replaced `player-src.html` on 2026-07-18 (byte-identical conversion). |
 | `assets/` | The images: **`img20.png`** (the cover emblem, transparent bg + transparent lever holes) and nothing else. The old parchment texture (`img01`) and the 18 Player plates (`img02–img19`) are **gone from the repo and were never committed to it**; don't plan on recovering them. |
 | **`build_keeper.py`** | Keeper's Book. Edit this (chapter prose lives inside as HTML strings). Reads `blood-and-grit.html` directly. Holds the Player-version **cascade tuples** and the `_chq` chapter-epigraph dict. |
-| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 403 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
+| **`build_legends.py`** | **The Book of Legends**. Edit this. The fourth book (2026-09-19), and the only one besides the Player's Book that a player may read. It has no rules in it: it is 406 in-world documents (letters, depositions, clippings, a company file, ledgers, songs, a banknote, a railroad's train-sheet, a forgery it prints by design) gathered by a fictional naturalist, N. Ashby, and prepared by a fictional editor whose bracketed notes disagree with him. Reads `blood-and-grit.html` like the Keeper's and Bestiary builders do, and since 2026-09-29 takes its cover swap, epigraphs and splice from `book_shell.py` (it carried the third copy of that transform until the fifth book was made, and said so). It also patches the shell's paginator so a `.paper` splits across a page boundary with its head repeated, the way a stat block does. **Two rules bind it:** it never names a face of the Old Dark (`verify_rules.py::check_face_silence` reads it), and nothing in it settles, where one document could be read as a confirmation, another nearby takes it back. **And its chapter order is the arc** (2026-09-24): a slow burn, set once in `ORDER`, which every numeral, Contents line, running head and "Chapter N" in the prose is read off. See the Book of Legends section below before moving a chapter. |
 | **`build_bestiary.py`** | Bestiary. Edit this (section text + `sb(...)` / `creature(...)` calls). Reads `blood-and-grit.html` directly. Also holds the Player-version cascade tuples, **and** (since 2026-07-18, when `bestiary_extra.py` was merged in) the 25 ordinary-beast stat blocks + field-guide lore (`LIVING_LORE`), the per-section tier/name **sorter** (`sort_sections`), and the **appendix generator** (`gen_appendix`). To add a creature, edit this one file. |
 | `pag_patch.py` | Shared paginator patch (imported by keeper + bestiary builds). Generalizes `splitContainer` so prose boxes, two-column blocks, stat blocks, **and creature entries** split across page boundaries to fill whitespace instead of moving whole. |
 | **`nav_tools.py`** | Shared navigation generators, imported by all three builds. `add_detailed_toc(html)` grows the simple chapter `<ul class="toc">` into a flat, splittable two-level `<ul class="toc2">` (chapters + their `<h2>` sub-heads), auto-id-ing any headings that lack ids and re-using the `ix-*` anchors; section-opener `<h2>`s anchor to their section id (the paginator stamps the section id onto its first block). `build_index(html, curated, creatures=…)` appends a letter-grouped two-column `<ul class="ix">` in a new `id="bookindex"` section (Bestiary auto-lists all `<p class="cr-name">` creatures; both books add curated concept/place entries) and inserts its Contents line. |
@@ -385,6 +385,17 @@ hand in the right order out of memory.
   a pattern in `BASIN_RETIRED` with the replacement beside it, so a book that states one names what it
   should have said; and the seven places in `perdition_map.RIDER_KNOWS` must read the same in all four
   books that print the list.
+  **Check 11, the Legends' people (2026-10-09).** The Book of Legends gathers four hundred papers by four
+  hundred hands, and a name typed with one book open went in where another book had already used it: a
+  circuit rider who dies in the Legends wore the Player's Book's example Preacher's surname, a galvanist had
+  its Sawbones', a voter on the Salitre poll was a line in the Keeper's table of names, and a porter shared a
+  Keeper's Ch. X widow's. The check reads every "Surname, Given" person the Legends Companion indexes and
+  fails on a surname any of the six other books uses, unless `SHARED_SURNAMES` lists it with what the
+  connection means (fourteen do: Coyle, Vane, the Wills Outfit, Esperanza Ríos and the rest). Its
+  `LEGENDS_RETIRED` holds the two Legends books to the Tenth staying on its own bank of the Colorado, and
+  four new patterns in `BASIN_RETIRED` keep the facts the same reading fixed: Saltlick isn't between the
+  Crossing and Coffin Wells, the Pell place is eleven miles out of Coffin Wells, the Dunbar is a homestead
+  well and not one of the padres' seven, and Adelia Cruz keeps the peace at Coffin Wells.
 - **Every option the rules print is one some path can reach**: `python audits/audit_diversity.py`
   (2026-08-22). It asks whether the game is as *wide* as it claims, which is a different question
   from whether it is correct, and it draws a narrow line by design: **it fails only on dead
@@ -618,7 +629,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.10) — structure & conventions
+## The Book of Legends (v1.11) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
@@ -712,10 +723,30 @@ chapter moves the arc, so score it against its neighbours before you do.
   one, and the editor nearly left it out: the Circle answers to a preacher who promised the country as it
   was before the war. It is the only hint in the book that a False Prophet runs the Golden Circle, and it
   must stay a hint. Never confirm it here.
+- **v1.11 (Cole, 2026-10-09): the crescendo.** Cole asked for the legends to build "like a crescendo that
+  leaves the readers with dropped jaws", to an existential, supernatural and cosmic pitch. The papers were
+  already built to turn, so the pass is architectural, and three things in it should be kept.
+  **Three meetings.** Threads planted far apart now meet late, and each meeting comes with its sober cause
+  printed first. *The Count* (seven) runs from the register's back board and the forgery to the torn page.
+  *The Song*: the second of Miss Crandall's unattached verses, a marshal at the Crossing who carried a light,
+  is two years older than Coyle's struck line at the Dunbar well, and the editor's note in the satchel puts
+  them side by side. *The Shape*: Professor Deane's fake chart in the Frauds chapter, the eclipse, and Kinnear's
+  four camps meet in *What She Remembered* (`ix-remembered`), where the eclipse observer's sheet is Deane's
+  chart with the four stars coming nearer every year, and Deane, in the Topeka cells at the hour of the
+  eclipse, drew it without knowing he had. That paper is the cosmic end of the book and it settles nothing:
+  it fits the first and second readings of the Rockies gatherings in Keeper's Ch. VII, and the editor lists
+  every sober cause before laying one sheet on the other. Don't add a fourth meeting without a take-back.
+  **The editor slips.** *A Word Before* now says the last two chapters are in Ashby's order; Ch. XVIII's
+  opening says why (every order the editor tried ended on the same papers); the last paragraph of the book is
+  the editor at the mission ground with three cups on the stone. The editor's sex is never given, here or in
+  the companion, so the editor's own lines say "anybody", never "a man".
+  **Read the other books before naming anybody.** The v1.11 pass found six names already in use elsewhere and
+  two used twice inside the Legends itself (two Asas, two Dells); check 11 of `audit_consistency.py` now holds
+  the cross-book half.
 - **No face of the Old Dark is named.** `verify_rules.py::check_face_silence` fails the build if one
   ever is, and it was proved by sabotage the day the book was written and again on 2026-09-25, when
   the Patrons became faces.
-- **Counted, not remembered.** `403` documents, `172` provenance notes, `138` editor's notes: the
+- **Counted, not remembered.** `406` documents, `173` provenance notes, `139` editor's notes: the
   builder prints those counts, and `audit_consistency.py` holds every copy this file and README type
   to the built book. (This bullet used to say nothing else in the repo typed them, while README and
   two rows of this file typed the 98.)
@@ -745,7 +776,7 @@ chapter moves the arc, so score it against its neighbours before you do.
 
 ---
 
-## The Legends Companion (v1.1) — structure & conventions
+## The Legends Companion (v1.2) — structure & conventions
 
 The Keeper's Companion to the Book of Legends, written 2026-09-29 on Cole's request for "the stories
 behind each of the sections in each chapter", told complete, consistent with the lore, tied to each
@@ -790,6 +821,14 @@ three parts:
   horror film and television, folklore and history, and each companion entry follows its source's
   arc retold in the game's lore. The book never names a source, for the reason the Book of Legends
   gives: each one was rewritten so none sounds like it.
+
+**Every entry names its turn (v1.2).** `TURNS_TEXT` in the builder holds one line per entry, `slug | turn`:
+the line in the papers where the ordinary stops being able to hold the detail, and how to land it at a table.
+It renders as a run-in paragraph between *Left open* and *At the table*, run in so the label can never be
+stranded at a page foot. The build stops if an entry has no turn or a turn has no entry. *How the Book Builds*
+(front matter, `build`) sets out the five movements, the three meetings and how to pace a campaign the way the
+book is paced, and *Threads That Cross the Book* carries the two new meetings as threads. Write a new entry's
+turn when you write the entry.
 
 **Every Calling has a way in (v1.1).** Each entry's `callings=` names the Player's Book Callings it gives a
 player a way into, checked against `chargen.json`. *Appendix: A Legend for Every Calling* is generated from
@@ -951,17 +990,19 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 ## Roadmap / open threads (not yet built)
 
-- **FIRST, ON THE LAPTOP: cut books-v1.17 (2026-10-08).** Cole asked for a release in the cloud session
-  that wrote the Book of Legends v1.10 and the Legends Companion v1.1. Everything up to the tag is done and
-  on `main`: the gate is green but for the two checks that need .NET (playtest, build), and nothing under
-  `GK/` moved but a README line. The cloud's GitHub access refuses a tag push with a 403, so the tag and the
-  Release are the laptop's. The walk is `/ship books` from step 5: `python make_pdf.py` (all eight, in Edge;
-  the Book of Legends should print 225 pages and the companion 352, or a few either side), `python
-  tools/make_bundles.py books`, the release notes (*a draft, RELEASE_NOTES_books-v1.17.md, was sent to Cole from the cloud
-  session*), `git tag -a
-  books-v1.17`, `gh release create books-v1.17` with all eleven assets (GritKeeper.zip and
-  BloodAndGrit-Modules.zip as they are on the current page), delete the gritkeeper-v1.59.0 page with
-  `--cleanup-tag=false`, and `python tools/release_index.py`. Then strike this item.
+- **FIRST, ON THE LAPTOP: cut books-v1.17 and modules-v1.14 (2026-10-08, widened 2026-10-09).** Cole asked
+  for a release in the cloud session that wrote the Book of Legends v1.10 and the Legends Companion v1.1, and
+  the next request in the same session took them to v1.11 and v1.2 and Module I to v1.11 (one epigraph line:
+  Adelia Cruz signs from Coffin Wells, not the Crossing). Everything up to the tag is done and on `main`: the
+  gate is green but for the two checks that need .NET (playtest, build), and nothing under `GK/` moved but a
+  README line. The cloud's GitHub access refuses a tag push with a 403, so the tags and the Release are the
+  laptop's. The walk is `/ship books` from step 5: `python make_pdf.py` (all eight, in Edge; the Book of
+  Legends should print 227 pages and the companion 377, or a few either side), `python tools/make_bundles.py
+  books` and `python tools/make_bundles.py modules`, the release notes (*a draft, RELEASE_NOTES_books-v1.17.md,
+  was sent to Cole from the cloud session*), `git tag -a books-v1.17` and `git tag -a modules-v1.14`,
+  `gh release create books-v1.17` with all eleven assets (GritKeeper.zip as it is on the current page),
+  delete the gritkeeper-v1.59.0 page with `--cleanup-tag=false`, and `python tools/release_index.py`. Then
+  strike this item.
 
 - **NEXT, ON THE LAPTOP: carry the Book of Legends v1.9 and v1.10 into the other books and
   GritKeeper (Cole, 2026-09-29; v1.10 added 2026-10-08).** Cole approved a proposal in the cloud session
@@ -1006,9 +1047,14 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
      re-mirror `GritKeeper/` and rezip, on the laptop. Read the Reference tab for any text quoting Ch.
      XV. The Bestiary's two proposed stat blocks (*An Agency Man*, *The Grey*) were declined, so
      `creatures.json` does not move.
-  7. **Measure the Book of Legends and the Legends Companion in Edge.** The Legends' 225 pages and its
-     fallback Contents numbers, and the companion's 352, were measured in the cloud's Chromium with the
-     books' own fonts, which agreed with the laptop on v1.8.
+  7. **Measure the Book of Legends and the Legends Companion in Edge.** The Legends' 227 pages and its
+     fallback Contents numbers, and the companion's 377, were measured in the cloud's Chromium with the
+     books' own fonts, which agreed with the laptop on v1.8. Module I measured 37 there against the
+     table's 36 from Edge; check it in Edge too.
+  8. **Keeper's Book Ch. XIII and Module III, one well in two places.** Module III calls the first nail the
+     courtyard well's and Ch. XIII puts the master nail in the altar stone over the Mission spring. Both may
+     be true (the courtyard well and the baptistry spring could be one water), but nothing says so. One
+     sentence in Ch. XIII would settle it. The Legends Companion is written to work either way.
 
 - ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
@@ -1024,7 +1070,7 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 - ~~**A Book of Legends**~~, **DONE (v1.0 2026-09-19, v1.8 2026-09-26).** A separate book of the
   Territory's legends, drawing on all three core books.
 - ~~**A Keeper's companion to the Book of Legends**~~, **DONE (Legends Companion v1.0, 2026-09-29;
-  v1.1 merged 2026-10-08 and shipping in books-v1.17).** The story behind every section, for the Keeper.
+  v1.1 merged 2026-10-08, v1.2 2026-10-09, shipping in books-v1.17).** The story behind every section, for the Keeper.
 - **Discord / online play**: proposed but not built. The full write-up is **`DESIGN-online-play.md`**, which lives on the working machine only (git-ignored since 2026-07-29); its substance is here.
   Four rungs, cheapest first: a webhook output sink → a slash-command bot rolling the real rules
   (ephemeral replies fit the Mark and Nerve tracks unusually well) → shared live state, either a
