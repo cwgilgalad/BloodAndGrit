@@ -368,7 +368,10 @@ ACT1 = '''
   ''' + keeper(
     "<p>One check, and it's on the wrongness rather than on anything seen. Nobody at this table has "
     "seen a monster yet and the module is in no hurry for them to. Sleep is a Toll rather than a "
-    "scene: a night in the cold with the doors barred costs each soul 2 Blood and nothing else.</p>") + '''
+    "scene: a night in the cold with the doors barred costs each soul 2 Blood. Don't count it as a "
+    "safe night, however stout the bar is, since the thing worth fearing sleeps on the inside of it. "
+    "The dawn gives back the pools and the once-a-day features, and Blood and Nerve stay where the "
+    "night left them.</p>") + '''
 </section>
 '''
 

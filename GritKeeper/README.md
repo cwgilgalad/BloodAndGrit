@@ -3,9 +3,9 @@
 **GritKeeper** (formerly *The Keeper's Table*) is a desktop utility for running
 **Blood & Grit** at the table. Built in C# (.NET 10 / Windows Forms), with the complete
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
-(Player's Book v2.56 · Keeper's Book v2.41 · Bestiary v2.27).
+(Player's Book v2.57 · Keeper's Book v2.42 · Bestiary v2.27).
 
-**App version 1.59.0**
+**App version 1.60.0**
 
 ---
 
@@ -101,8 +101,11 @@ Frightened, and rolls the break table at 0 Nerve, exactly as the Tracker's Dread
 *(v1.30, the two used to disagree, and this one doubled the Nerve on a critical failure,
 which the book does not say)*. A **Scars** column carries what a soul does not put down:
 Lasting Injuries and Afflictions, written into the Keeper's ledger on the Session tab as
-they happen and shown on the Ledger sheet. **New Session** (refill Nerve, reset Grit) and **Rest ▾** (a long
-rest, Blood *and* Nerve to full, whole posse or one soul). *(v1.5)* **Double-click a
+they happen and shown on the Ledger sheet. **New Session** (resets Grit, and asks whether a week of peace has passed before it gives back any
+Blood or Nerve) and **Rest ▾** (the book's three rests, for the whole posse or one soul: a dawn in
+the field brings back the pools, a safe night adds 1d6 Nerve and some Blood, and a week of peace
+gives back all of it and eases the Taint). **Steady ▾** holds whiskey (1d4 Nerve) and laudanum
+(1d6), one a scene, with a Fortitude save after the first in a day. *(v1.5; the rests since v1.60)* **Double-click a
 soul (or hit the far-right Ledger button) to open their character sheet**, the book's
 own Ledger, **in its own window**, the same modeless pop-out pattern as the Bestiary's
 creature cards; **double-click the Notes cell** to read and edit the whole note in a

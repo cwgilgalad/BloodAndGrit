@@ -1458,8 +1458,9 @@ public partial class MainForm
                 e.ToolTipText = col == "NerveLine"
                     ? $"{soul.Name}: {soul.NerveCur} of {soul.NerveMax} Nerve"
                         + (soul.NerveCur == 0 ? ", Broken.\n\n" : ".\n\n")
-                        + $"Will {(soul.Will >= 0 ? "+" : "")}{soul.Will} against the Dread DC. Nerve lost on a "
-                        + "failure is the horror's Tier; a critical failure doubles it."
+                        + $"Will {(soul.Will >= 0 ? "+" : "")}{soul.Will} against the Dread DC. A failure "
+                        + $"costs Nerve by the DC: {Horror.LadderLine()}. A critical failure costs the same "
+                        + "and adds Frightened 1."
                     : $"{soul.Name}: Mark {soul.Mark} of {Rules.MarkLost}"
                         + (soul.Mark >= Rules.MarkLost
                             ? ", Lost. The character passes into the Keeper's hands."
@@ -2012,8 +2013,11 @@ public partial class MainForm
 
     /// <summary>Ask the Keeper for the die they just rolled: the dice-and-books table's half of a
     /// roll the engine would otherwise make for them. Returns null when the engine is doing the
-    /// rolling, so a caller can pass the result straight through as the "forced die".</summary>
-    int? AskDie(string prompt)
+    /// rolling, so a caller can pass the result straight through as the "forced die".
+    ///
+    /// <para><paramref name="sides"/> bounds the box. It was a d20 box for every question until
+    /// v1.60.0, so a Keeper asked for the 1d6 of a confession could type 17 and the app took it.</para></summary>
+    int? AskDie(string prompt, int sides = 20)
     {
         if (EngineRolls) return null;
         using var f = new Sheet
@@ -2027,33 +2031,47 @@ public partial class MainForm
             Left = Pad, Top = Pad, Width = CW, Text = prompt, ForeColor = Ink,
             Height = TextRenderer.MeasureText(prompt, f.Font, new Size(CW, 0), TextFormatFlags.WordBreak).Height + 4
         };
-        var d20 = new NumericUpDown { Left = Pad, Top = say.Bottom + 10, Width = 74, Minimum = 1, Maximum = 20, Value = 10 };
-        var ok = new Button { Text = "That's the roll", Left = Pad + CW - 120, Top = d20.Top - 2, Width = 120, Height = 30, DialogResult = DialogResult.OK };
-        f.Controls.AddRange(new Control[] { say, d20, ok });
+        sides = Math.Max(1, sides);
+        var die = new NumericUpDown { Left = Pad, Top = say.Bottom + 10, Width = 74, Minimum = 1, Maximum = sides, Value = (sides + 1) / 2 };
+        var ok = new Button { Text = "That's the roll", Left = Pad + CW - 120, Top = die.Top - 2, Width = 120, Height = 30, DialogResult = DialogResult.OK };
+        f.Controls.AddRange(new Control[] { say, die, ok });
         f.ClientSize = new Size(CW + Pad * 2, ok.Bottom + Pad);
         // Esc closes it the same way the title bar's ✕ already did, by taking the number that is
         // showing. There is no cancelling this one: the caller is mid-resolution and needs a die
         // either way, and a modal that ignores Esc reads as a hung window, not as a firm question.
         f.AcceptButton = ok; f.CancelButton = ok;
         f.ShowDialog(this);
-        return (int)d20.Value;
+        return (int)die.Value;
     }
 
     void ClearConditions()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         c.Conditions = ""; trkGrid.Refresh();
-        Log($"{c.Name}: conditions cleared.");
+        // The bottle's Drained lives on the soul as well as on the row, so New fight can put it back
+        // after wiping the fight's own conditions. Clearing the row alone would have it reappear at
+        // the next fight, which reads as the button not having worked.
+        var soul = SoulOf(c);
+        bool sobered = soul?.DrainedByDrink == true;
+        if (sobered) soul.DrainedByDrink = false;
+        Log($"{c.Name}: conditions cleared" + (sobered ? ", the bottle's Drained with them." : "."));
     }
 
+    /// <summary>What a row wears out of every fight: the bottle's Drained on the soul behind it, or
+    /// nothing for a foe, a familiar or a hand-entered row.</summary>
+    string StandingOf(Combatant c) => Rest.Standing(SoulOf(c));
+
     // Set up the next encounter without losing the party: clear the foes, wipe the
-    // per-fight conditions off the survivors, and drop back to Round 1. Blood carries over
-    // (use the Posse tab's Rest to heal up between fights).
+    // per-fight conditions off the survivors, and drop back to Round 1. Blood carries over, and so
+    // does the bottle's Drained, which only a safe night lifts: the Posse tab's Rest ▾, or the
+    // rests under Restore ▾ here, are what heal between fights.
     void NewFight()
     {
         var foes = tracker.Where(c => !c.IsPC).ToList();
         int working = tracker.Sum(c => c.Worked.Count);
-        int marked = tracker.Count(Rules.FightResidue);
+        // Asked against what each row carries out of every fight, so a posse sober and fresh but for
+        // the bottle's Drained is not offered a clear that would put the Drained straight back.
+        int marked = tracker.Count(c => Rules.FightResidue(c, StandingOf(c)));
         // An encounter is not just the foes standing in it. The signs on the trail are the spoor of
         // the fight now ending, and what the fight left ON the survivors (conditions, spent Beats,
         // a turn half taken, every Sign and Miracle still riding) belongs to it too. Until v1.24.2
@@ -2071,16 +2089,17 @@ public partial class MainForm
         if (working > 0) bits.Add($"{working} effect(s) still working");
         // Everything else the reset touches, counted as souls rather than as a list of six fields:
         // "3 still carrying the last fight" is what a Keeper needs to agree to.
-        int carrying = tracker.Count(c => Rules.FightResidue(c) && c.Worked.Count == 0);
+        int carrying = tracker.Count(c => Rules.FightResidue(c, StandingOf(c)) && c.Worked.Count == 0);
         if (carrying > 0) bits.Add($"{carrying} still carrying the last fight");
         if (bits.Count == 0) bits.Add($"the round back to 1 from {round}");
         if (!Confirm($"New fight? Clears {string.Join(", ", bits)}, keeps the posse, resets to Round 1.")) return;
 
         foreach (var f in foes) tracker.Remove(f);
         signs.Clear();
-        // a fresh fight: nothing carried over, no conditions, no spent Beats, nobody mid-turn,
-        // and nothing still working from the last one (Rules.ResetForNewFight, so it is testable)
-        Rules.ResetForNewFight(tracker);
+        // a fresh fight: no spent Beats, nobody mid-turn, nothing still working from the last one,
+        // and no conditions but the one a soul carries out of every fight (Rules.ResetForNewFight,
+        // so it is testable)
+        Rules.ResetForNewFight(tracker, StandingOf);
         round = 1; ShowRound(); RefreshTracker();
         ReturnFeatures(FeatureCadence.Scene, "A new fight");
         Log("New fight: foes cleared, the trail wiped, the posse holds the field, Round 1.");
@@ -2583,7 +2602,7 @@ public partial class MainForm
         card.Controls.Add(name); card.Controls.Add(count);
         card.Controls.Add(take); card.Controls.Add(strike);
         string tip = $"{row.Name}\n\n{Wrap(row.Tally.Phrase ?? row.Desc ?? "")}"
-                   + "\n\nNothing gives these back. A new fight, a long rest and a new session all "
+                   + "\n\nNothing gives these back. A new fight, any rest and a new session all "
                    + "leave them standing, because the debt is owed until it is collected.";
         Tip.SetToolTip(card, tip); Tip.SetToolTip(name, tip); Tip.SetToolTip(count, tip);
         return card;
@@ -2668,6 +2687,10 @@ public partial class MainForm
     /// Keeper to stop reading the log.</summary>
     void ReturnFeatures(FeatureCadence upTo, string because)
     {
+        // A scene is also the bottle's boundary: one drink or dose a scene, so a new scene is a new
+        // one. Every call here is a scene ending or something longer.
+        if (upTo >= FeatureCadence.Scene)
+            foreach (var p in party) p.DosedThisScene = false;
         int gave = party.Sum(p => CharGen.RefreshFeatures(p, upTo));
         if (gave > 0)
             Log($"{because}, {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back to the posse.");
@@ -2878,8 +2901,9 @@ public partial class MainForm
     }
 
     /// <summary>Put the selected combatant back to full Blood. The ad-hoc heal a Keeper wants
-    /// between scenes without arithmetic. A posse soul gets their Nerve and pool back too, because
-    /// for a soul "restored" means the whole of what a long rest restores.</summary>
+    /// between scenes without arithmetic, and Blood only: until v1.60.0 a posse soul got Nerve and
+    /// the pool back with it, which made this a rest the book never printed. Nerve and the pools
+    /// are what the three rests give, under the Posse tab's Rest ▾.</summary>
     void RestoreSelected()
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
@@ -2893,40 +2917,50 @@ public partial class MainForm
                + "a heal.");
             return;
         }
-        if (SoulOf(c) is PartyMember soul) { RestSoul(soul); c.Wound(c.BloodMax - c.BloodCur, "restored"); }
-        else if (c.BloodMax <= 0) { Nope($"{c.Name} has no Blood maximum to restore to. Set one in the /Max column."); return; }
-        else
-        {
-            c.Wound(c.BloodMax - c.BloodCur, "restored");
-            Log($"{c.Name} is made whole, {c.BloodCur}/{c.BloodMax} Blood.");
-        }
+        var soul = SoulOf(c);
+        // The Returned get no Blood from any rest (Ch. XII), and a Keeper's "to full" is a rest by
+        // another name. Refused out loud rather than done, so the table hears the rule.
+        if (soul != null && CharGen.IsReturned(soul.Sheet))
+        { Nope($"{soul.Name} is Returned. Mending is the only healing the Returned have, so their Blood comes back by that and nothing else."); return; }
+        if (c.BloodMax <= 0) { Nope($"{c.Name} has no Blood maximum to restore to. Set one in the /Max column."); return; }
+        c.Wound(c.BloodMax - c.BloodCur, "restored");
+        if (soul != null) { soul.BloodCur = Math.Min(soul.BloodMax, c.BloodCur); posseGrid?.Refresh(); }
+        Log($"{c.Name} is made whole, {c.BloodCur}/{c.BloodMax} Blood.");
         RefreshTracker();
     }
 
-    /// <summary>Everyone on the field back to full Blood, and every posse soul back to full Nerve
-    /// with them. The scene is over; this is the line between one and the next.</summary>
+    /// <summary>Everyone on the field back to full Blood, and nothing else: no Nerve, no pool, no
+    /// features, which are the rests' to give. The Returned are left as they are, and the
+    /// question and the log both say how many.</summary>
     void RestoreField()
     {
         // The dead are not "everyone on the field". A scene-end restore is a mercy for the living;
         // bringing somebody back is a decision, and it has its own item on their row.
-        var bodies = tracker.Where(t => t.BloodMax > 0 && !t.Dead).ToList();
+        var living = tracker.Where(t => t.BloodMax > 0 && !t.Dead).ToList();
+        bool Returned(Combatant t) => SoulOf(t) is PartyMember s && CharGen.IsReturned(s.Sheet);
+        int returned = living.Count(Returned);
+        var bodies = living.Where(t => !Returned(t)).ToList();
         int gone = tracker.Count(t => t.Dead);
+        string skipped = returned == 0 ? ""
+            : returned == 1 ? " 1 Returned soul is left as they are: Mending is the only healing the Returned have."
+            : $" {returned} Returned souls are left as they are: Mending is the only healing the Returned have.";
         if (bodies.Count == 0)
         {
-            Nope(gone > 0 ? $"Nobody left on the field has Blood to restore, {gone} of them are dead."
-                          : "Nobody on the field has Blood to restore.");
+            Nope((gone > 0 ? $"Nobody left on the field has Blood to restore, {gone} of them are dead."
+                           : "Nobody on the field has Blood to restore.") + skipped);
             return;
         }
         int hurt = bodies.Count(t => t.BloodCur < t.BloodMax);
-        if (!Confirm($"Restore everyone on the field? {hurt} of {bodies.Count} are carrying wounds; "
-                   + "every posse soul also gets their Nerve and pool back."))
+        if (!Confirm($"Everyone on the field back to full Blood? {hurt} of {bodies.Count} are carrying wounds. "
+                   + "Blood only: Nerve, pools and features come back with a rest." + skipped))
             return;
-        foreach (var t in bodies) t.Wound(t.BloodMax - t.BloodCur, "restored");
-        foreach (var p in party.Where(p => tracker.Any(t => t.IsSoul(p) && !t.Dead)))
-        { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; }
+        foreach (var t in bodies)
+        {
+            t.Wound(t.BloodMax - t.BloodCur, "restored");
+            if (SoulOf(t) is PartyMember p) p.BloodCur = Math.Min(p.BloodMax, t.BloodCur);
+        }
         posseGrid?.Refresh(); RefreshTracker();
-        ReturnFeatures(FeatureCadence.Scene, "The field is restored");
-        Log($"The field is restored, {bodies.Count} back to full Blood, the posse's Nerve with them.");
+        Log($"The field is restored, {bodies.Count} back to full Blood and nothing else." + skipped);
     }
 
     // The posse soul behind a tracker row, matched by the stable id (Name only as a legacy
@@ -3109,7 +3143,12 @@ public partial class MainForm
         Label Para(string text, int top, Font font, Color fore) => MainForm.Para(text, Pad, top, CW, font, fore);
         var target = new ComboBox { Left = 112, Top = 15, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var t in foes) target.Items.Add(t.Name);
-        target.SelectedIndex = 0;
+        // Aimed at the first row on the OTHER side, where it used to be the first row on the field:
+        // a soul's Strike opened pointed at the next soul down, and one missed look shot a friend.
+        // A familiar fights for the posse. With nobody across the line (a brawl among the posse),
+        // the first row it is.
+        static bool OnPosseSide(Combatant t) => t.IsPC || t.IsFamiliar;
+        target.SelectedIndex = Math.Max(0, foes.FindIndex(t => OnPosseSide(t) != OnPosseSide(attacker)));
         var weapon = new ComboBox { Left = 112, Top = 51, Width = CW - 96, DropDownStyle = ComboBoxStyle.DropDownList };
         if (asCreature)
             foreach (var a in catks)
@@ -3347,7 +3386,12 @@ public partial class MainForm
                 ? CombatFlow.StrikeAndApply(attacker, tgt, catks[idx], (int)toHit.Value, drList, forced, shot)
                 : CombatFlow.StrikeAndApply(attacker, tgt, CharGen.D.weapons[idx], (int)toHit.Value, drList,
                                             forced, null, null, shot);
-            Log(rep.Line + (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit ? $", {catks[idx].Effect}." : ""));
+            // A creature's rider goes on the end of the line. The line already ends in a full stop,
+            // so the rider takes its place: "... at 8, grab." where it used to read "at 8., grab."
+            string said = rep.Line;
+            if (asCreature && !string.IsNullOrEmpty(catks[idx].Effect) && rep.Res.Strike.Hit)
+                said = (said.EndsWith('.') ? said[..^1] : said) + $", {catks[idx].Effect.TrimEnd('.')}.";
+            Log(said);
             // the Strike reads on the Dice tab's card too, graded like any other check
             ShowResult(rep.Res.Strike.DegreeName, rep.Line, DegreeColor(rep.Res.Strike.DegreeName));
             if (SoulOf(tgt) is PartyMember tp) { tp.BloodCur = tgt.BloodCur; posseGrid?.Refresh(); }
@@ -4073,7 +4117,14 @@ public partial class MainForm
         var did = new List<string>();
         if (nScars > 0) { p.Scars.Clear(); did.Add($"{nScars} scar{(nScars == 1 ? "" : "s")} struck off"); }
         if (hasLook) { p.Sheet.Look = null; did.Add("look cleared"); }
-        if (hasCond) { row.Conditions = ""; did.Add("conditions lifted"); }
+        if (hasCond)
+        {
+            row.Conditions = "";
+            // The bottle's Drained lives on the soul as well as the row, and New fight puts the
+            // soul's back on. Lifted here too, or a clean sheet came back Drained at the next fight.
+            p.DrainedByDrink = false;
+            did.Add("conditions lifted");
+        }
         CaptureUndo();
         posseGrid?.Refresh(); trkGrid?.Refresh();
         RefreshSoulCard(p);
@@ -5298,7 +5349,8 @@ public partial class MainForm
         RH(r, "Blood, Dying & Grievous Wounds");
         RTbl(r, new[] { 16, 66 }, new[] { "State", "The rule" },
             new[] { "0 Blood",      "Dying and Bleeding; unconscious" },
-            new[] { "Death",        "Comes at −CON" },
+            new[] { "Stable",       $"The bleeding stopped by a DC {Rules.StabilizeDc} Fortitude save or Medicine check. Still senseless at 0 or below; fresh harm opens the wound again, and a critical success brings them round on 1 Blood" },
+            new[] { "Death",        "Comes at a negative number equal to the CON score (twice it for the Risen)" },
             new[] { "A terrible blow", $"One hit for half maximum Blood or more, or any critical hit → Fortitude save DC {Rules.GrievousDc} (higher for terrible weapons) or take a Lasting Injury" });
 
         RH(r, "Lasting Injuries");
@@ -5314,6 +5366,18 @@ public partial class MainForm
         RH(r, "Nonlethal");
         RT(r, "Declare before the roll that you strike nonlethally; fists and a club do so by default; most other arms " +
               "take −2 to pull the blow. A foe at 0 Blood that way is senseless, not dead.");
+
+        // Rendered from Rest, the same titles and numbers the Posse tab's Rest ▾ spends. The app
+        // had one rest until v1.60.0, "Blood and Nerve to full", which the book never printed.
+        RH(r, "Rest  (Player's Book, Ch. XI)");
+        RTbl(r, new[] { 18, 64 }, new[] { "The rest", "What it gives back" },
+            new[] { Rest.Title(RestKind.Dawn), "The pools and the once-a-dawn features. No Blood and no Nerve" },
+            new[] { Rest.Title(RestKind.Night), $"The pools, 1d{Rest.NightNerveDie} Nerve, and Blood equal to level × CON modifier (at least 1). Lifts the bottle's Drained" },
+            new[] { Rest.Title(RestKind.Week), $"All the Blood and all the Nerve. The Taint eases by {Rest.WeekEasesTaint}: one step for every {Rest.DaysPerTaintStep} days clear, over {Rest.WeekDays} days" });
+        RT(r, "No rest touches the Mark, Grit, a Hunger, a Debt or a familiar. The Returned get no Blood from any "
+             + "rest, since Mending is the only healing they have; their Nerve comes back like anyone's.");
+        RI(r, "The Posse tab's Rest ▾ takes any of the three for the whole posse or one soul, and the Tracker's "
+             + "Restore ▾ rests the posse from the field.");
     }
 
     void RefLeafConditions(RichTextBox r)
@@ -5324,7 +5388,7 @@ public partial class MainForm
             new[] { "Blinded",   "−4 Defense, −4 most actions, lose DEX to Defense, half Speed" },
             new[] { "Clumsy",    "−2 on DEX-based Strikes, checks, and Defense" },
             new[] { "Drained",   "−2 on Fortitude and CON checks; lose Blood equal to your level, until recovered" },
-            new[] { "Dying",     "At 0 Blood; unconscious and Bleeding toward −CON and death" },
+            new[] { "Dying",     $"At 0 Blood; unconscious and Bleeding toward death at a negative number equal to the CON score. DC {Rules.StabilizeDc} Fortitude or Medicine stops it" },
             new[] { "Fatigued",  "−2 on checks and saves; cannot Aim or run; rest to shed it" },
             new[] { "Frightened","−1 (or worse) on everything; lessens one step each turn" },
             new[] { "Grabbed",   "Held fast; Off-Guard; −4 DEX; a check to break free" },
@@ -5334,6 +5398,7 @@ public partial class MainForm
             new[] { "Prone",     "−4 to melee; +4 to others' ranged against you; rising costs a Beat" },
             new[] { "Sickened",  "−2 on Strikes, damage, checks, and saves; nausea" },
             new[] { "Slowed",    "Lose one Beat each turn while it lasts; may still defend" },
+            new[] { "Stable",    "Dying no longer: the bleeding has stopped, still senseless until healed. Fresh harm reopens it" },
             new[] { "Stunned",   "Drop what you hold; lose all Beats this round; −2 Defense" });
         RI(r, "Tag any of these onto a combatant from the Tracker's ＋ Condition ▾ menu.");
     }
@@ -5373,13 +5438,15 @@ public partial class MainForm
     void RefLeafNerve(RichTextBox r)
     {
         RH(r, "Nerve & Dread");
-        RT(r, "Nerve = RES score + level. A Dread Check is a Will save against the horror's Dread DC. On a failure, " +
-              "Nerve is lost by the horror's Tier; a critical failure doubles it. At 0 Nerve a soul Breaks.");
-        RTbl(r, new[] { 6, 40 }, new[] { "Tier", "Nerve lost on a failure" },
-            new[] { "I",    "1" },
-            new[] { "II",   "1d4" },
-            new[] { "III",  "1d6" },
-            new[] { "IV–V", "1d10" });
+        RT(r, "Nerve = RES score + level. A Dread Check is a Will save against the horror's Dread DC, and the DC "
+              + "sets what a failure costs, off the ladder below. A critical failure costs the same and adds "
+              + "Frightened 1. A success holds; a critical success steadies the soul against that horror for the "
+              + "scene. At 0 Nerve a soul Breaks.");
+        // Walked off Horror.DreadTier and Rules.NerveLoss, the two the Dread Check itself spends.
+        // Typed until v1.60.0, and wrong: it said the loss came by Tier and that a critical failure
+        // doubled it, which no version of the engine ever did.
+        RTbl(r, new[] { 12, 50 }, new[] { "Dread DC", "Nerve lost on a failure" },
+            Horror.DreadBands().Select(b => new[] { b.Dcs, b.Cost }));
         RI(r, "Familiarity is the death of dread. The same sight costs nothing the second time.");
 
         // Rendered from Rules.Afflictions, which is the Keeper's Book's own d10: the app rolls
@@ -5397,11 +5464,19 @@ public partial class MainForm
         RH(r, "Recovering Nerve");
         RTbl(r, new[] { 44, 30 }, new[] { "The remedy", "It restores" },
             new[] { "Confession, spoken plainly to a listener",  "1d6" },
-            new[] { "A full night unmolested in genuine safety", "1d6" },
-            new[] { "A week of true peace",                      "All of it" },
+            new[] { Rest.Title(RestKind.Night) + ", unmolested",  $"1d{Rest.NightNerveDie}, with Blood (the Wounds leaf)" },
+            new[] { Rest.Title(RestKind.Week),                    "All of it" },
             new[] { "A sermon, a Sawbones' reason, a grim joke, or a point of Grit", "A measure of steadiness" },
-            new[] { "Whiskey, steadies the hand now",           "1d4, but courts a vice and its Fortitude saves" });
+            new[] { "Whiskey, one a scene",                       $"1d{Rest.DoseDie(false)}; {DoseSaves()}" },
+            new[] { "Laudanum, one a scene",                      $"1d{Rest.DoseDie(true)}; {DoseSaves()}" });
+        RT(r, "One drink or dose a scene, the bottle and the phial counted together. A failed save leaves the soul "
+             + "Drained 1 until a safe night, and takes Blood equal to their level with it, once: a soul already "
+             + "Drained loses nothing more. A dawn in the field does not lift it.");
     }
+
+    /// <summary>The Fortitude ladder a day's drinking climbs, read off <see cref="Rest.DoseDc"/>.</summary>
+    static string DoseSaves()
+        => $"the first in a day is free, then Fortitude DC {Rest.DoseDc(1)}, {Rest.DoseDc(2)}, {Rest.DoseDc(3)} and up";
 
     void RefLeafMarkTaint(RichTextBox r)
     {
@@ -5699,6 +5774,10 @@ public partial class MainForm
         split.Panel2.Controls.Add(clocksGroup);
         page.Controls.Add(split);
         Watermark(clockPanel, () => FlowBottom(clockPanel));
+        // The tab is lazy. A session loaded before its first visit handed the threads to
+        // RefreshClocks while there was no panel to draw them on, and the tab then opened empty
+        // over a full board. So the builder draws what is already there.
+        RefreshClocks();
         return page;
     }
 
@@ -5818,5 +5897,26 @@ public partial class MainForm
             ClockMenu(row, c);
             clockPanel.Controls.Add(row);
         }
+    }
+
+    /// <summary>GK-C1, v1.60.0: a thread that exists before the Session tab is first opened is on
+    /// the tab when it is. Null when the tab shows every thread in <c>clocks</c>, else what it got
+    /// wrong. Needs a form whose Session tab has not been built, so <c>--selftest</c> runs it
+    /// before the tip walk realizes every tab.</summary>
+    internal string ClocksShowOnFirstVisit()
+    {
+        var page = allTabs.FirstOrDefault(t => t.Text == "Session");
+        if (page == null) return "there is no Session tab";
+        if (!pendingTabs.ContainsKey(page)) return "the Session tab was already built, so a first visit cannot be tested";
+        var probe = new CampaignClock { Name = "The self-test's thread", Segments = 4, Filled = 1 };
+        clocks.Add(probe);
+        try
+        {
+            RealizeTab(page);
+            if (clockPanel == null) return "the Session tab built no clock panel";
+            int shown = clockPanel.Controls.Count;
+            return shown == clocks.Count ? null : $"the tab opened showing {shown} of {clocks.Count} threads";
+        }
+        finally { clocks.Remove(probe); RefreshClocks(); }
     }
 }

@@ -17,7 +17,7 @@ also renamed in v1.6.0.
 ## Source-tree layout (read before editing the app)
 
 The working/master tree is **`GK/`**, and since v1.28.0 it holds **three** projects:
-`GK/rules/` (the `net10.0` rules library, the eight headless `.cs` files and `Data/*.json`),
+`GK/rules/` (the `net10.0` rules library, the ten headless `.cs` files and `Data/*.json`),
 `GK/source/` (the WinForms app: the UI `.cs`, its `.csproj`, `app.ico`, `Assets/`), and
 `GK/smoke/` (the headless logic-test project). The app and the smoke rig both reference the
 library. **Edit `GK/rules` for rules and data, `GK/source` for UI; build/test in `GK/`.**
@@ -103,7 +103,10 @@ what each tab *is*, plus the decisions already settled.
   **＋ Add soul ▾** (v1.52.0, G7: build one by hand through the soul wizard, roll one at a level and
   Calling you pick, take the New Soul tab's sheet, or a blank row for typing a paper sheet in, all
   four land through one `SeatSoul`), inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread Checks with
-  the real Nerve-loss ladder, New Session reset, Rest ▾ (long rest), send-to-Tracker, ▲▼ reorder,
+  the real Nerve-loss ladder, New Session (Grit back to 3, and Blood and Nerve only if the Keeper says a
+  week of peace has passed, since v1.60.0), Rest ▾ (the book's three rests from `Rest.cs`, for the posse or
+  one soul; there is no long rest), Steady ▾ (confession, whiskey and laudanum one a scene, or by hand),
+  send-to-Tracker, ▲▼ reorder,
   a **Gender** column (persisted), double-click for a soul's Ledger window or the Notes editor, and
   **✦ Level up**, a dialog offering only what the new level unlocks, drawn from the generator's
   eligibility helpers. Backed by `CharGen.LevelUp`, which clones the sheet and appends exactly the
@@ -246,6 +249,7 @@ what each tab *is*, plus the decisions already settled.
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
 | **`Look.cs`** | What a soul looks like: `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. The two rules that govern it are below, under *What a soul looks like*. |
 | **`Names.cs`** | **What things are called**: `Namer` (seeded, spends what it draws) and `Names` (loads the stock). Pure, drawing-free, in the rules library. Two defences that fail separately: **breadth** reaches across seeds, **memory** reaches within one. It spends title **shapes** as readily as words, which is the half that was broken, *The Salt at Coffin Wells* and *The Reckoning of the Wells* collided on the word AND on the grammar, so widening the vocabulary alone would have produced the identical fault in a better coat. **Exactly one `rng.Next` per draw** and this is forced, not stylistic: `MapGen`'s `rngLm` names *and* places landmarks off one `Random`, so a rejection loop costing two rolls instead of one would silently move every rock on the sheet. `Reserve()` spends a word consuming no randomness, so an exclusion never shifts a seed. |
+| **`Rest.cs`** | The book's three rests and the bottle, since v1.60.0. `Rest.Take` does dawn in the field (the pools and the once-a-dawn features, nothing else), a safe night (1d6 Nerve, Blood of level × CON modifier, and it lifts the drink's Drained) and a week of peace (all Blood, all Nerve, and the Taint eased by `WeekEasesTaint`, which is worked out from seven days and a step for every three). `TakeDose` is whiskey and laudanum, one a scene, with the Fortitude ladder in `DoseDc`. The Returned get no Blood from any rest, because Mending is the only healing they have. Pure, in the rules library, and smoke-tested; the Posse and Tracker tabs only choose which rest. |
 | `Data/names.json` | The naming stock: 21 title templates and the word pools they fill, plus `spent` (words already on published work, refused on first draw). **App-side data like `tables_extra.json` and `appearance.json`, not a book transcription**, so it may be widened freely. Note `actor`/`actorp` and `verb3`/`verb` are split for **subject–verb agreement**: one list would generate "Until the Homesteaders Pays". `motion3` exists because an arrival template handed an intransitive verb produces "Something Forgets to Chalk Section". **Embedded**, like the rest. |
 | `Data/appearance.json` | 28 peoples, 19 whole styles of dress, and the shared pools for build, bearing, face, marks, voice, hair, whiskers, wear and the one memorable detail. **The app's own, not the books'**, like `tables_extra.json`, and for the same reason: `chargen.json` is a transcription and must stay one. **Embedded**, like the rest. |
 
@@ -429,8 +433,9 @@ one and the book has two: the Witch Hunter's Judgment returns "when you name a n
 Sawbones' Field Surgery is "once per wound". No clock returns those, so nothing but the Keeper's
 hand and a new session does either.
 
-**What returns a feature is a boundary the app already had.** New fight and Restore field are the
-scene; Rest is the dawn; New session is the night. `NextTurn` hands back the once-a-turn features
+**What returns a feature is a boundary the app already had.** New fight is the scene; every one of the
+three rests is at least a dawn; New session is the session. Restore field gives back Blood and nothing
+else since v1.60.0. `NextTurn` hands back the once-a-turn features
 on its own and `NextRound` the once-a-round ones for the whole posse, so nobody presses anything
 for those. Nothing new was invented for a Keeper to remember.
 
@@ -948,8 +953,8 @@ counterpart here, the two were merged rather than stacked.)*
 ## The rules library, and why the JSON had to move with it
 
 `GK/rules/BloodAndGrit.Rules.csproj` is a plain `net10.0` class library, no WinForms, holding the
-eight headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
-`Look.cs`, `Daybook.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
+ten headless files (`Core.cs`, `CharGen.cs`, `IronCode.cs`, `Horror.cs`, `MapGen.cs`, `Pdf.cs`,
+`Look.cs`, `Daybook.cs`, `Names.cs`, `Rest.cs`) **and the six `Data/*.json`**. This replaced `smoke.csproj`'s hand-listed
 `<Compile Include>` per file, which could silently fall out of step with what the app contained:
 a seventh headless file, unlisted, went untested forever.
 

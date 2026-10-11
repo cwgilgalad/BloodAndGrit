@@ -173,7 +173,7 @@
       ],
       "trainedChoice": [],
       "line": "You broke sod that did not want breaking and buried more than one child under it.",
-      "boon": "A full night's rest in a camp you have made restores you and each companion an extra 1d6 Blood; your dogs and stock give warning before trouble arrives.",
+      "boon": "A safe night in a camp you have made restores you and each companion sheltering with you an extra 1d6 Blood; your dogs and stock give warning before trouble arrives.",
       "burden": "Away from home or kin, −1 on Initiative in the first round of any fight."
     },
     {
@@ -3999,7 +3999,7 @@
       "blurb": "Sawbones is what the West called a doctor, after the saw in the bag, and the trade was as rough as the name.",
       "perk": {
         "name": "Not On My Table",
-        "desc": "A soul whose wounds you've dressed since the last full rest won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
+        "desc": "A soul whose wounds you've dressed since the last safe night won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
       },
       "fight": {
         "brings": "The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.",
@@ -5263,11 +5263,11 @@
       ],
       "featureDescs": {
         "The Vigil": "You were not called to preach and never wanted to be. What you took were vows of work: to go where the sick are, to stay when others leave, and to keep watch over what should not be left alone. You work Miracles from the blessing and vigil lists, spending Mercy, and your Miracle DC is 10 + half your level + your RES modifier. Your order taught you that a thing watched is a thing that cannot get on with what it was doing.",
-        "Nurse": "Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a full rest recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.",
+        "Nurse": "Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a safe night recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.",
         "Hold the Lamp": "Set your lamp down and stand over it. For as long as you hold the spot and strike at nothing, every soul who can see the light takes +2 on Dread Checks, and any Nerve they do lose is reduced by 1. Step away and it is a lamp again.",
         "Not One Step": "You cannot be made to run. You are immune to the Frightened condition and to any effect that would compel you to flee, leave, or turn away, and a soul you have physical hold of shares that while you keep hold. This has killed Sisters. It has also saved most of the people they were standing in front of.",
         "The Cool Cloth": "Once per scene, spend 1 Mercy and take one lasting hurt off a soul you can touch: a condition, an affliction in its early stage, or the whole of one Dread Check's Nerve loss suffered this scene. You cannot do it twice for the same soul in a scene, and it does not work on yourself.",
-        "The Long Watch": "You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a full rest's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.",
+        "The Long Watch": "You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a safe night's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.",
         "The Least of These": "At 10th level you have spent so long standing between other people and the dark that the dark has learned your face. Once per session, when a soul within your reach would die or be taken, dragged off, possessed, unmade or called away, you may refuse it. They are not. The cost is yours: you drop to 1 Blood, lose all remaining Mercy, and cannot do it again until the next session. Whatever wanted them now knows exactly who you are.",
         "The Longer Watch": "You have sat up with worse than this. You need no sleep on a night you have chosen to keep watch, and every soul resting under your watch recovers Nerve fully and wakes with +2 on their first save of the day. You may keep three such nights in a row before it starts to tell, and it does tell.",
         "Between You and It": "Standing in front of somebody has become a thing you are good at rather than a thing you are brave about. As a reaction, take any single attack, effect or grab aimed at an ally within ten feet upon yourself instead, and reduce it by your level. You may do this as many times a round as you have reactions, which is once, and there has never yet been a round in which you did not use it.",
@@ -5279,7 +5279,7 @@
         "options": [
           {
             "name": "The Hospitaller",
-            "boon": "The fever ward and the cholera camp are your ground. Disease and contagion have no hold on you, and a soul under your care through a full rest recovers as though it had rested twice. Mastery (10th): once per scene, a soul who dies within your reach does not, and has until the end of the next round to be saved properly."
+            "boon": "The fever ward and the cholera camp are your ground. Disease and contagion have no hold on you, and a soul under your care through a safe night recovers as though it had rested twice. Mastery (10th): once per scene, a soul who dies within your reach does not, and has until the end of the next round to be saved properly."
           },
           {
             "name": "The Teacher",

@@ -753,6 +753,68 @@ def check_perks(problems):
     checks += 1
     return checks
 
+# ------------------------------------------------ how many skills a ready-made soul is trained in
+# D01 (Cole, 2026-09-25): the skill an Origin trains comes ON TOP of the Calling's number plus
+# WIT, and that number has a floor of 1. GritKeeper's CharGen already counted it that way; the
+# book said otherwise until v2.57, and Appendix D's four sheets with a skill-granting Origin were
+# one short by the app's count. The rule is now printed twice (Ch. V's "Read each table thus" and
+# Ch. VIII's opening) and applied six times (Appendix D), so all eight are held to chargen.json.
+
+PREGEN_BOX_RE = re.compile(r'<div class="box">\s*<h4>(.*?)</h4>(.*?)</div>', re.S)
+PREGEN_SCORE_RE = re.compile(r"<strong>(STR|DEX|CON|WIT|RES|PRE)</strong> (\d+) ")
+PREGEN_TRAINED_RE = re.compile(r"<strong>Trained:</strong>\s*(.*?)\.\s*<strong>", re.S)
+ON_TOP_RE = re.compile(r"WIT modifier \(minimum 1\),[^.]*?the skill your Origin trains comes on "
+                       r"top of")
+
+
+def check_pregen_skills(problems):
+    cal_by = {c["name"]: c for c in RAW_DATA["callings"]}
+    org_by = {o["name"]: o for o in RAW_DATA["origins"]}
+    start = BOOK_HTML.index('<section class="page" id="posse">')
+    posse = BOOK_HTML[start:BOOK_HTML.index("</section>", start)]
+
+    checks = 1
+    said = ON_TOP_RE.findall(_reading_text("blood-and-grit.html"))
+    if len(said) != 2:
+        problems.append(f"Ch. V and Ch. VIII: the rule that an Origin's skill comes on top of the "
+                        f"Calling's number plus WIT (minimum 1) is printed {len(said)} time(s), "
+                        f"expected 2 (D01)")
+
+    boxes = PREGEN_BOX_RE.findall(posse)
+    checks += 1
+    if len(boxes) != 6:
+        problems.append(f"Appendix D: read {len(boxes)} ready-made souls, expected 6")
+    for head, body in boxes:
+        head = _tidy(TAG_RE.sub("", head))
+        m = re.match(r"(.+?) — (.+?) · (.+)$", head)
+        if not m:
+            problems.append(f"Appendix D: cannot read the heading {head!r}")
+            continue
+        who, calling, origin = m.group(1), m.group(2), m.group(3)
+        origin = "The " + origin[4:] if origin.startswith("the ") else origin
+        cal, org = cal_by.get(calling), org_by.get(origin)
+        scores = {ab: int(v) for ab, v in PREGEN_SCORE_RE.findall(body)}
+        t = PREGEN_TRAINED_RE.search(body)
+        if not cal or not org or "WIT" not in scores or not t:
+            problems.append(f"Appendix D / {who}: cannot read the Calling, the Origin, WIT or "
+                            f"the Trained line")
+            continue
+        trained = [_tidy(s) for s in re.split(r",\s*(?![^()]*\))", TAG_RE.sub("", t.group(1)))]
+        gift = org.get("trained", []) + org.get("trainedChoice", [])
+        base = max(1, cal["trainedSkills"] + (scores["WIT"] - 10) // 2)
+        want = base + (1 if gift else 0)
+        checks += 3
+        if len(trained) != want:
+            problems.append(f"Appendix D / {who}: {len(trained)} trained skills; "
+                            f"max(1, {cal['trainedSkills']} + WIT mod) is {base}"
+                            f"{' and the Origin adds one' if gift else ''}, so {want}")
+        if len(set(trained)) != len(trained):
+            problems.append(f"Appendix D / {who}: a trained skill is listed twice: {trained}")
+        if gift and not any(g in trained for g in gift):
+            problems.append(f"Appendix D / {who}: {origin} trains {' or '.join(gift)}, and the "
+                            f"sheet has none of them")
+    return checks
+
 # --------------------------------------------------- where the budget stops being arithmetic
 # B4 measured that the encounter budget holds to Tier III and not past it, and the answer was to
 # say so rather than retune anything: a Tier IV creature is a problem with an answer, not a fight
@@ -1293,6 +1355,7 @@ def main():
     checks += check_budget(problems)
     checks += check_origins(problems)
     checks += check_perks(problems)
+    checks += check_pregen_skills(problems)
     checks += check_arithmetic_stops(problems)
     checks += check_price_dearer(problems)
     checks += check_workings(problems)

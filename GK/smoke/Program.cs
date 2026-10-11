@@ -4789,7 +4789,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     // getting it wrong in the generous direction is worse than not counting at all.
     T("a scene leaves it spent",  CharGen.RefreshFeatures(soul, FeatureCadence.Scene) == 0);
     T("still spent after the scene", CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 0);
-    T("a long rest does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
+    T("a dawn in the field does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
     T("a new session does",       CharGen.RefreshFeatures(soul, FeatureCadence.Session) == 1);
     T("and it is back",           CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
 
@@ -5186,6 +5186,55 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
         sway.Conditions == "Drained 1" && !Rules.FightResidue(sway, Rest.Standing(tippler)) && sway.BloodCur == 9);
     Rules.ResetForNewFight(new[] { sway });
     T("standing: with nobody named, the reset clears it all", sway.Conditions == "");
+
+    // The menu lines. Each is read off the constants Take and TakeDose spend, so these hold the
+    // words to the arithmetic: a menu that promises a d6 over a rest that rolls a d4 is the
+    // two-authorities fault in a place nobody tests by hand.
+    T("label: a rest's line is its title and what it gives",
+      Enum.GetValues<RestKind>().All(k => Rest.Label(k) == Rest.Title(k) + ": " + Rest.Gives(k)));
+    T("label: a safe night reads as the book prints it",
+      Rest.Label(RestKind.Night) == "A safe night: pools, 1d6 Nerve, Blood");
+    T("label: a dawn says it gives no Blood or Nerve",
+      Rest.Gives(RestKind.Dawn).Contains("no Blood or Nerve"));
+    T("label: a week names the Taint it eases",
+      Rest.Gives(RestKind.Week).EndsWith($"Taint eased {Rest.WeekEasesTaint}") && Rest.Gives(RestKind.Week).EndsWith("Taint eased 2"));
+    T("label: no rest is called a long rest",
+      Enum.GetValues<RestKind>().All(k => !Rest.Label(k).Contains("long rest", StringComparison.OrdinalIgnoreCase)));
+    T("label: no stray space before a colon",
+      Enum.GetValues<RestKind>().All(k => !Rest.Label(k).Contains(" :")));
+    T("dose: whiskey is a d4 and laudanum a d6", Rest.DoseDie(false) == 4 && Rest.DoseDie(true) == 6);
+
+    // And the numbers in the lines are the numbers the rests move.
+    var told = Worn();
+    int eased = int.Parse(System.Text.RegularExpressions.Regex.Match(Rest.Gives(RestKind.Week), @"Taint eased (\d+)").Groups[1].Value);
+    Rest.Take(told, RestKind.Week, null);
+    T("label: a week eases the Taint by the number its line prints", told.Taint == 3 - eased);
+    var slept = Worn();
+    int nd = int.Parse(System.Text.RegularExpressions.Regex.Match(Rest.Gives(RestKind.Night), @"1d(\d+) Nerve").Groups[1].Value);
+    Rest.Take(slept, RestKind.Night, nd);
+    T("label: a safe night's top roll is the die its line prints", slept.NerveCur == 2 + nd);
+    T("night: the Nerve die is a d6", nd == 6);
+}
+
+// ---- the Dread ladder as bands (v1.60.0) ----
+// The tooltip and the Reference deck print the ladder from Horror.DreadBands, which walks
+// DreadTier rather than typing the bands a second time. Held here to the function it walks.
+{
+    var bands = Horror.DreadBands();
+    T("dread bands: five of them, one per tier", bands.Count == 5 && bands.Select(b => b.Tier).SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
+    T("dread bands: the first is open below", bands[0].From == int.MinValue);
+    T("dread bands: the last is open above", bands[^1].To == int.MaxValue);
+    T("dread bands: each starts one past the last one's end",
+      Enumerable.Range(1, bands.Count - 1).All(i => bands[i].From == bands[i - 1].To + 1));
+    T("dread bands: every closed end is in the tier the band says",
+      bands.All(b => (b.To == int.MaxValue || Horror.DreadTier(b.To) == b.Tier)
+                  && (b.From == int.MinValue || Horror.DreadTier(b.From) == b.Tier)));
+    T("dread bands: the loss is the ladder's own", bands.All(b => b.Loss == Rules.NerveLoss(b.Tier).label));
+    T("dread bands: only the last carries an Affliction",
+      bands.Take(bands.Count - 1).All(b => !b.Affliction) && bands[^1].Affliction);
+    T("dread: an Affliction from tier 5 and not before", Horror.Afflicts(5) && !Horror.Afflicts(4));
+    T("dread: the ladder on one line",
+      Horror.LadderLine() == "10 or under → 1 · 11–13 → 1d4 · 14–16 → 1d6 · 17–20 → 1d10 · 21 and over → 1d10 and a lasting Affliction");
 }
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");

@@ -418,15 +418,23 @@ ACT2 = '''
   ''' + found("The Risen") + '''
 
   <p><strong>Three Risen.</strong> Full entry under <a href="#dead">What Walks Here</a>. Play them
-  slow and play them relentless. They don't flinch, they don't take cover, and a shot that would
-  put a man down puts one of them on the ground for a round and then it gets back up.</p>
+  slow and play them relentless. They don't flinch and they don't take cover. One that drops to 0
+  Blood lies still until the next full dark, then gets up again on full Blood, unless somebody has
+  burned it, salted it or taken its head by then.</p>
 
   ''' + keeper(
     "<p><strong>This is the lesson fight and it must be won.</strong> The engine says a fresh posse "
-    "clears it two times in twelve if they only shoot, and ten times in twelve if somebody "
+    "clears it " + words(_ACT2["cleared"]) + " time" + ("s" if _ACT2["cleared"] != 1 else "")
+    + " in " + words(_ACT2["reached"]) + " if they only shoot, and ten times in twelve if somebody "
     "thinks of fire, the barn door as a bottleneck, or the lamp oil on the shelf. Put the lamp oil "
     "where they can see it. If the fight turns badly, Marshal Cruz arrives on the third round: she "
-    "followed them, and she has a shotgun and a bad conscience.</p>", "Running it") + '''
+    "followed them, and she has a shotgun and a bad conscience.</p>"
+    "<p><strong>Then the bodies.</strong> Winning the yard only buys the posse until the next full "
+    "dark. Every Risen they put down has to be burned, salted or have its head taken before then, "
+    "or it goes looking for the living again, the way it did the first time. Fire is quickest, and "
+    "the barn and the oil are right there. Salt is harder, since the store in town keeps selling out of it. "
+    "If nobody at the table thinks of it and Cruz is there, she does. She has buried these people "
+    "once already.</p>", "Running it") + '''
 
   <h2 id="a2-cellar">7. The Cellar</h2>
   <p>Hannah Pell is down there, bled thin and half-turned, and she is still herself for now. She knows

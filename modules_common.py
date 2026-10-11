@@ -195,9 +195,15 @@ def statblock(name, note=None):
     body = "".join(f'<p><span class="sb-tag">{k}</span> {v}</p>' for k, v in rows)
     if note:
         body += f'<p class="sb-cont">{note}</p>'
+    # The Bestiary's kind line already leads with its Tier ("Tier I · the shambling dead"), so
+    # prefixing the numeral again printed "Tier I · Tier I · …" on every block (M19). A kind line
+    # that ever comes through without one still gets it, off the entry's own tier.
+    kind = c["tierText"]
+    if not re.match(r"Tier [IVX]+\b", kind):
+        kind = f'Tier {ROMAN.get(c["tier"], c["tier"])} &middot; {kind}'
     return (f'<div class="statblock"><div class="sb-head">'
             f'<span class="sb-name">{c["name"]}</span>'
-            f'<span class="sb-tier">Tier {ROMAN.get(c["tier"], c["tier"])} &middot; {c["tierText"]}</span>'
+            f'<span class="sb-tier">{kind}</span>'
             f'</div>{body}</div>')
 
 

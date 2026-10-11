@@ -319,7 +319,7 @@ def check_grounds(dig, creatures):
 # called it first.
 CONDITION_WORDS = {
     "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Enfeebled", "Fatigued", "Frightened",
-    "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stunned",
+    "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stable", "Stunned",
     "Broken", "Charmed", "Concealed", "Confused", "Controlled", "Cursed", "Dazed", "Dazzled",
     "Deafened", "Doomed", "Encumbered", "Entangled", "Exhausted", "Fascinated", "Flat-Footed",
     "Fleeing", "Hidden", "Immobilised", "Immobilized", "Invisible", "Nauseated", "Panicked",

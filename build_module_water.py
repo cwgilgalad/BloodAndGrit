@@ -632,7 +632,9 @@ COST = '''
     "in the nave, and every point not in the nave isn't at the bottom of the shaft.</p>"
     "<p>So let the Sawbones work. Let them camp at the mission. Let them go back up the rope and "
     "come down again tomorrow; it costs a segment of the clock and the module is built to "
-    "charge exactly that and no more.</p>") + '''
+    "charge exactly that and no more. Be plain with them about what the night buys, though. A camp "
+    "on top of the shaft is no safe night, so the dawn brings back the pools and the Sawbones' doses "
+    "and leaves Blood and Nerve where the dark left them. Out here the kit is what closes a wound.</p>") + '''
 
   <h2 id="cost-night">The Night, End to End</h2>
   <p>''' + words(_NIGHT["finished"], True) + ''' of twelve finished the night on their feet. ''' + words(_NIGHT["broke"], True) + ''' broke off and rode out;

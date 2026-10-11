@@ -35,6 +35,28 @@ public static class Rest
         _ => "A week of peace",
     };
 
+    /// <summary>The die a safe night rolls for Nerve.</summary>
+    public const int NightNerveDie = 6;
+
+    /// <summary>The die a drink or a dose rolls for Nerve: a d4 for whiskey, a d6 for laudanum.
+    /// Named so the menu line, the dialog that asks for the die and the roll itself read one
+    /// number.</summary>
+    public static int DoseDie(bool laudanum) => laudanum ? 6 : 4;
+
+    /// <summary>What a rest gives back, in the few words a menu line has room for. Read off the
+    /// same constants <see cref="Take"/> spends, so a menu cannot promise what the rest does not
+    /// do.</summary>
+    public static string Gives(RestKind kind) => kind switch
+    {
+        RestKind.Dawn => "pools and dawn features, no Blood or Nerve",
+        RestKind.Night => $"pools, 1d{NightNerveDie} Nerve, Blood",
+        _ => $"pools, all Blood and Nerve, Taint eased {WeekEasesTaint}",
+    };
+
+    /// <summary>A rest's menu line: its title and what it gives, "A safe night: pools, 1d6 Nerve,
+    /// Blood". No access key: the menus that carry it escape ampersands on the way in.</summary>
+    public static string Label(RestKind kind) => $"{Title(kind)}: {Gives(kind)}";
+
     /// <summary>What a rest gave back, counted rather than described, so the log can say exactly
     /// what moved and say "nothing" when nothing did.</summary>
     public record RestOutcome(RestKind Kind, string Who, int Blood, int Nerve, int Pool, string PoolName,
@@ -89,7 +111,7 @@ public static class Rest
 
         if (kind == RestKind.Night)
         {
-            p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (nerveDie ?? Rules.Rng.Next(1, 7)));
+            p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (nerveDie ?? Rules.Rng.Next(1, NightNerveDie + 1)));
             if (!returned) p.BloodCur = Math.Min(p.BloodMax, p.BloodCur + NightsBlood(p.Level, ConMod(p.Sheet)));
             p.DrainedByDrink = false;
         }
@@ -154,7 +176,7 @@ public static class Rest
     {
         if (WhyNotDose(p) != null) return null;
         int nerve0 = p.NerveCur;
-        p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (nerveDie ?? Rules.Rng.Next(1, laudanum ? 7 : 5)));
+        p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (nerveDie ?? Rules.Rng.Next(1, DoseDie(laudanum) + 1)));
 
         int dc = DoseDc(p.DosesToday), die = 0, idx = 2, blood = 0;
         string name = "", detail = "";

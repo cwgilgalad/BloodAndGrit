@@ -182,6 +182,15 @@ static class Program
                     // to know the rules already.
                     if (mode == RunMode.KeeperEngine)
                     {
+                        // GK-C1, v1.60.0. First, while the Session tab is still unbuilt: the tip
+                        // walk below realizes every tab, and this bug lived only on a first visit.
+                        // A session loaded before the tab was opened showed an empty board over a
+                        // full list of threads, because the loader drew them into a panel that did
+                        // not exist yet.
+                        var blank = mf.ClocksShowOnFirstVisit();
+                        if (blank != null) Line("       clocks: " + blank);
+                        Chk(blank == null, "GK-C1: threads that exist before the Session tab is opened are on it when it is");
+
                         var quiet = mf.AuditTabTips();
                         foreach (var q in quiet) Line("       silent: " + q);
                         Chk(quiet.Count == 0, $"GUI: every control on all ten tabs says what it is ({quiet.Count} silent)");

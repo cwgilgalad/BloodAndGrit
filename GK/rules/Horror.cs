@@ -11,6 +11,46 @@ public static class Horror
     /// (Ch. XII: DC 10 → 1, 13 → 1d4, 16 → 1d6, 20 → 1d10, 25 → 1d10 + an Affliction).</summary>
     public static int DreadTier(int dc) => dc <= 10 ? 1 : dc <= 13 ? 2 : dc <= 16 ? 3 : dc <= 20 ? 4 : 5;
 
+    /// <summary>The tier from which a failed Dread Check also leaves a lasting Affliction.</summary>
+    public const int AfflictionTier = 5;
+
+    /// <summary>Whether a failure at this tier carries a lasting Affliction as well as the Nerve.</summary>
+    public static bool Afflicts(int tier) => tier >= AfflictionTier;
+
+    /// <summary>One run of Dread DCs that cost the same: the lowest and highest DC in it, with
+    /// <see cref="int.MinValue"/> and <see cref="int.MaxValue"/> at the two open ends.</summary>
+    public record DreadBand(int From, int To, int Tier, string Loss, bool Affliction)
+    {
+        public string Dcs => From == int.MinValue ? $"{To} or under"
+                           : To == int.MaxValue ? $"{From} and over"
+                           : From == To ? $"{From}" : $"{From}–{To}";
+        public string Cost => Loss + (Affliction ? " and a lasting Affliction" : "");
+    }
+
+    /// <summary>Ch. XII's ladder as bands of DC, found by walking <see cref="DreadTier"/> rather
+    /// than typed a second time. The tooltip, the Reference deck and the smoke suite all read it
+    /// here, so a band that moves in the one function moves everywhere it is printed.</summary>
+    public static IReadOnlyList<DreadBand> DreadBands()
+    {
+        // Every tier boundary sits well inside 1..60; the walk only has to see each change once.
+        const int lo = 1, hi = 60;
+        var bands = new List<DreadBand>();
+        int start = lo, tier = DreadTier(lo);
+        for (int dc = lo + 1; dc <= hi + 1; dc++)
+        {
+            int t = dc <= hi ? DreadTier(dc) : -1;
+            if (t == tier) continue;
+            bands.Add(new DreadBand(start == lo ? int.MinValue : start, t == -1 ? int.MaxValue : dc - 1,
+                                    tier, Rules.NerveLoss(tier).label, Afflicts(tier)));
+            start = dc; tier = t;
+        }
+        return bands;
+    }
+
+    /// <summary>The whole ladder on one line, "10 or under → 1 · 11–13 → 1d4 · …".</summary>
+    public static string LadderLine()
+        => string.Join(" · ", DreadBands().Select(b => $"{b.Dcs} → {b.Cost}"));
+
     public record DreadOutcome(int Die, int Will, int DreadDc, int Degree, string DegreeName,
         int NerveLost, bool Frightened, bool Steadied, bool Affliction, string Detail, bool Numb = false)
     {
@@ -42,8 +82,8 @@ public static class Horror
         {
             case 3: steadied = true; break;                                        // critical success
             case 2: break;                                                         // success: steel yourself
-            case 1: nerve = Rules.NerveLoss(tier).roll(); affliction = tier >= 5; break;   // failure
-            default: nerve = Rules.NerveLoss(tier).roll(); frightened = true; affliction = tier >= 5; break; // crit fail
+            case 1: nerve = Rules.NerveLoss(tier).roll(); affliction = Afflicts(tier); break;   // failure
+            default: nerve = Rules.NerveLoss(tier).roll(); frightened = true; affliction = Afflicts(tier); break; // crit fail
         }
         // At Hunger 3 the fear stops landing. The check is still ROLLED and still fails (the
         // Frightened and the Affliction both stand, because those are things done TO a soul) and

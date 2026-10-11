@@ -5,6 +5,14 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
+# ---- what a week of peace does to a Taint, as the Player's Book reckons it (Ch. XI, Rest).
+# build_player.py derives it from Ch. XII's "one step for every three days clear"; this book
+# reads the Player's Book's own words back rather than typing a second copy of the sum.
+_wk = re.search(r"a Taint eases by (\w+ steps?), one for every", H)
+if not _wk:
+    raise SystemExit("blood-and-grit.html, Ch. XI Rest: cannot read how far a week of peace eases a Taint")
+WEEK_TAINT = _wk.group(1)
+
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
 
@@ -68,13 +76,13 @@ if ".statblock{" not in H:
 # nothing left to remember.
 _PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
 _meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.41 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.41)</title>"),
+ (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Keeper's Book · Version 2.42 -->"),
+ (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Keeper's Book (v2.42)</title>"),
  ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">For the Eyes of the Keeper Alone</div>'),
  ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Keeper\'s Book</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.41</div>'),
+ (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.42</div>'),
  ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.41 · For the Keeper Alone</p>'),
+ (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.42 · For the Keeper Alone</p>'),
 ]
 for a, b in _meta:
     # A cover string that stops matching used to be a silent no-op, and on 2026-08-19 that
@@ -463,11 +471,14 @@ CH3 = f"""<!-- III -->
   it to them.</div>
 
   <h2>Giving Back Nerve</h2>
-  <p>Rest does not come in the field. Out there a sermon, a comrade's joke or a bottle is all that brings Nerve
-  back, and each carries a limit or a price. The Player's Book prints every way it comes back (Ch. XII,
-  <em>Recovering Nerve</em>): a confession or a full night unmolested in genuine safety for 1d6 apiece, one drink a
-  scene for 1d4 (a dose of laudanum 1d6) with a Fortitude save for each one after the first in a day, and a week of
-  true peace for all of it. That last is why a posse usually sits down to
+  <p>Sleeping rough gives no Nerve back. A dawn in the field returns the pools and the once-a-day features and
+  nothing more, so out there a sermon, a comrade's joke or a bottle is all that brings Nerve back, and each carries a
+  limit or a price; Grit only holds a fright off for a turn. Watch the bottle closest. One drink or one dose a scene,
+  whiskey for 1d4 and laudanum for 1d6, and the first in a day is free. Each after it calls a Fortitude save at DC 12
+  and 2 more for every one after that, and a failure leaves the drinker Drained 1 until a safe night; one who is
+  Drained already has nothing more to lose to it. The Player's Book prints every way Nerve comes back
+  (Ch. XII, <em>Recovering Nerve</em>): the drink, a confession or a safe night (a full night unmolested in genuine
+  safety) for 1d6 apiece, and a week of true peace for all of it. That last is why a posse usually sits down to
   a new session at full. The time between two reckonings is mostly that week. When the next session picks up the
   same night, it isn't, and they begin where they stopped. You're the one who says whether a night was genuinely
   safe: never in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
@@ -956,7 +967,7 @@ CH6 = f"""<!-- VI -->
       <tr><td>A bad fall (per 10 ft)</td><td>Ref, DC 15 to catch</td><td>1d6 Blood per 10 ft fallen</td></tr>
       <tr><td>River in flood</td><td>Athletics, DC 18</td><td>Swept downstream; gear lost; drowning clock</td></tr>
       <tr><td>Camp fever / bad water</td><td>Fort, DC 15</td><td>Sickened, &minus;2 to all rolls until it breaks</td></tr>
-      <tr><td>Prairie fire / smoke</td><td>Ref to flee, Fort vs. smoke, DC 16</td><td>1d8 fire; choking and blind</td></tr>
+      <tr><td>Prairie fire / smoke</td><td>Ref to flee, Fort vs. smoke, DC 16</td><td>1d8 fire; Blinded and Sickened while in the smoke and for 1 round after</td></tr>
       <tr><td>Snakebite / spider</td><td>Fort, DC 15</td><td>1d6 and Enfeebled; worsens untreated</td></tr>
       <tr><td>Quicksand / bog</td><td>Athletics, DC 15</td><td>Sinks a step each round; rope and aid needed</td></tr>
       <tr><td>Bad laudanum / rotgut</td><td>Fort, DC 13</td><td>Fatigued until slept off; a poor choice in a crisis</td></tr>
@@ -1502,8 +1513,8 @@ CH7 = f"""<!-- VII -->
   reckoning and the next, is where characters heal, where Afflictions are worked on, where the players invest in
   the country that the dark will later threaten. Give them real things to do with it:</p>
   <ul>
-    <li><strong>Mending body and nerve.</strong> A true season of safety heals Blood fully and gives a chance at lifting
-    one Affliction (a hard road, Ch. III). This is also when the doctor sets the bone right, the preacher hears the
+    <li><strong>Mending body and nerve.</strong> A week of true peace puts back all the Blood and all the Nerve and eases
+    a Taint by {WEEK_TAINT}; a longer season of it gives a chance at lifting one Affliction (a hard road, Ch. III). This is also when the doctor sets the bone right, the preacher hears the
     confession, the drink wears off. Make rest a place, with people in it.</li>
     <li><strong>Putting down roots.</strong> Let them buy the claim, court the widow, take the deputy's star, build the
     ranch. Every root they put down is a thing the dark can later threaten, and a reason they can't just ride
@@ -1681,8 +1692,10 @@ CH9 = f"""<!-- IX -->
   <div class="divider"></div>
   <p class="dropcap lead"><em>The Salt at Coffin Wells</em> is a one-session adventure for a fresh party of 1st-level
   characters. It's built to do the thing a first session most often fails to do: open as an honest western, turn the
-  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night, with every monster you need printed
-  right here, so you never have to reach for the Bestiary. Read it once; run it loose. Module I tells this same
+  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night. Its monsters are named here and printed elsewhere. The
+  Risen and the Nightwalker are under <em>The Restless Dead</em> (Bestiary Ch. II), and Module I carries both stat blocks;
+  the Road Agents a bolder table can add to Act Three are under <em>Men, and the Shapes of Men</em> (Bestiary Ch. IV).
+  Have those pages open before the party rides in. Read it once; run it loose. Module I tells this same
   night at full length, with a bigger cast and a map of its own. Run one or the other, and whichever you run is what
   happened at Coffin Wells.</p>
 
@@ -1786,8 +1799,16 @@ APX = f"""<!-- APPENDIX -->
   <div class="twocol">
     <h3>Nerve &amp; Breaking</h3>
     <p>Max Nerve = RES score + level. At 0: roll the Break, take an Affliction, stay dangerous in play; a further
-    failure at 0 breaks again. Recover: a safe night or a confession 1d6, a drink 1d4 and a vice, a week of peace all
-    of it; rest never in the field.</p>
+    failure at 0 breaks again. Recover: a safe night or a confession 1d6; one drink or dose a scene, whiskey 1d4 or
+    laudanum 1d6, the first of the day free and each after it on a Fort save at DC 12, +2 a time, Drained 1 till a
+    safe night on a failure; a week of peace all of it. A dawn in the field gives none.</p>
+
+    <h3>Blood, Dying &amp; Rest</h3>
+    <p>At 0 Blood: Dying, senseless, 1 Blood lost at each of their turns; dead at &ndash;CON, the negative of the CON
+    score. Stable on a DC 15 Fortitude save each turn or a friend's two-Beat Medicine at DC 15; up on 1 Blood on a
+    critical success or after ten quiet minutes. Dawn in the field: pools and once-a-day features only. Safe night:
+    those, 1d6 Nerve, and level &times; CON mod in Blood (min. 1). Week of peace: all Blood, all Nerve, a Taint eases by
+    {WEEK_TAINT}. No rest touches the Mark, Grit, a Hunger, a Debt or a familiar; the Returned take no Blood from any.</p>
 
     <h3>The Mark (6 steps)</h3>
     <p>Grant for: breaking utterly (the rare roll), reaching for the Old Dark, surviving the deep dark changed. Never
