@@ -94,6 +94,7 @@ CHECKS = [
 ]
 
 BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
+         "legends-companion.html",
          "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
          "module-what-the-water-answers.html"]
 

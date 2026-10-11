@@ -135,7 +135,7 @@ it matters at a table, not a diff summary.
 ```bash
 git tag -a <tag> -m "<one line: what this version of this component is>"
 git push origin <tag>
-gh release create <tag>   GritKeeper.zip BloodAndGrit-Books.zip BloodAndGrit-Modules.zip   Blood-and-Grit-Players-Book.pdf Blood-and-Grit-Keepers-Book.pdf Blood-and-Grit-Bestiary.pdf   Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf   Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf   Blood-and-Grit-Module-III-What-the-Water-Answers.pdf   Blood-and-Grit-Book-of-Legends.pdf   --title "Blood & Grit — GritKeeper vX.Y.Z · Books vA.B · Modules vC.D"   --notes-file RELEASE_NOTES_<tag>.md
+gh release create <tag>   GritKeeper.zip BloodAndGrit-Books.zip BloodAndGrit-Modules.zip   Blood-and-Grit-Players-Book.pdf Blood-and-Grit-Keepers-Book.pdf Blood-and-Grit-Bestiary.pdf   Blood-and-Grit-Module-I-The-Salt-at-Coffin-Wells.pdf   Blood-and-Grit-Module-II-A-Face-Not-His-Own.pdf   Blood-and-Grit-Module-III-What-the-Water-Answers.pdf   Blood-and-Grit-Book-of-Legends.pdf   Blood-and-Grit-Legends-Companion.pdf   --title "Blood & Grit — GritKeeper vX.Y.Z · Books vA.B · Modules vC.D"   --notes-file RELEASE_NOTES_<tag>.md
 ```
 
 Tag the component that actually moved: `gritkeeper-vX.Y.Z` · `books-vX.Y` · `modules-vX.Y`.
@@ -147,13 +147,13 @@ whatever session was merged last and usually has nothing to do with the books. B
 for 2026-09-22 read that way. `tools/release_index.py` says it in its own source: tag with `-m`
 and it speaks.
 
-**Attach all ten assets every time, including the parts that did not change.** GitHub carries one
+**Attach all eleven assets every time, including the parts that did not change.** GitHub carries one
 Release page and it is the only page, so anything left off it is a thing a stranger cannot
 download. Re-upload the unchanged zips and PDFs from disk; they are cheap and the alternative is a
 page that serves half a game.
 
 The zips exist because GitHub serves raw `.html` as plain text, so without one a stranger cannot
-get a book in a click. The seven PDFs are attached loose as well as inside the zips, because
+get a book in a click. The eight PDFs are attached loose as well as inside the zips, because
 `README.md` links each book at `/releases/latest/download/<name>.pdf`: a link that reads in the
 browser and never goes stale.
 
@@ -198,6 +198,6 @@ Report the tag, the Release URL, the gate's numbers, and anything left undone. I
 
 ## The two live rules this runbook will not let you forget
 
-- **There is one Release page and it carries all ten assets.** Attach the unchanged zips and PDFs
+- **There is one Release page and it carries all eleven assets.** Attach the unchanged zips and PDFs
   too. Every version stays reachable by tag, and `RELEASES.md` is the index.
 - **PDFs are reprinted every ship, at step 5, without being asked** (2026-08-27). Between ships, leave them alone. They are the only way anybody outside this laptop reads a book.

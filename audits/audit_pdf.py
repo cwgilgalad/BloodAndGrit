@@ -54,6 +54,9 @@ PDFS = [
     # Cole, 2026-09-21: the Book of Legends ships as its own PDF as well. Cover and Contents are its
     # front matter; confirm the count against the first printed copy.
     ("Blood-and-Grit-Book-of-Legends.pdf", 2),
+    # 2026-09-29: the Keeper's Companion to the Book of Legends. Cover and epigraph are its front
+    # matter, the same as the Book of Legends; confirm against the first printed copy.
+    ("Blood-and-Grit-Legends-Companion.pdf", 2),
 ]
 
 # The page number is set with `letter-spacing:.3em`, so the text extractor hands back "1 2 1" for
@@ -84,16 +87,32 @@ def row_number(page, link, words):
     between them, level with nothing of its own and with the next column's row. The Book of Legends'
     "Missing at Twelve Mile, the county's book of the" prints 166, lands on 166, and was reported
     as printing 137, its neighbour's number, the first time the book had a row that long.
+
+    And the digits are never another link's own words. A printed page number is plain text beside
+    its link, in every book. The Legends Companion strings its cross-references along a line, so
+    "A Well That Breathes (Chapter XVI) · The Eclipse of 1878" puts a year inside the next link, and
+    the first time it was printed that year was read as the first link's page number, four times.
     """
     r = fitz.Rect(link["from"])
     mid = (r.y0 + r.y1) / 2
+    others = [fitz.Rect(o["from"]) for o in page.get_links() if fitz.Rect(o["from"]) != r]
 
     def level(w):
         c = (w[1] + w[3]) / 2
         return abs(c - mid) < 5 or r.y0 <= c <= r.y1
 
-    cand = [w for w in words if level(w) and w[0] > r.x1 - 2 and w[4].isdigit()]
-    return int(min(cand, key=lambda w: w[0])[4]) if cand else None
+    def linked(w):
+        cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
+        return any(o.x0 <= cx <= o.x1 and o.y0 <= cy <= o.y1 for o in others)
+
+    # And the number is the very next word after the link. A Contents or Index row has nothing between its
+    # link and its number but a drawn leader; a cross-reference in prose has words. The companion's v1.1
+    # printed "Ashby (Chapter XVIII)). By 1886 he's left the Agency." and the year was read as a page.
+    cand = [w for w in words if level(w) and w[0] > r.x1 - 2 and not linked(w)]
+    if not cand:
+        return None
+    nearest = min(cand, key=lambda w: w[0])
+    return int(nearest[4]) if nearest[4].isdigit() else None
 
 
 

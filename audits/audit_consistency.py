@@ -45,6 +45,10 @@ What it holds together:
      and holds its lists to its own headings; the Book of Legends is built after it, so the
      headings on that side are held here. Ch. XVI once said two of the three were there when
      all three were.
+ 11. THE LEGENDS' PEOPLE: every surname the Legends Companion indexes, against all six other
+     books. A name another book already gave to somebody else fails unless it is listed as a
+     deliberate cross-reference. Four went in by accident before this existed, and one was a
+     dead circuit rider wearing the Player's Book's example Preacher's name.
 
 Usage:
     python audits/audit_consistency.py            # every check
@@ -714,6 +718,20 @@ BASIN_RETIRED = [
     (r"railhead at Calvary Crossing", "the railroad is still surveying the basin"),
     (r"San Clavo[^.]{0,60}on the east wall|on the east wall[^.]{0,60}San Clavo",
      "the mission is 15 miles east of Coffin Wells, mid-basin"),
+    # The Book of Legends v1.10 and its companion, read against everything else on 2026-10-09. Four
+    # facts the Legends had wrong and one a module had wrong, each written in good faith off one book
+    # without the others open beside it.
+    (r"between the Crossing and Coffin Wells",
+     "Saltlick is a hard day north and east of the Crossing and Coffin Wells a day south and west, "
+     "so nothing on the Stage Road lies between them"),
+    (r"Pell (?:homestead|place)[^.]{0,40}nine miles|nine miles (?:down the river from|below) "
+     r"(?:Calvary Crossing|this town)",
+     "the Pell place is eleven miles out of Coffin Wells, south, down a track (Module I)"),
+    (r"Dunbar (?:well )?(?:is|was) one of the",
+     "the padres' seven are Coffin Wells, Saltlick, the Mission spring, the South well, the Crossing "
+     "well, the North seep and Roadman's; the Dunbar is a homestead well"),
+    (r"Adelia Cruz,? (?:of )?Calvary Crossing",
+     "Adelia Cruz keeps the peace at Coffin Wells; the county's marshal at the Crossing is T. Coyle"),
 ]
 RIDER_LIST_IN = ["blood-and-grit.html", "module-salt-at-coffin-wells.html",
                  "module-a-face-not-his-own.html", "module-what-the-water-answers.html"]
@@ -1108,6 +1126,106 @@ def check_legends_both_books():
            f"Ch. XVI gives, and {len(powers)} Powers, as the Keeper's Book counts them")
 
 
+# Check 11. The Book of Legends gathers four hundred papers by four hundred hands, and most of those
+# hands needed a name. Every one of them was typed by somebody who had one book open, so a name the
+# other books had already given to somebody else went in twice: a circuit rider who dies in the
+# Legends shared a surname and an initial with the Player's Book's own example Preacher, a galvanist
+# had the Player's Book's Sawbones' surname, a voter on a Redemption poll was a line in the Keeper's
+# Book's table of names, and a porter shared a name with a Keeper's Ch. X widow. None of it was
+# wrong in the Legends; all of it read at the table as a connection nobody meant. The companion
+# indexes everybody in the Legends as "Surname, Given", which makes the list to check.
+#
+# A surname here that another book also uses is a failure unless it is in SHARED_SURNAMES, which is
+# where a deliberate cross-reference says what it is. Add a name to it only when the two books mean
+# the same family.
+SHARED_SURNAMES = {
+    "Ashby": "the naturalist himself, quoted across the books",
+    "Coyle": "Marshal T. Coyle at Calvary Crossing",
+    "Cruz": "Adelia Cruz, who keeps the peace at Coffin Wells",
+    "Deakin": "Hollis Deakin, who hauls water in Module III and interprets for the court",
+    "Ellender": "the Ellender party, a story of Keeper's Ch. VII",
+    "Kearse": "Delphia Kearse, from the Keeper's table of names, keeps the road house at Sull's Ferry",
+    "Kell": "Absalom Kell of the Wills Outfit, Keeper's Ch. XVI",
+    "Pell": "the Pell place, Module I",
+    "Rainey": "Dob and Ida Rainey of the Wills Outfit",
+    "Ríos": "Esperanza Ríos, the last keeper of the ring",
+    "Salcedo": "Fray Ignacio Salcedo, whose ledger is Module III",
+    "Tuck": "Ferris Tuck of the Wills Outfit",
+    "Vane": "Josiah Vane of the Vane Banking House, Module I",
+    "Wills": "Tom Wills, the fifth rider",
+}
+# The Legends books never put the Tenth on the far bank: its orders were not to cross, and the
+# sand hills lie west of Jubilee, on Redemption's side of the river (Keeper's Ch. XV).
+LEGENDS_RETIRED = [
+    (r"riding the sand hills|sand hills west of the branch",
+     "the Tenth is ordered not to cross, and the sand hills are on Redemption's side of the river"),
+]
+OTHER_BOOKS = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html",
+               "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
+               "module-what-the-water-answers.html"]
+
+
+def _companion_people():
+    """Every person the companion indexes, as its builder declares them, read without running it."""
+    import html as _html
+    tree = ast.parse((ROOT / "build_legends_companion.py").read_text(encoding="utf-8"))
+    out = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and getattr(node.func, "id", "") == "entry":
+            for kw in node.keywords:
+                if kw.arg == "people":
+                    out.update(_html.unescape(x).rstrip("*") for x in ast.literal_eval(kw.value))
+    return out
+
+
+def check_legends_names(dig):
+    print("\nThe Book of Legends' people against everybody the other books have already named")
+    people = _companion_people()
+    surnames = {}
+    for label in people:
+        # "Mad Spaniard, the" is a byname turned round for the index, not a surname.
+        if "," not in label or not label[:1].isupper() or label.rstrip().endswith(", the"):
+            continue
+        head = label.split(",")[0].split("(")[0].strip()
+        word = head.split()[-1] if head else ""
+        if len(word) > 2 and word[0].isupper():
+            surnames.setdefault(word, label)
+    others = {}
+    for name in OTHER_BOOKS:
+        book = dig["books"].get(name)
+        if book is None:
+            fail(f"{name} is not built, so the Legends' names went unchecked against it")
+            continue
+        others[name] = "\n".join(t for _c, _s, t in X.all_text(book))
+    bad = 0
+    for word, label in sorted(surnames.items()):
+        CHECKS[0] += 1
+        where = [n for n, t in others.items() if re.search(r"\b" + re.escape(word) + r"\b", t)]
+        if where and word not in SHARED_SURNAMES:
+            bad += 1
+            fail(f"“{label}” in the Legends shares the surname {word} with "
+                 f"{', '.join(where)}. Rename one, or list it in SHARED_SURNAMES with what it means")
+    for word in SHARED_SURNAMES:
+        CHECKS[0] += 1
+        if word not in surnames:
+            bad += 1
+            fail(f"SHARED_SURNAMES allows {word}, and nobody in the companion's index carries it. "
+                 "Take it out.")
+    for name in ("legends.html", "legends-companion.html"):
+        book = dig["books"].get(name)
+        if book is None:
+            continue
+        text = "\n".join(t for _c, _s, t in X.all_text(book))
+        for pat, why in LEGENDS_RETIRED:
+            CHECKS[0] += 1
+            for m in re.finditer(pat, text, re.I):
+                bad += 1
+                fail(f"{name}: “{m.group(0)}” ({why})")
+    if not bad:
+        ok(f"{len(surnames)} surnames in the Legends, {len(SHARED_SURNAMES)} of them shared on "
+           f"purpose and none by accident across the {len(others)} other books")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -1142,6 +1260,7 @@ def main():
     check_book_counts(json.loads(
         (ROOT / "GK/rules/Data/chargen.json").read_text(encoding="utf-8")))
     check_legends_both_books()
+    check_legends_names(dig)
 
     print()
     if FAILURES:

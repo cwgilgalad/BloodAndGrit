@@ -402,6 +402,7 @@ def check_face_silence(problems):
 
 RETIRED = re.compile(r"\bpatrons?\b(?!\s+saints?\b)", re.I)
 RETIRED_IN = ["blood-and-grit.html", "keeper-handbook.html", "bestiary.html", "legends.html",
+              "legends-companion.html",
               "module-salt-at-coffin-wells.html", "module-a-face-not-his-own.html",
               "module-what-the-water-answers.html"]
 RETIRED_IN += sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "GK/rules/Data").glob("*.json"))

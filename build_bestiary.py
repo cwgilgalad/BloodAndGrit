@@ -43,42 +43,30 @@ if ".statblock{" not in H:
     H = H.replace("</style>", _css, 1)
 
 # ---- cover / meta retext ----
-# The Player's Book version is read off the shell rather than typed here. It was typed
-# until 2026-08-20, and every bump then had to be repeated by hand in build_keeper.py,
-# build_bestiary.py and modules_common.py in lockstep. That was missed on v2.26 and
-# again on v2.27, and each time a companion book or all three modules built wearing the
-# Player's Book's own title. Derived, the cascade cannot be missed because there is
-# nothing left to remember.
-_PV = re.search(r"Edition of 1885 · Version (\d+\.\d+)</div>", H).group(1)
-_meta = [
- (f"<!-- Blood & Grit — The Player's Book · Version {_PV} -->", "<!-- Blood & Grit — The Bestiary · Version 2.27 -->"),
- (f"<title>Blood &amp; Grit — The Player's Book (Revised &amp; Expanded · v{_PV})</title>", "<title>Blood &amp; Grit — The Bestiary (v2.27)</title>"),
- ('<div class="kicker">Being a Field Manual for the Living</div>', '<div class="kicker">A True Account of the Things That Walk</div>'),
- ('<div class="t-foot">The Player\'s Book</div>', '<div class="t-foot">The Bestiary</div>'),
- (f'<div class="t-tiny">Revised &amp; Expanded · Compiled in the Territories · Edition of 1885 · Version {_PV}</div>', '<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.27</div>'),
- ('<div class="t-tiny">Most rules herein are adapted from Pathfinder Second Edition, with some unique rules &amp; systems of its own</div>', '<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>'),
- (f'<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Player\'s Book · Version {_PV} · First Complete Edition</p>', '<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.27 · For the Keeper Alone</p>'),
-]
-for a, b in _meta:
-    # See build_keeper.py: a match that quietly stops matching ships the wrong cover.
-    assert a in H, "the Player's Book cover no longer carries: " + a[:70]
-    H = H.replace(a, b, 1)
+# The swap lives in book_shell.py, shared by every one-of-a-kind book since 2026-09-29, and the
+# Player's Book version is read off the shell there. It was typed here until 2026-08-20, and a
+# bump missed in one of the copies built a companion book wearing the Player's Book's title.
+import book_shell
+H = book_shell.retext_cover(
+    H,
+    comment="<!-- Blood & Grit — The Bestiary · Version 2.27 -->",
+    title="<title>Blood &amp; Grit — The Bestiary (v2.27)</title>",
+    kicker='<div class="kicker">A True Account of the Things That Walk</div>',
+    foot='<div class="t-foot">The Bestiary</div>',
+    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.27</div>',
+    tiny2='<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>',
+    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.27 · For the Keeper Alone</p>',
+)
 
 # ---- replace the two Player's-Book epigraph quotes with new Bestiary ones (same voice) ----
-_q_old1 = ('"We came west to be made new, and found instead that the country was older\n'
-           '    than newness, older than God, and had been waiting a long while in the quiet for company."\n'
-           '    <span class="src">— from the burned journal of Eliza Hart, Surveyor</span>')
 _q_new1 = ('"I set out to make an honest catalogue of the country\'s animals. I&rsquo;ve filled four ledgers since,\n'
            '    and not one of them holds an animal."\n'
            '    <span class="src">— from the field-books of N. Ashby, naturalist; last entry near Calvary Wells</span>')
-_q_old2 = ('"Keep your powder dry, your salt close, and your accounts with the dark paid up.\n'
-           '    The country settles every debt in the end."\n'
-           '    <span class="src">— a saying common to the trail, author unknown</span>')
 _q_new2 = ('"Name a thing and you have a handle on it, my mother used to say. She never met the things out here.\n'
            '    They have your name long before you ever learn theirs."\n'
            '    <span class="src">— Eulalie &lsquo;Lucky&rsquo; Devereaux</span>')
-for a,b in [(_q_old1,_q_new1),(_q_old2,_q_new2)]:
-    if a in H: H = H.replace(a,b,1)
+H = book_shell.swap_epigraphs(H, [(book_shell.PLAYER_EPIGRAPH_1, _q_new1),
+                                   (book_shell.PLAYER_EPIGRAPH_2, _q_new2)])
 
 def runhead(short):
     return f'<div class="runhead"><span class="l">Blood &amp; Grit</span><span>{short}</span></div>'
@@ -138,19 +126,11 @@ def creature(stat_html, lore, found, keeper, kn_tag="How to Play It", witness=No
             f'</div>')
 
 # ---- replace the two carried-over Player's epigraph quotes (regex on the quote divs) ----
-import re as _re
-def _set_epigraph(s, mt, text, src):
-    pat = _re.compile(r'<div class="quote" style="margin-top:'+mt+r';">.*?</div>', _re.DOTALL)
-    new = ('<div class="quote" style="margin-top:'+mt+';">\n    '+text+
-           '\n    <span class="src">\u2014 '+src+'</span>\n  </div>')
-    s2, n = pat.subn(new, s, count=1)
-    assert n==1, "epigraph "+mt+" not found"
-    return s2
-H = _set_epigraph(H, "120px",
+H = book_shell.set_epigraph(H, "120px",
     '"I set out to make an honest catalogue of the territory\'s animals. I&rsquo;ve filled four ledgers\n'
     '    since, and not one of them holds an animal."',
     "from the field-books of N. Ashby, naturalist; last entry near Calvary Wells")
-H = _set_epigraph(H, "90px",
+H = book_shell.set_epigraph(H, "90px",
     '"Name a thing and you have a handle on it, my grandmother said. She didn&rsquo;t say the handle\n'
     '    runs both ways; that some things, once named, will know yours."',
     "Eulalie &lsquo;Lucky&rsquo; Devereaux")
@@ -2858,14 +2838,7 @@ BODY = sort_sections(BODY, _CSEC)   # each section: tier asc, then name asc
 BODY = gen_appendix(BODY, _CSEC)    # appendix regenerated from actual stat blocks
 
 # ---- splice into the shell ----
-start_marker = "<!-- ===================== CONTENTS ===================== -->"
-si = H.find(start_marker)
-assert si != -1, "contents marker not found"
-sci = H.find("<script>")
-assert sci != -1
-div_close = H.rfind("</div>", si, sci)
-assert div_close != -1
-new_html = H[:si] + BODY + "\n</div>\n" + H[sci:]
+new_html = book_shell.splice(H, BODY)
 
 from nav_tools import add_detailed_toc, build_index, assert_css_vars
 BEST_INDEX = [
