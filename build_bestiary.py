@@ -49,13 +49,13 @@ if ".statblock{" not in H:
 import book_shell
 H = book_shell.retext_cover(
     H,
-    comment="<!-- Blood & Grit — The Bestiary · Version 2.27 -->",
-    title="<title>Blood &amp; Grit — The Bestiary (v2.27)</title>",
+    comment="<!-- Blood & Grit — The Bestiary · Version 2.28 -->",
+    title="<title>Blood &amp; Grit — The Bestiary (v2.28)</title>",
     kicker='<div class="kicker">A True Account of the Things That Walk</div>',
     foot='<div class="t-foot">The Bestiary</div>',
-    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.27</div>',
+    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.28</div>',
     tiny2='<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>',
-    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.27 · For the Keeper Alone</p>',
+    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.28 · For the Keeper Alone</p>',
 )
 
 # ---- replace the two Player's-Book epigraph quotes with new Bestiary ones (same voice) ----

@@ -7,7 +7,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 `blood-and-grit-sources.zip`, deleted 2026-07-23, sat at its day-one 2026-07-11 contents
 while the build architecture moved on underneath it.)
 
-**Current versions: Player's Book v2.57 · Keeper's Book v2.42 · Bestiary v2.27 ·
+**Current versions: Player's Book v2.57 · Keeper's Book v2.42 · Bestiary v2.28 ·
 GritKeeper app v1.60.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
@@ -122,7 +122,7 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 |---|---|---|---|
 | The Player's Book | v2.57 | 290 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.42 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
-| The Bestiary | v2.27 | 226 | none (182 creatures) |
+| The Bestiary | v2.28 | 226 | none (182 creatures) |
 | The Book of Legends | v1.11 | 227‡ | none (406 documents) |
 | The Legends Companion | v1.2 | 377‡ | none (a story behind every section of the Book of Legends, and its turn) |
 | Module I: The Salt at Coffin Wells | v1.11 | 36 | one inline SVG map, downloadable |
@@ -858,7 +858,7 @@ references, for writing; a release build is always the plain command.
 
 ---
 
-## The Bestiary (v2.27) — structure & conventions
+## The Bestiary (v2.28) — structure & conventions
 
 New in v2.2: a **generated two-level detailed Contents** and a back-of-book **Index**
 (`id="bookindex"`) that auto-lists all **182 creatures** by name (from every `<p class="cr-name">`,
