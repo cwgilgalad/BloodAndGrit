@@ -1146,6 +1146,7 @@ SHARED_SURNAMES = {
     "Ellender": "the Ellender party, a story of Keeper's Ch. VII",
     "Kearse": "Delphia Kearse, from the Keeper's table of names, keeps the road house at Sull's Ferry",
     "Kell": "Absalom Kell of the Wills Outfit, Keeper's Ch. XVI",
+    "Kinnear": "W. F. Kinnear, the Agency operative; Keeper's Ch. XV names him by design",
     "Pell": "the Pell place, Module I",
     "Rainey": "Dob and Ida Rainey of the Wills Outfit",
     "Ríos": "Esperanza Ríos, the last keeper of the ring",

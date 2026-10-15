@@ -80,7 +80,7 @@ print(f"detailed TOC: {len(desk['toc2'])} lines, all anchors resolved")
 # browser, so nobody reading it on a screen ever saw the wrong number -- and the one reader who
 # does see it, the one who has printed the file or turned JavaScript off, is the reader a fallback
 # exists for. Scoped to the <ul class="toc"> block so the index below it keeps its own pass.
-src = open("build_player.py", encoding="utf-8").read()
+src = open("build_player.py", encoding="utf-8", newline="").read()
 before = src                            # --check compares against this and never writes
 toc2map = {e["a"]: e["pg"] for e in desk["toc2"]}
 tu = src.index('<ul class="toc">'); te = src.index("</ul>", tu)

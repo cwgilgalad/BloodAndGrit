@@ -679,8 +679,8 @@ body{ background:#525659; }
 
   <div class="box gold">
     <h3 id="ix-words">Words of the Country</h3>
-    <p>The frontier had a vocabulary of its own and this book uses it, because a game set in 1880 that
-    talks like a telephone stops being set in 1880 somewhere around the second session. Below is the
+    <p>The frontier had a vocabulary of its own and this book uses it, because a game set in 1885 that
+    talks like a telephone stops being set in 1885 somewhere around the second session. Below is the
     short list a reader today is likeliest to trip over. The rest you can take from the sentence around it.</p>
     <ul class="dash">
       <li><strong>Sawbones</strong>: a doctor. The name is the bag: a frontier surgeon carried a
@@ -711,7 +711,8 @@ which is to say the difference between a friend who is wounded and a friend who 
       <li><strong>Arroyo</strong>: a dry wash. It is a road eleven months of the year and a
       drowning the twelfth.</li>
       <li><strong>Pinkerton</strong>: a private detective of the Pinkerton agency, hired by
-      railroads, mine owners, and anybody else who preferred a law of his own hiring.</li>
+      railroads, mine owners, the Department of Justice (which kept no detectives of its own), and anybody
+      else who preferred a law of his own hiring.</li>
     </ul>
   </div>
 
@@ -753,7 +754,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <table>
     <thead><tr><th>Figure</th><th>How It Is Reckoned</th></tr></thead>
     <tbody>
-      <tr><td>Blood (Hit Points)</td><td>Your Calling's full Hit Die + CON modifier at 1st level; add a roll (or the average) of the Hit Die + CON each level after.</td></tr>
+      <tr><td>Blood (Hit Points)</td><td>Your Calling's full Hit Die + CON modifier at 1st level; each level after, roll the Hit Die or take its average rounded up (d6 4, d8 5, d10 6, d12 7) and add CON, gaining at least 1 a level.</td></tr>
       <tr><td>Defense (AC)</td><td>10 + DEX modifier + armor worn + any cover. See Conflict for how bullets treat armor.</td></tr>
       <tr><td>Saves</td><td>Base from your Calling (a strong save is 2 plus half your level, a weak save a third of it, both rounding down) plus the keyed ability: Fortitude (CON), Reflex (DEX), Will (RES).</td></tr>
       <tr><td>Attack</td><td>Your Calling's rank: Practiced (your level), Steady (level less 1), or Slight (level less 2, never below +0), added to every attack roll along with the keyed ability. See Chapter XIV.</td></tr>
@@ -1192,7 +1193,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   </table>
   <h4>Bushwhack</h4>
   <p>Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is
-  unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. Everything
+  unaware of you, who has not yet acted in the fight, or whom an ally is engaging (an Off-Guard target; see Conditions), deal the listed extra damage. Everything
   rides on the ambush. A bounty man forced to trade blows in the open with a cornered killer has already made his mistake.</p>
   <h4>Quick Hands</h4>
   <p>Years of needing your iron (or your irons, the manacle kind) a half-second sooner than the other man. You draw,
@@ -1320,7 +1321,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>Trails of the Drifter</h4>
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
-      <li><strong>The Ghost Trail.</strong> Gain a bonus to Stealth, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
+      <li><strong>The Ghost Trail.</strong> Gain +2 to Stealth, and you may Hide in cover even while observed. <em>Mastery (10th):</em> once per scene, become wholly unseen for a round, striking from nowhere.</li>
       <li><strong>The Hard Trail.</strong> Ignore the toll of harsh country, weather, and want; +2 Fortitude against the elements. <em>Mastery (10th):</em> once per scene, shrug off the first wound or affliction that would lay you low.</li>
       <li><strong>The Hunter's Trail.</strong> You never lose a trail and gain +2 against ambush and to read a quarry. <em>Mastery (10th):</em> once per scene, study a foe a moment and learn the weakness that undoes it.</li>
     </ul>
@@ -1516,7 +1517,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>Games of the Gambler</h4>
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
-      <li><strong>The Charmer.</strong> Spend Favor on Deceive, Persuade, and reading a room, and gain a bonus at any table. <em>Mastery (10th):</em> once per scene, bend a crowd or a single mark wholly to your play.</li>
+      <li><strong>The Charmer.</strong> Spend Favor on Deceive, Persuade, and reading a room, and gain +2 at any table. <em>Mastery (10th):</em> once per scene, bend a crowd or a single mark wholly to your play.</li>
       <li><strong>The Duelist.</strong> Spend Favor to add luck to your Strikes and to turn a blow aside. <em>Mastery (10th):</em> once per scene in a duel, turn a foe's hit into a miss, or your miss into a killing crit.</li>
       <li><strong>The Mechanic.</strong> Your Favor pool grows, and once per scene you may set a die to any face you please. <em>Mastery (10th):</em> once per scene, stack fate entirely and take the better result on every roll for a round.</li>
     </ul>
@@ -1602,7 +1603,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <ul class="dash">
       <li><strong>The Fanning Hand.</strong> With a single-action revolver you may fan a second Strike each round at the Multiple Attack Penalty without spending an extra Beat. <em>Mastery (10th):</em> once each round, dropping a foe lets you immediately Strike another in range at no penalty.</li>
       <li><strong>The Fast Draw.</strong> You always act first in a one-on-one draw, and your first Strike of a fight gains +1. <em>Mastery (10th):</em> the first shot you fire in a scene is a critical hit if it lands.</li>
-      <li><strong>The Long Rifle.</strong> Ignore the penalty at the first range increment, and Aim as a single Beat. <em>Mastery (10th):</em> a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted.</li>
+      <li><strong>The Long Rifle.</strong> Ignore the first –2 for range, and Aim as a single Beat. <em>Mastery (10th):</em> a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted.</li>
     </ul>
   </div>
 </section>
@@ -1678,8 +1679,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     <h4>Oaths of Office</h4>
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
-      <li><strong>The Lawman.</strong> Your commands carry weight, a bonus to Demoralize and to rally, and you may deputize allies for a scene. <em>Mastery (10th):</em> once per scene, your word stays a hand: a foe must lay down arms or stand frozen a round.</li>
-      <li><strong>The Manhunter.</strong> Name a quarry; gain bonuses to track, read, and strike them. <em>Mastery (10th):</em> your mark cannot shake you, and once per scene you land a decisive, fight-ending blow or capture against them.</li>
+      <li><strong>The Lawman.</strong> Your commands carry weight, +2 to Demoralize and to rally, and you may deputize allies for a scene. <em>Mastery (10th):</em> once per scene, your word stays a hand: a foe must lay down arms or stand frozen a round.</li>
+      <li><strong>The Manhunter.</strong> Name a quarry; gain +2 to track and read them, and +2 damage when you strike them. <em>Mastery (10th):</em> your mark cannot shake you, and once per scene you land a decisive, fight-ending blow or capture against them.</li>
       <li><strong>The Shield.</strong> You may intercept a blow meant for an ally at your side. <em>Mastery (10th):</em> once per scene, become the only target the enemy may strike, or turn aside a killing blow aimed at another.</li>
     </ul>
   </div>
@@ -1719,8 +1720,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <h4>Hawken Rifle</h4>
-  <p>The heavy plains rifle is your right arm. With a two-handed rifle you ignore the penalty at the first range increment,
-  and the first reload each round costs no extra Beat. You keep your piece clean, charged, and to hand, and you do not miss
+  <p>The heavy plains rifle is your right arm, and yours is a Hawken (use the Buffalo Rifle line). With a two-handed rifle you
+  ignore the first –2 for range, and the first reload each round is free. You keep your piece clean, charged, and to hand, and you do not miss
   the shots a lesser hand calls lucky.</p>
   <h4>Dead Aim</h4>
   <p>Spend a Beat to steady your rifle. This is the <em>Aim</em> action, and your next shot this turn deals the extra
@@ -1738,14 +1739,14 @@ which is to say the difference between a friend who is wounded and a friend who 
   Keeper will honor. Against animals and the wild things of the dark you deal <strong>+1 damage</strong>, and you may harvest
   a kill (hide, fat, claw, tooth, gland) for coin, for trade, or for the makings of a remedy or a ward.</p>
   <h4>Iron Constitution</h4>
-  <p>The mountains have been trying to kill you for years and have not managed it. Gain a bonus against cold, heat, thirst,
+  <p>The mountains have been trying to kill you for years and have not managed it. Gain +2 against cold, heat, thirst,
   hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal a little faster than you
   have any right to.</p>
   <h4>Mountain Sense</h4>
   <p>You cannot be caught flat in the wild. You are never surprised out of doors, you act first in the opening round of any
   ambush you spring or spot, and predators give you a wide berth; they know a bigger one when they smell it.</p>
   <h4>Unbroken</h4>
-  <p>You have seen what the high country hides in the deep snow, and naming it did not break you. Gain a bonus on Dread
+  <p>You have seen what the high country hides in the deep snow, and naming it did not break you. Gain +2 on Dread
   Checks in the wilderness, and you may spend a Beat to steady a companion who can see you, lending them your nerve to face
   what is coming down out of the hills.</p>
   <h4>King of the High Country</h4>
@@ -1780,7 +1781,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
       <li><strong>The Hermit.</strong> You have gone native in the deep country and made a peace of sorts with what lives there: beasts will not harm you unbidden, you find shelter and forage anywhere, and you read the land's moods. <em>Mastery (10th):</em> once per scene, call on the wild. A beast comes to your aid, a sudden storm covers your retreat, or the country itself turns a pursuer aside.</li>
-      <li><strong>The Hunter.</strong> Name a quarry as the Marshal marks a man, but for the beasts and monsters of the wild: gain bonuses to track, read, and damage it. <em>Mastery (10th):</em> once per scene, a Dead Aim shot against your quarry strikes a killing blow that fells even a great beast.</li>
+      <li><strong>The Hunter.</strong> Name a quarry as the Marshal marks a man, but for the beasts and monsters of the wild: gain +2 to track and read it, and +2 damage against it. <em>Mastery (10th):</em> once per scene, a Dead Aim shot against your quarry strikes a killing blow that fells even a great beast.</li>
       <li><strong>The Trapper.</strong> You set deadfalls, snares, and pit-traps swiftly and well; a trap on ground you have readied forces the unwary to save or be caught: Grabbed, Slowed, or wounded as the trap allows. <em>Mastery (10th):</em> once per scene, a sprung trap is ruinous: the quarry, beast or man, is caught fast and badly hurt.</li>
     </ul>
   </div>
@@ -1916,7 +1917,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   trust it. In a country this lethal, they're worth their weight in silver.</p>
   <p class="perk"><span class="lbl">Perk</span><span class="nm">Not On My Table.</span> A soul whose wounds you've dressed since the last safe night won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question.</p>
   <div class="fight">
-    <div class="brings"><span class="k">In a fight</span>The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.</div>
+    <div class="brings"><span class="k">In a fight</span>The posse still standing. Your Medicine stops the bleeding while the shooting lasts, Field Surgery puts the Blood back once it stops, and from 4th level Precise Strike says you are not harmless while you work.</div>
     <div class="pays"><span class="k">You pay</span>Steady attack, a d8, and a blade&rsquo;s reach. Your damage wants you close to a thing you would much rather be operating on afterward.</div>
   </div>
   <table class="lvl">
@@ -1944,7 +1945,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   still stop bleeding and stabilize the dying on a Medicine check.</p>
   <h4>Anatomist / Precise Strike</h4>
   <p>You know exactly where things come apart. Against any living foe whose anatomy you understand, you may add the listed
-  extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade.</p>
+  extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade. The extra damage starts at 4th level, when your table first lists Precise Strike.</p>
   <h4>Tonics</h4>
   <p>You brew and carry remedies: stimulants, sedatives, laudanum, antitoxins. Each dawn you may prepare a number of doses
   equal to your WIT modifier + half your level. Their use, and abuse, is detailed in Chapter X.</p>
@@ -1980,8 +1981,8 @@ which is to say the difference between a friend who is wounded and a friend who 
     <p>At 3rd level, choose one. It grants a boon at once and blooms into its greater ability: its <strong>Mastery</strong>, at 10th level, the height of a frontier life.</p>
     <ul class="dash">
       <li><strong>The Chemist.</strong> Prepare extra tonics each day and name any poison or drug at a glance. <em>Mastery (10th):</em> brew a signature serum that grants a mighty boon for a scene, or lays a foe insensible.</li>
-      <li><strong>The Field Medic.</strong> Tend wounds in the thick of a fight without provoking, and reach the downed faster. <em>Mastery (10th):</em> once per scene, a barked field-treatment heals every ally who can hear you.</li>
-      <li><strong>The Surgeon.</strong> Your Treat Wounds restores an extra die, and you stabilize the dying as a single Beat. <em>Mastery (10th):</em> once per scene, drag a freshly-fallen ally back to their feet and fighting.</li>
+      <li><strong>The Field Medic.</strong> Use Field Surgery in the thick of a fight, and reach the downed faster. <em>Mastery (10th):</em> once per scene, a barked field-treatment heals every ally who can hear you.</li>
+      <li><strong>The Surgeon.</strong> Your Field Surgery restores an extra die, and you stabilize the dying as a single Beat. <em>Mastery (10th):</em> once per scene, drag a freshly-fallen ally back to their feet and fighting.</li>
     </ul>
   </div>
 </section>
@@ -2151,7 +2152,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>10</td><td class="c">+9</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 3d6, Revelation, Testament Mastery</td></tr>
       <tr><td>11</td><td class="c">+10</td><td class="c">+7</td><td class="c">+3</td><td class="c">+7</td><td>Brimstone 4d6, The Camp Meeting</td></tr>
       <tr><td>12</td><td class="c">+11</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Edge</td></tr>
-      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Testify</td></tr>
+      <tr><td>13</td><td class="c">+12</td><td class="c">+8</td><td class="c">+4</td><td class="c">+8</td><td>Bear Witness</td></tr>
       <tr><td>14</td><td class="c">+13</td><td class="c">+9</td><td class="c">+4</td><td class="c">+9</td><td>Edge</td></tr>
       <tr><td>15</td><td class="c">+14</td><td class="c">+9</td><td class="c">+5</td><td class="c">+9</td><td>The Great Awakening</td></tr>
     </tbody>
@@ -2185,7 +2186,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   meeting recovers all Nerve, gains +2 on their next save against fear or the uncanny, and will tell you what they came
   there to confess. What they confess is the useful part. A town has never yet been converted, but it has often been
   talked into helping.</p>
-  <h4>Testify</h4>
+  <h4>Bear Witness</h4>
   <p>You have stopped preaching at the dark and started giving evidence about it. Once per scene, spend 2 Conviction and
   name what an uncanny thing did: it takes 4d6 damage that nothing reduces, and every ally who heard you may immediately
   reroll one save they failed this scene. The truth spoken plainly about a thing that lives on not being spoken of costs
@@ -2210,7 +2211,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <ul class="dash">
       <li><strong>The Hellfire Testament.</strong> Your Brimstone strikes an additional foe within reach of the first. <em>Mastery (10th):</em> once per scene, call down a pillar of fire upon the unclean.</li>
       <li><strong>The Revival Testament.</strong> Your sermons mend the faithful and steady their nerve. <em>Mastery (10th):</em> once per scene, a great revival heals and emboldens every ally who can hear you, and lifts the freshly fallen.</li>
-      <li><strong>The Wrathful Testament.</strong> Gain a bonus against the uncanny and those who serve it. <em>Mastery (10th):</em> once per scene, your smite banishes a lesser horror outright.</li>
+      <li><strong>The Wrathful Testament.</strong> Gain +2 against the uncanny and those who serve it. <em>Mastery (10th):</em> once per scene, your smite banishes a lesser horror outright.</li>
     </ul>
   </div>
 </section>
@@ -2545,7 +2546,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   wreathed in a cold white burning: you take no damage from any uncanny source, every Strike you land deals an
   additional 6d8 to unclean things, and anything reduced to 0 Blood in that light is ended outright: no rising, no
   reforming, no return, nothing left to salt. When it goes out you are at 1 Blood, all Zeal spent, and Fatigued until
-  you have slept a full night somewhere with a roof. It is understood among your order that a man only gets so many of
+  you have had a safe night under a roof. It is understood among your order that a man only gets so many of
   these, and that nobody has ever counted his own correctly.</p>
 
   <div class="box">
@@ -3178,7 +3179,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <li id="ix-e-calm"><strong>Gunfighter's Calm.</strong> Once per scene, ignore the Multiple Attack Penalty on a single Strike: the noise falls away and the world seems to slow to let you aim.</li>
     <li id="ix-e-reload"><strong>Practiced Reload.</strong> Reduce the Beats to reload any one weapon you favor by 1 (minimum 0). You clear your own misfires as a single Interact rather than an action plus a check.</li>
     <li id="ix-e-quick-draw"><strong>Quick Draw.</strong> You may draw and Strike in one motion, and add +2 to the roll deciding who shoots first.</li>
-    <li id="ix-e-steady"><strong>Steady Shot.</strong> If you do not move on your turn, ignore the first range increment penalty and gain +1 to hit. With a Kickback weapon you also ignore the recoil penalty.</li>
+    <li id="ix-e-steady"><strong>Steady Shot.</strong> If you do not move on your turn, ignore the first –2 for range and gain +1 to hit. With a Kickback weapon you also ignore the recoil penalty.</li>
     <li id="ix-e-throw"><strong>Throw the Stick.</strong> If you carry powder, you may hurl a lit charge in place of a Strike, lobbing it a fair distance to burst where it lands.</li>
     <li id="ix-e-two-gun"><strong>Two-Gun.</strong> Fight with a pistol in each hand. Your off-hand Strike does not increase your Multiple Attack Penalty for that round, though it is still made at the current penalty.</li>
     <li id="ix-e-two-guns-speaking"><strong>Two Guns Speaking.</strong> (Two-Gun, 11th) Both irons at once count as one Strike: roll once, and on a
@@ -3222,7 +3223,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h2 id="ix-efr">Edges of the Frontier</h2>
   <ul class="dash">
     <li id="ix-e-provider"><strong>Dead Shot Provider.</strong> You never want for food or fresh horses where game or ranches exist, and your camp is always well-sited.</li>
-    <li id="ix-e-frontier-med"><strong>Frontier Medicine.</strong> (Trained in Medicine) Your field care heals an extra 1d6, and you can improvise a remedy from what the land offers.</li>
+    <li id="ix-e-frontier-med"><strong>Frontier Medicine.</strong> (Trained in Medicine) Your Field Surgery heals an extra 1d6, and you can improvise a remedy from what the land offers.</li>
     <li id="ix-e-pathfinder"><strong>Pathfinder.</strong> You are never truly lost; gain +2 on overland travel and always find water, forage, and safe ground where others find none.</li>
     <li id="ix-e-powder"><strong>Powder Sense.</strong> +2 to set, spot, or disarm charges and traps, and your own blasts never catch a friend you can plainly see.</li>
     <li id="ix-e-tracker"><strong>Tracker.</strong> +3 on Survival to track, and you may track across stone, shallow water, and the spoor of unnatural things.</li>
@@ -3280,7 +3281,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       down there without your having to guess it first.</li>
     <li><strong>Prospector: Highball Charge.</strong> (Powderman) Once per scene, overpack a single charge: it deals <strong>maximum dice</strong> and doubles its burst radius. Stand well back, and count your friends first.</li>
     <li><strong>Prospector: Laid By.</strong> Once per session, declare that you laid by a useful mundane item, a cached supply, or a contact in this place. Within reason, you did.</li>
-    <li><strong>Sawbones: Battlefield Surgeon.</strong> Your field care in the thick of a fight provokes no reaction and restores an extra die of Blood.</li>
+    <li><strong>Sawbones: Battlefield Surgeon.</strong> Your Field Surgery in the thick of a fight restores an extra die of Blood.</li>
     <li><strong>Sawbones: Two Doses.</strong> (The Waking Draught, 11th) You carry a second dose, and a patient raised by either may act for twenty
       minutes rather than ten.</li>
   </ul>
@@ -3345,7 +3346,7 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Gunhand</td><td>3d6 × $10</td></tr>
       <tr><td>Hexer</td><td>2d6 × $5</td></tr>
       <tr><td>Marshal</td><td>3d6 × $10, plus a badge or its like</td></tr>
-      <tr><td>Mountain Man</td><td>2d6 × $10 in pelts, plus a rifle, traps, and a good knife</td></tr>
+      <tr><td>Mountain Man</td><td>2d6 × $10 in pelts, plus a Hawken (use the Buffalo Rifle line), traps, and a good knife</td></tr>
       <tr><td>Padre</td><td>2d6 × $10, plus vestments &amp; a relic</td></tr>
       <tr><td>Preacher</td><td>2d6 × $10, plus a holy book</td></tr>
       <tr><td>Prospector</td><td>3d6 × $10, plus prospecting tools</td></tr>
@@ -3380,11 +3381,11 @@ which is to say the difference between a friend who is wounded and a friend who 
   <table>
     <thead><tr><th>Weapon</th><th class="c">Damage</th><th class="c">Range</th><th class="c">Cap.</th><th class="c">Reload</th><th>Traits</th><th class="c">Cost</th></tr></thead>
     <tbody>
-      <tr><td>Buffalo Rifle</td><td class="c">1d12</td><td class="c">250</td><td class="c">1</td><td class="c">1</td><td>Kickback, Volley 30 ft, Fatal d12</td><td class="c">$55</td></tr>
+      <tr><td>Buffalo Rifle</td><td class="c">1d12</td><td class="c">250</td><td class="c">1</td><td class="c">1</td><td>Kickback, Two-Handed, Volley 30 ft, Fatal d12</td><td class="c">$55</td></tr>
       <tr><td>Cap-and-Ball Revolver</td><td class="c">1d8</td><td class="c">40</td><td class="c">6</td><td class="c">slow</td><td>Fatal d10, Misfire 2</td><td class="c">$12</td></tr>
       <tr><td>Derringer</td><td class="c">1d6</td><td class="c">20</td><td class="c">2</td><td class="c">1</td><td>Concealable, Fatal d8, Misfire 1</td><td class="c">$8</td></tr>
-      <tr><td>Double-Barrel Shotgun</td><td class="c">2d8</td><td class="c">30</td><td class="c">2</td><td class="c">1</td><td>Scatter 10 ft, Kickback, Fatal d12</td><td class="c">$25</td></tr>
-      <tr><td>Lever-Action Repeater</td><td class="c">1d10</td><td class="c">120</td><td class="c">12</td><td class="c">1/shot</td><td>Repeating, Fatal d12</td><td class="c">$40</td></tr>
+      <tr><td>Double-Barrel Shotgun</td><td class="c">2d8</td><td class="c">30</td><td class="c">2</td><td class="c">1</td><td>Scatter 10 ft, Kickback, Two-Handed, Fatal d12</td><td class="c">$25</td></tr>
+      <tr><td>Lever-Action Repeater</td><td class="c">1d10</td><td class="c">120</td><td class="c">12</td><td class="c">1/shot</td><td>Repeating, Two-Handed, Fatal d12</td><td class="c">$40</td></tr>
       <tr><td>Single-Action Revolver</td><td class="c">1d8</td><td class="c">50</td><td class="c">6</td><td class="c">1/shot</td><td>Fatal d10, Misfire 1</td><td class="c">$20</td></tr>
     </tbody>
   </table>
@@ -3393,12 +3394,12 @@ which is to say the difference between a friend who is wounded and a friend who 
   <ul class="dash">
     <li><strong>Concealable.</strong> +2 to hide it on your person, and it may be drawn as part of the Strike rather than a separate Beat.</li>
     <li><strong>Fatal dX.</strong> On a critical hit, this weapon's damage dice all become dX, and you add one extra die of that size. A gun is at its most honest in the half-second it kills you.</li>
-    <li><strong>Kickback.</strong> The recoil is brutal. Take –2 to the Strike unless your STR is 12 or higher, or you spend a Beat to brace (Aim). Firing a Kickback weapon without bracing leaves you Off-Guard until your next turn.</li>
+    <li><strong>Kickback.</strong> The recoil is brutal. Fire it without bracing and you take –2 to the Strike and stand Off-Guard until your next turn, unless your STR is 12 or better. Spending a Beat to brace (Aim) lifts both.</li>
     <li><strong>Misfire X.</strong> On a critical failure to hit, and on any natural 1 whether or not it would have hit, the weapon jams. Clearing it costs an Interact action and a Repair check (DC 10 + X). In wet weather, increase X by 1 for black-powder arms.</li>
     <li><strong>Reach.</strong> The weapon strikes at a step's distance: a lance, spear, pike, or fixed bayonet. It can hit a foe (or a rider) one rank back, and lets a footman set against a charge (see <em>Fighting from the Saddle</em>).</li>
     <li><strong>Repeating.</strong> Holds many rounds. Loading a single round is one Interact; a full reload follows the rule below.</li>
     <li><strong>Scatter X.</strong> On a hit, deal 1d6 splash damage to every creature within X feet of the target. On a miss within the first range increment, the target still takes the splash.</li>
-    <li><strong>Two-Handed.</strong> The weapon needs both hands to wield. You cannot also manage a shield, the reins, or a second gun, and using it from a moving horse is doubly awkward.</li>
+    <li><strong>Two-Handed.</strong> The weapon needs both hands to wield. You cannot also manage a shield, the reins, or a second gun, and from a moving horse the mounted –2 doubles to –4 (Chapter XI).</li>
     <li><strong>Volley X.</strong> This long iron is made for distance; Strikes against targets within X feet take –2.</li>
   </ul>
   <h3>Reloading</h3>
@@ -3412,13 +3413,15 @@ which is to say the difference between a friend who is wounded and a friend who 
   <div class="runhead"><span class="l">Blood &amp; Grit</span><span>X. Goods &amp; Provisions</span></div>
   <h2 id="ix-blades">Blades &amp; Bludgeons</h2>
   <table>
-    <thead><tr><th>Weapon</th><th class="c">Damage</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Weapon</th><th class="c">Damage</th><th>Notes</th><th class="c">Cost</th></tr></thead>
     <tbody>
-      <tr><td>Club / Rifle-Butt</td><td class="c">1d6</td><td>Common; nonlethal by choice</td></tr>
-      <tr><td>Fists / Boots</td><td class="c">1d3</td><td>Nonlethal unless you mean it; Agile</td></tr>
-      <tr><td>Hatchet</td><td class="c">1d6</td><td>Throwable to 20 ft</td></tr>
-      <tr><td>Knife / Bowie</td><td class="c">1d4</td><td>Concealable; Agile; +1 on a Sudden Strike</td></tr>
-      <tr><td>Saber / Cavalry Sword</td><td class="c">1d8</td><td>Reach and heft; favored mounted</td></tr>
+      <tr><td>Club / Rifle-Butt</td><td class="c">1d6</td><td>Common; nonlethal by choice</td><td class="c">free</td></tr>
+      <tr><td>Fists / Boots</td><td class="c">1d3</td><td>Nonlethal unless you mean it; Agile</td><td class="c">free</td></tr>
+      <tr><td>Hatchet</td><td class="c">1d6</td><td>Throwable to 20 ft</td><td class="c">$1</td></tr>
+      <tr><td>Knife / Bowie</td><td class="c">1d4</td><td>Concealable; Agile; +1 damage on a Sudden Strike</td><td class="c">$2</td></tr>
+      <tr><td>Lance / Spear</td><td class="c">1d8</td><td>Reach; a charge weapon from the saddle</td><td class="c">$3</td></tr>
+      <tr><td>Saber / Cavalry Sword</td><td class="c">1d8</td><td>Long and heavy; favored mounted</td><td class="c">$5</td></tr>
+      <tr><td>Staff / Walking Stick</td><td class="c">1d4</td><td>Common; nonlethal by choice</td><td class="c">free</td></tr>
     </tbody>
   </table>
   <p class="note"><strong>Agile</strong> weapons reduce the Multiple Attack Penalty (–4 / –8 instead of –5 / –10). A blade
@@ -3459,7 +3462,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <tbody>
       <tr><td>50 ft hemp rope</td><td class="c">75¢</td><td>Bandages, per use</td><td class="c">10¢</td></tr>
       <tr><td>Bedroll &amp; tarp</td><td class="c">$2</td><td>Bottle of whiskey</td><td class="c">50¢</td></tr>
-      <tr><td>Box of cartridges (50)</td><td class="c">$1</td><td>Graveyard salt, lb.</td><td class="c">$1</td></tr>
+      <tr><td>Box of cartridges (50), metallic</td><td class="c">$1.25</td><td>Graveyard salt, lb.</td><td class="c">$1</td></tr>
       <tr><td>Holy book</td><td class="c">$3</td><td>Lantern &amp; oil</td><td class="c">$1</td></tr>
       <tr><td>Laudanum, per dose</td><td class="c">25¢</td><td>Shovel / tools</td><td class="c">$2</td></tr>
       <tr><td>Silver ball, each</td><td class="c">$5</td><td>Spyglass</td><td class="c">$8</td></tr>
@@ -3537,17 +3540,17 @@ which is to say the difference between a friend who is wounded and a friend who 
   <table>
     <thead><tr><th>Weapon</th><th class="c">Damage</th><th class="c">Range</th><th class="c">Cap.</th><th class="c">Reload</th><th>Traits</th><th class="c">Cost</th></tr></thead>
     <tbody>
-      <tr><td>Bolt / Trapdoor Rifle</td><td class="c">1d12</td><td class="c">200</td><td class="c">1</td><td class="c">1</td><td>Volley 30 ft, Fatal d12</td><td class="c">$30</td></tr>
-      <tr><td>Bow / Crossbow</td><td class="c">1d8</td><td class="c">60</td><td class="c">1</td><td class="c">1</td><td>Silent; Volley 20 ft (bow)</td><td class="c">$6</td></tr>
-      <tr><td>Carbine (lever)</td><td class="c">1d10</td><td class="c">90</td><td class="c">8</td><td class="c">1/shot</td><td>Repeating, Fatal d12</td><td class="c">$34</td></tr>
+      <tr><td>Bolt / Trapdoor Rifle</td><td class="c">1d12</td><td class="c">200</td><td class="c">1</td><td class="c">1</td><td>Two-Handed, Volley 30 ft, Fatal d12</td><td class="c">$30</td></tr>
+      <tr><td>Bow / Crossbow</td><td class="c">1d8</td><td class="c">60</td><td class="c">1</td><td class="c">1</td><td>Silent, Two-Handed; Volley 20 ft (bow)</td><td class="c">$6</td></tr>
+      <tr><td>Carbine (lever)</td><td class="c">1d10</td><td class="c">90</td><td class="c">8</td><td class="c">1/shot</td><td>Repeating, Two-Handed, Fatal d12</td><td class="c">$34</td></tr>
       <tr><td>Coach Gun (sawed-off)</td><td class="c">2d8</td><td class="c">15</td><td class="c">2</td><td class="c">1</td><td>Scatter 15 ft, Concealable, Kickback</td><td class="c">$22</td></tr>
-      <tr><td>Coal-Oil Bomb</td><td class="c">1d6 fire</td><td class="c">15*</td><td class="c">—</td><td class="c">—</td><td>Thrown; Scatter 5 ft, persists 1 round</td><td class="c">50¢</td></tr>
+      <tr><td>Coal-Oil Bomb</td><td class="c">1d6 fire</td><td class="c">15*</td><td class="c">—</td><td class="c">—</td><td>Thrown; Scatter 5 ft; the target burns for 1d6 more at the start of its next turn</td><td class="c">50¢</td></tr>
       <tr><td>Heavy "Walker" Revolver</td><td class="c">1d10</td><td class="c">50</td><td class="c">6</td><td class="c">slow</td><td>Kickback, Fatal d12, Misfire 1</td><td class="c">$22</td></tr>
       <tr><td>Pepperbox Pistol</td><td class="c">1d6</td><td class="c">25</td><td class="c">5</td><td class="c">slow</td><td>Concealable, Misfire 2</td><td class="c">$10</td></tr>
       <tr><td>Pocket Revolver</td><td class="c">1d6</td><td class="c">30</td><td class="c">5</td><td class="c">1/shot</td><td>Concealable, Fatal d8, Misfire 1</td><td class="c">$14</td></tr>
       <tr><td>Stick of Dynamite</td><td class="c">2d6</td><td class="c">10*</td><td class="c">—</td><td class="c">—</td><td>Thrown; 10-ft burst, Reflex DC 15 half</td><td class="c">$2</td></tr>
       <tr><td>Throwing Knife / Tomahawk</td><td class="c">1d4 / 1d6</td><td class="c">20</td><td class="c">—</td><td class="c">—</td><td>Thrown, Agile (knife)</td><td class="c">$1</td></tr>
-      <tr><td>Wall / Punt Gun</td><td class="c">3d10</td><td class="c">80</td><td class="c">1</td><td class="c">slow</td><td>Scatter 20 ft, Kickback, Volley 20 ft</td><td class="c">$70</td></tr>
+      <tr><td>Wall / Punt Gun</td><td class="c">3d10</td><td class="c">80</td><td class="c">1</td><td class="c">slow</td><td>Scatter 20 ft, Kickback, Two-Handed, Volley 20 ft</td><td class="c">$70</td></tr>
     </tbody>
   </table>
   <p class="note">*Thrown explosives treat the listed range as a throwing increment. A Prospector ignores the
@@ -3724,8 +3727,8 @@ which is to say the difference between a friend who is wounded and a friend who 
       <tr><td>Pinkerton file on a name</td><td class="c">$15+</td><td>Surveyor's transit &amp; chains</td><td class="c">$25</td></tr>
     </tbody>
   </table>
-  <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman treat one
-  extra patient between rests. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate on
+  <p class="note"><strong>Superior doctor's bag.</strong> Grants +2 to Medicine and lets a Sawbones or Shaman tend two
+  patients in the time it takes to tend one. <strong>Iron vest.</strong> The store-bought cousin of the scavenged plate on
   the armor table: chest and back only, but cut to fit and bought rather than hammered out of a boiler. Same DR 3
   against blades, small shot and pistol balls, same –2 Speed, same racket. Most long irons still punch clean
   through it. <strong>Book of true occult lore.</strong> A month's careful study grants +2 to
@@ -3898,11 +3901,14 @@ which is to say the difference between a friend who is wounded and a friend who 
   <strong>Beats</strong>: the small, equal measures of what a person can do in those six seconds. Spend them in any
   order, and on any mix of the actions below. A second Strike in a turn is harder than the first; a third, harder still.
   That's the Iron Code, and it's why patient people outlive quick ones.</p>
+  <p id="ix-surprise"><strong>Surprise.</strong> When one side strikes from true surprise, the Keeper calls it. The surprised
+  lose the first round and stand Off-Guard through all of it, then roll initiative for the second.</p>
 
   <table>
     <thead><tr><th>Action</th><th class="c">Beats</th><th>What It Does</th></tr></thead>
     <tbody>
       <tr><td>Aim / Brace</td><td class="c">1</td><td>+2 on your next Strike before your turn ends; braces a Kickback weapon.</td></tr>
+      <tr><td>Break Free</td><td class="c">1</td><td>Athletics or Acrobatics against the grabber's attack roll; a tie keeps you held.</td></tr>
       <tr><td>Interact</td><td class="c">1</td><td>Draw or stow a weapon, clear a jam, work a lever, open a door, fetch a tonic.</td></tr>
       <tr><td>Reload</td><td class="c">varies</td><td>Make a spent weapon ready; see Reloading below.</td></tr>
       <tr><td>Steady a Soul</td><td class="c">1</td><td>A shout, a hand, a Command; many Calling features cost a Beat. The feature says so.</td></tr>
@@ -3914,7 +3920,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <p class="note" id="ix-reactions"><strong>Free of charge.</strong> A single short phrase, dropping prone, and letting go of what you hold cost
   no Beat. <strong>Reactions.</strong> Once between your turns you may take one reaction. The common one is
   <em>Dive for Cover</em>: when you can see the shot coming (a leveled gun, a lit fuse) drop prone and gain the benefit
-  of cover against that one attack, at the cost of being Prone when you rise.</p>
+  of cover against that one attack, and you stay Prone until you spend a Beat to rise.</p>
 
   <h2 id="ix-map">The Strike, and the Multiple Attack Penalty</h2>
   <p>To make a Strike, roll d20 + your attack (your level, adjusted by your Calling's rank, Chapter XIV) + the keyed ability (DEX for guns and thrown, STR for blades and
@@ -3958,7 +3964,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     </tbody>
   </table>
   <p class="note" id="ix-offguard"><strong>Off-Guard</strong> is the Code's word for a target who cannot properly defend: unaware of you,
-  flanked between two foes, caught unready at the first instant of a fight, or knocked sprawling. An Off-Guard creature is
+  flanked between two foes, or caught unready at the first instant of a fight. An Off-Guard creature is
   easier to hit and easier to hit <em>well</em>.</p>
 
   <h2 id="ix-aiming">Aiming and Bracing</h2>
@@ -3998,7 +4004,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     and the Miracle called <em>Not While I Stand</em>. They are answered the same way, and it is the same roll you
     already know.</p>
     <p>Spend the Reaction and the price. Then roll <strong>d20 + half your level + the ability your working uses</strong>
-    against <strong>the other worker's DC</strong>. Beat it and the working comes apart: the price is spent, and
+    against <strong>the other worker's DC</strong>. Meet or beat it and the working comes apart: the price is spent, and
     nothing happens. Miss and it lands exactly as it meant to, and you have paid anyway. Neither of you may answer the
     answer.</p>
     <p>The difference between them is the difference between the two kinds of power. A Sign fouls
@@ -4465,6 +4471,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   level + RES modifier</strong>. A casting time given in Beats follows the Iron Code (Chapter XI); a Sign that takes an
   <em>Action</em> costs one Beat. Working a Sign is plainly visible: there is a word, there is a gesture, and everyone
   in the room can see who did it.</p>
+  <p class="note" id="ix-recoil"><strong>Recoil.</strong> When a working makes an uncanny thing recoil (Salt &amp; Iron, the holy water, a Conjurer's great charm), it backs out of your reach and does not come at you again before your next turn.</p>
 
   <h2 id="ix-sign-lists">The Three Lists</h2>
   <p>Not every worker reaches the same place, and the places do not hold the same things. There are three lists in this
@@ -4501,7 +4508,7 @@ which is to say the difference between a friend who is wounded and a friend who 
   <h3 id="ix-s-deadmans">Deadman's Coat</h3>
   <p><em>Rank 2 · 1 Beat · 2 Nerve.</em> For a scene the eye slides off you the way it slides off a fencepost. You are not invisible; you are uninteresting, which in a crowded room works better. <strong>Backlash:</strong> Speak, strike, or draw and it breaks at once, and whoever was nearest is startled into looking straight at you.</p>
   <h3 id="ix-s-breath">Borrowed Breath</h3>
-  <p><em>Rank 3 · 1 Beat · 3 Nerve.</em> Lend a dying companion a measure of your own life. Heal them 2d8 and take half that number in Blood yourself, which does not come back until you rest. <strong>Backlash:</strong> If they die anyway, you gain +1 Mark. The dark keeps the loan regardless.</p>
+  <p><em>Rank 3 · 1 Beat · 3 Nerve.</em> Lend a dying companion a measure of your own life. Heal them 2d8 and take half that number in Blood yourself, which comes back only with a safe night or a week of peace. <strong>Backlash:</strong> If they die anyway, you gain +1 Mark. The dark keeps the loan regardless.</p>
   <h3 id="ix-s-longwhisper">The Long Whisper</h3>
   <p><em>Rank 3 · 1 Beat · 3 Nerve.</em> Speak a sentence into the ear of someone you have met, wherever they are, as though you stood behind them. They may answer once. Most do not, the first time. The way stays open for the scene. <strong>Backlash:</strong> Anything between you that can hear the dark hears it too, and now has both your names.</p>
   <h3 id="ix-s-nailshadow">Nail the Shadow</h3>
@@ -4807,7 +4814,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <h3 id="ix-m-fever">The Fever Broken</h3>
   <p><em>Rank 2 · One minute · 2 Faith.</em> Sit the long watch and break the fever. End the next worsening of a disease or poison and grant a fresh save against it at +4. Most of doctoring is refusing to let a thing get worse. The watch is kept and the working is done.</p>
   <h3 id="ix-m-healsleep">The Sleep of Healing</h3>
-  <p><em>Rank 3 · One minute · 3 Faith.</em> Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn.</p>
+  <p><em>Rank 3 · One minute · 3 Faith.</em> Sing a hurt soul down into a true healing sleep. If tonight is a safe night they recover double the Blood and Nerve it gives, and either way they wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn.</p>
   <h3 id="ix-m-shared">The Life Shared</h3>
   <p><em>Rank 4 · 1 Beat · 4 Faith.</em> Open the well to more than one at once. Divide your healing among every ally you can reach, 2d8 to be shared out as you choose, the mercy spread thin across many rather than poured into one.</p>
   <h3 id="ix-m-longmercy">The Long Mercy</h3>
@@ -4943,7 +4950,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <ul class="dash">
     <li>One <strong>ability score</strong> raised by a point at 5th, 10th, and 15th level.</li>
     <li>Better <strong>attack and saves</strong>, as your Calling's table shows, and as <em>Attack Rank and the Saves</em>, below, lets you reckon without the book.</li>
-    <li>More <strong>Blood</strong>: roll your Calling's Hit Die (or take its average) and add your CON modifier.</li>
+    <li>More <strong>Blood</strong>: roll your Calling's Hit Die or take its average rounded up (d6 4, d8 5, d10 6, d12 7), and add your CON modifier. However the roll falls, a level gives at least 1.</li>
     <li>New <strong>Calling features</strong>; an Old Dark path (Bargain, Craft, Gospel, or Devotion) deepens at 3rd and 9th; the gifted learn new <strong>Signs</strong> at the listed levels.</li>
     <li>An <strong>Edge</strong> at 1st, 3rd, 5th, 7th, and 9th level, and again at 12th and 14th.</li>
     <li>A <strong>skill increase</strong> at 3rd, 5th, 7th, and 9th level, and again at 11th and 13th, raising one skill's proficiency a step (toward Expert, then Master, as your level allows).</li>
@@ -4957,9 +4964,9 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
   <table>
     <thead><tr><th>Rank</th><th>Your attack</th><th>Callings</th></tr></thead>
     <tbody>
-      <tr><td>Practiced</td><td>Equal to your level</td><td>Bounty Hunter, Gunhand, Marshal, Mountain Man, Witch Hunter</td></tr>
-      <tr><td>Steady</td><td>Your level, less 1</td><td>Drifter, Gambler, Prospector, Sawbones, Padre, Preacher, Shaman, Sister, False Prophet</td></tr>
-      <tr><td>Slight</td><td>Your level, less 2 (never below +0)</td><td>Hexer, Witch, Dark Cultist</td></tr>
+      <tr><td>Practiced</td><td>Equal to your level</td><td><!--RANK_Practiced--></td></tr>
+      <tr><td>Steady</td><td>Your level, less 1</td><td><!--RANK_Steady--></td></tr>
+      <tr><td>Slight</td><td>Your level, less 2 (never below +0)</td><td><!--RANK_Slight--></td></tr>
     </tbody>
   </table>
   <p><strong>Saves.</strong> Your statline names which of your three saves are strong. A <strong>strong
@@ -5052,14 +5059,14 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
       <tr><td>Clumsy</td><td>–2 on DEX-based Strikes, checks, and Defense</td></tr>
       <tr><td>Drained</td><td>–2 on Fortitude and CON checks until it lifts, and Blood equal to your level lost once, as it sets in; a second Drained takes nothing more, and the worse of the two is the one you carry</td></tr>
       <tr><td>Dying</td><td>At 0 Blood; senseless and Bleeding, and dead at –CON, the negative of your CON score; a DC 15 Fortitude save at each of your turns, or a friend's two-Beat Medicine check at the same DC, makes you Stable</td></tr>
-      <tr><td>Enfeebled</td><td>–2 on STR-based Strikes, damage, and checks; carry half what you could</td></tr>
-      <tr><td>Fatigued</td><td>–2 on checks and saves; cannot Aim or run; rest to shed it</td></tr>
+      <tr><td>Enfeebled</td><td>–2 on STR-based Strikes and checks; carry half what you could</td></tr>
+      <tr><td>Fatigued</td><td>–2 on checks and saves; cannot Aim or run; a safe night sheds it</td></tr>
       <tr id="ix-frightened"><td>Frightened</td><td>–1 (or worse) on everything; lessens by one step each turn as you master the fear</td></tr>
-      <tr><td>Grabbed</td><td>Held fast; Off-Guard; –4 DEX; a check to break free</td></tr>
+      <tr><td>Grabbed</td><td>Held fast; Off-Guard; –4 DEX. To break free, spend a Beat and roll Athletics or Acrobatics against the grabber's attack roll; a tie keeps you held (Chapter II)</td></tr>
       <tr><td>Lost</td><td>Mark 6; the character passes into the Keeper's hands</td></tr>
       <tr><td>Marked</td><td>Stepped along the Mark track; see Chapter XII</td></tr>
-      <tr><td>Off-Guard</td><td>–2 to your Defense; you cannot properly defend (unaware, flanked, sprawled, or caught unready)</td></tr>
-      <tr><td>Prone</td><td>–4 to melee; +4 to others' ranged against you; rising costs a Beat</td></tr>
+      <tr><td>Off-Guard</td><td>–2 to your Defense; you cannot properly defend (unaware, flanked, or caught unready)</td></tr>
+      <tr><td>Prone</td><td>–4 on your melee Strikes; others' ranged Strikes against you +4; rising costs a Beat</td></tr>
       <tr><td>Sickened</td><td>–2 on Strikes, damage, checks, and saves; nausea</td></tr>
       <tr><td>Slowed 1</td><td>Lose one Beat each turn while it lasts; may still defend</td></tr>
       <tr><td>Stable</td><td>Down and senseless, bleeding no more; you come round on 1 Blood after ten quiet minutes, or at once on a critical success</td></tr>
@@ -5130,7 +5137,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 11 &middot; <strong>Saves</strong> Fort +3, Ref +1, Will +4 &middot; <strong>Nerve</strong> 15 &middot; <strong>Grit</strong> 3</p>
     <p><strong>Attack</strong> +0 &middot; knife <!--HIT:STR--> (1d4) &middot; cap-and-ball revolver <!--HIT:DEX--> (1d8, slow reload) &middot; <strong>Armor</strong> good coat (DR 1 vs blades &amp; small shot)</p>
     <p><strong>Trained:</strong> Medicine, Lore (Occult), Notice, Deceive, Survival, Sleight, Insight, Lore (Frontier), Persuade, Ride. <strong>Features:</strong> Field Surgery, Anatomist. <strong>Edge:</strong> Frontier Medicine. <strong>Perk:</strong> Not On My Table.</p>
-    <p><strong>Gear:</strong> surgeon's kit, laudanum, good coat, worn revolver, $14 and a letter of unpaid debt.</p>
+    <p><strong>Gear:</strong> surgeon's kit, laudanum, good coat, worn revolver with powder and ball for 30 shots, a knife, $14 and a letter of unpaid debt.</p>
     <p class="note"><strong>Lost:</strong> the name, the house, the inheritance: a scandal she will not discuss. <strong>Seen:</strong> a body on her table open its eyes, four hours dead. <strong>Vice:</strong> laudanum. <strong>Moving:</strong> the debt, and the man back east who holds it.</p>
     <p><strong>In the Basin:</strong> Coffin Wells wrote east for a doctor when the fever started out at the homesteads, and hers was the only answer they got. The pay's poor. The debt doesn't care.</p>
   </div>
@@ -5142,7 +5149,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <p><strong>Blood</strong> 9 &middot; <strong>Defense</strong> 9 &middot; <strong>Saves</strong> Fort +3, Ref &minus;1, Will +4 &middot; <strong>Nerve</strong> 16 &middot; <strong>Grit</strong> 3</p>
     <p><strong>Attack</strong> +0 &middot; walking staff <!--HIT:STR--> (1d4) &middot; double-barrel shotgun <!--HIT:DEX--> (2d8, Scatter; kept wrapped in oilcloth and prayer) &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Persuade, Intimidate, Lore (Occult), Notice, Insight. <strong>Features:</strong> Conviction (pool 3), Sermon. <strong>Miracles known:</strong> The Steadying Word, Call to the Mourner's Bench (both Rank 1). <strong>Miracle DC</strong> 13. <strong>Edge:</strong> Iron Will. <strong>Perk:</strong> A Crowd Where You Stand.</p>
-    <p><strong>Gear:</strong> Bible, salt, camp kit, the shotgun, $11 and a congregation's last collection.</p>
+    <p><strong>Gear:</strong> Bible, salt, camp kit, walking staff, the shotgun and 12 shells, $11 and a congregation's last collection.</p>
     <p class="note"><strong>Lost:</strong> his congregation, to a fire that did not behave like fire. <strong>Seen:</strong> what set it, and it saw him. <strong>Vice:</strong> pride in the Word. <strong>Moving:</strong> the thing that burned his church went west, and so, therefore, did he.</p>
     <p><strong>In the Basin:</strong> the Methodists at Coffin Wells needed somebody to ride out to the homesteads where the fever is, and he took the work. He'd heard about the mission east of town that burned in 1811, and he wants to see what burns out here.</p>
   </div>
@@ -5152,9 +5159,9 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <p class="note">Thirty winters in the high country and a Hawken older than most towns. Speaks four languages and prefers none of them.</p>
     <p><strong>STR</strong> 15 (+2) &middot; <strong>DEX</strong> 11 (+0) &middot; <strong>CON</strong> 14 (+2) &middot; <strong>WIT</strong> 12 (+1) &middot; <strong>RES</strong> 14 (+2) &middot; <strong>PRE</strong> 8 (&minus;1)</p>
     <p><strong>Blood</strong> 12 &middot; <strong>Defense</strong> 10 &middot; <strong>Saves</strong> Fort +4, Ref +0, Will +4 &middot; <strong>Nerve</strong> 15 &middot; <strong>Grit</strong> 3</p>
-    <p><strong>Attack</strong> +1 &middot; Hawken rifle <!--HIT:DEX--> (1d12, Dead Aim +1d6) &middot; bowie knife <!--HIT:STR--> (1d4) &middot; <strong>Armor</strong> buffalo coat (DR 1 vs blades &amp; small shot)</p>
+    <p><strong>Attack</strong> +1 &middot; Hawken rifle <!--HIT:DEX--> (1d12, use the Buffalo Rifle line; Dead Aim +1d6) &middot; bowie knife <!--HIT:STR--> (1d4) &middot; <strong>Armor</strong> buffalo coat (DR 1 vs blades &amp; small shot)</p>
     <p><strong>Trained:</strong> Survival, Notice, Athletics, Stealth, Animal Handling, Lore (Frontier), Medicine, Repair. <strong>Features:</strong> Hawken Rifle, Dead Aim 1d6, Hard Country. <strong>Edge:</strong> Tracker. <strong>Perk:</strong> Half a Wild Thing.</p>
-    <p><strong>Gear:</strong> the Hawken, traps, pelts worth 2d6 &times; $10, a buffalo coat, a good knife, a better dog.</p>
+    <p><strong>Gear:</strong> the Hawken rifle with powder and ball for 40 shots, traps, pelts worth 2d6 &times; $10, a buffalo coat, a good knife, a better dog.</p>
     <p class="note"><strong>Lost:</strong> her trapping partner, to a winter that was not a winter. <strong>Seen:</strong> its tracks, man-shaped, and forty feet apart. <strong>Vice:</strong> solitude, and the flask that makes it bearable. <strong>Moving:</strong> she is hunting it. She does not say so.</p>
     <p><strong>In the Basin:</strong> she lost the trail at the edge of the Badlands in the spring. A teamster at Saltlick Station says he's seen tracks like that since, and he won't say where unless he's drunk, and then he can't.</p>
   </div>
@@ -5166,7 +5173,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <p><strong>Blood</strong> 8 &middot; <strong>Defense</strong> 12 &middot; <strong>Saves</strong> Fort +0, Ref +4, Will +3 &middot; <strong>Nerve</strong> 14 &middot; <strong>Grit</strong> 3</p>
     <p><strong>Attack</strong> +1 &middot; service carbine <!--HIT:DEX--> (1d10) &middot; revolver <!--HIT:DEX--> (1d8) &middot; rope and irons &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Notice, Stealth, Survival, Intimidate, Insight, Lore (Frontier), Athletics, Deceive, Ride. <strong>Features:</strong> Bushwhack 1d6, Quick Hands. <strong>Edge:</strong> Cold Read. <strong>Perk:</strong> Paper on Him.</p>
-    <p><strong>Gear:</strong> carbine, irons, wanted papers, field glasses, $22 of the last bounty.</p>
+    <p><strong>Gear:</strong> carbine and 30 rounds, revolver and 30 cartridges, irons, wanted papers, field glasses, $22 of the last bounty.</p>
     <p class="note"><strong>Lost:</strong> the certainty the war promised him. <strong>Seen:</strong> a man he'd buried collect his own bounty in the next county. <strong>Vice:</strong> violence, arrived at too easily. <strong>Moving:</strong> one name left on a private list, and it keeps moving west.</p>
     <p><strong>In the Basin:</strong> the last name on his list was seen drawing wages from the railroad's survey office at Calvary Crossing. He's in no hurry. The survey pays guns too.</p>
   </div>
@@ -5178,7 +5185,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <p><strong>Blood</strong> 7 &middot; <strong>Defense</strong> 10 &middot; <strong>Saves</strong> Fort +1, Ref +0, Will +5 &middot; <strong>Nerve</strong> 17 &middot; <strong>Grit</strong> 3</p>
     <p><strong>Attack</strong> +0 &middot; kitchen knife <!--HIT:STR--> (1d4), and the Signs she paid for &middot; <strong>Armor</strong> none</p>
     <p><strong>Trained:</strong> Lore (Occult), Medicine, Survival, Notice, Animal Handling, Deceive, Insight. <strong>Features:</strong> Witch-Sight, Signs, Marked. <strong>Signs known:</strong> Salt &amp; Iron, The Lender's Ear (both Rank 1: all a 1st-level soul may reach). <strong>Sign DC</strong> 13. <strong>Edge:</strong> Salt-Wise. <strong>Perk:</strong> Your Debts Are Public.</p>
-    <p><strong>Gear:</strong> herb satchel, salt, iron nails, charm-makings, a crow named Deuteronomy, $6.</p>
+    <p><strong>Gear:</strong> herb satchel, salt, iron nails, charm-makings, a kitchen knife, a crow named Deuteronomy, $6.</p>
     <p class="note"><strong>Lost:</strong> everything the sod could take, and then the man too. <strong>Seen:</strong> what answered the night she asked. She carries <strong>Mark 1</strong>, and knows it. <strong>Vice:</strong> the bargains; they keep working. <strong>Moving:</strong> paying it back before it comes to collect.</p>
     <p><strong>In the Basin:</strong> she proved up a claim on the river below the Crossing, and the sod she broke is where the four of them are buried. Her well went sour this spring. She's the only one on her bend who wasn't surprised.</p>
   </div>
@@ -6417,6 +6424,24 @@ html = html.replace("<!--WEEK_DAYS-->", NUMBER_WORDS[WEEK_DAYS])
 html = html.replace("<!--TAINT_DAYS-->", NUMBER_WORDS[taint_days])
 html = html.replace("<!--WEEK_TAINT-->", f"{NUMBER_WORDS[week_eases]} step{'' if week_eases == 1 else 's'}")
 
+# Ch. XIV's Attack Rank table names the Callings that hold each rank. The names are read off the
+# eighteen statlines ("... Attack Steady"), in book order, so a Calling added, renamed, or moved
+# between ranks shows up in the table without anyone retyping it. The typed list once left the
+# Engineer out of Steady. audits/verify_rules.py holds the table to the statlines and the data.
+RANK_ORDER = ("Practiced", "Steady", "Slight")
+ranks = {r: [] for r in RANK_ORDER}
+heads = list(re.finditer(r'<h2 id="ix-c-[^"]*">([^<]+)</h2>', html))
+for i, h in enumerate(heads):
+    stop = heads[i + 1].start() if i + 1 < len(heads) else len(html)
+    st = re.search(r'<p class="statline">[^<]*Attack (\w+)</p>', html[h.end():stop])
+    if not st or st.group(1) not in ranks:
+        sys.exit(f"Ch. XIV, Attack Rank: cannot read {h.group(1)}'s rank off its statline")
+    ranks[st.group(1)].append(h.group(1).strip())
+empty = [r for r in RANK_ORDER if not ranks[r]]
+if empty:
+    sys.exit(f"Ch. XIV, Attack Rank: no Calling holds {', '.join(empty)}")
+html = re.sub(r"<!--RANK_(\w+)-->", lambda m: ", ".join(ranks[m.group(1)]), html)
+
 
 def signed(n):
     return f"+{n}" if n >= 0 else f"&minus;{-n}"
@@ -6445,7 +6470,7 @@ def fill_pregen_hits(page):
 
 
 html = fill_pregen_hits(html)
-left = re.findall(r"<!--(?:HIT:\w+|WEEK_\w+|TAINT_\w+)-->", html)
+left = re.findall(r"<!--(?:HIT:\w+|WEEK_\w+|TAINT_\w+|RANK_\w+)-->", html)
 if left:
     sys.exit(f"unfilled figures left in the book: {sorted(set(left))}")
 
