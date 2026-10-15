@@ -72,7 +72,7 @@ public partial class MainForm
             encounter.Add(new EncounterPick(c)); RefreshEncounter(); Log($"Encounter: added {c.name}.");
         }, 110, "Add to the encounter builder"));
         filters.Controls.Add(Lbl("  ×"));
-        beastQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
+        beastQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = Rules.FieldBatchMax, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         Tip.SetToolTip(beastQty, "How many copies → Tracker drops at once");
         filters.Controls.Add(beastQty);
         filters.Controls.Add(Btn("→ Tracker", (s, e) =>
@@ -336,7 +336,7 @@ public partial class MainForm
         encPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToEncounter(); e.SuppressKeyPress = true; } };
         top.Controls.Add(encPick);
         top.Controls.Add(Lbl(" ×"));
-        encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
+        encQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = Rules.FieldBatchMax, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         Tip.SetToolTip(encQty, "How many of that creature to cost into the plan at once. Six wolves is six "
             + "lines of budget, not one, which is the whole point of costing a fight before running it.");
         top.Controls.Add(encQty);
@@ -356,8 +356,8 @@ public partial class MainForm
         top.Controls.Add(Btn("Send all → Tracker", (s, e) =>
         {
             if (encounter.Count == 0) { Nope("Nothing costed yet. Add a foe to the plan first."); return; }
-            foreach (var p in encounter.ToList()) AddCreatureToTracker(p.Creature);
-        }, 150, "Put every listed creature on the battlefield"));
+            SendEncounterToField();
+        }, 150, "Put every listed creature on the battlefield, each kind as one arrival"));
 
         encGrid = new DataGridView
         {
@@ -1083,7 +1083,7 @@ public partial class MainForm
         bar.Controls.Add(glassToggle);
 
         bar.Controls.Add(BarSep());
-        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant: the engine handles to-hit, degrees, MAP, Fatal, and DR"));
+        bar.Controls.Add(Btn("Strike ▸", (s, e) => StrikeDialog(), 72, "Resolve a Strike from the selected combatant: the engine handles to-hit, degrees, MAP and Fatal, and fills in the target's armor DR for the blow"));
         bar.Controls.Add(Btn("Dread ▸", (s, e) => DreadDialog(), 70, "Roll a Dread Check for the selected soul: Nerve off the ladder, Frightened, and the break at 0 Nerve"));
         bar.Controls.Add(Btn("✦ Work ▸", (s, e) => WorkPowerDialog(), 84,
             "Work a Sign, a Miracle, or a creature's own power: who works it, on whom, what it costs "
@@ -1139,7 +1139,7 @@ public partial class MainForm
         trkPick.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { AddPickToTracker(); e.SuppressKeyPress = true; } };
         bar.Controls.Add(trkPick);
         bar.Controls.Add(Lbl(" ×"));
-        trkQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = 20, Value = 1, Margin = new Padding(0, 5, 3, 3) };
+        trkQty = new NumericUpDown { Width = 46, Minimum = 1, Maximum = Rules.FieldBatchMax, Value = 1, Margin = new Padding(0, 5, 3, 3) };
         Tip.SetToolTip(trkQty, "How many of that foe to put on the field at once. Each arrives as its own "
             + "row with its own Blood and its own initiative, numbered so you can tell them apart.");
         bar.Controls.Add(trkQty);
@@ -2855,13 +2855,41 @@ public partial class MainForm
         return answer == DialogResult.No;
     }
 
-    void AddCreatureToTracker(Creature c, int count = 1, bool skipSafeTable = false)
+    /// <summary>The Encounter tab's Send all. Each kind goes on as one arrival ("3× The Risen take
+    /// the field"), so the safe-table rule asks once per kind rather than once per copy, and a kind
+    /// the Keeper puts on the trail sends none of its copies onto the field. The whole send is one
+    /// undo step: the safe-table dialog pumps messages between kinds, which would otherwise leave a
+    /// step behind for each.</summary>
+    void SendEncounterToField()
+    {
+        var sent = new List<(Creature Creature, int Count)>();
+        using (OneUndoStep())
+            foreach (var (c, n) in Rules.Muster(encounter.Select(p => p.Creature)))
+            {
+                int on = 0;
+                foreach (int run in Rules.FieldBatches(n))
+                {
+                    if (!AddCreatureToTracker(c, run, skipSafeTable: on > 0)) break;
+                    on += run;
+                }
+                if (on > 0) sent.Add((c, on));
+            }
+        // One kind has already said so in its own line; two or more would leave the status bar
+        // showing only the last of them.
+        if (sent.Count > 1) Log($"Tracker: the encounter takes the field, {Rules.MusterLine(sent)}.");
+    }
+
+    /// <summary>Put <paramref name="count"/> of a creature on the field, asking the safe-table
+    /// question first where it applies. True when they went onto the field; false when the Keeper
+    /// put the thing on the trail instead or cancelled, so a caller sending more of the same kind
+    /// knows to stop rather than ask again.</summary>
+    bool AddCreatureToTracker(Creature c, int count = 1, bool skipSafeTable = false)
     {
         // The one place every route onto the battlefield goes through (the Bestiary's → Tracker,
         // the Foe box, the Encounter's Send all, the right-click menus) so the safe-table rule
         // gets asked once, here, rather than in five places that would each forget it differently.
-        if (!skipSafeTable && Rules.SignOnly(c.tier, partyLevelHint) && !AskInTheFlesh(c, partyLevelHint)) return;
-        count = Math.Clamp(count, 1, 20);
+        if (!skipSafeTable && Rules.SignOnly(c.tier, partyLevelHint) && !AskInTheFlesh(c, partyLevelHint)) return false;
+        count = Math.Clamp(count, 1, Rules.FieldBatchMax);
         // number from the highest existing suffix, not the row count; otherwise
         // add/remove/add mints two "#2"s
         var kin = tracker.Where(t => t.Ref == c.name).ToList();
@@ -2884,6 +2912,7 @@ public partial class MainForm
         Log(count == 1
             ? $"Tracker: {c.name} takes the field ({c.BloodValue} Blood)."
             : $"Tracker: {count}× {c.name} take the field ({c.BloodValue} Blood each).");
+        return true;
     }
 
     void AdjustCombatant(int sign)
@@ -3161,6 +3190,16 @@ public partial class MainForm
         var mapLbl = new Label { Left = 196, Top = 90, Width = Pad + CW - 196, Height = 20, ForeColor = Blood, AutoEllipsis = true };
         // Dice-and-books table: the Keeper rolls the d20 and enters it; the engine table rolls its own.
         var d20 = new NumericUpDown { Left = 248, Top = 123, Width = 60, Minimum = 1, Maximum = 20, Value = 10 };
+        // Where the DR came from, beside the box, after the d20 when there is one. Until v1.60.0
+        // the box opened on 0 every time and the Strike button's tip claimed the engine handled DR:
+        // a soul in Boiled Leather took a ghoul's full claw unless the Keeper remembered the suit.
+        int drNoteLeft = EngineRolls ? 196 : 316;
+        var drNote = new Label { Left = drNoteLeft, Top = 126, Width = Pad + CW - drNoteLeft, Height = 20,
+                                 ForeColor = Faint, Font = DialogItalic, AutoEllipsis = true };
+        Tip.SetToolTip(dr, "Prefilled from the target's worn armor for this blow (Ch. X): a blade or claw "
+            + "meets its DR vs blades, a Scatter gun its DR vs small shot, and a ball or a flame none. "
+            + "Yours to overrule: a pocket pistol from across a room counts as small shot, and the "
+            + "Bestiary prints no DR, so type any resistance you rule for a creature.");
 
         // Declared before Sync rather than beside the other buttons at the bottom, because Sync is
         // what turns the Strike off once the Beats are gone and a local cannot reach one declared
@@ -3239,18 +3278,36 @@ public partial class MainForm
         target.SelectedIndexChanged += (s, e) => Sync();
         Sync();
 
+        // The target's armor against THIS blow, refilled when either end of it changes. Kept out of
+        // Sync on purpose: Sync runs again after every Strike in the loop below, and a DR the
+        // Keeper has overruled should survive the second Strike at the same target. The rule and
+        // its words live in CombatFlow.ArmorDrFor, where the smoke rig can read them.
+        void PrefillDr()
+        {
+            var tgtNow = foes[Math.Clamp(target.SelectedIndex, 0, foes.Count - 1)];
+            int idx = Math.Max(0, weapon.SelectedIndex);
+            string kind = asCreature ? catks[idx].Type : IronCode.DamageType(CharGen.D.weapons[idx]);
+            var (amount, why) = CombatFlow.ArmorDrFor(SoulOf(tgtNow)?.Sheet, kind);
+            dr.Value = Math.Clamp(amount, (int)dr.Minimum, (int)dr.Maximum);
+            drNote.Text = why;
+        }
+        weapon.SelectedIndexChanged += (s, e) => PrefillDr();
+        target.SelectedIndexChanged += (s, e) => PrefillDr();
+        PrefillDr();
+
         var how = Para(
             (EngineRolls ? "The engine rolls the d20 and reads the four degrees"
                          : "You roll the d20 and enter it above; the engine reads the four degrees")
             + ", applies the Multiple Attack Penalty at this combatant's step"
             + (asCreature ? "" : " and the Fatal die on a critical hit")
-            + ", subtracts the target's DR, takes the Blood, and spends a Beat. Strike again to take "
+            + ", subtracts the DR in the box (the target's worn armor against this blow, filled in "
+            + "for you), takes the Blood, and spends a Beat. Strike again to take "
             + "the next one at higher MAP; Begin turn on the tracker gives the Beats back and makes "
             + "the shot clean.", 178, f.Font, Ink);
 
         f.Controls.AddRange(new Control[] {
             L("Target:", 15), target, L(asCreature ? "Attack:" : "Weapon:", 51), weapon, L("To hit:", 87), toHit, mapLbl,
-            L("Target DR:", 123), dr, against, how });
+            L("Target DR:", 123), dr, drNote, against, how });
         if (!EngineRolls)
         {
             f.Controls.Add(new Label { Left = 196, Top = 126, Width = 48, Text = "d20:", ForeColor = Blood, TextAlign = ContentAlignment.MiddleRight });
@@ -3921,20 +3978,24 @@ public partial class MainForm
     /// failure … loses the listed Nerve and imposes Frightened 1 at once", Ch. XII); it also never
     /// hung the Frightened, never rolled the Affliction a DC-25 failure carries, and never touched
     /// the break table, so the same horror cost a soul twice the Nerve and left no mark on one tab,
-    /// and cost the printed Nerve and left a scar on the other. This is the one road now.</summary>
-    void ResolveDread(PartyMember soul, int dc, int? forcedDie, bool onStainedGround = true)
+    /// and cost the printed Nerve and left a scar on the other. This is the one road now.
+    ///
+    /// <para>Answers what the check did and whether it broke the soul, so the whole-posse press can
+    /// put every soul on one line (<see cref="DreadCheckPosse"/>). Null for a null soul.</para></summary>
+    Horror.PosseRoll ResolveDread(PartyMember soul, int dc, int? forcedDie, bool onStainedGround = true)
     {
-        if (soul == null) return;
+        if (soul == null) return null;
         var o = Horror.DreadCheck(soul, dc, forcedDie, onStainedGround);
         ShowResult(o.DegreeName, $"{soul.Name}: {o.Line}", DegreeColor(o.DegreeName));
-        ApplyDread(soul, o);
+        return new Horror.PosseRoll(soul.Name, o, ApplyDread(soul, o));
     }
 
     /// <summary>What a Dread Check does to the soul who made it, applied one way wherever it was
     /// rolled. The sign-reading dialog had a copy of its own, and the copy had drifted: it broke a
     /// soul at 0 Nerve without the Affliction breaking carries, and it handed a null row to the
-    /// Frightened when the reader was not on the field. Two copies of a rule is two rules.</summary>
-    void ApplyDread(PartyMember soul, Horror.DreadOutcome o)
+    /// Frightened when the reader was not on the field. Two copies of a rule is two rules.
+    /// Answers whether the check broke the soul.</summary>
+    bool ApplyDread(PartyMember soul, Horror.DreadOutcome o)
     {
         Log($"{soul.Name}: {o.Line}");
         if (o.NerveLost > 0) soul.NerveCur = Math.Max(0, soul.NerveCur - o.NerveLost);
@@ -3972,6 +4033,7 @@ public partial class MainForm
             RecordScar(soul, "Affliction", aff, why);
         }
         posseGrid?.Refresh(); trkGrid?.Refresh();
+        return broke;
     }
 
     /// <summary>A blow bad enough to leave something behind (Ch. XI): half the soul's maximum Blood
@@ -3985,7 +4047,9 @@ public partial class MainForm
 
         int die = AskDie($"{soul.Name}'s Fortitude save against DC {Rules.GrievousDc}, what did the d20 come up?")
                   ?? Rules.Rng.Next(1, 21);
-        var (idx, deg, detail) = Rules.FourDegrees(die, soul.Fort, Rules.GrievousDc);
+        // Under the soul's name, so the daybook's check line says whose save it was.
+        int idx; string deg, detail;
+        using (Daybook.As(soul.Name)) (idx, deg, detail) = Rules.FourDegrees(die, soul.Fort, Rules.GrievousDc);
         if (idx > 1)   // 2 = success, 3 = critical success
         {
             Log($"{soul.Name} rides it out, Fortitude {detail} → {deg}. No lasting injury.");
@@ -4234,7 +4298,9 @@ public partial class MainForm
         while (f.ShowDialog(this) == DialogResult.OK)
         {
             var reader = readers[Math.Max(0, who.SelectedIndex)];
-            var o = Horror.ReadSign((int)mod.Value, tier, EngineRolls ? null : (int)d20.Value);
+            // Read under the reader's name, so the daybook's check line says whose roll it was.
+            Horror.SignOutcome o;
+            using (Daybook.As(reader.Name)) o = Horror.ReadSign((int)mod.Value, tier, EngineRolls ? null : (int)d20.Value);
             Log($"{reader.Name} reads {sign.Name}: {o.Detail} → {o.DegreeName}. {o.Learned}");
             ShowResult(o.DegreeName, $"{reader.Name} reads {sign.Name}: {o.Learned}", DegreeColor(o.DegreeName));
 

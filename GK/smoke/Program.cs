@@ -6,6 +6,12 @@ void T(string name, bool ok)
     if (ok) pass++; else { fail++; Console.WriteLine($"FAIL  {name}"); }
 }
 
+// A constant held to the book's own number. Written as `Rules.GrievousDc == 15`, the compiler folds
+// the comparison to a literal true, and CA1508 calls that dead code, which broke the smoke build
+// under -warnaserror. Handed through here the comparison runs at run time instead. The test is
+// exactly as strong: a constant that drifts from the book fails the same way it always did.
+static bool Pinned<TV>(TV actual, TV expected) => EqualityComparer<TV>.Default.Equals(actual, expected);
+
 // ---- FourDegrees: all edges on the ordered 0-3 scale ----
 T("plain success",        Rules.FourDegrees(10, 5, 13).idx == 2);
 T("plain failure",        Rules.FourDegrees(5, 2, 13).idx == 1);
@@ -250,7 +256,7 @@ foreach (var (table, floor) in new[]
         Enumerable.Range(0, 4).Select(Rules.SpoorRead).Distinct().Count() == 4);
     T("spoor: and none of them is blank",
         Enumerable.Range(0, 4).All(d => !string.IsNullOrWhiteSpace(Rules.SpoorRead(d))));
-    T("spoor: the thread is a four-segment clock", Rules.SpoorClockSegments == 4);
+    T("spoor: the thread is a four-segment clock", Pinned(Rules.SpoorClockSegments, 4));
     // The rule only fires where Rules.Cost says it does: two or more Tiers over the posse.
     T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
     T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
@@ -1109,7 +1115,11 @@ foreach (var (table, floor) in new[]
         // took it off on Unwork, so a session saved mid-Sign reloaded with the penalty baked into
         // Defense AND the working still on the row, and it landed twice. Reading it twice must be
         // idempotent, which a stored adjustment is not.
-        T("burden: reading it twice gives the same answer", lit.EffectiveDefense == 8 && lit.EffectiveDefense == 8);
+        // Both reads are taken and both are tested. Written as `a == 8 && a == 8` the analyzer
+        // assumes a property returns what it returned a moment ago, which is the very thing this
+        // test exists to check, and flags the second half as always true (CA1508).
+        T("burden: reading it twice gives the same answer",
+            new[] { lit.EffectiveDefense, lit.EffectiveDefense }.All(d => d == 8));
         lit.Conditions = "";
         T("burden: and it lifts clean when the condition goes", lit.EffectiveDefense == 12 && lit.DefenseLine == "12");
 
@@ -1557,7 +1567,7 @@ foreach (var (table, floor) in new[]
     T("grievous: no damage is never a terrible blow", !Rules.IsGrievous(0, 20, true));
     T("grievous: a target with no Blood maximum cannot be measured against one",
         !Rules.IsGrievous(5, 0, false));
-    T("grievous: the DC is the book's fifteen", Rules.GrievousDc == 15);
+    T("grievous: the DC is the book's fifteen", Pinned(Rules.GrievousDc, 15));
 
     T("injury: the d6 table has six entries", Rules.LastingInjuries.Length == 6);
     T("injury: in the book's order", Rules.LastingInjuries[0] == "Bloody Gash" && Rules.LastingInjuries[5] == "Gut-Shot");
@@ -1615,7 +1625,7 @@ for (int i = 0; i < 100; i++)
 // ---- Encounter cost ----
 // Typed on purpose. These are Ch. IV's own numbers as repriced in v1.44.0, and a test that read
 // them off Rules.BudgetRungs would pass whatever the ladder later drifted to.
-T("budget = 4 per soul", Rules.BudgetPerSoul == 4);
+T("budget = 4 per soul", Pinned(Rules.BudgetPerSoul, 4));
 T("even foe = 8",   Rules.Cost(2, 4).cost == 8 && Rules.Cost(2, 4).role == "Even foe");
 T("mook = 4",       Rules.Cost(1, 4).cost == 4);
 T("standout = 16",  Rules.Cost(3, 4).cost == 16 && !Rules.Cost(3, 4).spoor);
@@ -2401,7 +2411,7 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
     // per-user folder, and either one on its own is enough.
     T("state: the per-user folder is the answer only when neither signal is present",
         (R(false,false) == Roaming) && (R(true,false) != Roaming) && (R(false,true) != Roaming) && (R(true,true) != Roaming));
-    T("state: the marker filename is the one the docs and package.ps1 name", AppState.PortableMarker == "portable.txt");
+    T("state: the marker filename is the one the docs and package.ps1 name", Pinned(AppState.PortableMarker, "portable.txt"));
 
     // The live folder must be usable and must exist: a Keeper whose profile is locked down
     // should still get an app that runs, which is why Dir falls back rather than throwing.
@@ -2800,6 +2810,34 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         IronCode.DamageType(cg.weapons.First(w => w.name == "Single-Action Revolver")) == "ball");
     T("a shotgun throws small shot", IronCode.DamageType(cg.weapons.First(w => w.name == "Double-Barrel Shotgun")) == "small shot");
     T("a blade cuts as blades", IronCode.DamageType(saber) == "blades");
+
+    // -- GK-B2: the Strike dialog prefills the target's armor DR for the blow (Ch. X) --
+    // The box opened on 0 every time, while the Strike button's tip said the engine handled DR. A
+    // soul in a suit whose two numbers differ, read through the real gear path, so a renamed row
+    // in chargen.json fails here and not at the table.
+    var suit = cg.armor.First(a => a.drBlades > 0 && a.drBlades != a.drShot);
+    var armored = new CharacterSheet { Gear = new List<string> { suit.gear } };
+    CharGen.ReadArmor(armored);
+    var vsBlade = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(saber));
+    var vsShot = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(cg.weapons.First(w => w.name == "Double-Barrel Shotgun")));
+    var vsBall = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(cg.weapons.First(w => w.name == "Single-Action Revolver")));
+    T($"a blade meets {suit.name}'s DR vs blades ({vsBlade.Amount})", vsBlade.Amount == suit.drBlades && vsBlade.Why.Contains(suit.name));
+    T($"a Scatter gun meets {suit.name}'s DR vs small shot ({vsShot.Amount})", vsShot.Amount == suit.drShot);
+    T("a revolver ball gets no armor DR, and the note says why",
+        vsBall.Amount == 0 && vsBall.Why.Contains("ball") && vsBall.Why.Contains(suit.name));
+    T("a creature's blades claw reads DR vs blades", CombatFlow.ArmorDrFor(armored, new CreatureAttack().Type).Amount == suit.drBlades);
+    T("a fiery touch gets no armor DR", CombatFlow.ArmorDrFor(armored, "fire").Amount == 0);
+    T("an unarmored soul prefills 0", CombatFlow.ArmorDrFor(new CharacterSheet(), "blades") == (0, "wears no armor"));
+    T("no sheet (a creature target) prefills 0", CombatFlow.ArmorDrFor(null, "blades").Amount == 0);
+    // And the prefilled number does what the box says once the dialog hands it on as "all": a
+    // claw at a forced 15 against Defense 5 lands, and the soul loses the roll less the suit.
+    var clawed = new Combatant { Name = "Armored", Defense = 5, BloodCur = 40, BloodMax = 40 };
+    var cr = CombatFlow.StrikeAndApply(new Combatant { Beats = 3, MapStep = 1 }, clawed,
+        new CreatureAttack { Name = "claws", Bonus = 8, Damage = "1d8+3" }, 8,
+        new[] { new DrEntry(vsBlade.Amount, "all") }, forcedDie: 15);
+    T("a prefilled blades DR comes off a creature's claw",
+        cr.Res.Strike.Hit && cr.Res.AfterDR == Math.Max(0, cr.Res.Damage.Total - suit.drBlades)
+        && clawed.BloodCur == 40 - cr.Res.AfterDR);
 
     // -- the composed Strike: a miss deals nothing; a hit rolls damage and applies DR --
     var miss = IronCode.Strike(-50, 99, cg.weapons.First(w => w.name == "Single-Action Revolver"), forcedDie: 10);
@@ -4616,6 +4654,28 @@ T("daybook: an unwritable path fails soft",
     !Daybook.Save(Path.Combine(dbPath, "no", "such", "place.txt")));
 try { File.Delete(dbPath); } catch { }
 
+// A whole-posse Dread Check writes a check line for every soul, and until v1.60.0 nothing in the
+// daybook said which line was whose. Each soul's check is made under their name now, and the name
+// is dropped once the check is done. A natural 20 so no Nerve die is rolled after the check line.
+string DbNewest() => Daybook.Dump().TrimEnd().Split('\n')[^1];
+Horror.DreadCheck(new PartyMember { Name = "Mattie", NerveMax = 9, NerveCur = 9 }, 13, forcedDie: 20);
+T("daybook: a soul's Dread Check is written under their name", DbNewest().Contains("Mattie: "));
+Rules.FourDegrees(10, 5, 13);
+T("daybook: and the name is gone once the check is done", !DbNewest().Contains("Mattie"));
+using (Daybook.As("Eli"))
+{
+    using (Daybook.As("Ruth")) Rules.FourDegrees(10, 5, 13);
+    T("daybook: the inner name is the one written", DbNewest().Contains("Ruth: "));
+    Rules.FourDegrees(10, 5, 13);
+    T("daybook: and the outer one comes back after it", DbNewest().Contains("Eli: "));
+    using (Daybook.As("  ")) Rules.FourDegrees(10, 5, 13);
+    T("daybook: a blank name keeps the one already there", DbNewest().Contains("Eli: "));
+}
+T("daybook: no scope, no name", Daybook.Whose.Length == 0);
+var dbDosed = new PartyMember { Name = "Hollis", Fort = 2, NerveMax = 9, NerveCur = 3, DosesToday = 1 };
+Rest.TakeDose(dbDosed, laudanum: false, nerveDie: 1, fortDie: 10);
+T("daybook: a dose's Fortitude save is written under the drinker's name", Daybook.Dump().Contains("Hollis: "));
+
 Daybook.Close();
 T("daybook: closing forgets everything", !Daybook.On && Daybook.Count == 0);
 T("daybook: and says so rather than reading as an empty night", Daybook.Dump().Contains("not recording"));
@@ -5105,6 +5165,38 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     Rest.Take(marshal, RestKind.Week);
     T("rest: a week does not return a session's one great moment", marshal.FeatureSpent.ContainsKey("Last Stand"));
 
+    // Devotion and Tribute are not dawn pools (v1.60.0). The Player's Book has Devotion "refreshed
+    // through observance" and Tribute refilling "when you preach the false gospel to believers",
+    // and every rest used to fill both anyway.
+    foreach (var (pool, how) in new[] { ("Devotion", "observance"), ("Tribute", "preach") })
+        foreach (var kind in new[] { RestKind.Dawn, RestKind.Night, RestKind.Week })
+        {
+            var votary = Worn();
+            votary.PoolName = pool; votary.PoolMax = 4; votary.PoolCur = 1;
+            var kept = Rest.Take(votary, kind, nerveDie: 1);
+            T($"rest: a {kind} leaves {pool} where it was", votary.PoolCur == 1 && kept.Pool == 0);
+            T($"rest: and the {kind}'s line says so, and how it comes back",
+              kept.Line.Contains($"{pool} stays at 1 of 4") && kept.Line.Contains(how));
+        }
+    var fullVow = Worn();
+    fullVow.PoolName = "Devotion"; fullVow.PoolMax = 4; fullVow.PoolCur = 4;
+    T("rest: a full Devotion has nothing to say about itself", Rest.Take(fullVow, RestKind.Dawn).PoolKept == null);
+    var favored = Worn();
+    favored.PoolName = "Favor";
+    var fr = Rest.Take(favored, RestKind.Dawn);
+    T("rest: every other pool still fills with the sun", favored.PoolCur == 4 && fr.PoolKept == null);
+    T("rest: no pool at all renews, so nothing is said about one", Rest.RenewsAtDawn(null) && Rest.RenewsAtDawn(" "));
+    T("rest: a pool is known whatever its case and spacing", !Rest.RenewsAtDawn("devotion ") && !Rest.RenewsAtDawn("TRIBUTE"));
+    var poolNames = CharGen.D.callings.Where(c => c.pool != null).Select(c => c.pool.name).ToHashSet();
+    T("rest: the two pools held back are both real pools",
+      Rest.PoolsRefilledOtherwise.Count == 2 && Rest.PoolsRefilledOtherwise.All(poolNames.Contains));
+    T("rest: and every other Calling's pool renews at dawn", poolNames.Count(Rest.RenewsAtDawn) == poolNames.Count - 2);
+    T("rest: a Dark Cultist's sheet says observance",
+      CharGen.Generate(3, false, "Dark Cultist").PoolLine.Contains("refreshed through observance"));
+    T("rest: a False Prophet's says preaching",
+      CharGen.Generate(3, false, "False Prophet").PoolLine.Contains("refilled by preaching to believers"));
+    T("rest: a Gambler's still says dawn", CharGen.Generate(3, false, "Gambler").PoolLine.Contains("refreshed each dawn"));
+
     // Whiskey and laudanum.
     T("dose: the first in a day calls no save", Rest.DoseDc(0) == 0);
     T("dose: the second calls Fortitude DC 12", Rest.DoseDc(1) == 12);
@@ -5235,6 +5327,47 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("dread: an Affliction from tier 5 and not before", Horror.Afflicts(5) && !Horror.Afflicts(4));
     T("dread: the ladder on one line",
       Horror.LadderLine() == "10 or under → 1 · 11–13 → 1d4 · 14–16 → 1d6 · 17–20 → 1d10 · 21 and over → 1d10 and a lasting Affliction");
+
+    // The whole posse on one line (v1.60.0). The button rolled every soul and the status bar and
+    // the Dice card both showed only the last one.
+    Horror.DreadOutcome Out(int degree, int nerve = 0, bool fright = false, bool steady = false, bool aff = false, bool numb = false)
+        => new(10, 0, 13, degree, "x", nerve, fright, steady, aff, "", numb);
+    T("posse dread: a critical success reads steadied", Out(3, steady: true).Brief == "steadied");
+    T("posse dread: a success reads held", Out(2).Brief == "held");
+    T("posse dread: a failure says the Nerve", Out(1, 3).Brief == "3 Nerve lost");
+    T("posse dread: a critical failure adds the Frightened", Out(0, 2, fright: true).Brief == "2 Nerve lost, Frightened 1");
+    T("posse dread: and tier 5 the Affliction", Out(1, 4, aff: true).Brief == "4 Nerve lost, an Affliction");
+    T("posse dread: a numb soul still failed", Out(1, 0, numb: true).Brief == "failed, numb to it");
+    var posse = new[] { new Horror.PosseRoll("Ruth", Out(2), false), new Horror.PosseRoll("Eli", Out(0, 3, fright: true), true) };
+    string posseLine = Horror.PosseLine(13, posse);
+    T("posse dread: the line opens on the DC", posseLine.StartsWith("Dread 13, the whole posse: "));
+    T("posse dread: and names every soul", posseLine.Contains("Ruth held") && posseLine.Contains("Eli 3 Nerve lost, Frightened 1"));
+    T("posse dread: and says who broke, and only them",
+      posseLine.Contains("Frightened 1, and broke") && !posseLine.Contains("held, and broke"));
+    T("posse dread: the headline counts who held", Horror.PosseHeadline(posse) == "1 of 2 held");
+    T("posse dread: a numb soul did not hold",
+      Horror.PosseHeadline(new[] { new Horror.PosseRoll("Hollow", Out(1, 0, numb: true), false) }) == "0 of 1 held");
+    T("posse dread: no rolls, no throw", Horror.PosseHeadline(null) == "0 of 0 held");
+}
+
+// ---- Send all, one arrival per kind (v1.60.0) ----
+// The Encounter tab sent each copy on its own, so three Risen asked the safe-table question three
+// times and logged three lines. Rules.Muster is what groups them; the tab does the asking.
+{
+    var (ka, kb) = (Db.Creatures[0], Db.Creatures[1]);
+    var kinds = Rules.Muster(new[] { ka, kb, ka, null, ka });
+    T("send all: one entry per kind", kinds.Count == 2);
+    T("send all: in the order each kind first turns up", kinds[0].Creature == ka && kinds[1].Creature == kb);
+    T("send all: with how many of each", kinds[0].Count == 3 && kinds[1].Count == 1);
+    T("send all: an empty plan musters nobody", Rules.Muster(Array.Empty<Creature>()).Count == 0);
+    T("send all: a kind is known by its name", Rules.Muster(new[] { ka, new Creature { name = ka.name } }).Single().Count == 2);
+    T("send all: the line names each kind once", Rules.MusterLine(kinds) == $"3× {ka.name} · 1× {kb.name}");
+    T("send all: a small kind goes on in one press", Rules.FieldBatches(3).SequenceEqual(new[] { 3 }));
+    T("send all: more than one press takes goes on in runs", Rules.FieldBatches(45).SequenceEqual(new[] { 20, 20, 5 }));
+    T("send all: and the runs add back up, none over the cap",
+      Enumerable.Range(1, 70).All(n => Rules.FieldBatches(n).Sum() == n
+                                    && Rules.FieldBatches(n).All(r => r > 0 && r <= Rules.FieldBatchMax)));
+    T("send all: nothing for nothing", !Rules.FieldBatches(0).Any() && !Rules.FieldBatches(-2).Any());
 }
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");

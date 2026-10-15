@@ -94,6 +94,16 @@ then makes a change, undoes it, redoes it, and checks the bytes come back both w
 through the real mutator or the probe proves only that the probe works: driving a raw list
 behind the UI is how the map markers once passed a check they should have failed.
 
+**One press is one step, at a dice table too (v1.60.0).** `CaptureUndo` coalesces through
+`BeginInvoke`, so whatever a press changes before the message loop runs again lands as one step.
+A whole-posse Rest, Steady, dose or New session at a Keeper's-dice table asks for a die per soul,
+and every modal prompt pumps that loop, so the press came out as one step a soul and one Undo took
+back only the last soul. `OneUndoStep()` settles anything pending as it opens, holds every capture
+while any scope is open (`undoGroupDepth`), and takes one capture when the last scope closes. Send
+all on the Encounter tab is wrapped the same way. `AuditUndo` changes two souls inside one group
+with the loop pumped between them and checks that a single Undo takes both back. Proved by
+sabotage: a group that never counts its depth fails it.
+
 ## The ten tabs
 
 Per-version feature history lives in `CHANGELOG.md`, which is the version record; what follows is
@@ -103,7 +113,8 @@ what each tab *is*, plus the decisions already settled.
   **＋ Add soul ▾** (v1.52.0, G7: build one by hand through the soul wizard, roll one at a level and
   Calling you pick, take the New Soul tab's sheet, or a blank row for typing a paper sheet in, all
   four land through one `SeatSoul`), inline damage/heal spinners, Spend Grit, Mark/Taint advance, per-soul or whole-posse Dread Checks with
-  the real Nerve-loss ladder, New Session (Grit back to 3, and Blood and Nerve only if the Keeper says a
+  the real Nerve-loss ladder (the whole-posse check reports every soul on one line, on the status
+  bar and the Dice card, through `Horror.PosseLine`), New Session (Grit back to 3, and Blood and Nerve only if the Keeper says a
   week of peace has passed, since v1.60.0), Rest ▾ (the book's three rests from `Rest.cs`, for the posse or
   one soul; there is no long rest), Steady ▾ (confession, whiskey and laudanum one a scene, or by hand),
   send-to-Tracker, ▲▼ reorder,
@@ -133,6 +144,12 @@ what each tab *is*, plus the decisions already settled.
   - **The safe-table rule runs here.** Every route onto the field funnels through
     `AddCreatureToTracker`, which asks `Rules.SignOnly(tier, partyLevel)` first; a horror two or
     more Tiers over the posse offers to go on the **trail** instead of the field.
+    **Send all** (v1.60.0) groups the plan by kind through `Rules.Muster`, so three Risen are
+    one arrival: one safe-table question, one log line ("3× The Risen take the field"), the
+    copies numbered (#1 to #3 on an empty field), and a closing line naming every kind when there is more than one.
+    A kind larger than `Rules.FieldBatchMax` (20, which is also the ceiling on every count
+    spinner) goes on in runs of that size and is asked about once. A trail answer leaves one
+    sign for the kind.
   - **A sign is NOT a tracker row**: it lives in its own `signs` BindingList (persisted as
     `GameSession.Signs`; traces saved inside `Tracker` migrate out on load) and draws in the
     THREADS ON THE TRAIL strip. **Rebuild the strip with `RefreshThreads()`** after anything that
@@ -242,14 +259,14 @@ what each tab *is*, plus the decisions already settled.
 | **`Hourglass.cs`** | `HourglassView`, owner-drawn sand, ink only. Draws no text, so the drawn-text landmine below does not apply. |
 | **`Pdf.cs`** | From-scratch PDF 1.4 writer, no packages: `TextSheet` (portrait soul sheet) and `MapPdf` (landscape map). Compiled into the smoke rig. |
 | `Program.cs` | Entry point. Wraps startup in global exception handlers that write `startup-error.txt` beside the exe (or `%TEMP%`) on any crash, so failures are never silent. Opens the `Daybook` (and points it at `daybook.txt` under `--verbose`), and folds its dump into both error reports. Also hosts `--selftest`. |
-| **`Daybook.cs`** | The capped record of what the app just did: rolls, checks, session saves/loads, mode switches, generated souls, and **turn handoffs** (who went, on what initiative, who was still to go, the `turn` channel, added in v1.35.0, which is how the ordering fix was proved in the running app rather than only in the test rig), for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. |
+| **`Daybook.cs`** | The capped record of what the app just did: rolls, checks, session saves/loads, mode switches, generated souls, and **turn handoffs** (who went, on what initiative, who was still to go, the `turn` channel, added in v1.35.0, which is how the ordering fix was proved in the running app rather than only in the test rig), for the failure that never throws and so writes no error file. **Inert until `Open()`**, which only the app calls: the smoke rig fuzzes the paths it listens to thousands of times per build. Ring of `Cap` (400), fails soft on every write, `Dump()` says "not recording" rather than reading as an empty night. Surfaced at **Help ▸ Save a diagnostic log…**. Since v1.60.0 a check made for a soul is written under their name: `Daybook.As(name)` opens a scope (nested scopes stack, a blank name keeps the outer one), and `Rules.FourDegrees` prefixes its line with `Daybook.Whose`. A whole-posse Dread Check used to write one unlabelled check line per soul. |
 | `app.ico` / `Assets/emblem.png` | The cover emblem as a multi-size Windows icon (regenerate from `assets/img20.png` if the emblem changes) and as the watermark PNG. Both embedded. |
 | `Data/creatures.json` | All 182 creatures, extracted from `bestiary.html` by `extract_creatures.py`. Re-extract and drop in fresh if the Bestiary content changes, no code changes needed. **Embedded into the exe.** |
 | `Data/tables.json` | The 17 simple tables + 11 Grounds terrain tables, same extraction approach. **Book-faithful. Never hand-edit; a re-extraction replaces it wholesale.** |
 | `Data/tables_extra.json` | The app's own generator expansions. Merged after `tables.json` by `Db.MergeTables`, so re-extraction can't eat them. |
 | **`Look.cs`** | What a soul looks like: `SoulLook` (the description, carried on `CharacterSheet.Look`) and `Look.Roll`. Pure, in the rules library, drawing-free. The two rules that govern it are below, under *What a soul looks like*. |
 | **`Names.cs`** | **What things are called**: `Namer` (seeded, spends what it draws) and `Names` (loads the stock). Pure, drawing-free, in the rules library. Two defences that fail separately: **breadth** reaches across seeds, **memory** reaches within one. It spends title **shapes** as readily as words, which is the half that was broken, *The Salt at Coffin Wells* and *The Reckoning of the Wells* collided on the word AND on the grammar, so widening the vocabulary alone would have produced the identical fault in a better coat. **Exactly one `rng.Next` per draw** and this is forced, not stylistic: `MapGen`'s `rngLm` names *and* places landmarks off one `Random`, so a rejection loop costing two rolls instead of one would silently move every rock on the sheet. `Reserve()` spends a word consuming no randomness, so an exclusion never shifts a seed. |
-| **`Rest.cs`** | The book's three rests and the bottle, since v1.60.0. `Rest.Take` does dawn in the field (the pools and the once-a-dawn features, nothing else), a safe night (1d6 Nerve, Blood of level × CON modifier, and it lifts the drink's Drained) and a week of peace (all Blood, all Nerve, and the Taint eased by `WeekEasesTaint`, which is worked out from seven days and a step for every three). `TakeDose` is whiskey and laudanum, one a scene, with the Fortitude ladder in `DoseDc`. The Returned get no Blood from any rest, because Mending is the only healing they have. Pure, in the rules library, and smoke-tested; the Posse and Tracker tabs only choose which rest. |
+| **`Rest.cs`** | The book's three rests and the bottle, since v1.60.0. `Rest.Take` does dawn in the field (the pools and the once-a-dawn features, nothing else), a safe night (1d6 Nerve, Blood of level × CON modifier, and it lifts the drink's Drained) and a week of peace (all Blood, all Nerve, and the Taint eased by `WeekEasesTaint`, which is worked out from seven days and a step for every three). `TakeDose` is whiskey and laudanum, one a scene, with the Fortitude ladder in `DoseDc`. The Returned get no Blood from any rest, because Mending is the only healing they have. Two pools stay where they were on every rest: the Dark Cultist's Devotion comes back through observance and the False Prophet's Tribute when the false gospel is preached to believers, as the Player's Book prints them, so `Rest.RenewsAtDawn` keeps both and the rest's line says how each one refills. The Keeper sets them by hand in the Pool column. `PoolsRefilledOtherwise` names the two, and a smoke test holds it to `chargen.json`'s pool names. No cost or refill amount moved (Cole's standing call to leave the Faith economy alone). Pure, in the rules library, and smoke-tested; the Posse and Tracker tabs only choose which rest. |
 | `Data/names.json` | The naming stock: 21 title templates and the word pools they fill, plus `spent` (words already on published work, refused on first draw). **App-side data like `tables_extra.json` and `appearance.json`, not a book transcription**, so it may be widened freely. Note `actor`/`actorp` and `verb3`/`verb` are split for **subject–verb agreement**: one list would generate "Until the Homesteaders Pays". `motion3` exists because an arrival template handed an intransitive verb produces "Something Forgets to Chalk Section". **Embedded**, like the rest. |
 | `Data/appearance.json` | 28 peoples, 19 whole styles of dress, and the shared pools for build, bearing, face, marks, voice, hair, whiskers, wear and the one memorable detail. **The app's own, not the books'**, like `tables_extra.json`, and for the same reason: `chargen.json` is a transcription and must stay one. **Embedded**, like the rest. |
 

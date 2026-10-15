@@ -1205,6 +1205,43 @@ public static class Rules
     /// the Encounter tab's verdict and the Tracker's refusal to put it on the field read this.</summary>
     public static bool SignOnly(int creatureTier, int partyLevel) => Cost(creatureTier, partyLevel).spoor;
 
+    /// <summary>The most copies of one creature that one press puts on the field. Every count
+    /// spinner in the app stops here, and an encounter plan holding more of one kind goes on in
+    /// runs of this many (<see cref="FieldBatches"/>).</summary>
+    public const int FieldBatchMax = 20;
+
+    /// <summary>An encounter plan as the field takes it: one entry per kind of creature, in the
+    /// order each kind first turns up in the plan, with how many of it the plan holds. Kinds are
+    /// told apart by name, which is also how the Tracker numbers its rows. Until v1.60.0 Send all
+    /// put a plan of three Risen on as three separate arrivals, so a Tier the safe-table rule bars
+    /// asked its question three times and the log said "takes the field" three times; grouped, it
+    /// is one arrival, one question and one line.</summary>
+    public static List<(Creature Creature, int Count)> Muster(IEnumerable<Creature> plan)
+    {
+        var kinds = new List<(Creature Creature, int Count)>();
+        var seat = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var c in plan)
+        {
+            if (c == null) continue;
+            if (seat.TryGetValue(c.name, out int i)) kinds[i] = (kinds[i].Creature, kinds[i].Count + 1);
+            else { seat[c.name] = kinds.Count; kinds.Add((c, 1)); }
+        }
+        return kinds;
+    }
+
+    /// <summary>Runs of at most <see cref="FieldBatchMax"/> that add up to <paramref name="count"/>,
+    /// for a kind the plan holds more of than one press takes. Nothing for a count below one.</summary>
+    public static IEnumerable<int> FieldBatches(int count)
+    {
+        for (int left = count; left > 0; left -= FieldBatchMax) yield return Math.Min(left, FieldBatchMax);
+    }
+
+    /// <summary>"3× The Risen · 1× The Hollow Man": what a send put on the field, one kind to a
+    /// piece. Send all logs it last when more than one kind went on, so the status bar carries the
+    /// whole send and not only its last kind.</summary>
+    public static string MusterLine(IEnumerable<(Creature Creature, int Count)> sent)
+        => string.Join(" · ", sent.Select(k => $"{k.Count}× {k.Creature.name}"));
+
     /// <summary>What a Survival check against <see cref="SpoorRow"/> buys, by degree: the same
     /// ordered 0–3 scale <see cref="FourDegrees"/> returns.</summary>
     public static string SpoorRead(int degree) => degree switch
@@ -1249,7 +1286,7 @@ public static class Rules
         if (die == 1)  idx = Math.Max(0, idx - 1);
         string deg = idx switch { 3 => "CRITICAL SUCCESS", 2 => "Success", 1 => "Failure", _ => "CRITICAL FAILURE" };
         string detail = $"d20({die}) {(mod>=0?"+":"")}{mod} = {total} vs DC {dc}";
-        Daybook.Note("check", $"{detail} → {deg}");
+        Daybook.Note("check", $"{Daybook.Whose}{detail} → {deg}");
         return (idx, deg, detail);
     }
 

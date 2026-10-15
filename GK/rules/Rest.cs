@@ -43,6 +43,40 @@ public static class Rest
     /// number.</summary>
     public static int DoseDie(bool laudanum) => laudanum ? 6 : 4;
 
+    // The two pools a rest leaves alone, and what fills each instead. Ch. XI's dawn "brings back the
+    // pools and preparations your Calling renews each dawn", and every Calling's pool says that of
+    // itself but two. The Dark Cultist's Devotion is "refreshed through observance: the kept fast,
+    // the night vigil, the rite performed at the proper hour"; the False Prophet's Tribute "refills
+    // when you preach the false gospel to believers" (and through Feed the Dark, once a session).
+    // Until this the app filled both at every rest, a free tank the book prices in observance and
+    // in preaching. Named here because chargen.json carries no refresh field, and the Engineer's
+    // and the Sister's pool sentences are not transcribed anywhere it could be read from; the smoke
+    // rig holds both names to the data and to the prose that is.
+    static readonly Dictionary<string, (string Short, string Long)> RefilledOtherwise = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Devotion"] = ("refreshed through observance",
+                        "it comes back through observance (the kept fast, the night vigil, the rite at its hour), not with the sun"),
+        ["Tribute"]  = ("refilled by preaching to believers",
+                        "it refills when the false gospel is preached to believers, not with the sun"),
+    };
+
+    /// <summary>The pools no rest refills: Devotion and Tribute, which the Player's Book says
+    /// come back through observance and through preaching. The Keeper fills them on the Posse
+    /// tab's Pool column when the rite is kept or the sermon preached.</summary>
+    public static IReadOnlyCollection<string> PoolsRefilledOtherwise => RefilledOtherwise.Keys;
+
+    /// <summary>Whether a dawn, and so every rest, fills this pool. True for every pool but the
+    /// two in <see cref="PoolsRefilledOtherwise"/>, and true for no pool at all, where there is
+    /// nothing to fill.</summary>
+    public static bool RenewsAtDawn(string poolName)
+        => string.IsNullOrWhiteSpace(poolName) || !RefilledOtherwise.ContainsKey(poolName.Trim());
+
+    /// <summary>How a pool comes back, in the words a sheet's pool line has room for:
+    /// "refreshed each dawn" for all but two.</summary>
+    public static string HowItRefills(string poolName)
+        => !string.IsNullOrWhiteSpace(poolName) && RefilledOtherwise.TryGetValue(poolName.Trim(), out var how)
+            ? how.Short : "refreshed each dawn";
+
     /// <summary>What a rest gives back, in the few words a menu line has room for. Read off the
     /// same constants <see cref="Take"/> spends, so a menu cannot promise what the rest does not
     /// do.</summary>
@@ -62,6 +96,11 @@ public static class Rest
     public record RestOutcome(RestKind Kind, string Who, int Blood, int Nerve, int Pool, string PoolName,
         int TaintEased, bool DrainLifted, int FeaturesBack, bool Returned)
     {
+        /// <summary>Why a pool short of full stayed where it was, when it is one of the two no
+        /// rest refills: "Devotion stays at 1 of 4: it comes back through observance…". Null when
+        /// the rest filled it, or it was full already.</summary>
+        public string PoolKept { get; init; }
+
         public string Line
         {
             get
@@ -77,21 +116,27 @@ public static class Rest
                 // Said even when the soul was at full Blood, because the Keeper deciding whether to
                 // rest a wounded Returned soul needs to know before, and the log is where it lands.
                 string note = Returned && Kind != RestKind.Dawn ? " No Blood: the Returned heal only by Mending." : "";
-                return $"{Who}, {Title(Kind).ToLowerInvariant()}: {what}.{note}";
+                string kept = PoolKept == null ? "" : $" {PoolKept}.";
+                return $"{Who}, {Title(Kind).ToLowerInvariant()}: {what}.{note}{kept}";
             }
         }
     }
 
-    /// <summary>Rest a soul. Every kind refills the pool (it "refreshes each dawn", and every rest
-    /// ends in one), returns the once-a-day features, and starts the day's count of drinks again.
-    /// A safe night adds 1d6 Nerve and <see cref="NightsBlood"/>, and lifts a Drained the bottle
-    /// left; a week gives back all the Blood and all the Nerve and eases the Taint.
+    /// <summary>Rest a soul. Every kind ends in a dawn, so every kind refills the pools a Calling
+    /// "renews each dawn" (Ch. XI), returns the once-a-day features, and starts the day's count of
+    /// drinks again. A safe night adds 1d6 Nerve and <see cref="NightsBlood"/>, and lifts a Drained
+    /// the bottle left; a week gives back all the Blood and all the Nerve and eases the Taint.
+    ///
+    /// <para>Two pools are not renewed at dawn and no rest fills them: Devotion, "refreshed
+    /// through observance", and Tribute, which "refills when you preach the false gospel to
+    /// believers" (<see cref="PoolsRefilledOtherwise"/>). The outcome says so when one is short,
+    /// so the Keeper is not left wondering why the Cultist woke with an empty hand.</para>
     ///
     /// <para>A dawn in the field restores pools and nothing else, Cole's call of 2026-09-27: a
     /// posse that sleeps in its boots by the wreck has had no rest the book would recognise, and
     /// the Blood and the Nerve are exactly what that night should have cost them. It leaves the
-    /// bottle's Drained standing for the same reason, since the book prints that as "until a full
-    /// night's rest".</para>
+    /// bottle's Drained standing for the same reason, since the book prints that as "Drained 1
+    /// until a safe night", and says outright that a dawn in the field does not lift it.</para>
     ///
     /// <para>No rest touches the Mark, Grit, a Hunger, a Debt or a familiar. Each of those has its
     /// own way back, or none, and a track that eased overnight would say its cost was nothing.
@@ -104,7 +149,8 @@ public static class Rest
         int blood0 = p.BloodCur, nerve0 = p.NerveCur, pool0 = p.PoolCur, taint0 = p.Taint;
         bool drain0 = p.DrainedByDrink;
 
-        p.PoolCur = p.PoolMax;
+        bool poolRenews = RenewsAtDawn(p.PoolName);
+        if (poolRenews) p.PoolCur = p.PoolMax;
         int features = CharGen.RefreshFeatures(p, FeatureCadence.Dawn);
         p.DosesToday = 0;
         p.DosedThisScene = false;
@@ -124,7 +170,11 @@ public static class Rest
         }
 
         return new RestOutcome(kind, p.Name, p.BloodCur - blood0, p.NerveCur - nerve0, p.PoolCur - pool0,
-            p.PoolName, taint0 - p.Taint, drain0 && !p.DrainedByDrink, features, returned);
+            p.PoolName, taint0 - p.Taint, drain0 && !p.DrainedByDrink, features, returned)
+        {
+            PoolKept = poolRenews || p.PoolCur >= p.PoolMax ? null
+                : $"{p.PoolName} stays at {p.PoolCur} of {p.PoolMax}: {RefilledOtherwise[p.PoolName.Trim()].Long}",
+        };
     }
 
     public static RestOutcome DawnInTheField(PartyMember p) => Take(p, RestKind.Dawn);
@@ -184,7 +234,9 @@ public static class Rest
         if (dc > 0)
         {
             die = fortDie ?? Rules.Rng.Next(1, 21);
-            (idx, name, detail) = Rules.FourDegrees(die, p.Fort, dc);
+            // Named, so the daybook's check line says whose save it was (GK-B5): a posse drinking
+            // together leaves one Fortitude line a soul.
+            using (Daybook.As(p.Name)) { (idx, name, detail) = Rules.FourDegrees(die, p.Fort, dc); }
             drained = idx <= 1;
             if (drained && !p.DrainedByDrink && !alreadyDrained)
             {

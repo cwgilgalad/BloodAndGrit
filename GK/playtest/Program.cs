@@ -129,13 +129,18 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
                     {
                         int who = souls.IndexOf(s);
                         int die = Rules.Rng.Next(1, 21);
-                        int will = sheets[who].Will;
+                        // The Returned's +2 goes on the Will, as Horror.DreadCheck adds it, so the
+                        // degrees are read against the DC the module prints.
+                        int will = sheets[who].Will + CharGen.DreadBonus(sheets[who]);
                         var (idx, degree, _) = Rules.FourDegrees(die, will, beat.DreadDc);
                         if (idx <= 1)                                  // failure or critical failure
                         {
                             var (label, roll) = Rules.NerveLoss(beat.DreadTier);
+                            // A critical failure loses the same Nerve as a failure and adds
+                            // Frightened 1 (Ch. XII, and Horror.DreadCheck). This used to double the
+                            // loss, which is no rule in the book. Frightened is not carried onto the
+                            // field here: it lapses a step at the end of each of the soul's turns.
                             int loss = roll();
-                            if (idx == 0) loss *= 2;                   // a critical failure costs double
                             nerve[who] = Math.Max(0, nerve[who] - loss);
                             run.NerveLost += loss;
                             if (nerve[who] == 0 && !run.Broke.Contains(s.Name)) run.Broke.Add(s.Name);
@@ -375,9 +380,15 @@ void Report(AdventureResult a, StringBuilder md)
     md.AppendLine($"- Nerve left across the whole posse, on average: **{a.AvgNerve:0.0} of "
                 + $"{a.Runs.Average(r => r.NerveMax):0.0}**. Runs in which at least one soul broke "
                 + $"(Nerve to 0): **{a.BrokeAny}** of {a.Runs.Count}.");
+    // The Dread Checks this night was played on, in order, the way the module prints them. It lets
+    // audits/audit_playtest.py tell a PLAYTEST.md played on other beats from today's without a
+    // harness run. Reading NerveLoss for its label rolls nothing, so no seed moves.
+    md.AppendLine("- Dread Checks played, in order: " + string.Join(" · ",
+        adv.Acts.SelectMany(x => x.Beats).Where(b => b.Kind == BeatKind.Dread)
+            .Select(b => $"DC {b.DreadDc} (lose {Rules.NerveLoss(b.DreadTier).label})")) + ".");
     md.AppendLine();
 
-    md.AppendLine($"- **The same twelve nights, with the Sawbones working between acts** "
+    md.AppendLine($"- **The same {a.Tended.Count} nights, with the Sawbones working between acts** "
                 + $"(the posse back to half Blood, never more): finished standing "
                 + $"**{a.TendedFinished} of {a.Tended.Count}**, put down to the last soul {a.TendedWiped}.");
     md.AppendLine();

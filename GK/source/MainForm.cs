@@ -714,6 +714,7 @@ public partial class MainForm : Sheet
         // never disposed. Three sizes, for the life of the process.
         resultBig.Font = Face("Segoe UI", big.Length > 12 ? 18f : big.Length > 6 ? 24f : 30f, FontStyle.Bold);
         resultSub.Text = sub;
+        Tip.SetToolTip(resultSub, sub);             // the whole line, when the card has to cut it short
     }
 
     /// The color a four-degrees result is read in, shared with the roll log so one outcome is
@@ -2565,7 +2566,7 @@ public partial class MainForm : Sheet
         ShowLadder();
         bar.Controls.Add(dreadLadder);
         bar.Controls.Add(Btn("Dread check, selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
-        bar.Controls.Add(Btn("Dread check, whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
+        bar.Controls.Add(Btn("Dread check, whole posse", (s, e) => DreadCheckPosse(), 175, "Roll every soul at once, and see every soul on one line on the status bar and the Dice card"));
 
         // Dread takes Nerve; something has to give it back. These are the Player's Book remedies
         // (Ch. XII, "Recovering Nerve") that are not a rest: a confession, a drink, a dose, or the
@@ -2710,6 +2711,27 @@ public partial class MainForm : Sheet
         ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc}, what did the d20 come up?"));
     }
 
+    /// <summary>A Dread Check for every soul in the posse, worked one soul at a time through
+    /// <see cref="ResolveDread"/> and then said once for all of them: the status bar and the Dice
+    /// card carry every soul (<see cref="Horror.PosseLine"/>), headed by how many held. The button
+    /// used to call the one-soul check in a loop, so both showed only the last soul and a Keeper had
+    /// to read the log to learn the first one had broken. One Undo takes back the whole posse's
+    /// check, even at a dice table where every soul's d20 is asked for in its own prompt.</summary>
+    void DreadCheckPosse()
+    {
+        if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
+        int dc = (int)dreadDc.Value;
+        var rolls = new List<Horror.PosseRoll>();
+        using (OneUndoStep())
+            foreach (var p in party.ToList())
+                if (ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc}, what did the d20 come up?")) is Horror.PosseRoll r)
+                    rolls.Add(r);
+        string line = Horror.PosseLine(dc, rolls);
+        Log(line);
+        var worst = rolls.MinBy(r => r.Outcome.Degree);
+        ShowResult(Horror.PosseHeadline(rolls), line, DegreeColor(worst?.Outcome.DegreeName));
+    }
+
     /// <summary>A rest's menu line, the same words on the Posse tab's Rest ▾, a soul's own
     /// right-click menu and the Tracker's Restore ▾. <see cref="Rest.Label"/> writes it, where the
     /// smoke rig can read it.</summary>
@@ -2718,11 +2740,13 @@ public partial class MainForm : Sheet
     /// <summary>One of Chapter XI's three rests for everyone in the posse, each soul worked by
     /// <see cref="RestOne"/>. There was one rest here until v1.60.0, "Blood and Nerve to full",
     /// and the book never printed it. No Confirm: a rest edits only the posse, the undo stack
-    /// captures the posse, and an undoable action does not ask first.</summary>
+    /// captures the posse, and an undoable action does not ask first. The whole posse's rest is
+    /// one Undo, even at a dice table where every soul's die is asked in a prompt of its own.</summary>
     void RestPosse(RestKind kind)
     {
         if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
-        foreach (var p in party.ToList()) RestOne(p, kind);
+        using (OneUndoStep())
+            foreach (var p in party.ToList()) RestOne(p, kind);
         posseGrid?.Refresh();
         RefreshCalling();
     }
@@ -2779,6 +2803,8 @@ public partial class MainForm : Sheet
         }
         int sides = Rest.DoseDie(laudanum);
         string what = laudanum ? "dose of laudanum" : "drink";
+        // One Undo for the round of drinks, however many dice prompts it asks on the way.
+        using var oneStep = OneUndoStep();
         foreach (var p in who.Except(hadTheirs))
         {
             int? nerveDie = AskDie($"The 1d{sides} Nerve from {p.Name}'s {what}, what did it come up?", sides);
@@ -2810,7 +2836,7 @@ public partial class MainForm : Sheet
         if (party.Count == 0) { Nope("No souls in the posse yet, so a new session has nobody to hand anything back to."); return; }
         var week = Ask3("Has a week of peace passed since the last session?"
             + Environment.NewLine + Environment.NewLine
-            + $"Yes: a week of peace for every soul (all Blood and Nerve back, the pools full, the Taint eased {Rest.WeekEasesTaint}), "
+            + $"Yes: a week of peace for every soul (all Blood and Nerve back, the dawn's pools full, the Taint eased {Rest.WeekEasesTaint}), "
             + "then Grit back to 3 and the once-a-session features."
             + Environment.NewLine + Environment.NewLine
             + "No: Grit back to 3 and the once-a-session features, and nothing else. Blood, Nerve and the pools "
@@ -2818,6 +2844,7 @@ public partial class MainForm : Sheet
             + Environment.NewLine + Environment.NewLine
             + "Cancel: no new session.");
         if (week == DialogResult.Cancel) return;
+        using var oneStep = OneUndoStep();
         if (week == DialogResult.Yes) foreach (var p in party.ToList()) RestOne(p, RestKind.Week);
         foreach (var p in party) { p.Grit = 3; p.DosedThisScene = false; }
         int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
@@ -2870,6 +2897,7 @@ public partial class MainForm : Sheet
         if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
         if (who[0] == null) { Nope(NoSoulPicked); return; }
 
+        using var oneStep = OneUndoStep();
         foreach (var p in who)
         {
             // A dice-and-books table is asked once a soul (A08, v1.60.0). It was asked once for
@@ -2886,8 +2914,9 @@ public partial class MainForm : Sheet
         posseGrid?.Refresh();
         // No CaptureUndo here: party is a BindingList of INotifyPropertyChanged souls, so setting
         // NerveCur already raises ListChanged, and CaptureUndo coalesces the whole posse's worth
-        // into one step. Same reason the rests and the bottle don't call it either. (At a dice
-        // table each AskDie is modal and lets the queued capture run, so there it is a step a soul.)
+        // into one step. Same reason the rests and the bottle don't call it either. At a dice table
+        // each AskDie is modal and runs the message loop, which let the queued capture fire there and
+        // made it a step a soul; the OneUndoStep above holds them all until the posse is done.
     }
 
     /// <summary>The escape hatch for a remedy the book doesn't print: a Sawbones' reason, a sermon,
@@ -3343,7 +3372,9 @@ public partial class MainForm : Sheet
         // a line of 9pt monospace among four hundred others (user-reported). It now gets its own
         // card at the top of the pane, in the same colors the log grades by.
         resultCard = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Color.FromArgb(252, 249, 240), Padding = new Padding(12, 6, 12, 6) };
-        resultSub = new Label { Dock = DockStyle.Bottom, Height = 22, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
+        // AutoEllipsis, and ShowResult puts the whole line in the tooltip: a whole-posse Dread check
+        // names every soul here, and six souls run past the width of the card.
+        resultSub = new Label { Dock = DockStyle.Bottom, Height = 22, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false, AutoEllipsis = true };
         resultBig = new Label { Dock = DockStyle.Fill, ForeColor = Ink, Font = new Font("Segoe UI", 30f, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
         resultCard.Controls.Add(resultBig);
         resultCard.Controls.Add(resultSub);
@@ -3604,9 +3635,30 @@ public partial class MainForm : Sheet
     // for serializing but not for stashing a past state to restore later).
     bool undoCapturePending;
 
+    // How many OneUndoStep scopes are open. The coalescing below makes one press one step only
+    // while nothing pumps messages in the middle of it, and a dice table does: a whole-posse rest,
+    // dose, steady or Dread check asks for each soul's die in a modal prompt, every prompt runs the
+    // message loop, and the capture queued behind the last soul fired there. So undoing a posse's
+    // night at a dice table took back one soul's, and the Keeper had to press Undo once a soul
+    // without knowing that was what it wanted.
+    int undoGroupDepth;
+
+    /// <summary>Make everything up to the handle's disposal ONE undo step, however many messages
+    /// are pumped in between: <c>using (OneUndoStep()) { foreach (var p in party) … }</c>. The
+    /// captures inside are held, and one is taken when the outermost scope closes, so the scopes
+    /// nest. Wrap any press that walks the posse and may ask for a die on the way.</summary>
+    IDisposable OneUndoStep()
+    {
+        // Settle anything still waiting first, so a change made before the press stays its own step
+        // and is not folded into the group's.
+        if (undoGroupDepth == 0) CaptureUndoNow();
+        undoGroupDepth++;
+        return new Restorer(() => { if (--undoGroupDepth == 0) CaptureUndo(); });
+    }
+
     void CaptureUndo()
     {
-        if (suppressUndo || undoCapturePending) return;
+        if (suppressUndo || undoCapturePending || undoGroupDepth > 0) return;
         // Coalesce: one user action can fan out into several list events (a Damage
         // click edits the posse AND mirrors to the tracker; New Session touches every
         // soul twice; Send posse → Tracker adds N rows). Deferring the capture to
@@ -3619,7 +3671,9 @@ public partial class MainForm : Sheet
 
     void CaptureUndoNow()
     {
-        if (suppressUndo) return;
+        // A capture queued before a group opened can still land inside it, from the first die prompt's
+        // message pump. It is held like the rest; the group's own capture at the close takes it in.
+        if (suppressUndo || undoGroupDepth > 0) return;
         string now = JsonSerializer.Serialize(Snapshot());
         if (now == undoBaseline) return;
         undoStack.Add(undoBaseline);
@@ -3811,6 +3865,24 @@ public partial class MainForm : Sheet
             if (JsonSerializer.Serialize(Snapshot()) != before) stale.Add("Undo does not restore the previous state");
             Redo(); Settle();
             if (JsonSerializer.Serialize(Snapshot()) != changed) stale.Add("Redo does not restore the undone state");
+
+            // A whole-posse press at a dice table: two souls changed with the message loop pumped
+            // between them, the way each soul's modal die prompt pumps it. Inside OneUndoStep that
+            // has to come out as ONE step, and the baseline has to have caught up once it closes.
+            Settle();
+            string beforeGroup = JsonSerializer.Serialize(Snapshot());
+            using (OneUndoStep())
+            {
+                party.Add(new PartyMember { Name = "Group Probe A" });
+                Settle();
+                party.Add(new PartyMember { Name = "Group Probe B" });
+                Settle();
+            }
+            Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != undoBaseline) stale.Add("a grouped press leaves the baseline behind");
+            Undo(); Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != beforeGroup)
+                stale.Add("one Undo does not take back a whole-posse press at a dice table");
         }
         finally { suppressUndo = prev; }
         return stale;

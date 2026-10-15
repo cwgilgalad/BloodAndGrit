@@ -526,7 +526,7 @@ Six finished 1st-level characters, math-verified against the chargen rules (Hone
 - **Anni Halvorsen**: Mountain Man · the Scout
 - **Frank Haskins**: Bounty Hunter · the Veteran
 - **Nettie Swain**: **Hexer** · the Homesteader (begins at Mark 1, fits the Hexer, who is
-  always already touched; knows Signs *Borrowed Breath* and *Salt & Iron*; companion crow
+  always already touched; knows Signs *Salt & Iron* and *The Lender's Ear*; companion crow
   "Deuteronomy")
 
 Chapter epigraphs exist on every chapter; the four added most recently are III (Making a

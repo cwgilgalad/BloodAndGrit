@@ -61,6 +61,15 @@ public static class Horror
           : $"Dread {DreadDc}: {DegreeName}, {NerveLost} Nerve lost"
               + (Frightened ? ", and Frightened 1" : "")
               + (Affliction ? ", and a lasting Affliction" : "") + ".";
+
+        /// <summary>The same outcome in a few words, for a line that has to carry the whole posse
+        /// (<see cref="PosseLine"/>): "held", "steadied", "3 Nerve lost, Frightened 1".</summary>
+        public string Brief =>
+            Steadied ? "steadied"
+          : Degree >= 2 ? "held"
+          : (Numb ? "failed, numb to it" : $"{NerveLost} Nerve lost")
+              + (Frightened ? ", Frightened 1" : "")
+              + (Affliction ? ", an Affliction" : "");
     }
 
     /// <summary>A Dread Check (Ch. XII). Crit success steadies (no Nerve); success steels (none);
@@ -116,10 +125,38 @@ public static class Horror
 
     /// <summary>A Dread Check for a posse soul, with everything the soul brings to it read off the
     /// soul: their Will, the Returned's +2 and the Mark and the Taint. One road, so no caller can
-    /// remember three of the four.</summary>
+    /// remember three of the four.
+    ///
+    /// <para>Made under the soul's name in the daybook (<see cref="Daybook.As"/>), so a whole
+    /// posse's worth of checks can be told apart there afterward.</para></summary>
     public static DreadOutcome DreadCheck(PartyMember soul, int dreadDc, int? forcedDie = null,
                                           bool onStainedGround = true)
-        => DreadCheck((soul?.Will ?? 0) + DreadModifier(soul, onStainedGround), dreadDc, forcedDie, soul?.Sheet);
+    {
+        using var named = Daybook.As(soul?.Name);
+        return DreadCheck((soul?.Will ?? 0) + DreadModifier(soul, onStainedGround), dreadDc, forcedDie, soul?.Sheet);
+    }
+
+    /// <summary>One soul's part in a whole-posse Dread Check: the name, what the check did, and
+    /// whether it broke them (which only the caller can say, since breaking reads the pool after
+    /// the Nerve comes off).</summary>
+    public record PosseRoll(string Name, DreadOutcome Outcome, bool Broke);
+
+    /// <summary>A whole-posse Dread Check on one line, every soul named, for the status bar and
+    /// the Dice card. The button rolled every soul and both showed only the last one, so a Keeper
+    /// had to scroll the log to learn that the first soul had broken.</summary>
+    public static string PosseLine(int dreadDc, IEnumerable<PosseRoll> rolls)
+        => $"Dread {dreadDc}, the whole posse: "
+         + string.Join(" · ", (rolls ?? Enumerable.Empty<PosseRoll>())
+               .Select(r => $"{r.Name} {r.Outcome.Brief}" + (r.Broke ? ", and broke" : ""))) + ".";
+
+    /// <summary>The Dice card's headline for the same check: how many held of how many rolled.
+    /// "Held" is the book's success or better. A soul the Hunger has numbed lost no Nerve, but
+    /// they failed, and the Frightened and the Affliction still land, so they are not counted.</summary>
+    public static string PosseHeadline(IEnumerable<PosseRoll> rolls)
+    {
+        var all = (rolls ?? Enumerable.Empty<PosseRoll>()).ToList();
+        return $"{all.Count(r => r.Outcome.Degree >= 2)} of {all.Count} held";
+    }
 
     /// <summary>Whether a Dread Check broke the soul who made it (Ch. XII, Breaking): it cost them
     /// Nerve, and it left them at 0. The app used to ask only whether the pool read 0 afterward,

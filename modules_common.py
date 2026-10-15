@@ -154,7 +154,51 @@ def night(adventure):
             "nerve": num(r"Nerve left across the whole posse, on average: \*\*([\d.]+) of"),
             "nerve_of": num(r"Nerve left across the whole posse, on average: \*\*[\d.]+ of ([\d.]+)"),
             "broken": int(num(r"at least one soul broke \(Nerve to 0\): \*\*(\d+)\*\*")),
-            "tended_down": int(num(r"finished standing \*\*\d+ of 12\*\*, put down to the last soul (\d+)"))}
+            "tended_finished": int(num(r"finished standing \*\*(\d+) of \d+\*\*")),
+            "tended_down": int(num(r"finished standing \*\*\d+ of \d+\*\*, put down to the last soul (\d+)"))}
+
+
+def runs():
+    """How many posses the harness put through each night, off PLAYTEST.md's opening line
+    ("3 adventures × 12 posses"). It is RunsPerAdventure in GK/playtest/Program.cs, and the modules
+    said "twelve posses" by hand in more places than anybody had counted."""
+    m = re.search(r"× (\d+) posses", open(PLAYTEST, encoding="utf-8").read())
+    if not m:
+        raise SystemExit("PLAYTEST.md no longer says how many posses it ran ('N adventures × M posses').")
+    return int(m.group(1))
+
+
+def rounds(avg):
+    """An average round count the way the prose says it: 3.2 is "three rounds", 1.0 is "one round"."""
+    n = int(avg + 0.5)
+    return f"{words(n)} round{'s' if n != 1 else ''}"
+
+
+# A Dread line, in the one shape every module has printed since the ladder pass (d8e3286): the DC,
+# the save, and the Nerve a failure costs in the ladder's own dice. dread_count() counts an act's
+# lines with it, and audits/audit_playtest.py reads the built modules with it to hold
+# GK/playtest/Adventures.cs to what the Keeper is told. A line in any other shape would be a line
+# neither of them can see, so both count the bare opening too and stop on a difference.
+DREAD_LINE = re.compile(r"<strong>Dread Check, DC (\d+), Will save\.</strong> Lose (1d10|1d6|1d4|1) Nerve")
+DREAD_ANY = re.compile(r"<strong>Dread Check, DC")
+DREAD_COUNT = "@DREAD-COUNT@"
+
+
+def dread_count(section):
+    """Fill an act's header note with the number of Dread Checks the act prints.
+
+    Counted off the act's own lines rather than typed. Module I's Act Two said "Two Dread Checks"
+    over a scene whose creature priced a third and printed no line for it, and Module III's Act Two
+    said "One" over an act that has never printed one. The token always starts a sentence."""
+    if DREAD_COUNT not in section:
+        raise SystemExit(f"dread_count() was handed an act with no {DREAD_COUNT} in its note.")
+    lines = DREAD_LINE.findall(section)
+    if len(lines) != len(DREAD_ANY.findall(section)):
+        raise SystemExit("A Dread line in this act is not in the ladder's shape "
+                         "('<strong>Dread Check, DC N, Will save.</strong> Lose X Nerve').")
+    n = len(lines)
+    return section.replace(DREAD_COUNT, "No Dread Check" if n == 0
+                           else f"{words(n, True)} Dread Check{'s' if n > 1 else ''}")
 
 
 _ONES = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
@@ -453,6 +497,8 @@ def splice(H, BODY):
 
 def finish(html, *, curated, subtitle, intro, out):
     from nav_tools import add_detailed_toc, build_index, assert_css_vars
+    if DREAD_COUNT in html:
+        raise SystemExit(f"{out}: an act's note still reads {DREAD_COUNT}; pass the act through dread_count().")
     html = build_index(html, curated=curated, creatures=False, subtitle=subtitle, intro=intro)
     html = add_detailed_toc(html)
     assert_css_vars(html, out)

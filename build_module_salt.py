@@ -6,15 +6,26 @@
 # keyed and run: every scene placed, every person given a want, every fight played on the engine
 # before a word was written about how hard it is. The numbers in "What the night costs" came out
 # of GK/playtest and nowhere else.
+import re
+
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents,
-                            fight, words, odds)
+                            fight, night, words, odds, runs, creature, dread_count, DREAD_COUNT)
 
 # The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
 _ACT2, _ACT3 = fight("The Salt at Coffin Wells", 0), fight("The Salt at Coffin Wells", 1)
+_RUNS = runs()
+_NIGHT = night("The Salt at Coffin Wells")
+# The Bestiary's own regeneration figure, which the cost paragraph quotes beside the engine's odds.
+_HEALS = int(re.search(r"Heals (\d+) Blood each turn", creature("The Nightwalker")["special"]).group(1))
 # The module says in three places that Act Three is not won with guns. If a harness run ever
 # clears it, those sentences are false and the build should say so rather than print them.
 assert _ACT3["cleared"] == 0, "PLAYTEST.md has a posse shooting the Nightwalker down; reread Act Three's prose"
+# What the Night Costs says the tended runs (half Blood back between acts) finished no better, and
+# that the Pell place's clear rate "looks alarming". Runs that turn either round make the
+# sentence false.
+assert _NIGHT["tended_finished"] == 0, "PLAYTEST.md has a tended posse finishing Module I; reread What the Night Costs"
+assert 2 * _ACT2["cleared"] < _ACT2["reached"], "PLAYTEST.md has the posse winning the Pell place; reread On the Act Two fight"
 from module_maps import map_html
 
 VERSION = "1.11"
@@ -330,7 +341,7 @@ ACT1 = '''
 <section class="page" id="act1">
   ''' + runhead("Act One") + '''
   <h1 class="chapter">Act One &mdash; The Ordinary West</h1>
-  <p class="note">Aim for forty minutes. One Dread Check, DC 13, and no monster.</p>
+  <p class="note">Aim for forty minutes. ''' + DREAD_COUNT + ''', DC 13, and no monster.</p>
 
   <p>This act has one job: be a real town, so that the second act has something to ruin. Play the
   scenes below in whatever order the posse walks into them, and cut the act the moment they decide
@@ -391,7 +402,7 @@ ACT2 = '''
 <section class="page" id="act2">
   ''' + runhead("Act Two") + '''
   <h1 class="chapter">Act Two &mdash; The Wrong Note Answers</h1>
-  <p class="note">Aim for an hour. Two Dread Checks and the fight the module is built around.</p>
+  <p class="note">Aim for an hour. ''' + DREAD_COUNT + ''' and the fight the module is built around.</p>
 
   <h2 id="a2-arrive">5. The Pell Place</h2>
   ''' + readaloud(
@@ -415,6 +426,9 @@ ACT2 = '''
   <p>They come out of the barn, and one of them is Tom Pell, who was buried on the Tuesday and is
   wearing what he was buried in.</p>
 
+  <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve. This is what the Risen cost the
+  first time the dead get up, and it comes due when Tom Pell steps out of the barn.</p>
+
   ''' + found("The Risen") + '''
 
   <p><strong>Three Risen.</strong> Full entry under <a href="#dead">What Walks Here</a>. Play them
@@ -425,8 +439,10 @@ ACT2 = '''
   ''' + keeper(
     "<p><strong>This is the lesson fight and it must be won.</strong> The engine says a fresh posse "
     "clears it " + words(_ACT2["cleared"]) + " time" + ("s" if _ACT2["cleared"] != 1 else "")
-    + " in " + words(_ACT2["reached"]) + " if they only shoot, and ten times in twelve if somebody "
-    "thinks of fire, the barn door as a bottleneck, or the lamp oil on the shelf. Put the lamp oil "
+    + " in " + words(_ACT2["reached"]) + " if they only shoot, and shooting is all the engine does. "
+    "What it never tries is the barn door as a bottleneck, or fire. The lamp oil on the shelf is the "
+    "fire: poured into a bottle with a rag in the neck, it throws as a Coal-Oil Bomb (Player's Book "
+    "Ch. X), and fire is one of the three things the Risen entry says finishes them. Put the lamp oil "
     "where they can see it. If the fight turns badly, Marshal Cruz arrives on the third round: she "
     "followed them, and she has a shotgun and a bad conscience.</p>"
     "<p><strong>Then the bodies.</strong> Winning the yard only buys the posse until the next full "
@@ -464,7 +480,7 @@ ACT3 = '''
 <section class="page" id="act3">
   ''' + runhead("Act Three") + '''
   <h1 class="chapter">Act Three &mdash; The Reckoning</h1>
-  <p class="note">Aim for an hour. One Dread Check, one problem, and a sunrise.</p>
+  <p class="note">Aim for an hour. ''' + DREAD_COUNT + ''', one problem, and a sunrise.</p>
 
   <h2 id="a3-mission">8. Mission San Clavo, the East Ground</h2>
   <p>Roofless, burned in 1811, and the graveyard on the east side is the only part anybody has kept
@@ -506,14 +522,14 @@ ACT3 = '''
   nave: the cold coming off it, the way it goes up a wall, the way it doesn't hurry.</p>
 
   ''' + keeper(
-    "<p><strong>This can't be shot down and the module means that literally.</strong> Twelve posses "
+    "<p><strong>This can't be shot down and the module means that literally.</strong> " + words(_RUNS, True) + " posses "
     "were run through this night on the engine, " + words(_ACT3["reached"]) + " of them reached this "
     "fight, and not one won it with guns; see "
     "<a href=\"#cost\">What the Night Costs</a> for the count. Don't soften the fight to make it "
     "winnable. Make the wall readable instead, and let the answer be a thing they do rather than a "
     "roll they pass. Pin it: the stake is right there in the dirt. Take the head. Burn it. "
     "Salt the grave. Every one of those is an action anyone can take, and none of them is an attack "
-    "roll against Defense 18.</p>", "Read this before you run it") + '''
+    "roll against Defense " + creature("The Nightwalker")["defense"] + ".</p>", "Read this before you run it") + '''
 
   <h2 id="a3-dawn">11. The Sky Goes Gray</h2>
   <p>The escape valve, and it is always available. If the posse is pinned and dying, the east goes
@@ -600,7 +616,7 @@ COST = '''
   ''' + runhead("What the Night Costs") + '''
   <h1 class="chapter">What the Night Costs</h1>
 
-  <p>Every number on this page came out of the game&rsquo;s own engine. Twelve posses (a Gunhand, a
+  <p>Every number on this page came out of the game&rsquo;s own engine. ''' + words(_RUNS, True) + ''' posses (a Gunhand, a
   Preacher, a Mountain Man and a Sawbones, built by the generator, at 1st level)
   were run through all three acts on the same rules library the app runs on, with the Bestiary&rsquo;s
   numbers for every foe and the book&rsquo;s dice for every roll. The runs are seeded and reproduce.</p>
@@ -612,11 +628,11 @@ COST = '''
 ''' + night_costs("The Salt at Coffin Wells",
       ["The dead getting up (Act Two)", "The Nightwalker (Act Three)"]) + '''
 
-  <p>Read the second row and then read it again. ''' + words(_ACT3["reached"], True) + ''' of twelve posses
+  <p>Read the second row and then read it again. ''' + words(_ACT3["reached"], True) + ''' of ''' + words(_RUNS) + ''' posses
   got as far as the grave, and not one of them put the Nightwalker down by shooting it. Giving the
   posse back half its Blood between every act didn't change that, which is how you know it isn't an
-  attrition problem. Twelve Strikes a round at rising MAP, against Defense 18 and a thing that heals
-  five Blood a turn, land about ''' + odds(_ACT3["ours"]) + ''', and it hits back
+  attrition problem. Twelve Strikes a round at rising MAP, against Defense ''' + creature("The Nightwalker")["defense"] + ''' and a thing that heals
+  ''' + words(_HEALS) + ''' Blood a turn, land about ''' + odds(_ACT3["ours"]) + ''', and it hits back
   ''' + odds(_ACT3["theirs"]) + '''.</p>
 
   ''' + keeper(
@@ -627,11 +643,11 @@ COST = '''
     "about.</p>") + '''
 
   <h2 id="cost-act2">On the Act Two fight</h2>
-  <p>''' + words(_ACT2["cleared"], True) + ''' clears in twelve looks alarming and is not. That row is a posse that only shoots, standing
+  <p>''' + words(_ACT2["cleared"], True) + ''' clears in ''' + words(_ACT2["reached"]) + ''' looks alarming and is not. That row is a posse that only shoots, standing
   in the open, in a yard, against three things that don't stop. The same fight with the barn door
-  as a bottleneck, or with the lamp oil used, or with the Marshal arriving on round three, is a fight
-  a fresh posse wins comfortably, and every one of those is keyed into <a href="#a2-fight">scene 6</a>
-  for exactly this reason.</p>
+  as a bottleneck, or with the lamp oil thrown, or with the Marshal arriving on round three, is a
+  different fight, one the engine has no way to play, and every one of those is keyed into
+  <a href="#a2-fight">scene 6</a> for exactly this reason.</p>
 
   <p>What the number is telling you is plain: <strong>this game does not
   reward standing still and firing.</strong> Act Two is where a table learns that, cheaply, against
@@ -700,6 +716,9 @@ AFTER = '''
 
 BASIN = basin("Coffin Wells", this_module="I")
 
+# Each act's note counts the Dread lines the act prints, so the count and the lines can't part.
+ACT1, ACT2, ACT3 = dread_count(ACT1), dread_count(ACT2), dread_count(ACT3)
+
 BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)
 
@@ -719,7 +738,7 @@ html = finish(
         ("The carved panels", "a3-mission"),
         ("The Risen", "dead-risen"),
         ("The Nightwalker", "dead-night"),
-        ("Dread Checks in this module", "cost"),
+        ("Dread Checks in this module", "what-teaches"),
         ("Safe-table rule (why the app argues)", "dead"),
         ("Scaling the night", "cost-scaling"),
         ("The Fourth Night (clock)", "truth-clock"),

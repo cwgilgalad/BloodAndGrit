@@ -1390,7 +1390,9 @@ public static class CharGen
             int val = cal.pool.formula.EndsWith("level") ? baseMod + level : baseMod + level / 2;
             val = Math.Max(cal.pool.min, val);
             string refresh = cal.pool.formula.EndsWith("level") ? "RES mod + level" : cal.pool.formula.Substring(0, 3) + " mod + half level";
-            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, refreshed each dawn)";
+            // How it comes back is the book's, pool by pool: "refreshed each dawn" for all but
+            // Devotion and Tribute, which a rest never fills (Rest.PoolsRefilledOtherwise).
+            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, {Rest.HowItRefills(cal.pool.name)})";
             s.PoolName = cal.pool.name;
             s.PoolMax = val;
         }

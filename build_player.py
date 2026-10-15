@@ -3908,7 +3908,7 @@ which is to say the difference between a friend who is wounded and a friend who 
     <thead><tr><th>Action</th><th class="c">Beats</th><th>What It Does</th></tr></thead>
     <tbody>
       <tr><td>Aim / Brace</td><td class="c">1</td><td>+2 on your next Strike before your turn ends; braces a Kickback weapon.</td></tr>
-      <tr><td>Break Free</td><td class="c">1</td><td>Athletics or Acrobatics against the grabber's attack roll; a tie keeps you held.</td></tr>
+      <tr id="ix-breakfree"><td>Break Free</td><td class="c">1</td><td>Athletics or Acrobatics against the grabber's attack roll; a tie keeps you held.</td></tr>
       <tr><td>Interact</td><td class="c">1</td><td>Draw or stow a weapon, clear a jam, work a lever, open a door, fetch a tonic.</td></tr>
       <tr><td>Reload</td><td class="c">varies</td><td>Make a spent weapon ready; see Reloading below.</td></tr>
       <tr><td>Steady a Soul</td><td class="c">1</td><td>A shout, a hand, a Command; many Calling features cost a Beat. The feature says so.</td></tr>
@@ -5431,6 +5431,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <li><a href="#ix-s-borrowedface">Borrowed Face, the (Sign)</a><span class="pg">232</span></li>
     <li><a href="#ix-c-bounty">Bounty Hunter (Calling)</a><span class="pg">46</span></li>
     <li><a href="#ix-m-branding">Branding, the (Miracle)</a><span class="pg">255</span></li>
+    <li><a href="#ix-breakfree">Break free (Grabbed)</a><span class="pg">196</span></li>
     <li><a href="#ix-breaking">Breaking (0 Nerve)</a><span class="pg">210</span></li>
     <li><a href="#ix-s-brewing">Brewing, the (Sign)</a><span class="pg">237</span></li>
     <li class="ix-hd">C</li>
@@ -5653,6 +5654,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <li><a href="#ix-m-rebuke">Rebuke the Dark (Miracle)</a><span class="pg">243</span></li>
     <li><a href="#ix-m-reckoningfire">Reckoning Fire, the (Miracle)</a><span class="pg">255</span></li>
     <li><a href="#ix-s-reckoning">Reckoning Hour, the (Sign)</a><span class="pg">228</span></li>
+    <li><a href="#ix-recoil">Recoil</a><span class="pg">224</span></li>
     <li><a href="#ix-reloading">Reloading</a><span class="pg">200</span></li>
     <li><a href="#ix-rest">Rest: dawn, a safe night, a week of peace</a><span class="pg">203</span></li>
     <li><a href="#ix-m-list-revival">Revival, the (Miracle list)</a><span class="pg">248</span></li>
@@ -5701,6 +5703,7 @@ whatever is in front of you, there is now enough of it for everyone here, for a 
     <li><a href="#ix-m-steadying">Steadying Word, the (Miracle)</a><span class="pg">241</span></li>
     <li><a href="#ix-s-stilling">Stilling, the (Sign)</a><span class="pg">225</span></li>
     <li><a href="#ix-e-stone">Stone Nerve (Edge)</a><span class="pg">163</span></li>
+    <li><a href="#ix-surprise">Surprise</a><span class="pg">196</span></li>
     <li class="ix-hd">T</li>
     <li><a href="#ix-taint">Taint of the Land, the</a><span class="pg">217</span></li>
     <li><a href="#ix-shed-taint">Taint, shedding the</a><span class="pg">219</span></li>
