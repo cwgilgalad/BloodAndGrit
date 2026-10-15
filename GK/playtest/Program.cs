@@ -407,18 +407,27 @@ void Report(AdventureResult a, StringBuilder md)
     }
     md.AppendLine();
 
-    // The way through, in the Bestiary's own words. Every one of these bosses is 0-for-everything
-    // when the posse only shoots, and every one of them has a printed answer. Quoted, never
-    // paraphrased: this is the book's sentence, and the module is not entitled to a second one.
+    // The way through, in the Bestiary's own words. These bosses seldom fall when the posse only
+    // shoots, and every one of them has a printed answer. Quoted, never paraphrased: this is the
+    // book's sentence, and the module is not entitled to a second one.
     var bosses = adv.Acts.SelectMany(x => x.Beats).Where(b => b.Kind == BeatKind.Fight)
         .SelectMany(b => b.Foes).Distinct()
         .Select(Db.Find).Where(c => c != null && c.tier >= 3).ToList();
     if (bosses.Any())
     {
+        // Counted, not typed: "not one ... was ever cleared" stood here as a constant until the
+        // 2026-10-15 Dread fixes moved the seeds and a posse cleared the yard at Saltlick.
+        var bossFights = a.Runs.Concat(a.Tended).SelectMany(r => r.Fights).Where(f => f.Tier >= 3).ToList();
+        int bossWins = bossFights.Count(f => f.PosseWon);
+        string times = bossWins switch { 1 => "once", 2 => "twice", _ => $"{bossWins} times" };
         md.AppendLine("### The way through");
         md.AppendLine();
-        md.AppendLine("Not one of the Tier III fights above was ever cleared by shooting it, across "
-                    + "every run, cold or tended. That is the design, not a shortfall: the Bestiary "
+        md.AppendLine((bossWins == 0
+                        ? "Not one of the Tier III fights above was ever cleared by shooting it, across "
+                          + "every run, cold or tended."
+                        : $"Shooting alone cleared the Tier III fights above {times} in {bossFights.Count} "
+                          + "tries, across every run, cold and tended.")
+                    + " That is the design, not a shortfall: the Bestiary "
                     + "prints an answer for each of them, and the module's job is to put that answer "
                     + "where the posse can find it under fire.");
         md.AppendLine();
