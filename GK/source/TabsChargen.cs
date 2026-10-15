@@ -271,7 +271,7 @@ public partial class MainForm
         dieUp.Value = Rules.Rng.Next(1, g.HitDie + 1);
         var totalLbl = new Label { AutoSize = true, ForeColor = Ink, Margin = new Padding(8, 8, 3, 3) };
         void RefreshTotal() => totalLbl.Text =
-            $"= +{(int)dieUp.Value + g.ConModForBlood} Blood   (d{g.HitDie} rolled {(int)dieUp.Value}, CON {(g.ConModForBlood >= 0 ? "+" : "")}{g.ConModForBlood})";
+            $"= +{Math.Max(1, (int)dieUp.Value + g.ConModForBlood)} Blood   (d{g.HitDie} rolled {(int)dieUp.Value}, CON {(g.ConModForBlood >= 0 ? "+" : "")}{g.ConModForBlood})";
         dieUp.ValueChanged += (s, e) => RefreshTotal(); RefreshTotal();
         var bloodPanel = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.LeftToRight, Margin = new Padding(0), WrapContents = false };
         bloodPanel.Controls.Add(dieUp);

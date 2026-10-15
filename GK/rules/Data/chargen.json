@@ -1913,7 +1913,7 @@
   ],
   "gearPrices": {
     "Heavy duster ($6)": 6.0,
-    "Box of cartridges (50) ($1)": 1.0,
+    "Box of cartridges (50), metallic ($1.25)": 1.25,
     "Bedroll & tarp ($2)": 2.0,
     "Week's rations ($3)": 3.0,
     "50 ft hemp rope (75¢)": 0.75,
@@ -2171,7 +2171,7 @@
         "melee": "Knife / Bowie",
         "sundries": [
           "Heavy duster ($6)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "50 ft hemp rope (75¢)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)",
@@ -2426,7 +2426,7 @@
         "melee": "Knife / Bowie",
         "sundries": [
           "Bedroll & tarp ($2)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "50 ft hemp rope (75¢)",
           "Heavy duster ($6)",
@@ -2946,7 +2946,7 @@
         ],
         "melee": "Knife / Bowie",
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Bottle of whiskey (50¢)",
           "Heavy duster ($6)",
           "Week's rations ($3)",
@@ -3195,8 +3195,8 @@
         ],
         "melee": "Knife / Bowie",
         "sundries": [
-          "Box of cartridges (50) ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "Bedroll & tarp ($2)",
           "Week's rations ($3)",
@@ -3444,7 +3444,7 @@
         ],
         "melee": "Club",
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "50 ft hemp rope (75¢)",
           "Week's rations ($3)",
@@ -3714,7 +3714,7 @@
         "guns": [],
         "melee": null,
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Bedroll & tarp ($2)",
           "Week's rations ($3)",
           "Lantern & oil ($1)",
@@ -3981,7 +3981,7 @@
           "Stick of dynamite ($2)",
           "Shovel & tools ($2)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)"
         ],
@@ -4240,7 +4240,7 @@
         "sundries": [
           "Laudanum, per dose (25¢)",
           "Laudanum, per dose (25¢)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "Week's rations ($3)",
           "Cow pony ($25)",
@@ -4766,7 +4766,7 @@
         "melee": "Club",
         "sundries": [
           "Graveyard salt, lb. ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)"
         ],
@@ -5616,7 +5616,7 @@
           "Silver ball ($5)",
           "Silver ball ($5)",
           "Graveyard salt, lb. ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Holy book ($3)",
           "Heavy duster ($6)",
           "Cow pony ($25)",
@@ -5940,7 +5940,7 @@
           "Talisman ($2)",
           "Graveyard salt, lb. ($1)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)"
+          "Box of cartridges (50), metallic ($1.25)"
         ],
         "armor": [
           "Boiled Leather",
@@ -6218,7 +6218,7 @@
         "sundries": [
           "Holy book ($3)",
           "Bottle of whiskey (50¢)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)"
         ],
         "armor": [
@@ -6501,7 +6501,7 @@
           "Graveyard salt, lb. ($1)",
           "Talisman ($2)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)"
+          "Box of cartridges (50), metallic ($1.25)"
         ],
         "armor": [
           "Heavy Duster / Coat"

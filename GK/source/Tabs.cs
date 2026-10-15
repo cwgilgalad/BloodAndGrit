@@ -1902,7 +1902,7 @@ public partial class MainForm
     // Slowed carry a value, so their common steps are offered explicitly)
     static readonly string[] BookConditions =
     {
-        "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Fatigued",
+        "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Enfeebled", "Fatigued",
         "Frightened 1", "Frightened 2", "Frightened 3", "Grabbed", "Off-Guard",
         "Prone", "Sickened", "Slowed 1", "Slowed 2", "Stunned", "Marked"
     };
@@ -5450,21 +5450,22 @@ public partial class MainForm
     {
         RH(r, "Conditions  (Appendix B)");
         RTbl(r, new[] { 11, 68 }, new[] { "Condition", "Effect" },
-            new[] { "Bleeding",  "Lose 1 Blood each round until stabilized" },
+            new[] { "Bleeding",  "Lose 1 Blood at each of your turns until stabilized" },
             new[] { "Blinded",   "−4 Defense, −4 most actions, lose DEX to Defense, half Speed" },
             new[] { "Clumsy",    "−2 on DEX-based Strikes, checks, and Defense" },
-            new[] { "Drained",   "−2 on Fortitude and CON checks; lose Blood equal to your level, until recovered" },
-            new[] { "Dying",     $"At 0 Blood; unconscious and Bleeding toward death at a negative number equal to the CON score. DC {Rules.StabilizeDc} Fortitude or Medicine stops it" },
-            new[] { "Fatigued",  "−2 on checks and saves; cannot Aim or run; rest to shed it" },
-            new[] { "Frightened","−1 (or worse) on everything; lessens one step each turn" },
-            new[] { "Grabbed",   "Held fast; Off-Guard; −4 DEX; a check to break free" },
+            new[] { "Drained",   "−2 on Fortitude and CON checks until it lifts, and Blood equal to your level lost once, as it sets in; a second Drained takes nothing more, and the worse of the two is the one you carry" },
+            new[] { "Dying",     $"At 0 Blood; senseless and Bleeding, and dead at −CON, the negative of your CON score; a DC {Rules.StabilizeDc} Fortitude save at each of your turns, or a friend's two-Beat Medicine check at the same DC, makes you Stable" },
+            new[] { "Enfeebled", "−2 on STR-based Strikes and checks; carry half what you could" },
+            new[] { "Fatigued",  "−2 on checks and saves; cannot Aim or run; a safe night sheds it" },
+            new[] { "Frightened","−1 (or worse) on everything; lessens by one step each turn as you master the fear" },
+            new[] { "Grabbed",   "Held fast; Off-Guard; −4 DEX. To break free, spend a Beat and roll Athletics or Acrobatics against the grabber's attack roll; a tie keeps you held (Chapter II)" },
             new[] { "Lost",      "Mark 6; the character passes into the Keeper's hands" },
-            new[] { "Marked",    "Stepped along the Mark track (see The Mark & the Taint leaf)" },
-            new[] { "Off-Guard", "−2 Defense; unaware, flanked, sprawled, or caught unready" },
-            new[] { "Prone",     "−4 to melee; +4 to others' ranged against you; rising costs a Beat" },
+            new[] { "Marked",    "Stepped along the Mark track; see Chapter XII (and The Mark & the Taint leaf)" },
+            new[] { "Off-Guard", "−2 to your Defense; you cannot properly defend (unaware, flanked, or caught unready)" },
+            new[] { "Prone",     "−4 on your melee Strikes; others' ranged Strikes against you +4; rising costs a Beat" },
             new[] { "Sickened",  "−2 on Strikes, damage, checks, and saves; nausea" },
             new[] { "Slowed",    "Lose one Beat each turn while it lasts; may still defend" },
-            new[] { "Stable",    "Dying no longer: the bleeding has stopped, still senseless until healed. Fresh harm reopens it" },
+            new[] { "Stable",    "Down and senseless, bleeding no more; you come round on 1 Blood after ten quiet minutes, or at once on a critical success" },
             new[] { "Stunned",   "Drop what you hold; lose all Beats this round; −2 Defense" });
         RI(r, "Tag any of these onto a combatant from the Tracker's ＋ Condition ▾ menu.");
     }

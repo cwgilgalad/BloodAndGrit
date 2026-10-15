@@ -787,7 +787,7 @@ public static class CharGen
                 s.AbilityBoostLevels.Add(L); s.BoostedAbilities.Add(best);
             }
             int conMod = Mod(s.Scores["CON"]);
-            int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;   // Ch. III: full Hit Die at 1st, roll after
+            int gain = (L == 1) ? cal.hitDie + conMod : Math.Max(1, Rules.Rng.Next(1, cal.hitDie + 1) + conMod);   // Ch. III: full Hit Die at 1st, roll after, at least 1 a level
             s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
 
             foreach (var f in cal.Row(L).features)
@@ -989,7 +989,7 @@ public static class CharGen
                 s.AbilityBoostLevels.Add(L); s.BoostedAbilities.Add(ab);
             }
             int conMod = Mod(s.Scores["CON"]);
-            int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;
+            int gain = (L == 1) ? cal.hitDie + conMod : Math.Max(1, Rules.Rng.Next(1, cal.hitDie + 1) + conMod);
             s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
 
             foreach (var f in cal.Row(L).features)
@@ -1218,7 +1218,7 @@ public static class CharGen
         }
         int conMod = Mod(s.Scores["CON"]);
         int die = ch.BloodDie is int bd && bd >= 1 && bd <= cal.hitDie ? bd : Rules.Rng.Next(1, cal.hitDie + 1);
-        s.BloodRolls.Add(die + conMod); s.ConModAtLevel.Add(conMod);
+        s.BloodRolls.Add(Math.Max(1, die + conMod)); s.ConModAtLevel.Add(conMod);   // Ch. III: at least 1 a level
 
         foreach (var f in cal.Row(N).features)
             if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) s.Features.Add(f);
@@ -1426,6 +1426,18 @@ public static class CharGen
         if (anyTrained.Count > 0) s.SkillRanks[Pick(anyTrained)] = 2;
     }
 
+    /// <summary>Gear keys a <c>session.json</c> from an older build can still carry, with the price
+    /// the soul paid then. v1.60.0 renamed the box of cartridges to the metallic box at $1.25 the
+    /// Player's Book prints; a soul who bought the old $1 box has to balance at $1.</summary>
+    static readonly Dictionary<string, double> RetiredGear = new()
+    {
+        ["Box of cartridges (50) ($1)"] = 1.0,
+    };
+
+    /// <summary>What a Gear entry cost: today's price, or a retired key's old one.</summary>
+    public static bool GearPaid(string item, out double price) =>
+        D.gearPrices.TryGetValue(item, out price) || RetiredGear.TryGetValue(item, out price);
+
     // ============================================================ VALIDATION
     // Re-derives every number from Data/chargen.json and the sheet's recorded choices.
     // Returns the list of violations; an empty list is a rules-conformant character.
@@ -1624,7 +1636,7 @@ public static class CharGen
               && s.CoinRolled % cal.coin.mult == 0, $"starting coin ${s.CoinRolled} outside {cal.coin.dice}d6 × ${cal.coin.mult}");
         double spent = 0;
         foreach (var g in s.Gear)
-            if (D.gearPrices.TryGetValue(g, out var c)) spent += c;
+            if (GearPaid(g, out var c)) spent += c;
         foreach (var w in s.WeaponsCarried)
         {
             // Both separators, because the tag itself changed in v1.58.0 (an em dash, then a

@@ -1702,7 +1702,7 @@ public static class Rules
                 // Appendix B has said "cannot Aim" about Fatigued since v1.4, and until there was
                 // an Aim action to refuse it was a sentence in a cell. There is one now.
                 if ((c.Conditions ?? "").Contains("Fatigued", StringComparison.OrdinalIgnoreCase))
-                    return new(false, $"{c.Name} is Fatigued, and the Fatigued cannot Aim or run. Rest sheds it.");
+                    return new(false, $"{c.Name} is Fatigued, and the Fatigued cannot Aim or run. A safe night sheds it.");
                 if (c.Aimed) return new(false, $"{c.Name} is already aimed. The +2 does not stack with itself.");
                 c.Aimed = true;
                 c.Beats -= act.Beats;
@@ -2362,11 +2362,12 @@ public static class Rules
             "clumsy"    => new(-2, -2, -2, 0, 0, 0, "Clumsy: the book scopes this to DEX-based Strikes, checks and Defense."),
             "drained"   => new(0, 0, -2, -2, 0, 0, "Drained: Fortitude and CON specifically, and loses Blood equal to their level."),
             "dying"     => new(0, 0, 0, 0, 0, 0, "Dying: unconscious at 0 Blood, bleeding toward −CON. The tracker runs this itself."),
-            "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued, and cannot Aim or run. Rest sheds it."),
+            "enfeebled" => new(-2, 0, -2, 0, 0, 0, "Enfeebled: the book scopes this to STR-based Strikes and checks, and they carry half what they could."),
+            "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued, and cannot Aim or run. A safe night sheds it."),
             "frightened"=> new(-n, -n, -n, -n, 0, 0, $"Frightened {n}: −{n} on everything; it lessens by one step each turn as they master it."),
-            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed: held fast and Off-Guard, at −4 DEX, and it takes a check to break free.") { OffGuard = true },
-            "off-guard" => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
-            "offguard"  => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed: held fast and Off-Guard, at −4 DEX. To break free they spend a Beat and roll Athletics or Acrobatics against the grabber's attack roll; a tie keeps them held.") { OffGuard = true },
+            "off-guard" => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, or caught at the first instant. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "offguard"  => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, or caught at the first instant. Easier to hit, and easier to hit well.") { OffGuard = true },
             "prone"     => new(-4, 0, 0, 0, 0, 0, "Prone: the −4 is to melee; anyone SHOOTING at them has +4 instead, and rising costs a Beat.") { Prone = true },
             "sickened"  => new(-2, 0, -2, -2, -2, 0, "Sickened: Strikes, damage, checks and saves alike."),
             "slowed"    => new(0, 0, 0, 0, 0, n, $"Slowed {n}: {n} fewer Beat{(n == 1 ? "" : "s")} each turn. They may still defend."),

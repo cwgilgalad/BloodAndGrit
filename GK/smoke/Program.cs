@@ -978,10 +978,11 @@ foreach (var (table, floor) in new[]
         // so could never be a number on the bearer's own Burden. Both are asserted below, from the
         // side they actually bite on.
         {
-            // The fifteen the printed Appendix B carries, in its own order.
+            // The rows the printed Appendix B carries, in its own order, less Stable (the dying
+            // model's state, which the Tracker sets itself). Enfeebled joined in v1.60.0.
             string[] appendixB =
             {
-                "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Fatigued", "Frightened",
+                "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Enfeebled", "Fatigued", "Frightened",
                 "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stunned",
             };
             // Four are narrative or run by their own machinery rather than by arithmetic: Bleeding
@@ -3668,6 +3669,31 @@ for (int i = 0; i < 200; i++)
     T($"random sweep #{i}" + (v.Count > 0 ? $" ({sheet.Calling}/{sheet.Origin} L{sheet.Level}): {v[0]}" : ""), v.Count == 0);
 }
 
+// ---- the box of cartridges is the metallic box Ch. X prints, and an old sheet still balances (v1.60.0) ----
+{
+    const string cartridges = "Box of cartridges (50), metallic ($1.25)", retired = "Box of cartridges (50) ($1)";
+    T("cartridges: the metallic box at $1.25", cg.gearPrices.TryGetValue(cartridges, out var cart) && Math.Abs(cart - 1.25) < 0.001);
+    T("cartridges: the retired $1 key is gone from gearPrices", !cg.gearPrices.ContainsKey(retired));
+    T("cartridges: no buy plan still names the retired key",
+        cg.callings.All(c => !c.buyPlan.ToString().Contains(retired, StringComparison.Ordinal)));
+    T("cartridges: the retired key is priced at the $1 it cost", CharGen.GearPaid(retired, out var was) && Math.Abs(was - 1.0) < 0.001);
+    CharacterSheet boxed = null;
+    for (int k = 0; k < 200 && boxed == null; k++)
+    {
+        var g = CharGen.Generate(1, false);
+        if (g.Gear.Contains(cartridges)) boxed = g;
+    }
+    T("cartridges: some soul buys the box", boxed != null);
+    if (boxed != null)
+    {
+        // what an older build saved: the $1 key, and a quarter more coin left over
+        boxed.Gear[boxed.Gear.IndexOf(cartridges)] = retired;
+        boxed.CoinLeft = Math.Round(boxed.CoinLeft + 0.25, 2);
+        var v = CharGen.Validate(boxed);
+        T("cartridges: a sheet saved with the $1 box still balances" + (v.Count > 0 ? $": {v[0]}" : ""), v.Count == 0);
+    }
+}
+
 // ---- armor (Ch. X): the three rows, and souls who actually end up wearing them ----
 T("three armors, each priced in gearPrices", cg.armor.Count == 3
     && cg.armor.All(a => cg.gearPrices.TryGetValue(a.gear, out var p) && Math.Abs(p - a.cost) < 0.001));
@@ -4036,8 +4062,18 @@ foreach (var c in cg.callings)
     var up = CharGen.LevelUp(s, ch);
     T("levelup honors chosen edge", gr.EdgeOptions.Count == 0 || up.Edges.Contains(gr.EdgeOptions[0]));
     T("levelup honors chosen subpath", !gr.Subpath || up.Subpath == gr.SubpathOptions[^1]);
-    T("levelup honors chosen Blood die", up.BloodRolls[^1] == 1 + up.ConModAtLevel[^1]);
+    T("levelup honors chosen Blood die", up.BloodRolls[^1] == Math.Max(1, 1 + up.ConModAtLevel[^1]));
     T("levelup with explicit choices conformant", CharGen.Validate(up).Count == 0);
+}
+
+// Ch. III: at least 1 Blood a level, whatever the CON (v1.60.0, P10 S21)
+{
+    var s = CharGen.Generate(1, false, "Marshal");
+    s.Scores["CON"] = 4;                                   // a −3 modifier
+    var up = CharGen.LevelUp(s, new CharGen.LevelUpChoices { BloodDie = 1 });
+    T("levelup: a 1 on the die under a −3 CON still gains 1 Blood", up.BloodRolls[^1] == 1);
+    up = CharGen.LevelUp(s, new CharGen.LevelUpChoices { BloodDie = 6 });
+    T("levelup: the floor leaves a roll that clears it alone", up.BloodRolls[^1] == 3);
 }
 
 // the Gunhand's bonus combat Edge keeps pace, one Gun edge per odd level
