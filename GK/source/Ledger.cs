@@ -235,7 +235,7 @@ public sealed class LedgerView : Panel
         }
 
         // ---- what fills the sheet ----
-        // A soul without a full character record (hand-entered, or the seeded pregens)
+        // A soul without a full character record (a blank row typed in off a paper sheet)
         // still shows everything the table row knows; what's genuinely unknown reads
         // as an em-dash, never as a bare white box that looks like a rendering bug.
         string name = sheet?.Name ?? member?.Name ?? "";

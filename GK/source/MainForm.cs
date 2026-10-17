@@ -3928,24 +3928,14 @@ public partial class MainForm : Sheet
 
     void SeedDemo()
     {
-        // The ready-made posse from Appendix D, so the app is useful on first launch: now
-        // seeded as full, rules-legal character sheets (Ledger, Signs, gear and all), not bare
-        // rows. A fixed seed makes the first-launch posse identical for everyone; ReseedEntropy
-        // afterward hands play back its unpredictable dice. Generate() (not Assemble; that
-        // throws on a null Origin) with a fixed Calling, then the pregen's own name and gender.
+        // The ready-made posse from Appendix D, so the app is useful on first launch: full,
+        // rules-legal character sheets (Ledger, Signs, gear and all), built to the book's own
+        // printed sheets by CharGen.AppendixD since v1.61.0 (they were random draws wearing the
+        // six names before). The fixed seed keeps the two things the book doesn't print, a look
+        // and a Compass, the same for everyone; ReseedEntropy hands play back its dice.
         Rules.Reseed(0x5EEDA117);
-        void Add(string name, string gender, string calling)
-        {
-            var s = CharGen.Generate(1, rolled: false, fixedCalling: calling);
-            s.Name = name; s.Gender = gender;
+        foreach (var s in CharGen.AppendixD())
             party.Add(CharGen.Seat(s));   // the same seating every other route uses; no log, nobody is watching yet
-        }
-        Add("Mattie \"Six-Finger\" Lusk",    "Woman", "Gunhand");
-        Add("Doc Delia Kemp",               "Woman", "Sawbones");
-        Add("Brother Isaiah Dade",          "Man",   "Preacher");
-        Add("Anni Halvorsen",               "Woman", "Mountain Man");
-        Add("Frank Haskins",                "Man",   "Bounty Hunter");
-        Add("Nettie Swain",                 "Woman", "Hexer");
         Rules.ReseedEntropy();   // restore entropy so play dice stay random
     }
 }

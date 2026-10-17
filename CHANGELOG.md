@@ -8,6 +8,35 @@ Desktop\Git repos.)
 
 ---
 
+- **The demo posse is Appendix D's own. GritKeeper v1.61.0 (2026-10-17).**
+
+  GritKeeper seats the six ready-made souls on first launch, and until now it seated six souls it rolled for itself
+  and named after Appendix D's. Mattie Lusk came up with somebody else's scores, skills and Edges, so a Keeper who
+  held the Posse tab up against the Player's Book was looking at two different women. `chargen.json` now carries
+  the six as `pregens`: the Honest Array each was built from, the Origin's skill, the trained picks, the Edges, the
+  Signs and Miracles, the arms and goods bought, the story items handed over free, and the Four Questions word for
+  word. `CharGen.AppendixD()` hands those to `Assemble`, and `SeedDemo` seats what comes back through
+  `CharGen.Seat`, the route every other soul takes. The fixed seed still draws the two things the book prints for
+  nobody, a look and a Compass.
+
+  **The purses are the book's story amounts.** Appendix D gives each soul a figure ($9, $14, $11, pelts, $22, $6)
+  that no roll of the Calling's coin dice leaves after paying for that kit. The data rolls the purse whose change
+  comes nearest the printed figure (Mattie rolls $40 and keeps $10.75 against the printed $9), so the coin ledger
+  still balances.
+
+  **Two copies, both audited.** The six boxes now live as data in two places, `chargen.json` and the smoke rig's
+  table of printed Blood, Defense, saves, Nerve and Mark. `check_pregen_seed` in `audits/verify_rules.py` holds
+  both to the built Player's Book: the Calling and Origin in each heading, the scores after the Origin's gifts, the
+  Trained line with the Origin's skill on it, the Edges, the workings, every bought weapon against the Attack line,
+  every story item against the Gear line, the Four Questions, and each number in the smoke table. It caught all
+  fourteen drifts planted to test it. The smoke rig builds the six, runs `Validate` on each, and checks every choice
+  and every printed number came through (16,646 assertions, up from 16,577).
+
+  **The Reference deck against Ch. XV.** v1.60.0 rewrote the Keeper's Book's *Powers of the Territory*, so the deck
+  was read for anything quoting it. Nothing does. Its one Keeper's-Book prose leaf, *Running in Town*, comes from
+  Ch. XIV and still matches it point for point, and the generators' rumours about the Army sit easily with the Army
+  as a fifth Power. No change.
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 

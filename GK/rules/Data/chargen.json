@@ -7214,5 +7214,288 @@
     "check": "a Lore (Occult) check against DC 15, plus 2 for each familiar you have bound before this one",
     "failure": "the night is spent and the beast is gone; you may try again after a full day's rest, and the DC does not come down",
     "limit": "you may hold one familiar, a second from 11th level, and a third only through The Third Beast. A beast bound past your limit will not stay, and the one that leaves is not the one you would have chosen"
-  }
+  },
+  "pregens": [
+    {
+      "name": "Mattie \"Six-Finger\" Lusk",
+      "gender": "Woman",
+      "calling": "Gunhand",
+      "origin": "The Outlaw",
+      "preGiftScores": {
+        "STR": 13,
+        "DEX": 15,
+        "CON": 14,
+        "WIT": 10,
+        "RES": 12,
+        "PRE": 8
+      },
+      "originSkillChoice": null,
+      "trained": [
+        "Notice",
+        "Intimidate"
+      ],
+      "edges": [
+        "Quick Draw"
+      ],
+      "bonusCombatEdges": [
+        "Steady Shot"
+      ],
+      "signs": [],
+      "miracles": [],
+      "coinRolled": 40,
+      "buyWeapons": [
+        "Single-Action Revolver",
+        "Knife / Bowie"
+      ],
+      "buyGear": [
+        "Box of cartridges (50), metallic ($1.25)",
+        "Heavy duster ($6)"
+      ],
+      "freeGear": [
+        "A horse she didn't pay for"
+      ],
+      "lost": "her gang, to a job gone wrong she didn't plan",
+      "seen": "the man she shot at Careless Creek stand back up",
+      "vice": "the cards",
+      "moving": "the paper on her, and whoever's carrying it this month"
+    },
+    {
+      "name": "Doc Delia Kemp",
+      "gender": "Woman",
+      "calling": "Sawbones",
+      "origin": "The Fallen Gentry",
+      "preGiftScores": {
+        "STR": 8,
+        "DEX": 12,
+        "CON": 13,
+        "WIT": 15,
+        "RES": 14,
+        "PRE": 10
+      },
+      "originSkillChoice": "Lore (Frontier)",
+      "trained": [
+        "Medicine",
+        "Lore (Occult)",
+        "Notice",
+        "Deceive",
+        "Survival",
+        "Sleight",
+        "Insight",
+        "Persuade",
+        "Ride"
+      ],
+      "edges": [
+        "Frontier Medicine"
+      ],
+      "bonusCombatEdges": [],
+      "signs": [],
+      "miracles": [],
+      "coinRolled": 30,
+      "buyWeapons": [
+        "Knife / Bowie",
+        "Cap-and-Ball Revolver"
+      ],
+      "buyGear": [
+        "Laudanum, per dose (25¢)",
+        "Heavy duster ($6)"
+      ],
+      "freeGear": [
+        "Powder and ball for 30 shots",
+        "A letter of unpaid debt"
+      ],
+      "lost": "the name, the house, the inheritance: a scandal she will not discuss",
+      "seen": "a body on her table open its eyes, four hours dead",
+      "vice": "laudanum",
+      "moving": "the debt, and the man back east who holds it"
+    },
+    {
+      "name": "Brother Isaiah Dade",
+      "gender": "Man",
+      "calling": "Preacher",
+      "origin": "The Freed",
+      "preGiftScores": {
+        "STR": 10,
+        "DEX": 8,
+        "CON": 13,
+        "WIT": 12,
+        "RES": 14,
+        "PRE": 15
+      },
+      "originSkillChoice": null,
+      "trained": [
+        "Persuade",
+        "Intimidate",
+        "Lore (Occult)",
+        "Notice",
+        "Insight"
+      ],
+      "edges": [
+        "Iron Will"
+      ],
+      "bonusCombatEdges": [],
+      "signs": [],
+      "miracles": [
+        "The Steadying Word",
+        "Call to the Mourner's Bench"
+      ],
+      "coinRolled": 40,
+      "buyWeapons": [
+        "Staff / Walking Stick",
+        "Double-Barrel Shotgun"
+      ],
+      "buyGear": [
+        "Graveyard salt, lb. ($1)",
+        "Bedroll & tarp ($2)",
+        "Week's rations ($3)",
+        "Box of cartridges (50), metallic ($1.25)"
+      ],
+      "freeGear": [
+        "A congregation's last collection"
+      ],
+      "lost": "his congregation, to a fire that did not behave like fire",
+      "seen": "what set it, and it saw him",
+      "vice": "pride in the Word",
+      "moving": "the thing that burned his church went west, and so, therefore, did he"
+    },
+    {
+      "name": "Anni Halvorsen",
+      "gender": "Woman",
+      "calling": "Mountain Man",
+      "origin": "The Scout",
+      "preGiftScores": {
+        "STR": 15,
+        "DEX": 10,
+        "CON": 14,
+        "WIT": 12,
+        "RES": 13,
+        "PRE": 8
+      },
+      "originSkillChoice": null,
+      "trained": [
+        "Notice",
+        "Athletics",
+        "Stealth",
+        "Animal Handling",
+        "Lore (Frontier)",
+        "Medicine",
+        "Repair"
+      ],
+      "edges": [
+        "Tracker"
+      ],
+      "bonusCombatEdges": [],
+      "signs": [],
+      "miracles": [],
+      "coinRolled": 70,
+      "buyWeapons": [],
+      "buyGear": [
+        "Heavy duster ($6)"
+      ],
+      "freeGear": [
+        "Powder and ball for 40 shots",
+        "A better dog"
+      ],
+      "lost": "her trapping partner, to a winter that was not a winter",
+      "seen": "its tracks, man-shaped, and forty feet apart",
+      "vice": "solitude, and the flask that makes it bearable",
+      "moving": "she is hunting it. She does not say so"
+    },
+    {
+      "name": "Frank Haskins",
+      "gender": "Man",
+      "calling": "Bounty Hunter",
+      "origin": "The Veteran",
+      "preGiftScores": {
+        "STR": 12,
+        "DEX": 15,
+        "CON": 10,
+        "WIT": 14,
+        "RES": 13,
+        "PRE": 8
+      },
+      "originSkillChoice": "Intimidate",
+      "trained": [
+        "Notice",
+        "Stealth",
+        "Survival",
+        "Insight",
+        "Lore (Frontier)",
+        "Athletics",
+        "Deceive",
+        "Ride"
+      ],
+      "edges": [
+        "Cold Read"
+      ],
+      "bonusCombatEdges": [],
+      "signs": [],
+      "miracles": [],
+      "coinRolled": 50,
+      "buyWeapons": [
+        "Single-Action Revolver"
+      ],
+      "buyGear": [
+        "Box of cartridges (50), metallic ($1.25)",
+        "Box of cartridges (50), metallic ($1.25)",
+        "Spyglass ($8)"
+      ],
+      "freeGear": [
+        "Irons",
+        "Wanted papers"
+      ],
+      "lost": "the certainty the war promised him",
+      "seen": "a man he'd buried collect his own bounty in the next county",
+      "vice": "violence, arrived at too easily",
+      "moving": "one name left on a private list, and it keeps moving west"
+    },
+    {
+      "name": "Nettie Swain",
+      "gender": "Woman",
+      "calling": "Hexer",
+      "origin": "The Homesteader",
+      "preGiftScores": {
+        "STR": 8,
+        "DEX": 10,
+        "CON": 12,
+        "WIT": 14,
+        "RES": 15,
+        "PRE": 13
+      },
+      "originSkillChoice": null,
+      "trained": [
+        "Lore (Occult)",
+        "Medicine",
+        "Notice",
+        "Animal Handling",
+        "Deceive",
+        "Insight"
+      ],
+      "edges": [
+        "Salt-Wise"
+      ],
+      "bonusCombatEdges": [],
+      "signs": [
+        "Salt & Iron",
+        "The Lender's Ear"
+      ],
+      "miracles": [],
+      "coinRolled": 10,
+      "buyWeapons": [
+        "Knife / Bowie"
+      ],
+      "buyGear": [
+        "Graveyard salt, lb. ($1)"
+      ],
+      "freeGear": [
+        "Herb satchel",
+        "Iron nails",
+        "Charm-makings",
+        "A crow named Deuteronomy"
+      ],
+      "lost": "everything the sod could take, and then the man too",
+      "seen": "what answered the night she asked",
+      "vice": "the bargains; they keep working",
+      "moving": "paying it back before it comes to collect"
+    }
+  ]
 }

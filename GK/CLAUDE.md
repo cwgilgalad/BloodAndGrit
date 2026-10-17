@@ -239,7 +239,12 @@ what each tab *is*, plus the decisions already settled.
   they can't drift.
 - **Session**: free-form Keeper's notes + named 4/6/8-segment progress clocks. Autosaves to
   `session.json` beside the exe on exit **and every 5 minutes**; reloads on launch. First run seeds
-  the Appendix D pregens so it's useful immediately.
+  the Appendix D pregens so it's useful immediately. **Since v1.61.0 those are the book's six, not six
+  draws wearing their names**: `chargen.json`'s `pregens` carry each printed sheet's choices,
+  `CharGen.AppendixD()` assembles them, and `check_pregen_seed` holds the data AND the smoke rig's table
+  of printed numbers to the built Player's Book. The purses are the one thing that cannot match: the book
+  prints story amounts, so each `coinRolled` is the legal roll leaving change nearest the printed figure.
+  Change a box in Appendix D and both copies have to follow, or the audit says which one did not.
 
 ## Files
 

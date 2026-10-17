@@ -2404,6 +2404,58 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
         .Deserialize<GameSession>(System.Text.Json.JsonSerializer.Serialize(nightOff)).IsUntouched == false);
 }
 
+// ---- the demo posse is Appendix D's, sheet for sheet (A05) ----
+// It was six Generate draws wearing the six names. Assemble honours a choice only where it is
+// legal and spelled right, and fills anything else from the dice without a word, so each pinned
+// choice is read back off the built sheet: a misspelt Edge would otherwise seat a random one.
+// verify_rules.py holds chargen.json's pregens to the printed boxes; this holds the app to them.
+{
+    void TD(string name, bool ok, string detail) => T(ok ? name : name + ": " + detail, ok);
+    var pregens = CharGen.D.pregens;
+    var built = CharGen.AppendixD();
+    T("appendix D: six ready-made souls", pregens.Count == 6 && built.Count == 6);
+    for (int i = 0; i < Math.Min(pregens.Count, built.Count); i++)
+    {
+        var pg = pregens[i]; var s = built[i];
+        string who = $"appendix D / {pg.name}";
+        var v = CharGen.Validate(s);
+        TD($"{who}: a legal sheet", v.Count == 0, string.Join("; ", v));
+        T($"{who}: name, gender, Calling and Origin as printed",
+            s.Name == pg.name && s.Gender == pg.gender && s.Calling == pg.calling && s.Origin == pg.origin);
+        T($"{who}: the Honest Array as placed", pg.preGiftScores.All(kv => s.PreGiftScores[kv.Key] == kv.Value));
+        var org = CharGen.D.origins.First(o => o.name == pg.origin);
+        var wantSkills = pg.trained.Concat(org.trained)
+            .Concat(pg.originSkillChoice != null ? new[] { pg.originSkillChoice } : Array.Empty<string>()).ToHashSet();
+        TD($"{who}: exactly the printed trained skills", s.SkillRanks.Keys.ToHashSet().SetEquals(wantSkills),
+            string.Join(", ", s.SkillRanks.Keys.OrderBy(k => k)));
+        TD($"{who}: the printed Edges", s.Edges.SequenceEqual(pg.edges) && s.BonusCombatEdges.SequenceEqual(pg.bonusCombatEdges),
+            string.Join(", ", s.Edges.Concat(s.BonusCombatEdges)));
+        T($"{who}: the printed workings", s.SignsKnown.SequenceEqual(pg.signs) && s.MiraclesKnown.SequenceEqual(pg.miracles));
+        T($"{who}: every arm bought", s.WeaponsCarried.Count == pg.buyWeapons.Count
+            && pg.buyWeapons.All(w => s.WeaponsCarried.Any(c => c.StartsWith(w + " "))));
+        T($"{who}: every priced and story item carried", pg.buyGear.Concat(pg.freeGear).All(s.Gear.Contains)
+            && s.Gear.Count(g => pg.buyGear.Contains(g)) == pg.buyGear.Count);
+        T($"{who}: the purse rolled as recorded", s.CoinRolled == pg.coinRolled && s.CoinLeft >= 0);
+        T($"{who}: the Four Questions as printed", s.Lost == pg.lost && s.Seen == pg.seen && s.Vice == pg.vice && s.Moving == pg.moving);
+    }
+    // The six as the book prints their numbers, the line a Keeper checks the Posse tab against.
+    var printed = new (string who, int blood, int def, int fort, int rf, int will, int nerve, int mark)[]
+    {
+        ("Mattie \"Six-Finger\" Lusk", 12, 13, 4, 5, 1, 13, 0), ("Doc Delia Kemp", 9, 11, 3, 1, 4, 15, 0),
+        ("Brother Isaiah Dade", 9, 9, 3, -1, 4, 16, 0),         ("Anni Halvorsen", 12, 10, 4, 0, 4, 15, 0),
+        ("Frank Haskins", 8, 12, 0, 4, 3, 14, 0),               ("Nettie Swain", 7, 10, 1, 0, 5, 17, 1),
+    };
+    foreach (var n in printed)
+    {
+        var s = built.FirstOrDefault(b => b.Name == n.who);
+        TD($"appendix D / {n.who}: Blood, Defense, saves, Nerve and Mark as printed", s != null
+            && (s.Blood, s.Defense, s.Fort, s.Ref, s.Will, s.NerveMax, s.Mark) == (n.blood, n.def, n.fort, n.rf, n.will, n.nerve, n.mark),
+            s == null ? "missing" : $"{s.Blood}/{s.Defense}/{s.Fort}/{s.Ref}/{s.Will}/{s.NerveMax}/{s.Mark}");
+    }
+    T("appendix D: the Preacher's Conviction opens at 3", built.FirstOrDefault(b => b.Calling == "Preacher")?.PoolMax == 3);
+    T("appendix D: and seats onto the posse as built", built.Select(CharGen.Seat).All(m => m.Sheet != null && m.BloodMax == m.Sheet.Blood));
+}
+
 // ---- Where the table lives (AppState.Resolve) ----
 // This decides whether a Keeper's campaign is found or silently abandoned on a first run, so
 // every combination is walked rather than trusted. The order it encodes: an explicit portable
