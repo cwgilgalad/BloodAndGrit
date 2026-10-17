@@ -2554,9 +2554,23 @@ public static class CharGen
     /// <summary>A boundary has passed: return everything that comes back at or before it. A scene
     /// returns the turn, round and scene features and leaves the once-a-session ones spent; any
     /// rest (<see cref="Rest.Take"/>) reaches the dawn ones as well; a new session returns the
-    /// lot. Answers with how many features actually came back, so the caller can say so instead
-    /// of logging a boundary that changed nothing.</summary>
+    /// rest of them through <see cref="RefreshForSession"/>. Answers with how many features
+    /// actually came back, so the caller can say so instead of logging a boundary that changed
+    /// nothing.</summary>
     public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
+        => Refresh(p, upTo, FeatureCadence.None);
+
+    /// <summary>A new session: every rationed feature but the dawn's (W03, v1.61.0). A session is
+    /// a sitting at the table and not a sunrise, and one that picks up the same night "begins where
+    /// the last one stopped" (Ch. XII, The Nerve Pool). So a feature prepared at dawn stays spent,
+    /// like the pool it is prepared from, until a rest reaches it. A week of peace has already
+    /// worked its dawns through <see cref="Rest.Take"/> by the time this runs. Until this, the
+    /// New session button's "No" handed the dawn features back while promising nothing but Grit
+    /// and the once-a-session ones.</summary>
+    public static int RefreshForSession(PartyMember p)
+        => Refresh(p, FeatureCadence.Session, FeatureCadence.Dawn);
+
+    static int Refresh(PartyMember p, FeatureCadence upTo, FeatureCadence skip)
     {
         // FeatureSpent only, on purpose: PartyMember.TallyOwed is a separate store precisely so
         // that no boundary can reach it. See the note there before wiring a reset through here.
@@ -2564,7 +2578,7 @@ public static class CharGen
         int gave = 0;
         foreach (var row in LedgerFor(p))
         {
-            if (row.Limit.Cadence > upTo) continue;
+            if (row.Limit.Cadence > upTo || row.Limit.Cadence == skip) continue;
             if (p.FeatureSpent.Remove(row.Name)) gave++;
         }
         if (gave > 0) p.Touched(nameof(PartyMember.FeatureSpent));

@@ -227,7 +227,9 @@ public class PartyMember : INotifyPropertyChanged
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
     // Zeal…). Empty name and 0 max for the mundane. Every rest refills it, dawn in the field
-    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed.
+    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed. Two
+    // pools are the exception, Devotion and Tribute, which come back through observance and
+    // preaching and which no rest touches (Rest.PoolsRefilledOtherwise).
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
@@ -237,8 +239,8 @@ public class PartyMember : INotifyPropertyChanged
     // whether the Fortitude save that comes after the first has left them Drained, and whether
     // they have already had their one this scene. Ordinary bound properties, so the setters call
     // On() and undo and session.json carry them with no extra wiring. Every rest starts the day's
-    // count again. A safe night or a week lifts the Drained (the book: "until a full night's
-    // rest"), and a dawn in the field leaves it. Every scene boundary clears the third.
+    // count again. A safe night or a week lifts the Drained (the book: "Drained 1 until a safe
+    // night"), and a dawn in the field leaves it. Every scene boundary clears the third.
     int _doses; bool _drinkDrained, _dosedScene;
     public int DosesToday { get => _doses; set { _doses = Math.Max(0, value); On(); } }
     public bool DrainedByDrink { get => _drinkDrained; set { _drinkDrained = value; On(); } }

@@ -37,6 +37,27 @@ Desktop\Git repos.)
   Ch. XIV and still matches it point for point, and the generators' rumours about the Army sit easily with the Army
   as a fifth Power. No change.
 
+  **v1.60.0, read again.** Its diff was gone back through line by line against the books, and four things in it were
+  wrong.
+
+  *New session* asks whether a week of peace has passed. On No it promised Grit and the once-a-session features and
+  nothing else, and it also handed back every feature prepared at dawn: a Prospector's Powderman charges, a
+  Sawbones' Tonics. A session that picks up the same night begins where the last one stopped (Ch. XII), so those
+  now wait for a rest, the same as the pool they are prepared from. `CharGen.RefreshForSession` is that boundary,
+  and four new smoke checks hold it (16,650 assertions).
+
+  The Reference deck's Wounds leaf told the Keeper that fresh harm opens a Stable soul's wound again. Neither book
+  prints that and the engine never did it. The leaf now says what Ch. XI says: down and senseless, bleeding no
+  more, round on 1 Blood after ten quiet minutes or at once on a critical success.
+
+  `verify_rules` held the book's arms tables to the data in one direction only, so a row the parser stopped reading
+  took its weapon out of the check without a word. Every weapon in `chargen.json` must now be a printed row as
+  well. All 21 are, and the check caught the three drifts planted to test it (2,381 cross-checks).
+
+  Two comments in `Core.cs` were stale: one said every rest refills a caster's pool, when Devotion and Tribute come
+  back through observance and preaching, and one quoted the Drained rule as "until a full night's rest" where the
+  book says a safe night.
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 

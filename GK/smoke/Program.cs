@@ -4951,6 +4951,24 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("a dawn in the field does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
     T("a new session does",       CharGen.RefreshFeatures(soul, FeatureCadence.Session) == 1);
     T("and it is back",           CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
+    CharGen.SpendFeature(soul, "Last Stand");
+    T("and the New session button's own refresh hands it back too", CharGen.RefreshForSession(soul) == 1);
+
+    // A new session is not a sunrise (W03, v1.61.0). The New session button's "No" gave the dawn's
+    // features back with the once-a-session ones, while promising Grit and those and nothing else.
+    // A session that picks up the same night begins where the last one stopped (Ch. XII), so what
+    // is prepared at dawn stays spent until a rest reaches it, the same as the pool.
+    {
+        var dig = new PartyMember { Name = "Hollis", Calling = "Prospector", Level = 10,
+                                    Sheet = CharGen.Generate(10, false, "Prospector") };
+        int Powder() => CharGen.LedgerFor(dig).First(r => r.Name == "Powderman").Left;
+        int charges = CharGen.LedgerFor(dig).First(r => r.Name == "Powderman").Of;
+        for (int i = 0; i < charges; i++) CharGen.SpendFeature(dig, "Powderman");
+        T("session: Powderman spent to the last charge", Powder() == 0);
+        T("session: a new session leaves the dawn's features spent", CharGen.RefreshForSession(dig) == 0 && Powder() == 0);
+        Rest.Take(dig, RestKind.Dawn);
+        T("session: and a dawn in the field gives them back", Powder() == charges);
+    }
 
     // Command is counted off PRE, so it takes as many presses as the modifier allows and no more.
     var cmd = CharGen.LedgerFor(soul).FirstOrDefault(r => r.Name == "Command");

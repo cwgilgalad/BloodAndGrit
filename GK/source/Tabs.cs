@@ -5423,7 +5423,7 @@ public partial class MainForm
         RH(r, "Blood, Dying & Grievous Wounds");
         RTbl(r, new[] { 16, 66 }, new[] { "State", "The rule" },
             new[] { "0 Blood",      "Dying and Bleeding; unconscious" },
-            new[] { "Stable",       $"The bleeding stopped by a DC {Rules.StabilizeDc} Fortitude save or Medicine check. Still senseless at 0 or below; fresh harm opens the wound again, and a critical success brings them round on 1 Blood" },
+            new[] { "Stable",       $"The bleeding stopped by a DC {Rules.StabilizeDc} Fortitude save or Medicine check. Still down and senseless, bleeding no more; they come round on 1 Blood after ten quiet minutes, or at once on a critical success" },
             new[] { "Death",        "Comes at a negative number equal to the CON score (twice it for the Risen)" },
             new[] { "A terrible blow", $"One hit for half maximum Blood or more, or any critical hit → Fortitude save DC {Rules.GrievousDc} (higher for terrible weapons) or take a Lasting Injury" });
 

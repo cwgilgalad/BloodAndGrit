@@ -2830,7 +2830,8 @@ public partial class MainForm : Sheet
     /// works that week on every soul through <see cref="RestOne"/>; No leaves Blood, Nerve and the
     /// pools where they stand; Cancel is no new session at all. On Yes or No, Grit goes back to 3
     /// (Ch. XIII: "three per soul, refreshed each session"), every once-a-session feature comes
-    /// back, and the scene's drink is spent.</summary>
+    /// back, and the scene's drink is spent. A feature prepared at dawn comes back with a rest and
+    /// not with a session (<see cref="CharGen.RefreshForSession"/>).</summary>
     void NewSession()
     {
         if (party.Count == 0) { Nope("No souls in the posse yet, so a new session has nobody to hand anything back to."); return; }
@@ -2847,7 +2848,7 @@ public partial class MainForm : Sheet
         using var oneStep = OneUndoStep();
         if (week == DialogResult.Yes) foreach (var p in party.ToList()) RestOne(p, RestKind.Week);
         foreach (var p in party) { p.Grit = 3; p.DosedThisScene = false; }
-        int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
+        int given = party.Sum(p => CharGen.RefreshForSession(p));
         posseGrid?.Refresh();
         RefreshCalling();
         Log((week == DialogResult.Yes ? "New session, after a week of peace" : "New session, straight on from the last")

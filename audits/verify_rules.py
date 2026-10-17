@@ -206,6 +206,16 @@ def check_arms(problems):
         elif b["cost"] != float(w.get("cost", 0)):
             problems.append(f"{name}: book cost {b['printed']!r} != data {w.get('cost', 0)!r}")
 
+    # And the other way round: every weapon the app sells is a row the book prints. Reading from
+    # the book alone, a table that read short (a second tbody, a row the regex stopped matching)
+    # dropped its weapons in silence, and the app went on pricing them off nothing.
+    printed = list(guns) + list(blades)
+    for w in weapons:
+        checks += 1
+        if not any(_matches(w["name"], n) for n in printed):
+            problems.append(f"{w['name']}: in the data's weapons and printed in neither of the "
+                            f"book's arms tables")
+
     # A blade has no Range, Cap. or Reload column, so carrying one would be an invention.
     for w in weapons:
         if w.get("kind") == "melee":
