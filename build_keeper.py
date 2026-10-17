@@ -5,6 +5,14 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
+# ---- what a week of peace does to a Taint, as the Player's Book reckons it (Ch. XI, Rest).
+# build_player.py derives it from Ch. XII's "one step for every three days clear"; this book
+# reads the Player's Book's own words back rather than typing a second copy of the sum.
+_wk = re.search(r"a Taint eases by (\w+ steps?), one for every", H)
+if not _wk:
+    raise SystemExit("blood-and-grit.html, Ch. XI Rest: cannot read how far a week of peace eases a Taint")
+WEEK_TAINT = _wk.group(1)
+
 # ---- whitespace optimization: make .statblock splittable across pages ----
 from pag_patch import patch_paginator as _patch_paginator
 
@@ -69,13 +77,13 @@ if ".statblock{" not in H:
 import book_shell
 H = book_shell.retext_cover(
     H,
-    comment="<!-- Blood & Grit — The Keeper's Book · Version 2.41 -->",
-    title="<title>Blood &amp; Grit — The Keeper's Book (v2.41)</title>",
+    comment="<!-- Blood & Grit — The Keeper's Book · Version 2.42 -->",
+    title="<title>Blood &amp; Grit — The Keeper's Book (v2.42)</title>",
     kicker='<div class="kicker">For the Eyes of the Keeper Alone</div>',
     foot='<div class="t-foot">The Keeper\'s Book</div>',
-    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.41</div>',
+    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.42</div>',
     tiny2='<div class="t-tiny">Companion to the Player\'s Book · the secrets, the monsters, and the running of the dark</div>',
-    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.41 · For the Keeper Alone</p>',
+    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Keeper\'s Book · Version 2.42 · For the Keeper Alone</p>',
 )
 
 # replace the two carried-over Player's epigraph quotes with Keeper-specific ones
@@ -415,7 +423,8 @@ CH3 = f"""<!-- III -->
 
   <h2>Running the Break</h2>
   <p>A character at <strong>0 Nerve</strong> breaks: roll on the Player's Book's table for an uncontrolled response,
-  and they take a lasting Affliction. The thing to remember at the table is that a broken character stays
+  and they take a lasting Affliction. Nerve stops at 0, and a soul who fails another Dread Check while standing there
+  breaks again, the table once more and another Affliction. The thing to remember at the table is that a broken character stays
   in the game and gets dangerous, to themselves and to the souls beside them. Lean into it. A man firing wild
   at the threat and whatever's near it, a woman frozen useless while the dark closes. These are the moments the
   players will remember being scared. But keep it short. Hand control back the moment the immediate response plays
@@ -451,9 +460,14 @@ CH3 = f"""<!-- III -->
   it to them.</div>
 
   <h2>Giving Back Nerve</h2>
-  <p>Nerve does not come back in the field. The Player's Book prints the ways it does come back (Ch. XII,
-  <em>Recovering Nerve</em>): a confession or a full night unmolested in genuine safety for 1d6 apiece, whiskey for
-  1d4 and the start of a vice, and a week of true peace for all of it. That last is why a posse usually sits down to
+  <p>Sleeping rough gives no Nerve back. A dawn in the field returns the pools and the once-a-day features and
+  nothing more, so out there a sermon, a comrade's joke or a bottle is all that brings Nerve back, and each carries a
+  limit or a price; Grit only holds a fright off for a turn. Watch the bottle closest. One drink or one dose a scene,
+  whiskey for 1d4 and laudanum for 1d6, and the first in a day is free. Each after it calls a Fortitude save at DC 12
+  and 2 more for every one after that, and a failure leaves the drinker Drained 1 until a safe night; one who is
+  Drained already has nothing more to lose to it. The Player's Book prints every way Nerve comes back
+  (Ch. XII, <em>Recovering Nerve</em>): the drink, a confession or a safe night (a full night unmolested in genuine
+  safety) for 1d6 apiece, and a week of true peace for all of it. That last is why a posse usually sits down to
   a new session at full. The time between two reckonings is mostly that week. When the next session picks up the
   same night, it isn't, and they begin where they stopped. You're the one who says whether a night was genuinely
   safe: never in sight of the dark, and never for merely waiting. The point is to make safety precious.</p>
@@ -461,7 +475,7 @@ CH3 = f"""<!-- III -->
   <h2>A Night's Worth of Dread &mdash; Worked</h2>
   <p>The hardest thing to feel for, starting out, is how much Nerve a night should cost. Too little and the horror
   never bites; too much and the party breaks in the second scene and spends the climax useless. Here is one full night
-  budgeted for a hard-bitten 2nd-level character starting with <strong>11 Nerve</strong> (RES&nbsp;9 + level&nbsp;2),
+  budgeted for a green 2nd-level hand starting with <strong>11 Nerve</strong> (RES&nbsp;9 + level&nbsp;2),
   to show how it goes:</p>
   <div class="box">
     <h4>The Bleeding of One Eli, Across One Session</h4>
@@ -610,7 +624,7 @@ CH4 = f"""<!-- IV -->
   <h2>Budgeting a Fight</h2>
   <p>For a quick measure, give the party a budget of <strong>4 points per character</strong>. Spend it on foes:</p>
   <ul>
-    <li><strong>A mook</strong> (Tier at or below party-level&minus;2): <strong>4 points</strong>.</li>
+    <li><strong>A mook</strong> (a Tier or two below the posse's): <strong>4 points</strong>.</li>
     <li><strong>An even foe</strong> (Tier matching the rule above): <strong>8 points</strong>.</li>
     <li><strong>A standout</strong> (one Tier above): <strong>16 points</strong>.</li>
   </ul>
@@ -690,7 +704,8 @@ CH4 = f"""<!-- IV -->
   <h2>The Gunfight</h2>
   <p>A few rulings will carry every shoot-out you run:</p>
   <ul>
-    <li><strong>Range &amp; cover.</strong> A target behind cover adds +2 (partial) or +4 (good) to its Defense;
+    <li><strong>Range &amp; cover.</strong> A shot at a target behind cover takes &minus;2 to hit (light cover)
+    or &minus;4 (heavy), as the Player's Book has it in Ch. XI under <em>Circumstance</em>;
     a target with no cover in the open is a target the smart foe takes first. Sidearms past their range, and long
     guns up close, take the penalty in the Player's Book.</li>
     <li><strong>The draw.</strong> When a fight breaks from a standoff, the side that meant to draw acts first;
@@ -721,8 +736,9 @@ CH4 = f"""<!-- IV -->
   taking, a hazard to be used or feared, a chokepoint that funnels the dead. The players should always have a terrain
   decision to make, and the monster should always have one the players can turn against it.</p>
   <ul>
-    <li><strong>Cover and concealment.</strong> Cover stops bullets (+2 or +4 Defense, Ch. above); concealment only
-    hides (a miss chance, a broken line of sight). Smoke, dark, and dust grant concealment, which the players
+    <li><strong>Cover and concealment.</strong> Cover stops bullets (&minus;2 to hit behind light cover, &minus;4
+    behind heavy; Player's Book, Ch. XI); concealment only hides (a target wholly hidden can't be shot at directly,
+    only fired at blind, at &minus;8). Smoke, dark, and dust grant concealment, which the players
     can use as readily as the dark can, and a clever party will.</li>
     <li><strong>High ground and chokepoints.</strong> The lip of the canyon, the top of the stairs, the doorway a swarm
     must come through one at a time. A party that seizes the choke turns a losing numbers-fight into a fair one; let
@@ -750,7 +766,7 @@ These are the fights players remember.</li>
     a source can be ended by reaching the source, which turns a grinding attrition fight into a tactical objective and
     gives the players a way to win that isn't "kill all forty." Most of the Bestiary's swarms are built this way.
     Lean on it.</li>
-    <li><strong>Let the mook die easy.</strong> A foe at Tier party-level&minus;2 should drop to one solid hit. Don't
+    <li><strong>Let the mook die easy.</strong> A foe a Tier or two below the posse's should drop to one solid hit. Don't
     give the small things Blood totals that make the players saw through them; the threat of a mob is its numbers and
     its tirelessness, not the toughness of any one body.</li>
   </ul>
@@ -789,7 +805,7 @@ These are the fights players remember.</li>
     of him is wind in a chest that quit working a while back. Then it turns, and its eyes catch your
     lantern, and they are the wrong color clean through. [<em>First true sight of the walking dead: a Dread
     Check, Will DC 16.</em>] Give me a Will save against the dread of it.</p>
-    <p><strong>Eli:</strong> &hellip;That's a 7. [<em>Failure: lose 1d6 Nerve, 4 rolled; Eli drops from 9 to 5.</em>]</p>
+    <p><strong>Eli:</strong> &hellip;That's a 7. [<em>Failure: lose 1d6 Nerve, 4 rolled; Eli drops from 11 to 7.</em>]</p>
     <p><strong>Keeper:</strong> Your nerve goes out of you like water. You've seen dead men: never one that
     looked back. It comes off the wall toward you, arms rising. You have the time it takes to cross the barn.</p>
     <p><strong>Eli:</strong> I draw and put two in its chest. [<em>Two Beats: a shot, then a second at the Multiple
@@ -942,7 +958,7 @@ CH6 = f"""<!-- VI -->
       <tr><td>A bad fall (per 10 ft)</td><td>Ref, DC 15 to catch</td><td>1d6 Blood per 10 ft fallen</td></tr>
       <tr><td>River in flood</td><td>Athletics, DC 18</td><td>Swept downstream; gear lost; drowning clock</td></tr>
       <tr><td>Camp fever / bad water</td><td>Fort, DC 15</td><td>Sickened, &minus;2 to all rolls until it breaks</td></tr>
-      <tr><td>Prairie fire / smoke</td><td>Ref to flee, Fort vs. smoke, DC 16</td><td>1d8 fire; choking and blind</td></tr>
+      <tr><td>Prairie fire / smoke</td><td>Ref to flee, Fort vs. smoke, DC 16</td><td>1d8 fire; Blinded and Sickened while in the smoke and for 1 round after</td></tr>
       <tr><td>Snakebite / spider</td><td>Fort, DC 15</td><td>1d6 and Enfeebled; worsens untreated</td></tr>
       <tr><td>Quicksand / bog</td><td>Athletics, DC 15</td><td>Sinks a step each round; rope and aid needed</td></tr>
       <tr><td>Bad laudanum / rotgut</td><td>Fort, DC 13</td><td>Fatigued until slept off; a poor choice in a crisis</td></tr>
@@ -1059,6 +1075,19 @@ CH7 = f"""<!-- VII -->
   years to do it; a thing in a hurry can be outrun. And <strong>what it wants in the end is never
   settled.</strong> This book gives you four ways to explain why it answers anybody and four ways to read
   what's gathering in the Rockies, and it never picks one. Don't you pick one out loud either.</div>
+  <h3>When Two Congregations Meet</h3>
+  <p>Two congregations cross paths oftener than either would like: at a hotel table, at a graveside, on a claim two
+  partners have worked for four years. Each leaves sure the other was answered by something else. Roll when two of
+  them share a scene, and play it knowing what your table may not: whichever of them the posse sides with, the same
+  thing is fed.</p>
+  <p class="note"><strong>d6, when two congregations meet:</strong> 1 they answered the same sign at the same hotel
+  on the same night, found each other out over the pie, and parted friends who pray for each other &middot; 2
+  partners four years, a bottle between them, and the first night either says aloud what answered him, one of them
+  is dead by morning and the other is sorry and sure &middot; 3 one town, two burying grounds, and a family that
+  wants its dead dug up out of the wrong one tonight &middot; 4 two printed creeds, word for word the same but for
+  the name, and each congregation hands the posse a copy to show how wrong the other is &middot; 5 one congregation
+  sells the posse the other's meeting place and hour, and every word of it is true &middot; 6 a few of them are
+  sorry with rifles, and the posse is in the road between</p>
   <p>One dark, six faces anybody has ever seen it wear, and a country sitting on top of the lot of it
   wondering why the wells go bad.</p>
   <p class="note">What follows is six dossiers, and every part of each one after the first paragraph is an offer
@@ -1488,8 +1517,8 @@ CH7 = f"""<!-- VII -->
   reckoning and the next, is where characters heal, where Afflictions are worked on, where the players invest in
   the country that the dark will later threaten. Give them real things to do with it:</p>
   <ul>
-    <li><strong>Mending body and nerve.</strong> A true season of safety heals Blood fully and gives a chance at lifting
-    one Affliction (a hard road, Ch. III). This is also when the doctor sets the bone right, the preacher hears the
+    <li><strong>Mending body and nerve.</strong> A week of true peace puts back all the Blood and all the Nerve and eases
+    a Taint by {WEEK_TAINT}; a longer season of it gives a chance at lifting one Affliction (a hard road, Ch. III). This is also when the doctor sets the bone right, the preacher hears the
     confession, the drink wears off. Make rest a place, with people in it.</li>
     <li><strong>Putting down roots.</strong> Let them buy the claim, court the widow, take the deputy's star, build the
     ranch. Every root they put down is a thing the dark can later threaten, and a reason they can't just ride
@@ -1667,8 +1696,10 @@ CH9 = f"""<!-- IX -->
   <div class="divider"></div>
   <p class="dropcap lead"><em>The Salt at Coffin Wells</em> is a one-session adventure for a fresh party of 1st-level
   characters. It's built to do the thing a first session most often fails to do: open as an honest western, turn the
-  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night, with every monster you need printed
-  right here, so you never have to reach for the Bestiary. Read it once; run it loose. Module I tells this same
+  wrong note slowly, and teach Nerve, the Mark, and the gun all in one night. Its monsters are named here and printed elsewhere. The
+  Risen and the Nightwalker are under <em>The Restless Dead</em> (Bestiary Ch. II), and Module I carries both stat blocks;
+  the Road Agents a bolder table can add to Act Three are under <em>Men, and the Shapes of Men</em> (Bestiary Ch. IV).
+  Have those pages open before the party rides in. Read it once; run it loose. Module I tells this same
   night at full length, with a bigger cast and a map of its own. Run one or the other, and whichever you run is what
   happened at Coffin Wells.</p>
 
@@ -1771,8 +1802,17 @@ APX = f"""<!-- APPENDIX -->
 
   <div class="twocol">
     <h3>Nerve &amp; Breaking</h3>
-    <p>Max Nerve = RES score + level; full each session. At 0: roll the Break, take an Affliction, stay dangerous in
-    play. Recover only in true safety (1d4), never near the dark.</p>
+    <p>Max Nerve = RES score + level. At 0: roll the Break, take an Affliction, stay dangerous in play; a further
+    failure at 0 breaks again. Recover: a safe night or a confession 1d6; one drink or dose a scene, whiskey 1d4 or
+    laudanum 1d6, the first of the day free and each after it on a Fort save at DC 12, +2 a time, Drained 1 till a
+    safe night on a failure; a week of peace all of it. A dawn in the field gives none.</p>
+
+    <h3>Blood, Dying &amp; Rest</h3>
+    <p>At 0 Blood: Dying, senseless, 1 Blood lost at each of their turns; dead at &ndash;CON, the negative of the CON
+    score. Stable on a DC 15 Fortitude save each turn or a friend's two-Beat Medicine at DC 15; up on 1 Blood on a
+    critical success or after ten quiet minutes. Dawn in the field: pools and once-a-day features only. Safe night:
+    those, 1d6 Nerve, and level &times; CON mod in Blood (min. 1). Week of peace: all Blood, all Nerve, a Taint eases by
+    {WEEK_TAINT}. No rest touches the Mark, Grit, a Hunger, a Debt or a familiar; the Returned take no Blood from any.</p>
 
     <h3>The Mark (6 steps)</h3>
     <p>Grant for: breaking utterly (the rare roll), reaching for the Old Dark, surviving the deep dark changed. Never
@@ -1802,6 +1842,10 @@ APX = f"""<!-- APPENDIX -->
     V: 23 / +17 / 110.<br>
     VI&ndash;VIII: the Bestiary.<br>
     Fair fight &asymp; party level = twice the Tier. Budget 4 points/PC; even foe 8, mook 4, standout 16.</p>
+
+    <h3>A Creature&rsquo;s Feet and First Move</h3>
+    <p>Speed: very slow 10 &middot; shuffling 15 &middot; slow 20 &middot; normal 30 &middot; fast 40 &middot; very fast
+    60 feet; fixed does not move. Initiative: d20 + its Will save, the bare d20 for a dash.</p>
 
     <h3>d12 &mdash; An Omen of the Dark</h3>
     <p>1 birds gone silent &middot; 2 a cold that lamps won't touch &middot; 3 milk soured, water iron &middot; 4 a
@@ -2368,7 +2412,9 @@ CH13 = f"""<!-- XIII -->
   <h3 id="basin-mission">Mission San Clavo &mdash; the ruined heart</h3>
   <p>The oldest thing the settlers built, and a ruin since it burned in 1811: a broken adobe church on the ground the padres
   chose because it sat over the reaching hand. The <strong>Mission spring</strong> rises in its cracked
-  baptistry, and the master nail, the one that closes the whole ring, is driven into the altar stone. Come
+  baptistry, and the master nail, the one that closes the whole ring, is driven into the altar stone. The
+  courtyard well outside the church door is the same water, one vein rising in two places, and the keepers who
+  walked the circuit called the master nail the courtyard well's as often as the altar's. Come
   here and the campaign's true shape is on the walls: the padres' carvings, the record of the binding, and the warning
   they left for whoever came after. The last keeper of the ring lived four miles from it.</p>
 
@@ -2736,7 +2782,7 @@ CH14 = f"""<!-- XIV -->
 # three legends were in the Book of Legends when all three were. The last field is the heading the
 # Book of Legends files each one under, or None if that book doesn't carry it; legends.html is built
 # after this book, so `audit_consistency.py` is what holds those headings to it.
-XV_POWERS = ["powers-redemption", "powers-mother", "powers-pinkertons", "powers-money"]
+XV_POWERS = ["powers-redemption", "powers-mother", "powers-pinkertons", "powers-army", "powers-money"]
 XVI_LEGENDS = [   # (anchor, heading here, what the prose calls it, heading in the Book of Legends)
     ("legends-spaniard", "The Mad Spaniard", "the Spaniard", "The Mad Spaniard"),
     ("legends-outfit", "The Wills Outfit", "the Outfit", "The Fifth Rider"),
@@ -2803,16 +2849,50 @@ CH15 = f"""<!-- XV -->
   because there was nothing at all to go back to. What they have built has an edge on it that a visitor feels inside a
   day and can't name until the third: everyone is very polite, everyone is armed, and nobody asks where you were in
   the war, because they've already decided.</p>
+  <p>Redemption doesn't keep to its own side of the river, and a posse that never rides within five hundred miles of
+  the Colorado can still run into it. For four springs from 1880 its circulars went up at railroad depots across Texas
+  and Georgia and at the steamboat landings, offering the people of the South wheat land, and papers to the right
+  sort. Its bonds, the <strong>Redemption Sixes</strong>, pay six per cent in gold at Jubilee, and a Kansas City bank
+  was offered them four times in one year, by a different gentleman each time at a better price, none of whom seemed
+  to mind whether the bank bought. Every bank in the Territories refuses its scrip, and two saloons in Yuma take it at
+  forty cents on the dollar. Its patrols in grey stop freighters at the water tanks on the Army's side of the river and
+  ask very politely for their papers, and a complaint sent up about one comes back endorsed that there is no report
+  of any such patrol. Its seminary preaches on the twenty-fifth of Leviticus, <em>the land shall not be sold for
+  ever: for the land is mine</em>, and says every parcel Jubilee buys is bought for Him, without saying who He is;
+  the preacher never gets as far as the tenth verse, about liberty, which is the one the town is named for. Every one
+  of those is a paper in the Book of Legends, and any of them can reach a table in Dodge or Leadville years before
+  anybody there says the word Jubilee.</p>
+  <p>Your players will ask why Washington lets all of this alone, and sooner or later one of them will ask why no
+  history book they ever read mentions Redemption. The Book of Legends answers both in a letter from a War Department
+  clerk, retired, who calls it a policy and says that like every policy at Washington it is mostly the absence of a
+  paper. A nation the United States doesn't recognise can't be at war with the United States and can't beat it, and
+  to send the Army is to admit there's something to send it against. What the gentlemen at Wormley's hotel settled in
+  February of 1877, finishing the business of the election, left the river alone, and nobody ever wrote that down.
+  The Treasury of Redemption pays its interest in gold, on the day, to gentlemen whose names you'd know. And the old
+  clerks say among themselves that a place left unwritten at Washington for a generation isn't there afterward, for
+  anybody; he doesn't believe that one himself. That letter is your answer to the player who asks why history never
+  mentions Redemption: Washington never wrote it down, and in a generation there was nothing on any shelf to find. How
+  it ends after that is yours. The Legends Companion offers four endings, from a Redemption that lasts as long as the
+  Circle's list and goes wherever the list was taking it, to a posse that lays the evidence before one honest office
+  and lives with what Washington does next.</p>
   <p>The <strong>Golden Circle</strong> is the thing inside it. An older society with an older name, resurgent, well
   funded, and roughly one part unreconstructed politics to one part something considerably worse. Its officers believe
   they're restoring a nation. What they are actually doing, and have been doing since before Redemption existed, is
   buying ground: specific parcels, in specific places, at prices that make no agricultural sense whatsoever, and
-  putting nothing on any of them.</p>
+  putting nothing on any of them. The buying is done by its <strong>Committee on Lands</strong>, which sits at
+  Jubilee, hears the list read, and votes the Treasury's gold for every parcel on it without debate. One member asked
+  in 1883 where the list came from and had his question minuted. He was dead of a pneumonia before the next meeting,
+  and the list at the one after had his own quarter section on it.</p>
   <div class="keeper-note"><span class="kn-tag">Running it</span>The horror here is that the Circle's leadership does
-  not know why the parcels matter either. Somebody hands them a list. They've been told it is strategic. Two of the
+  not know why the parcels matter either. The list comes to the Committee on Lands in the Treasury's bag on the first
+  Saturday of the month, in a hand nobody on the committee knows. They've been told it is strategic. Two of the
   parcels are on the Painted Mesa's old ground, one is a dry lake in Nevada, and one is a hundred and sixty acres of
-  worthless slope in the Rockies (Ch. VII) that the ledger says was bought for eleven thousand dollars in gold. Let the players
-  find the ledger long before they find out who wrote the list.</div>
+  worthless slope in the Rockies (Ch. VII), parcel No. 4 on the committee's books, that the ledger says was bought for
+  eleven thousand dollars in gold. Let the players find the ledger long before they find out who wrote the list. If
+  they ever ask who might have, the faintest rumour in Jubilee, which the women tell and never the same way twice,
+  says the Circle answers to a preacher who was there before the town was and promised the first families the
+  country as it was before the war; that makes a False Prophet (Ch. VII) one of the ways to hold who writes the list.
+  Keep it a rumour, as the Book of Legends does.</div>
 
 </section>
 
@@ -2852,12 +2932,23 @@ CH15 = f"""<!-- XV -->
   in a wet city, which is worth much less than the silence she came out of. Never give the
   players a raid to conduct. Give them a woman who's alive because of one of these houses, and a debt coming due on
   her granddaughter, and let them work out what an answer even looks like. If a fight happens it should be with a
-  frightened midwife holding a lamp, and the players should feel bad about it afterward.</div>
+  frightened midwife holding a lamp, and the players should feel bad about it afterward. Keep the Table's name out of
+  the houses' mouths while the posse is in earshot, too. The women use it among themselves and never write it down,
+  and they won't say it in front of a stranger; the posse should hear it first from a bounty man or across a saloon
+  table, which is where the Book of Legends has it. Of all the papers in that book from somebody who keeps a house,
+  one letter writes the Table down, and the woman who wrote it asked for it back.</div>
 
   <h2 id="powers-pinkertons">The Pinkertons</h2>
   <p>The Agency is in the Territories in force and it is not a horror, which is why it belongs in this chapter. It is
   competent, patient, well funded, and staffed by men who are frequently correct. It solves crimes. It also breaks
   strikes, and it works for whoever is paying, and it doesn't distinguish between the two.</p>
+  <p>One of the parties paying is the government. The Department of Justice has no detectives of its own, so when
+  Washington wants a thing looked into and won't send a marshal or a regiment to look at it, it engages the Agency by
+  contract, at so much a day and expenses, and the operatives report to the Department and to no other person. The
+  railroads and the mine owners hire the Agency on the same footing, and an operative is working for the government
+  when his report says so and for a railroad when it says that. A posse that takes a Pinkerton for some company's
+  hired man can find a Department contract in his coat, and a United States Marshal bound by its terms to make
+  whatever arrests he advises.</p>
   <p>For a Keeper the Agency is the answer to a problem this game otherwise has: <strong>consequence at a distance</strong>.
   The Old Dark doesn't investigate. The dead don't file reports. A posse that shoots its way through a mining camp in
   the spring has faced nothing at all for it by the fall unless somebody sends a professional after them, and the Agency is
@@ -2874,6 +2965,50 @@ CH15 = f"""<!-- XV -->
     operative who was right about the players, was wrong about the world, and has to decide what to put in the
     report.</li>
   </ul>
+  <div class="keeper-note"><span class="kn-tag">Running the Agency</span>The Book of Legends gives you that operative
+  by name, <strong>W. F. Kinnear</strong>, who worked the Department's contract on stolen Army horses in 1881, hired on as
+  a hostler at Fort Lyon, and had three thieves in the Marshal's hands inside eleven days. In 1884 a private mining
+  company sent him into the high country for eleven weeks, and he came down with four of the Rockies camps (Ch. VII)
+  in his report and a seventh paragraph saying all four were waiting for the same thing. Chicago wrote <em>not
+  credible</em> across it and moved him to Pueblo, where he took the statement of the Circle's runaway clerk under a
+  Department contract and watched the Department write <em>File</em> on it. He opened a file on N. Ashby, the
+  naturalist, last seen riding toward Calvary Crossing, and the Department closed it the week after he asked to go
+  and look. Before that book is done he has left the Agency, and he still holds to paragraph 7. Bring him to your
+  table early as the posse's most dangerous opponent and let him end as the best friend it has. He'll never lie in a
+  report, and the turn comes the day he sees something his card has no column for.</div>
+
+  <h2 id="powers-army">The Army</h2>
+  <p>The Army is the Power everybody in the Territories has already met. It owns the posts, the military roads and
+  the telegraph that runs between them, and it buys the county's hay, horses, beef and salt at prices the county
+  lives on. Behind it stands Washington, which pays for all of it and would like to hear as little as it can about
+  any of it, and what the two of them want is a quiet frontier. A posse can enlist in it, sell to it, scout for it,
+  desert it, or end up in its road, and any one of those will carry a campaign.</p>
+  <p>Be as plain at your table about what that quiet costs as the Player's Book is about the First Peoples. The quiet
+  is the nations' defeat, and the posts are there to hold it. The buffalo are gone, the treaties were broken one after
+  another, and the reservation lines are redrawn smaller with every new one; a family found off its reservation
+  without the agent's pass is counted hostile, and a column goes out after it. In the Southwest the work goes on.
+  Geronimo is out in the Sierra Madre with a few dozen Chiricahua, thousands of troops are in the field after him, and
+  most of the finding is done by Apache scouts in the Army's pay. A posse that rides with the Army in 1885 rides into
+  all of that, and the families at the far end of the column have names and reasons of their own, as everybody in
+  Ch. VIII does. Settle with your table, under the lines and veils of Ch. I, whether that history is handled gravely,
+  glancingly or not at all, and never use it for shock.</p>
+  <p>The thing the Army would most like not to see is Redemption. In April of 1882 a captain at Fort Yuma rode up the
+  river with fifteen men and reported a customs house of brick, a flag he didn't recognise, four men in grey who asked
+  for his papers, and a town of eight thousand with two hundred men drilling in the square. Every headquarters between
+  Yuma and Washington wrote <em>Respectfully forwarded</em> on the report, and the War Department wrote <em>File. No
+  action.</em> Eleven months later the Secretary of War told a member of Congress that the Department had no
+  information of any organized community at the place described, and the year after that the Army gave up Fort Yuma
+  for economy. In the spring of 1885 it sent two troops of the Tenth Cavalry to camp on the river, under orders to
+  keep to their own bank, to have no words with Redemption's patrols, and to take no notice of the flag that goes
+  up across the water every morning at reveille.</p>
+  <div class="keeper-note"><span class="kn-tag">Running it</span>The Tenth is the regiment the Army sends first, and
+  this is the hardest posting it has: sixty men told to look every day at a country that officially isn't there. Play
+  the troopers as soldiers doing a hard job with dignity, never as anybody's prop, and give the posse a first sergeant
+  they can trust; the Book of Legends has one, Isom Fairley, who means to serve thirty years and reads the Jubilee
+  papers when he can get them. The Fort Yuma report and its endorsements are in that book, and so is a post on the
+  Pecos that requisitioned forty wagon loads of salt in 1880 and, asked what for, answered <em>For the preservation of
+  the post</em>. It got the salt. Keep the Agency in view as well. It is paid to see what the Army is ordered not to,
+  and Washington pays for both.</div>
 
   <h2 id="powers-money">Kansas City Money</h2>
   <p>Follow any bank in the Territories back far enough and it is a correspondent of a bank in Kansas City, and behind
@@ -2904,10 +3039,12 @@ CH15 = f"""<!-- XV -->
   Rockies gatherings (Ch. VII) seen from outside by men who have no idea what they are buying. The Mad Spaniard
   (Ch. XVI) turns up in Jubilee and in the Rockies and is remembered in both, and in Jubilee he's remembered from before the town was
   there. The Dread Mother's houses are the only institution in the Territories that has ever turned down Kansas City
-  money, and nobody has thought to ask them why. And the Pinkerton assigned to your players will, by the end, have
+  money, and nobody has thought to ask them why. The two troops of the Tenth on the Colorado look across the water
+  at Jubilee every morning under orders not to see it, and Jubilee looks back at them like weather. And the
+  Pinkerton assigned to your players will, by the end, have
   compiled a better account of the gatherings than the players have, and won't be believed by a single soul in
   Chicago.</p>
-  <p>Two threads is a campaign. Three is a good long one. All four is a setting sourcebook, and a setting sourcebook
+  <p>Two threads is a campaign. Three is a good long one. All {N_POWERS} is a setting sourcebook, and a setting sourcebook
   is a different and lesser thing than a country your players are frightened of.</p>
 </section>
 """
@@ -3224,10 +3361,17 @@ KEEP_INDEX = [
     ("Redemption (the new Confederacy)", "powers-redemption"),
     ("Jubilee (Redemption's capital)", "powers-redemption"),
     ("The Golden Circle", "powers-redemption"),
+    ("The Committee on Lands", "powers-redemption"),
+    ("Redemption Sixes (bonds)", "powers-redemption"),
     ("The Dread Mother", "powers-mother"),
     ("The Long Table (the federation)", "powers-mother"),
     ("Seated, and asked to stand", "powers-mother"),
     ("The Pinkertons", "powers-pinkertons"),
+    ("The Department of Justice", "powers-pinkertons"),
+    ("Kinnear, W. F. (operative)", "powers-pinkertons"),
+    ("The Army (and Washington)", "powers-army"),
+    ("The Tenth Cavalry, on the Colorado", "powers-army"),
+    ("Fort Yuma", "powers-army"),
     ("Kansas City money", "powers-money"),
     ("The railroad barons", "powers-money"),
     # --- XVI. Legends of the Territory ---

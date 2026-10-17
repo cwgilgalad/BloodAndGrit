@@ -108,8 +108,26 @@ THROWN_RE = re.compile(
     r'<td class="c">—</td><td class="c">—</td><td>([^<]*)</td>'
     r'<td class="c">([^<]+)</td></tr>')
 
+# Blades & Bludgeons, read inside its own section. It carries a Cost column since S50 (the
+# Firearms, More Arms and Armor tables all priced every row and this one priced none, so a new
+# Sawbones could buy a revolver and not a knife). "free" is a price: the book's word for the
+# fists, the club and the staff, which the data carries as 0.
+BLADES_SEC_RE = re.compile(r'<h2 id="ix-blades">.*?<tbody>(.*?)</tbody>', re.S)
 BLADE_RE = re.compile(
-    r'<tr><td>([^<]+)</td><td class="c">(\d+d\d+)</td><td>([^<]*)</td></tr>')
+    r'<tr><td>([^<]+)</td><td class="c">(\d+d\d+)</td><td>([^<]*)</td>'
+    r'<td class="c">([^<]+)</td></tr>')
+
+
+def _price(s):
+    """A printed price as dollars: "free", "$5", "$1.25", "50¢". None if it is none of those."""
+    s = s.strip()
+    if s == "free":
+        return 0.0
+    m = re.fullmatch(r"\$(\d+(?:\.\d+)?)", s)
+    if m:
+        return float(m.group(1))
+    m = re.fullmatch(r"(\d+)¢", s)
+    return int(m.group(1)) / 100 if m else None
 
 
 def _unescape(s):
@@ -127,8 +145,10 @@ def load_arms():
             "reload": _unescape(reload_), "traits": _unescape(traits), "cost": float(cost),
         }
     blades = {}
-    for name, dmg, notes in BLADE_RE.findall(html):
-        blades[_unescape(name)] = {"dmg": _unescape(dmg), "notes": _unescape(notes)}
+    sec = BLADES_SEC_RE.search(html)
+    for name, dmg, notes, cost in BLADE_RE.findall(sec.group(1) if sec else ""):
+        blades[_unescape(name)] = {"dmg": _unescape(dmg), "notes": _unescape(notes),
+                                   "cost": _price(_unescape(cost)), "printed": _unescape(cost)}
     thrown = [_unescape(m[0]) for m in THROWN_RE.findall(html)]
     return guns, blades, thrown
 
@@ -177,9 +197,14 @@ def check_arms(problems):
         if w is None:
             problems.append(f"{name}: printed in the book's blades table and absent from the data")
             continue
-        checks += 1
+        checks += 2
         if b["dmg"] != w.get("dmg"):
             problems.append(f"{name}: book damage {b['dmg']!r} != data {w.get('dmg')!r}")
+        if b["cost"] is None:
+            problems.append(f"{name}: the blades table prices it {b['printed']!r}, which is "
+                            f"not free, $N or N¢")
+        elif b["cost"] != float(w.get("cost", 0)):
+            problems.append(f"{name}: book cost {b['printed']!r} != data {w.get('cost', 0)!r}")
 
     # A blade has no Range, Cap. or Reload column, so carrying one would be an invention.
     for w in weapons:
@@ -754,6 +779,155 @@ def check_perks(problems):
     checks += 1
     return checks
 
+# ------------------------------------------------ how many skills a ready-made soul is trained in
+# D01 (Cole, 2026-09-25): the skill an Origin trains comes ON TOP of the Calling's number plus
+# WIT, and that number has a floor of 1. GritKeeper's CharGen already counted it that way; the
+# book said otherwise until v2.57, and Appendix D's four sheets with a skill-granting Origin were
+# one short by the app's count. The rule is now printed twice (Ch. V's "Read each table thus" and
+# Ch. VIII's opening) and applied six times (Appendix D), so all eight are held to chargen.json.
+
+PREGEN_BOX_RE = re.compile(r'<div class="box">\s*<h4>(.*?)</h4>(.*?)</div>', re.S)
+PREGEN_SCORE_RE = re.compile(r"<strong>(STR|DEX|CON|WIT|RES|PRE)</strong> (\d+) ")
+PREGEN_TRAINED_RE = re.compile(r"<strong>Trained:</strong>\s*(.*?)\.\s*<strong>", re.S)
+ON_TOP_RE = re.compile(r"WIT modifier \(minimum 1\),[^.]*?the skill your Origin trains comes on "
+                       r"top of")
+
+
+def check_pregen_skills(problems):
+    cal_by = {c["name"]: c for c in RAW_DATA["callings"]}
+    org_by = {o["name"]: o for o in RAW_DATA["origins"]}
+    start = BOOK_HTML.index('<section class="page" id="posse">')
+    posse = BOOK_HTML[start:BOOK_HTML.index("</section>", start)]
+
+    checks = 1
+    said = ON_TOP_RE.findall(_reading_text("blood-and-grit.html"))
+    if len(said) != 2:
+        problems.append(f"Ch. V and Ch. VIII: the rule that an Origin's skill comes on top of the "
+                        f"Calling's number plus WIT (minimum 1) is printed {len(said)} time(s), "
+                        f"expected 2 (D01)")
+
+    boxes = PREGEN_BOX_RE.findall(posse)
+    checks += 1
+    if len(boxes) != 6:
+        problems.append(f"Appendix D: read {len(boxes)} ready-made souls, expected 6")
+    for head, body in boxes:
+        head = _tidy(TAG_RE.sub("", head))
+        m = re.match(r"(.+?) — (.+?) · (.+)$", head)
+        if not m:
+            problems.append(f"Appendix D: cannot read the heading {head!r}")
+            continue
+        who, calling, origin = m.group(1), m.group(2), m.group(3)
+        origin = "The " + origin[4:] if origin.startswith("the ") else origin
+        cal, org = cal_by.get(calling), org_by.get(origin)
+        scores = {ab: int(v) for ab, v in PREGEN_SCORE_RE.findall(body)}
+        t = PREGEN_TRAINED_RE.search(body)
+        if not cal or not org or "WIT" not in scores or not t:
+            problems.append(f"Appendix D / {who}: cannot read the Calling, the Origin, WIT or "
+                            f"the Trained line")
+            continue
+        trained = [_tidy(s) for s in re.split(r",\s*(?![^()]*\))", TAG_RE.sub("", t.group(1)))]
+        gift = org.get("trained", []) + org.get("trainedChoice", [])
+        base = max(1, cal["trainedSkills"] + (scores["WIT"] - 10) // 2)
+        want = base + (1 if gift else 0)
+        checks += 3
+        if len(trained) != want:
+            problems.append(f"Appendix D / {who}: {len(trained)} trained skills; "
+                            f"max(1, {cal['trainedSkills']} + WIT mod) is {base}"
+                            f"{' and the Origin adds one' if gift else ''}, so {want}")
+        if len(set(trained)) != len(trained):
+            problems.append(f"Appendix D / {who}: a trained skill is listed twice: {trained}")
+        if gift and not any(g in trained for g in gift):
+            problems.append(f"Appendix D / {who}: {origin} trains {' or '.join(gift)}, and the "
+                            f"sheet has none of them")
+    return checks
+
+
+# ----------------------------------------------- what the ready-made souls carry (S48)
+# Appendix D's gear lines used to leave out weapons the same sheets fight with, and all but one
+# left out the ammunition: the preacher walked into his first fight with a shotgun and not a
+# shell. So every weapon on an Attack line (anything printed with a to-hit and a damage die)
+# must be named on the Gear line by its last word, and the Gear line must count rounds (rounds,
+# cartridges, shells, shots) at least once for every gun.
+PREGEN_WEAPON_RE = re.compile(r"^\s*(.+?) (?:\+\d+|&minus;\d+) \(\d+d\d+")
+PREGEN_ROUNDS_RE = re.compile(r"\b\d+ (?:rounds|cartridges|shells|shots)\b")
+GUN_WORDS = {"revolver", "shotgun", "rifle", "carbine", "derringer", "pistol", "repeater", "gun"}
+
+
+def check_pregen_gear(problems):
+    start = BOOK_HTML.index('<section class="page" id="posse">')
+    posse = BOOK_HTML[start:BOOK_HTML.index("</section>", start)]
+    boxes = PREGEN_BOX_RE.findall(posse)
+    checks = 1
+    if len(boxes) != 6:
+        problems.append(f"Appendix D gear: read {len(boxes)} ready-made souls, expected 6")
+    for head, body in boxes:
+        who = _tidy(TAG_RE.sub("", head)).split(" — ")[0]
+        atk = re.search(r"<strong>Attack</strong>(.*?)</p>", body, re.S)
+        gear = re.search(r"<strong>Gear:</strong>(.*?)</p>", body, re.S)
+        if not atk or not gear:
+            problems.append(f"Appendix D / {who}: cannot read the Attack or the Gear line")
+            continue
+        kit = _tidy(TAG_RE.sub("", gear.group(1))).lower()
+        weapons = [m.group(1) for part in atk.group(1).split("&middot;")
+                   if (m := PREGEN_WEAPON_RE.match(part))]
+        checks += 1
+        if not weapons:
+            problems.append(f"Appendix D / {who}: no weapon read off the Attack line")
+        guns = 0
+        for weapon in weapons:
+            word = _tidy(TAG_RE.sub("", weapon)).split()[-1].lower()
+            guns += word in GUN_WORDS
+            checks += 1
+            if not re.search(rf"\b{re.escape(word)}\b", kit):
+                problems.append(f"Appendix D / {who}: fights with a {weapon.strip()} and the "
+                                f"Gear line carries no {word}")
+        rounds = len(PREGEN_ROUNDS_RE.findall(kit))
+        checks += 1
+        if rounds < guns:
+            problems.append(f"Appendix D / {who}: {guns} gun(s) on the Attack line and "
+                            f"{rounds} count(s) of rounds on the Gear line")
+    return checks
+
+
+# ------------------------------------------------------ Ch. XIV's Attack Rank table (S53)
+# The table names the Callings that hold each rank. It used to be typed, and it left the
+# Engineer out of Steady while his own statline said Steady. build_player.py now fills it from
+# the statlines; this holds the printed rows to the statlines (in book order) and to
+# chargen.json's attackRank, so the build, the book and the data cannot part.
+RANK_ORDER = ("Practiced", "Steady", "Slight")
+RANK_ROW_RE = re.compile(r"<tr><td>(Practiced|Steady|Slight)</td><td>[^<]*</td><td>([^<]*)</td></tr>")
+
+
+def check_rank_table(problems):
+    start = BOOK_HTML.find('<h2 id="ix-ranks">')
+    tbody = re.search(r"<tbody>(.*?)</tbody>", BOOK_HTML[start:], re.S) if start >= 0 else None
+    rows = dict(RANK_ROW_RE.findall(tbody.group(1))) if tbody else {}
+    checks = 1
+    if sorted(rows) != sorted(RANK_ORDER):
+        problems.append(f"Ch. XIV, Attack Rank: read the rows {sorted(rows)}, expected "
+                        f"{', '.join(RANK_ORDER)}")
+        return checks
+    book = load_book()
+    held = {c["name"]: c.get("attackRank") for c in RAW_DATA["callings"]}
+    named = []
+    for rank in RANK_ORDER:
+        printed = [_tidy(n) for n in rows[rank].split(",") if n.strip()]
+        named += printed
+        statlines = [n for n, b in book.items() if b["rank"] == rank]
+        data = sorted(n for n, r in held.items() if r == rank)
+        checks += 2
+        if printed != statlines:
+            problems.append(f"Ch. XIV, Attack Rank, {rank}: the table names {printed} and the "
+                            f"statlines, in book order, give {statlines}")
+        if sorted(printed) != data:
+            problems.append(f"Ch. XIV, Attack Rank, {rank}: the table names {sorted(printed)} "
+                            f"and chargen.json's attackRank gives {data}")
+    checks += 1
+    if sorted(named) != sorted(held):
+        problems.append(f"Ch. XIV, Attack Rank: the table names {len(named)} Callings "
+                        f"({len(set(named))} different) and there are {len(held)}")
+    return checks
+
 # --------------------------------------------------- where the budget stops being arithmetic
 # B4 measured that the encounter budget holds to Tier III and not past it, and the answer was to
 # say so rather than retune anything: a Tier IV creature is a problem with an answer, not a fight
@@ -1294,6 +1468,9 @@ def main():
     checks += check_budget(problems)
     checks += check_origins(problems)
     checks += check_perks(problems)
+    checks += check_pregen_skills(problems)
+    checks += check_pregen_gear(problems)
+    checks += check_rank_table(problems)
     checks += check_arithmetic_stops(problems)
     checks += check_price_dearer(problems)
     checks += check_workings(problems)
@@ -1309,7 +1486,8 @@ def main():
         return 1
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
           f"prose, their Perks, their fight ledgers, their 3rd-level paths, every Sign and "
-          f"Miracle, the arms table, "
+          f"Miracle, the arms table and what each blade costs, Ch. XIV's Attack Rank table, "
+          f"the ready-made souls' weapons and rounds, "
           f"Ch. IV's Origins, the Index's own alphabet, the coin each Calling starts with, "
           f"every level ladder the prose spells out, the Old Dark's faces kept off the players' "
           f"side, and its encounter budget across both books "

@@ -53,9 +53,9 @@
   "speed": "shuffling (half)",
   "saves": "Fort +6, Ref +0, Will +2",
   "attacks": "grasping hands +4 (1d6+2 and grab); bite +4 (1d4+2)",
-  "special": "Does not stop. Ignores pain, fear, and being bloodied; immune to anything worked on a living mind.",
+  "special": "Does not stop. Ignores pain, fear, and being bloodied; immune to anything worked on a living mind. A Risen brought to 0 Blood lies still until the next full dark, then stands on full Blood, unless the body was burned or salted or the head taken first.",
   "dread": "DC 16, 1d6 (the first time the dead get up)",
-  "puttingItDown": "Break the body past use or take the head; salt and fire end it for good.",
+  "puttingItDown": "Breaking the body past use buys you until the next dark; take the head, or give it salt or fire, and that ends it for good.",
   "mark": "",
   "lore": [
    "There is nothing clever in the Risen and nothing left of whoever it used to be. The country called it up out of thin ground (a battlefield, a hanging-tree, a pauper's trench dug too shallow in a hard winter) and what climbed out is a body that has forgotten it is supposed to lie down. It does not hate you. It does not know you. It simply comes, slow and certain, with the dumb patience of running water, and it will be coming long after you have run out of reasons to stay.",

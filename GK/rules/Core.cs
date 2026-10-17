@@ -226,18 +226,30 @@ public class PartyMember : INotifyPropertyChanged
     public int Mark { get => _mark; set { _mark = Math.Clamp(value, 0, Rules.MarkLost); On(); } }
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
-    // Zeal…). Empty name and 0 max for the mundane. Refreshed to max at a full rest / dawn.
+    // Zeal…). Empty name and 0 max for the mundane. Every rest refills it, dawn in the field
+    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed.
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
     public string Notes { get => _notes; set { _notes = value; On(); } }
+
+    // What the bottle has had off this soul (Ch. XII, Whiskey and worse): drinks and doses today,
+    // whether the Fortitude save that comes after the first has left them Drained, and whether
+    // they have already had their one this scene. Ordinary bound properties, so the setters call
+    // On() and undo and session.json carry them with no extra wiring. Every rest starts the day's
+    // count again. A safe night or a week lifts the Drained (the book: "until a full night's
+    // rest"), and a dawn in the field leaves it. Every scene boundary clears the third.
+    int _doses; bool _drinkDrained, _dosedScene;
+    public int DosesToday { get => _doses; set { _doses = Math.Max(0, value); On(); } }
+    public bool DrainedByDrink { get => _drinkDrained; set { _drinkDrained = value; On(); } }
+    public bool DosedThisScene { get => _dosedScene; set { _dosedScene = value; On(); } }
 
     /// <summary>What this soul carries out of the bad nights and does not put down: Lasting
     /// Injuries (Ch. XI: "they do not heal with rest alone; they take a Sawbones, time, and
     /// sometimes a graveyard") and Afflictions (Keeper's Book Ch. III: "the scars that stay").
     ///
     /// Both were in the app already and neither could be written down. The Reference deck printed
-    /// the injury table, <see cref="Horror.DreadCheck"/> worked out whether a failure carried an
+    /// the injury table, <see cref="Horror.DreadCheck(int, int, int?, CharacterSheet)"/> worked out whether a failure carried an
     /// Affliction and returned a flag no screen ever read, and a soul had nowhere to put either,
     /// so the one thing the game says is permanent lived on somebody's notepad, in the app whose
     /// whole promise is that nothing has to.</summary>
@@ -266,7 +278,7 @@ public class PartyMember : INotifyPropertyChanged
     ///
     /// <para>Deliberately NOT part of <see cref="FeatureSpent"/>, and the separation is the whole
     /// design. <c>CharGen.RefreshFeatures</c> is the single path a boundary takes to give things
-    /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a long rest and a new session
+    /// back, it walks <c>FeatureSpent</c> alone, and so a new fight, a rest and a new session
     /// cannot reach a Debt however they change. A Debt is owed until the Old Dark collects it, and
     /// the app should never be the reason one quietly went away.</para>
     ///
@@ -526,7 +538,8 @@ public class Combatant : INotifyPropertyChanged
     /// <see cref="Down"/> is true and <see cref="Rules.CanAct"/> refuses the turn, so the exception
     /// has to be a fact of its own. Cleared when the round turns over, which is what "one more
     /// round" means. It does not stop the bleeding; the book buys consciousness with it, not
-    /// time.</summary>
+    /// time. The Risen are given the same round free by their Shape (<see cref="Rules.RisenStands"/>),
+    /// and it ends the same way.</summary>
     public bool Upright { get => _upright; set { _upright = value; On(); OnDying(); } }
 
     /// <summary>Knocked senseless rather than killed: brought to 0 Blood by a blow that was
@@ -1192,6 +1205,43 @@ public static class Rules
     /// the Encounter tab's verdict and the Tracker's refusal to put it on the field read this.</summary>
     public static bool SignOnly(int creatureTier, int partyLevel) => Cost(creatureTier, partyLevel).spoor;
 
+    /// <summary>The most copies of one creature that one press puts on the field. Every count
+    /// spinner in the app stops here, and an encounter plan holding more of one kind goes on in
+    /// runs of this many (<see cref="FieldBatches"/>).</summary>
+    public const int FieldBatchMax = 20;
+
+    /// <summary>An encounter plan as the field takes it: one entry per kind of creature, in the
+    /// order each kind first turns up in the plan, with how many of it the plan holds. Kinds are
+    /// told apart by name, which is also how the Tracker numbers its rows. Until v1.60.0 Send all
+    /// put a plan of three Risen on as three separate arrivals, so a Tier the safe-table rule bars
+    /// asked its question three times and the log said "takes the field" three times; grouped, it
+    /// is one arrival, one question and one line.</summary>
+    public static List<(Creature Creature, int Count)> Muster(IEnumerable<Creature> plan)
+    {
+        var kinds = new List<(Creature Creature, int Count)>();
+        var seat = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var c in plan)
+        {
+            if (c == null) continue;
+            if (seat.TryGetValue(c.name, out int i)) kinds[i] = (kinds[i].Creature, kinds[i].Count + 1);
+            else { seat[c.name] = kinds.Count; kinds.Add((c, 1)); }
+        }
+        return kinds;
+    }
+
+    /// <summary>Runs of at most <see cref="FieldBatchMax"/> that add up to <paramref name="count"/>,
+    /// for a kind the plan holds more of than one press takes. Nothing for a count below one.</summary>
+    public static IEnumerable<int> FieldBatches(int count)
+    {
+        for (int left = count; left > 0; left -= FieldBatchMax) yield return Math.Min(left, FieldBatchMax);
+    }
+
+    /// <summary>"3× The Risen · 1× The Hollow Man": what a send put on the field, one kind to a
+    /// piece. Send all logs it last when more than one kind went on, so the status bar carries the
+    /// whole send and not only its last kind.</summary>
+    public static string MusterLine(IEnumerable<(Creature Creature, int Count)> sent)
+        => string.Join(" · ", sent.Select(k => $"{k.Count}× {k.Creature.name}"));
+
     /// <summary>What a Survival check against <see cref="SpoorRow"/> buys, by degree: the same
     /// ordered 0–3 scale <see cref="FourDegrees"/> returns.</summary>
     public static string SpoorRead(int degree) => degree switch
@@ -1236,7 +1286,7 @@ public static class Rules
         if (die == 1)  idx = Math.Max(0, idx - 1);
         string deg = idx switch { 3 => "CRITICAL SUCCESS", 2 => "Success", 1 => "Failure", _ => "CRITICAL FAILURE" };
         string detail = $"d20({die}) {(mod>=0?"+":"")}{mod} = {total} vs DC {dc}";
-        Daybook.Note("check", $"{detail} → {deg}");
+        Daybook.Note("check", $"{Daybook.Whose}{detail} → {deg}");
         return (idx, deg, detail);
     }
 
@@ -1378,8 +1428,9 @@ public static class Rules
     /// "Initiative: a Notice check", and the tracker rolled a bare d20 for everyone for eleven
     /// releases, so a Scout with Notice +9 took their place in the line exactly as often as the
     /// bandit beside them. The bonus comes from the roller's sheet where there is one
-    /// (<see cref="CharGen.InitiativeBonus"/>); a creature has no skill ranks in its stat block, so
-    /// it passes 0 and rolls the plain die rather than being handed a number the book never gave it.
+    /// (<see cref="CharGen.InitiativeBonus"/>); a creature has no skill ranks in its stat block and
+    /// brings its Will save instead (<see cref="CharGen.CreatureInitiativeBonus"/>), which the book
+    /// has printed since v1.60.0. The harness still passes 0 for everyone, so PLAYTEST.md holds.
     ///
     /// Floored at 1 on purpose: a low-Wits soul can carry a negative bonus, and 0 is the value the
     /// tracker uses to mean "has not rolled yet". A rolled 0 and an unrolled 0 must not look alike.
@@ -1387,9 +1438,11 @@ public static class Rules
     public static int RollInitiative(int noticeBonus) => Math.Max(1, Rng.Next(1, 21) + noticeBonus);
 
     /// <summary>Can this one still be handed a turn this round? A trace takes none, someone bleeding
-    /// out takes none, and nobody takes two, unless they have spent Grit to refuse to fall, which
-    /// is the one thing in the book that buys a turn out of a body at 0 Blood (Ch. II). The dead are
-    /// never <see cref="Combatant.Upright"/>; <see cref="RefuseToFall"/> is what keeps that true.
+    /// out takes none, and nobody takes two, unless they have spent Grit to refuse to fall (Ch. II)
+    /// or are Risen and still inside the round that dropped them (Ch. XII): the two things in the
+    /// book that buy a turn out of a body at 0 Blood. The dead are never
+    /// <see cref="Combatant.Upright"/>; <see cref="RefuseToFall"/> and <see cref="RisenStands"/>
+    /// are what keep that true.
     /// </summary>
     public static bool CanAct(Combatant c)
         => c != null && !c.HasActed && !c.IsSign && !c.Dead && (!c.Down || c.Upright);
@@ -1421,10 +1474,14 @@ public static class Rules
     public static int StrengthOf(CharacterSheet s)
         => s?.Scores != null && s.Scores.TryGetValue("STR", out int str) && str > 0 ? str : AverageScore;
 
-    /// <summary>A soul's death threshold: their CON. Returns <see cref="DefaultDeathAt"/> for a soul
-    /// with no sheet, which is every hand-entered row on the Posse tab.</summary>
+    /// <summary>A soul's death threshold: their CON score, or twice it for the Risen, who are "hard
+    /// to put down" (Ch. XII, The Shapes of Return). Returns <see cref="DefaultDeathAt"/> for a
+    /// soul with no sheet, which is every hand-entered row on the Posse tab.</summary>
     public static int DeathThresholdFor(CharacterSheet s)
-        => s?.Scores != null && s.Scores.TryGetValue("CON", out int con) && con > 0 ? con : DefaultDeathAt;
+    {
+        int con = s?.Scores != null && s.Scores.TryGetValue("CON", out int c) && c > 0 ? c : DefaultDeathAt;
+        return CharGen.IsRisen(s) ? con * 2 : con;
+    }
 
     // ---- the Witch's bound beast on the field (Player's Book Ch. VII) ----
     //
@@ -1515,6 +1572,19 @@ public static class Rules
         soul.Grit -= 1;
         c.Upright = true;
         return null;
+    }
+
+    /// <summary>The Risen's gift (Ch. XII, The Shapes of Return): "the blow that drops you leaves
+    /// you on your feet until the end of the round it lands." The same <see cref="Combatant.Upright"/>
+    /// that Grit buys, given by the Shape instead and cleared by the same <see cref="BleedOut"/>, so
+    /// the round it lasts is the round Grit's lasts. Free and not a choice, so nobody is asked.
+    /// Returns whether it took: only a posse soul of that Shape, freshly down and not dead.</summary>
+    public static bool RisenStands(Combatant c, PartyMember soul)
+    {
+        if (c == null || soul == null || c.Dead || !c.Down || c.Upright || !CharGen.IsRisen(soul.Sheet))
+            return false;
+        c.Upright = true;
+        return true;
     }
 
     /// <summary>Stop the bleeding. The book gives a Fortitude save and a Medicine check the same DC,
@@ -1633,7 +1703,7 @@ public static class Rules
                 // Appendix B has said "cannot Aim" about Fatigued since v1.4, and until there was
                 // an Aim action to refuse it was a sentence in a cell. There is one now.
                 if ((c.Conditions ?? "").Contains("Fatigued", StringComparison.OrdinalIgnoreCase))
-                    return new(false, $"{c.Name} is Fatigued, and the Fatigued cannot Aim or run. Rest sheds it.");
+                    return new(false, $"{c.Name} is Fatigued, and the Fatigued cannot Aim or run. A safe night sheds it.");
                 if (c.Aimed) return new(false, $"{c.Name} is already aimed. The +2 does not stack with itself.");
                 c.Aimed = true;
                 c.Beats -= act.Beats;
@@ -1800,34 +1870,42 @@ public static class Rules
     /// ground with a count running is still on the ground when the shooting stops, and "New fight"
     /// must not quietly make them well. <see cref="Combatant.Upright"/> IS here, because refusing to
     /// fall buys one round and the round is over.</para>
-    public static bool FightResidue(Combatant c)
-        => c != null && (!string.IsNullOrWhiteSpace(c.Conditions) || c.Beats != 3 || c.MapStep != 1
+    public static bool FightResidue(Combatant c) => FightResidue(c, "");
+
+    /// <summary><see cref="FightResidue(Combatant)"/> for a row whose soul carries a condition out
+    /// of every fight (<see cref="Rest.Standing"/>, the bottle's Drained). Wearing exactly that
+    /// is not residue, since the reset would clear it and put it straight back, and a guard that
+    /// offers to clear something that returns is a button that does nothing.</summary>
+    public static bool FightResidue(Combatant c, string standing)
+        => c != null && (!Rest.SameConditions(c.Conditions, standing) || c.Beats != 3 || c.MapStep != 1
             || c.Acting || c.HasActed || c.Upright || c.LastDelta != 0 || !string.IsNullOrEmpty(c.LastNote)
             || c.Worked is { Count: > 0 }
             // The turn state the Iron Code added: an aim held, a recoil standing, cover pressed to,
             // a reaction spent. All of them are of the fight and none should outlive it.
             || c.Aimed || c.Recoiling || c.ReactionSpent || c.Cover != IronCode.Cover.None);
 
-    /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue"/>
+    /// <summary>Is there anything of the last fight still on the field? <see cref="FightResidue(Combatant)"/>
     /// over everyone standing on it.</summary>
     public static bool AnyFightResidue(IEnumerable<Combatant> field)
         => field != null && field.Any(FightResidue);
 
     /// <summary>Wipe everything the last fight left on a survivor: conditions, spent Beats, position
-    /// in the order, and every Sign or Miracle still working on them. Blood is deliberately NOT
-    /// touched: wounds carry between fights, and the Posse tab's Rest is what heals them.
+    /// in the order, and every Sign or Miracle still working on them. Blood is not touched: wounds
+    /// carry between fights, and the Posse tab's Rest ▾ is what heals them. A condition that
+    /// outlasts the fight goes back on after the wipe, when <paramref name="standing"/> names one
+    /// for the row (the Tracker passes <see cref="Rest.Standing"/> for the soul behind it).
     ///
     /// This lives here rather than inline in the Tracker because it is the exact seam a bug walked
     /// through: New fight was written before Worked effects and the sign strip existed, and being UI
     /// code no test could reach it, so it silently stopped resetting everything a fight leaves
     /// behind. Out here the smoke suite holds it to its word.</summary>
-    public static void ResetForNewFight(IEnumerable<Combatant> survivors)
+    public static void ResetForNewFight(IEnumerable<Combatant> survivors, Func<Combatant, string> standing = null)
     {
         if (survivors == null) return;
         foreach (var c in survivors)
         {
             if (c == null) continue;
-            c.Conditions = ""; c.Beats = 3; c.MapStep = 1;
+            c.Conditions = standing?.Invoke(c) ?? ""; c.Beats = 3; c.MapStep = 1;
             c.Acting = false; c.HasActed = false; c.Upright = false;
             // The Iron Code's turn state goes with the rest of it. Senseless and the Gait do NOT:
             // being laid out is a fact about a body and carries between fights exactly as Blood
@@ -2285,11 +2363,12 @@ public static class Rules
             "clumsy"    => new(-2, -2, -2, 0, 0, 0, "Clumsy: the book scopes this to DEX-based Strikes, checks and Defense."),
             "drained"   => new(0, 0, -2, -2, 0, 0, "Drained: Fortitude and CON specifically, and loses Blood equal to their level."),
             "dying"     => new(0, 0, 0, 0, 0, 0, "Dying: unconscious at 0 Blood, bleeding toward −CON. The tracker runs this itself."),
-            "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued, and cannot Aim or run. Rest sheds it."),
+            "enfeebled" => new(-2, 0, -2, 0, 0, 0, "Enfeebled: the book scopes this to STR-based Strikes and checks, and they carry half what they could."),
+            "fatigued"  => new(0, 0, -2, -2, 0, 0, "Fatigued, and cannot Aim or run. A safe night sheds it."),
             "frightened"=> new(-n, -n, -n, -n, 0, 0, $"Frightened {n}: −{n} on everything; it lessens by one step each turn as they master it."),
-            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed: held fast and Off-Guard, at −4 DEX, and it takes a check to break free.") { OffGuard = true },
-            "off-guard" => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
-            "offguard"  => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, caught at the first instant, or knocked sprawling. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "grabbed"   => new(0, -2, 0, 0, 0, 0, "Grabbed: held fast and Off-Guard, at −4 DEX. To break free they spend a Beat and roll Athletics or Acrobatics against the grabber's attack roll; a tie keeps them held.") { OffGuard = true },
+            "off-guard" => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, or caught at the first instant. Easier to hit, and easier to hit well.") { OffGuard = true },
+            "offguard"  => new(0, -2, 0, 0, 0, 0, "Off-Guard: cannot properly defend, being unaware, flanked, or caught at the first instant. Easier to hit, and easier to hit well.") { OffGuard = true },
             "prone"     => new(-4, 0, 0, 0, 0, 0, "Prone: the −4 is to melee; anyone SHOOTING at them has +4 instead, and rising costs a Beat.") { Prone = true },
             "sickened"  => new(-2, 0, -2, -2, -2, 0, "Sickened: Strikes, damage, checks and saves alike."),
             "slowed"    => new(0, 0, 0, 0, 0, n, $"Slowed {n}: {n} fewer Beat{(n == 1 ? "" : "s")} each turn. They may still defend."),

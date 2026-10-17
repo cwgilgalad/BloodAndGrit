@@ -8,16 +8,37 @@
 # module I. Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents,
-                            fight, night, words, odds)
+                            fight, night, words, odds, runs, rounds, creature, dread_count, DREAD_COUNT)
 
 # The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
 _ACT2, _ACT3, _NIGHT = fight("A Face Not His Own", 0), fight("A Face Not His Own", 1), night("A Face Not His Own")
-# "They won't win it by shooting" is said outright below. A harness run that clears Act Three makes
-# it false, and the build should stop rather than print it.
-assert _ACT3["cleared"] == 0, "PLAYTEST.md has a posse clearing the yard; reread Act Three's prose"
+_RUNS = runs()
+# "Shooting seldom wins it" is said outright below, beside how often it did. The prose said "none
+# cleared it" until the 2026-10-15 harness fixes moved the seeds and one posse in eight did; the counts
+# are quoted now, and the claim they sit under holds while shooting clears the yard under one time in four.
+assert 4 * _ACT3["cleared"] < _ACT3["reached"], "PLAYTEST.md has posses clearing the yard by shooting; reread Act Three's prose"
+# Scene 8's Keeper note and What the Night Costs both say the posse wins the tack room.
+assert 2 * _ACT2["cleared"] > _ACT2["reached"], "PLAYTEST.md has the posse losing Act Two; reread scene 8 and What the Night Costs"
+# What the Night Costs says tending the posse between acts left the number that finished where it was,
+# which is how it argues the gap between the two fights isn't attrition. A tended night that finishes
+# more often makes that false.
+assert _NIGHT["tended_finished"] == _NIGHT["finished"], \
+    "tending moved how many finished Module II in PLAYTEST.md; reread What the Night Costs"
+
+
+def _times(n):
+    """How often, the way the prose says it: "not once", "once", "twice", "three times"."""
+    return {0: "not once", 1: "once", 2: "twice"}.get(n, words(n) + " times")
+
+
+def _posses(n):
+    """A count of posses as the start of a clause: "no posse", "one posse", "three posses"."""
+    return "no posse" if n == 0 else words(n) + (" posse" if n == 1 else " posses")
+
+
 from module_maps import map_html
 
-VERSION = "1.12"
+VERSION = "1.13"
 SLUG = "a-face-not-his-own"
 
 H = shell(
@@ -99,7 +120,8 @@ WHAT = '''
     at your table will kill a person who was still a person. The module is built to let that happen
     and not to punish it.</li>
     <li><strong>Act Three teaches that the answer was written down.</strong> Unlike module I, this
-    fight <em>can</em> be won on the field, though the engine says it usually is not, and says why.
+    fight <em>can</em> be won on the field, though the engine saw it done ''' + _times(_ACT3["cleared"]) + ''' in
+    ''' + words(_ACT3["reached"]) + ''' tries, and says why.
     See <a href="#cost">What the Night Costs</a>.</li>
   </ul>
 
@@ -318,7 +340,7 @@ ACT1 = '''
 <section class="page" id="act1">
   ''' + runhead("Act One") + '''
   <h1 class="chapter">Act One &mdash; The Wrong Note Among Friends</h1>
-  <p class="note">Aim for an hour. No fight. One Dread Check, and eight people being ordinary.</p>
+  <p class="note">Aim for an hour. No fight. ''' + DREAD_COUNT + ''', and eight people being ordinary.</p>
 
   <h2 id="a1-house">1. The Station House</h2>
   <p>Low, long, warm, and smelling of coffee and wet wool. Gant takes their coats and tells them the
@@ -368,7 +390,10 @@ ACT1 = '''
   ''' + keeper(
     "<p>One check, and it's on the wrongness rather than on anything seen. Nobody at this table has "
     "seen a monster yet and the module is in no hurry for them to. Sleep is a Toll rather than a "
-    "scene: a night in the cold with the doors barred costs each soul 2 Blood and nothing else.</p>") + '''
+    "scene: a night in the cold with the doors barred costs each soul 2 Blood. Don't count it as a "
+    "safe night, however stout the bar is, since the thing worth fearing sleeps on the inside of it. "
+    "The dawn gives back the pools and the once-a-day features, and Blood and Nerve stay where the "
+    "night left them.</p>") + '''
 </section>
 '''
 
@@ -377,7 +402,7 @@ ACT2 = '''
 <section class="page" id="act2">
   ''' + runhead("Act Two") + '''
   <h1 class="chapter">Act Two &mdash; The First Taking</h1>
-  <p class="note">Aim for ninety minutes. One Dread Check, one fight in a very small room.</p>
+  <p class="note">Aim for ninety minutes. ''' + DREAD_COUNT + ''', one fight in a very small room.</p>
 
   <h2 id="a2-well">5. The Well</h2>
   <p>The bucket comes up with a coat button in it, and the coat is hanging by the door, and its owner
@@ -425,8 +450,8 @@ ACT2 = '''
   faces, which are the faces the posse has been eating supper across from all night.</p>
 
   ''' + keeper(
-    "<p><strong>The engine says the posse wins this one</strong>: " + words(_ACT2["cleared"]) + " clears in twelve, in "
-    "about two rounds. That's by design. Act Two is the fight this module lets them have, so that "
+    "<p><strong>The engine says the posse wins this one</strong>: " + words(_ACT2["cleared"]) + " clears in " + words(_ACT2["reached"]) + ", in "
+    "about " + rounds(_ACT2["rounds"]) + ". That's by design. Act Two is the fight this module lets them have, so that "
     "Act Three can be the one it does not. Let it be brutal and fast and let them win it.</p>"
     "<p>If a player refuses to fire on a face they know, that isn't a problem to solve. Let them "
     "hold, let it cost them, and let another soul do it. Then remember which of them hesitated, "
@@ -439,7 +464,7 @@ ACT3 = '''
 <section class="page" id="act3">
   ''' + runhead("Act Three") + '''
   <h1 class="chapter">Act Three &mdash; The Tell Made Plain</h1>
-  <p class="note">Aim for an hour. One Dread Check, one open field, and a sunrise.</p>
+  <p class="note">Aim for an hour. ''' + DREAD_COUNT + ''', one open field, and a sunrise.</p>
 
   <h2 id="a3-tell">9. It Stops Pretending</h2>
   <p><strong>Dread Check, DC 16, Will save.</strong> Lose 1d6 Nerve. It happens when the last face
@@ -479,10 +504,11 @@ ACT3 = '''
   will seat it on the field without arguing.</p>
 
   ''' + keeper(
-    "<p><strong>And the engine still says they won't win it by shooting.</strong> " + words(_ACT3["reached"], True) + " "
-    "posses reached it, none cleared it, and " + words(_ACT3["broke"]) + " of them broke it off (see <a href='#cost'>What the Night "
+    "<p><strong>And the engine still says shooting seldom wins it.</strong> " + words(_ACT3["reached"], True) + " "
+    "posses reached it, " + ("none" if not _ACT3["cleared"] else words(_ACT3["cleared"])) + " cleared it, and "
+    + words(_ACT3["broke"]) + " of them broke it off (see <a href='#cost'>What the Night "
     "Costs</a>). The difference from module I is the reason. Module I's boss had no answer on the "
-    "field at all. This one is a fight the posse loses on the numbers by a little, and one "
+    "field at all. This one is a fight the posse loses on the numbers, and one "
     "prepared thing flips it. The "
     "mirror doesn't kill it. The mirror makes it hesitate, and hesitation is the whole margin.</p>") + '''
 
@@ -601,7 +627,7 @@ COST = '''
   ''' + runhead("What the Night Costs") + '''
   <h1 class="chapter">What the Night Costs</h1>
 
-  <p>Every number on this page came out of the game&rsquo;s own engine. Twelve posses (a Gunhand, a
+  <p>Every number on this page came out of the game&rsquo;s own engine. ''' + words(_RUNS, True) + ''' posses (a Gunhand, a
   Preacher, a Mountain Man and a Sawbones, built by the generator, at 3rd level)
   were run through all three acts on the same rules library the app runs on, with the Bestiary&rsquo;s
   numbers for every foe and the book&rsquo;s dice for every roll. The runs are seeded and reproduce.</p>
@@ -613,22 +639,23 @@ COST = '''
 ''' + night_costs("A Face Not His Own",
       ["The tack room (Act Two)", "The yard at first light (Act Three)"]) + '''
 
-  <p>Across twelve cold runs no posse finished the night on its feet. ''' + words(_NIGHT["broke"], True) + '''
-  broke off and rode out, and ''' + words(_NIGHT["down"]) + ''' were put down to the last soul. Souls down at the
+  <p>Across ''' + words(_RUNS) + ''' cold runs ''' + _posses(_NIGHT["finished"]) + ''' finished the night on its feet. ''' + words(_NIGHT["broke"], True) + '''
+  broke off and rode out, and ''' + ("none was" if not _NIGHT["down"] else words(_NIGHT["down"]) + (" was" if _NIGHT["down"] == 1 else " were")) + ''' put down to the last soul. Souls down at the
   end averaged ''' + _NIGHT["souls"] + ''' of 4, and Nerve finished at ''' + _NIGHT["nerve"] + ''' of a possible
   ''' + _NIGHT["nerve_of"] + ''', ''' + ("with no soul breaking outright in any of them" if not _NIGHT["broken"]
-  else f"with {words(_NIGHT['broken'])} run{'s' if _NIGHT['broken'] > 1 else ''} in twelve seeing a soul break outright") + '''.</p>
+  else f"with {words(_NIGHT['broken'])} run{'s' if _NIGHT['broken'] > 1 else ''} in {words(_RUNS)} seeing a soul break outright") + '''.</p>
 
   <p>That is a very particular shape and it is the shape this module was built for. The Act Two
   fight is a fight the posse wins. The Act Three fight is a fight the posse survives. Giving them
-  back half their Blood between acts changed neither count, which is how you know the difference
+  back half their Blood between acts left the number that finished where it was, which is how you know the difference
   between the two rows isn't attrition.</p>
 
   ''' + keeper(
     "<p><strong>" + words(_ACT3["ours"], True) + " per cent, against " + words(_ACT3["theirs"]) + ".</strong> "
-    "That's the Act Three row, whole. Four souls trading Strikes at rising MAP against Defense 17 "
+    "That's the Act Three row, whole. Four souls trading Strikes at rising MAP against Defense "
+    + creature("The Skin-Walker")["defense"] + " "
     "land about " + odds(_ACT3["ours"]) + ", and it hits back " + odds(_ACT3["theirs"]) + ". "
-    "A round or so of that is the entire fight. Bring "
+    "About " + rounds(_ACT3["rounds"]) + " of that is the entire fight. Bring "
     "nothing to the yard, and the yard is a countdown.</p>"
     "<p>Now put one prepared thing in their hands. A mirror off the bunk-room wall costs it its "
     "first round. A line of ash and bone takes the yard away from it. Silver or prayed-over shot "
@@ -639,7 +666,7 @@ COST = '''
   <p>The same harness ran <em>The Salt at Coffin Wells</em> at 1st level and this at 3rd, and the two
   Tier III fights failed differently. The Nightwalker was never beaten and never could be: it's two
   Tiers over the posse and the safe-table rule says so out loud. The Skin-Walker is one Tier over,
-  the app seats it without complaint, and the engine never once cleared it;
+  the app seats it without complaint, and the engine cleared it ''' + _times(_ACT3["cleared"]) + ''' in ''' + words(_ACT3["reached"]) + ''' tries;
   but every posse that reached the yard was a posse that only shot at it.</p>
 
   <p><strong>Module I's lesson is that some things aren't fights. This one's is narrower and
@@ -712,6 +739,9 @@ AFTER = '''
 '''
 
 BASIN = basin("Saltlick Station", this_module="II")
+
+# Each act's note counts the Dread lines the act prints, so the count and the lines can't part.
+ACT1, ACT2, ACT3 = dread_count(ACT1), dread_count(ACT2), dread_count(ACT3)
 
 BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)

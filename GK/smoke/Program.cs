@@ -6,6 +6,12 @@ void T(string name, bool ok)
     if (ok) pass++; else { fail++; Console.WriteLine($"FAIL  {name}"); }
 }
 
+// A constant held to the book's own number. Written as `Rules.GrievousDc == 15`, the compiler folds
+// the comparison to a literal true, and CA1508 calls that dead code, which broke the smoke build
+// under -warnaserror. Handed through here the comparison runs at run time instead. The test is
+// exactly as strong: a constant that drifts from the book fails the same way it always did.
+static bool Pinned<TV>(TV actual, TV expected) => EqualityComparer<TV>.Default.Equals(actual, expected);
+
 // ---- FourDegrees: all edges on the ordered 0-3 scale ----
 T("plain success",        Rules.FourDegrees(10, 5, 13).idx == 2);
 T("plain failure",        Rules.FourDegrees(5, 2, 13).idx == 1);
@@ -250,7 +256,7 @@ foreach (var (table, floor) in new[]
         Enumerable.Range(0, 4).Select(Rules.SpoorRead).Distinct().Count() == 4);
     T("spoor: and none of them is blank",
         Enumerable.Range(0, 4).All(d => !string.IsNullOrWhiteSpace(Rules.SpoorRead(d))));
-    T("spoor: the thread is a four-segment clock", Rules.SpoorClockSegments == 4);
+    T("spoor: the thread is a four-segment clock", Pinned(Rules.SpoorClockSegments, 4));
     // The rule only fires where Rules.Cost says it does: two or more Tiers over the posse.
     T("spoor: a Tier III horror is sign-only against a 2nd-level posse", Rules.Cost(3, 2).spoor);
     T("spoor: and is met in the flesh by a 6th-level one",              !Rules.Cost(3, 6).spoor);
@@ -972,10 +978,11 @@ foreach (var (table, floor) in new[]
         // so could never be a number on the bearer's own Burden. Both are asserted below, from the
         // side they actually bite on.
         {
-            // The fifteen the printed Appendix B carries, in its own order.
+            // The rows the printed Appendix B carries, in its own order, less Stable (the dying
+            // model's state, which the Tracker sets itself). Enfeebled joined in v1.60.0.
             string[] appendixB =
             {
-                "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Fatigued", "Frightened",
+                "Bleeding", "Blinded", "Clumsy", "Drained", "Dying", "Enfeebled", "Fatigued", "Frightened",
                 "Grabbed", "Lost", "Marked", "Off-Guard", "Prone", "Sickened", "Slowed", "Stunned",
             };
             // Four are narrative or run by their own machinery rather than by arithmetic: Bleeding
@@ -1109,7 +1116,11 @@ foreach (var (table, floor) in new[]
         // took it off on Unwork, so a session saved mid-Sign reloaded with the penalty baked into
         // Defense AND the working still on the row, and it landed twice. Reading it twice must be
         // idempotent, which a stored adjustment is not.
-        T("burden: reading it twice gives the same answer", lit.EffectiveDefense == 8 && lit.EffectiveDefense == 8);
+        // Both reads are taken and both are tested. Written as `a == 8 && a == 8` the analyzer
+        // assumes a property returns what it returned a moment ago, which is the very thing this
+        // test exists to check, and flags the second half as always true (CA1508).
+        T("burden: reading it twice gives the same answer",
+            new[] { lit.EffectiveDefense, lit.EffectiveDefense }.All(d => d == 8));
         lit.Conditions = "";
         T("burden: and it lifts clean when the condition goes", lit.EffectiveDefense == 12 && lit.DefenseLine == "12");
 
@@ -1290,8 +1301,19 @@ foreach (var (table, floor) in new[]
     var scout = CharGen.Generate(6, false, "Mountain Man");
     T("initiative: the bonus is exactly the sheet's Notice bonus",
         CharGen.InitiativeBonus(scout) == CharGen.SkillBonus(scout, "Notice"));
-    T("initiative: no sheet, no bonus, a creature rolls the plain die",
+    T("initiative: no sheet, no bonus, an ad-hoc NPC rolls the plain die",
         CharGen.InitiativeBonus(null) == 0);
+    // A creature rolls d20 + its Will save (Ch. XI, since v1.60.0), and every block in the
+    // Bestiary carries one, so none of them falls back to the plain die by accident.
+    T("initiative: a creature's bonus is its Will save",
+        Db.Creatures.All(b => CharGen.CreatureInitiativeBonus(b) == b.WillValue));
+    // Thirteen hazards and mindless things print "Will \u2014", and a dash rolls the bare d20.
+    T("initiative: every stat block prints a Will save or a dash",
+        Db.Creatures.All(b => System.Text.RegularExpressions.Regex.IsMatch(b.saves ?? "", @"Will\s*([+\-]\d+|\u2014)")));
+    T("initiative: a dash adds nothing",
+        Db.Creatures.Where(b => (b.saves ?? "").Contains("Will \u2014")).All(b => CharGen.CreatureInitiativeBonus(b) == 0)
+        && Db.Creatures.Any(b => (b.saves ?? "").Contains("Will \u2014")));
+    T("initiative: no stat block, no bonus", CharGen.CreatureInitiativeBonus(null) == 0);
 }
 
 // ---- the turn hourglass (v1.29.0) ----
@@ -1557,7 +1579,7 @@ foreach (var (table, floor) in new[]
     T("grievous: no damage is never a terrible blow", !Rules.IsGrievous(0, 20, true));
     T("grievous: a target with no Blood maximum cannot be measured against one",
         !Rules.IsGrievous(5, 0, false));
-    T("grievous: the DC is the book's fifteen", Rules.GrievousDc == 15);
+    T("grievous: the DC is the book's fifteen", Pinned(Rules.GrievousDc, 15));
 
     T("injury: the d6 table has six entries", Rules.LastingInjuries.Length == 6);
     T("injury: in the book's order", Rules.LastingInjuries[0] == "Bloody Gash" && Rules.LastingInjuries[5] == "Gut-Shot");
@@ -1615,7 +1637,7 @@ for (int i = 0; i < 100; i++)
 // ---- Encounter cost ----
 // Typed on purpose. These are Ch. IV's own numbers as repriced in v1.44.0, and a test that read
 // them off Rules.BudgetRungs would pass whatever the ladder later drifted to.
-T("budget = 4 per soul", Rules.BudgetPerSoul == 4);
+T("budget = 4 per soul", Pinned(Rules.BudgetPerSoul, 4));
 T("even foe = 8",   Rules.Cost(2, 4).cost == 8 && Rules.Cost(2, 4).role == "Even foe");
 T("mook = 4",       Rules.Cost(1, 4).cost == 4);
 T("standout = 16",  Rules.Cost(3, 4).cost == 16 && !Rules.Cost(3, 4).spoor);
@@ -2401,7 +2423,7 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
     // per-user folder, and either one on its own is enough.
     T("state: the per-user folder is the answer only when neither signal is present",
         (R(false,false) == Roaming) && (R(true,false) != Roaming) && (R(false,true) != Roaming) && (R(true,true) != Roaming));
-    T("state: the marker filename is the one the docs and package.ps1 name", AppState.PortableMarker == "portable.txt");
+    T("state: the marker filename is the one the docs and package.ps1 name", Pinned(AppState.PortableMarker, "portable.txt"));
 
     // The live folder must be usable and must exist: a Keeper whose profile is locked down
     // should still get an app that runs, which is why Dir falls back rather than throwing.
@@ -2800,6 +2822,34 @@ foreach (var (pool, floor) in new[] { ("vices", 32), ("lost", 28), ("seen", 28),
         IronCode.DamageType(cg.weapons.First(w => w.name == "Single-Action Revolver")) == "ball");
     T("a shotgun throws small shot", IronCode.DamageType(cg.weapons.First(w => w.name == "Double-Barrel Shotgun")) == "small shot");
     T("a blade cuts as blades", IronCode.DamageType(saber) == "blades");
+
+    // -- GK-B2: the Strike dialog prefills the target's armor DR for the blow (Ch. X) --
+    // The box opened on 0 every time, while the Strike button's tip said the engine handled DR. A
+    // soul in a suit whose two numbers differ, read through the real gear path, so a renamed row
+    // in chargen.json fails here and not at the table.
+    var suit = cg.armor.First(a => a.drBlades > 0 && a.drBlades != a.drShot);
+    var armored = new CharacterSheet { Gear = new List<string> { suit.gear } };
+    CharGen.ReadArmor(armored);
+    var vsBlade = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(saber));
+    var vsShot = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(cg.weapons.First(w => w.name == "Double-Barrel Shotgun")));
+    var vsBall = CombatFlow.ArmorDrFor(armored, IronCode.DamageType(cg.weapons.First(w => w.name == "Single-Action Revolver")));
+    T($"a blade meets {suit.name}'s DR vs blades ({vsBlade.Amount})", vsBlade.Amount == suit.drBlades && vsBlade.Why.Contains(suit.name));
+    T($"a Scatter gun meets {suit.name}'s DR vs small shot ({vsShot.Amount})", vsShot.Amount == suit.drShot);
+    T("a revolver ball gets no armor DR, and the note says why",
+        vsBall.Amount == 0 && vsBall.Why.Contains("ball") && vsBall.Why.Contains(suit.name));
+    T("a creature's blades claw reads DR vs blades", CombatFlow.ArmorDrFor(armored, new CreatureAttack().Type).Amount == suit.drBlades);
+    T("a fiery touch gets no armor DR", CombatFlow.ArmorDrFor(armored, "fire").Amount == 0);
+    T("an unarmored soul prefills 0", CombatFlow.ArmorDrFor(new CharacterSheet(), "blades") == (0, "wears no armor"));
+    T("no sheet (a creature target) prefills 0", CombatFlow.ArmorDrFor(null, "blades").Amount == 0);
+    // And the prefilled number does what the box says once the dialog hands it on as "all": a
+    // claw at a forced 15 against Defense 5 lands, and the soul loses the roll less the suit.
+    var clawed = new Combatant { Name = "Armored", Defense = 5, BloodCur = 40, BloodMax = 40 };
+    var cr = CombatFlow.StrikeAndApply(new Combatant { Beats = 3, MapStep = 1 }, clawed,
+        new CreatureAttack { Name = "claws", Bonus = 8, Damage = "1d8+3" }, 8,
+        new[] { new DrEntry(vsBlade.Amount, "all") }, forcedDie: 15);
+    T("a prefilled blades DR comes off a creature's claw",
+        cr.Res.Strike.Hit && cr.Res.AfterDR == Math.Max(0, cr.Res.Damage.Total - suit.drBlades)
+        && clawed.BloodCur == 40 - cr.Res.AfterDR);
 
     // -- the composed Strike: a miss deals nothing; a hit rolls damage and applies DR --
     var miss = IronCode.Strike(-50, 99, cg.weapons.First(w => w.name == "Single-Action Revolver"), forcedDie: 10);
@@ -3630,6 +3680,31 @@ for (int i = 0; i < 200; i++)
     T($"random sweep #{i}" + (v.Count > 0 ? $" ({sheet.Calling}/{sheet.Origin} L{sheet.Level}): {v[0]}" : ""), v.Count == 0);
 }
 
+// ---- the box of cartridges is the metallic box Ch. X prints, and an old sheet still balances (v1.60.0) ----
+{
+    const string cartridges = "Box of cartridges (50), metallic ($1.25)", retired = "Box of cartridges (50) ($1)";
+    T("cartridges: the metallic box at $1.25", cg.gearPrices.TryGetValue(cartridges, out var cart) && Math.Abs(cart - 1.25) < 0.001);
+    T("cartridges: the retired $1 key is gone from gearPrices", !cg.gearPrices.ContainsKey(retired));
+    T("cartridges: no buy plan still names the retired key",
+        cg.callings.All(c => !c.buyPlan.ToString().Contains(retired, StringComparison.Ordinal)));
+    T("cartridges: the retired key is priced at the $1 it cost", CharGen.GearPaid(retired, out var was) && Math.Abs(was - 1.0) < 0.001);
+    CharacterSheet boxed = null;
+    for (int k = 0; k < 200 && boxed == null; k++)
+    {
+        var g = CharGen.Generate(1, false);
+        if (g.Gear.Contains(cartridges)) boxed = g;
+    }
+    T("cartridges: some soul buys the box", boxed != null);
+    if (boxed != null)
+    {
+        // what an older build saved: the $1 key, and a quarter more coin left over
+        boxed.Gear[boxed.Gear.IndexOf(cartridges)] = retired;
+        boxed.CoinLeft = Math.Round(boxed.CoinLeft + 0.25, 2);
+        var v = CharGen.Validate(boxed);
+        T("cartridges: a sheet saved with the $1 box still balances" + (v.Count > 0 ? $": {v[0]}" : ""), v.Count == 0);
+    }
+}
+
 // ---- armor (Ch. X): the three rows, and souls who actually end up wearing them ----
 T("three armors, each priced in gearPrices", cg.armor.Count == 3
     && cg.armor.All(a => cg.gearPrices.TryGetValue(a.gear, out var p) && Math.Abs(p - a.cost) < 0.001));
@@ -3998,8 +4073,18 @@ foreach (var c in cg.callings)
     var up = CharGen.LevelUp(s, ch);
     T("levelup honors chosen edge", gr.EdgeOptions.Count == 0 || up.Edges.Contains(gr.EdgeOptions[0]));
     T("levelup honors chosen subpath", !gr.Subpath || up.Subpath == gr.SubpathOptions[^1]);
-    T("levelup honors chosen Blood die", up.BloodRolls[^1] == 1 + up.ConModAtLevel[^1]);
+    T("levelup honors chosen Blood die", up.BloodRolls[^1] == Math.Max(1, 1 + up.ConModAtLevel[^1]));
     T("levelup with explicit choices conformant", CharGen.Validate(up).Count == 0);
+}
+
+// Ch. III: at least 1 Blood a level, whatever the CON (v1.60.0, P10 S21)
+{
+    var s = CharGen.Generate(1, false, "Marshal");
+    s.Scores["CON"] = 4;                                   // a −3 modifier
+    var up = CharGen.LevelUp(s, new CharGen.LevelUpChoices { BloodDie = 1 });
+    T("levelup: a 1 on the die under a −3 CON still gains 1 Blood", up.BloodRolls[^1] == 1);
+    up = CharGen.LevelUp(s, new CharGen.LevelUpChoices { BloodDie = 6 });
+    T("levelup: the floor leaves a roll that clears it alone", up.BloodRolls[^1] == 3);
 }
 
 // the Gunhand's bonus combat Edge keeps pace, one Gun edge per odd level
@@ -4616,6 +4701,28 @@ T("daybook: an unwritable path fails soft",
     !Daybook.Save(Path.Combine(dbPath, "no", "such", "place.txt")));
 try { File.Delete(dbPath); } catch { }
 
+// A whole-posse Dread Check writes a check line for every soul, and until v1.60.0 nothing in the
+// daybook said which line was whose. Each soul's check is made under their name now, and the name
+// is dropped once the check is done. A natural 20 so no Nerve die is rolled after the check line.
+string DbNewest() => Daybook.Dump().TrimEnd().Split('\n')[^1];
+Horror.DreadCheck(new PartyMember { Name = "Mattie", NerveMax = 9, NerveCur = 9 }, 13, forcedDie: 20);
+T("daybook: a soul's Dread Check is written under their name", DbNewest().Contains("Mattie: "));
+Rules.FourDegrees(10, 5, 13);
+T("daybook: and the name is gone once the check is done", !DbNewest().Contains("Mattie"));
+using (Daybook.As("Eli"))
+{
+    using (Daybook.As("Ruth")) Rules.FourDegrees(10, 5, 13);
+    T("daybook: the inner name is the one written", DbNewest().Contains("Ruth: "));
+    Rules.FourDegrees(10, 5, 13);
+    T("daybook: and the outer one comes back after it", DbNewest().Contains("Eli: "));
+    using (Daybook.As("  ")) Rules.FourDegrees(10, 5, 13);
+    T("daybook: a blank name keeps the one already there", DbNewest().Contains("Eli: "));
+}
+T("daybook: no scope, no name", Daybook.Whose.Length == 0);
+var dbDosed = new PartyMember { Name = "Hollis", Fort = 2, NerveMax = 9, NerveCur = 3, DosesToday = 1 };
+Rest.TakeDose(dbDosed, laudanum: false, nerveDie: 1, fortDie: 10);
+T("daybook: a dose's Fortitude save is written under the drinker's name", Daybook.Dump().Contains("Hollis: "));
+
 Daybook.Close();
 T("daybook: closing forgets everything", !Daybook.On && Daybook.Count == 0);
 T("daybook: and says so rather than reading as an empty night", Daybook.Dump().Contains("not recording"));
@@ -4689,7 +4796,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var judgment = Lim("Witch Hunter", "Judgment");
     T("Judgment is a trigger, not a clock", judgment.Cadence == FeatureCadence.Trigger);
     T("Judgment says what returns it",      judgment.Says(null) == "once per quarry");
-    T("Field Surgery is per wound",         Lim("Sawbones", "Field Surgery").Says(null) == "once per wound");
+    T("Field Surgery is per patient",       Lim("Sawbones", "Field Surgery").Says(null) == "once per patient");
     T("a scene does not return a trigger",  FeatureCadence.Trigger > FeatureCadence.Scene);
     T("a new session does",                 FeatureCadence.Trigger < FeatureCadence.Session);
 
@@ -4789,7 +4896,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     // getting it wrong in the generous direction is worse than not counting at all.
     T("a scene leaves it spent",  CharGen.RefreshFeatures(soul, FeatureCadence.Scene) == 0);
     T("still spent after the scene", CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 0);
-    T("a long rest does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
+    T("a dawn in the field does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
     T("a new session does",       CharGen.RefreshFeatures(soul, FeatureCadence.Session) == 1);
     T("and it is back",           CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
 
@@ -4969,6 +5076,354 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var plain = CharGen.Generate(1, rolled: false, fixedCalling: "Gunhand");
     T("seat: no subpath, no stray separator",
         plain.Subpath != null || !CharGen.Seat(plain).Notes.Contains(" \u00b7  "));
+}
+
+// ---- breaking, and what the Mark and the Taint do to a Dread Check (v1.60.0) ----
+// Breaks used to be "the pool reads 0 afterward", which broke a soul who was already at 0 and had
+// just steeled themselves. The Mark's +2 and the Stain's -2 were printed and reached no roll.
+{
+    var held = Horror.DreadCheck(30, 10, forcedDie: 15);
+    T("break: a soul at 0 who holds does not break", !Horror.Breaks(held, 0));
+    var failed = Horror.DreadCheck(0, 16, forcedDie: 2);
+    T("break: a failure that costs Nerve and lands on 0 breaks", failed.NerveLost > 0 && Horror.Breaks(failed, 0));
+    T("break: and one that leaves Nerve standing does not", !Horror.Breaks(failed, 3));
+    var numbSheet = CharGen.Generate(3, false, null, CharGen.ReturnedOrigin);
+    CharGen.TakeHunger(numbSheet, CharGen.HungerNumb);
+    var numbed = Horror.DreadCheck(0, 16, forcedDie: 2, who: numbSheet);
+    T("break: a numb soul loses nothing and so does not break", numbed.Numb && !Horror.Breaks(numbed, 0));
+    T("break: nothing to read, nothing broken", !Horror.Breaks(null, 0));
+
+    T("dread: Mark 4 is +2", Horror.DreadModifier(new PartyMember { Mark = Horror.MarkKin }) == 2);
+    T("dread: Mark 3 is nothing yet", Horror.DreadModifier(new PartyMember { Mark = Horror.MarkKin - 1 }) == 0);
+    T("dread: the Stain is -2 on its ground", Horror.DreadModifier(new PartyMember { Taint = Horror.TaintStain }) == -2);
+    T("dread: and nothing off it",
+        Horror.DreadModifier(new PartyMember { Taint = Horror.TaintStain }, onStainedGround: false) == 0);
+    T("dread: the two cancel", Horror.DreadModifier(new PartyMember { Mark = 4, Taint = 3 }) == 0);
+    T("dread: nobody, nothing", Horror.DreadModifier(null) == 0);
+    var kin = new PartyMember { Name = "Kin", Will = 5, Mark = 4 };
+    T("dread: the Mark reaches the roll", Horror.DreadCheck(kin, 16, forcedDie: 10).Will == 7);
+    var stained = new PartyMember { Name = "Stained", Will = 5, Taint = 3 };
+    T("dread: and so does the Stain", Horror.DreadCheck(stained, 16, forcedDie: 10).Will == 3);
+    T("dread: unless the Keeper says they are clear of it",
+        Horror.DreadCheck(stained, 16, forcedDie: 10, onStainedGround: false).Will == 5);
+    T("dread: the Mark moves the Will and never the DC's Nerve die",
+        Horror.DreadCheck(kin, 16, forcedDie: 10).DreadDc == 16);
+
+    // The Risen: twice the CON to die at, and one more round on their feet.
+    CharacterSheet Returned(string shape) => new()
+        { Origin = CharGen.ReturnedOrigin, Shape = shape, Scores = new() { ["CON"] = 12 } };
+    T("risen: dead at twice the CON", Rules.DeathThresholdFor(Returned(CharGen.RisenShape)) == 24);
+    T("risen: and no other Shape is", Rules.DeathThresholdFor(Returned("The Hollow")) == 12);
+    var risen = new PartyMember { Name = "Eli", Sheet = Returned(CharGen.RisenShape) };
+    var dropped = new Combatant { Name = "Eli", BloodCur = 0, BloodMax = 20, IsPC = true, DeathAt = 24 };
+    T("risen: the blow that drops them leaves them standing", Rules.RisenStands(dropped, risen) && dropped.Upright);
+    T("risen: once, not twice", !Rules.RisenStands(dropped, risen));
+    var hollow = new PartyMember { Name = "Ada", Sheet = Returned("The Hollow") };
+    T("risen: another Shape falls", !Rules.RisenStands(
+        new Combatant { Name = "Ada", BloodCur = 0, BloodMax = 20, IsPC = true, DeathAt = 12 }, hollow));
+    T("risen: a soul still standing has nothing to refuse", !Rules.RisenStands(
+        new Combatant { Name = "Eli", BloodCur = 5, BloodMax = 20, IsPC = true, DeathAt = 24 }, risen));
+}
+
+// ---- rest, and the bottle (v1.60.0) ----
+// The book prints three rests, and until v1.60.0 the app had one that it had made up: Blood and
+// Nerve to full. Each rest is held to what it gives back, and as hard to what it leaves alone.
+{
+    PartyMember Worn(int level = 3, int con = 14) => new()
+    {
+        Name = "Ruth", Level = level, Sheet = new CharacterSheet { Scores = new() { ["CON"] = con } },
+        BloodMax = 30, BloodCur = 5, NerveMax = 12, NerveCur = 2, PoolName = "Faith", PoolMax = 4, PoolCur = 0,
+        Grit = 1, Mark = 2, Taint = 3, DosesToday = 2, DrainedByDrink = true, DosedThisScene = true,
+    };
+
+    var dawn = Worn();
+    var d = Rest.Take(dawn, RestKind.Dawn);
+    T("rest: a dawn in the field fills the pool", dawn.PoolCur == 4 && d.Pool == 4);
+    T("rest: and gives back no Blood and no Nerve", dawn.BloodCur == 5 && dawn.NerveCur == 2 && d.Blood == 0 && d.Nerve == 0);
+    T("rest: it starts the day's drinks again", dawn.DosesToday == 0 && !dawn.DosedThisScene);
+    T("rest: and leaves the bottle's Drained standing", dawn.DrainedByDrink && !d.DrainLifted);
+    T("rest: a dawn eases no Taint", dawn.Taint == 3 && d.TaintEased == 0);
+    T("rest: the dawn's line names the pool", d.Line.Contains("+4 Faith") && !d.Line.Contains("Blood"));
+
+    var night = Worn(level: 3, con: 14);
+    var n = Rest.Take(night, RestKind.Night, nerveDie: 4);
+    T("rest: a safe night gives level times the CON modifier in Blood", night.BloodCur == 11 && n.Blood == 6);
+    T("rest: and the d6 in Nerve", night.NerveCur == 6 && n.Nerve == 4);
+    T("rest: and lifts the bottle's Drained", !night.DrainedByDrink && n.DrainLifted);
+    T("rest: and fills the pool", night.PoolCur == 4);
+    T("rest: and eases no Taint", night.Taint == 3);
+    T("rest: the night's line says what moved", n.Line.Contains("+6 Blood") && n.Line.Contains("+4 Nerve"));
+
+    T("rest: a low CON counts as 1", Rest.NightsBlood(4, -1) == 4 && Rest.NightsBlood(4, 0) == 4);
+    T("rest: level times modifier", Rest.NightsBlood(5, 3) == 15);
+    T("rest: no sheet reads the middle of the scale", Rest.ConMod(null) == 0 && Rest.ConMod(new CharacterSheet()) == 0);
+    var paper = new PartyMember { Name = "Paper", Level = 4, BloodMax = 30, BloodCur = 1, NerveMax = 9, NerveCur = 9 };
+    Rest.Take(paper, RestKind.Night, nerveDie: 3);
+    T("rest: a hand-typed row gets its level in Blood", paper.BloodCur == 5);
+
+    // Iron Constitution (Ch. V, since v1.60.0): a safe night gives one more Blood per level, from
+    // the 6th level that grants it, and not a level sooner.
+    var hillman = Worn(level: 6, con: 14); hillman.Calling = "Mountain Man"; hillman.BloodMax = 60;
+    Rest.Take(hillman, RestKind.Night, nerveDie: 1);
+    T("rest: Iron Constitution adds a Blood a level", hillman.BloodCur == 5 + 12 + 6);
+    var greenhorn = Worn(level: 5, con: 14); greenhorn.Calling = "Mountain Man";
+    Rest.Take(greenhorn, RestKind.Night, nerveDie: 1);
+    T("rest: and not before the level that grants it", greenhorn.BloodCur == 5 + 10);
+
+    var nearly = Worn();
+    nearly.BloodCur = 28; nearly.NerveCur = 11;
+    Rest.Take(nearly, RestKind.Night, nerveDie: 6);
+    T("rest: a night stops at full", nearly.BloodCur == 30 && nearly.NerveCur == 12);
+
+    var week = Worn();
+    var w = Rest.Take(week, RestKind.Week);
+    T("rest: a week gives back all the Blood and all the Nerve", week.BloodCur == 30 && week.NerveCur == 12);
+    T("rest: and eases the Taint by two", week.Taint == 1 && w.TaintEased == 2);
+    T("rest: and lifts the Drained", !week.DrainedByDrink);
+    var clean = Worn();
+    clean.Taint = 1;
+    Rest.Take(clean, RestKind.Week);
+    T("rest: and never below none", clean.Taint == 0);
+
+    foreach (var kind in new[] { RestKind.Dawn, RestKind.Night, RestKind.Week })
+    {
+        var owing = Worn();
+        owing.TallyOwed["Bargain: Pact-Sworn"] = 2;
+        Rest.Take(owing, kind, nerveDie: 1);
+        T($"rest: a {kind} leaves the Mark, the Grit and the Debts alone",
+            owing.Mark == 2 && owing.Grit == 1 && owing.TallyOwed["Bargain: Pact-Sworn"] == 2);
+    }
+
+    var rested = new PartyMember { Name = "Full", Level = 2, BloodMax = 10, BloodCur = 10, NerveMax = 5, NerveCur = 5 };
+    T("rest: a soul with nothing to give back is told so",
+        Rest.Take(rested, RestKind.Dawn).Line.Contains("nothing to give back"));
+    T("rest: nobody, nothing", Rest.Take(null, RestKind.Week) == null);
+
+    // The Returned heal only by Mending. Their Nerve comes back like anyone's, and a Hunger never.
+    var ret = CharGen.Seat(CharGen.Generate(3, false, null, CharGen.ReturnedOrigin));
+    CharGen.TakeHunger(ret.Sheet, 2);
+    ret.BloodCur = 1; ret.NerveCur = 0;
+    var rn = Rest.Take(ret, RestKind.Night, nerveDie: 3);
+    T("rest: the Returned get no Blood from a night", ret.BloodCur == 1 && rn.Blood == 0);
+    T("rest: but their Nerve comes back", ret.NerveCur == 3);
+    T("rest: and the log says why", rn.Line.Contains("Mending"));
+    Rest.Take(ret, RestKind.Week);
+    T("rest: nor from a week", ret.BloodCur == 1 && ret.NerveCur == ret.NerveMax);
+    T("rest: and no rest hands a Hunger back", ret.Sheet.Hunger == 2);
+    T("rest: a dawn says nothing about Mending", !Rest.Take(ret, RestKind.Dawn).Line.Contains("Mending"));
+
+    // A dawn returns the dawn's features; a week of peace is not a new session.
+    var pro = CharGen.Seat(CharGen.Generate(3, false, "Prospector"));
+    T("rest: Powderman can be spent", CharGen.SpendFeature(pro, "Powderman"));
+    T("rest: and any dawn returns it", Rest.Take(pro, RestKind.Dawn).FeaturesBack == 1 && !pro.FeatureSpent.ContainsKey("Powderman"));
+    var marshal = CharGen.Seat(CharGen.Generate(10, false, "Marshal"));
+    CharGen.SpendFeature(marshal, "Last Stand");
+    Rest.Take(marshal, RestKind.Week);
+    T("rest: a week does not return a session's one great moment", marshal.FeatureSpent.ContainsKey("Last Stand"));
+
+    // Devotion and Tribute are not dawn pools (v1.60.0). The Player's Book has Devotion "refreshed
+    // through observance" and Tribute refilling "when you preach the false gospel to believers",
+    // and every rest used to fill both anyway.
+    foreach (var (pool, how) in new[] { ("Devotion", "observance"), ("Tribute", "preach") })
+        foreach (var kind in new[] { RestKind.Dawn, RestKind.Night, RestKind.Week })
+        {
+            var votary = Worn();
+            votary.PoolName = pool; votary.PoolMax = 4; votary.PoolCur = 1;
+            var kept = Rest.Take(votary, kind, nerveDie: 1);
+            T($"rest: a {kind} leaves {pool} where it was", votary.PoolCur == 1 && kept.Pool == 0);
+            T($"rest: and the {kind}'s line says so, and how it comes back",
+              kept.Line.Contains($"{pool} stays at 1 of 4") && kept.Line.Contains(how));
+        }
+    var fullVow = Worn();
+    fullVow.PoolName = "Devotion"; fullVow.PoolMax = 4; fullVow.PoolCur = 4;
+    T("rest: a full Devotion has nothing to say about itself", Rest.Take(fullVow, RestKind.Dawn).PoolKept == null);
+    var favored = Worn();
+    favored.PoolName = "Favor";
+    var fr = Rest.Take(favored, RestKind.Dawn);
+    T("rest: every other pool still fills with the sun", favored.PoolCur == 4 && fr.PoolKept == null);
+    T("rest: no pool at all renews, so nothing is said about one", Rest.RenewsAtDawn(null) && Rest.RenewsAtDawn(" "));
+    T("rest: a pool is known whatever its case and spacing", !Rest.RenewsAtDawn("devotion ") && !Rest.RenewsAtDawn("TRIBUTE"));
+    var poolNames = CharGen.D.callings.Where(c => c.pool != null).Select(c => c.pool.name).ToHashSet();
+    T("rest: the two pools held back are both real pools",
+      Rest.PoolsRefilledOtherwise.Count == 2 && Rest.PoolsRefilledOtherwise.All(poolNames.Contains));
+    T("rest: and every other Calling's pool renews at dawn", poolNames.Count(Rest.RenewsAtDawn) == poolNames.Count - 2);
+    T("rest: a Dark Cultist's sheet says observance",
+      CharGen.Generate(3, false, "Dark Cultist").PoolLine.Contains("refreshed through observance"));
+    T("rest: a False Prophet's says preaching",
+      CharGen.Generate(3, false, "False Prophet").PoolLine.Contains("refilled by preaching to believers"));
+    T("rest: a Gambler's still says dawn", CharGen.Generate(3, false, "Gambler").PoolLine.Contains("refreshed each dawn"));
+
+    // Whiskey and laudanum.
+    T("dose: the first in a day calls no save", Rest.DoseDc(0) == 0);
+    T("dose: the second calls Fortitude DC 12", Rest.DoseDc(1) == 12);
+    T("dose: and two more for every one after", Rest.DoseDc(2) == 14 && Rest.DoseDc(3) == 16);
+
+    PartyMember Sober() { var s = Worn(); s.DosesToday = 0; s.DrainedByDrink = false; s.DosedThisScene = false; s.Fort = 2; return s; }
+    var sot = Sober();
+    var first = Rest.TakeDose(sot, laudanum: false, nerveDie: 3);
+    T("dose: the first gives its Nerve and calls no save",
+        first.Nerve == 3 && sot.NerveCur == 5 && first.SaveDc == 0 && !first.Drained);
+    T("dose: its line says only the Nerve", !first.Line.Contains("DC") && first.Line.Contains("a drink"));
+    T("dose: once a scene", Rest.WhyNotDose(sot) != null && Rest.TakeDose(sot, false, nerveDie: 3) == null);
+    T("dose: and the refusal costs nothing", sot.NerveCur == 5 && sot.DosesToday == 1);
+    sot.DosedThisScene = false;
+    int blood0 = sot.BloodCur;
+    var second = Rest.TakeDose(sot, laudanum: true, nerveDie: 2, fortDie: 1);
+    T("dose: a second in the day calls DC 12", second.SaveDc == 12 && second.Line.Contains("laudanum"));
+    T("dose: a failure leaves them Drained and takes their level in Blood",
+        second.Drained && sot.DrainedByDrink && second.BloodLost == 3 && sot.BloodCur == blood0 - 3);
+    T("dose: the Nerve comes back whatever the save", second.Nerve == 2);
+    T("dose: the line names the save and the cost",
+        second.Line.Contains("DC 12") && second.Line.Contains("Drained 1") && second.Line.Contains("3 Blood"));
+    sot.DosedThisScene = false;
+    var third = Rest.TakeDose(sot, false, nerveDie: 1, fortDie: 1);
+    T("dose: a third calls DC 14", third.SaveDc == 14);
+    T("dose: and a second failure takes nothing more", third.Drained && third.BloodLost == 0 && sot.BloodCur == blood0 - 3);
+
+    var steady = Sober();
+    steady.DosesToday = 1;
+    var sat = Rest.TakeDose(steady, false, nerveDie: 2, fortDie: 15);
+    T("dose: a save made sits well", sat.SaveDc == 12 && !sat.Drained && !steady.DrainedByDrink && sat.BloodLost == 0);
+    T("dose: and says so", sat.Line.Contains("sits well"));
+
+    var already = Sober();
+    already.DosesToday = 1;
+    int b0 = already.BloodCur;
+    var elsewhere = Rest.TakeDose(already, false, nerveDie: 1, fortDie: 1, alreadyDrained: true);
+    T("dose: a soul Drained by something else loses no more Blood",
+        elsewhere.Drained && elsewhere.BloodLost == 0 && already.BloodCur == b0);
+
+    var brim = Sober();
+    brim.NerveCur = 11;
+    T("dose: Nerve stops at its maximum", Rest.TakeDose(brim, true, nerveDie: 6).Nerve == 1 && brim.NerveCur == 12);
+    T("dose: nobody is refused by name", Rest.WhyNotDose(null) != null && Rest.TakeDose(null, false) == null);
+
+    var drunk = Sober();
+    Rest.TakeDose(drunk, false, nerveDie: 1);
+    drunk.DosedThisScene = false;
+    Rest.TakeDose(drunk, false, nerveDie: 1, fortDie: 1);
+    Rest.Take(drunk, RestKind.Night, nerveDie: 1);
+    T("dose: a safe night starts the count again and lifts the Drained",
+        drunk.DosesToday == 0 && !drunk.DrainedByDrink && Rest.TakeDose(drunk, false, nerveDie: 1).SaveDc == 0);
+
+    // The Tracker's conditions line: the worse Drained holds, and a night lifts only the bottle's.
+    T("drain: added where none shows", Rest.WithDrinkDrain("Frightened 1") == "Frightened 1, Drained 1");
+    T("drain: a deeper Drained holds", Rest.WithDrinkDrain("Drained 2, Sickened 1") == "Drained 2, Sickened 1");
+    T("drain: lifting takes the bottle's own", Rest.WithoutDrinkDrain("Frightened 1, Drained 1") == "Frightened 1");
+    T("drain: and leaves a deeper one", Rest.WithoutDrinkDrain("Drained 2") == "Drained 2");
+    T("drain: an empty line", Rest.WithDrinkDrain(null) == "Drained 1" && Rest.WithoutDrinkDrain(null) == "");
+    T("drain: any value shows", Rest.ShowsDrained("Drained 3") && !Rest.ShowsDrained("Frightened 1") && !Rest.ShowsDrained(null));
+
+    // The bottle's Drained outlasts the fight. New fight clears the conditions and puts it back,
+    // and the guard in front of it must not count it as residue, or the button offers to clear a
+    // thing that comes straight back.
+    var tippler = Sober();
+    T("standing: a sober soul carries nothing", Rest.Standing(tippler) == "" && Rest.Standing(null) == "");
+    tippler.DrainedByDrink = true;
+    T("standing: the bottle's Drained carries", Rest.Standing(tippler) == "Drained 1");
+    T("standing: the same conditions in any order",
+        Rest.SameConditions("Frightened 1, Drained 1", "drained 1,Frightened 1") && Rest.SameConditions(null, "")
+        && !Rest.SameConditions("Drained 1", "") && !Rest.SameConditions("Drained 1", "Drained 2"));
+    var sway = new Combatant { Name = "Tippler", IsPC = true, BloodCur = 9, BloodMax = 12, Conditions = "Drained 1" };
+    T("standing: wearing only what carries is no residue", !Rules.FightResidue(sway, "Drained 1"));
+    T("standing: but the plain check still sees it", Rules.FightResidue(sway));
+    sway.Conditions = "Frightened 1, Drained 1";
+    T("standing: anything more is residue", Rules.FightResidue(sway, "Drained 1"));
+    Rules.ResetForNewFight(new[] { sway }, c => Rest.Standing(tippler));
+    T("standing: the reset clears the fight and keeps the bottle",
+        sway.Conditions == "Drained 1" && !Rules.FightResidue(sway, Rest.Standing(tippler)) && sway.BloodCur == 9);
+    Rules.ResetForNewFight(new[] { sway });
+    T("standing: with nobody named, the reset clears it all", sway.Conditions == "");
+
+    // The menu lines. Each is read off the constants Take and TakeDose spend, so these hold the
+    // words to the arithmetic: a menu that promises a d6 over a rest that rolls a d4 is the
+    // two-authorities fault in a place nobody tests by hand.
+    T("label: a rest's line is its title and what it gives",
+      Enum.GetValues<RestKind>().All(k => Rest.Label(k) == Rest.Title(k) + ": " + Rest.Gives(k)));
+    T("label: a safe night reads as the book prints it",
+      Rest.Label(RestKind.Night) == "A safe night: pools, 1d6 Nerve, Blood");
+    T("label: a dawn says it gives no Blood or Nerve",
+      Rest.Gives(RestKind.Dawn).Contains("no Blood or Nerve"));
+    T("label: a week names the Taint it eases",
+      Rest.Gives(RestKind.Week).EndsWith($"Taint eased {Rest.WeekEasesTaint}") && Rest.Gives(RestKind.Week).EndsWith("Taint eased 2"));
+    T("label: no rest is called a long rest",
+      Enum.GetValues<RestKind>().All(k => !Rest.Label(k).Contains("long rest", StringComparison.OrdinalIgnoreCase)));
+    T("label: no stray space before a colon",
+      Enum.GetValues<RestKind>().All(k => !Rest.Label(k).Contains(" :")));
+    T("dose: whiskey is a d4 and laudanum a d6", Rest.DoseDie(false) == 4 && Rest.DoseDie(true) == 6);
+
+    // And the numbers in the lines are the numbers the rests move.
+    var told = Worn();
+    int eased = int.Parse(System.Text.RegularExpressions.Regex.Match(Rest.Gives(RestKind.Week), @"Taint eased (\d+)").Groups[1].Value);
+    Rest.Take(told, RestKind.Week, null);
+    T("label: a week eases the Taint by the number its line prints", told.Taint == 3 - eased);
+    var slept = Worn();
+    int nd = int.Parse(System.Text.RegularExpressions.Regex.Match(Rest.Gives(RestKind.Night), @"1d(\d+) Nerve").Groups[1].Value);
+    Rest.Take(slept, RestKind.Night, nd);
+    T("label: a safe night's top roll is the die its line prints", slept.NerveCur == 2 + nd);
+    T("night: the Nerve die is a d6", nd == 6);
+}
+
+// ---- the Dread ladder as bands (v1.60.0) ----
+// The tooltip and the Reference deck print the ladder from Horror.DreadBands, which walks
+// DreadTier rather than typing the bands a second time. Held here to the function it walks.
+{
+    var bands = Horror.DreadBands();
+    T("dread bands: five of them, one per tier", bands.Count == 5 && bands.Select(b => b.Tier).SequenceEqual(new[] { 1, 2, 3, 4, 5 }));
+    T("dread bands: the first is open below", bands[0].From == int.MinValue);
+    T("dread bands: the last is open above", bands[^1].To == int.MaxValue);
+    T("dread bands: each starts one past the last one's end",
+      Enumerable.Range(1, bands.Count - 1).All(i => bands[i].From == bands[i - 1].To + 1));
+    T("dread bands: every closed end is in the tier the band says",
+      bands.All(b => (b.To == int.MaxValue || Horror.DreadTier(b.To) == b.Tier)
+                  && (b.From == int.MinValue || Horror.DreadTier(b.From) == b.Tier)));
+    T("dread bands: the loss is the ladder's own", bands.All(b => b.Loss == Rules.NerveLoss(b.Tier).label));
+    T("dread bands: only the last carries an Affliction",
+      bands.Take(bands.Count - 1).All(b => !b.Affliction) && bands[^1].Affliction);
+    T("dread: an Affliction from tier 5 and not before", Horror.Afflicts(5) && !Horror.Afflicts(4));
+    T("dread: the ladder on one line",
+      Horror.LadderLine() == "10 or under → 1 · 11–13 → 1d4 · 14–16 → 1d6 · 17–20 → 1d10 · 21 and over → 1d10 and a lasting Affliction");
+
+    // The whole posse on one line (v1.60.0). The button rolled every soul and the status bar and
+    // the Dice card both showed only the last one.
+    Horror.DreadOutcome Out(int degree, int nerve = 0, bool fright = false, bool steady = false, bool aff = false, bool numb = false)
+        => new(10, 0, 13, degree, "x", nerve, fright, steady, aff, "", numb);
+    T("posse dread: a critical success reads steadied", Out(3, steady: true).Brief == "steadied");
+    T("posse dread: a success reads held", Out(2).Brief == "held");
+    T("posse dread: a failure says the Nerve", Out(1, 3).Brief == "3 Nerve lost");
+    T("posse dread: a critical failure adds the Frightened", Out(0, 2, fright: true).Brief == "2 Nerve lost, Frightened 1");
+    T("posse dread: and tier 5 the Affliction", Out(1, 4, aff: true).Brief == "4 Nerve lost, an Affliction");
+    T("posse dread: a numb soul still failed", Out(1, 0, numb: true).Brief == "failed, numb to it");
+    var posse = new[] { new Horror.PosseRoll("Ruth", Out(2), false), new Horror.PosseRoll("Eli", Out(0, 3, fright: true), true) };
+    string posseLine = Horror.PosseLine(13, posse);
+    T("posse dread: the line opens on the DC", posseLine.StartsWith("Dread 13, the whole posse: "));
+    T("posse dread: and names every soul", posseLine.Contains("Ruth held") && posseLine.Contains("Eli 3 Nerve lost, Frightened 1"));
+    T("posse dread: and says who broke, and only them",
+      posseLine.Contains("Frightened 1, and broke") && !posseLine.Contains("held, and broke"));
+    T("posse dread: the headline counts who held", Horror.PosseHeadline(posse) == "1 of 2 held");
+    T("posse dread: a numb soul did not hold",
+      Horror.PosseHeadline(new[] { new Horror.PosseRoll("Hollow", Out(1, 0, numb: true), false) }) == "0 of 1 held");
+    T("posse dread: no rolls, no throw", Horror.PosseHeadline(null) == "0 of 0 held");
+}
+
+// ---- Send all, one arrival per kind (v1.60.0) ----
+// The Encounter tab sent each copy on its own, so three Risen asked the safe-table question three
+// times and logged three lines. Rules.Muster is what groups them; the tab does the asking.
+{
+    var (ka, kb) = (Db.Creatures[0], Db.Creatures[1]);
+    var kinds = Rules.Muster(new[] { ka, kb, ka, null, ka });
+    T("send all: one entry per kind", kinds.Count == 2);
+    T("send all: in the order each kind first turns up", kinds[0].Creature == ka && kinds[1].Creature == kb);
+    T("send all: with how many of each", kinds[0].Count == 3 && kinds[1].Count == 1);
+    T("send all: an empty plan musters nobody", Rules.Muster(Array.Empty<Creature>()).Count == 0);
+    T("send all: a kind is known by its name", Rules.Muster(new[] { ka, new Creature { name = ka.name } }).Single().Count == 2);
+    T("send all: the line names each kind once", Rules.MusterLine(kinds) == $"3× {ka.name} · 1× {kb.name}");
+    T("send all: a small kind goes on in one press", Rules.FieldBatches(3).SequenceEqual(new[] { 3 }));
+    T("send all: more than one press takes goes on in runs", Rules.FieldBatches(45).SequenceEqual(new[] { 20, 20, 5 }));
+    T("send all: and the runs add back up, none over the cap",
+      Enumerable.Range(1, 70).All(n => Rules.FieldBatches(n).Sum() == n
+                                    && Rules.FieldBatches(n).All(r => r > 0 && r <= Rules.FieldBatchMax)));
+    T("send all: nothing for nothing", !Rules.FieldBatches(0).Any() && !Rules.FieldBatches(-2).Any());
 }
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");

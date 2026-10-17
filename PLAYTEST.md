@@ -13,10 +13,11 @@ The posse is the same four callings every time: **Gunhand, Preacher, Mountain Ma
 **Coffin Wells · a posse of four at level 1 · party Tier 1**
 
 - **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 11. Put down to the last soul: 1.
-- Souls down at the end, on average: **2.4 of 4**.
-- Nerve left across the whole posse, on average: **51.2 of 58.9**. Runs in which at least one soul broke (Nerve to 0): **1** of 12.
+- Souls down at the end, on average: **2.5 of 4**.
+- Nerve left across the whole posse, on average: **45.2 of 58.9**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- Dread Checks played, in order: DC 13 (lose 1) · DC 13 (lose 1d4) · DC 16 (lose 1d6) · DC 16 (lose 1d6) · DC 16 (lose 1d6).
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 1.
+- **The same 12 nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 1.
 
 ### Fight by fight
 
@@ -24,8 +25,8 @@ The posse is the same four callings every time: **Gunhand, Preacher, Mountain Ma
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the Pell place, the dead getting up | TI | 2/12 | 9/12 | 1.6 | 28% | 48% |
-| the Nightwalker at the opened grave | TIII ⚠ | 0/2 | 2/2 | 1.0 | 33% | 67% |
+| the Pell place, the dead getting up | TI | 1/12 | 10/12 | 1.7 | 26% | 49% |
+| the Nightwalker at the opened grave | TIII ⚠ | 0/1 | 1/1 | 1.0 | 17% | 67% |
 
 ### The way through
 
@@ -43,11 +44,12 @@ Not one of the Tier III fights above was ever cleared by shooting it, across eve
 
 **Saltlick Station · a posse of four at level 3 · party Tier 2**
 
-- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 10. Put down to the last soul: 2.
-- Souls down at the end, on average: **2.8 of 4**.
-- Nerve left across the whole posse, on average: **49.0 of 68.3**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- **Finished the night on their feet: 1 of 12 runs.** Broke off and rode out: 11. Put down to the last soul: 0.
+- Souls down at the end, on average: **2.3 of 4**.
+- Nerve left across the whole posse, on average: **51.0 of 68.3**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- Dread Checks played, in order: DC 13 (lose 1d4) · DC 16 (lose 1d6) · DC 16 (lose 1d6).
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 2.
+- **The same 12 nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **1 of 12**, put down to the last soul 1.
 
 ### Fight by fight
 
@@ -55,12 +57,12 @@ Not one of the Tier III fights above was ever cleared by shooting it, across eve
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the tack room, and the two it has already been inside | TII | 9/12 | 3/12 | 2.2 | 37% | 60% |
-| the yard at first light | TIII | 0/9 | 7/9 | 1.3 | 16% | 86% |
+| the tack room, and the two it has already been inside | TII | 8/12 | 4/12 | 2.1 | 38% | 60% |
+| the yard at first light | TIII | 1/8 | 7/8 | 1.4 | 17% | 73% |
 
 ### The way through
 
-Not one of the Tier III fights above was ever cleared by shooting it, across every run, cold or tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
+Shooting alone cleared the Tier III fights above twice in 16 tries, across every run, cold and tended. That is the design, not a shortfall: the Bestiary prints an answer for each of them, and the module's job is to put that answer where the posse can find it under fire.
 
 **The Skin-Walker**. *Putting it down:* It cannot abide its true reflection nor cross a line of ash and bone; a prayed-over or silver bullet wounds past the borrowed skin.
 
@@ -72,11 +74,12 @@ Not one of the Tier III fights above was ever cleared by shooting it, across eve
 
 **Mission San Clavo · a posse of four at level 5 · party Tier 3**
 
-- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 10. Put down to the last soul: 2.
-- Souls down at the end, on average: **2.9 of 4**.
-- Nerve left across the whole posse, on average: **69.3 of 78.8**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- **Finished the night on their feet: 0 of 12 runs.** Broke off and rode out: 11. Put down to the last soul: 1.
+- Souls down at the end, on average: **2.8 of 4**.
+- Nerve left across the whole posse, on average: **75.2 of 78.8**. Runs in which at least one soul broke (Nerve to 0): **0** of 12.
+- Dread Checks played, in order: DC 13 (lose 1d4) · DC 20 (lose 1d10).
 
-- **The same twelve nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 3.
+- **The same 12 nights, with the Sawbones working between acts** (the posse back to half Blood, never more): finished standing **0 of 12**, put down to the last soul 2.
 
 ### Fight by fight
 
@@ -84,9 +87,9 @@ Not one of the Tier III fights above was ever cleared by shooting it, across eve
 
 | Fight | Foe tier | Cleared | Broke off | Avg rounds | Posse hit rate | Foe hit rate |
 |---|---|---|---|---|---|---|
-| the ones who drank first | TII | 9/12 | 3/12 | 3.2 | 35% | 57% |
-| what has been living in the nave | TII | 1/9 | 6/9 | 1.7 | 35% | 64% |
-| the thing the first binding was for | TIII | 0/1 | 1/1 | 1.0 | 44% | 67% |
+| the ones who drank first | TII | 8/12 | 4/12 | 3.0 | 33% | 56% |
+| what has been living in the nave | TII | 1/8 | 7/8 | 1.3 | 34% | 60% |
+| the thing the first binding was for | TIII | 0/1 | 0/1 | 1.0 | 33% | 86% |
 
 ### The way through
 
@@ -100,7 +103,7 @@ Not one of the Tier III fights above was ever cleared by shooting it, across eve
 
 | Adventure | Level | Finished (cold) | Finished (tended) | Broke off | Put down | Avg souls down |
 |---|---|---|---|---|---|---|
-| The Salt at Coffin Wells | 1 | 0/12 | 0/12 | 11 | 1 | 2.4 |
-| A Face Not His Own | 3 | 0/12 | 0/12 | 10 | 2 | 2.8 |
-| What the Water Answers | 5 | 0/12 | 0/12 | 10 | 2 | 2.9 |
+| The Salt at Coffin Wells | 1 | 0/12 | 0/12 | 11 | 1 | 2.5 |
+| A Face Not His Own | 3 | 1/12 | 1/12 | 11 | 0 | 2.3 |
+| What the Water Answers | 5 | 0/12 | 0/12 | 11 | 1 | 2.8 |
 

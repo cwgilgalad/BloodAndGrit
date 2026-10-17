@@ -63,6 +63,30 @@ public static class Daybook
         }
     }
 
+    // Whose roll the next check is. Rules.FourDegrees writes the daybook's "check" line and knows
+    // a die, a modifier and a DC, never a name, so a whole-posse Dread check left six lines that
+    // read "d20(7) +2 = 9 vs DC 13 → Failure" and no way to tell whose was whose. The Dice log had
+    // the names all along. Thread-static so nothing on another thread can borrow the name.
+    [ThreadStatic] static string roller;
+
+    /// <summary>Name whose checks these are until the handle is disposed: <c>using (Daybook.As(soul.Name))</c>
+    /// around a soul's Dread Check, Fortitude save or reading of sign. A blank name leaves the
+    /// current one standing, and the old one comes back on Dispose, so the scopes nest.</summary>
+    public static IDisposable As(string who)
+    {
+        string was = roller;
+        if (!string.IsNullOrWhiteSpace(who)) roller = who.Trim();
+        return new Restore(was);
+    }
+
+    sealed class Restore(string was) : IDisposable
+    {
+        public void Dispose() => roller = was;
+    }
+
+    /// <summary>"Mattie Lusk: " while a check is being made under <see cref="As"/>, or empty.</summary>
+    public static string Whose => roller == null ? "" : roller + ": ";
+
     /// <summary>Record one thing that happened. <paramref name="channel"/> is a short tag the eye
     /// can scan a column of: <c>roll</c>, <c>session</c>, <c>mode</c>, <c>soul</c>, <c>error</c>.
     /// Costs nothing when the daybook is closed, which is the common case in the rules library.</summary>

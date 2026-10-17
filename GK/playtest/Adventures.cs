@@ -14,6 +14,12 @@ using BloodAndGritKeeper;
 /// something in front of them that has to be fought.</summary>
 public enum BeatKind { Dread, Fight, Toll }
 
+/// <remarks>A Dread beat is the module's printed Dread line, carried over as it reads: the DC, and the
+/// rung of the Nerve-loss ladder its "Lose X Nerve" names (1 → 1, 2 → 1d4, 3 → 1d6, 4 → 1d10).
+/// The rung is kept separate from the DC because a module may print a check softer than its DC,
+/// as Module I's boot hill does. They drifted apart once: the ladder pass (d8e3286) repriced every
+/// printed line and left every beat here on its old number. audits/audit_playtest.py now reads the
+/// built modules and fails when the beats and the lines disagree in count, order, DC or die.</remarks>
 public record Beat(
     BeatKind Kind,
     string Name,
@@ -64,16 +70,18 @@ public static class Adventures
                 "The dead get up. Nerve becomes real.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "the supper cold on the table, the door standing open", DreadDc: 16, DreadTier: 1),
+                    new Beat(BeatKind.Dread, "the supper cold on the table, the door standing open", DreadDc: 13, DreadTier: 2),
+                    new Beat(BeatKind.Dread, "the dead getting up out of the barn", DreadDc: 16, DreadTier: 3,
+                        Note: "The Risen's own Dread line, the first time the dead get up. Scene 6 prints it."),
                     new Beat(BeatKind.Fight, "the Pell place, the dead getting up",
                         Foes: new[] { "The Risen", "The Risen", "The Risen" }),
-                    new Beat(BeatKind.Dread, "the wife in the cellar, bled and half-turned", DreadDc: 16, DreadTier: 2),
+                    new Beat(BeatKind.Dread, "the wife in the cellar, bled and half-turned", DreadDc: 16, DreadTier: 3),
                 }),
             new Act("Act Three: The Reckoning",
                 "The ruined mission, the opened grave, and the thing that came out of it.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "its regard, in the dark of the church", DreadDc: 18, DreadTier: 3),
+                    new Beat(BeatKind.Dread, "its regard, in the dark of the church", DreadDc: 16, DreadTier: 3),
                     new Beat(BeatKind.Fight, "the Nightwalker at the opened grave",
                         Foes: new[] { "The Nightwalker" },
                         Note: "The book says outright that the players cannot simply out-shoot this. "
@@ -102,14 +110,14 @@ public static class Adventures
                 "Eight names, one roof, and something already inside it.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "the hostler answers to a name that is not his", DreadDc: 15, DreadTier: 2),
+                    new Beat(BeatKind.Dread, "the hostler answers to a name that is not his", DreadDc: 13, DreadTier: 2),
                     new Beat(BeatKind.Toll, "a night in the cold with the doors barred", Toll: 2),
                 }),
             new Act("Act Two: The First Taking",
                 "It takes somebody the posse has spoken to, and leaves what it does not need.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "what is left of the one it finished with", DreadDc: 17, DreadTier: 2),
+                    new Beat(BeatKind.Dread, "what is left of the one it finished with", DreadDc: 16, DreadTier: 3),
                     new Beat(BeatKind.Fight, "the tack room, and the two it has already been inside",
                         Foes: new[] { "The Possessed", "The Possessed" }),
                 }),
@@ -117,7 +125,7 @@ public static class Adventures
                 "The tell named out loud, and the thing that no longer needs the face.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "it stops pretending", DreadDc: 18, DreadTier: 3),
+                    new Beat(BeatKind.Dread, "it stops pretending", DreadDc: 16, DreadTier: 3),
                     new Beat(BeatKind.Fight, "the yard at first light",
                         Foes: new[] { "The Skin-Walker" }),
                 }),
@@ -148,7 +156,7 @@ public static class Adventures
                 "A well gone wrong, and the homesteads that drink from it.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "what the bucket brings up", DreadDc: 16, DreadTier: 2),
+                    new Beat(BeatKind.Dread, "what the bucket brings up", DreadDc: 13, DreadTier: 2),
                     new Beat(BeatKind.Fight, "the ones who drank first",
                         Foes: new[] { "The Drowned", "The Drowned", "The Drowned" }),
                     new Beat(BeatKind.Toll, "the walk to the mission on bad water", Toll: 3),
@@ -157,7 +165,9 @@ public static class Adventures
                 "The mission's own record of what it bound, and what keeping it cost.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "the last entry, in a hand that stops mid-word", DreadDc: 17, DreadTier: 2),
+                    // No Dread beat. The act note promised one and the module has never printed it;
+                    // the harness played one at DC 17 that no Keeper was ever told to call. The
+                    // runner plays what the module prints, so it goes back when a line does.
                     new Beat(BeatKind.Fight, "what has been living in the nave",
                         Foes: new[] { "The Plague-Dead", "The Plague-Dead", "The Plague-Dead" }),
                 }),
@@ -165,7 +175,7 @@ public static class Adventures
                 "Down the well the padres bound first.",
                 new[]
                 {
-                    new Beat(BeatKind.Dread, "the dark at the bottom of the shaft", DreadDc: 19, DreadTier: 3),
+                    new Beat(BeatKind.Dread, "the dark at the bottom of the shaft", DreadDc: 20, DreadTier: 4),
                     new Beat(BeatKind.Fight, "the thing the first binding was for",
                         Foes: new[] { "The Hunger That Walks", "The Drowned", "The Drowned" }),
                 }),

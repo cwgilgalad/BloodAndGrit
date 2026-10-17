@@ -8,16 +8,28 @@
 # Every number under "What the Night Costs" came out of GK/playtest.
 from modules_common import (basin, night_costs, shell, splice, finish, report, runhead, quote, readaloud,
                             keeper, clock, npc, statblock, found, contents,
-                            fight, night, words, odds)
+                            fight, night, words, odds, runs, rounds, dread_count, DREAD_COUNT)
 
 # The engine's numbers, off PLAYTEST.md. The prose below quotes these rather than a copy of them.
 _ACT1, _NAVE, _PIT = (fight("What the Water Answers", i) for i in range(3))
 _NIGHT = night("What the Water Answers")
+_RUNS = runs()
 # "Not one soul broke" is printed in bold below; a run in which one did makes it false.
 assert _NIGHT["broken"] == 0, "PLAYTEST.md has a soul breaking in Module III; reread The Night, End to End"
+# Act One's Keeper note says the engine has the posse winning the dooryard, and Act Three's says
+# fire and iron are slower than the posse has. Runs that turn either round make the note false.
+assert 2 * _ACT1["cleared"] > _ACT1["reached"], "PLAYTEST.md has the posse losing Act One; reread its Keeper note"
+assert _PIT["cleared"] == 0, "PLAYTEST.md has a posse clearing the bottom of the shaft; reread scene 11"
+# The nave is "the one this module lets go badly", shot "about as well" as the dooryard to a "far
+# worse outcome", and "over in" fewer rounds than Act One. What the Night Costs reads the first two
+# rows that way in words, so runs that stop saying it make the paragraph false.
+assert 2 * _NAVE["cleared"] < _NAVE["reached"], "PLAYTEST.md has the posse winning the nave; reread What It Teaches and scene 6"
+assert abs(_NAVE["ours"] - _ACT1["ours"]) <= 5, "PLAYTEST.md has the posse shooting the nave and the dooryard differently; reread What the Night Costs"
+assert _NAVE["cleared"] * _ACT1["reached"] < _ACT1["cleared"] * _NAVE["reached"], "PLAYTEST.md no longer has the nave going worse than Act One"
+assert _NAVE["rounds"] < _ACT1["rounds"], "PLAYTEST.md has the nave running longer than Act One; reread What the Night Costs"
 from module_maps import map_html
 
-VERSION = "1.12"
+VERSION = "1.13"
 SLUG = "what-the-water-answers"
 
 H = shell(
@@ -97,7 +109,7 @@ WHAT = '''
     things that drank from it. A fight a 5th-level posse wins.</li>
     <li><strong>Act Two teaches that somebody wrote it down.</strong> The padres kept a ledger of
     what they bound and what keeping it cost, and the last entry stops mid-word. The fight in the
-    nave is the one this module lets go badly: the engine cleared it three times in nine.</li>
+    nave is the one this module lets go badly: the engine cleared it ''' + words(_NAVE["cleared"]) + ''' time''' + ("s" if _NAVE["cleared"] != 1 else "") + ''' in ''' + words(_NAVE["reached"]) + '''.</li>
     <li><strong>Act Three teaches what a binding actually is.</strong> Not a thing done once. A
     thing being done, by somebody, continuously, until they stop. The posse goes down the shaft to
     find out who stopped, and then has to decide whether to start again.</li>
@@ -333,7 +345,7 @@ ACT1 = '''
 <section class="page" id="act1">
   ''' + runhead("Act One") + '''
   <h1 class="chapter">Act One &mdash; What Comes Up With the Water</h1>
-  <p class="note">Aim for an hour. One Dread Check, one fight the posse should win.</p>
+  <p class="note">Aim for an hour. ''' + DREAD_COUNT + ''', one fight the posse should win.</p>
 
   <h2 id="a1-house">1. The Cardoza Place</h2>
   <p>Adobe, forty years old, the last homestead out past the mission, six miles on and downhill from it. Eleven people
@@ -373,8 +385,8 @@ ACT1 = '''
   waist in a dry country and they've been walking two days.</p>
 
   ''' + keeper(
-    "<p><strong>The engine says the posse wins this</strong>: nine clears in twelve, about "
-    "three rounds. It's meant to be won. What it isn't meant to be is free: the fight is in "
+    "<p><strong>The engine says the posse wins this</strong>: " + words(_ACT1["cleared"]) + " clears in "
+    + words(_ACT1["reached"]) + ", about " + rounds(_ACT1["rounds"]) + ". It's meant to be won. What it isn't meant to be is free: the fight is in "
     "the dooryard of a family that is watching, and two of the three are recognised on sight by "
     "somebody standing behind the posse.</p>") + '''
 
@@ -390,7 +402,7 @@ ACT2 = '''
 <section class="page" id="act2">
   ''' + runhead("Act Two") + '''
   <h1 class="chapter">Act Two &mdash; The Ledger of the Padres</h1>
-  <p class="note">Aim for ninety minutes. One Dread Check, one fight that can go wrong, and the
+  <p class="note">Aim for ninety minutes. ''' + DREAD_COUNT + ''', one fight that can go wrong, and the
   whole answer written down in somebody else&rsquo;s hand.</p>
 
   <h2 id="a2-court">4. The Courtyard</h2>
@@ -413,7 +425,7 @@ ACT2 = '''
   ''' + found("The Plague-Dead") + '''
 
   <p>Full entry under <a href="#dead">What's Coming Up</a>. Three of them, and this is the fight
-  this module lets go badly: ''' + words(_NAVE["cleared"]) + ''' clear in ''' + words(_NAVE["reached"]) + ''' on the engine. See
+  this module lets go badly: ''' + words(_NAVE["cleared"]) + ''' clear''' + ("s" if _NAVE["cleared"] != 1 else "") + ''' in ''' + words(_NAVE["reached"]) + ''' on the engine. See
   <a href="#cost">What the Night Costs</a> before you run it, because the reason isn't the
   creature.</p>
 
@@ -465,7 +477,7 @@ ACT3 = '''
 <section class="page" id="act3">
   ''' + runhead("Act Three") + '''
   <h1 class="chapter">Act Three &mdash; The Bottom of the Basin</h1>
-  <p class="note">Aim for an hour and be willing to give it more. One Dread Check, one descent, and
+  <p class="note">Aim for an hour and be willing to give it more. ''' + DREAD_COUNT + ''', one descent, and
   a decision that outlives the module.</p>
 
   <h2 id="a3-shaft">8. The First Well</h2>
@@ -509,7 +521,7 @@ ACT3 = '''
   ''' + keeper(
     "<p><strong>Read its Putting It Down line before you run this and then read the second half of "
     "it again.</strong> Fire and iron will do it, slowly, and the engine says slowly is longer than "
-    "the posse has: zero clears, one round of trading, see <a href='#cost'>What the Night "
+    "the posse has: " + words(_PIT["cleared"]) + " clears, " + rounds(_PIT["rounds"]) + " of trading, see <a href='#cost'>What the Night "
     "Costs</a>. The other half of the line is the module's real ending: a true name, and a held "
     "warmth, may call the man back from it once.</p>"
     "<p>The name is in the ledger. Every keeper of the circuit wrote their own name at the head of "
@@ -606,7 +618,7 @@ COST = '''
   ''' + runhead("What the Night Costs") + '''
   <h1 class="chapter">What the Night Costs</h1>
 
-  <p>Every number on this page came out of the game&rsquo;s own engine. Twelve posses (a Gunhand, a
+  <p>Every number on this page came out of the game&rsquo;s own engine. ''' + words(_RUNS, True) + ''' posses (a Gunhand, a
   Preacher, a Mountain Man and a Sawbones, built by the generator, at 5th level)
   were run through all three acts on the same rules library the app runs on, with the Bestiary&rsquo;s
   numbers for every foe and the book&rsquo;s dice for every roll. The runs are seeded and reproduce.</p>
@@ -616,13 +628,13 @@ COST = '''
 
   <p>Read the first two rows together, because they're the interesting pair. Both fights are Tier
   II. The posse shoots about as well in the second as in the first, ''' + str(_NAVE["ours"]) + ''' per cent
-  against ''' + str(_ACT1["ours"]) + ''', and clears it ''' + words(_NAVE["cleared"]) + ''' time in ''' + words(_NAVE["reached"]) + ''' where it
-  cleared the first ''' + words(_ACT1["cleared"]) + ''' times in ''' + words(_ACT1["reached"]) + '''. Same tier, same party, same dice,
+  against ''' + str(_ACT1["ours"]) + ''', and clears it ''' + words(_NAVE["cleared"]) + ''' time''' + ("s" if _NAVE["cleared"] != 1 else "") + ''' in ''' + words(_NAVE["reached"]) + ''' where it
+  cleared the first ''' + words(_ACT1["cleared"]) + ''' time''' + ("s" if _ACT1["cleared"] != 1 else "") + ''' in ''' + words(_ACT1["reached"]) + '''. Same tier, same party, same dice,
   far worse outcome.</p>
 
   <p>What changed is that the posse arrived at the nave already spent. The round counts say it:
   Act One runs ''' + f"{_ACT1['rounds']:.1f}" + ''' rounds, and the nave is over in ''' + f"{_NAVE['rounds']:.1f}" + ''', which at this
-  level is what losing looks like rather than what winning looks like. ''' + words(_NAVE["reached"], True) + ''' of twelve
+  level is what losing looks like rather than what winning looks like. ''' + words(_NAVE["reached"], True) + ''' of ''' + words(_RUNS) + '''
   reached the nave; ''' + words(_PIT["reached"]) + ''' of ''' + words(_NAVE["reached"]) + ''' got past it.</p>
 
   ''' + keeper(
@@ -632,17 +644,21 @@ COST = '''
     "in the nave, and every point not in the nave isn't at the bottom of the shaft.</p>"
     "<p>So let the Sawbones work. Let them camp at the mission. Let them go back up the rope and "
     "come down again tomorrow; it costs a segment of the clock and the module is built to "
-    "charge exactly that and no more.</p>") + '''
+    "charge exactly that and no more. Be plain with them about what the night buys, though. A camp "
+    "on top of the shaft is no safe night, so the dawn brings back the pools and the Sawbones' doses "
+    "and leaves Blood and Nerve where the dark left them. Out here the kit is what closes a wound.</p>") + '''
 
   <h2 id="cost-night">The Night, End to End</h2>
-  <p>''' + words(_NIGHT["finished"], True) + ''' of twelve finished the night on their feet. ''' + words(_NIGHT["broke"], True) + ''' broke off and rode out;
+  <p>''' + words(_NIGHT["finished"], True) + ''' of ''' + words(_RUNS) + ''' finished the night on their feet. ''' + words(_NIGHT["broke"], True) + ''' broke off and rode out;
   ''' + words(_NIGHT["down"]) + ''' were put down to the last soul. Souls down at the end averaged ''' + _NIGHT["souls"] + ''' of 4. Nerve,
-  though, finished at ''' + _NIGHT["nerve"] + ''' of a possible ''' + _NIGHT["nerve_of"] + ''', and <strong>not one soul broke in twelve
+  though, finished at ''' + _NIGHT["nerve"] + ''' of a possible ''' + _NIGHT["nerve_of"] + ''', and <strong>not one soul broke in ''' + words(_RUNS) + '''
   runs</strong>, at the highest level of the three and against the worst things in them.</p>
 
   <p>That is not an accident of the dice. A 5th-level posse has the Nerve to look at this, and the
   module knows it. What it doesn't have is the Blood to walk through it, and the Sawbones running
-  between acts moved the count by one run in twelve. Survive this night carefully, and
+  between acts ''' + (f"moved the count by {words(abs(_NIGHT['tended_down'] - _NIGHT['down']))} "
+  f"run{'s' if abs(_NIGHT['tended_down'] - _NIGHT['down']) != 1 else ''} in {words(_RUNS)}"
+  if _NIGHT["tended_down"] != _NIGHT["down"] else "didn't move the count at all") + '''. Survive this night carefully, and
   don't charge it.</p>
 
   <h2 id="cost-scaling">Scaling the Night</h2>
@@ -706,6 +722,9 @@ AFTER = '''
 '''
 
 BASIN = basin("Mission San Clavo", this_module="III")
+
+# Each act's note counts the Dread lines the act prints, so the count and the lines can't part.
+ACT1, ACT2, ACT3 = dread_count(ACT1), dread_count(ACT2), dread_count(ACT3)
 
 BODY = (CONTENTS + WHAT + BASIN + TRUTH + TURN + HOOK + GROUND + ACT1 + ACT2 + ACT3
         + CAST + DEAD + COST + AFTER)

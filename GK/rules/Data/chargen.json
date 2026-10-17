@@ -173,7 +173,7 @@
       ],
       "trainedChoice": [],
       "line": "You broke sod that did not want breaking and buried more than one child under it.",
-      "boon": "A full night's rest in a camp you have made restores you and each companion an extra 1d6 Blood; your dogs and stock give warning before trouble arrives.",
+      "boon": "A safe night in a camp you have made restores you and each companion sheltering with you an extra 1d6 Blood; your dogs and stock give warning before trouble arrives.",
       "burden": "Away from home or kin, −1 on Initiative in the first round of any fight."
     },
     {
@@ -308,7 +308,7 @@
           "name": "The Risen",
           "hunger": "Warmth, company, a reason to be upright.",
           "feeding": "A night of being treated as a person by somebody who knows what you are.",
-          "gift": "You are hard to put down: your death threshold is twice your CON, and the blow that drops you leaves you on your feet until the end of the round it lands."
+          "gift": "You are hard to put down: your death threshold is twice your CON score (–24 for CON 12), and the blow that drops you leaves you on your feet until the end of the round it lands."
         },
         {
           "name": "The Sanguine",
@@ -370,7 +370,7 @@
     {
       "name": "Steady Shot",
       "group": "Gun",
-      "desc": "If you do not move, ignore the first range increment penalty and gain +1 to hit; ignore Kickback recoil."
+      "desc": "If you do not move, ignore the first –2 for range and gain +1 to hit; ignore Kickback recoil."
     },
     {
       "name": "Throw the Stick",
@@ -451,7 +451,7 @@
     {
       "name": "Frontier Medicine",
       "group": "Frontier",
-      "desc": "Your field care heals an extra 1d6; improvise a remedy from what the land offers.",
+      "desc": "Your Field Surgery heals an extra 1d6; the Medicine check that stops a friend's bleeding gives back 1d6 Blood; improvise a remedy from what the land offers.",
       "reqTrained": "Medicine"
     },
     {
@@ -472,7 +472,7 @@
     {
       "name": "Hedge Magic",
       "group": "Old Dark",
-      "desc": "Learn a single Sign and gain a small Nerve pool to fuel it, though you are not a Hexer.",
+      "desc": "Learn a single Sign and set apart a pool of 2 Nerve to fuel it, refilled by a safe night and spent before your own, though you are not a Hexer.",
       "notFaith": true,
       "effect": "sign+1"
     },
@@ -577,7 +577,7 @@
       "name": "Run It Down",
       "calling": "Bounty Hunter",
       "reqFeature": "Getaway",
-      "desc": "After a Bushwhack lands, immediately Step and Stride free; your quarry must spend an action to break away."
+      "desc": "After a Getaway, the quarry you Struck can't leave your reach without a Beat to break away (Acrobatics or Athletics vs your Reflex DC); if it fails, it is Off-Guard to your next Strike this scene."
     },
     {
       "name": "Devoted Unto Death",
@@ -660,7 +660,7 @@
     {
       "name": "Battlefield Surgeon",
       "calling": "Sawbones",
-      "desc": "Field care in the thick of a fight provokes no reaction and restores an extra die of Blood."
+      "desc": "Field Surgery in the thick of a fight restores an extra die of Blood."
     },
     {
       "name": "Spirit-Spoken",
@@ -997,7 +997,7 @@
       "list": "common",
       "rank": 3,
       "cost": "1 Beat · 3 Nerve",
-      "desc": "Lend a dying companion a measure of your own life. Heal them 2d8 and take half that number in Blood yourself, which does not come back until you rest. Backlash: If they die anyway, you gain +1 Mark. The dark keeps the loan regardless."
+      "desc": "Lend a dying companion a measure of your own life. Heal them 2d8 and take half that number in Blood yourself, which comes back only with a safe night or a week of peace. Backlash: If they die anyway, you gain +1 Mark. The dark keeps the loan regardless."
     },
     {
       "name": "Nail the Shadow",
@@ -1468,7 +1468,7 @@
       "list": "mending",
       "rank": 3,
       "cost": "One minute · 3 Faith",
-      "desc": "Sing a hurt soul down into a true healing sleep. They recover double from tonight's rest and wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn."
+      "desc": "Sing a hurt soul down into a true healing sleep. If tonight is a safe night they recover double the Blood and Nerve it gives, and either way they wake clear of fear and easy of mind, which in this country is the rarer of the two cures. The sleep holds until dawn."
     },
     {
       "name": "The Life Shared",
@@ -1678,7 +1678,7 @@
     {
       "name": "Buffalo Rifle",
       "dmg": "1d12",
-      "traits": "Kickback, Volley 30 ft, Fatal d12",
+      "traits": "Kickback, Two-Handed, Volley 30 ft, Fatal d12",
       "range": 250,
       "cap": 1,
       "reload": "1",
@@ -1708,7 +1708,7 @@
     {
       "name": "Double-Barrel Shotgun",
       "dmg": "2d8",
-      "traits": "Scatter 10 ft, Kickback, Fatal d12",
+      "traits": "Scatter 10 ft, Kickback, Two-Handed, Fatal d12",
       "range": 30,
       "cap": 2,
       "reload": "1",
@@ -1718,7 +1718,7 @@
     {
       "name": "Lever-Action Repeater",
       "dmg": "1d10",
-      "traits": "Repeating, Fatal d12",
+      "traits": "Repeating, Two-Handed, Fatal d12",
       "range": 120,
       "cap": 12,
       "reload": "1/shot",
@@ -1738,7 +1738,7 @@
     {
       "name": "Bolt / Trapdoor Rifle",
       "dmg": "1d12",
-      "traits": "Volley 30 ft, Fatal d12",
+      "traits": "Two-Handed, Volley 30 ft, Fatal d12",
       "range": 200,
       "cap": 1,
       "reload": "1",
@@ -1748,7 +1748,7 @@
     {
       "name": "Bow / Crossbow",
       "dmg": "1d8",
-      "traits": "Silent; Volley 20 ft (bow)",
+      "traits": "Silent, Two-Handed; Volley 20 ft (bow)",
       "range": 60,
       "cap": 1,
       "reload": "1",
@@ -1758,7 +1758,7 @@
     {
       "name": "Carbine (lever)",
       "dmg": "1d10",
-      "traits": "Repeating, Fatal d12",
+      "traits": "Repeating, Two-Handed, Fatal d12",
       "range": 90,
       "cap": 8,
       "reload": "1/shot",
@@ -1808,7 +1808,7 @@
     {
       "name": "Wall / Punt Gun",
       "dmg": "3d10",
-      "traits": "Scatter 20 ft, Kickback, Volley 20 ft",
+      "traits": "Scatter 20 ft, Kickback, Two-Handed, Volley 20 ft",
       "range": 80,
       "cap": 1,
       "reload": "slow",
@@ -1832,21 +1832,35 @@
     {
       "name": "Knife / Bowie",
       "dmg": "1d4",
-      "traits": "Concealable, Agile, +1 on a Sudden Strike",
-      "cost": 0,
+      "traits": "Concealable, Agile, +1 damage on a Sudden Strike",
+      "cost": 2,
       "kind": "melee"
     },
     {
       "name": "Hatchet",
       "dmg": "1d6",
       "traits": "Throwable to 20 ft",
-      "cost": 0,
+      "cost": 1,
       "kind": "melee"
     },
     {
       "name": "Saber",
       "dmg": "1d8",
-      "traits": "Reach and heft; favored mounted",
+      "traits": "Long and heavy; favored mounted",
+      "cost": 5,
+      "kind": "melee"
+    },
+    {
+      "name": "Lance / Spear",
+      "dmg": "1d8",
+      "traits": "Reach; a charge weapon from the saddle",
+      "cost": 3,
+      "kind": "melee"
+    },
+    {
+      "name": "Staff / Walking Stick",
+      "dmg": "1d4",
+      "traits": "nonlethal by choice",
       "cost": 0,
       "kind": "melee"
     }
@@ -1899,7 +1913,7 @@
   ],
   "gearPrices": {
     "Heavy duster ($6)": 6.0,
-    "Box of cartridges (50) ($1)": 1.0,
+    "Box of cartridges (50), metallic ($1.25)": 1.25,
     "Bedroll & tarp ($2)": 2.0,
     "Week's rations ($3)": 3.0,
     "50 ft hemp rope (75¢)": 0.75,
@@ -2097,7 +2111,7 @@
         }
       ],
       "featureDescs": {
-        "Bushwhack": "Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is unaware of you, who has not yet acted in the fight, or whom an ally threatens, deal the listed extra damage. Everything rides on the ambush. A bounty man forced to trade blows in the open with a cornered killer has already made his mistake.",
+        "Bushwhack": "Bringing a man in is not a fair fight, and you do not pretend otherwise. Once per turn, when you Strike a quarry who is unaware of you, who has not yet acted in the fight, or whom an ally is engaging (an Off-Guard target; see Conditions), deal the listed extra damage. Everything rides on the ambush. A bounty man forced to trade blows in the open with a cornered killer has already made his mistake.",
         "Quick Hands": "Years of needing your iron (or your irons, the manacle kind) a half-second sooner than the other man. You draw, holster, reload, or snap on a cuff as part of another action rather than spending a Beat on it, and add +2 to the roll that decides who acts first. Lockpicks, knots, and a fugitive's hidden pockets answer to these hands as readily as a trigger does.",
         "Road Sense": "You have laid enough ambushes to know when you are walking into one. Gain +2 on Notice against traps, tails, and lying-in-wait, and you are never caught flat; you act in the first round of a fight even when surprise is called against you. The hunted set snares too.",
         "The Drop": "With a quarry dead to rights (your iron drawn, his not) you may Demoralize as a single Beat, and a man who yields comes along quiet, hands where you can see them. Against one who calls the bluff, your first Strike counts him as unaware. Dead or alive is his choosing; you are paid the same either way.",
@@ -2114,7 +2128,7 @@
         "options": [
           {
             "name": "The Stalker",
-            "boon": "You read a quarry's trail and habits and strike from where he never looks; your Bushwhack deals extra dice against a foe who has not yet acted. Mastery (10th): once per scene, a perfect ambush against an unready quarry is an automatic critical that may end the chase before it starts."
+            "boon": "You read a quarry's trail and habits and strike from where he never looks; your Bushwhack deals an extra 1d6 against a foe who has not yet acted. Mastery (10th): once per scene, a perfect ambush against an unready quarry is an automatic critical that may end the chase before it starts."
           },
           {
             "name": "The Posse Boss",
@@ -2157,7 +2171,7 @@
         "melee": "Knife / Bowie",
         "sundries": [
           "Heavy duster ($6)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "50 ft hemp rope (75¢)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)",
@@ -2369,7 +2383,7 @@
         "options": [
           {
             "name": "The Ghost Trail",
-            "boon": "Gain a bonus to Stealth, and you may Hide in cover even while observed. Mastery (10th): once per scene, become wholly unseen for a round, striking from nowhere."
+            "boon": "Gain +2 to Stealth, and you may Hide in cover even while observed. Mastery (10th): once per scene, become wholly unseen for a round, striking from nowhere."
           },
           {
             "name": "The Hard Trail",
@@ -2412,7 +2426,7 @@
         "melee": "Knife / Bowie",
         "sundries": [
           "Bedroll & tarp ($2)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "50 ft hemp rope (75¢)",
           "Heavy duster ($6)",
@@ -2891,7 +2905,7 @@
         "options": [
           {
             "name": "The Charmer",
-            "boon": "Spend Favor on Deceive, Persuade, and reading a room, and gain a bonus at any table. Mastery (10th): once per scene, bend a crowd or a single mark wholly to your play."
+            "boon": "Spend Favor on Deceive, Persuade, and reading a room, and gain +2 at any table. Mastery (10th): once per scene, bend a crowd or a single mark wholly to your play."
           },
           {
             "name": "The Duelist",
@@ -2932,7 +2946,7 @@
         ],
         "melee": "Knife / Bowie",
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Bottle of whiskey (50¢)",
           "Heavy duster ($6)",
           "Week's rations ($3)",
@@ -3143,7 +3157,7 @@
         "options": [
           {
             "name": "The Fanning Hand",
-            "boon": "With a single-action revolver you may fan a second Strike each round at the Multiple Attack Penalty without spending an extra Beat. Mastery (10th): once each round, dropping a foe lets you immediately Strike another in range at no penalty."
+            "boon": "With a single-action revolver you may fan a second Strike each round at the Multiple Attack Penalty without spending an extra Beat. Mastery (10th): your fanned Strike takes no Multiple Attack Penalty."
           },
           {
             "name": "The Fast Draw",
@@ -3151,7 +3165,7 @@
           },
           {
             "name": "The Long Rifle",
-            "boon": "Ignore the penalty at the first range increment, and Aim as a single Beat. Mastery (10th): a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted."
+            "boon": "Ignore the first –2 for range, and your Aim holds while you don't move, to the end of your next turn. Mastery (10th): a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted."
           }
         ]
       },
@@ -3181,8 +3195,8 @@
         ],
         "melee": "Knife / Bowie",
         "sundries": [
-          "Box of cartridges (50) ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "Bedroll & tarp ($2)",
           "Week's rations ($3)",
@@ -3389,11 +3403,11 @@
         "options": [
           {
             "name": "The Lawman",
-            "boon": "Your commands carry weight, a bonus to Demoralize and to rally, and you may deputize allies for a scene. Mastery (10th): once per scene, your word stays a hand: a foe must lay down arms or stand frozen a round."
+            "boon": "Your commands carry weight, +2 to Demoralize and to rally, and you may deputize allies for a scene. Mastery (10th): once per scene, your word stays a hand: a foe must lay down arms or stand frozen a round."
           },
           {
             "name": "The Manhunter",
-            "boon": "Name a quarry; gain bonuses to track, read, and strike them. Mastery (10th): your mark cannot shake you, and once per scene you land a decisive, fight-ending blow or capture against them."
+            "boon": "Name a quarry; gain +2 to track and read them, and +2 damage when you strike them. Mastery (10th): your mark cannot shake you, and once per scene you land a decisive, fight-ending blow or capture against them."
           },
           {
             "name": "The Shield",
@@ -3430,7 +3444,7 @@
         ],
         "melee": "Club",
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "50 ft hemp rope (75¢)",
           "Week's rations ($3)",
@@ -3640,14 +3654,14 @@
         }
       ],
       "featureDescs": {
-        "Hawken Rifle": "The heavy plains rifle is your right arm. With a two-handed rifle you ignore the penalty at the first range increment, and the first reload each round costs no extra Beat. You keep your piece clean, charged, and to hand, and you do not miss the shots a lesser hand calls lucky.",
+        "Hawken Rifle": "The heavy plains rifle is your right arm, and yours is a Hawken (use the Buffalo Rifle line). With a two-handed rifle you ignore the first –2 for range, and the first reload each round is free. You keep your piece clean, charged, and to hand, and you do not miss the shots a lesser hand calls lucky.",
         "Dead Aim": "Spend a Beat to steady your rifle. This is the Aim action, and your next shot this turn deals the extra damage shown on a hit: 1d6 at 1st level, 2d6 at 5th, 3d6 once you are King of the High Country, and 4d6 at 11th. Patience, a good rest, and a held breath are worth more than any luck.",
         "Hard Country": "The wilderness is your parlor. You're never lost in wild country, you ignore natural difficult terrain (scree, deadfall, brush, snow) and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger that would break other men, you simply endure.",
         "Read Sign": "Gain +2 to Survival and Notice to track and to read what passed: how many, how long ago, and whether it walked on two legs or something else. You leave little trail of your own: the DC to track you rises by 2, and you know when you are being followed.",
         "Skinner": "Spend a Beat to study a beast or an unnatural thing (Survival or Lore: Occult) and learn one weakness or trait the Keeper will honor. Against animals and the wild things of the dark you deal +1 damage, and you may harvest a kill (hide, fat, claw, tooth, gland) for coin, for trade, or for the makings of a remedy or a ward.",
-        "Iron Constitution": "The mountains have been trying to kill you for years and have not managed it. Gain a bonus against cold, heat, thirst, hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal a little faster than you have any right to.",
+        "Iron Constitution": "The mountains have been trying to kill you for years and have not managed it. Gain +2 against cold, heat, thirst, hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal faster than you have any right to: a safe night gives you back one more Blood for each of your levels.",
         "Mountain Sense": "You cannot be caught flat in the wild. You are never surprised out of doors, you act first in the opening round of any ambush you spring or spot, and predators give you a wide berth; they know a bigger one when they smell it.",
-        "Unbroken": "You have seen what the high country hides in the deep snow, and naming it did not break you. Gain a bonus on Dread Checks in the wilderness, and you may spend a Beat to steady a companion who can see you, lending them your nerve to face what is coming down out of the hills.",
+        "Unbroken": "You have seen what the high country hides in the deep snow, and naming it did not break you. Gain +2 on Dread Checks in the wilderness, and you may spend a Beat to steady a companion who can see you, lending them your nerve to face what is coming down out of the hills.",
         "King of the High Country": "At 10th level the wilderness is yours, and everything in it knows your step. Your Dead Aim rises to 3d6; while out of doors you gain a standing +1 to Defense and to all saves; and once per scene a single steadied rifle shot is an automatic critical against a living or unnatural quarry you have studied with Skinner. The mountain does not give up its king easily, and neither, in the end, do you.",
         "Winter Count": "You have kept a count of your winters the old way, and the years are worth something. Once per session, name any wilderness, weather, beast, trail or man you have plausibly met before, and you have: you know one true and useful thing about it that nobody in the posse could have known, and you gain +4 on your next check concerning it. The Keeper decides what the year was.",
         "The Far Shot": "Distance has stopped being a penalty and started being an advantage. You suffer no penalty for range with a long gun at any distance you can see, and a steadied shot taken from beyond the reach of anything shooting back ignores cover that is not solid stone. The rifle was always the argument. Standing far enough away was the rest of it.",
@@ -3663,7 +3677,7 @@
           },
           {
             "name": "The Hunter",
-            "boon": "Name a quarry as the Marshal marks a man, but for the beasts and monsters of the wild: gain bonuses to track, read, and damage it. Mastery (10th): once per scene, a Dead Aim shot against your quarry strikes a killing blow that fells even a great beast."
+            "boon": "Name a quarry as the Marshal marks a man, but for the beasts and monsters of the wild: gain +2 to track and read it, and +2 damage against it. Mastery (10th): once per scene, a Dead Aim shot against your quarry strikes a killing blow that fells even a great beast."
           },
           {
             "name": "The Trapper",
@@ -3700,7 +3714,7 @@
         "guns": [],
         "melee": null,
         "sundries": [
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Bedroll & tarp ($2)",
           "Week's rations ($3)",
           "Lantern & oil ($1)",
@@ -3967,7 +3981,7 @@
           "Stick of dynamite ($2)",
           "Shovel & tools ($2)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)"
         ],
@@ -3999,10 +4013,10 @@
       "blurb": "Sawbones is what the West called a doctor, after the saw in the bag, and the trade was as rough as the name.",
       "perk": {
         "name": "Not On My Table",
-        "desc": "A soul whose wounds you've dressed since the last full rest won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
+        "desc": "A soul whose wounds you've dressed since the last safe night won't bleed out while you're conscious and in the same fight. They fall, they hold one point short of dead, and they wait for you. Whether you reach them in time is the only question. It is always the only question."
       },
       "fight": {
-        "brings": "The posse still standing. Field Surgery puts Blood back in the middle of a round, and Precise Strike says you are not harmless while you do it.",
+        "brings": "The posse still standing. Your Medicine stops the bleeding while the shooting lasts, Field Surgery puts the Blood back once it stops, and from 4th level Precise Strike says you are not harmless while you work.",
         "costs": "Steady attack, a d8, and a blade's reach. Your damage wants you close to a thing you would much rather be operating on afterward."
       },
       "group": "Worldly",
@@ -4166,12 +4180,12 @@
         }
       ],
       "featureDescs": {
-        "Field Surgery": "With a kit and a few minutes, you restore 1d8 + your level in Blood to a patient, once per wound. Without a kit you may still stop bleeding and stabilize the dying on a Medicine check.",
-        "Anatomist / Precise Strike": "You know exactly where things come apart. Against any living foe whose anatomy you understand, you may add the listed extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade.",
+        "Field Surgery": "With a kit and a few minutes, you restore 1d8 + your level in Blood to a patient, once per patient after each fight. Without a kit you may still stop bleeding and stabilize the dying on a Medicine check.",
+        "Anatomist / Precise Strike": "You know exactly where things come apart, and you gain +2 on Medicine to find what killed a thing. Against any living foe whose anatomy you understand, you may add the listed extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade. The extra damage starts at 4th level, when your table first lists Precise Strike.",
         "Tonics": "You brew and carry remedies: stimulants, sedatives, laudanum, antitoxins. Each dawn you may prepare a number of doses equal to your WIT modifier + half your level. Their use, and abuse, is detailed in Chapter X.",
         "Alienist": "You can doctor the mind as well as the body. By talking a sufferer through their terror for ten quiet minutes, you restore Nerve equal to 1d6 + your WIT modifier, reason held up like a lamp against the dark. It does not work twice on the same fright.",
         "Miracle Worker": "At 10th level your hands have become something the country whispers about. Once per session you may attempt the impossible at the operating table: a Beyond (DC 30) Medicine check, taken over an hour of desperate work, can pull a character back from death itself so long as the body is whole and no more than a minute has passed, or can lift a single Lasting Injury or bodily Affliction entirely. Whether the patient is grateful for what you have done is between them and their god.",
-        "The Waking Draught": "You have mixed something that argues with unconsciousness. Once per scene, a dose brings a dying or senseless patient to their feet with 1d8 + your level in Blood and a clear head for ten minutes, whatever put them down. When the ten minutes are up they drop where they stand and cannot be raised this way again until they have slept. Used on the Marked or the uncanny it does nothing at all, and they will know you tried.",
+        "The Waking Draught": "You have mixed something that argues with unconsciousness. Once per scene, a dose brings a dying or senseless patient to their feet with 1d8 + your level in Blood and a clear head for ten minutes, whatever put them down. When the ten minutes are up they drop where they stand and cannot be raised this way again until they have had a safe night. Used on the Marked or the uncanny it does nothing at all, and they will know you tried.",
         "Read the Body": "A living thing in front of you is a document you can read. Spend a Beat studying any creature: learn its remaining Blood, its lowest save, whether it is diseased, poisoned, possessed, expectant, healing or already dead, and the single most fragile thing about it. Your Precise Strike against that creature ignores any damage reduction for the rest of the scene.",
         "The Hour After": "Once per session, given a body no more than an hour dead and whole enough to work on, you bring it back. Not a Beyond check and not a prayer: an hour of surgery, both hands, everything you have, and at the end of it the patient breathes. They return at 1 Blood with a Lasting Injury of the Keeper's choosing and no memory of the interval, and they are not quite the same about the dark afterward. You may not do this twice for the same soul, and the second time you do it for anybody at all in a season, something notices that a doctor out here is undoing its work."
       },
@@ -4185,11 +4199,11 @@
           },
           {
             "name": "The Field Medic",
-            "boon": "Tend wounds in the thick of a fight without provoking, and reach the downed faster. Mastery (10th): once per scene, a barked field-treatment heals every ally who can hear you."
+            "boon": "Use Field Surgery in the thick of a fight, at a cost of two Beats, and reach the downed faster. Mastery (10th): once per scene, a barked field-treatment heals every ally who can hear you."
           },
           {
             "name": "The Surgeon",
-            "boon": "Your Treat Wounds restores an extra die, and you stabilize the dying as a single Beat. Mastery (10th): once per scene, drag a freshly-fallen ally back to their feet and fighting."
+            "boon": "Your Field Surgery restores an extra die, and you stabilize the dying as a single Beat. Mastery (10th): once per scene, drag a freshly-fallen ally back to their feet and fighting."
           }
         ]
       },
@@ -4226,7 +4240,7 @@
         "sundries": [
           "Laudanum, per dose (25¢)",
           "Laudanum, per dose (25¢)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Heavy duster ($6)",
           "Week's rations ($3)",
           "Cow pony ($25)",
@@ -4671,7 +4685,7 @@
           "ref": 4,
           "will": 8,
           "features": [
-            "Testify"
+            "Bear Witness"
           ]
         },
         {
@@ -4697,13 +4711,13 @@
       ],
       "featureDescs": {
         "Conviction": "You have a pool of Conviction equal to your PRE modifier + half your level (minimum 1), refreshed each dawn. Conviction fuels your sermons and miracles. It is faith made countable, and it runs dry exactly when you need it most.",
-        "Sermon": "Spend 1 Conviction and speak for a round. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on Will saves until the scene ends. The unfaithful may mock; they steady all the same.",
+        "Sermon": "Spend 1 Conviction and your turn preaching. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on Will saves until the scene ends; preach again in the same scene and the Nerve comes back, but the +1 stays a +1. The unfaithful may mock; they steady all the same.",
         "Ward": "Spend 1 Conviction to inscribe or invoke a ward against the uncanny. Marked and unnatural things must make a Will save to cross it or strike those within. A ward holds until dawn or until you fall.",
         "Brimstone": "Your invective becomes a smiting. As an attack, point and condemn a single creature within sight; spend 1 Conviction to deal the listed holy damage (doubled against the Marked and the uncanny), Will save for half. It is loud, and it draws notice.",
         "Lay On Hands": "By touch and prayer, spend Conviction to heal 1d8 Blood per point spent, or to halt bleeding and stabilize the dying. The same gift, turned on the unnatural, deals that much instead.",
         "Revelation": "At 10th level, faith burns through the veil. Once per session, as an action, you may spend 3 Conviction to lay the truth of a place or a creature bare before all who can hear you: the uncanny within sight is named aloud (its nature, its hunger, and the one thing it fears) and is struck Frightened 1 for the scene, while your companions ignore the next Dread Check they would face. The Word, spoken once with perfect certainty, still moves something. You simply never learn what, or whether it was listening, or merely could not bear to be seen.",
         "The Camp Meeting": "Give you a night, a fire and a crowd, and you will change the temper of a place. Everyone who stays to the end of the meeting recovers all Nerve, gains +2 on their next save against fear or the uncanny, and will tell you what they came there to confess. What they confess is the useful part. A town has never yet been converted, but it has often been talked into helping.",
-        "Testify": "You have stopped preaching at the dark and started giving evidence about it. Once per scene, spend 2 Conviction and name what an uncanny thing did: it takes 4d6 damage that nothing reduces, and every ally who heard you may immediately reroll one save they failed this scene. The truth spoken plainly about a thing that lives on not being spoken of costs it.",
+        "Bear Witness": "You have stopped preaching at the dark and started giving evidence about it. Once per scene, spend 2 Conviction and name what an uncanny thing did: it takes 4d6 damage that nothing reduces, and every ally who heard you may immediately reroll one save they failed this scene. The truth spoken plainly about a thing that lives on not being spoken of costs it.",
         "The Great Awakening": "Once per session, you preach the sermon you have been carrying your whole life. Everything within earshot that can hear you and is not uncanny recovers all Blood and all Nerve and is immune to fear for the scene. Everything within earshot that is uncanny takes 10d6 and must beat your Will save or be Frightened and unable to approach you for the rest of the scene, and the lesser sort of uncanny that fails is simply undone where it stands. When you finish you have nothing left: no Conviction, no voice for a day, and the certain knowledge that you have spent something you will not get back and cannot count."
       },
       "signsKnownAt": null,
@@ -4712,15 +4726,15 @@
         "options": [
           {
             "name": "The Hellfire Testament",
-            "boon": "Your Brimstone strikes an additional foe within reach of the first. Mastery (10th): once per scene, call down a pillar of fire upon the unclean."
+            "boon": "Until your Brimstone comes, an uncanny thing that hears your Sermon takes 1d6; after, your Brimstone strikes an additional foe within reach of the first. Mastery (10th): once per scene, call down a pillar of fire upon the unclean."
           },
           {
             "name": "The Revival Testament",
-            "boon": "Your sermons mend the faithful and steady their nerve. Mastery (10th): once per scene, a great revival heals and emboldens every ally who can hear you, and lifts the freshly fallen."
+            "boon": "Your sermons mend the faithful and steady their nerve: each ally who hears your Sermon also heals 1d6 Blood. Mastery (10th): once per scene, a great revival heals and emboldens every ally who can hear you, and lifts the freshly fallen."
           },
           {
             "name": "The Wrathful Testament",
-            "boon": "Gain a bonus against the uncanny and those who serve it. Mastery (10th): once per scene, your smite banishes a lesser horror outright."
+            "boon": "Gain +2 against the uncanny and those who serve it. Mastery (10th): once per scene, your smite banishes a lesser horror outright."
           }
         ]
       },
@@ -4752,7 +4766,7 @@
         "melee": "Club",
         "sundries": [
           "Graveyard salt, lb. ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)",
           "Bedroll & tarp ($2)"
         ],
@@ -5263,11 +5277,11 @@
       ],
       "featureDescs": {
         "The Vigil": "You were not called to preach and never wanted to be. What you took were vows of work: to go where the sick are, to stay when others leave, and to keep watch over what should not be left alone. You work Miracles from the blessing and vigil lists, spending Mercy, and your Miracle DC is 10 + half your level + your RES modifier. Your order taught you that a thing watched is a thing that cannot get on with what it was doing.",
-        "Nurse": "Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a full rest recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.",
+        "Nurse": "Bandaging, broth, a hand on a forehead, a window opened at the right hour. A soul you tend through a safe night recovers 1d6 additional Nerve along with its usual Blood, and you may stabilize a dying soul with a touch and no check at all. Nothing about this is uncanny. You have simply done it four hundred times and know what the fourth hundred looks like.",
         "Hold the Lamp": "Set your lamp down and stand over it. For as long as you hold the spot and strike at nothing, every soul who can see the light takes +2 on Dread Checks, and any Nerve they do lose is reduced by 1. Step away and it is a lamp again.",
         "Not One Step": "You cannot be made to run. You are immune to the Frightened condition and to any effect that would compel you to flee, leave, or turn away, and a soul you have physical hold of shares that while you keep hold. This has killed Sisters. It has also saved most of the people they were standing in front of.",
         "The Cool Cloth": "Once per scene, spend 1 Mercy and take one lasting hurt off a soul you can touch: a condition, an affliction in its early stage, or the whole of one Dread Check's Nerve loss suffered this scene. You cannot do it twice for the same soul in a scene, and it does not work on yourself.",
-        "The Long Watch": "You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a full rest's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.",
+        "The Long Watch": "You have not slept a whole night since you took the veil, and it has stopped costing you. Two hours' rest gives you a safe night's benefit, a night spent watching costs you no penalty, and while you are awake and on watch nothing surprises the camp.",
         "The Least of These": "At 10th level you have spent so long standing between other people and the dark that the dark has learned your face. Once per session, when a soul within your reach would die or be taken, dragged off, possessed, unmade or called away, you may refuse it. They are not. The cost is yours: you drop to 1 Blood, lose all remaining Mercy, and cannot do it again until the next session. Whatever wanted them now knows exactly who you are.",
         "The Longer Watch": "You have sat up with worse than this. You need no sleep on a night you have chosen to keep watch, and every soul resting under your watch recovers Nerve fully and wakes with +2 on their first save of the day. You may keep three such nights in a row before it starts to tell, and it does tell.",
         "Between You and It": "Standing in front of somebody has become a thing you are good at rather than a thing you are brave about. As a reaction, take any single attack, effect or grab aimed at an ally within ten feet upon yourself instead, and reduce it by your level. You may do this as many times a round as you have reactions, which is once, and there has never yet been a round in which you did not use it.",
@@ -5279,7 +5293,7 @@
         "options": [
           {
             "name": "The Hospitaller",
-            "boon": "The fever ward and the cholera camp are your ground. Disease and contagion have no hold on you, and a soul under your care through a full rest recovers as though it had rested twice. Mastery (10th): once per scene, a soul who dies within your reach does not, and has until the end of the next round to be saved properly."
+            "boon": "The fever ward and the cholera camp are your ground. Disease and contagion have no hold on you, and a soul under your care through a safe night recovers as though it had rested twice. Mastery (10th): once per scene, a soul who dies within your reach does not, and has until the end of the next round to be saved properly."
           },
           {
             "name": "The Teacher",
@@ -5550,7 +5564,7 @@
         "The Pyre": "At 10th level you are the bane of unclean things. Your Judgment recharges at the start of every scene, no longer only with each new quarry. And once per session, when you reduce an uncanny quarry to 0 Blood, you may perform the rites of ending (salt, fire, the severed name) and ensure it stays dead: it does not rise, reform, or return. Nothing the Keeper has prepared survives the Pyre. The cost is the man you have become to wield it.",
         "The Name Written Down": "You keep a book, and what goes in the book does not come out. Enter a creature's name and one true fact about it, and thereafter you always know whether it lives, you gain +2 on every roll against it, and it cannot conceal its nature from you by any means. You may carry as many names as your WIT modifier. Crossing one out is the only way to make room, and there are two ways to cross one out.",
         "No Sanctuary": "A thing you are hunting has nowhere to be. It can't heal, regenerate, reform or be aided while you're within a hundred feet of it, and any ward, threshold, holy ground or bound place that shelters it opens for you and closes behind you. What you have hunted onto consecrated ground stays on it.",
-        "The Last Fire": "Once per session, light the fire you have been carrying since the beginning. For the rest of the scene you are wreathed in a cold white burning: you take no damage from any uncanny source, every Strike you land deals an additional 6d8 to unclean things, and anything reduced to 0 Blood in that light is ended outright: no rising, no reforming, no return, nothing left to salt. When it goes out you are at 1 Blood, all Zeal spent, and Fatigued until you have slept a full night somewhere with a roof. It is understood among your order that a man only gets so many of these, and that nobody has ever counted his own correctly."
+        "The Last Fire": "Once per session, light the fire you have been carrying since the beginning. For the rest of the scene you are wreathed in a cold white burning: you take no damage from any uncanny source, every Strike you land deals an additional 6d8 to unclean things, and anything reduced to 0 Blood in that light is ended outright: no rising, no reforming, no return, nothing left to salt. When it goes out you are at 1 Blood, all Zeal spent, and Fatigued until you have had a safe night under a roof. It is understood among your order that a man only gets so many of these, and that nobody has ever counted his own correctly."
       },
       "signsKnownAt": null,
       "subpath": {
@@ -5602,7 +5616,7 @@
           "Silver ball ($5)",
           "Silver ball ($5)",
           "Graveyard salt, lb. ($1)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Holy book ($3)",
           "Heavy duster ($6)",
           "Cow pony ($25)",
@@ -5926,7 +5940,7 @@
           "Talisman ($2)",
           "Graveyard salt, lb. ($1)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)"
+          "Box of cartridges (50), metallic ($1.25)"
         ],
         "armor": [
           "Boiled Leather",
@@ -6204,7 +6218,7 @@
         "sundries": [
           "Holy book ($3)",
           "Bottle of whiskey (50¢)",
-          "Box of cartridges (50) ($1)",
+          "Box of cartridges (50), metallic ($1.25)",
           "Week's rations ($3)"
         ],
         "armor": [
@@ -6416,7 +6430,7 @@
         "Blood Price": "From 5th level you may pay for a Sign in Blood (Hit Points) when your Nerve runs short, at a rate of 2 Blood per point of Nerve. The Old Dark does not care which red ledger you draw from.",
         "Adept": "At 10th level, choose one Sign you know. You may work it without spending Nerve once per scene, though never without consequence.",
         "Working a Sign — the Short of It": "Declare the Sign and pay its Nerve (or Blood). If it forces a save, the target rolls against your Sign DC = 10 + half your level + your RES modifier. Backlash strikes on the listed trigger, most often a natural 1 on any roll the working requires, or a failed working. The deep truths a Sign reveals may also demand a Dread Check of their own. Knowing is never free; for a Hexer, it is merely cheaper at first.",
-        "The Deeper Bargain": "You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its Nerve cost as damage that cannot be healed until you have slept. A Hexer who has learned this generally learns it in one particular night, and remembers that night for good.",
+        "The Deeper Bargain": "You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its Nerve cost as damage that cannot be healed until your next safe night. A Hexer who has learned this generally learns it in one particular night, and remembers that night for good.",
         "Adept (Second)": "Choose a second Sign you know. It too may be worked once per scene without spending Nerve. The consequence attached to it does not stop attaching.",
         "The Long Debt": "Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have the Nerve, at any scale the fiction can hold: a Sign laid on a town, on a river, on a bloodline, on a night. It works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the Keeper takes something from the world you were standing in: a person, a place, a year of somebody's life who never asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly what it is worth and you are never the one paying."
       },
@@ -6487,7 +6501,7 @@
           "Graveyard salt, lb. ($1)",
           "Talisman ($2)",
           "Lantern & oil ($1)",
-          "Box of cartridges (50) ($1)"
+          "Box of cartridges (50), metallic ($1.25)"
         ],
         "armor": [
           "Heavy Duster / Coat"

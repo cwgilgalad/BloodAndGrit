@@ -8,6 +8,142 @@ Desktop\Git repos.)
 
 ---
 
+- **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
+  Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
+
+  The book had one rest, a "long rest" that gave everything back, and the app had a button for it. Two readings of
+  the rules on 2026-09-26 found that it made Nerve cheap: a posse that could sleep was a posse that could not be worn
+  down, which is the whole of what the horror is for. Cole approved the fix on 2026-09-27, and it is in every book
+  and the app now. The same readings turned up dozens of smaller faults across the books, the modules and the app,
+  and this release carries every fix Cole approved.
+
+  **Three rests, printed in Ch. XI.** *Dawn in the field* gives back the pools and the once-a-dawn features, and
+  nothing else. *A safe night* gives those, 1d6 Nerve, and Blood equal to level × CON modifier (at least 1). *A week
+  of peace* gives back all Blood and all Nerve and eases the Taint by 2. That 2 is not typed anywhere: the builder
+  reads the Taint rule's own step (one for every three days) and works it out from a seven-day week, and the
+  Keeper's Book reads the figure back out of the built Player's Book. No rest touches the Mark, Grit, a Hunger, a
+  Debt or a familiar, and the Returned still heal only by Mending. The phrase "long rest" is gone from the books and
+  the app, and every feature that leaned on "a full rest" names one of the three now (the Homesteader's camp, the
+  Sawbones' *Not On My Table*, the Nurse, *The Long Watch*, the Hospitaller, *Last Fire*, *Borrowed Breath*, the
+  *Sleep of Healing*). Fatigued is shed by a safe night. Modules II and III each rule on it: the station at Saltlick
+  is no safe night, since the thing worth fearing sleeps on the inside of the bar, and nor is the top of the shaft at
+  San Clavo.
+
+  **Drink and dose.** Whiskey steadies 1d4 Nerve and laudanum 1d6, one a scene. The first of the day is free. After
+  it, each one asks a Fortitude save at DC 12 and 2 more for every one after, and a failure leaves the soul Drained
+  until a safe night: −2 on Fortitude and CON checks, and Blood equal to level lost once. A second Drained stacks
+  nothing, and a dawn does not lift it. The rule has its own anchored item under *Recovering Nerve*, and the
+  Laudanum entry in the gear list, Appendices B and C, the Keeper's *Giving Back Nerve* and the Screen all say the
+  same thing.
+
+  **"Dead at −CON" means the CON score.** Ch. XI, Appendix B's Dying and Stable, and the Screen say so in words now,
+  with the Dying cadence beside it.
+
+  **The ready-made posse adds up.** Ch. V and Ch. VIII say how many skills a new character trains and what happens
+  when the Origin trains one already picked, and four of the six pregens in Appendix D were a skill short: Doc Kemp
+  and Frank Haskins take Ride, Anni Halvorsen Repair and Nettie Swain Insight. Every attack line in Appendix D is
+  filled from that pregen's own ability and rank at build time, every weapon a pregen fights with is in their gear,
+  and every gun has its rounds. Ch. II has a short section, *When Bonuses Meet*, on how bonuses and penalties stack.
+
+  **The Player's Book, line by line.** Blood after 1st level takes the Hit Die's average rounded up, and a level
+  never gives less than 1 Blood, whatever the CON. Long guns and the bow are Two-Handed, a weapon awkward twice over
+  is at −4, and the arms table gains a Lance or Spear row with Reach and a Staff row. Every blade prints its price,
+  and the box of fifty cartridges is the metallic one at $1.25. The Hawken is the Buffalo Rifle's line wherever it
+  appears, with its reload free. Kickback says what Ch. XI says. Eight features that gave "a bonus" give +2 now, and
+  the Manhunter's and the Hunter's damage is +2. The Drifter's *Bushwhack* reads in the Drifter's words, the
+  Anatomist's damage starts at 4th, *Field Surgery* is named where it is used and no longer provokes, and *Testify*
+  is *Bear Witness*. The Long Rifle, the Hawken and *Steady Shot* say what their range means. Ch. XI prints
+  *Surprise*, a *Break Free* row (Athletics or Acrobatics against the grabber's attack roll, and a tie keeps you
+  held), and *Recoil*, the backing-off that Salt & Iron, the holy water and a Conjurer's great charm cause. Prone,
+  Dive and Off-Guard read the right way round for a d20 reader, "meet or beat" is said where it matters, and
+  Enfeebled is a condition in Appendix B. Ch. XIV's Attack Rank table is built from the Callings'
+  statlines, which put the Engineer in Steady. The Coal-Oil Bomb and the doctor's bag read as the gear list prices
+  them, and the glossary has the Pinkertons' Department of Justice contract. The Index gains Break free, Recoil and
+  Surprise. `verify_rules.py` has three new checks (the rank table, the pregens' gear and what each blade costs) and
+  ran 2,298 cross-checks with no drift.
+
+  **The Keeper's Book.** Both places the budget describes an easy foe say "a Tier or two below the posse's", cover is −2 light and −4 heavy as the Player's Book has it, and the Pell Barn example and the worked budget agree
+  on 11 Nerve falling to 7. The prairie fire leaves a soul Blinded and Sickened while in the smoke and for a round
+  after, and Ch. IX tells the Keeper which Bestiary chapters and which module print its monsters. Ch. XV gains the
+  Army as a fifth Power, with "all five" counted from the list. The Pinkertons have their Department of Justice
+  contract and W. F. Kinnear, Redemption has its reach (the circulars, the Redemption Sixes, the scrip at Yuma, the
+  grey patrols) and the Golden Circle its Committee on Lands. Washington's silence has its four reasons, the preacher
+  rumour stays a rumour, and the houses keep the Table's name off paper. Ch. VII has *When Two Congregations
+  Meet*, and Ch. XIII says the courtyard well and the altar spring at San Clavo are one water.
+
+  **The Bestiary.** A Risen brought to 0 Blood lies still until the next full dark, then stands on full Blood,
+  unless the body was burned or salted or the head taken first. Its *Putting It Down* line says the same, and so
+  does Module I.
+
+  **The Book of Legends.** The Contents numbers a reader sees with scripts off were six or seven pages out past
+  "weather". They are the laptop's Edge render now, 220 sheets.
+
+  **The modules.** Module I's scene 6, where three Risen walk out of the barn, prints the Dread Check their entry
+  prices (DC 16, lose 1d6), and the lamp oil in its Keeper box is the Coal-Oil Bomb. Every act's note counts its
+  Dread lines off the page, so Module III's Act Two note says "No Dread Check", which is what that act prints. Every
+  engine number the three modules quote comes from `PLAYTEST.md` or stops the build: Module III's "three times in
+  nine" was one in nine. The harness was playing the Dread DCs the modules printed before the ladder pass; it plays
+  the printed ones now, gives the Returned their +2, and no longer doubles the Nerve a critical failure costs, and
+  `audit_playtest.py` holds its Dread beats to the lines the built modules print. The rerun moved the numbers, and one
+  posse in eight now clears the yard at Saltlick by shooting, so Module II quotes that count where it used to say
+  none had.
+
+  **The app.** The Posse tab's *Rest ▾* offers the three rests for the whole posse or one soul, and *Steady ▾* offers
+  confession, whiskey, laudanum or a number typed by hand. At a dice table it asks for each soul's die. `Rest.cs`, a
+  tenth file in the rules library, does the arithmetic, and every menu line is built from the same constants it
+  uses, so the words cannot say one thing while the numbers do another. The Dark Cultist's Devotion and the False
+  Prophet's Tribute keep their level through every rest, as the Player's Book prints them, and the rest's line says
+  how each one refills. *New session* asks whether a week of peace has passed: Yes rests everybody a week, and
+  either way Grit goes back to 3 and the once-a-session features return. The Tracker's *Restore ▾* gives Blood and
+  nothing else and refuses a Returned soul out loud. The drink's Drained follows a soul onto the Tracker and
+  survives New fight. A whole-posse rest, dose or steady at a dice table is one Undo.
+
+  *Send all* puts each kind on the field as one arrival, with one safe-table question, one log line and one Undo;
+  the copies are numbered, and the count spinners stop at 20. A Strike prefills DR from the target's worn armor, and
+  aims at the other side by default, with a familiar counted as the posse's. A creature's attack effect is written
+  into the log line when it hits. A whole-posse Dread Check reports every soul, and the daybook names whose check
+  each line is. The Mark and the Taint reach a Dread Check, a soul breaks only when the check cost Nerve and left
+  them at 0, and reading a sign takes the same path as any other Dread, Affliction included. Threads loaded before
+  the Session tab is first opened show on it. The app follows the Player's Book on Enfeebled, Grabbed, Off-Guard,
+  Fatigued, the metallic cartridges (a saved sheet with the old box still adds up) and the 1-Blood floor, and the
+  Reference tab's condition rows are copied from Appendix B.
+
+  **Twenty design calls (2026-10-17).** The readings left twenty questions that only a designer could answer, and Cole
+  answered all twenty with the recommendation offered. A creature rolls initiative as d20 + its Will save, and the
+  thirteen blocks that print a dash for Will roll the bare d20; Ch. XI, the Bestiary's *How to Read the Dead* and the
+  Keeper's Screen all print it, and the Bestiary now reads its speed words in feet, very slow at 10 up to very fast at
+  60. Demoralize is Intimidate against the foe's Will DC, 10 + its Will save. Surviving danger pays four times what it
+  did, 40 experience for a trivial brush up to 160 for an ordeal, and the story awards stand at 10 to 30. A bow from
+  the saddle takes the moving horse's −2 and stops there, and a crossbow counts as a carbine up there, at −4.
+
+  The Preacher's *Sermon* costs a Conviction and the turn, and a second one in the same scene brings the Nerve back
+  again and leaves the +1 at +1. The Hellfire Testament burns an uncanny listener for 1d6 until Brimstone comes, and
+  the Revival Testament heals each listener 1d6 Blood. The Sawbones' *Field Surgery* is once per patient after each
+  fight, the Field Medic pays two Beats for it mid-fight, the Anatomist adds +2 on Medicine to find what killed a
+  thing, and the Waking Draught lasts until a safe night. The Mountain Man's *Iron Constitution* gives one more Blood
+  a level from a safe night, the Bounty Hunter's Stalker adds 1d6 to a Bushwhack on a foe who has not yet acted, the
+  Gunhand's Fanning Hand Mastery takes the Multiple Attack Penalty off the fanned Strike, and the Long Rifle ignores
+  the first −2 for range and holds its Aim to the end of the next turn while the shooter stays put. The Deeper
+  Bargain's wound waits for the next safe night. Three Edges were rewritten: *Frontier Medicine* gives back 1d6 Blood
+  with the Medicine check that stops a friend's bleeding, *Hedge Magic* sets 2 Nerve apart for its one Sign and a
+  safe night fills it, and *Run It Down* holds the quarry in reach until it spends a Beat and beats the hunter's
+  Reflex DC with Acrobatics or Athletics; a failed break leaves it Off-Guard to the next Strike.
+
+  Module I's scene 10 gives the stake its procedure. Taking it up is an Interact, and driving it home is a Beat and
+  no roll while the thing feeds, from its bite landing to its next turn; once pinned it cannot rise, climb, heal or
+  hold anyone. The head is two Beats with a blade, an axe or the banker's shovel, the fire a Beat with lamp oil, and
+  the salt a Beat.
+
+  In the app, a creature's arrival and the whole field roll initiative on the creature's Will save, a safe night pays
+  out Iron Constitution, a Hedge Magic sheet shows its pool, and the Reference tab's Iron Code leaf carries the
+  creature's initiative and the bow from the saddle. The engine harness passes no initiative bonus and is unchanged,
+  so `PLAYTEST.md` still reproduces.
+
+  Checks: build 0 warnings and 0 errors under `-warnaserror`, smoke 16,576 passed and 0 failed, `--selftest` 45/45,
+  `audit_ui.py` clear, `verify_rules.py` 2,298 cross-checks and `audit_consistency.py` 182,363, both with no drift,
+  and `audit_ai_tells.py --books --strict` clean. Pages in the laptop's Edge: 295 / 158 / 226, the Legends 220 and
+  its Companion 368, the modules 36 / 38 / 39.
+
 - **The legends checked against everything else, and built to a crescendo. The Book of Legends v1.11, the Legends
   Companion v1.2 and Module I v1.11 (2026-10-09).**
 

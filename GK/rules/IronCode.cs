@@ -389,7 +389,9 @@ public static class IronCode
                 // The moving platform. Ranged and thrown alike; a pistol at a walk is free, which is
                 // the whole reason the horseman carries one.
                 Take(gun || thrown ? -2 : 0, "shooting from a moving horse");
-                // And a long gun is doubly awkward up there, the box's −4 in all.
+                // And a long gun is doubly awkward up there, the box's −4 in all. The arms table's
+                // "Bow / Crossbow" is one row and is not a long gun by name, so it takes the bow's −2
+                // alone (v1.60.0); a crossbow is a carbine up there and its second −2 is the Keeper's.
                 Take(gun && IsLongGun(w) ? -2 : 0, "a two-handed long gun from the saddle");
             }
             // Striking down at a footman. The saber is the horseman's blade and waives the mounted
@@ -596,6 +598,32 @@ public static class CombatFlow
         string ability = string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase) ? "DEX" : "STR";
         int mod = s.Scores != null && s.Scores.TryGetValue(ability, out var sc) ? CharGen.Mod(sc) : 0;
         return s.Attack + mod;
+    }
+
+    /// <summary>The DR a soul's worn armor gives against one blow, and a few words naming where the
+    /// number came from, so the Strike dialog can prefill its "Target DR" box rather than leave the
+    /// Keeper to look the suit up. Ch. X: "Worn armor grants Damage Reduction against blades and
+    /// small shot only." A claw or a knife reads <see cref="CharacterSheet.DrBlades"/>, a Scatter
+    /// gun reads <see cref="CharacterSheet.DrShot"/>, and a ball, a flame or a freezing grip gets
+    /// none.
+    ///
+    /// <para><paramref name="damageType"/> is what <see cref="IronCode.DamageType"/> or a
+    /// creature attack's own <see cref="CreatureAttack.Type"/> calls the blow. A null sheet (a
+    /// creature, a hand-entered row, a familiar) prints no DR in this game's Bestiary, so it reads
+    /// 0 and the Keeper types any resistance they rule. The book's two judgement calls stay the
+    /// Keeper's too: a pocket pistol's ball from across a room counts as small shot, and the engine
+    /// cannot see the room, so it prefills the ball and the Keeper overrules.</para></summary>
+    public static (int Amount, string Why) ArmorDrFor(CharacterSheet s, string damageType)
+    {
+        if (s == null) return (0, "no armor on record: type any DR you rule");
+        if (string.IsNullOrEmpty(s.ArmorWorn)) return (0, "wears no armor");
+        if (string.Equals(damageType, "blades", StringComparison.OrdinalIgnoreCase))
+            return (s.DrBlades, $"{s.ArmorWorn} vs blades");
+        if (string.Equals(damageType, "small shot", StringComparison.OrdinalIgnoreCase))
+            return (s.DrShot, $"{s.ArmorWorn} vs small shot");
+        string what = string.Equals(damageType, "ball", StringComparison.OrdinalIgnoreCase)
+            ? "a ball" : string.IsNullOrEmpty(damageType) ? "this blow" : damageType;
+        return (0, $"{what}: {s.ArmorWorn} does not turn it");
     }
 
     /// <summary><paramref name="Inflicts"/> is the conditions this blow's own printed rider names:

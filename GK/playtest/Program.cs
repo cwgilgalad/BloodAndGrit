@@ -129,13 +129,18 @@ RunResult PlayOnce(Adventure adv, string[] callings, int seed, bool loud, bool t
                     {
                         int who = souls.IndexOf(s);
                         int die = Rules.Rng.Next(1, 21);
-                        int will = sheets[who].Will;
+                        // The Returned's +2 goes on the Will, as Horror.DreadCheck adds it, so the
+                        // degrees are read against the DC the module prints.
+                        int will = sheets[who].Will + CharGen.DreadBonus(sheets[who]);
                         var (idx, degree, _) = Rules.FourDegrees(die, will, beat.DreadDc);
                         if (idx <= 1)                                  // failure or critical failure
                         {
                             var (label, roll) = Rules.NerveLoss(beat.DreadTier);
+                            // A critical failure loses the same Nerve as a failure and adds
+                            // Frightened 1 (Ch. XII, and Horror.DreadCheck). This used to double the
+                            // loss, which is no rule in the book. Frightened is not carried onto the
+                            // field here: it lapses a step at the end of each of the soul's turns.
                             int loss = roll();
-                            if (idx == 0) loss *= 2;                   // a critical failure costs double
                             nerve[who] = Math.Max(0, nerve[who] - loss);
                             run.NerveLost += loss;
                             if (nerve[who] == 0 && !run.Broke.Contains(s.Name)) run.Broke.Add(s.Name);
@@ -375,9 +380,15 @@ void Report(AdventureResult a, StringBuilder md)
     md.AppendLine($"- Nerve left across the whole posse, on average: **{a.AvgNerve:0.0} of "
                 + $"{a.Runs.Average(r => r.NerveMax):0.0}**. Runs in which at least one soul broke "
                 + $"(Nerve to 0): **{a.BrokeAny}** of {a.Runs.Count}.");
+    // The Dread Checks this night was played on, in order, the way the module prints them. It lets
+    // audits/audit_playtest.py tell a PLAYTEST.md played on other beats from today's without a
+    // harness run. Reading NerveLoss for its label rolls nothing, so no seed moves.
+    md.AppendLine("- Dread Checks played, in order: " + string.Join(" · ",
+        adv.Acts.SelectMany(x => x.Beats).Where(b => b.Kind == BeatKind.Dread)
+            .Select(b => $"DC {b.DreadDc} (lose {Rules.NerveLoss(b.DreadTier).label})")) + ".");
     md.AppendLine();
 
-    md.AppendLine($"- **The same twelve nights, with the Sawbones working between acts** "
+    md.AppendLine($"- **The same {a.Tended.Count} nights, with the Sawbones working between acts** "
                 + $"(the posse back to half Blood, never more): finished standing "
                 + $"**{a.TendedFinished} of {a.Tended.Count}**, put down to the last soul {a.TendedWiped}.");
     md.AppendLine();
@@ -396,18 +407,27 @@ void Report(AdventureResult a, StringBuilder md)
     }
     md.AppendLine();
 
-    // The way through, in the Bestiary's own words. Every one of these bosses is 0-for-everything
-    // when the posse only shoots, and every one of them has a printed answer. Quoted, never
-    // paraphrased: this is the book's sentence, and the module is not entitled to a second one.
+    // The way through, in the Bestiary's own words. These bosses seldom fall when the posse only
+    // shoots, and every one of them has a printed answer. Quoted, never paraphrased: this is the
+    // book's sentence, and the module is not entitled to a second one.
     var bosses = adv.Acts.SelectMany(x => x.Beats).Where(b => b.Kind == BeatKind.Fight)
         .SelectMany(b => b.Foes).Distinct()
         .Select(Db.Find).Where(c => c != null && c.tier >= 3).ToList();
     if (bosses.Any())
     {
+        // Counted, not typed: "not one ... was ever cleared" stood here as a constant until the
+        // 2026-10-15 Dread fixes moved the seeds and a posse cleared the yard at Saltlick.
+        var bossFights = a.Runs.Concat(a.Tended).SelectMany(r => r.Fights).Where(f => f.Tier >= 3).ToList();
+        int bossWins = bossFights.Count(f => f.PosseWon);
+        string times = bossWins switch { 1 => "once", 2 => "twice", _ => $"{bossWins} times" };
         md.AppendLine("### The way through");
         md.AppendLine();
-        md.AppendLine("Not one of the Tier III fights above was ever cleared by shooting it, across "
-                    + "every run, cold or tended. That is the design, not a shortfall: the Bestiary "
+        md.AppendLine((bossWins == 0
+                        ? "Not one of the Tier III fights above was ever cleared by shooting it, across "
+                          + "every run, cold or tended."
+                        : $"Shooting alone cleared the Tier III fights above {times} in {bossFights.Count} "
+                          + "tries, across every run, cold and tended.")
+                    + " That is the design, not a shortfall: the Bestiary "
                     + "prints an answer for each of them, and the module's job is to put that answer "
                     + "where the posse can find it under fire.");
         md.AppendLine();

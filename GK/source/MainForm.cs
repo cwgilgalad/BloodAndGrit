@@ -152,7 +152,7 @@ public partial class MainForm : Sheet
     // on 2026-08-19 and GritKeeper v1.42.0 shipped telling every Keeper it carried v2.26.
     // `audits/verify_release.py` now reads the three numbers out of the builders and checks them
     // against these, so the next miss is a finding rather than a screenshot.
-    internal const string PlayerBookVer = "2.56", KeeperBookVer = "2.41", BestiaryVer = "2.27";
+    internal const string PlayerBookVer = "2.57", KeeperBookVer = "2.42", BestiaryVer = "2.28";
 
     // How this table is running (Player / Keeper-with-dice / Keeper-on-the-engine). Read live by the
     // Strike and Dread dialogs to decide who rolls, and by ApplyModeTabs to decide what's on show.
@@ -714,6 +714,7 @@ public partial class MainForm : Sheet
         // never disposed. Three sizes, for the life of the process.
         resultBig.Font = Face("Segoe UI", big.Length > 12 ? 18f : big.Length > 6 ? 24f : 30f, FontStyle.Bold);
         resultSub.Text = sub;
+        Tip.SetToolTip(resultSub, sub);             // the whole line, when the card has to cut it short
     }
 
     /// The color a four-degrees result is read in, shared with the roll log so one outcome is
@@ -2450,14 +2451,20 @@ public partial class MainForm : Sheet
             MI(menu, p.Grit > 0 ? $"Spend Grit  ({p.Grit} left)" : "Spend Grit, none left", () => SpendGrit(p), p.Grit > 0);
             MISep(menu);
             MI(menu, $"Dread check  (DC {dreadDc.Value}, {dreadLadder.Text})", () => DreadCheckPC(p));
+            // The three rests of Ch. XI for this soul alone, where "Long rest, Blood and Nerve to
+            // full" sat until v1.60.0: a rest the book never printed. The night and the week left
+            // the Steady list at the same time, because each gives back more than Nerve and that
+            // list gave back only the Nerve.
+            var rest = new ToolStripMenuItem("Rest");
+            foreach (var kind in new[] { RestKind.Dawn, RestKind.Night, RestKind.Week })
+                rest.DropDownItems.Add(RestLabel(kind), null, (s, e) => RestSoul(p, kind));
+            menu.Items.Add(rest);
             var steady = new ToolStripMenuItem("Steady. Give Nerve back");
-            steady.DropDownItems.Add("Confession, spoken plainly  (1d6)", null, (s, e) => Steady(false, "1d6", "makes confession"));
-            steady.DropDownItems.Add("A night unmolested, in real safety  (1d6)", null, (s, e) => Steady(false, "1d6", "sleeps a night in real safety"));
-            steady.DropDownItems.Add("Whiskey  (1d4, and it courts a vice)", null, (s, e) => Steady(false, "1d4", "takes to the bottle"));
-            steady.DropDownItems.Add("A week of true peace  (all of it)", null, (s, e) => Steady(false, null, "takes a week of true peace"));
+            steady.DropDownItems.Add("Confession, spoken plainly  (1d6)", null, (s, e) => Steady(false, 6, "makes confession"));
+            steady.DropDownItems.Add(DoseLabel(false, false), null, (s, e) => Dose(false, false));
+            steady.DropDownItems.Add(DoseLabel(false, true), null, (s, e) => Dose(false, true));
             steady.DropDownItems.Add("Steady by hand…", null, (s, e) => SteadyByHand(false));
             menu.Items.Add(steady);
-            MI(menu, "Long rest, Blood and Nerve to full", () => RestSoul(p));
             MISep(menu);
             MI(menu, p.Mark < 6 ? $"Mark +1  (step {p.Mark} of 6)" : "Mark is full at 6", () => AdvanceMark(p), p.Mark < 6);
             MI(menu, p.Taint < 4 ? $"Taint +1  ({p.Taint} of 4)" : "Taint is full at 4", () => DeepenTaint(p), p.Taint < 4);
@@ -2545,70 +2552,64 @@ public partial class MainForm : Sheet
             AutoSize = true, ForeColor = GoldDeep, Padding = new Padding(4, 7, 6, 0),
             Tag = "readout"                                     // a live number: it must say what it is
         };
+        // The ladder in the tip is Horror's own, built from the DreadTier the check spends. It was
+        // typed here until v1.60.0, one sample DC to a rung, and left a Keeper to guess where each
+        // rung began.
         Tip.SetToolTip(dreadLadder, "What a failed save costs at this DC: Ch. XII's ladder, read off the DC "
-            + "itself: 10 → 1 · 13 → 1d4 · 16 → 1d6 · 20 → 1d10 · 25 → 1d10 and a lasting Affliction. "
-            + "A critical failure loses the same Nerve and adds Frightened 1.");
+            + $"itself: {Horror.LadderLine()}. A critical failure loses the same Nerve and adds Frightened 1.");
         void ShowLadder()
         {
             int tier = Horror.DreadTier((int)dreadDc.Value);
-            dreadLadder.Text = $"costs {Rules.NerveLoss(tier).label} Nerve" + (tier >= 5 ? " + an Affliction" : "");
+            dreadLadder.Text = $"costs {Rules.NerveLoss(tier).label} Nerve" + (Horror.Afflicts(tier) ? " + an Affliction" : "");
         }
         dreadDc.ValueChanged += (s, e) => ShowLadder();
         ShowLadder();
         bar.Controls.Add(dreadLadder);
         bar.Controls.Add(Btn("Dread check, selected", (s, e) => DreadCheckPC(SelectedPC()), 155, "Roll the selected soul's Will vs the Dread DC"));
-        bar.Controls.Add(Btn("Dread check, whole posse", (s, e) => { foreach (var p in party.ToList()) DreadCheckPC(p); }, 175, "Roll every soul at once"));
+        bar.Controls.Add(Btn("Dread check, whole posse", (s, e) => DreadCheckPosse(), 175, "Roll every soul at once, and see every soul on one line on the status bar and the Dice card"));
 
-        // Dread takes Nerve; something has to give it back. Until now the only ways were a long
-        // rest or a new session: both of which do more than steady a soul, and neither of which
-        // is named for Nerve, so a Keeper who had just spent it had nowhere obvious to go. These
-        // are the Player's Book remedies (Ch. XII, "Recovering Nerve") in the order it prints them.
-        bar.Controls.Add(MenuBtn("Steady ▾", 92, "Give Nerve back, the book's remedies, or straight to full",
+        // Dread takes Nerve; something has to give it back. These are the Player's Book remedies
+        // (Ch. XII, "Recovering Nerve") that are not a rest: a confession, a drink, a dose, or the
+        // Keeper's own number. The safe night and the week of peace moved to Rest ▾ in v1.60.0,
+        // because each gives back Blood and the pools as well, and this menu gave back only Nerve.
+        bar.Controls.Add(MenuBtn("Steady ▾", 92, "Give Nerve back: a confession, a drink or a dose (one a scene), or a number by hand. The rests are under Rest ▾",
             ("The selected soul:", null),
-            ("Confession, spoken plainly  (1d6)", (s, e) => Steady(false, "1d6", "makes confession")),
-            ("A night unmolested, in real safety  (1d6)", (s, e) => Steady(false, "1d6", "sleeps a night in real safety")),
-            ("Whiskey  (1d4, and it courts a vice)", (s, e) => Steady(false, "1d4", "takes to the bottle")),
-            ("A week of true peace  (all of it)", (s, e) => Steady(false, null, "takes a week of true peace")),
+            ("Confession, spoken plainly  (1d6)", (s, e) => Steady(false, 6, "makes confession")),
+            (DoseLabel(false, false), (s, e) => Dose(false, false)),
+            (DoseLabel(false, true), (s, e) => Dose(false, true)),
             ("Steady by hand…", (s, e) => SteadyByHand(false)),
             ("-", null),
             ("The whole posse:", null),
-            ("Confession, spoken plainly  (1d6 each)", (s, e) => Steady(true, "1d6", "makes confession")),
-            ("A night unmolested, in real safety  (1d6 each)", (s, e) => Steady(true, "1d6", "sleeps a night in real safety")),
-            ("Whiskey  (1d4 each, and it courts a vice)", (s, e) => Steady(true, "1d4", "takes to the bottle")),
-            ("A week of true peace  (all of it)", (s, e) => Steady(true, null, "takes a week of true peace")),
+            ("Confession, spoken plainly  (1d6 each)", (s, e) => Steady(true, 6, "makes confession")),
+            (DoseLabel(true, false), (s, e) => Dose(true, false)),
+            (DoseLabel(true, true), (s, e) => Dose(true, true)),
             ("Steady by hand…", (s, e) => SteadyByHand(true))));
 
         // A new session is the boundary the book rations fourteen features by (Last Stand,
         // Miracle Worker, Hands of Life, the one great thing a Calling may do in a night) and
         // until v1.42.0 nothing in the app handed any of them back, because nothing counted them
         // in the first place. This button already meant "the last night is over"; now it says so
-        // to the feature ledger too.
+        // to the feature ledger too. NewSession says what else it does, and what it asks first.
         //
         // (Kept above the call rather than inside it: audit_ui.py walks a call character by
         // character and reads an apostrophe as the start of a char literal, so a comment about a
         // Marshal's Last Stand written between these parentheses eats the tooltip behind it.)
         bar.Controls.Add(BarSep());
-        bar.Controls.Add(Btn("New session", (s, e) =>
-        {
-            if (!Confirm("Start a new session? Refills Nerve, resets Grit to 3, refreshes the faith "
-                       + "pool, and hands back every once-a-session feature. Blood is not healed: "
-                       + "that is what Rest is for.")) return;
-            // Grit is "three per soul, refreshed each session" (Ch. XIII) and Nerve comes back with
-            // safety. The faith pool "refreshes with the dawn" (Ch. VI), and a new session opens on
-            // a new day, leaving it out meant a Padre sat down to every session with an empty pool
-            // while the Gunhand beside them got full Nerve, and the only way to fix it was a long
-            // rest they had not earned. Blood is deliberately untouched: wounds carry.
-            foreach (var p in party) { p.NerveCur = p.NerveMax; p.Grit = 3; p.PoolCur = p.PoolMax; }
-            int faithful = party.Count(p => p.PoolMax > 0);
-            int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
-            RefreshCalling();
-            Log("New session, Nerve refilled and Grit reset to 3 for the whole posse"
-                + (faithful > 0 ? $", and the faith pool refreshed for {faithful} of them." : ".")
-                + (given > 0 ? " " + given + (given == 1 ? " rationed feature comes" : " rationed features come") + " back with it." : ""));
-        }, 100, "Refill Nerve, reset Grit, refresh the faith pool, and hand back every once-a-session feature"));
-        bar.Controls.Add(MenuBtn("Rest ▾", 100, "A long rest, restore Blood and Nerve to full",
-            ("Whole posse, heal to full", (s, e) => RestPosse()),
-            ("Selected soul, heal to full", (s, e) => RestSoul(SelectedPC()))));
+        bar.Controls.Add(Btn("New session", (s, e) => NewSession(), 100,
+            "Grit back to 3 and every once-a-session feature handed back. It asks first whether a week of peace has passed, since only a rest brings back Blood and Nerve"));
+        // Chapter XI's three rests, for everyone or for the soul selected in the grid. Each line
+        // says what it gives, read off Rest.cs, so the menu and the rest cannot disagree. No
+        // Confirm: a rest edits only the posse, and the posse is on the undo stack.
+        bar.Controls.Add(MenuBtn("Rest ▾", 100, "Chapter XI's three rests: a dawn in the field, a safe night, a week of peace. No rest touches the Mark, Grit, a Hunger, a Debt or a familiar",
+            ("The whole posse:", null),
+            (RestLabel(RestKind.Dawn), (s, e) => RestPosse(RestKind.Dawn)),
+            (RestLabel(RestKind.Night), (s, e) => RestPosse(RestKind.Night)),
+            (RestLabel(RestKind.Week), (s, e) => RestPosse(RestKind.Week)),
+            ("-", null),
+            ("The selected soul:", null),
+            (RestLabel(RestKind.Dawn), (s, e) => RestSoul(SelectedPC(), RestKind.Dawn)),
+            (RestLabel(RestKind.Night), (s, e) => RestSoul(SelectedPC(), RestKind.Night)),
+            (RestLabel(RestKind.Week), (s, e) => RestSoul(SelectedPC(), RestKind.Week))));
         bar.Controls.Add(BarSep());
         bar.Controls.Add(Btn("Send posse → Tracker", (s, e) => PartyToTracker(), 155, "Put the whole posse onto the combat tracker"));
         bar.Controls.Add(DangerBtn("Clear posse", (s, e) =>
@@ -2710,29 +2711,148 @@ public partial class MainForm : Sheet
         ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc}, what did the d20 come up?"));
     }
 
-    // A long rest heals the body and steadies the mind: Blood and Nerve back to full.
-    // The Mark and Taint do not wash off with rest, so they're left alone.
-    void RestPosse()
+    /// <summary>A Dread Check for every soul in the posse, worked one soul at a time through
+    /// <see cref="ResolveDread"/> and then said once for all of them: the status bar and the Dice
+    /// card carry every soul (<see cref="Horror.PosseLine"/>), headed by how many held. The button
+    /// used to call the one-soul check in a loop, so both showed only the last soul and a Keeper had
+    /// to read the log to learn the first one had broken. One Undo takes back the whole posse's
+    /// check, even at a dice table where every soul's d20 is asked for in its own prompt.</summary>
+    void DreadCheckPosse()
     {
         if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
-        if (!Confirm("A long rest for the whole posse? Restores every soul's Blood, Nerve, and pool to full.")) return;
-        foreach (var p in party) { p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax; MirrorToTracker(p); }
-        posseGrid?.Refresh();
-        int gave = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Dawn));
-        RefreshCalling();
-        Log("The posse takes a long rest: Blood, Nerve, and the day's pool restored to full."
-            + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
+        int dc = (int)dreadDc.Value;
+        var rolls = new List<Horror.PosseRoll>();
+        using (OneUndoStep())
+            foreach (var p in party.ToList())
+                if (ResolveDread(p, dc, AskDie($"{p.Name}'s Will save against Dread DC {dc}, what did the d20 come up?")) is Horror.PosseRoll r)
+                    rolls.Add(r);
+        string line = Horror.PosseLine(dc, rolls);
+        Log(line);
+        var worst = rolls.MinBy(r => r.Outcome.Degree);
+        ShowResult(Horror.PosseHeadline(rolls), line, DegreeColor(worst?.Outcome.DegreeName));
     }
 
-    void RestSoul(PartyMember p)
+    /// <summary>A rest's menu line, the same words on the Posse tab's Rest ▾, a soul's own
+    /// right-click menu and the Tracker's Restore ▾. <see cref="Rest.Label"/> writes it, where the
+    /// smoke rig can read it.</summary>
+    static string RestLabel(RestKind kind) => Rest.Label(kind);
+
+    /// <summary>One of Chapter XI's three rests for everyone in the posse, each soul worked by
+    /// <see cref="RestOne"/>. There was one rest here until v1.60.0, "Blood and Nerve to full",
+    /// and the book never printed it. No Confirm: a rest edits only the posse, the undo stack
+    /// captures the posse, and an undoable action does not ask first. The whole posse's rest is
+    /// one Undo, even at a dice table where every soul's die is asked in a prompt of its own.</summary>
+    void RestPosse(RestKind kind)
+    {
+        if (party.Count == 0) { Nope("No souls in the posse yet."); return; }
+        using (OneUndoStep())
+            foreach (var p in party.ToList()) RestOne(p, kind);
+        posseGrid?.Refresh();
+        RefreshCalling();
+    }
+
+    /// <summary>One rest for one soul: Rest ▾ with a soul selected, or the soul's own
+    /// right-click menu.</summary>
+    void RestSoul(PartyMember p, RestKind kind)
     {
         if (p == null) { Nope(NoSoulPicked); return; }
-        p.BloodCur = p.BloodMax; p.NerveCur = p.NerveMax; p.PoolCur = p.PoolMax;
-        MirrorToTracker(p); posseGrid?.Refresh();
-        int gave = CharGen.RefreshFeatures(p, FeatureCadence.Dawn);
+        RestOne(p, kind);
+        posseGrid?.Refresh();
         RefreshCalling();
-        Log($"{p.Name} rests: Blood, Nerve, and pool restored to full."
-            + (gave > 0 ? $" {gave} rationed feature{(gave == 1 ? " comes" : "s come")} back with the morning." : ""));
+    }
+
+    /// <summary>Work a rest on one soul through <see cref="Rest.Take"/>, then put what moved on
+    /// the field and in the log. A safe night asks a dice-and-books table for its 1d6 of Nerve
+    /// once a soul, because every soul rolls their own. A night or a week that lifts the bottle's
+    /// Drained takes it off the soul's Tracker row as well, where it has shown since the failed
+    /// save.</summary>
+    void RestOne(PartyMember p, RestKind kind)
+    {
+        int? die = kind == RestKind.Night
+            ? AskDie($"The 1d{Rest.NightNerveDie} Nerve for {p.Name}'s safe night, what did it come up?", Rest.NightNerveDie)
+            : null;
+        var o = Rest.Take(p, kind, die);
+        if (o.DrainLifted && tracker.FirstOrDefault(t => t.IsSoul(p)) is Combatant row)
+            row.Conditions = Rest.WithoutDrinkDrain(row.Conditions);
+        MirrorToTracker(p);
+        Log(o.Line);
+    }
+
+    /// <summary>The Steady menus' line for a drink or a dose, its die read off
+    /// <see cref="Rest.DoseDie"/>.</summary>
+    static string DoseLabel(bool each, bool laudanum)
+        => $"{(laudanum ? "Laudanum" : "Whiskey")}  (1d{Rest.DoseDie(laudanum)}{(each ? " each" : "")}, one a scene)";
+
+    /// <summary>A drink of whiskey or a dose of laudanum (Ch. XII, <em>Recovering Nerve</em>) for
+    /// the selected soul or for everyone, worked by <see cref="Rest.TakeDose"/>. One a scene of
+    /// either: a soul who has had theirs is refused by name, or passed over and named when the
+    /// whole posse drinks. A dice-and-books table is asked for the Nerve die and, from the second
+    /// of the day on, the Fortitude d20, once a soul each. A failed save puts the bottle's
+    /// Drained 1 on the soul's Tracker row, unless a Drained is showing there already.</summary>
+    void Dose(bool wholePosse, bool laudanum)
+    {
+        var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
+        if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
+        if (who[0] == null) { Nope(NoSoulPicked); return; }
+        var hadTheirs = who.Where(p => Rest.WhyNotDose(p) != null).ToList();
+        if (hadTheirs.Count == who.Count)
+        {
+            Nope(wholePosse ? "Everyone in the posse has had their one this scene. The bottle steadies a hand once a scene and no more."
+                            : Rest.WhyNotDose(who[0]));
+            return;
+        }
+        int sides = Rest.DoseDie(laudanum);
+        string what = laudanum ? "dose of laudanum" : "drink";
+        // One Undo for the round of drinks, however many dice prompts it asks on the way.
+        using var oneStep = OneUndoStep();
+        foreach (var p in who.Except(hadTheirs))
+        {
+            int? nerveDie = AskDie($"The 1d{sides} Nerve from {p.Name}'s {what}, what did it come up?", sides);
+            int dc = Rest.DoseDc(p.DosesToday);
+            int? fortDie = dc > 0
+                ? AskDie($"{p.Name} has had {p.DosesToday} already today, so this one calls a Fortitude save at DC {dc}. What did the d20 come up?")
+                : null;
+            var row = tracker.FirstOrDefault(t => t.IsSoul(p));
+            var o = Rest.TakeDose(p, laudanum, nerveDie, fortDie, alreadyDrained: Rest.ShowsDrained(row?.Conditions));
+            if (o.Drained && row != null) row.Conditions = Rest.WithDrinkDrain(row.Conditions);
+            MirrorToTracker(p);
+            Log(o.Line);
+        }
+        if (hadTheirs.Count > 0)
+            Log($"{string.Join(", ", hadTheirs.Select(p => p.Name))} "
+              + (hadTheirs.Count == 1 ? "has had their one this scene and sits this one out." : "have had their one this scene and sit this one out."));
+        posseGrid?.Refresh();
+    }
+
+    /// <summary>The line between one night at the table and the next (A06, v1.60.0). It used to
+    /// refill every soul's Nerve and pool with no rest behind it, which made it a rest the book
+    /// never printed. Now it asks whether a week of peace has passed since the last session. Yes
+    /// works that week on every soul through <see cref="RestOne"/>; No leaves Blood, Nerve and the
+    /// pools where they stand; Cancel is no new session at all. On Yes or No, Grit goes back to 3
+    /// (Ch. XIII: "three per soul, refreshed each session"), every once-a-session feature comes
+    /// back, and the scene's drink is spent.</summary>
+    void NewSession()
+    {
+        if (party.Count == 0) { Nope("No souls in the posse yet, so a new session has nobody to hand anything back to."); return; }
+        var week = Ask3("Has a week of peace passed since the last session?"
+            + Environment.NewLine + Environment.NewLine
+            + $"Yes: a week of peace for every soul (all Blood and Nerve back, the dawn's pools full, the Taint eased {Rest.WeekEasesTaint}), "
+            + "then Grit back to 3 and the once-a-session features."
+            + Environment.NewLine + Environment.NewLine
+            + "No: Grit back to 3 and the once-a-session features, and nothing else. Blood, Nerve and the pools "
+            + "stay where the last session left them, and Rest gives them back."
+            + Environment.NewLine + Environment.NewLine
+            + "Cancel: no new session.");
+        if (week == DialogResult.Cancel) return;
+        using var oneStep = OneUndoStep();
+        if (week == DialogResult.Yes) foreach (var p in party.ToList()) RestOne(p, RestKind.Week);
+        foreach (var p in party) { p.Grit = 3; p.DosedThisScene = false; }
+        int given = party.Sum(p => CharGen.RefreshFeatures(p, FeatureCadence.Session));
+        posseGrid?.Refresh();
+        RefreshCalling();
+        Log((week == DialogResult.Yes ? "New session, after a week of peace" : "New session, straight on from the last")
+            + ": Grit reset to 3 for the whole posse."
+            + (given > 0 ? " " + given + (given == 1 ? " rationed feature comes" : " rationed features come") + " back with it." : ""));
     }
 
     // The three one-step marks a soul can take. Methods rather than button lambdas so the buttons
@@ -2768,26 +2888,24 @@ public partial class MainForm : Sheet
         Log($"{p.Name}'s Taint deepens to {p.Taint} of 4.");
     }
 
-    /// <summary>Give Nerve back. <paramref name="expr"/> is the remedy's die (rolled fresh per soul,
-    /// the way the table reads) or null for "all of it". Nothing here touches Blood, the Mark, or
-    /// the Taint, steadying a soul is not healing one, and the book is careful about the difference.</summary>
-    void Steady(bool wholePosse, string expr, string doing)
+    /// <summary>Give Nerve back by a remedy's die, 1d<paramref name="sides"/>, rolled fresh for
+    /// every soul. Nothing here touches Blood, the Mark, or the Taint: steadying a soul is not
+    /// healing one, and the book is careful about the difference.</summary>
+    void Steady(bool wholePosse, int sides, string doing)
     {
         var who = wholePosse ? party.ToList() : new List<PartyMember> { SelectedPC() };
         if (wholePosse && who.Count == 0) { Nope("No souls in the posse yet."); return; }
         if (who[0] == null) { Nope(NoSoulPicked); return; }
 
-        // A dice-and-books table rolls its own recovery too. Asked ONCE for the whole posse rather
-        // than once a soul: "a week of true peace" is one remedy applied to everybody, and six
-        // dialogs in a row for one line of the book is how a Keeper learns to use the other mode.
-        int? forced = expr == null ? null
-            : AskDie($"The {expr} for {(wholePosse ? "the posse" : who[0].Name)} {doing}, what did it come up?");
-
+        using var oneStep = OneUndoStep();
         foreach (var p in who)
         {
+            // A dice-and-books table is asked once a soul (A08, v1.60.0). It was asked once for
+            // the whole posse and the one number went to everybody, when every soul at the table
+            // rolls their own. The week of peace that justified asking once is a rest now.
+            int? forced = AskDie($"The 1d{sides} as {p.Name} {doing}, what did it come up?", sides);
             int before = p.NerveCur;
-            if (expr == null) p.NerveCur = p.NerveMax;
-            else p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (forced ?? Rules.RollExpr(expr).total));
+            p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (forced ?? Rules.RollExpr($"1d{sides}").total));
             int back = p.NerveCur - before;
             Log(back == 0
                 ? $"{p.Name} {doing}, Nerve already steady at {p.NerveCur}/{p.NerveMax}."
@@ -2796,7 +2914,9 @@ public partial class MainForm : Sheet
         posseGrid?.Refresh();
         // No CaptureUndo here: party is a BindingList of INotifyPropertyChanged souls, so setting
         // NerveCur already raises ListChanged, and CaptureUndo coalesces the whole posse's worth
-        // into one step. Same reason RestPosse/RestSoul don't call it either.
+        // into one step. Same reason the rests and the bottle don't call it either. At a dice table
+        // each AskDie is modal and runs the message loop, which let the queued capture fire there and
+        // made it a step a soul; the OneUndoStep above holds them all until the posse is done.
     }
 
     /// <summary>The escape hatch for a remedy the book doesn't print: a Sawbones' reason, a sermon,
@@ -2847,7 +2967,10 @@ public partial class MainForm : Sheet
           DeathAt = Rules.DeathThresholdFor(p.Sheet),
           // STR rides along for the same reason and by the same route: the Kickback rule exempts
           // anyone at 12 or better, and a Combatant has no sheet to ask once it is on the field.
-          Str = Rules.StrengthOf(p.Sheet) });
+          Str = Rules.StrengthOf(p.Sheet),
+          // The bottle's Drained lasts until a safe night, so a soul who drank before the fight
+          // arrives wearing it, the same line New fight puts back.
+          Conditions = Rest.Standing(p) });
         if (!quiet) Log($"{p.Name} takes the field.");
         return true;
     }
@@ -3249,7 +3372,9 @@ public partial class MainForm : Sheet
         // a line of 9pt monospace among four hundred others (user-reported). It now gets its own
         // card at the top of the pane, in the same colors the log grades by.
         resultCard = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Color.FromArgb(252, 249, 240), Padding = new Padding(12, 6, 12, 6) };
-        resultSub = new Label { Dock = DockStyle.Bottom, Height = 22, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
+        // AutoEllipsis, and ShowResult puts the whole line in the tooltip: a whole-posse Dread check
+        // names every soul here, and six souls run past the width of the card.
+        resultSub = new Label { Dock = DockStyle.Bottom, Height = 22, ForeColor = Ink, Font = new Font("Segoe UI", 9.5f), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false, AutoEllipsis = true };
         resultBig = new Label { Dock = DockStyle.Fill, ForeColor = Ink, Font = new Font("Segoe UI", 30f, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, UseMnemonic = false };
         resultCard.Controls.Add(resultBig);
         resultCard.Controls.Add(resultSub);
@@ -3358,6 +3483,11 @@ public partial class MainForm : Sheet
     // ---------------------------------------------------------- dialogs
     static bool Confirm(string msg) =>
         MessageBox.Show(msg, "Blood & Grit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+    /// <summary>A question with two real answers and a way out: Yes, No, or Cancel for neither.
+    /// <see cref="Confirm"/> for the times when No and Cancel are not the same thing.</summary>
+    static DialogResult Ask3(string msg) =>
+        MessageBox.Show(msg, "Blood & Grit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
     // ---------------------------------------------------------- persistence
     string SavePath => Path.Combine(AppState.Dir, "session.json");
@@ -3505,9 +3635,30 @@ public partial class MainForm : Sheet
     // for serializing but not for stashing a past state to restore later).
     bool undoCapturePending;
 
+    // How many OneUndoStep scopes are open. The coalescing below makes one press one step only
+    // while nothing pumps messages in the middle of it, and a dice table does: a whole-posse rest,
+    // dose, steady or Dread check asks for each soul's die in a modal prompt, every prompt runs the
+    // message loop, and the capture queued behind the last soul fired there. So undoing a posse's
+    // night at a dice table took back one soul's, and the Keeper had to press Undo once a soul
+    // without knowing that was what it wanted.
+    int undoGroupDepth;
+
+    /// <summary>Make everything up to the handle's disposal ONE undo step, however many messages
+    /// are pumped in between: <c>using (OneUndoStep()) { foreach (var p in party) … }</c>. The
+    /// captures inside are held, and one is taken when the outermost scope closes, so the scopes
+    /// nest. Wrap any press that walks the posse and may ask for a die on the way.</summary>
+    IDisposable OneUndoStep()
+    {
+        // Settle anything still waiting first, so a change made before the press stays its own step
+        // and is not folded into the group's.
+        if (undoGroupDepth == 0) CaptureUndoNow();
+        undoGroupDepth++;
+        return new Restorer(() => { if (--undoGroupDepth == 0) CaptureUndo(); });
+    }
+
     void CaptureUndo()
     {
-        if (suppressUndo || undoCapturePending) return;
+        if (suppressUndo || undoCapturePending || undoGroupDepth > 0) return;
         // Coalesce: one user action can fan out into several list events (a Damage
         // click edits the posse AND mirrors to the tracker; New Session touches every
         // soul twice; Send posse → Tracker adds N rows). Deferring the capture to
@@ -3520,7 +3671,9 @@ public partial class MainForm : Sheet
 
     void CaptureUndoNow()
     {
-        if (suppressUndo) return;
+        // A capture queued before a group opened can still land inside it, from the first die prompt's
+        // message pump. It is held like the rest; the group's own capture at the close takes it in.
+        if (suppressUndo || undoGroupDepth > 0) return;
         string now = JsonSerializer.Serialize(Snapshot());
         if (now == undoBaseline) return;
         undoStack.Add(undoBaseline);
@@ -3712,6 +3865,24 @@ public partial class MainForm : Sheet
             if (JsonSerializer.Serialize(Snapshot()) != before) stale.Add("Undo does not restore the previous state");
             Redo(); Settle();
             if (JsonSerializer.Serialize(Snapshot()) != changed) stale.Add("Redo does not restore the undone state");
+
+            // A whole-posse press at a dice table: two souls changed with the message loop pumped
+            // between them, the way each soul's modal die prompt pumps it. Inside OneUndoStep that
+            // has to come out as ONE step, and the baseline has to have caught up once it closes.
+            Settle();
+            string beforeGroup = JsonSerializer.Serialize(Snapshot());
+            using (OneUndoStep())
+            {
+                party.Add(new PartyMember { Name = "Group Probe A" });
+                Settle();
+                party.Add(new PartyMember { Name = "Group Probe B" });
+                Settle();
+            }
+            Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != undoBaseline) stale.Add("a grouped press leaves the baseline behind");
+            Undo(); Settle();
+            if (JsonSerializer.Serialize(Snapshot()) != beforeGroup)
+                stale.Add("one Undo does not take back a whole-posse press at a dice table");
         }
         finally { suppressUndo = prev; }
         return stale;

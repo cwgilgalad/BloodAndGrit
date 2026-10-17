@@ -265,8 +265,10 @@ public partial class MainForm
         T("The party sheet. Add each soul's Blood, Defense, saves, Nerve, Grit, Mark, and Taint, or click straight " +
           "into a cell to edit it. The buttons along the top do the bookkeeping: Damage and Heal apply the Amount " +
           "spinner to the selected soul, Spend Grit counts it down, and Dread check rolls a Will save against the DC " +
-          "you set, taking the Nerve loss by the horror's Tier automatically. \"New session\" refills Nerve and " +
-          "resets Grit to 3; Rest ▾ is the long rest; ▲ ▼ put the posse in whatever order you ride in. " +
+          "you set and takes the Nerve that DC costs on a failure. \"New session\" resets Grit to 3 and hands back " +
+          "the once-a-session features, after asking whether a week of peace has passed. Rest ▾ holds the book's " +
+          "three rests (a dawn in the field, a safe night, a week of peace), each saying what it gives, and " +
+          "Steady ▾ holds a confession, a drink and a dose. ▲ ▼ put the posse in whatever order you ride in. " +
           "Double-click a soul to open their Ledger, the book's own character sheet, in its own window; " +
           "double-click the Notes cell to read and edit the whole note. On first run the six ready-made souls from " +
           "Appendix D are already seated. Clear them out whenever your own posse is ready.");

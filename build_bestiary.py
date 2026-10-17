@@ -49,13 +49,13 @@ if ".statblock{" not in H:
 import book_shell
 H = book_shell.retext_cover(
     H,
-    comment="<!-- Blood & Grit — The Bestiary · Version 2.27 -->",
-    title="<title>Blood &amp; Grit — The Bestiary (v2.27)</title>",
+    comment="<!-- Blood & Grit — The Bestiary · Version 2.28 -->",
+    title="<title>Blood &amp; Grit — The Bestiary (v2.28)</title>",
     kicker='<div class="kicker">A True Account of the Things That Walk</div>',
     foot='<div class="t-foot">The Bestiary</div>',
-    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.27</div>',
+    tiny='<div class="t-tiny">Compiled in the Territories · Edition of 1885 · Version 2.28</div>',
     tiny2='<div class="t-tiny">A field-guide to the dead, the cursed, and the things that were never men</div>',
-    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.27 · For the Keeper Alone</p>',
+    note='<p class="note" style="text-align:center; margin:0;">Blood &amp; Grit · The Bestiary · Version 2.28 · For the Keeper Alone</p>',
 )
 
 # ---- replace the two Player's-Book epigraph quotes with new Bestiary ones (same voice) ----
@@ -185,7 +185,12 @@ HOWTO = f"""<!-- I -->
       whose <strong>level is twice its Tier</strong>; two Tiers above the party is a thing to flee.</li>
       <li><strong>Defense</strong> is the number to beat to hit it; <strong>Blood</strong> is what it can take.</li>
       <li><strong>Saves</strong> are Fortitude / Reflex / Will. <strong>Attacks</strong> give the bonus to hit and the
-      damage on a hit; apply the Multiple Attack Penalty to extra strikes as a player would.</li>
+      damage on a hit; apply the Multiple Attack Penalty to extra strikes as a player would. A creature rolls
+      <strong>initiative</strong> as d20 + its Will save, and where the block prints a dash, the bare d20.</li>
+      <li><strong>Speed</strong> is in words, measured against a person afoot at 30 feet: <em>very slow</em> 10,
+      <em>shuffling</em> 15, <em>slow</em> 20, <em>normal</em> 30, <em>fast</em> 40, <em>very fast</em> 60. <em>Fixed</em>
+      means it does not move at all. A word like <em>fly</em> or <em>swim</em> names the medium the speed is good in,
+      and a block with two (&ldquo;swim fast; slow on land&rdquo;) has both. Anything else, read against the nearest word here.</li>
       <li><strong>Special</strong> is the one thing that makes it more than its numbers. <strong>Dread</strong> is the
       Will-save DC on first sight and the Nerve it costs to fail (Keeper's Book, Ch. III).</li>
       <li><strong>Mark</strong>, where it appears, is what touching the thing's power costs a living soul.</li>
@@ -243,9 +248,9 @@ DEAD = f"""<!-- II -->
   {creature(
     sb("The Risen", "Tier I &middot; the shambling dead", 12, 14, "shuffling (half)", "+6", "+0", "+2",
        "grasping hands +4 (1d6+2 and grab); bite +4 (1d4+2)",
-       "<strong>Does not stop.</strong> Ignores pain, fear, and being bloodied; immune to anything worked on a living mind.",
+       "<strong>Does not stop.</strong> Ignores pain, fear, and being bloodied; immune to anything worked on a living mind. A Risen brought to 0 Blood lies still until the next full dark, then stands on full Blood, unless the body was burned or salted or the head taken first.",
        "DC 16, 1d6 (the first time the dead get up)",
-       "Break the body past use or take the head; salt and fire end it for good."),
+       "Breaking the body past use buys you until the next dark; take the head, or give it salt or fire, and that ends it for good."),
     lore=[
       "There is nothing clever in the Risen and nothing left of whoever it used to be. The country called it up out of thin ground (a battlefield, a hanging-tree, a pauper's trench dug too shallow in a hard winter) and what climbed out is a body that has forgotten it is supposed to lie down. It does not hate you. It does not know you. It simply comes, slow and certain, with the dumb patience of running water, and it will be coming long after you have run out of reasons to stay.",
       "A single Risen is a sad and ugly thing a frightened farmhand can put down with a fence-post and nerve enough. The horror of them is arithmetic. Where one rises, a dozen rise, and a dozen become a wall of cold hands that does not tire, does not flank, and does not stop coming through the door you barred."],

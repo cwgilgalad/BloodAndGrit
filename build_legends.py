@@ -29,7 +29,7 @@ import re
 
 H = open("blood-and-grit.html", encoding="utf-8").read()
 
-VERSION = "1.11"
+VERSION = "1.12"
 
 # ---------------------------------------------------------------- the papers, as CSS
 # Every document type is set apart by rule, indent and weight rather than by a colour wash, so the
@@ -490,13 +490,13 @@ def chapter(anchor, sub, body):
 
 # ---------------------------------------------------------------- Contents
 # The page numbers here are the no-JS fallback and nothing more: the paginator overwrites every one of
-# them from the rendered sheets. Measured for v1.10 in the cloud's Chromium, with the book's own web
-# fonts loaded, because the laptop was not to hand. That render matched the laptop's page count on v1.8
-# (177), so these should hold, but re-measure them in the laptop's Edge at the next ship.
-STATIC_PG = {"before": 6, "basin": 8, "frauds": 20, "weather": 36, "paper": 43, "jubilee": 55,
-             "forwarded": 65, "faces": 82, "songs": 89, "trades": 98, "road": 112, "dead": 127,
-             "ground": 141, "hunger": 155, "preaching": 168, "circle": 180, "longtable": 185,
-             "brother": 196, "depth": 206, "last": 219}
+# them from the rendered sheets. Measured in the laptop's Edge on 2026-10-14, the way make_pdf.py lays a
+# book out (1700 px viewport, after the real fonts land): 220 sheets. The cloud's Chromium had made it
+# 227 for v1.10 and v1.11, though it matched Edge on v1.8, so trust only an Edge measurement here.
+STATIC_PG = {"before": 6, "basin": 8, "frauds": 20, "weather": 35, "paper": 42, "jubilee": 53,
+             "forwarded": 63, "faces": 79, "songs": 86, "trades": 94, "road": 108, "dead": 123,
+             "ground": 137, "hunger": 150, "preaching": 163, "circle": 175, "longtable": 179,
+             "brother": 190, "depth": 200, "last": 212}
 assert set(STATIC_PG) == {"before"} | set(NUM), "a chapter has no fallback page number, or a stale one"
 
 _toc = "\n".join(f'    <li><a href="#{a}">{NUM[a]}. {TITLE[a]}</a><span class="pg">{STATIC_PG[a]}</span></li>'

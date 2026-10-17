@@ -261,7 +261,7 @@ public class CharacterSheet
     public bool FamiliarLost { get; set; }                               // it died; the Witch is Sickened until re-bound
     /// <summary>The Familiar-Bound's greater boon has been spent: "should you fall, it carries your
     /// spirit to a new dawn, <em>once</em>". Once ever, and nothing in the app gives it back: not
-    /// a new fight, not a long rest, not a new session. It is stored on the SHEET rather than in
+    /// a new fight, not any rest, not a new session. It is stored on the SHEET rather than in
     /// <see cref="PartyMember.FeatureSpent"/> for exactly that reason: FeatureSpent is a ration and
     /// <see cref="CharGen.RefreshFeatures"/> walks it at every boundary, so a once-in-a-life thing kept
     /// there would quietly come back the first time somebody pressed New fight. Same separation,
@@ -299,7 +299,7 @@ public class CharacterSheet
 ///
 /// <para><b>Trigger</b> is the odd one, and it is here because the book has two of them: the
 /// Witch Hunter's Judgment comes back "when you name a new quarry" and the Sawbones' Field
-/// Surgery is "once per wound". No clock returns those, so nothing but the Keeper's hand and a
+/// Surgery is "once per patient after each fight". No clock returns those, so nothing but the Keeper's hand and a
 /// new session does either, which is exactly why it sits directly under Session.</para></summary>
 public enum FeatureCadence { None = 0, Turn = 1, Round = 2, Scene = 3, Dawn = 4, Trigger = 5, Session = 6 }
 
@@ -490,8 +490,18 @@ public static class CharGen
     /// Named rather than left as a bare <see cref="SkillBonus"/> call at the tracker, so the skill
     /// the rule keys to is written down once and the tracker cannot quietly start rolling a
     /// different one. A soul with no sheet (an ad-hoc NPC, a creature) has nothing to read and
-    /// adds nothing.</summary>
+    /// adds nothing here; a creature reads <see cref="CreatureInitiativeBonus"/> instead.</summary>
     public static int InitiativeBonus(CharacterSheet s) => SkillBonus(s, "Notice");
+
+    /// <summary>What a creature adds to initiative: its Will save, because the Player's Book says
+    /// "a creature with a stat block rolls d20 + its Will save" (Ch. XI, since v1.60.0). A stat
+    /// block prints no Notice, and Notice is the RES skill as Will is the RES save at the thing's
+    /// Tier, so the one number every block carries stands in for it. Until then the tracker rolled
+    /// creatures the plain die, and a ninth-level posse beat a Tier V horror to the draw nineteen
+    /// times in twenty. Named apart from <see cref="InitiativeBonus"/> rather than overloaded,
+    /// because <c>InitiativeBonus(null)</c> is the ad-hoc NPC's call and must stay unambiguous.
+    /// No block, no bonus.</summary>
+    public static int CreatureInitiativeBonus(Creature c) => c?.WillValue ?? 0;
 
     // ---- the Rank spine, shared by Signs (Ch. XIII) and Miracles (Ch. VI) ----
 
@@ -528,6 +538,10 @@ public static class CharGen
     public static List<CgMiracle> MiraclesFor(CgCalling cal, int level)
         => cal.miraclesKnownAt == null || cal.miracleLists == null ? new()
          : D.miracles.Where(x => cal.miracleLists.Contains(x.list) && x.rank <= RankAt(level)).ToList();
+
+    /// <summary>The Nerve Hedge Magic sets apart for its Sign (Player's Book Ch. IX and XIII). It
+    /// read "a small Nerve pool" until v1.60.0, which gave the app nothing to print.</summary>
+    public const int HedgeNervePool = 2;
 
     /// <summary>Every Sign a soul may actually learn at a level: their Calling's lists, gated by Rank.
     /// A Calling that works no Signs gets nothing, unless the soul took <em>Hedge Magic</em> (Ch. IX),
@@ -787,7 +801,7 @@ public static class CharGen
                 s.AbilityBoostLevels.Add(L); s.BoostedAbilities.Add(best);
             }
             int conMod = Mod(s.Scores["CON"]);
-            int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;   // Ch. III: full Hit Die at 1st, roll after
+            int gain = (L == 1) ? cal.hitDie + conMod : Math.Max(1, Rules.Rng.Next(1, cal.hitDie + 1) + conMod);   // Ch. III: full Hit Die at 1st, roll after, at least 1 a level
             s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
 
             foreach (var f in cal.Row(L).features)
@@ -989,7 +1003,7 @@ public static class CharGen
                 s.AbilityBoostLevels.Add(L); s.BoostedAbilities.Add(ab);
             }
             int conMod = Mod(s.Scores["CON"]);
-            int gain = (L == 1) ? cal.hitDie + conMod : Rules.Rng.Next(1, cal.hitDie + 1) + conMod;
+            int gain = (L == 1) ? cal.hitDie + conMod : Math.Max(1, Rules.Rng.Next(1, cal.hitDie + 1) + conMod);
             s.BloodRolls.Add(gain); s.ConModAtLevel.Add(conMod);
 
             foreach (var f in cal.Row(L).features)
@@ -1218,7 +1232,7 @@ public static class CharGen
         }
         int conMod = Mod(s.Scores["CON"]);
         int die = ch.BloodDie is int bd && bd >= 1 && bd <= cal.hitDie ? bd : Rules.Rng.Next(1, cal.hitDie + 1);
-        s.BloodRolls.Add(die + conMod); s.ConModAtLevel.Add(conMod);
+        s.BloodRolls.Add(Math.Max(1, die + conMod)); s.ConModAtLevel.Add(conMod);   // Ch. III: at least 1 a level
 
         foreach (var f in cal.Row(N).features)
             if (f != "Edge" && !f.StartsWith("Sign learned") && !f.StartsWith("Stolen Wonder")) s.Features.Add(f);
@@ -1390,7 +1404,9 @@ public static class CharGen
             int val = cal.pool.formula.EndsWith("level") ? baseMod + level : baseMod + level / 2;
             val = Math.Max(cal.pool.min, val);
             string refresh = cal.pool.formula.EndsWith("level") ? "RES mod + level" : cal.pool.formula.Substring(0, 3) + " mod + half level";
-            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, refreshed each dawn)";
+            // How it comes back is the book's, pool by pool: "refreshed each dawn" for all but
+            // Devotion and Tribute, which a rest never fills (Rest.PoolsRefilledOtherwise).
+            s.PoolLine = $"{cal.pool.name} {val} ({refresh}, {Rest.HowItRefills(cal.pool.name)})";
             s.PoolName = cal.pool.name;
             s.PoolMax = val;
         }
@@ -1423,6 +1439,18 @@ public static class CharGen
         var anyTrained = s.SkillRanks.Where(kv => kv.Value == 1).Select(kv => kv.Key).ToList();
         if (anyTrained.Count > 0) s.SkillRanks[Pick(anyTrained)] = 2;
     }
+
+    /// <summary>Gear keys a <c>session.json</c> from an older build can still carry, with the price
+    /// the soul paid then. v1.60.0 renamed the box of cartridges to the metallic box at $1.25 the
+    /// Player's Book prints; a soul who bought the old $1 box has to balance at $1.</summary>
+    static readonly Dictionary<string, double> RetiredGear = new()
+    {
+        ["Box of cartridges (50) ($1)"] = 1.0,
+    };
+
+    /// <summary>What a Gear entry cost: today's price, or a retired key's old one.</summary>
+    public static bool GearPaid(string item, out double price) =>
+        D.gearPrices.TryGetValue(item, out price) || RetiredGear.TryGetValue(item, out price);
 
     // ============================================================ VALIDATION
     // Re-derives every number from Data/chargen.json and the sheet's recorded choices.
@@ -1622,7 +1650,7 @@ public static class CharGen
               && s.CoinRolled % cal.coin.mult == 0, $"starting coin ${s.CoinRolled} outside {cal.coin.dice}d6 × ${cal.coin.mult}");
         double spent = 0;
         foreach (var g in s.Gear)
-            if (D.gearPrices.TryGetValue(g, out var c)) spent += c;
+            if (GearPaid(g, out var c)) spent += c;
         foreach (var w in s.WeaponsCarried)
         {
             // Both separators, because the tag itself changed in v1.58.0 (an em dash, then a
@@ -1674,7 +1702,11 @@ public static class CharGen
         if (cal.signsKnownAt != null)
             sb.AppendLine($"Sign DC {10 + s.Level / 2 + Mod(s.Scores["RES"])} (10 + half level + RES mod)");
         else if (s.SignsKnown.Count > 0)
+        {
             sb.AppendLine($"Sign DC {10 + Mod(s.Scores["RES"])} (Hedge Magic, no Signs feature, so no level added)");
+            // Ch. IX since v1.60.0: "a small Nerve pool" left every table to guess at its size.
+            sb.AppendLine($"Hedge Nerve {HedgeNervePool}, set apart for the Sign: spent before your own, filled again by a safe night");
+        }
         if (cal.miraclesKnownAt != null)
         {
             string fa = cal.pool.formula.Substring(0, 3);
@@ -1809,7 +1841,7 @@ public static class CharGen
         "round" => FeatureCadence.Round,
         // A fight IS a scene at this table, and the book uses both words for the same boundary.
         "scene" or "fight" or "encounter" => FeatureCadence.Scene,
-        // Once per quarry, once per wound: the fiction says when, so the Keeper does.
+        // Once per quarry, once per patient: the fiction says when, so the Keeper does.
         "quarry" or "wound" or "patient" or "target" => FeatureCadence.Trigger,
         // A day and a night both end at the dawn that refreshes every pool in this game.
         "day" or "night" or "dawn" => FeatureCadence.Dawn,
@@ -2327,6 +2359,15 @@ public static class CharGen
     public static bool IsReturned(CharacterSheet s)
         => s != null && string.Equals(s.Origin, ReturnedOrigin, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>The Shape whose gift is a doubled death threshold and a last round on its feet.
+    /// Named because two rules turn on it (<see cref="Rules.DeathThresholdFor"/> and
+    /// <see cref="Rules.RisenStands"/>), and read off the sheet rather than the data so it holds
+    /// before chargen.json has loaded.</summary>
+    public const string RisenShape = "The Risen";
+
+    public static bool IsRisen(CharacterSheet s)
+        => IsReturned(s) && string.Equals(s.Shape, RisenShape, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>The four Shapes of Return, read off the Origin that owns them.</summary>
     public static List<CgShape> ShapesOfReturn
         => D?.origins?.FirstOrDefault(o => o.name == ReturnedOrigin)?.shapes ?? new();
@@ -2427,7 +2468,7 @@ public static class CharGen
             FeatureCadence.Turn => $"{feature} is spent for this turn. It comes back on their next one.",
             FeatureCadence.Round => $"{feature} is spent for this round.",
             FeatureCadence.Scene => $"{feature} is spent for this scene, a new fight returns it.",
-            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn, a long rest returns it.",
+            FeatureCadence.Dawn => $"{feature} is spent until they prepare again at dawn. Any rest returns it, a dawn in the field included.",
             FeatureCadence.Trigger => $"{feature} is spent. {row.Limit.Phrase}",
             _ => $"{feature} is spent for the session. Nothing short of the next one returns it.",
         };
@@ -2460,10 +2501,10 @@ public static class CharGen
     }
 
     /// <summary>A boundary has passed: return everything that comes back at or before it. A scene
-    /// returns the turn, round and scene features and leaves the once-a-session ones spent; a long
-    /// rest reaches the dawn ones as well; a new session returns the lot. Answers with how many
-    /// features actually came back, so the caller can say so rather than logging a boundary that
-    /// changed nothing.</summary>
+    /// returns the turn, round and scene features and leaves the once-a-session ones spent; any
+    /// rest (<see cref="Rest.Take"/>) reaches the dawn ones as well; a new session returns the
+    /// lot. Answers with how many features actually came back, so the caller can say so instead
+    /// of logging a boundary that changed nothing.</summary>
     public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
     {
         // FeatureSpent only, on purpose: PartyMember.TallyOwed is a separate store precisely so
