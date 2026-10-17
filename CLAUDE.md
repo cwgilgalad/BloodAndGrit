@@ -120,11 +120,11 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 
 | Book | Version | Pages† | Images |
 |---|---|---|---|
-| The Player's Book | v2.57 | 290 | one inline SVG map (Appendix E) + cover emblem |
-| The Keeper's Book (GM guide) | v2.42 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
+| The Player's Book | v2.57 | 295 | one inline SVG map (Appendix E) + cover emblem |
+| The Keeper's Book (GM guide) | v2.42 | 158 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.28 | 226 | none (182 creatures) |
-| The Book of Legends | v1.12 | 227‡ | none (406 documents) |
-| The Legends Companion | v1.2 | 377‡ | none (a story behind every section of the Book of Legends, and its turn) |
+| The Book of Legends | v1.12 | 220 | none (406 documents) |
+| The Legends Companion | v1.2 | 368 | none (a story behind every section of the Book of Legends, and its turn) |
 | Module I: The Salt at Coffin Wells | v1.12 | 36 | one inline SVG map, downloadable |
 | Module II: A Face Not His Own | v1.13 | 38 | one inline SVG map, downloadable |
 | Module III: What the Water Answers | v1.13 | 39 | one inline SVG map (two panels), downloadable |
@@ -135,9 +135,6 @@ Player's since v2.9; the Keeper's and Bestiary's new in v2.2/v2.2). Both navigat
 every page number live via the paginator, exactly like the original TOC. New in this pass: a
 worked sample county, **Perdition Basin** (`perdition_map.py` draws its two-layer SVG map, a
 clean player map and a secrets-annotated Keeper map, from one shared coordinate model).
-
-‡ Measured in the cloud's Chromium with the books' own web fonts, on 2026-10-08. That render
-agreed with the laptop's Edge on the Book of Legends v1.8 (177), but re-measure both in Edge at the next ship.
 
 † Page counts as rendered on the user's Windows laptop (Edge/Chromium, July 2026). **Pagination
 is environment-dependent:** the Linux/cloud environment that measured earlier counts (163/73/130)
@@ -990,71 +987,15 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
 
 ## Roadmap / open threads (not yet built)
 
-- **FIRST, ON THE LAPTOP: cut books-v1.17 and modules-v1.14 (2026-10-08, widened 2026-10-09).** Cole asked
-  for a release in the cloud session that wrote the Book of Legends v1.10 and the Legends Companion v1.1, and
-  the next request in the same session took them to v1.11 and v1.2 and Module I to v1.11 (one epigraph line:
-  Adelia Cruz signs from Coffin Wells, not the Crossing). Everything up to the tag is done and on `main`: the
-  gate is green but for the two checks that need .NET (playtest, build), and nothing under `GK/` moved but a
-  README line. The cloud's GitHub access refuses a tag push with a 403, so the tags and the Release are the
-  laptop's. The walk is `/ship books` from step 5: `python make_pdf.py` (all eight, in Edge; the Book of
-  Legends should print 227 pages and the companion 377, or a few either side), `python tools/make_bundles.py
-  books` and `python tools/make_bundles.py modules`, the release notes (*a draft, RELEASE_NOTES_books-v1.17.md,
-  was sent to Cole from the cloud session*), `git tag -a books-v1.17` and `git tag -a modules-v1.14`,
-  `gh release create books-v1.17` with all eleven assets (GritKeeper.zip as it is on the current page),
-  delete the gritkeeper-v1.59.0 page with `--cleanup-tag=false`, and `python tools/release_index.py`. Then
-  strike this item.
-
-- **NEXT, ON THE LAPTOP: carry the Book of Legends v1.9 and v1.10 into the other books and
-  GritKeeper (Cole, 2026-09-29; v1.10 added 2026-10-08).** Cole approved a proposal in the cloud session
-  that built Legends v1.9 and asked for the rest of it to wait, with this as the priority. Both versions
-  are merged and ship in books-v1.17 with the Legends Companion, and both changed only the Book of Legends
-  and the companion, because any Keeper's or Player's Book bump is a signed GritKeeper patch and the cloud
-  can't sign. What the other books and the app need, so that all of them tell the same country:
-  1. **Keeper's Book Ch. XV, the Army as a fifth Power.** *The Army* (with Washington behind it) passes
-     the Powers test: it owns the posts, wants a quiet frontier and would rather not see Redemption, and
-     can be joined, bought or fought. Running notes: the Tenth is the regiment sent first; the salt
-     requisition and the Fort Yuma report forwarded to *File. No action.* are in the Book of Legends;
-     the Agency is paid to see what the Army is ordered not to. Be as plain about what that quiet
-     frontier costs the nations as the Player's Book's Peoples sections are. Add it to `XV_POWERS`, and
-     derive *"All four is a setting sourcebook"*, which is still typed, from `N_POWERS`.
-  2. **Keeper's Book Ch. XV, the Pinkertons work for the federal government.** Cole's word: make it
-     explicit. The Department of Justice has no detectives of its own and engages the Agency by
-     contract; railroads and mines hire it too. Name **W. F. Kinnear**, the operative whose reports run
-     through the Book of Legends, so a Keeper can bring him to the table.
-  3. **Keeper's Book Ch. XV, Redemption's reach and the Circle's list.** A paragraph on how Redemption
-     shows itself outside its line (circulars in Texas and Georgia, bonds offered at Kansas City, scrip
-     at Yuma, patrols on United States ground, the seminary's sermon on Leviticus 25), and the Committee
-     on Lands, which buys what the list says and does not know who writes it. Keep it the same list the
-     Keeper's *Running it* note already describes.
-  3a. **Keeper's Book Ch. XV, Washington's silence (v1.10).** A paragraph under Redemption on why the United
-     States won't see it, matching the retired clerk in the Book of Legends' *Why, Since You Ask*: a country
-     it doesn't recognise can't be at war with it; what was settled at Wormley's in 1877 left the river alone;
-     the Treasury pays its interest in gold to men you'd know; and the old clerks' belief that a place left
-     unwritten for a generation stops being there. Say plainly that this is the answer to a player who asks
-     why history never mentions Redemption, and point at the companion's four endings.
-  3b. **Keeper's Book Ch. XV, the Circle's preacher (v1.10).** One sentence in the Circle's *Running it*: the
-     faintest rumour says the Circle answers to a preacher who promised the country as it was before the war,
-     which makes a False Prophet one of the ways to hold who writes the list. Rumour only, as the Book of
-     Legends keeps it.
-  3c. **Keeper's Book Ch. XV, the Dread Mother (v1.10).** Add that the houses never write the Table's name
-     down, which the Book of Legends now holds as a build rule, so a Keeper keeps it out of their mouths.
-  4. **Keeper's Book Ch. VII, *When Two Congregations Meet*,** a d6 under the *two hands of one body*
-     rule, for the cultists at odds that the Book of Legends now shows.
-  5. **Player's Book glossary, *Pinkerton*.** It says the Agency is hired by railroads, mine owners and
-     anybody else; add the Department of Justice.
-  6. **GritKeeper.** A Keeper's or Player's Book bump moves `KeeperBookVer` / `PlayerBookVer` in
-     `GK/source/MainForm.cs` and the version lines `update_readme.py` writes; then build, smoke, publish,
-     re-mirror `GritKeeper/` and rezip, on the laptop. Read the Reference tab for any text quoting Ch.
-     XV. The Bestiary's two proposed stat blocks (*An Agency Man*, *The Grey*) were declined, so
-     `creatures.json` does not move.
-  7. **Measure the Book of Legends and the Legends Companion in Edge.** The Legends' 227 pages and its
-     fallback Contents numbers, and the companion's 377, were measured in the cloud's Chromium with the
-     books' own fonts, which agreed with the laptop on v1.8. Module I measured 37 there against the
-     table's 36 from Edge; check it in Edge too.
-  8. **Keeper's Book Ch. XIII and Module III, one well in two places.** Module III calls the first nail the
-     courtyard well's and Ch. XIII puts the master nail in the altar stone over the Mission spring. Both may
-     be true (the courtyard well and the baptistry spring could be one water), but nothing says so. One
-     sentence in Ch. XIII would settle it. The Legends Companion is written to work either way.
+- ~~**Cut books-v1.17 and modules-v1.14**~~ and ~~**carry the Book of Legends v1.9 and v1.10 into the other
+  books and GritKeeper**~~: **DONE (GritKeeper v1.60.0, books-v1.17, modules-v1.14, 2026-10-17).** The two
+  laptop items from the cloud sessions of 2026-09-29 and 2026-10-08 shipped together. Keeper's Book Ch. XV has the
+  Army as a fifth Power (counted from `XV_POWERS`), the Pinkertons' Department of Justice contract and
+  W. F. Kinnear, Redemption's reach and Washington's silence, the Circle's preacher and the Dread Mother's
+  unwritten name; Ch. VII has *When Two Congregations Meet*; Ch. XIII says the courtyard well and the
+  baptistry spring are one water; the Player's Book glossary names the Department of Justice. The Book of
+  Legends (220 pages) and its Companion (368) were measured in Edge. One piece is carried into v1.61.0: read
+  the Reference tab for any line quoting Ch. XV.
 
 - ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's
