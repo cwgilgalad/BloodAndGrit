@@ -5594,7 +5594,7 @@ public partial class MainForm
                 RH(r, title);
                 RTbl(r, new[] { 6, 19, 22, 46 }, new[] { "Rank", "Sign", "Cost", "The working" },
                     CharGen.D.signs.Where(sg => sg.list == key).OrderBy(sg => sg.rank).ThenBy(sg => sg.name)
-                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? ":", sg.desc ?? "" }));
+                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? "—", sg.desc ?? "" }));
             }
 
         RH(r, "Grit");
@@ -5638,7 +5638,7 @@ public partial class MainForm
                 RH(r, title);
                 RTbl(r, new[] { 6, 21, 20, 46 }, new[] { "Rank", "Miracle", "Cost", "The working" },
                     CharGen.D.miracles.Where(m => m.list == key).OrderBy(m => m.rank).ThenBy(m => m.name)
-                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? ":", m.desc ?? "" }));
+                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? "—", m.desc ?? "" }));
             }
         RI(r, "\"Faith\" in a Miracle's cost means points from your Calling's pool, whatever your Calling names it.");
     }
@@ -5668,7 +5668,7 @@ public partial class MainForm
         // Bestiary's one-liner and the tab called the exact budget "a fair, hard fight", which is
         // Ch. IV's word for half again over it.
         RTbl(r, new[] { 12, 18, 40 }, new[] { "The fight", "Spend", "What Ch. IV promises" },
-            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? ":" }));
+            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? "—" }));
         RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
         RI(r, "At double, the chapter does not only price it. It says to tell the fiction so, with a "
              + "sight, an omen, a dead man already on the ground, before the players commit.");
@@ -5688,7 +5688,7 @@ public partial class MainForm
             {
                 var s = Rules.SpoorRow[i];
                 return new[] { Rules.Roman(i + 1), "Survival " + s.readDc,
-                               s.dreadDc == 0 ? ":" : "DC " + s.dreadDc, s.what };
+                               s.dreadDc == 0 ? "—" : "DC " + s.dreadDc, s.what };
             }));
         RT(r, "The Dread DC is one rung below meeting the thing itself: reading an aftermath is not "
              + "standing in front of the animal. Nerve is lost off the usual ladder.");
@@ -5712,7 +5712,7 @@ public partial class MainForm
     {
         var guns  = CharGen.D?.weapons?.Where(w => w.kind == "gun").ToList();
         var steel = CharGen.D?.weapons?.Where(w => w.kind != "gun").ToList();
-        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : ":";
+        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : "—";
         RH(r, "Guns");
         if (guns?.Count > 0)
             RTbl(r, new[] { 23, 7, 5, 42 }, new[] { "Arm", "Damage", "Cost", "Traits" },

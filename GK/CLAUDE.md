@@ -390,10 +390,13 @@ Ch. XI was audited against the engine and nine gaps closed. Six decisions alread
   `Strength`. A stored default of ten would be indistinguishable from a soul who really is average,
   and would hand the shotgun's recoil to somebody the book exempts. `ApplySession` backfills it only
   ever upward from zero.
-- **A long gun is identified by NAME**, in `IronCode.IsLongGun`. Ch. X's glossary defines a
-  Two-Handed trait and then prints it on no weapon in either table, so there is no trait to read;
-  Ch. XI names them the same way ("a two-handed long gun (rifle, carbine, shotgun)"). Following the
-  book beat inventing a data column it does not have.
+- **A long gun is a gun that prints Two-Handed, less the bow**, in `IronCode.IsLongGun`
+  (`WeaponTraits.TwoHanded`). Ch. X's trait entry doubles the mounted −2 for anything two-handed
+  and excepts "a bow, made for the saddle"; Ch. XI's "a two-handed long gun (rifle, carbine,
+  shotgun)" is the same set. Until v1.61.0 it went by the NAME, because the book then printed the
+  trait on no weapon, and the name list missed the Wall / Punt Gun once the trait was printed. The
+  one "Bow / Crossbow" row reads as the bow (v1.60.0). A smoke check holds every rifle, carbine,
+  shotgun and repeater to it, so a trait dropped in transcription fails the build.
 
 **The arms table is now audited, and it is the reason all of this was unbuildable.**
 `audits/verify_rules.py` guarded the Calling tables and read the arms table not at all, so

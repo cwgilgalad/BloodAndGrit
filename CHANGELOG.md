@@ -58,6 +58,21 @@ Desktop\Git repos.)
   back through observance and preaching, and one quoted the Drained rule as "until a full night's rest" where the
   book says a safe night.
 
+  **The Wall / Punt Gun is a long gun.** The app picked long guns out by name (rifle, carbine, shotgun, repeater), a
+  list made when Ch. X printed its Two-Handed trait on no weapon at all. The book prints it on every long gun now,
+  and on the punt gun, whose name holds none of those words, so the biggest iron in the table fired from a galloping
+  horse at a pistol's −2 and cost nothing to swing at arm's length. A long gun is now a gun that prints Two-Handed,
+  less the bow, which is Ch. X's own rule ("A bow, made for the saddle, takes only the –2"). Every other weapon comes
+  out as it did. Nine new smoke checks (16,659 assertions), one of them holding every rifle, carbine, shotgun and
+  repeater to the rule so a trait lost in transcription fails the build.
+
+  **A blank on the sheet is a dash again.** The v1.58.0 voice pass took the em dash out of the app's words and, in
+  fourteen places, out of its empty fields as well. A soul typed in off a paper sheet showed ":" for Gender, Origin,
+  each ability it had no score for, Defense, Speed, Init. and Attack, and in its empty features and gear boxes; the
+  Reference deck printed ":" for the price of Fists / Boots, a Sign or Miracle with no cost, a Tier I trace with no
+  Dread DC, and a fight with no promise. A colon reads as a label that lost its value. All fourteen are dashes again, as the books' stat blocks
+  print them.
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 

@@ -798,6 +798,24 @@ foreach (var (table, floor) in new[]
             T("point-blank: bracing lifts only the one bracing is for",
                 IronCode.Reckon(new IronCode.Shot { Distance = 5 }, buff, braced: true).Total == -2);
 
+            // A long gun is a gun that prints Two-Handed, less the bow (v1.61.0). It went by the name
+            // before, and the name missed the Wall / Punt Gun.
+            var punt = CharGen.D.weapons.First(w => w.name == "Wall / Punt Gun");
+            var bow = CharGen.D.weapons.First(w => w.name == "Bow / Crossbow");
+            var coach = CharGen.D.weapons.First(w => w.name == "Coach Gun (sawed-off)");
+            T("long gun: every rifle, carbine, shotgun and repeater the table prints is one",
+                CharGen.D.weapons.Where(w => new[] { "Rifle", "Shotgun", "Carbine", "Repeater" }
+                        .Any(k => w.name.Contains(k))).All(IronCode.IsLongGun));
+            T("long gun: the punt gun needs both hands and is one too", IronCode.IsLongGun(punt));
+            T("long gun: the bow prints Two-Handed and is not one",
+                WeaponTraits.Parse(bow.traits).TwoHanded && !IronCode.IsLongGun(bow));
+            T("long gun: the sawed-off prints no Two-Handed and is not one", !IronCode.IsLongGun(coach));
+            T("long gun: no pistol is one",
+                !CharGen.D.weapons.Where(w => w.name.Contains("Revolver") || w.name.Contains("Pistol")
+                                           || w.name == "Derringer").Any(IronCode.IsLongGun));
+            T("point-blank: the punt gun is unwieldy at arm's length and inside its Volley",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, punt).Total == -4);
+
             // The flat rows.
             T("cover: light is −2", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Light }, sar).Total == -2);
             T("cover: heavy is −4", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Heavy }, sar).Total == -4);
@@ -932,6 +950,17 @@ foreach (var (table, floor) in new[]
             T("saddle: a long gun at a gallop takes −4 in all",
                 IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
                     CharGen.D.weapons.First(w => w.name == "Lever-Action Repeater")).Total == -4);
+            // Ch. X's Two-Handed: "from a moving horse the mounted –2 doubles to –4 … A bow, made for
+            // the saddle, takes only the –2".
+            T("saddle: so does the punt gun, which needs both hands",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Wall / Punt Gun")).Total == -4);
+            T("saddle: the bow row takes only the bow's −2",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Bow / Crossbow")).Total == -2);
+            T("saddle: and the sawed-off, which prints no Two-Handed, takes the platform's −2 alone",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Coach Gun (sawed-off)")).Total == -2);
             T("saddle: at a walk the horseman's pistol is free",
                 IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Walking }, sixgun).Total == 0);
             T("saddle: you cannot aim from a moving horse", !IronCode.CanAim(IronCode.Gait.Trotting));
