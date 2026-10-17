@@ -1322,19 +1322,6 @@ public partial class MainForm : Sheet
         return found;
     }
 
-    /// <summary>Drive the tabs into states a Keeper actually reaches, and ask again what they
-    /// cannot show.
-    ///
-    /// <para>This is the half that finds anything, and the reason is worth writing down. The walk
-    /// above sees every tab EMPTY, and the bug that motivated the whole check lived in a state an
-    /// empty tab never reaches: the Encounter verdict is one line with nothing on the plan, and one
-    /// line fits. Put the worst thing in the book on it at 5th level and it becomes three, two of
-    /// which rendered nothing at all from v1.51.0. Sabotaged on 2026-08-31 to be sure: with the
-    /// fix taken back out, the realize-only walk still reported nothing wrong.</para>
-    ///
-    /// <para>Every state is put back afterward. The self-test runs against a real
-    /// <see cref="AppState.Dir"/>, and a check that leaves somebody's table rearranged is a check
-    /// they run once.</para></summary>
     /// <summary>That the Tracker's two unbound columns actually carry the soul's numbers, and
     /// carry nothing on a row that has no soul.
     ///
@@ -1389,6 +1376,72 @@ public partial class MainForm : Sheet
         }
     }
 
+    /// <summary>That a heal from the Posse tab stands a laid-out soul up properly, and that no heal
+    /// or rest stands up the dead (v1.61.0, A09 and A10).
+    ///
+    /// <para>Both faults lived in the doors between the two tabs, which is why this drives the doors
+    /// rather than <see cref="Combatant.Rise"/>: Blood set on the soul, so the list's own change
+    /// event carries it through <see cref="MirrorToTracker"/>, and a week of peace through
+    /// <see cref="RestOne"/>, the road the posse's Rest and New session both take. Nothing here
+    /// goes near <c>AdjustPC</c>, whose refusal is a dialog and would hold the self-test open.</para></summary>
+    internal string DeathOutlastsTheHeal()
+    {
+        var page = allTabs.FirstOrDefault(t => t.Text == "Tracker");
+        if (page == null) return "there is no Tracker tab";
+        RealizeTab(page);
+        var gone = SeatSoul(CharGen.Generate(3, false, "Gunhand"));
+        var dazed = SeatSoul(CharGen.Generate(3, false, "Gunhand"));
+        if (gone == null || dazed == null) return "no soul could be seated";
+        int wasField = tracker.Count;
+        try
+        {
+            AddSoulToTracker(gone, quiet: true);
+            AddSoulToTracker(dazed, quiet: true);
+            var corpse = tracker.FirstOrDefault(t => t.IsSoul(gone));
+            var laidOut = tracker.FirstOrDefault(t => t.IsSoul(dazed));
+            if (corpse == null || laidOut == null) return "a seated soul reached no tracker row";
+            if (corpse.DeathAt <= 0) return "a soul came onto the field with no −CON to die at";
+
+            // Killed outright on the field, and the Posse tab told so.
+            corpse.Wound(-(corpse.BloodCur + corpse.DeathAt + 1));
+            gone.BloodCur = 0;
+            if (!corpse.Dead) return "a blow past −CON left the row alive";
+            RestOne(gone, RestKind.Week);
+            if (!corpse.Dead || gone.BloodCur != 0)
+                return $"a week of peace stood up the dead (row {(corpse.Dead ? "dead" : "alive")}, soul on {gone.BloodCur} Blood)";
+            gone.BloodCur = 5;
+            if (!corpse.Dead) return "Blood typed on the Posse tab walked a death back";
+
+            // Laid out by a pulled blow, then healed from the Posse tab.
+            laidOut.Wound(-(laidOut.BloodCur + 3), nonlethal: true);
+            dazed.BloodCur = 0;
+            if (!laidOut.Senseless) return "a pulled blow to zero did not lay the row out";
+            dazed.BloodCur = 6;
+            if (laidOut.Senseless || laidOut.Stable || laidOut.Down)
+                return "a soul healed on the Posse tab is still lying senseless on the Tracker";
+            return null;
+        }
+        finally
+        {
+            while (tracker.Count > wasField) tracker.RemoveAt(tracker.Count - 1);
+            party.Remove(gone);
+            party.Remove(dazed);
+        }
+    }
+
+    /// <summary>Drive the tabs into states a Keeper actually reaches, and ask again what they
+    /// cannot show.
+    ///
+    /// <para>This is the half that finds anything, and the reason is worth writing down. The walk
+    /// above sees every tab EMPTY, and the bug that motivated the whole check lived in a state an
+    /// empty tab never reaches: the Encounter verdict is one line with nothing on the plan, and one
+    /// line fits. Put the worst thing in the book on it at 5th level and it becomes three, two of
+    /// which rendered nothing at all from v1.51.0. Sabotaged on 2026-08-31 to be sure: with the
+    /// fix taken back out, the realize-only walk still reported nothing wrong.</para>
+    ///
+    /// <para>Every state is put back afterward. The self-test runs against a real
+    /// <see cref="AppState.Dir"/>, and a check that leaves somebody's table rearranged is a check
+    /// they run once.</para></summary>
     internal List<string> AuditDrivenClipping()
     {
         var found = new List<string>();
@@ -2689,6 +2742,7 @@ public partial class MainForm : Sheet
     {
         var p = SelectedPC();
         if (p == null) { Nope(NoSoulPicked); return; }
+        if (sign > 0 && DiedOnTheField(p)) { Nope(DeadIsDead(p.Name)); return; }
         int v = (int)adjAmount.Value;
         p.BloodCur = Math.Clamp(p.BloodCur + sign * v, 0, p.BloodMax);
         Log($"{p.Name} {(sign < 0 ? "takes" : "recovers")} {v} Blood → {p.BloodCur}/{p.BloodMax}" + (p.BloodCur == 0 ? ", DOWN." : ""));
@@ -2756,6 +2810,7 @@ public partial class MainForm : Sheet
     void RestSoul(PartyMember p, RestKind kind)
     {
         if (p == null) { Nope(NoSoulPicked); return; }
+        if (DiedOnTheField(p)) { Nope(DeadIsDead(p.Name)); return; }
         RestOne(p, kind);
         posseGrid?.Refresh();
         RefreshCalling();
@@ -2765,9 +2820,12 @@ public partial class MainForm : Sheet
     /// the field and in the log. A safe night asks a dice-and-books table for its 1d6 of Nerve
     /// once a soul, because every soul rolls their own. A night or a week that lifts the bottle's
     /// Drained takes it off the soul's Tracker row as well, where it has shown since the failed
-    /// save.</summary>
+    /// save. A soul whose row on the field is dead is passed over and named: a rest is for the
+    /// living, as Restore on the Tracker already held, and the posse's rest and New session's week
+    /// of peace both come through here.</summary>
     void RestOne(PartyMember p, RestKind kind)
     {
+        if (DiedOnTheField(p)) { Log($"{p.Name} is dead, and the rest passes them by."); return; }
         int? die = kind == RestKind.Night
             ? AskDie($"The 1d{Rest.NightNerveDie} Nerve for {p.Name}'s safe night, what did it come up?", Rest.NightNerveDie)
             : null;
@@ -3042,7 +3100,9 @@ public partial class MainForm : Sheet
             // whenever the row was down would quietly un-stabilise a soul because somebody typed in
             // their Notes field.
             if (c.BloodCur < wasBlood && c.Down) c.Stable = false;
-            if (c.BloodCur > 0) { c.Bleed = 0; c.Stable = false; c.Upright = false; }
+            // Through the body's own Rise, which is what Wound does: Senseless goes with the rest,
+            // and a dead row stays dead whatever Blood the Posse tab now says it carries.
+            c.Rise();
             trkGrid?.Refresh();
             CheckFalling(c, wasDown, wasDead, Math.Max(0, wasBlood - c.BloodCur));
         }

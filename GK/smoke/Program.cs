@@ -2048,6 +2048,30 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("dying: healing above zero ends the dying", !mended.Dying && !mended.Down && mended.Bleed == 0);
     T("dying: and they can act again",          Rules.CanAct(mended));
 
+    // -- Rise: the one way onto a row's feet, for Wound and for the Posse tab's mirror (v1.61.0) --
+    // The mirror restates Blood straight onto the row and then asks Rise to finish the job. It
+    // cleared three of Wound's four and skipped the Dead test, so these are written the mirror's way:
+    // a number set, then Rise.
+    var laidOut = Soul(10, 12);
+    laidOut.Wound(-15, nonlethal: true);
+    laidOut.BloodCur = 6; laidOut.Rise();
+    // (Senseless is all the Strike line reads to say "SENSELESS: laid out, not killed", so the flag
+    // is the symptom. No Strike here: its damage dice come off the reseeded shared Rng and would
+    // move every roll after this block.)
+    T("rise: a soul laid out and healed is no longer Senseless", !laidOut.Senseless && !laidOut.Stable && !laidOut.Down);
+    var corpse = Soul(4, 12);
+    corpse.Wound(-40);
+    corpse.BloodCur = 12; corpse.Rise();
+    T("rise: Blood restated over the dead leaves them dead", corpse.Dead && corpse.Bleed >= 12);
+    var corpse2 = Soul(4, 12);
+    corpse2.Wound(-40);
+    corpse2.Wound(12);
+    T("rise: and so does a heal through Wound", corpse2.Dead && corpse2.DyingLine == "dead");
+    var stillOnGround = Soul(8, 12);
+    stillOnGround.Wound(-8); Rules.BleedOut(new[] { stillOnGround });
+    stillOnGround.Rise();
+    T("rise: a soul still at zero stays on the ground, count and all", stillOnGround.Dying && stillOnGround.Bleed == 1);
+
     // -- Grit: refuse to fall (Ch. II) --
     var brave = Soul(6, 12);
     var soul = new PartyMember { Name = "Ruth", Grit = 1 };

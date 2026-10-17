@@ -73,6 +73,18 @@ Desktop\Git repos.)
   Dread DC, and a fight with no promise. A colon reads as a label that lost its value. All fourteen are dashes again, as the books' stat blocks
   print them.
 
+  **The dead stay dead, and a heal wakes the senseless.** Blood typed on the Posse tab, or handed back there by a
+  rest, reaches the Tracker through a mirror that restates the number. The mirror cleared the bleeding count on any
+  row above zero and never asked whether the row was dead, so a week of peace at New session put a soul killed
+  outright back on the field at full Blood, and the log said nothing about it. It also forgot the senselessness: a
+  soul laid out by a pulled blow and healed on the Posse tab got up still Senseless, and the next blow against them
+  read "SENSELESS: laid out, not killed" over somebody standing. Every door onto a row's feet (a heal, the mirror, a
+  number typed into the Tracker's Blood cell) now goes through one `Combatant.Rise`, which does nothing for the
+  dead. Heal on either tab, Restore, and a single soul's rest refuse a corpse by name; the posse's Rest and New
+  session's week pass them over in the log. The row's "They were not dead after all" is the way back, and it now
+  lands the soul on 1 Blood whatever was typed over the body. Four new smoke checks (16,663 assertions), and a
+  self-test probe that walks both doors from the Posse tab (46 checks).
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 

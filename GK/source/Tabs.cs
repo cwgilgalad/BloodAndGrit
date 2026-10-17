@@ -1502,6 +1502,10 @@ public partial class MainForm
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
             var c = tracker[e.RowIndex];
             if (c.BloodMax > 0 && c.BloodCur > c.BloodMax) c.BloodCur = c.BloodMax;
+            // A number typed over a body on the ground puts it back on its feet, as a heal would. A
+            // soul's row gets this again from the mirror; a hand-entered PC row has no soul behind
+            // it and got it from nowhere, so its count and its senselessness outlived the Blood.
+            c.Rise();
             // SoulOf, not a match on Name. The mirror is keyed to the soul's stable id precisely so
             // it survives a rename (see SoulOf); this site still matched by name, so typing Blood
             // straight into the grid quietly stopped reaching a renamed soul while the Damage button
@@ -2926,6 +2930,9 @@ public partial class MainForm
     void AdjustCombatant(int sign)
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        // Heal answers the dead the way Restore does, out loud. Wound would put the Blood on and leave
+        // the row dead, and the log would say "recovers" over a corpse.
+        if (sign > 0 && c.Dead) { Nope(DeadIsDead(c.Name)); return; }
         int v = (int)trkAmount.Value;
         int was = c.BloodCur;
         bool wasDown = c.Down, wasDead = c.Dead;
@@ -2937,6 +2944,19 @@ public partial class MainForm
         CheckFalling(c, wasDown, wasDead, Math.Max(0, was - c.BloodCur));
     }
 
+    /// <summary>What every heal says to the dead: Heal and Restore on the Tracker, and Heal and the
+    /// rests on the Posse tab, which see the death through the soul's row. One wording, because the
+    /// rule is one rule wherever the Keeper's hand happens to be.</summary>
+    static string DeadIsDead(string name)
+        => $"{name} is dead, out here dead is dead, and Blood is not what is wrong.\n\n"
+         + "If the table has decided otherwise, right-click their row on the Tracker: \"They were "
+         + "not dead after all\". That is the Keeper's call to make on purpose, not a side effect "
+         + "of a heal.";
+
+    /// <summary>Whether this soul's row on the field is a dead one. The Posse tab holds no death of
+    /// its own (a soul there is a number of Blood), so it asks the Tracker, where the count ran.</summary>
+    bool DiedOnTheField(PartyMember p) => tracker.FirstOrDefault(t => t.IsSoul(p))?.Dead == true;
+
     /// <summary>Put the selected combatant back to full Blood. The ad-hoc heal a Keeper wants
     /// between scenes without arithmetic, and Blood only: until v1.60.0 a posse soul got Nerve and
     /// the pool back with it, which made this a rest the book never printed. Nerve and the pools
@@ -2946,14 +2966,7 @@ public partial class MainForm
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         // Blood does not answer this one. Wound refuses to un-kill (see Combatant.Wound), so without
         // this the button would fill the bar, leave the row dead, and give a Keeper no idea why.
-        if (c.Dead)
-        {
-            Nope($"{c.Name} is dead, out here dead is dead, and Blood is not what is wrong.\n\n"
-               + "If the table has decided otherwise, right-click the row: \"They were not dead "
-               + "after all\". That is the Keeper's call to make on purpose, not a side effect of "
-               + "a heal.");
-            return;
-        }
+        if (c.Dead) { Nope(DeadIsDead(c.Name)); return; }
         var soul = SoulOf(c);
         // The Returned get no Blood from any rest (Ch. XII), and a Keeper's "to full" is a rest by
         // another name. Refused out loud rather than done, so the table hears the rule.
@@ -3835,7 +3848,9 @@ public partial class MainForm
                    + "being back on the ground.\n\n"
                    + "The book has no rule for this. It is the table's call."))
             return;
-        c.Bleed = 0; c.Stable = false; c.Upright = false;
+        // From zero, so "at 1 Blood" is what happens: a corpse can carry Blood typed over it, and
+        // Wound would have added the 1 to that.
+        c.Bleed = 0; c.Stable = false; c.Upright = false; c.BloodCur = 0;
         c.Wound(1, "back");
         if (SoulOf(c) is PartyMember p) p.BloodCur = c.BloodCur;
         posseGrid?.Refresh(); RefreshTracker();

@@ -349,6 +349,14 @@ Four decisions already settled:
 `ResetForNewFight` clears **none** of it except `Upright`: dying is Blood, and Blood
 carries between fights. `FightResidue` matches, so New fight cannot say "nothing to clear" over it.
 
+**`Combatant.Rise` is the one way onto a row's feet (v1.61.0).** `Wound`, the Posse-to-Tracker
+mirror and a Blood typed into the Tracker's cell all call it, and it does nothing at zero or for the
+dead. The mirror used to clear the count by hand, skipped `Senseless`, and never asked about death,
+so a week of peace stood a corpse up at full Blood. Every heal and rest refuses the dead out loud
+(`DeadIsDead`; the Posse tab asks the Tracker through `DiedOnTheField`, since a soul there is only a
+number). `Resurrect` is the only door back. `--selftest`'s `DeathOutlastsTheHeal` drives both
+Posse-tab doors; a new route that restates Blood goes through `Rise`, or it reopens this.
+
 ## The row grounds are separated by CAST, not by brightness (v1.38.0)
 
 Seven grounds now say what a tracker row is, and the rule that keeps them apart is that **no two

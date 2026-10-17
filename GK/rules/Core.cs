@@ -639,9 +639,7 @@ public class Combatant : INotifyPropertyChanged
         if (_deathAt > 0 && !wasDead)
         {
             if (raw < 0) Bleed = _bleed - raw;             // raw is negative; its magnitude is the overkill
-            // Back on their feet: the bleeding, the standing-on-Grit and the senselessness all end
-            // together, because all three are answers to having been at zero.
-            else if (_bloodCur > 0) { Bleed = 0; Stable = false; Upright = false; Senseless = false; }
+            else Rise();
         }
 
         int moved = _bloodCur - was;
@@ -652,6 +650,24 @@ public class Combatant : INotifyPropertyChanged
                           : Dying && overkill > 0 && was <= 0 ? $"−{overkill}, bleeding"
                           : Down ? $"−{Math.Abs(moved) + overkill}, DOWN"
                           : (moved > 0 ? "+" : "−") + Math.Abs(moved));
+    }
+
+    /// <summary>Back on their feet: the bleeding, the standing-on-Grit and the senselessness all end
+    /// together, because all three are answers to having been at zero. Nothing for anybody still at
+    /// zero, and nothing for the dead, whom no heal brings back: <see cref="Wound"/> will put Blood
+    /// on a corpse and leave it a corpse, and the row's "They were not dead after all" is the one
+    /// door out.
+    ///
+    /// <para>Its own method because there are two ways onto a row's feet and they disagreed. Wound
+    /// cleared all four; the Posse-to-Tracker mirror, which restates Blood typed or rested on the
+    /// Posse tab, cleared three and skipped the Dead test (v1.61.0, A09 and A10). A soul laid out
+    /// by a pulled blow and healed on the Posse tab stayed Senseless, so their next hit read
+    /// "SENSELESS: laid out, not killed" over a standing body; and a week of peace at New session
+    /// zeroed a dead soul's Bleed and brought them back at full Blood without a word.</para></summary>
+    public void Rise()
+    {
+        if (_bloodCur <= 0 || Dead) return;
+        Bleed = 0; Stable = false; Upright = false; Senseless = false;
     }
 
     /// <summary>Forget what last happened here: a new round is a clean page.</summary>
