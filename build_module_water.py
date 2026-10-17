@@ -29,7 +29,7 @@ assert _NAVE["cleared"] * _ACT1["reached"] < _ACT1["cleared"] * _NAVE["reached"]
 assert _NAVE["rounds"] < _ACT1["rounds"], "PLAYTEST.md has the nave running longer than Act One; reread What the Night Costs"
 from module_maps import map_html
 
-VERSION = "1.12"
+VERSION = "1.13"
 SLUG = "what-the-water-answers"
 
 H = shell(

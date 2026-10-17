@@ -28,7 +28,7 @@ assert _NIGHT["tended_finished"] == 0, "PLAYTEST.md has a tended posse finishing
 assert 2 * _ACT2["cleared"] < _ACT2["reached"], "PLAYTEST.md has the posse winning the Pell place; reread On the Act Two fight"
 from module_maps import map_html
 
-VERSION = "1.11"
+VERSION = "1.12"
 SLUG = "salt-at-coffin-wells"
 
 H = shell(

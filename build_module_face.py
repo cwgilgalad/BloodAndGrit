@@ -38,7 +38,7 @@ def _posses(n):
 
 from module_maps import map_html
 
-VERSION = "1.12"
+VERSION = "1.13"
 SLUG = "a-face-not-his-own"
 
 H = shell(

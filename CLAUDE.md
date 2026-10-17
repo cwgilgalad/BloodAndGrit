@@ -123,11 +123,11 @@ Three companion books share one HTML engine (cover + client-side paginator + pri
 | The Player's Book | v2.57 | 290 | one inline SVG map (Appendix E) + cover emblem |
 | The Keeper's Book (GM guide) | v2.42 | 153 | one inline SVG map (Ch. XIII) + cover emblem |
 | The Bestiary | v2.28 | 226 | none (182 creatures) |
-| The Book of Legends | v1.11 | 227‡ | none (406 documents) |
+| The Book of Legends | v1.12 | 227‡ | none (406 documents) |
 | The Legends Companion | v1.2 | 377‡ | none (a story behind every section of the Book of Legends, and its turn) |
-| Module I: The Salt at Coffin Wells | v1.11 | 36 | one inline SVG map, downloadable |
-| Module II: A Face Not His Own | v1.12 | 38 | one inline SVG map, downloadable |
-| Module III: What the Water Answers | v1.12 | 39 | one inline SVG map (two panels), downloadable |
+| Module I: The Salt at Coffin Wells | v1.12 | 36 | one inline SVG map, downloadable |
+| Module II: A Face Not His Own | v1.13 | 38 | one inline SVG map, downloadable |
+| Module III: What the Water Answers | v1.13 | 39 | one inline SVG map (two panels), downloadable |
 
 All three now carry a **generated two-level detailed Contents** (chapters + their sub-headings,
 built at build time by `nav_tools.py` so it never drifts) and a **back-of-book Index** (the
@@ -629,7 +629,7 @@ it's *not* in the dict. Don't add it there or it'll double.)
 
 ---
 
-## The Book of Legends (v1.11) — structure & conventions
+## The Book of Legends (v1.12) — structure & conventions
 
 Chapters of in-world papers, a front-matter preface by the editor, and a back-of-book
 Index (`id="bookindex"`) of what each paper is about rather than who wrote it. No rules, no stat
