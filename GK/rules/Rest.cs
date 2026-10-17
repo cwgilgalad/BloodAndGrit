@@ -22,6 +22,17 @@ public static class Rest
     /// when it is lower.</summary>
     public static int NightsBlood(int level, int conMod) => Math.Max(1, level) * Math.Max(1, conMod);
 
+    /// <summary>What a safe night gives one soul in Blood: <see cref="NightsBlood"/>, and one more
+    /// per level for a Mountain Man who has come into Iron Constitution (Ch. V, since v1.60.0:
+    /// "a safe night gives you back one more Blood for each of your levels"). It read "you heal a
+    /// little faster" until then, which no rest could count.</summary>
+    public static int NightsBloodFor(PartyMember p)
+        => NightsBlood(p.Level, ConMod(p.Sheet))
+         + (CharGen.FeaturesAt(p.Calling, p.Level, p.Sheet?.Subpath).Any(f => f.Name == IronConstitution)
+            ? Math.Max(1, p.Level) : 0);
+
+    public const string IronConstitution = "Iron Constitution";
+
     /// <summary>The CON modifier off a soul's sheet. A hand-entered row has no sheet, and reads as
     /// the middle of the scale, which the minimum of 1 then governs: the same reading
     /// <see cref="Rules.DeathThresholdFor"/> gives a soul nobody has written a CON for.</summary>
@@ -158,7 +169,7 @@ public static class Rest
         if (kind == RestKind.Night)
         {
             p.NerveCur = Math.Min(p.NerveMax, p.NerveCur + (nerveDie ?? Rules.Rng.Next(1, NightNerveDie + 1)));
-            if (!returned) p.BloodCur = Math.Min(p.BloodMax, p.BloodCur + NightsBlood(p.Level, ConMod(p.Sheet)));
+            if (!returned) p.BloodCur = Math.Min(p.BloodMax, p.BloodCur + NightsBloodFor(p));
             p.DrainedByDrink = false;
         }
         else if (kind == RestKind.Week)

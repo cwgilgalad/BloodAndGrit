@@ -1428,8 +1428,9 @@ public static class Rules
     /// "Initiative: a Notice check", and the tracker rolled a bare d20 for everyone for eleven
     /// releases, so a Scout with Notice +9 took their place in the line exactly as often as the
     /// bandit beside them. The bonus comes from the roller's sheet where there is one
-    /// (<see cref="CharGen.InitiativeBonus"/>); a creature has no skill ranks in its stat block, so
-    /// it passes 0 and rolls the plain die rather than being handed a number the book never gave it.
+    /// (<see cref="CharGen.InitiativeBonus"/>); a creature has no skill ranks in its stat block and
+    /// brings its Will save instead (<see cref="CharGen.CreatureInitiativeBonus"/>), which the book
+    /// has printed since v1.60.0. The harness still passes 0 for everyone, so PLAYTEST.md holds.
     ///
     /// Floored at 1 on purpose: a low-Wits soul can carry a negative bonus, and 0 is the value the
     /// tracker uses to mean "has not rolled yet". A rolled 0 and an unrolled 0 must not look alike.

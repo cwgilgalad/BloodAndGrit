@@ -447,8 +447,8 @@ teaches a Keeper to stop trusting the counters that matter.
 reset rule is "everything at or below the boundary that just passed comes back". A scene returns
 the turn, round and scene features and leaves the once-a-session ones spent. **Trigger** is the odd
 one and the book has two: the Witch Hunter's Judgment returns "when you name a new quarry" and the
-Sawbones' Field Surgery is "once per wound". No clock returns those, so nothing but the Keeper's
-hand and a new session does either.
+Sawbones' Field Surgery is "once per patient after each fight" ("once per wound" until v1.60.0). No
+clock returns those, so nothing but the Keeper's hand and a new session does either.
 
 **What returns a feature is a boundary the app already had.** New fight is the scene; every one of the
 three rests is at least a dawn; New session is the session. Restore field gives back Blood and nothing

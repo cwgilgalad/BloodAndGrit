@@ -1301,8 +1301,19 @@ foreach (var (table, floor) in new[]
     var scout = CharGen.Generate(6, false, "Mountain Man");
     T("initiative: the bonus is exactly the sheet's Notice bonus",
         CharGen.InitiativeBonus(scout) == CharGen.SkillBonus(scout, "Notice"));
-    T("initiative: no sheet, no bonus, a creature rolls the plain die",
+    T("initiative: no sheet, no bonus, an ad-hoc NPC rolls the plain die",
         CharGen.InitiativeBonus(null) == 0);
+    // A creature rolls d20 + its Will save (Ch. XI, since v1.60.0), and every block in the
+    // Bestiary carries one, so none of them falls back to the plain die by accident.
+    T("initiative: a creature's bonus is its Will save",
+        Db.Creatures.All(b => CharGen.CreatureInitiativeBonus(b) == b.WillValue));
+    // Thirteen hazards and mindless things print "Will \u2014", and a dash rolls the bare d20.
+    T("initiative: every stat block prints a Will save or a dash",
+        Db.Creatures.All(b => System.Text.RegularExpressions.Regex.IsMatch(b.saves ?? "", @"Will\s*([+\-]\d+|\u2014)")));
+    T("initiative: a dash adds nothing",
+        Db.Creatures.Where(b => (b.saves ?? "").Contains("Will \u2014")).All(b => CharGen.CreatureInitiativeBonus(b) == 0)
+        && Db.Creatures.Any(b => (b.saves ?? "").Contains("Will \u2014")));
+    T("initiative: no stat block, no bonus", CharGen.CreatureInitiativeBonus(null) == 0);
 }
 
 // ---- the turn hourglass (v1.29.0) ----
@@ -4785,7 +4796,7 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var judgment = Lim("Witch Hunter", "Judgment");
     T("Judgment is a trigger, not a clock", judgment.Cadence == FeatureCadence.Trigger);
     T("Judgment says what returns it",      judgment.Says(null) == "once per quarry");
-    T("Field Surgery is per wound",         Lim("Sawbones", "Field Surgery").Says(null) == "once per wound");
+    T("Field Surgery is per patient",       Lim("Sawbones", "Field Surgery").Says(null) == "once per patient");
     T("a scene does not return a trigger",  FeatureCadence.Trigger > FeatureCadence.Scene);
     T("a new session does",                 FeatureCadence.Trigger < FeatureCadence.Session);
 
@@ -5149,6 +5160,15 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     var paper = new PartyMember { Name = "Paper", Level = 4, BloodMax = 30, BloodCur = 1, NerveMax = 9, NerveCur = 9 };
     Rest.Take(paper, RestKind.Night, nerveDie: 3);
     T("rest: a hand-typed row gets its level in Blood", paper.BloodCur == 5);
+
+    // Iron Constitution (Ch. V, since v1.60.0): a safe night gives one more Blood per level, from
+    // the 6th level that grants it, and not a level sooner.
+    var hillman = Worn(level: 6, con: 14); hillman.Calling = "Mountain Man"; hillman.BloodMax = 60;
+    Rest.Take(hillman, RestKind.Night, nerveDie: 1);
+    T("rest: Iron Constitution adds a Blood a level", hillman.BloodCur == 5 + 12 + 6);
+    var greenhorn = Worn(level: 5, con: 14); greenhorn.Calling = "Mountain Man";
+    Rest.Take(greenhorn, RestKind.Night, nerveDie: 1);
+    T("rest: and not before the level that grants it", greenhorn.BloodCur == 5 + 10);
 
     var nearly = Worn();
     nearly.BloodCur = 28; nearly.NerveCur = 11;

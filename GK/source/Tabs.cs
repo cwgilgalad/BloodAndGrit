@@ -1763,9 +1763,15 @@ public partial class MainForm
     /// <summary>The initiative a combatant walks in on. Zero while nobody has rolled (the tracker's
     /// own word for "not in the order yet"), but once the field HAS rolled, a new arrival rolls with
     /// it. Landing every mid-fight arrival at 0 put it at the bottom of an order everyone else had a
-    /// d20 for, so the thing that just kicked the door in went last, every single time.</summary>
-    internal int ArrivalInit(CharacterSheet sheet = null)
-        => tracker.Any(t => t.Init != 0) ? Rules.RollInitiative(CharGen.InitiativeBonus(sheet)) : 0;
+    /// d20 for, so the thing that just kicked the door in went last, every single time. A creature
+    /// off the Bestiary brings its Will save, as it does to <see cref="RollInitiative()"/>.</summary>
+    internal int ArrivalInit(CharacterSheet sheet = null, Creature beast = null)
+        => tracker.Any(t => t.Init != 0) ? Rules.RollInitiative(InitBonusOf(sheet, beast)) : 0;
+
+    /// <summary>A soul's Notice off their sheet, a creature's Will off its stat block, and nothing
+    /// for a hand-entered NPC that has neither.</summary>
+    static int InitBonusOf(CharacterSheet sheet, Creature beast)
+        => sheet != null ? CharGen.InitiativeBonus(sheet) : CharGen.CreatureInitiativeBonus(beast);
 
     /// <summary>Put an arrival on the field, in its place in the order rather than at the bottom of
     /// the grid. <see cref="ArrivalInit"/> has rolled it a real initiative whenever the field has
@@ -1792,12 +1798,14 @@ public partial class MainForm
         //
         // And it is a NOTICE check (Player's Book Ch. XI), which this rolled as a bare d20 for
         // eleven releases while the app's own Reference deck printed the rule two tabs away. A soul
-        // with a sheet now brings their Notice bonus; a creature or a hand-entered NPC has none in
-        // its stat block, so it keeps the plain die rather than being handed an invented number.
+        // with a sheet now brings their Notice bonus, and since v1.60.0 a creature brings its Will
+        // save (Ch. XI: "a creature with a stat block rolls d20 + its Will save"). A hand-entered NPC
+        // has neither, so it keeps the plain die rather than being handed an invented number.
         int scouted = 0;
         foreach (var c in tracker)
         {
-            int bonus = CharGen.InitiativeBonus(SoulOf(c)?.Sheet);
+            var beast = string.IsNullOrEmpty(c.Ref) ? null : Db.Find(c.Ref);
+            int bonus = InitBonusOf(SoulOf(c)?.Sheet, beast);
             if (bonus != 0) scouted++;
             c.Init = Rules.RollInitiative(bonus);
             c.Acting = false; c.HasActed = false;
@@ -1806,7 +1814,7 @@ public partial class MainForm
         UpdateTurnLine();
         Log(scouted == 0
             ? "Initiative rolled for the field."
-            : $"Initiative rolled for the field: a Notice check, with {scouted} soul(s) adding their own bonus.");
+            : $"Initiative rolled for the field: Notice for the posse, Will for the creatures, {scouted} adding a bonus.");
     }
 
     /// <summary>Put the round on the bar without the spinner treating it as the Keeper's own edit.
@@ -2906,7 +2914,7 @@ public partial class MainForm
             {
                 Name = bare ? c.name : $"{c.name} #{k}",
                 BloodCur = c.BloodValue, BloodMax = c.BloodValue,
-                Defense = c.DefenseValue, Ref = c.name, Init = ArrivalInit()
+                Defense = c.DefenseValue, Ref = c.name, Init = ArrivalInit(beast: c)
             });
         }
         Log(count == 1
@@ -5398,7 +5406,7 @@ public partial class MainForm
         // this leaf mid-fight was told the app knew what a Beat buys. Now the leaf and the Tracker's
         // Act ▾ menu are two views of one array, and the leaf cannot promise what the app will not do.
         RTbl(r, new[] { 16, 66 }, new[] { "Element", "The rule" },
-            new[] { "Initiative",   "A Notice check" },
+            new[] { "Initiative",   "A Notice check; a creature rolls d20 + its Will save (a dash, the bare d20)" },
             new[] { "The turn",     $"Three Beats, spent as you like, {Rules.BeatActions.Length} things to spend them on" },
             new[] { "A Beat",       string.Join(" · ", Rules.BeatActions.Select(a => a.Name)) },
             new[] { "A Strike",     "d20 + attack proficiency + DEX/STR against Defense" },
@@ -5407,7 +5415,7 @@ public partial class MainForm
             new[] { "A reaction",   "One between your turns. Dive for Cover is the common one" },
             new[] { "Circumstance", "Cover −2 / −4 · into melee −4 · beyond the first increment −2 each · blind −8" },
             new[] { "Aim / Brace",  "A Beat for +2 on the next Strike, and it braces a Kickback weapon" },
-            new[] { "From the saddle", "Trot or gallop: −2, no aiming; a long gun −4 in all. Charge 20 ft: +1 die" });
+            new[] { "From the saddle", "Trot or gallop: −2, no aiming; a long gun or a crossbow −4 in all, a bow the −2 alone. Charge 20 ft: +1 die" });
     }
 
     void RefLeafWounds(RichTextBox r)

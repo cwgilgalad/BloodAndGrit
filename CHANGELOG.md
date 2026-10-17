@@ -60,7 +60,7 @@ Desktop\Git repos.)
   statlines, which put the Engineer in Steady. The Coal-Oil Bomb and the doctor's bag read as the gear list prices
   them, and the glossary has the Pinkertons' Department of Justice contract. The Index gains Break free, Recoil and
   Surprise. `verify_rules.py` has three new checks (the rank table, the pregens' gear and what each blade costs) and
-  ran 2,295 cross-checks with no drift.
+  ran 2,298 cross-checks with no drift.
 
   **The Keeper's Book.** Both places the budget describes an easy foe say "a Tier or two below the posse's", cover is −2 light and −4 heavy as the Player's Book has it, and the Pell Barn example and the worked budget agree
   on 11 Nerve falling to 7. The prairie fire leaves a soul Blinded and Sickened while in the smoke and for a round
@@ -108,8 +108,39 @@ Desktop\Git repos.)
   Fatigued, the metallic cartridges (a saved sheet with the old box still adds up) and the 1-Blood floor, and the
   Reference tab's condition rows are copied from Appendix B.
 
-  Checks: build 0 warnings and 0 errors under `-warnaserror`, smoke 16,570 passed and 0 failed, `--selftest` 45/45,
-  `audit_ui.py` clear, `verify_rules.py` 2,295 cross-checks and `audit_consistency.py` 182,186, both with no drift,
+  **Twenty design calls (2026-10-17).** The readings left twenty questions that only a designer could answer, and Cole
+  answered all twenty with the recommendation offered. A creature rolls initiative as d20 + its Will save, and the
+  thirteen blocks that print a dash for Will roll the bare d20; Ch. XI, the Bestiary's *How to Read the Dead* and the
+  Keeper's Screen all print it, and the Bestiary now reads its speed words in feet, very slow at 10 up to very fast at
+  60. Demoralize is Intimidate against the foe's Will DC, 10 + its Will save. Surviving danger pays four times what it
+  did, 40 experience for a trivial brush up to 160 for an ordeal, and the story awards stand at 10 to 30. A bow from
+  the saddle takes the moving horse's −2 and stops there, and a crossbow counts as a carbine up there, at −4.
+
+  The Preacher's *Sermon* costs a Conviction and the turn, and a second one in the same scene brings the Nerve back
+  again and leaves the +1 at +1. The Hellfire Testament burns an uncanny listener for 1d6 until Brimstone comes, and
+  the Revival Testament heals each listener 1d6 Blood. The Sawbones' *Field Surgery* is once per patient after each
+  fight, the Field Medic pays two Beats for it mid-fight, the Anatomist adds +2 on Medicine to find what killed a
+  thing, and the Waking Draught lasts until a safe night. The Mountain Man's *Iron Constitution* gives one more Blood
+  a level from a safe night, the Bounty Hunter's Stalker adds 1d6 to a Bushwhack on a foe who has not yet acted, the
+  Gunhand's Fanning Hand Mastery takes the Multiple Attack Penalty off the fanned Strike, and the Long Rifle ignores
+  the first −2 for range and holds its Aim to the end of the next turn while the shooter stays put. The Deeper
+  Bargain's wound waits for the next safe night. Three Edges were rewritten: *Frontier Medicine* gives back 1d6 Blood
+  with the Medicine check that stops a friend's bleeding, *Hedge Magic* sets 2 Nerve apart for its one Sign and a
+  safe night fills it, and *Run It Down* holds the quarry in reach until it spends a Beat and beats the hunter's
+  Reflex DC with Acrobatics or Athletics; a failed break leaves it Off-Guard to the next Strike.
+
+  Module I's scene 10 gives the stake its procedure. Taking it up is an Interact, and driving it home is a Beat and
+  no roll while the thing feeds, from its bite landing to its next turn; once pinned it cannot rise, climb, heal or
+  hold anyone. The head is two Beats with a blade, an axe or the banker's shovel, the fire a Beat with lamp oil, and
+  the salt a Beat.
+
+  In the app, a creature's arrival and the whole field roll initiative on the creature's Will save, a safe night pays
+  out Iron Constitution, a Hedge Magic sheet shows its pool, and the Reference tab's Iron Code leaf carries the
+  creature's initiative and the bow from the saddle. The engine harness passes no initiative bonus and is unchanged,
+  so `PLAYTEST.md` still reproduces.
+
+  Checks: build 0 warnings and 0 errors under `-warnaserror`, smoke 16,576 passed and 0 failed, `--selftest` 45/45,
+  `audit_ui.py` clear, `verify_rules.py` 2,298 cross-checks and `audit_consistency.py` 182,363, both with no drift,
   and `audit_ai_tells.py --books --strict` clean. Pages in the laptop's Edge: 295 / 158 / 226, the Legends 220 and
   its Companion 368, the modules 36 / 38 / 39.
 

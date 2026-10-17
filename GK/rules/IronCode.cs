@@ -389,7 +389,9 @@ public static class IronCode
                 // The moving platform. Ranged and thrown alike; a pistol at a walk is free, which is
                 // the whole reason the horseman carries one.
                 Take(gun || thrown ? -2 : 0, "shooting from a moving horse");
-                // And a long gun is doubly awkward up there, the box's −4 in all.
+                // And a long gun is doubly awkward up there, the box's −4 in all. The arms table's
+                // "Bow / Crossbow" is one row and is not a long gun by name, so it takes the bow's −2
+                // alone (v1.60.0); a crossbow is a carbine up there and its second −2 is the Keeper's.
                 Take(gun && IsLongGun(w) ? -2 : 0, "a two-handed long gun from the saddle");
             }
             // Striking down at a footman. The saber is the horseman's blade and waives the mounted

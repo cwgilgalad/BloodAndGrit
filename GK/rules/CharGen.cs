@@ -299,7 +299,7 @@ public class CharacterSheet
 ///
 /// <para><b>Trigger</b> is the odd one, and it is here because the book has two of them: the
 /// Witch Hunter's Judgment comes back "when you name a new quarry" and the Sawbones' Field
-/// Surgery is "once per wound". No clock returns those, so nothing but the Keeper's hand and a
+/// Surgery is "once per patient after each fight". No clock returns those, so nothing but the Keeper's hand and a
 /// new session does either, which is exactly why it sits directly under Session.</para></summary>
 public enum FeatureCadence { None = 0, Turn = 1, Round = 2, Scene = 3, Dawn = 4, Trigger = 5, Session = 6 }
 
@@ -490,8 +490,18 @@ public static class CharGen
     /// Named rather than left as a bare <see cref="SkillBonus"/> call at the tracker, so the skill
     /// the rule keys to is written down once and the tracker cannot quietly start rolling a
     /// different one. A soul with no sheet (an ad-hoc NPC, a creature) has nothing to read and
-    /// adds nothing.</summary>
+    /// adds nothing here; a creature reads <see cref="CreatureInitiativeBonus"/> instead.</summary>
     public static int InitiativeBonus(CharacterSheet s) => SkillBonus(s, "Notice");
+
+    /// <summary>What a creature adds to initiative: its Will save, because the Player's Book says
+    /// "a creature with a stat block rolls d20 + its Will save" (Ch. XI, since v1.60.0). A stat
+    /// block prints no Notice, and Notice is the RES skill as Will is the RES save at the thing's
+    /// Tier, so the one number every block carries stands in for it. Until then the tracker rolled
+    /// creatures the plain die, and a ninth-level posse beat a Tier V horror to the draw nineteen
+    /// times in twenty. Named apart from <see cref="InitiativeBonus"/> rather than overloaded,
+    /// because <c>InitiativeBonus(null)</c> is the ad-hoc NPC's call and must stay unambiguous.
+    /// No block, no bonus.</summary>
+    public static int CreatureInitiativeBonus(Creature c) => c?.WillValue ?? 0;
 
     // ---- the Rank spine, shared by Signs (Ch. XIII) and Miracles (Ch. VI) ----
 
@@ -528,6 +538,10 @@ public static class CharGen
     public static List<CgMiracle> MiraclesFor(CgCalling cal, int level)
         => cal.miraclesKnownAt == null || cal.miracleLists == null ? new()
          : D.miracles.Where(x => cal.miracleLists.Contains(x.list) && x.rank <= RankAt(level)).ToList();
+
+    /// <summary>The Nerve Hedge Magic sets apart for its Sign (Player's Book Ch. IX and XIII). It
+    /// read "a small Nerve pool" until v1.60.0, which gave the app nothing to print.</summary>
+    public const int HedgeNervePool = 2;
 
     /// <summary>Every Sign a soul may actually learn at a level: their Calling's lists, gated by Rank.
     /// A Calling that works no Signs gets nothing, unless the soul took <em>Hedge Magic</em> (Ch. IX),
@@ -1688,7 +1702,11 @@ public static class CharGen
         if (cal.signsKnownAt != null)
             sb.AppendLine($"Sign DC {10 + s.Level / 2 + Mod(s.Scores["RES"])} (10 + half level + RES mod)");
         else if (s.SignsKnown.Count > 0)
+        {
             sb.AppendLine($"Sign DC {10 + Mod(s.Scores["RES"])} (Hedge Magic, no Signs feature, so no level added)");
+            // Ch. IX since v1.60.0: "a small Nerve pool" left every table to guess at its size.
+            sb.AppendLine($"Hedge Nerve {HedgeNervePool}, set apart for the Sign: spent before your own, filled again by a safe night");
+        }
         if (cal.miraclesKnownAt != null)
         {
             string fa = cal.pool.formula.Substring(0, 3);
@@ -1823,7 +1841,7 @@ public static class CharGen
         "round" => FeatureCadence.Round,
         // A fight IS a scene at this table, and the book uses both words for the same boundary.
         "scene" or "fight" or "encounter" => FeatureCadence.Scene,
-        // Once per quarry, once per wound: the fiction says when, so the Keeper does.
+        // Once per quarry, once per patient: the fiction says when, so the Keeper does.
         "quarry" or "wound" or "patient" or "target" => FeatureCadence.Trigger,
         // A day and a night both end at the dawn that refreshes every pool in this game.
         "day" or "night" or "dawn" => FeatureCadence.Dawn,

@@ -451,7 +451,7 @@
     {
       "name": "Frontier Medicine",
       "group": "Frontier",
-      "desc": "Your Field Surgery heals an extra 1d6; improvise a remedy from what the land offers.",
+      "desc": "Your Field Surgery heals an extra 1d6; the Medicine check that stops a friend's bleeding gives back 1d6 Blood; improvise a remedy from what the land offers.",
       "reqTrained": "Medicine"
     },
     {
@@ -472,7 +472,7 @@
     {
       "name": "Hedge Magic",
       "group": "Old Dark",
-      "desc": "Learn a single Sign and gain a small Nerve pool to fuel it, though you are not a Hexer.",
+      "desc": "Learn a single Sign and set apart a pool of 2 Nerve to fuel it, refilled by a safe night and spent before your own, though you are not a Hexer.",
       "notFaith": true,
       "effect": "sign+1"
     },
@@ -577,7 +577,7 @@
       "name": "Run It Down",
       "calling": "Bounty Hunter",
       "reqFeature": "Getaway",
-      "desc": "After a Bushwhack lands, immediately Step and Stride free; your quarry must spend an action to break away."
+      "desc": "After a Getaway, the quarry you Struck can't leave your reach without a Beat to break away (Acrobatics or Athletics vs your Reflex DC); if it fails, it is Off-Guard to your next Strike this scene."
     },
     {
       "name": "Devoted Unto Death",
@@ -2128,7 +2128,7 @@
         "options": [
           {
             "name": "The Stalker",
-            "boon": "You read a quarry's trail and habits and strike from where he never looks; your Bushwhack deals extra dice against a foe who has not yet acted. Mastery (10th): once per scene, a perfect ambush against an unready quarry is an automatic critical that may end the chase before it starts."
+            "boon": "You read a quarry's trail and habits and strike from where he never looks; your Bushwhack deals an extra 1d6 against a foe who has not yet acted. Mastery (10th): once per scene, a perfect ambush against an unready quarry is an automatic critical that may end the chase before it starts."
           },
           {
             "name": "The Posse Boss",
@@ -3157,7 +3157,7 @@
         "options": [
           {
             "name": "The Fanning Hand",
-            "boon": "With a single-action revolver you may fan a second Strike each round at the Multiple Attack Penalty without spending an extra Beat. Mastery (10th): once each round, dropping a foe lets you immediately Strike another in range at no penalty."
+            "boon": "With a single-action revolver you may fan a second Strike each round at the Multiple Attack Penalty without spending an extra Beat. Mastery (10th): your fanned Strike takes no Multiple Attack Penalty."
           },
           {
             "name": "The Fast Draw",
@@ -3165,7 +3165,7 @@
           },
           {
             "name": "The Long Rifle",
-            "boon": "Ignore the first –2 for range, and Aim as a single Beat. Mastery (10th): a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted."
+            "boon": "Ignore the first –2 for range, and your Aim holds while you don't move, to the end of your next turn. Mastery (10th): a braced, aimed shot ignores cover and concealment and is an automatic critical against a foe who has not yet acted."
           }
         ]
       },
@@ -3659,7 +3659,7 @@
         "Hard Country": "The wilderness is your parlor. You're never lost in wild country, you ignore natural difficult terrain (scree, deadfall, brush, snow) and a day's hunting or foraging feeds you and up to four others. Cold, altitude, thirst, and hunger that would break other men, you simply endure.",
         "Read Sign": "Gain +2 to Survival and Notice to track and to read what passed: how many, how long ago, and whether it walked on two legs or something else. You leave little trail of your own: the DC to track you rises by 2, and you know when you are being followed.",
         "Skinner": "Spend a Beat to study a beast or an unnatural thing (Survival or Lore: Occult) and learn one weakness or trait the Keeper will honor. Against animals and the wild things of the dark you deal +1 damage, and you may harvest a kill (hide, fat, claw, tooth, gland) for coin, for trade, or for the makings of a remedy or a ward.",
-        "Iron Constitution": "The mountains have been trying to kill you for years and have not managed it. Gain +2 against cold, heat, thirst, hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal a little faster than you have any right to.",
+        "Iron Constitution": "The mountains have been trying to kill you for years and have not managed it. Gain +2 against cold, heat, thirst, hunger, poison, and disease, and once per scene you may reroll a failed Fortitude save. You heal faster than you have any right to: a safe night gives you back one more Blood for each of your levels.",
         "Mountain Sense": "You cannot be caught flat in the wild. You are never surprised out of doors, you act first in the opening round of any ambush you spring or spot, and predators give you a wide berth; they know a bigger one when they smell it.",
         "Unbroken": "You have seen what the high country hides in the deep snow, and naming it did not break you. Gain +2 on Dread Checks in the wilderness, and you may spend a Beat to steady a companion who can see you, lending them your nerve to face what is coming down out of the hills.",
         "King of the High Country": "At 10th level the wilderness is yours, and everything in it knows your step. Your Dead Aim rises to 3d6; while out of doors you gain a standing +1 to Defense and to all saves; and once per scene a single steadied rifle shot is an automatic critical against a living or unnatural quarry you have studied with Skinner. The mountain does not give up its king easily, and neither, in the end, do you.",
@@ -4180,12 +4180,12 @@
         }
       ],
       "featureDescs": {
-        "Field Surgery": "With a kit and a few minutes, you restore 1d8 + your level in Blood to a patient, once per wound. Without a kit you may still stop bleeding and stabilize the dying on a Medicine check.",
-        "Anatomist / Precise Strike": "You know exactly where things come apart. Against any living foe whose anatomy you understand, you may add the listed extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade. The extra damage starts at 4th level, when your table first lists Precise Strike.",
+        "Field Surgery": "With a kit and a few minutes, you restore 1d8 + your level in Blood to a patient, once per patient after each fight. Without a kit you may still stop bleeding and stabilize the dying on a Medicine check.",
+        "Anatomist / Precise Strike": "You know exactly where things come apart, and you gain +2 on Medicine to find what killed a thing. Against any living foe whose anatomy you understand, you may add the listed extra damage with a precise attack: a scalpel, a derringer pressed to the ribs, a well-placed blade. The extra damage starts at 4th level, when your table first lists Precise Strike.",
         "Tonics": "You brew and carry remedies: stimulants, sedatives, laudanum, antitoxins. Each dawn you may prepare a number of doses equal to your WIT modifier + half your level. Their use, and abuse, is detailed in Chapter X.",
         "Alienist": "You can doctor the mind as well as the body. By talking a sufferer through their terror for ten quiet minutes, you restore Nerve equal to 1d6 + your WIT modifier, reason held up like a lamp against the dark. It does not work twice on the same fright.",
         "Miracle Worker": "At 10th level your hands have become something the country whispers about. Once per session you may attempt the impossible at the operating table: a Beyond (DC 30) Medicine check, taken over an hour of desperate work, can pull a character back from death itself so long as the body is whole and no more than a minute has passed, or can lift a single Lasting Injury or bodily Affliction entirely. Whether the patient is grateful for what you have done is between them and their god.",
-        "The Waking Draught": "You have mixed something that argues with unconsciousness. Once per scene, a dose brings a dying or senseless patient to their feet with 1d8 + your level in Blood and a clear head for ten minutes, whatever put them down. When the ten minutes are up they drop where they stand and cannot be raised this way again until they have slept. Used on the Marked or the uncanny it does nothing at all, and they will know you tried.",
+        "The Waking Draught": "You have mixed something that argues with unconsciousness. Once per scene, a dose brings a dying or senseless patient to their feet with 1d8 + your level in Blood and a clear head for ten minutes, whatever put them down. When the ten minutes are up they drop where they stand and cannot be raised this way again until they have had a safe night. Used on the Marked or the uncanny it does nothing at all, and they will know you tried.",
         "Read the Body": "A living thing in front of you is a document you can read. Spend a Beat studying any creature: learn its remaining Blood, its lowest save, whether it is diseased, poisoned, possessed, expectant, healing or already dead, and the single most fragile thing about it. Your Precise Strike against that creature ignores any damage reduction for the rest of the scene.",
         "The Hour After": "Once per session, given a body no more than an hour dead and whole enough to work on, you bring it back. Not a Beyond check and not a prayer: an hour of surgery, both hands, everything you have, and at the end of it the patient breathes. They return at 1 Blood with a Lasting Injury of the Keeper's choosing and no memory of the interval, and they are not quite the same about the dark afterward. You may not do this twice for the same soul, and the second time you do it for anybody at all in a season, something notices that a doctor out here is undoing its work."
       },
@@ -4199,7 +4199,7 @@
           },
           {
             "name": "The Field Medic",
-            "boon": "Use Field Surgery in the thick of a fight, and reach the downed faster. Mastery (10th): once per scene, a barked field-treatment heals every ally who can hear you."
+            "boon": "Use Field Surgery in the thick of a fight, at a cost of two Beats, and reach the downed faster. Mastery (10th): once per scene, a barked field-treatment heals every ally who can hear you."
           },
           {
             "name": "The Surgeon",
@@ -4711,7 +4711,7 @@
       ],
       "featureDescs": {
         "Conviction": "You have a pool of Conviction equal to your PRE modifier + half your level (minimum 1), refreshed each dawn. Conviction fuels your sermons and miracles. It is faith made countable, and it runs dry exactly when you need it most.",
-        "Sermon": "Spend 1 Conviction and speak for a round. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on Will saves until the scene ends. The unfaithful may mock; they steady all the same.",
+        "Sermon": "Spend 1 Conviction and your turn preaching. Allies who hear you regain Nerve equal to your PRE modifier and gain +1 on Will saves until the scene ends; preach again in the same scene and the Nerve comes back, but the +1 stays a +1. The unfaithful may mock; they steady all the same.",
         "Ward": "Spend 1 Conviction to inscribe or invoke a ward against the uncanny. Marked and unnatural things must make a Will save to cross it or strike those within. A ward holds until dawn or until you fall.",
         "Brimstone": "Your invective becomes a smiting. As an attack, point and condemn a single creature within sight; spend 1 Conviction to deal the listed holy damage (doubled against the Marked and the uncanny), Will save for half. It is loud, and it draws notice.",
         "Lay On Hands": "By touch and prayer, spend Conviction to heal 1d8 Blood per point spent, or to halt bleeding and stabilize the dying. The same gift, turned on the unnatural, deals that much instead.",
@@ -4726,11 +4726,11 @@
         "options": [
           {
             "name": "The Hellfire Testament",
-            "boon": "Your Brimstone strikes an additional foe within reach of the first. Mastery (10th): once per scene, call down a pillar of fire upon the unclean."
+            "boon": "Until your Brimstone comes, an uncanny thing that hears your Sermon takes 1d6; after, your Brimstone strikes an additional foe within reach of the first. Mastery (10th): once per scene, call down a pillar of fire upon the unclean."
           },
           {
             "name": "The Revival Testament",
-            "boon": "Your sermons mend the faithful and steady their nerve. Mastery (10th): once per scene, a great revival heals and emboldens every ally who can hear you, and lifts the freshly fallen."
+            "boon": "Your sermons mend the faithful and steady their nerve: each ally who hears your Sermon also heals 1d6 Blood. Mastery (10th): once per scene, a great revival heals and emboldens every ally who can hear you, and lifts the freshly fallen."
           },
           {
             "name": "The Wrathful Testament",
@@ -6430,7 +6430,7 @@
         "Blood Price": "From 5th level you may pay for a Sign in Blood (Hit Points) when your Nerve runs short, at a rate of 2 Blood per point of Nerve. The Old Dark does not care which red ledger you draw from.",
         "Adept": "At 10th level, choose one Sign you know. You may work it without spending Nerve once per scene, though never without consequence.",
         "Working a Sign — the Short of It": "Declare the Sign and pay its Nerve (or Blood). If it forces a save, the target rolls against your Sign DC = 10 + half your level + your RES modifier. Backlash strikes on the listed trigger, most often a natural 1 on any roll the working requires, or a failed working. The deep truths a Sign reveals may also demand a Dread Check of their own. Knowing is never free; for a Hexer, it is merely cheaper at first.",
-        "The Deeper Bargain": "You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its Nerve cost as damage that cannot be healed until you have slept. A Hexer who has learned this generally learns it in one particular night, and remembers that night for good.",
+        "The Deeper Bargain": "You may borrow against yourself. Once per scene, work any Sign you know without spending Nerve by instead taking its Nerve cost as damage that cannot be healed until your next safe night. A Hexer who has learned this generally learns it in one particular night, and remembers that night for good.",
         "Adept (Second)": "Choose a second Sign you know. It too may be worked once per scene without spending Nerve. The consequence attached to it does not stop attaching.",
         "The Long Debt": "Once per session, work any Sign of any rank you have ever read, whether or not you know it, whether or not you have the Nerve, at any scale the fiction can hold: a Sign laid on a town, on a river, on a bloodline, on a night. It works, completely, the first time and without a roll. Then the debt comes due, and it does not come due to you: the Keeper takes something from the world you were standing in: a person, a place, a year of somebody's life who never asked. You will be told what it cost afterward, in detail, and you will do it again, because you always know exactly what it is worth and you are never the one paying."
       },

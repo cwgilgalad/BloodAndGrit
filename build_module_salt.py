@@ -527,9 +527,17 @@ ACT3 = '''
     "fight, and not one won it with guns; see "
     "<a href=\"#cost\">What the Night Costs</a> for the count. Don't soften the fight to make it "
     "winnable. Make the wall readable instead, and let the answer be a thing they do rather than a "
-    "roll they pass. Pin it: the stake is right there in the dirt. Take the head. Burn it. "
-    "Salt the grave. Every one of those is an action anyone can take, and none of them is an attack "
-    "roll against Defense " + creature("The Nightwalker")["defense"] + ".</p>", "Read this before you run it") + '''
+    "roll they pass. Every one of these is an action anyone can take, and none of them is an attack "
+    "roll against Defense " + creature("The Nightwalker")["defense"] + ".</p>"
+    "<ul>"
+    "<li><strong>Pin it.</strong> The stake is right there in the dirt, and taking it up is an Interact. "
+    "Driving it home is a Beat with no roll, and it can only be done while the thing feeds: from the moment "
+    "its bite lands until its next turn comes round. Somebody at the table pays for that opening. "
+    "Pinned, it cannot rise, climb, heal, or keep hold of whoever it had.</li>"
+    "<li><strong>Take the head.</strong> Two Beats with a blade, an axe, or the banker&rsquo;s shovel.</li>"
+    "<li><strong>Burn it.</strong> A Beat with the lamp oil and a light.</li>"
+    "<li><strong>Salt the grave.</strong> A Beat.</li>"
+    "</ul>", "Read this before you run it") + '''
 
   <h2 id="a3-dawn">11. The Sky Goes Gray</h2>
   <p>The escape valve, and it is always available. If the posse is pinned and dying, the east goes
