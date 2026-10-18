@@ -3901,29 +3901,45 @@ public partial class MainForm
         var modLbl = new Label { Left = Pad, Top = which.Bottom + 12, Width = 92, Text = "Modifier:" };
         var mod = new NumericUpDown { Left = Pad + 96, Top = which.Bottom + 9, Width = 70, Minimum = -20, Maximum = 40, Value = soul?.Fort ?? 0 };
         var modNote = new Label { Left = mod.Right + 10, Top = which.Bottom + 13, Width = CW - (mod.Right + 10 - Pad), Height = 18, ForeColor = Faint, Font = DialogItalic, AutoEllipsis = true };
+
+        // Frontier Medicine rides on the healer's Medicine check only, and puts no Blood in a Returned
+        // patient: Mending is the only healing they have.
+        bool returned = CharGen.IsReturned(soul?.Sheet);
+        var fm = new CheckBox { Left = Pad + 96, Top = mod.Bottom + 8, AutoSize = true,
+                                Text = $"Frontier Medicine: 1d{Rules.FrontierMedicineDie} Blood back if it holds" };
+        Tip.SetToolTip(fm, returned
+            ? $"{c.Name} is Returned and heals only by Mending, so the Edge puts no Blood back."
+            : $"Ch. IX: the Medicine check that stops a friend's bleeding gives back 1d{Rules.FrontierMedicineDie} "
+            + "Blood as well. Tick it when the healer carries the Edge. A soul's own Fortitude doesn't get it.");
         void SyncWhich()
         {
             bool own = which.SelectedIndex == 0;
             if (own && soul != null) mod.Value = Math.Clamp(soul.Fort, mod.Minimum, mod.Maximum);
             modNote.Text = own ? "their Fortitude, off the sheet" : "the healer's Medicine bonus. Type it in";
+            fm.Enabled = !own && !returned;
+            if (!fm.Enabled) fm.Checked = false;
         }
         which.SelectedIndexChanged += (s, e) => SyncWhich();
         SyncWhich();
 
-        var d20Lbl = new Label { Left = Pad, Top = mod.Bottom + 12, Width = 92, Text = "d20 rolled:", ForeColor = Blood };
-        var d20 = new NumericUpDown { Left = Pad + 96, Top = mod.Bottom + 9, Width = 70, Minimum = 1, Maximum = 20, Value = 10 };
-        int y = (EngineRolls ? mod.Bottom : d20.Bottom) + 16;
+        var d20Lbl = new Label { Left = Pad, Top = fm.Bottom + 12, Width = 92, Text = "d20 rolled:", ForeColor = Blood };
+        var d20 = new NumericUpDown { Left = Pad + 96, Top = fm.Bottom + 9, Width = 70, Minimum = 1, Maximum = 20, Value = 10 };
+        var d6Lbl = new Label { Left = d20.Right + 20, Top = fm.Bottom + 12, Width = 72, Text = $"d{Rules.FrontierMedicineDie} rolled:", ForeColor = Blood, Enabled = false };
+        var d6 = new NumericUpDown { Left = d6Lbl.Right + 4, Top = fm.Bottom + 9, Width = 60, Minimum = 1, Maximum = Rules.FrontierMedicineDie, Value = 1, Enabled = false };
+        fm.CheckedChanged += (s, e) => d6Lbl.Enabled = d6.Enabled = fm.Checked;
+        int y = (EngineRolls ? fm.Bottom : d20.Bottom) + 16;
 
         var go = new Button { Text = "Roll it ▸", Left = Pad + CW - 190, Top = y, Width = 96, Height = 30, DialogResult = DialogResult.OK };
         var close = new Button { Text = "Close", Left = Pad + CW - 88, Top = y, Width = 88, Height = 30, DialogResult = DialogResult.Cancel };
-        f.Controls.AddRange(new Control[] { head, body, whichLbl, which, modLbl, mod, modNote, go, close });
-        if (!EngineRolls) f.Controls.AddRange(new Control[] { d20Lbl, d20 });
+        f.Controls.AddRange(new Control[] { head, body, whichLbl, which, modLbl, mod, modNote, fm, go, close });
+        if (!EngineRolls) f.Controls.AddRange(new Control[] { d20Lbl, d20, d6Lbl, d6 });
         f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
         f.AcceptButton = go; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
-            var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value);
+            var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value,
+                                      fm.Checked, EngineRolls ? null : (int)d6.Value);
             Log($"{c.Name}: {res.Line}  (d20 {res.Die}{(res.Mod >= 0 ? "+" : "")}{res.Mod})");
             ShowResult(res.DegreeName, $"{c.Name}, {res.Line}", DegreeColor(res.DegreeName));
             if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }

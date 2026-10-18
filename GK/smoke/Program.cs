@@ -2040,6 +2040,29 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("dying: a critical success brings them round", woke.Woke && crit.BloodCur == 1 && !crit.Down);
     T("dying: and clears the count with them", crit.Bleed == 0 && !crit.Stable);
 
+    // -- Frontier Medicine (Ch. IX): the Medicine check that stops the bleeding gives 1d6 Blood back --
+    var fmOk = Soul(10, 12);
+    fmOk.Wound(-10);
+    var mendOk = Rules.Stabilize(fmOk, 0, forcedDie: 16, frontierMedicine: true, forcedMend: 4);
+    T("frontier medicine: a success brings them round on the d6", mendOk.Stopped && mendOk.Mend == 4 && fmOk.BloodCur == 4 && !fmOk.Down);
+    T("frontier medicine: and clears the count with them", mendOk.Woke && fmOk.Bleed == 0 && !fmOk.Stable);
+    var fmCrit = Soul(10, 12);
+    fmCrit.Wound(-10);
+    var mendCrit = Rules.Stabilize(fmCrit, 10, forcedDie: 20, frontierMedicine: true, forcedMend: 6);
+    T("frontier medicine: stacks on a critical success's 1", mendCrit.BloodBack == 7 && fmCrit.BloodCur == 7);
+    var fmMiss = Soul(10, 12);
+    fmMiss.Wound(-10);
+    var mendMiss = Rules.Stabilize(fmMiss, 0, forcedDie: 2, frontierMedicine: true, forcedMend: 6);
+    T("frontier medicine: a failure puts nothing back", !mendMiss.Stopped && mendMiss.Mend == 0 && fmMiss.BloodCur == 0 && fmMiss.Dying);
+    var fmHigh = Soul(10, 12);
+    fmHigh.Wound(-10);
+    T("frontier medicine: a Keeper's d6 is held to the die",
+        Rules.Stabilize(fmHigh, 0, forcedDie: 16, frontierMedicine: true, forcedMend: 9).Mend == Rules.FrontierMedicineDie);
+    T("frontier medicine: without the Edge a success is only stable", ok2.Mend == 0 && ok2.BloodBack == 0 && !ok2.Woke);
+    T("frontier medicine: read off the sheet's Edges",
+        Rules.HasFrontierMedicine(new CharacterSheet { Edges = { Rules.FrontierMedicine } })
+        && !Rules.HasFrontierMedicine(new CharacterSheet()) && !Rules.HasFrontierMedicine(null));
+
     // -- healing past zero undoes all of it --
     var mended = Soul(8, 12);
     mended.Wound(-8);
@@ -2467,6 +2490,8 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
     var pregens = CharGen.D.pregens;
     var built = CharGen.AppendixD();
     T("appendix D: six ready-made souls", pregens.Count == 6 && built.Count == 6);
+    T("frontier medicine: the Edge is printed under that name", CharGen.D.edges.Any(e => e.name == Rules.FrontierMedicine));
+    T("frontier medicine: Doc Kemp's sheet carries it", built.Any(s => s.Name.Contains("Kemp") && Rules.HasFrontierMedicine(s)));
     for (int i = 0; i < Math.Min(pregens.Count, built.Count); i++)
     {
         var pg = pregens[i]; var s = built[i];

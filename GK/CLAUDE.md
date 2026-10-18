@@ -357,6 +357,11 @@ so a week of peace stood a corpse up at full Blood. Every heal and rest refuses 
 number). `Resurrect` is the only door back. `--selftest`'s `DeathOutlastsTheHeal` drives both
 Posse-tab doors; a new route that restates Blood goes through `Rise`, or it reopens this.
 
+**Frontier Medicine's d6 is the caller's to grant (v1.61.0).** `Rules.Stabilize(…, frontierMedicine)`
+adds the Edge's 1d6 to a check that holds, on top of a critical's 1. The engine cannot see who is doing
+the stabilizing, so the dialog decides, and it refuses the box for a soul's own Fortitude (not a Medicine
+check) and for a Returned patient (Mending is their only healing).
+
 ## The row grounds are separated by CAST, not by brightness (v1.38.0)
 
 Seven grounds now say what a tracker row is, and the rule that keeps them apart is that **no two

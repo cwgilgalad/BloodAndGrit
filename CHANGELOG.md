@@ -85,6 +85,15 @@ Desktop\Git repos.)
   lands the soul on 1 Blood whatever was typed over the body. Four new smoke checks (16,663 assertions), and a
   self-test probe that walks both doors from the Posse tab (46 checks).
 
+  **Frontier Medicine puts Blood back.** Ch. IX says the Edge's healer stops a friend's bleeding and "gives back
+  1d6 Blood as well", and the app stopped the bleeding and left the patient senseless on nothing. The Stabilize
+  dialog now has a box for it: tick it when the healer has the Edge, and a check that holds rolls the d6 (or, at a
+  Keeper's-dice table, takes the die typed beside it) and brings the patient round on that much. A critical
+  success's 1 Blood is added to it, since the book's "as well" sits beside that rule rather than in place of it.
+  The box goes grey for a soul's own Fortitude, which is not a Medicine check, and for a Returned patient, who heals
+  only by Mending. `Rules.Stabilize` takes the Edge as an argument and the outcome says how much the d6 gave. Nine
+  new smoke checks (16,672 assertions), two of them holding the Edge to its printed name and to Doc Kemp's sheet.
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 

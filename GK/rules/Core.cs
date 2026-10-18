@@ -1605,32 +1605,51 @@ public static class Rules
         return true;
     }
 
+    /// <summary>The Edge whose healer's stabilizing Medicine check gives back 1d6 Blood as well
+    /// (Ch. IX). Read off the healer's sheet, never typed: <see cref="HasFrontierMedicine"/>.</summary>
+    public const string FrontierMedicine = "Frontier Medicine";
+    public const int FrontierMedicineDie = 6;
+    public static bool HasFrontierMedicine(CharacterSheet s) => s?.Edges?.Contains(FrontierMedicine) == true;
+
     /// <summary>Stop the bleeding. The book gives a Fortitude save and a Medicine check the same DC,
     /// so this takes the roll and the modifier and does not care which it was. A critical success
     /// also brings them round on 1 Blood: the one degree the four-degree ladder has spare here, and
-    /// the reading that keeps a natural 20 worth rolling.</summary>
+    /// the reading that keeps a natural 20 worth rolling. <see cref="Mend"/> is the Frontier Medicine
+    /// die, and it stacks on that 1, since the Edge says "as well".</summary>
     public record StabilizeOutcome(int Die, int Mod, int Degree, string DegreeName, bool Stopped,
-                                   bool Woke, string Detail)
+                                   bool Woke, string Detail, int Mend = 0)
     {
+        /// <summary>The Blood they come round on: 1 on a critical success, plus the Mend.</summary>
+        public int BloodBack => !Stopped ? 0 : (Degree == 3 ? 1 : 0) + Mend;
         public string Line => !Stopped
             ? $"Stabilize (DC {StabilizeDc}): {DegreeName}, still bleeding."
+            : Mend > 0 ? $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops, and Frontier Medicine "
+                         + $"brings them round on {BloodBack} Blood (d{FrontierMedicineDie} {Mend})."
             : Woke ? $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops and they come round on 1 Blood."
                    : $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops. Still senseless.";
     }
 
     /// <summary>Try to stop somebody bleeding out. Applies the result: a success sets
-    /// <see cref="Combatant.Stable"/>, a critical success also puts a Blood back in them.</summary>
-    public static StabilizeOutcome Stabilize(Combatant c, int mod, int? forcedDie = null)
+    /// <see cref="Combatant.Stable"/>, a critical success also puts a Blood back in them, and a
+    /// healer with Frontier Medicine puts 1d6 more back on any success. The caller decides whether
+    /// the Edge applies: only to a Medicine check, and never to a Returned patient, who heals only by
+    /// Mending. <paramref name="forcedMend"/> is a Keeper's own d6, clamped to the die.</summary>
+    public static StabilizeOutcome Stabilize(Combatant c, int mod, int? forcedDie = null,
+                                             bool frontierMedicine = false, int? forcedMend = null)
     {
         int die = forcedDie ?? Rng.Next(1, 21);
         var (idx, name, detail) = FourDegrees(die, mod, StabilizeDc);
-        bool stopped = idx >= 2, woke = idx == 3;
+        bool stopped = idx >= 2;
+        int mend = stopped && frontierMedicine
+            ? Math.Clamp(forcedMend ?? Rng.Next(1, FrontierMedicineDie + 1), 1, FrontierMedicineDie) : 0;
+        int back = !stopped ? 0 : (idx == 3 ? 1 : 0) + mend;
         if (c != null && stopped)
         {
             c.Stable = true;
-            if (woke) c.Wound(1, "stabilized");   // Wound clears Bleed and Stable on the way up
+            // Wound clears Bleed and Stable on the way up
+            if (back > 0) c.Wound(back, mend > 0 ? "stabilized, Frontier Medicine" : "stabilized");
         }
-        return new StabilizeOutcome(die, mod, idx, name, stopped, woke, detail);
+        return new StabilizeOutcome(die, mod, idx, name, stopped, back > 0, detail, mend);
     }
 
     // ---- the Beat, spent (Ch. XI: the turn's three Beats, spent as you like) ----
