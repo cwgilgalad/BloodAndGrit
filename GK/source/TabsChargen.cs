@@ -4,7 +4,7 @@ public partial class MainForm
 {
     // ============================================================ NEW SOUL TAB
     // A whole character sheet at the press of a button, walked through Chapter III's
-    // eight steps against Data/chargen.json (transcribed from the Player's Book) and
+    // steps against Data/chargen.json (transcribed from the Player's Book) and
     // re-validated by CharGen.Validate before it is ever shown: the generator is not
     // allowed to hand the Keeper a character the book couldn't have made. The result
     // is displayed on the book's own Ledger sheet, and can be hand-tweaked or built
@@ -57,7 +57,7 @@ public partial class MainForm
         bar.SetFlowBreak(soulOrigin, true);
 
         bar.Controls.Add(Btn("🎲 Make a soul", (s, e) => GenerateSoul(), 120, "Deal a whole character, strictly by the book"));
-        bar.Controls.Add(Btn("🧭 Wizard…", (s, e) => RunSoulWizard(), 100, "Build a custom character choice by choice, Ch. III's eight steps"));
+        bar.Controls.Add(Btn("🧭 Wizard…", (s, e) => RunSoulWizard(), 100, $"Build a custom character choice by choice, in {SpelledSteps(StepCount).ToLowerInvariant()} steps"));
         bar.Controls.Add(Btn("✎ Tweak", (s, e) =>
         {
             if (lastSoul == null) { Nope("Make a soul first."); return; }
@@ -378,7 +378,7 @@ public partial class MainForm
         if (!known)
         {
             MessageBox.Show(owner,
-                $"{p.Name} has no character sheet, and \"{p.Calling}\" isn't one of the seventeen "
+                $"{p.Name} has no character sheet, and \"{p.Calling}\" isn't one of the "
                 + "Callings in Chapter IV, so there's no table to grow them by.\r\n\r\n"
                 + "Set their Calling on the Posse tab to a Calling from the book, or build them "
                 + "on the New Soul tab, and they'll level by the book from then on.",

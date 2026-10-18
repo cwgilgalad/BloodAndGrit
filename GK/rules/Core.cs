@@ -19,7 +19,7 @@ namespace BloodAndGritKeeper;
 public enum RunMode { Player, KeeperDice, KeeperEngine }
 
 /// <summary>The one small preference that outlives a session: how the last table chose to run, and
-/// whether to skip the chooser next time. Kept beside the exe in prefs.json; a missing or unreadable
+/// whether to skip the chooser next time. Kept in prefs.json under <see cref="AppState.Dir"/>; a missing or unreadable
 /// file just means "ask, defaulting to the engine".</summary>
 /// <summary>The turn hourglass: how long the posse has, how much of it is gone, and what the glass
 /// should look like, with no reference to drawing, so the smoke rig can hold it to all of that.

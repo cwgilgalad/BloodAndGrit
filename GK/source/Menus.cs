@@ -324,8 +324,8 @@ public partial class MainForm
           "a one-page PDF, or copy the SVG straight to the clipboard.");
 
         H("8 · Deal a new soul  (New Soul)");
-        T("A complete character at any level 1–10, displayed on the book's own Ledger sheet. 🎲 Make a soul rolls " +
-          "the whole character strictly by Chapter III's eight steps, pin the Calling or Origin if you have one in " +
+        T("A complete character at any level 1–" + Rules.MaxLevel + ", displayed on the book's own Ledger sheet. 🎲 Make a soul rolls " +
+          "the whole character strictly by Chapter III's steps, pin the Calling or Origin if you have one in " +
           "mind. 🧭 Wizard… walks you through every choice yourself: abilities, skills, Edges, Signs, coin and all, " +
           "each list filtered to what the book allows. Either way the sheet is cross-checked against the rules " +
           "before it reaches you, and ✎ Tweak lets you hand-adjust anything after (the Ledger notes the sheet was " +
@@ -475,8 +475,8 @@ public partial class MainForm
 
     /// <summary>What the app actually needs, on the back of the box. Written from what the build
     /// really is rather than from ambition: a self-contained win-x64 single file, so 64-bit Windows
-    /// and no .NET install; a window that refuses to go below 1040x640; and a folder it can WRITE
-    /// to, because the session, the preferences and the crash report all land beside the exe.
+    /// and no .NET install; a window that refuses to go below 1040x640; and where the table is
+    /// kept, which is <see cref="AppState.Dir"/> and not beside the exe unless asked (v1.31.0).
     ///
     /// Every line here is a promise. Nothing goes on this list that the app cannot do: the app
     /// spent two releases telling people they could play on a phone.</summary>
@@ -524,17 +524,19 @@ public partial class MainForm
         L("",         "sheets and trail maps). Not required to play");
         rtf.AppendText("\n");
 
-        H("One thing that matters");
-        N("  Put the folder somewhere you can write to: your Desktop, your Documents,");
-        N("  a USB stick. GritKeeper saves the table beside its own exe (session.json,");
-        N("  prefs.json), so a read-only place like Program Files will not hold your game.");
+        H("Where your table is kept");
+        N("  In %APPDATA%\\GritKeeper (session.json, prefs.json), so the exe can live");
+        N("  anywhere, Program Files included, and a new version never touches your game.");
+        N("  To keep the table beside the exe instead, say on a USB stick, put an empty");
+        N("  file named portable.txt next to it. A folder already holding a session.json");
+        N("  beside the exe goes on using it.");
         rtf.AppendText("\n");
 
         H("What it is not");
         N("  A Windows desktop program, and only that. It does not run on macOS, Linux,");
         N("  a phone or a tablet, there is no browser version, and it does not connect");
         N("  players over a network: one machine at the table, usually the Keeper's.");
-        N("  (The three books are PDFs. Those open on anything, phone included; it is");
+        N("  (The books are PDFs. Those open on anything, phone included; it is");
         N("  the app that is Windows-only, not the game.)");
         rtf.AppendText("\n");
 

@@ -92,7 +92,23 @@ Desktop\Git repos.)
   success's 1 Blood is added to it, since the book's "as well" sits beside that rule rather than in place of it.
   The box goes grey for a soul's own Fortitude, which is not a Medicine check, and for a Returned patient, who heals
   only by Mending. `Rules.Stabilize` takes the Edge as an argument and the outcome says how much the d6 gave. Nine
-  new smoke checks (16,672 assertions), two of them holding the Edge to its printed name and to Doc Kemp's sheet.
+  new smoke checks (16,671 assertions), two of them holding the Edge to its printed name and to Doc Kemp's sheet.
+
+  **Where the table is kept, said right.** Since v1.31.0 the table has been saved in `%APPDATA%\GritKeeper` unless
+  a `portable.txt` sits beside the exe, and three places went on telling Keepers to put the exe somewhere writable
+  because the game was saved beside it: the requirements screen under Help, the README that ships in the zip, and
+  the front page. All three now say where the table is and how to keep it beside the exe on a USB stick. The zip's
+  README and the Help screen's New Soul entry also offered levels 1–10 and Chapter III's eight steps. The Help
+  screen reads the cap off `Rules.MaxLevel` now, neither names a count of steps, the wizard's tooltip spells its
+  step count the way its welcome page does, and the level-up message has stopped counting the Callings (it said
+  seventeen, and there are eighteen).
+
+  **The front page sells the app.** README's GritKeeper section opened on packaging and a ninety-word list of
+  features. It opens now on what a night at the table is like with the app in it, puts the three ways to sit down
+  first, lists what it does as things a Keeper gets, and keeps the requirements and the download details beneath.
+  It had also typed an eleven-leaf Keeper's screen (there are thirteen) and a CI job that checks the books, which
+  CI hasn't done since 2026-08-10. No count is typed there now, and the workflow's step name drops its "~12,000
+  assertions" for the same reason.
 
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
