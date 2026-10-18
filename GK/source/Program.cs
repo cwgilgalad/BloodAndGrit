@@ -253,6 +253,13 @@ static class Program
                         var unseen = mf.TrackerShowsTheSoul();
                         if (unseen != null) Line("       tracker: " + unseen);
                         Chk(unseen == null, "GUI: the Tracker shows the soul's Nerve and Mark, and shows neither on a creature");
+
+                        // v1.61.0, A09 and A10: the Posse-to-Tracker mirror stood the dead up on any
+                        // heal or week of peace, and left a laid-out soul Senseless after one. Both
+                        // live in the doors between the tabs, so the probe walks the doors.
+                        var risen = mf.DeathOutlastsTheHeal();
+                        if (risen != null) Line("       tracker: " + risen);
+                        Chk(risen == null, "GUI: a Posse-tab heal stands the laid-out up, and no heal or rest stands up the dead");
                     }
                 }
 

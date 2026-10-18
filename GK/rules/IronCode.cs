@@ -18,6 +18,7 @@ public class WeaponTraits
     public int Scatter { get; set; }         // 0 = none; else feet: 1d6 splash within (Ch. X "Scatter X")
     public int Volley { get; set; }          // 0 = none; else feet: -2 to Strikes within (Ch. X "Volley X")
     public bool Kickback { get; set; }       // -2 and Off-Guard unless braced or STR 12+ (Ch. XI)
+    public bool TwoHanded { get; set; }      // the mounted -2 doubles from a moving horse (Ch. X), bar the bow
     public bool Repeating { get; set; }
     public bool Concealable { get; set; }
 
@@ -38,6 +39,7 @@ public class WeaponTraits
         m = VolleyRe.Match(traits);      if (m.Success) t.Volley   = int.Parse(m.Groups[1].Value);
         t.Agile       = traits.Contains("Agile", StringComparison.OrdinalIgnoreCase);
         t.Kickback    = traits.Contains("Kickback", StringComparison.OrdinalIgnoreCase);
+        t.TwoHanded   = traits.Contains("Two-Handed", StringComparison.OrdinalIgnoreCase);
         t.Repeating   = traits.Contains("Repeating", StringComparison.OrdinalIgnoreCase);
         t.Concealable = traits.Contains("Concealable", StringComparison.OrdinalIgnoreCase);
         return t;
@@ -235,21 +237,18 @@ public static class IronCode
     /// exactly the fault the derived-Burden design exists to prevent.</para></summary>
     public record Reckoning(int Total, List<string> Parts, bool CannotTarget);
 
-    /// <summary>Whether this is a long gun (rifle, carbine, shotgun or repeater) which the Code
-    /// handles differently at point-blank and from the saddle. Read off the NAME on purpose: Ch. X's
-    /// glossary defines a <em>Two-Handed</em> trait and then prints it on no weapon in either table,
-    /// so there is no trait to read. Ch. XI names them the same way, "a two-handed long gun
-    /// (rifle, carbine, shotgun)", so this follows the book rather than inventing data for it.</summary>
+    /// <summary>Whether this is a long gun, which the Code handles differently at point-blank and
+    /// from the saddle: a gun that prints <em>Two-Handed</em>, less the bow. Ch. X's trait entry
+    /// doubles the mounted −2 for anything two-handed and then excepts "a bow, made for the saddle";
+    /// Ch. XI's "a two-handed long gun (rifle, carbine, shotgun)" is the same set seen from the other
+    /// end. Until v1.61.0 this went by the name, from when the book printed the trait on no weapon at
+    /// all, and the name missed the Wall / Punt Gun, which needs both hands and never paid for them.
+    /// The arms table's one "Bow / Crossbow" row takes the bow's reading (v1.60.0); the crossbow's
+    /// second −2 is the Keeper's.</summary>
     public static bool IsLongGun(CgWeapon w)
-    {
-        if (!string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)) return false;
-        string n = w.name ?? "";
-        return n.Contains("Rifle", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Shotgun", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Carbine", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Repeater", StringComparison.OrdinalIgnoreCase)
-            || n.Contains("Musket", StringComparison.OrdinalIgnoreCase);
-    }
+        => string.Equals(w?.kind, "gun", StringComparison.OrdinalIgnoreCase)
+        && WeaponTraits.Parse(w.traits).TwoHanded
+        && !(w.name ?? "").Contains("Bow", StringComparison.OrdinalIgnoreCase);
 
     // ---- Fighting from the Saddle (Ch. XI) ----
 
@@ -390,7 +389,7 @@ public static class IronCode
                 // the whole reason the horseman carries one.
                 Take(gun || thrown ? -2 : 0, "shooting from a moving horse");
                 // And a long gun is doubly awkward up there, the box's −4 in all. The arms table's
-                // "Bow / Crossbow" is one row and is not a long gun by name, so it takes the bow's −2
+                // "Bow / Crossbow" is one row and IsLongGun reads it as the bow, so it takes the −2
                 // alone (v1.60.0); a crossbow is a carbine up there and its second −2 is the Keeper's.
                 Take(gun && IsLongGun(w) ? -2 : 0, "a two-handed long gun from the saddle");
             }

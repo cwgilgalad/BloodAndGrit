@@ -235,16 +235,18 @@ public sealed class LedgerView : Panel
         }
 
         // ---- what fills the sheet ----
-        // A soul without a full character record (hand-entered, or the seeded pregens)
+        // A soul without a full character record (a blank row typed in off a paper sheet)
         // still shows everything the table row knows; what's genuinely unknown reads
-        // as an em-dash, never as a bare white box that looks like a rendering bug.
+        // as an em-dash, never as a bare white box that looks like a rendering bug. (The v1.58.0
+        // voice pass turned it into a colon, which reads as a label missing its value; the dash
+        // here is a blank on a form, as in the books' stat blocks, and not prose.)
         string name = sheet?.Name ?? member?.Name ?? "";
         string calling = sheet?.Calling ?? member?.Calling ?? "";
         // gender rides on the sheet, but hand-entered souls carry it on the member too; show
         // whichever we have. (pattern var is gv, not sg: sg collides with the SignsKnown loop below.)
-        string Dash(string v) => string.IsNullOrWhiteSpace(v) ? ":" : v;
+        string Dash(string v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
         string gender = Dash(sheet?.Gender is { Length: > 0 } gv ? gv : member?.Gender);
-        string origin = sheet?.Origin ?? ":";
+        string origin = Dash(sheet?.Origin);
         int level = sheet?.Level ?? member?.Level ?? 1;
         string bloodTxt = member != null ? $"{member.BloodCur} / {member.BloodMax}"
                         : sheet != null ? $"{sheet.Blood} / {sheet.Blood}" : "";
@@ -310,7 +312,7 @@ public sealed class LedgerView : Panel
                 }
                 else
                 {
-                    g.DrawString(":", fValue, GetBrush(InkSoft), ax + (aW - TextW(":", fValue)) / 2, y + aH - 22 * zoom);
+                    g.DrawString("—", fValue, GetBrush(InkSoft), ax + (aW - TextW("—", fValue)) / 2, y + aH - 22 * zoom);
                 }
             }
         }
@@ -320,11 +322,11 @@ public sealed class LedgerView : Panel
         float sW = (w - gap * 5) / 6;
         string atkTxt = sheet != null
             ? $"G {S(sheet.Attack + CharGen.Mod(sheet.Scores["DEX"]))} · M {S(sheet.Attack + CharGen.Mod(sheet.Scores["STR"]))}"
-            : ":";
+            : "—";
         FieldBox(x0,                  y, sW, "Blood / Max", bloodTxt, valueBold: true, figures: true, shortLabel: "Blood");
-        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : ":", figures: true);
-        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : ":", figures: true);
-        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : ":", figures: true);
+        FieldBox(x0 + (sW + gap),     y, sW, "Defense", defense > 0 ? defense.ToString() : "—", figures: true);
+        FieldBox(x0 + (sW + gap) * 2, y, sW, "Speed", sheet != null ? sheet.Speed + " ft" : "—", figures: true);
+        FieldBox(x0 + (sW + gap) * 3, y, sW, "Init.", sheet != null ? S(CharGen.Mod(sheet.Scores["DEX"])) : "—", figures: true);
         FieldBox(x0 + (sW + gap) * 4, y, sW, "Attack", atkTxt, figures: true);
         FieldBox(x0 + (sW + gap) * 5, y, sW, "Grit", grit.ToString(), figures: true);
         y += 40 * zoom + gap;
@@ -499,7 +501,7 @@ public sealed class LedgerView : Panel
                     }
                 }
             }
-            else lines.Add((":", false));
+            else lines.Add(("—", false));
             yR += ProseBox(xx, yR, bw, "Edges, Calling Features & Path", lines, minH: 120 * zoom) + gap;
 
             var gear = new List<(string, bool)>();
@@ -512,7 +514,7 @@ public sealed class LedgerView : Panel
                 gear.Add((" ", false));
                 gear.Add(($"Coin, rolled ${sheet.CoinRolled:0}, ${sheet.CoinLeft:0.##} left", true));
             }
-            else gear.Add((":", false));
+            else gear.Add(("—", false));
             yR += ProseBox(xx, yR, bw, "Arms, Gear & Coin", gear, minH: 90 * zoom);
         }
 

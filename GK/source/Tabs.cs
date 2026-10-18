@@ -1502,6 +1502,10 @@ public partial class MainForm
             if (e.RowIndex < 0 || e.RowIndex >= tracker.Count) return;
             var c = tracker[e.RowIndex];
             if (c.BloodMax > 0 && c.BloodCur > c.BloodMax) c.BloodCur = c.BloodMax;
+            // A number typed over a body on the ground puts it back on its feet, as a heal would. A
+            // soul's row gets this again from the mirror; a hand-entered PC row has no soul behind
+            // it and got it from nowhere, so its count and its senselessness outlived the Blood.
+            c.Rise();
             // SoulOf, not a match on Name. The mirror is keyed to the soul's stable id precisely so
             // it survives a rename (see SoulOf); this site still matched by name, so typing Blood
             // straight into the grid quietly stopped reaching a renamed soul while the Damage button
@@ -2926,6 +2930,9 @@ public partial class MainForm
     void AdjustCombatant(int sign)
     {
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
+        // Heal answers the dead the way Restore does, out loud. Wound would put the Blood on and leave
+        // the row dead, and the log would say "recovers" over a corpse.
+        if (sign > 0 && c.Dead) { Nope(DeadIsDead(c.Name)); return; }
         int v = (int)trkAmount.Value;
         int was = c.BloodCur;
         bool wasDown = c.Down, wasDead = c.Dead;
@@ -2937,6 +2944,19 @@ public partial class MainForm
         CheckFalling(c, wasDown, wasDead, Math.Max(0, was - c.BloodCur));
     }
 
+    /// <summary>What every heal says to the dead: Heal and Restore on the Tracker, and Heal and the
+    /// rests on the Posse tab, which see the death through the soul's row. One wording, because the
+    /// rule is one rule wherever the Keeper's hand happens to be.</summary>
+    static string DeadIsDead(string name)
+        => $"{name} is dead, out here dead is dead, and Blood is not what is wrong.\n\n"
+         + "If the table has decided otherwise, right-click their row on the Tracker: \"They were "
+         + "not dead after all\". That is the Keeper's call to make on purpose, not a side effect "
+         + "of a heal.";
+
+    /// <summary>Whether this soul's row on the field is a dead one. The Posse tab holds no death of
+    /// its own (a soul there is a number of Blood), so it asks the Tracker, where the count ran.</summary>
+    bool DiedOnTheField(PartyMember p) => tracker.FirstOrDefault(t => t.IsSoul(p))?.Dead == true;
+
     /// <summary>Put the selected combatant back to full Blood. The ad-hoc heal a Keeper wants
     /// between scenes without arithmetic, and Blood only: until v1.60.0 a posse soul got Nerve and
     /// the pool back with it, which made this a rest the book never printed. Nerve and the pools
@@ -2946,14 +2966,7 @@ public partial class MainForm
         if (trkGrid.CurrentRow?.DataBoundItem is not Combatant c) { Nope("Select a combatant first."); return; }
         // Blood does not answer this one. Wound refuses to un-kill (see Combatant.Wound), so without
         // this the button would fill the bar, leave the row dead, and give a Keeper no idea why.
-        if (c.Dead)
-        {
-            Nope($"{c.Name} is dead, out here dead is dead, and Blood is not what is wrong.\n\n"
-               + "If the table has decided otherwise, right-click the row: \"They were not dead "
-               + "after all\". That is the Keeper's call to make on purpose, not a side effect of "
-               + "a heal.");
-            return;
-        }
+        if (c.Dead) { Nope(DeadIsDead(c.Name)); return; }
         var soul = SoulOf(c);
         // The Returned get no Blood from any rest (Ch. XII), and a Keeper's "to full" is a rest by
         // another name. Refused out loud rather than done, so the table hears the rule.
@@ -3835,7 +3848,9 @@ public partial class MainForm
                    + "being back on the ground.\n\n"
                    + "The book has no rule for this. It is the table's call."))
             return;
-        c.Bleed = 0; c.Stable = false; c.Upright = false;
+        // From zero, so "at 1 Blood" is what happens: a corpse can carry Blood typed over it, and
+        // Wound would have added the 1 to that.
+        c.Bleed = 0; c.Stable = false; c.Upright = false; c.BloodCur = 0;
         c.Wound(1, "back");
         if (SoulOf(c) is PartyMember p) p.BloodCur = c.BloodCur;
         posseGrid?.Refresh(); RefreshTracker();
@@ -3886,29 +3901,45 @@ public partial class MainForm
         var modLbl = new Label { Left = Pad, Top = which.Bottom + 12, Width = 92, Text = "Modifier:" };
         var mod = new NumericUpDown { Left = Pad + 96, Top = which.Bottom + 9, Width = 70, Minimum = -20, Maximum = 40, Value = soul?.Fort ?? 0 };
         var modNote = new Label { Left = mod.Right + 10, Top = which.Bottom + 13, Width = CW - (mod.Right + 10 - Pad), Height = 18, ForeColor = Faint, Font = DialogItalic, AutoEllipsis = true };
+
+        // Frontier Medicine rides on the healer's Medicine check only, and puts no Blood in a Returned
+        // patient: Mending is the only healing they have.
+        bool returned = CharGen.IsReturned(soul?.Sheet);
+        var fm = new CheckBox { Left = Pad + 96, Top = mod.Bottom + 8, AutoSize = true,
+                                Text = $"Frontier Medicine: 1d{Rules.FrontierMedicineDie} Blood back if it holds" };
+        Tip.SetToolTip(fm, returned
+            ? $"{c.Name} is Returned and heals only by Mending, so the Edge puts no Blood back."
+            : $"Ch. IX: the Medicine check that stops a friend's bleeding gives back 1d{Rules.FrontierMedicineDie} "
+            + "Blood as well. Tick it when the healer carries the Edge. A soul's own Fortitude doesn't get it.");
         void SyncWhich()
         {
             bool own = which.SelectedIndex == 0;
             if (own && soul != null) mod.Value = Math.Clamp(soul.Fort, mod.Minimum, mod.Maximum);
             modNote.Text = own ? "their Fortitude, off the sheet" : "the healer's Medicine bonus. Type it in";
+            fm.Enabled = !own && !returned;
+            if (!fm.Enabled) fm.Checked = false;
         }
         which.SelectedIndexChanged += (s, e) => SyncWhich();
         SyncWhich();
 
-        var d20Lbl = new Label { Left = Pad, Top = mod.Bottom + 12, Width = 92, Text = "d20 rolled:", ForeColor = Blood };
-        var d20 = new NumericUpDown { Left = Pad + 96, Top = mod.Bottom + 9, Width = 70, Minimum = 1, Maximum = 20, Value = 10 };
-        int y = (EngineRolls ? mod.Bottom : d20.Bottom) + 16;
+        var d20Lbl = new Label { Left = Pad, Top = fm.Bottom + 12, Width = 92, Text = "d20 rolled:", ForeColor = Blood };
+        var d20 = new NumericUpDown { Left = Pad + 96, Top = fm.Bottom + 9, Width = 70, Minimum = 1, Maximum = 20, Value = 10 };
+        var d6Lbl = new Label { Left = d20.Right + 20, Top = fm.Bottom + 12, Width = 72, Text = $"d{Rules.FrontierMedicineDie} rolled:", ForeColor = Blood, Enabled = false };
+        var d6 = new NumericUpDown { Left = d6Lbl.Right + 4, Top = fm.Bottom + 9, Width = 60, Minimum = 1, Maximum = Rules.FrontierMedicineDie, Value = 1, Enabled = false };
+        fm.CheckedChanged += (s, e) => d6Lbl.Enabled = d6.Enabled = fm.Checked;
+        int y = (EngineRolls ? fm.Bottom : d20.Bottom) + 16;
 
         var go = new Button { Text = "Roll it ▸", Left = Pad + CW - 190, Top = y, Width = 96, Height = 30, DialogResult = DialogResult.OK };
         var close = new Button { Text = "Close", Left = Pad + CW - 88, Top = y, Width = 88, Height = 30, DialogResult = DialogResult.Cancel };
-        f.Controls.AddRange(new Control[] { head, body, whichLbl, which, modLbl, mod, modNote, go, close });
-        if (!EngineRolls) f.Controls.AddRange(new Control[] { d20Lbl, d20 });
+        f.Controls.AddRange(new Control[] { head, body, whichLbl, which, modLbl, mod, modNote, fm, go, close });
+        if (!EngineRolls) f.Controls.AddRange(new Control[] { d20Lbl, d20, d6Lbl, d6 });
         f.ClientSize = new Size(CW + Pad * 2, go.Bottom + Pad);
         f.AcceptButton = go; f.CancelButton = close;
 
         while (f.ShowDialog(this) == DialogResult.OK)
         {
-            var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value);
+            var res = Rules.Stabilize(c, (int)mod.Value, EngineRolls ? null : (int)d20.Value,
+                                      fm.Checked, EngineRolls ? null : (int)d6.Value);
             Log($"{c.Name}: {res.Line}  (d20 {res.Die}{(res.Mod >= 0 ? "+" : "")}{res.Mod})");
             ShowResult(res.DegreeName, $"{c.Name}, {res.Line}", DegreeColor(res.DegreeName));
             if (SoulOf(c) is PartyMember p) { p.BloodCur = c.BloodCur; posseGrid?.Refresh(); }
@@ -5423,7 +5454,7 @@ public partial class MainForm
         RH(r, "Blood, Dying & Grievous Wounds");
         RTbl(r, new[] { 16, 66 }, new[] { "State", "The rule" },
             new[] { "0 Blood",      "Dying and Bleeding; unconscious" },
-            new[] { "Stable",       $"The bleeding stopped by a DC {Rules.StabilizeDc} Fortitude save or Medicine check. Still senseless at 0 or below; fresh harm opens the wound again, and a critical success brings them round on 1 Blood" },
+            new[] { "Stable",       $"The bleeding stopped by a DC {Rules.StabilizeDc} Fortitude save or Medicine check. Still down and senseless, bleeding no more; they come round on 1 Blood after ten quiet minutes, or at once on a critical success" },
             new[] { "Death",        "Comes at a negative number equal to the CON score (twice it for the Risen)" },
             new[] { "A terrible blow", $"One hit for half maximum Blood or more, or any critical hit → Fortitude save DC {Rules.GrievousDc} (higher for terrible weapons) or take a Lasting Injury" });
 
@@ -5594,7 +5625,7 @@ public partial class MainForm
                 RH(r, title);
                 RTbl(r, new[] { 6, 19, 22, 46 }, new[] { "Rank", "Sign", "Cost", "The working" },
                     CharGen.D.signs.Where(sg => sg.list == key).OrderBy(sg => sg.rank).ThenBy(sg => sg.name)
-                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? ":", sg.desc ?? "" }));
+                        .Select(sg => new[] { sg.rank.ToString(), sg.name, sg.cost ?? "—", sg.desc ?? "" }));
             }
 
         RH(r, "Grit");
@@ -5638,7 +5669,7 @@ public partial class MainForm
                 RH(r, title);
                 RTbl(r, new[] { 6, 21, 20, 46 }, new[] { "Rank", "Miracle", "Cost", "The working" },
                     CharGen.D.miracles.Where(m => m.list == key).OrderBy(m => m.rank).ThenBy(m => m.name)
-                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? ":", m.desc ?? "" }));
+                        .Select(m => new[] { m.rank.ToString(), m.name, m.cost ?? "—", m.desc ?? "" }));
             }
         RI(r, "\"Faith\" in a Miracle's cost means points from your Calling's pool, whatever your Calling names it.");
     }
@@ -5668,7 +5699,7 @@ public partial class MainForm
         // Bestiary's one-liner and the tab called the exact budget "a fair, hard fight", which is
         // Ch. IV's word for half again over it.
         RTbl(r, new[] { 12, 18, 40 }, new[] { "The fight", "Spend", "What Ch. IV promises" },
-            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? ":" }));
+            Rules.BudgetFights.Select(f => new[] { f.Name, f.Spend, f.Promise ?? "—" }));
         RT(r, "Spend the budget and the fight is fair; overspend and you had better mean it.");
         RI(r, "At double, the chapter does not only price it. It says to tell the fiction so, with a "
              + "sight, an omen, a dead man already on the ground, before the players commit.");
@@ -5688,7 +5719,7 @@ public partial class MainForm
             {
                 var s = Rules.SpoorRow[i];
                 return new[] { Rules.Roman(i + 1), "Survival " + s.readDc,
-                               s.dreadDc == 0 ? ":" : "DC " + s.dreadDc, s.what };
+                               s.dreadDc == 0 ? "—" : "DC " + s.dreadDc, s.what };
             }));
         RT(r, "The Dread DC is one rung below meeting the thing itself: reading an aftermath is not "
              + "standing in front of the animal. Nerve is lost off the usual ladder.");
@@ -5712,7 +5743,7 @@ public partial class MainForm
     {
         var guns  = CharGen.D?.weapons?.Where(w => w.kind == "gun").ToList();
         var steel = CharGen.D?.weapons?.Where(w => w.kind != "gun").ToList();
-        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : ":";
+        string Cost(double c) => c > 0 ? "$" + c.ToString("0") : "—";
         RH(r, "Guns");
         if (guns?.Count > 0)
             RTbl(r, new[] { 23, 7, 5, 42 }, new[] { "Arm", "Damage", "Cost", "Traits" },

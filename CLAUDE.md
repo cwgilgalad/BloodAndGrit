@@ -8,7 +8,7 @@ builders (`build_player.py` / `build_keeper.py` / `build_bestiary.py`), the shar
 while the build architecture moved on underneath it.)
 
 **Current versions: Player's Book v2.57 · Keeper's Book v2.42 · Bestiary v2.28 ·
-GritKeeper app v1.60.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
+GritKeeper app v1.61.0 (renamed from "The Keeper's Table" in v1.5.0; self-contained,
 crash-hardened, Authenticode-signed, exe `GritKeeper.exe`).**
 
 **The rules are their own library (since v1.28.0), and the app's own detail lives in
@@ -951,7 +951,7 @@ to it: the one place this rule is written that the auditor does not read is nowh
 
 ---
 
-## GritKeeper (v1.60.0) — the C# desktop app
+## GritKeeper (v1.61.0) — the C# desktop app
 
 A standalone Keeper-facing utility for running games at the table, built in **C#/.NET 10, Windows
 Forms**. Not part of the HTML book pipeline, separate source tree, separate build. The working
@@ -994,8 +994,8 @@ changes. Then build, smoke, publish, re-mirror `GritKeeper/`, and rezip.
   W. F. Kinnear, Redemption's reach and Washington's silence, the Circle's preacher and the Dread Mother's
   unwritten name; Ch. VII has *When Two Congregations Meet*; Ch. XIII says the courtyard well and the
   baptistry spring are one water; the Player's Book glossary names the Department of Justice. The Book of
-  Legends (220 pages) and its Companion (368) were measured in Edge. One piece is carried into v1.61.0: read
-  the Reference tab for any line quoting Ch. XV.
+  Legends (220 pages) and its Companion (368) were measured in Edge. The one piece carried into v1.61.0, reading
+  the Reference tab for any line quoting Ch. XV, found none: the deck's Keeper prose is Ch. XIV's and still matches.
 
 - ~~**A named sample territory with an SVG map**~~, **DONE (v2.10/v2.2):** Perdition Basin, a
   one-county worked example with a two-layer in-engine SVG map (clean player map in the Player's

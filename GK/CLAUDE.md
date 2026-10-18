@@ -239,7 +239,12 @@ what each tab *is*, plus the decisions already settled.
   they can't drift.
 - **Session**: free-form Keeper's notes + named 4/6/8-segment progress clocks. Autosaves to
   `session.json` beside the exe on exit **and every 5 minutes**; reloads on launch. First run seeds
-  the Appendix D pregens so it's useful immediately.
+  the Appendix D pregens so it's useful immediately. **Since v1.61.0 those are the book's six, not six
+  draws wearing their names**: `chargen.json`'s `pregens` carry each printed sheet's choices,
+  `CharGen.AppendixD()` assembles them, and `check_pregen_seed` holds the data AND the smoke rig's table
+  of printed numbers to the built Player's Book. The purses are the one thing that cannot match: the book
+  prints story amounts, so each `coinRolled` is the legal roll leaving change nearest the printed figure.
+  Change a box in Appendix D and both copies have to follow, or the audit says which one did not.
 
 ## Files
 
@@ -344,6 +349,19 @@ Four decisions already settled:
 `ResetForNewFight` clears **none** of it except `Upright`: dying is Blood, and Blood
 carries between fights. `FightResidue` matches, so New fight cannot say "nothing to clear" over it.
 
+**`Combatant.Rise` is the one way onto a row's feet (v1.61.0).** `Wound`, the Posse-to-Tracker
+mirror and a Blood typed into the Tracker's cell all call it, and it does nothing at zero or for the
+dead. The mirror used to clear the count by hand, skipped `Senseless`, and never asked about death,
+so a week of peace stood a corpse up at full Blood. Every heal and rest refuses the dead out loud
+(`DeadIsDead`; the Posse tab asks the Tracker through `DiedOnTheField`, since a soul there is only a
+number). `Resurrect` is the only door back. `--selftest`'s `DeathOutlastsTheHeal` drives both
+Posse-tab doors; a new route that restates Blood goes through `Rise`, or it reopens this.
+
+**Frontier Medicine's d6 is the caller's to grant (v1.61.0).** `Rules.Stabilize(…, frontierMedicine)`
+adds the Edge's 1d6 to a check that holds, on top of a critical's 1. The engine cannot see who is doing
+the stabilizing, so the dialog decides, and it refuses the box for a soul's own Fortitude (not a Medicine
+check) and for a Returned patient (Mending is their only healing).
+
 ## The row grounds are separated by CAST, not by brightness (v1.38.0)
 
 Seven grounds now say what a tracker row is, and the rule that keeps them apart is that **no two
@@ -385,10 +403,13 @@ Ch. XI was audited against the engine and nine gaps closed. Six decisions alread
   `Strength`. A stored default of ten would be indistinguishable from a soul who really is average,
   and would hand the shotgun's recoil to somebody the book exempts. `ApplySession` backfills it only
   ever upward from zero.
-- **A long gun is identified by NAME**, in `IronCode.IsLongGun`. Ch. X's glossary defines a
-  Two-Handed trait and then prints it on no weapon in either table, so there is no trait to read;
-  Ch. XI names them the same way ("a two-handed long gun (rifle, carbine, shotgun)"). Following the
-  book beat inventing a data column it does not have.
+- **A long gun is a gun that prints Two-Handed, less the bow**, in `IronCode.IsLongGun`
+  (`WeaponTraits.TwoHanded`). Ch. X's trait entry doubles the mounted −2 for anything two-handed
+  and excepts "a bow, made for the saddle"; Ch. XI's "a two-handed long gun (rifle, carbine,
+  shotgun)" is the same set. Until v1.61.0 it went by the NAME, because the book then printed the
+  trait on no weapon, and the name list missed the Wall / Punt Gun once the trait was printed. The
+  one "Bow / Crossbow" row reads as the bow (v1.60.0). A smoke check holds every rifle, carbine,
+  shotgun and repeater to it, so a trait dropped in transcription fails the build.
 
 **The arms table is now audited, and it is the reason all of this was unbuildable.**
 `audits/verify_rules.py` guarded the Calling tables and read the arms table not at all, so

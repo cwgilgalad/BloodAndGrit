@@ -5,7 +5,7 @@
 Bestiary and all the Keeper's rollable tables baked in, extracted directly from the books
 (Player's Book v2.57 · Keeper's Book v2.42 · Bestiary v2.28).
 
-**App version 1.60.0**
+**App version 1.61.0**
 
 ---
 
@@ -31,9 +31,11 @@ Bestiary and all the Keeper's rollable tables baked in, extracted directly from 
 | **Display** | 1920 × 1080: the Tracker and the Ledger both breathe better with the room |
 | **Printing** | Any printer, for the PDFs it writes (character sheets and trail maps). Not required to play |
 
-**One thing that matters:** put the folder somewhere you can **write** to (your Desktop,
-your Documents, a USB stick). GritKeeper saves the table beside its own exe (`session.json`,
-`prefs.json`), so a read-only location like `C:\Program Files` will not hold your game.
+**Where your table is kept:** in `%APPDATA%\GritKeeper` (`session.json`, `prefs.json`), so the
+exe can live anywhere, `C:\Program Files` included, and unzipping a new version never touches
+your game. To keep the table beside the exe instead (a copy on a USB stick, say), put an empty
+file named `portable.txt` next to it. A folder that already holds a `session.json` beside the
+exe goes on using it.
 
 **What it is not.** GritKeeper is a Windows desktop program and only that. It does not run
 on macOS, Linux, a phone or a tablet; there is no browser version; and it does not connect
@@ -86,8 +88,8 @@ cd source
 dotnet run
 ```
 
-Your table state auto-saves to `session.json` beside the exe on exit **and every five
-minutes**, and reloads on launch. First launch seeds the ready-made posse from the
+Your table state auto-saves to `session.json` (in `%APPDATA%\GritKeeper`, unless you've asked
+for it beside the exe) on exit **and every five minutes**, and reloads on launch. First launch seeds the ready-made posse from the
 Player's Book Appendix D so everything is usable immediately.
 
 ## The ten tabs
@@ -222,14 +224,14 @@ table rather than building a second one, so the ground, scale, hour, weather, ov
 markers and exports are the same controls and can never disagree with the tab's. Esc, F11
 or ✕ brings it back.
 
-**New Soul** *(overhauled in v1.5)*: a complete character at any level 1–10, displayed
+**New Soul** *(overhauled in v1.5)*: a complete character at any level, displayed
 on **the book's own Ledger sheet** (the character sheet from the back of the Player's
 Book, redrawn live and filled in: name, **gender**, calling, origin, abilities,
 reckoned numbers, the Mark's six boxes, the Four Questions, **what they look like**, all
 seventeen skills with proficiency ticks, edges & path, arms & gear & coin). Three roads to
 a soul:
 
-- **🎲 Make a soul**: rolled strictly by Chapter III's eight steps: abilities (Honest
+- **🎲 Make a soul**: rolled strictly by Chapter III's steps: abilities (Honest
   Array or the 4d6-drop-lowest Gamble), Calling and Origin with their cross-constraints
   honored, skills, legal Edges, Signs for the Old Dark only, the Mark where the book
   imposes it, coin rolled on the Calling's dice and spent at printed prices, gender and

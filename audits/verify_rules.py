@@ -206,6 +206,16 @@ def check_arms(problems):
         elif b["cost"] != float(w.get("cost", 0)):
             problems.append(f"{name}: book cost {b['printed']!r} != data {w.get('cost', 0)!r}")
 
+    # And the other way round: every weapon the app sells is a row the book prints. Reading from
+    # the book alone, a table that read short (a second tbody, a row the regex stopped matching)
+    # dropped its weapons in silence, and the app went on pricing them off nothing.
+    printed = list(guns) + list(blades)
+    for w in weapons:
+        checks += 1
+        if not any(_matches(w["name"], n) for n in printed):
+            problems.append(f"{w['name']}: in the data's weapons and printed in neither of the "
+                            f"book's arms tables")
+
     # A blade has no Range, Cap. or Reload column, so carrying one would be an invention.
     for w in weapons:
         if w.get("kind") == "melee":
@@ -889,6 +899,138 @@ def check_pregen_gear(problems):
     return checks
 
 
+# ------------------------------------------- the demo posse is built off the same six (A05)
+# GritKeeper's first run seats Appendix D, and until v1.61.0 it seated six souls it rolled for
+# itself under the same names. chargen.json's "pregens" now hand CharGen.Assemble the printed
+# choices, and the smoke rig checks the built numbers against a table of what the book prints.
+# That makes two hand-typed copies of the six boxes, so both are held to the book here: every
+# choice the box shows, and every number in the smoke rig's table.
+SMOKE_PRINTED_RE = re.compile(
+    r'\("((?:[^"\\]|\\.)+)",\s*(-?\d+),\s*(-?\d+),\s*(-?\d+),\s*(-?\d+),\s*(-?\d+),'
+    r'\s*(-?\d+),\s*(-?\d+)\)')
+PREGEN_FIELD_RE = r"<strong>{}</strong>\s*(.*?)\s*(?=<strong>|</p>)"
+
+
+def _pregen_field(body, *labels):
+    for label in labels:
+        m = re.search(PREGEN_FIELD_RE.format(re.escape(label)), body, re.S)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _pregen_list(chunk):
+    chunk = re.sub(r"\s*\((?:both|all) Rank[^)]*\)", "", chunk or "")
+    return [_tidy(s) for s in re.split(r",\s*(?![^()]*\))", _tidy(TAG_RE.sub("", chunk)).rstrip("."))
+            if _tidy(s)]
+
+
+def check_pregen_seed(problems):
+    pregens = RAW_DATA.get("pregens") or []
+    org_by = {o["name"]: o for o in RAW_DATA["origins"]}
+    start = BOOK_HTML.index('<section class="page" id="posse">')
+    posse = BOOK_HTML[start:BOOK_HTML.index("</section>", start)]
+    boxes = {}
+    for head, body in PREGEN_BOX_RE.findall(posse):
+        m = re.match(r"(.+?) — (.+?) · (.+)$", _tidy(TAG_RE.sub("", head)))
+        if m:
+            boxes[m.group(1)] = (m.group(2), "The " + m.group(3)[4:]
+                                 if m.group(3).startswith("the ") else m.group(3), body)
+
+    checks = 1
+    if [p["name"] for p in pregens] != list(boxes):
+        problems.append(f"chargen.json pregens: {[p['name'] for p in pregens]} is not Appendix D's "
+                        f"six in book order {list(boxes)}")
+    for p in pregens:
+        who = p["name"]
+        if who not in boxes:
+            continue
+        calling, origin, body = boxes[who]
+        org = org_by.get(p["origin"]) or {}
+        checks += 9
+        if (p["calling"], p["origin"]) != (calling, origin):
+            problems.append(f"Appendix D / {who}: printed a {calling} out of {origin}, the data "
+                            f"builds a {p['calling']} out of {p['origin']}")
+
+        # scores print AFTER the Origin's gifts; the data carries them before, as the wizard does
+        printed = {ab: int(v) for ab, v in PREGEN_SCORE_RE.findall(body)}
+        built = {ab: v + (org.get("gifts") or {}).get(ab, 0) for ab, v in p["preGiftScores"].items()}
+        if printed != built:
+            problems.append(f"Appendix D / {who}: printed scores {printed}, the data's plus the "
+                            f"Origin's gifts make {built}")
+        if sorted(p["preGiftScores"].values()) != [8, 10, 12, 13, 14, 15]:
+            problems.append(f"Appendix D / {who}: the scores before the gifts are not the Honest "
+                            f"Array: {sorted(p['preGiftScores'].values())}")
+
+        # the Trained line carries the Origin's skill as well as the Calling's
+        trained = set(_pregen_list(_pregen_field(body, "Trained:")))
+        want = set(p["trained"]) | set(org.get("trained") or [])
+        if p.get("originSkillChoice"):
+            want.add(p["originSkillChoice"])
+        if trained != want:
+            problems.append(f"Appendix D / {who}: Trained differs; the book alone has "
+                            f"{sorted(trained - want)}, the data alone {sorted(want - trained)}")
+
+        edges = _pregen_list(_pregen_field(body, "Edges:", "Edge:"))
+        if edges != p["edges"] + p["bonusCombatEdges"]:
+            problems.append(f"Appendix D / {who}: printed Edges {edges}, the data takes "
+                            f"{p['edges'] + p['bonusCombatEdges']}")
+        for label, key in (("Signs known:", "signs"), ("Miracles known:", "miracles")):
+            known = _pregen_list(_pregen_field(body, label))
+            if known != p[key]:
+                problems.append(f"Appendix D / {who}: printed {label} {known}, the data "
+                                f"{p[key]}")
+
+        # every bought weapon is one the Attack line fights with, named by a word of its name
+        attack = _tidy(TAG_RE.sub("", _pregen_field(body, "Attack") or "")).lower()
+        for w in p["buyWeapons"]:
+            words = [t for t in re.split(r"[\s/]+", w.lower()) if len(t) > 3]
+            if not any(re.search(rf"\b{re.escape(t)}\b", attack) for t in words):
+                problems.append(f"Appendix D / {who}: the data buys a {w} the Attack line does "
+                                f"not fight with")
+
+        # the story items the data hands over free are the book's own words off the Gear line
+        kit = _tidy(TAG_RE.sub("", _pregen_field(body, "Gear:") or "")).lower()
+        for item in p["freeGear"]:
+            if item.lower() not in kit:
+                problems.append(f"Appendix D / {who}: {item!r} is not on the printed Gear line")
+
+        # the Four Questions, word for word (a sentence naming the Mark rides inside Seen)
+        for label, key in (("Lost:", "lost"), ("Seen:", "seen"), ("Vice:", "vice"),
+                           ("Moving:", "moving")):
+            m = re.search(rf"<strong>{label}</strong>\s*(.*?)\s*(?=<strong>(?!Mark)|</p>)",
+                          body, re.S)
+            said = m.group(1) if m else ""
+            said = re.sub(r"\s*[^.]*<strong>Mark \d+</strong>[^.]*\.", "", said)
+            said = _tidy(TAG_RE.sub("", said)).rstrip(".")
+            if said != _tidy(p[key]):
+                problems.append(f"Appendix D / {who}: {label} printed {said!r}, the data "
+                                f"{p[key]!r}")
+
+    # the smoke rig's table of printed numbers, which is what the built sheets are checked against
+    smoke = (ROOT / "GK/smoke/Program.cs").read_text(encoding="utf-8")
+    at = smoke.find("the demo posse is Appendix D's")
+    rows = {r[0].replace('\\"', '"'): tuple(int(x) for x in r[1:])
+            for r in SMOKE_PRINTED_RE.findall(smoke[at:at + 6000])} if at >= 0 else {}
+    checks += 1
+    if set(rows) != set(boxes):
+        problems.append(f"GK/smoke: the Appendix D table of printed numbers names {sorted(rows)}, "
+                        f"the book {sorted(boxes)}")
+    for who, (_, _, body) in boxes.items():
+        line = _tidy(TAG_RE.sub("", body))
+        m = re.search(r"Blood (\d+) · Defense (\d+) · Saves Fort ([+−-]\d+), Ref ([+−-]\d+), "
+                      r"Will ([+−-]\d+) · Nerve (\d+)", line)
+        mark = re.search(r"carries Mark (\d+)", line)
+        if not m or who not in rows:
+            continue
+        book = tuple(int(x.replace("−", "-")) for x in m.groups()) + (int(mark.group(1)) if mark else 0,)
+        checks += 1
+        if rows[who] != book:
+            problems.append(f"GK/smoke / {who}: the table says Blood, Defense, Fort, Ref, Will, "
+                            f"Nerve, Mark {rows[who]}, the book prints {book}")
+    return checks
+
+
 # ------------------------------------------------------ Ch. XIV's Attack Rank table (S53)
 # The table names the Callings that hold each rank. It used to be typed, and it left the
 # Engineer out of Steady while his own statline said Steady. build_player.py now fills it from
@@ -1470,6 +1612,7 @@ def main():
     checks += check_perks(problems)
     checks += check_pregen_skills(problems)
     checks += check_pregen_gear(problems)
+    checks += check_pregen_seed(problems)
     checks += check_rank_table(problems)
     checks += check_arithmetic_stops(problems)
     checks += check_price_dearer(problems)
@@ -1487,7 +1630,7 @@ def main():
     print(f"book <-> data <-> formula: in step across {len(data)} Callings, their feature "
           f"prose, their Perks, their fight ledgers, their 3rd-level paths, every Sign and "
           f"Miracle, the arms table and what each blade costs, Ch. XIV's Attack Rank table, "
-          f"the ready-made souls' weapons and rounds, "
+          f"the ready-made souls' weapons and rounds and the demo posse built from them, "
           f"Ch. IV's Origins, the Index's own alphabet, the coin each Calling starts with, "
           f"every level ladder the prose spells out, the Old Dark's faces kept off the players' "
           f"side, and its encounter budget across both books "

@@ -20,7 +20,7 @@
 #     python audits/verify_rules.py
 #     ...see audits/README.md for the full set and what each costs.
 #
-# The app job stays automatic. It compiles and executes ~12,000 assertions, which is
+# The app job stays automatic. It compiles and executes the whole logic suite, which is
 # exactly the kind of thing a machine should do unasked and a person should not have to
 # remember.
 #
@@ -54,7 +54,7 @@ jobs:
         run: dotnet build -c Release -warnaserror
         working-directory: GK/source
 
-      - name: Logic suite — ~12,000 assertions over the rules, chargen, maps and PDF writer
+      - name: Logic suite over the rules, chargen, maps and PDF writer
         run: dotnet run -c Release
         working-directory: GK/smoke
 

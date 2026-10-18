@@ -19,7 +19,7 @@ namespace BloodAndGritKeeper;
 public enum RunMode { Player, KeeperDice, KeeperEngine }
 
 /// <summary>The one small preference that outlives a session: how the last table chose to run, and
-/// whether to skip the chooser next time. Kept beside the exe in prefs.json; a missing or unreadable
+/// whether to skip the chooser next time. Kept in prefs.json under <see cref="AppState.Dir"/>; a missing or unreadable
 /// file just means "ask, defaulting to the engine".</summary>
 /// <summary>The turn hourglass: how long the posse has, how much of it is gone, and what the glass
 /// should look like, with no reference to drawing, so the smoke rig can hold it to all of that.
@@ -227,7 +227,9 @@ public class PartyMember : INotifyPropertyChanged
     public int Taint { get => _taint; set { _taint = Math.Clamp(value, 0, 4); On(); } }
     // The faith/sign pool a caster or believer spends (Grace, Conviction, Breath, Mercy,
     // Zeal…). Empty name and 0 max for the mundane. Every rest refills it, dawn in the field
-    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed.
+    // included (Rest.Take): the pool is prayer and preparation, and neither needs a bed. Two
+    // pools are the exception, Devotion and Tribute, which come back through observance and
+    // preaching and which no rest touches (Rest.PoolsRefilledOtherwise).
     public string PoolName { get => _poolName; set { _poolName = value ?? ""; On(); } }
     public int PoolCur { get => _poolCur; set { _poolCur = Math.Clamp(value, 0, 99); On(); } }
     public int PoolMax { get => _poolMax; set { _poolMax = Math.Clamp(value, 0, 99); On(); } }
@@ -237,8 +239,8 @@ public class PartyMember : INotifyPropertyChanged
     // whether the Fortitude save that comes after the first has left them Drained, and whether
     // they have already had their one this scene. Ordinary bound properties, so the setters call
     // On() and undo and session.json carry them with no extra wiring. Every rest starts the day's
-    // count again. A safe night or a week lifts the Drained (the book: "until a full night's
-    // rest"), and a dawn in the field leaves it. Every scene boundary clears the third.
+    // count again. A safe night or a week lifts the Drained (the book: "Drained 1 until a safe
+    // night"), and a dawn in the field leaves it. Every scene boundary clears the third.
     int _doses; bool _drinkDrained, _dosedScene;
     public int DosesToday { get => _doses; set { _doses = Math.Max(0, value); On(); } }
     public bool DrainedByDrink { get => _drinkDrained; set { _drinkDrained = value; On(); } }
@@ -637,9 +639,7 @@ public class Combatant : INotifyPropertyChanged
         if (_deathAt > 0 && !wasDead)
         {
             if (raw < 0) Bleed = _bleed - raw;             // raw is negative; its magnitude is the overkill
-            // Back on their feet: the bleeding, the standing-on-Grit and the senselessness all end
-            // together, because all three are answers to having been at zero.
-            else if (_bloodCur > 0) { Bleed = 0; Stable = false; Upright = false; Senseless = false; }
+            else Rise();
         }
 
         int moved = _bloodCur - was;
@@ -650,6 +650,24 @@ public class Combatant : INotifyPropertyChanged
                           : Dying && overkill > 0 && was <= 0 ? $"−{overkill}, bleeding"
                           : Down ? $"−{Math.Abs(moved) + overkill}, DOWN"
                           : (moved > 0 ? "+" : "−") + Math.Abs(moved));
+    }
+
+    /// <summary>Back on their feet: the bleeding, the standing-on-Grit and the senselessness all end
+    /// together, because all three are answers to having been at zero. Nothing for anybody still at
+    /// zero, and nothing for the dead, whom no heal brings back: <see cref="Wound"/> will put Blood
+    /// on a corpse and leave it a corpse, and the row's "They were not dead after all" is the one
+    /// door out.
+    ///
+    /// <para>Its own method because there are two ways onto a row's feet and they disagreed. Wound
+    /// cleared all four; the Posse-to-Tracker mirror, which restates Blood typed or rested on the
+    /// Posse tab, cleared three and skipped the Dead test (v1.61.0, A09 and A10). A soul laid out
+    /// by a pulled blow and healed on the Posse tab stayed Senseless, so their next hit read
+    /// "SENSELESS: laid out, not killed" over a standing body; and a week of peace at New session
+    /// zeroed a dead soul's Bleed and brought them back at full Blood without a word.</para></summary>
+    public void Rise()
+    {
+        if (_bloodCur <= 0 || Dead) return;
+        Bleed = 0; Stable = false; Upright = false; Senseless = false;
     }
 
     /// <summary>Forget what last happened here: a new round is a clean page.</summary>
@@ -1587,32 +1605,51 @@ public static class Rules
         return true;
     }
 
+    /// <summary>The Edge whose healer's stabilizing Medicine check gives back 1d6 Blood as well
+    /// (Ch. IX). Read off the healer's sheet, never typed: <see cref="HasFrontierMedicine"/>.</summary>
+    public const string FrontierMedicine = "Frontier Medicine";
+    public const int FrontierMedicineDie = 6;
+    public static bool HasFrontierMedicine(CharacterSheet s) => s?.Edges?.Contains(FrontierMedicine) == true;
+
     /// <summary>Stop the bleeding. The book gives a Fortitude save and a Medicine check the same DC,
     /// so this takes the roll and the modifier and does not care which it was. A critical success
     /// also brings them round on 1 Blood: the one degree the four-degree ladder has spare here, and
-    /// the reading that keeps a natural 20 worth rolling.</summary>
+    /// the reading that keeps a natural 20 worth rolling. <see cref="Mend"/> is the Frontier Medicine
+    /// die, and it stacks on that 1, since the Edge says "as well".</summary>
     public record StabilizeOutcome(int Die, int Mod, int Degree, string DegreeName, bool Stopped,
-                                   bool Woke, string Detail)
+                                   bool Woke, string Detail, int Mend = 0)
     {
+        /// <summary>The Blood they come round on: 1 on a critical success, plus the Mend.</summary>
+        public int BloodBack => !Stopped ? 0 : (Degree == 3 ? 1 : 0) + Mend;
         public string Line => !Stopped
             ? $"Stabilize (DC {StabilizeDc}): {DegreeName}, still bleeding."
+            : Mend > 0 ? $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops, and Frontier Medicine "
+                         + $"brings them round on {BloodBack} Blood (d{FrontierMedicineDie} {Mend})."
             : Woke ? $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops and they come round on 1 Blood."
                    : $"Stabilize (DC {StabilizeDc}): {DegreeName}. The bleeding stops. Still senseless.";
     }
 
     /// <summary>Try to stop somebody bleeding out. Applies the result: a success sets
-    /// <see cref="Combatant.Stable"/>, a critical success also puts a Blood back in them.</summary>
-    public static StabilizeOutcome Stabilize(Combatant c, int mod, int? forcedDie = null)
+    /// <see cref="Combatant.Stable"/>, a critical success also puts a Blood back in them, and a
+    /// healer with Frontier Medicine puts 1d6 more back on any success. The caller decides whether
+    /// the Edge applies: only to a Medicine check, and never to a Returned patient, who heals only by
+    /// Mending. <paramref name="forcedMend"/> is a Keeper's own d6, clamped to the die.</summary>
+    public static StabilizeOutcome Stabilize(Combatant c, int mod, int? forcedDie = null,
+                                             bool frontierMedicine = false, int? forcedMend = null)
     {
         int die = forcedDie ?? Rng.Next(1, 21);
         var (idx, name, detail) = FourDegrees(die, mod, StabilizeDc);
-        bool stopped = idx >= 2, woke = idx == 3;
+        bool stopped = idx >= 2;
+        int mend = stopped && frontierMedicine
+            ? Math.Clamp(forcedMend ?? Rng.Next(1, FrontierMedicineDie + 1), 1, FrontierMedicineDie) : 0;
+        int back = !stopped ? 0 : (idx == 3 ? 1 : 0) + mend;
         if (c != null && stopped)
         {
             c.Stable = true;
-            if (woke) c.Wound(1, "stabilized");   // Wound clears Bleed and Stable on the way up
+            // Wound clears Bleed and Stable on the way up
+            if (back > 0) c.Wound(back, mend > 0 ? "stabilized, Frontier Medicine" : "stabilized");
         }
-        return new StabilizeOutcome(die, mod, idx, name, stopped, woke, detail);
+        return new StabilizeOutcome(die, mod, idx, name, stopped, back > 0, detail, mend);
     }
 
     // ---- the Beat, spent (Ch. XI: the turn's three Beats, spent as you like) ----

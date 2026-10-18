@@ -798,6 +798,24 @@ foreach (var (table, floor) in new[]
             T("point-blank: bracing lifts only the one bracing is for",
                 IronCode.Reckon(new IronCode.Shot { Distance = 5 }, buff, braced: true).Total == -2);
 
+            // A long gun is a gun that prints Two-Handed, less the bow (v1.61.0). It went by the name
+            // before, and the name missed the Wall / Punt Gun.
+            var punt = CharGen.D.weapons.First(w => w.name == "Wall / Punt Gun");
+            var bow = CharGen.D.weapons.First(w => w.name == "Bow / Crossbow");
+            var coach = CharGen.D.weapons.First(w => w.name == "Coach Gun (sawed-off)");
+            T("long gun: every rifle, carbine, shotgun and repeater the table prints is one",
+                CharGen.D.weapons.Where(w => new[] { "Rifle", "Shotgun", "Carbine", "Repeater" }
+                        .Any(k => w.name.Contains(k))).All(IronCode.IsLongGun));
+            T("long gun: the punt gun needs both hands and is one too", IronCode.IsLongGun(punt));
+            T("long gun: the bow prints Two-Handed and is not one",
+                WeaponTraits.Parse(bow.traits).TwoHanded && !IronCode.IsLongGun(bow));
+            T("long gun: the sawed-off prints no Two-Handed and is not one", !IronCode.IsLongGun(coach));
+            T("long gun: no pistol is one",
+                !CharGen.D.weapons.Where(w => w.name.Contains("Revolver") || w.name.Contains("Pistol")
+                                           || w.name == "Derringer").Any(IronCode.IsLongGun));
+            T("point-blank: the punt gun is unwieldy at arm's length and inside its Volley",
+                IronCode.Reckon(new IronCode.Shot { Distance = 5 }, punt).Total == -4);
+
             // The flat rows.
             T("cover: light is −2", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Light }, sar).Total == -2);
             T("cover: heavy is −4", IronCode.Reckon(new IronCode.Shot { Cover = IronCode.Cover.Heavy }, sar).Total == -4);
@@ -932,6 +950,17 @@ foreach (var (table, floor) in new[]
             T("saddle: a long gun at a gallop takes −4 in all",
                 IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
                     CharGen.D.weapons.First(w => w.name == "Lever-Action Repeater")).Total == -4);
+            // Ch. X's Two-Handed: "from a moving horse the mounted –2 doubles to –4 … A bow, made for
+            // the saddle, takes only the –2".
+            T("saddle: so does the punt gun, which needs both hands",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Wall / Punt Gun")).Total == -4);
+            T("saddle: the bow row takes only the bow's −2",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Bow / Crossbow")).Total == -2);
+            T("saddle: and the sawed-off, which prints no Two-Handed, takes the platform's −2 alone",
+                IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Galloping },
+                    CharGen.D.weapons.First(w => w.name == "Coach Gun (sawed-off)")).Total == -2);
             T("saddle: at a walk the horseman's pistol is free",
                 IronCode.Reckon(new IronCode.Shot { Gait = IronCode.Gait.Walking }, sixgun).Total == 0);
             T("saddle: you cannot aim from a moving horse", !IronCode.CanAim(IronCode.Gait.Trotting));
@@ -2011,6 +2040,29 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     T("dying: a critical success brings them round", woke.Woke && crit.BloodCur == 1 && !crit.Down);
     T("dying: and clears the count with them", crit.Bleed == 0 && !crit.Stable);
 
+    // -- Frontier Medicine (Ch. IX): the Medicine check that stops the bleeding gives 1d6 Blood back --
+    var fmOk = Soul(10, 12);
+    fmOk.Wound(-10);
+    var mendOk = Rules.Stabilize(fmOk, 0, forcedDie: 16, frontierMedicine: true, forcedMend: 4);
+    T("frontier medicine: a success brings them round on the d6", mendOk.Stopped && mendOk.Mend == 4 && fmOk.BloodCur == 4 && !fmOk.Down);
+    T("frontier medicine: and clears the count with them", mendOk.Woke && fmOk.Bleed == 0 && !fmOk.Stable);
+    var fmCrit = Soul(10, 12);
+    fmCrit.Wound(-10);
+    var mendCrit = Rules.Stabilize(fmCrit, 10, forcedDie: 20, frontierMedicine: true, forcedMend: 6);
+    T("frontier medicine: stacks on a critical success's 1", mendCrit.BloodBack == 7 && fmCrit.BloodCur == 7);
+    var fmMiss = Soul(10, 12);
+    fmMiss.Wound(-10);
+    var mendMiss = Rules.Stabilize(fmMiss, 0, forcedDie: 2, frontierMedicine: true, forcedMend: 6);
+    T("frontier medicine: a failure puts nothing back", !mendMiss.Stopped && mendMiss.Mend == 0 && fmMiss.BloodCur == 0 && fmMiss.Dying);
+    var fmHigh = Soul(10, 12);
+    fmHigh.Wound(-10);
+    T("frontier medicine: a Keeper's d6 is held to the die",
+        Rules.Stabilize(fmHigh, 0, forcedDie: 16, frontierMedicine: true, forcedMend: 9).Mend == Rules.FrontierMedicineDie);
+    T("frontier medicine: without the Edge a success is only stable", ok2.Mend == 0 && ok2.BloodBack == 0 && !ok2.Woke);
+    T("frontier medicine: read off the sheet's Edges",
+        Rules.HasFrontierMedicine(new CharacterSheet { Edges = { Rules.FrontierMedicine } })
+        && !Rules.HasFrontierMedicine(new CharacterSheet()) && !Rules.HasFrontierMedicine(null));
+
     // -- healing past zero undoes all of it --
     var mended = Soul(8, 12);
     mended.Wound(-8);
@@ -2018,6 +2070,30 @@ T("spoor at +2",    Rules.Cost(4, 4).spoor);
     mended.Wound(6);
     T("dying: healing above zero ends the dying", !mended.Dying && !mended.Down && mended.Bleed == 0);
     T("dying: and they can act again",          Rules.CanAct(mended));
+
+    // -- Rise: the one way onto a row's feet, for Wound and for the Posse tab's mirror (v1.61.0) --
+    // The mirror restates Blood straight onto the row and then asks Rise to finish the job. It
+    // cleared three of Wound's four and skipped the Dead test, so these are written the mirror's way:
+    // a number set, then Rise.
+    var laidOut = Soul(10, 12);
+    laidOut.Wound(-15, nonlethal: true);
+    laidOut.BloodCur = 6; laidOut.Rise();
+    // (Senseless is all the Strike line reads to say "SENSELESS: laid out, not killed", so the flag
+    // is the symptom. No Strike here: its damage dice come off the reseeded shared Rng and would
+    // move every roll after this block.)
+    T("rise: a soul laid out and healed is no longer Senseless", !laidOut.Senseless && !laidOut.Stable && !laidOut.Down);
+    var corpse = Soul(4, 12);
+    corpse.Wound(-40);
+    corpse.BloodCur = 12; corpse.Rise();
+    T("rise: Blood restated over the dead leaves them dead", corpse.Dead && corpse.Bleed >= 12);
+    var corpse2 = Soul(4, 12);
+    corpse2.Wound(-40);
+    corpse2.Wound(12);
+    T("rise: and so does a heal through Wound", corpse2.Dead && corpse2.DyingLine == "dead");
+    var stillOnGround = Soul(8, 12);
+    stillOnGround.Wound(-8); Rules.BleedOut(new[] { stillOnGround });
+    stillOnGround.Rise();
+    T("rise: a soul still at zero stays on the ground, count and all", stillOnGround.Dying && stillOnGround.Bleed == 1);
 
     // -- Grit: refuse to fall (Ch. II) --
     var brave = Soul(6, 12);
@@ -2402,6 +2478,60 @@ T("legacy session loads", legacy != null && legacy.Tracker.Count == 0 && legacy.
     T("untouched: an all-NPC night with an empty posse is NOT an empty session", nightOff.IsUntouched == false);
     T("untouched: and it survives a save and load", System.Text.Json.JsonSerializer
         .Deserialize<GameSession>(System.Text.Json.JsonSerializer.Serialize(nightOff)).IsUntouched == false);
+}
+
+// ---- the demo posse is Appendix D's, sheet for sheet (A05) ----
+// It was six Generate draws wearing the six names. Assemble honours a choice only where it is
+// legal and spelled right, and fills anything else from the dice without a word, so each pinned
+// choice is read back off the built sheet: a misspelt Edge would otherwise seat a random one.
+// verify_rules.py holds chargen.json's pregens to the printed boxes; this holds the app to them.
+{
+    void TD(string name, bool ok, string detail) => T(ok ? name : name + ": " + detail, ok);
+    var pregens = CharGen.D.pregens;
+    var built = CharGen.AppendixD();
+    T("appendix D: six ready-made souls", pregens.Count == 6 && built.Count == 6);
+    T("frontier medicine: the Edge is printed under that name", CharGen.D.edges.Any(e => e.name == Rules.FrontierMedicine));
+    T("frontier medicine: Doc Kemp's sheet carries it", built.Any(s => s.Name.Contains("Kemp") && Rules.HasFrontierMedicine(s)));
+    for (int i = 0; i < Math.Min(pregens.Count, built.Count); i++)
+    {
+        var pg = pregens[i]; var s = built[i];
+        string who = $"appendix D / {pg.name}";
+        var v = CharGen.Validate(s);
+        TD($"{who}: a legal sheet", v.Count == 0, string.Join("; ", v));
+        T($"{who}: name, gender, Calling and Origin as printed",
+            s.Name == pg.name && s.Gender == pg.gender && s.Calling == pg.calling && s.Origin == pg.origin);
+        T($"{who}: the Honest Array as placed", pg.preGiftScores.All(kv => s.PreGiftScores[kv.Key] == kv.Value));
+        var org = CharGen.D.origins.First(o => o.name == pg.origin);
+        var wantSkills = pg.trained.Concat(org.trained)
+            .Concat(pg.originSkillChoice != null ? new[] { pg.originSkillChoice } : Array.Empty<string>()).ToHashSet();
+        TD($"{who}: exactly the printed trained skills", s.SkillRanks.Keys.ToHashSet().SetEquals(wantSkills),
+            string.Join(", ", s.SkillRanks.Keys.OrderBy(k => k)));
+        TD($"{who}: the printed Edges", s.Edges.SequenceEqual(pg.edges) && s.BonusCombatEdges.SequenceEqual(pg.bonusCombatEdges),
+            string.Join(", ", s.Edges.Concat(s.BonusCombatEdges)));
+        T($"{who}: the printed workings", s.SignsKnown.SequenceEqual(pg.signs) && s.MiraclesKnown.SequenceEqual(pg.miracles));
+        T($"{who}: every arm bought", s.WeaponsCarried.Count == pg.buyWeapons.Count
+            && pg.buyWeapons.All(w => s.WeaponsCarried.Any(c => c.StartsWith(w + " "))));
+        T($"{who}: every priced and story item carried", pg.buyGear.Concat(pg.freeGear).All(s.Gear.Contains)
+            && s.Gear.Count(g => pg.buyGear.Contains(g)) == pg.buyGear.Count);
+        T($"{who}: the purse rolled as recorded", s.CoinRolled == pg.coinRolled && s.CoinLeft >= 0);
+        T($"{who}: the Four Questions as printed", s.Lost == pg.lost && s.Seen == pg.seen && s.Vice == pg.vice && s.Moving == pg.moving);
+    }
+    // The six as the book prints their numbers, the line a Keeper checks the Posse tab against.
+    var printed = new (string who, int blood, int def, int fort, int rf, int will, int nerve, int mark)[]
+    {
+        ("Mattie \"Six-Finger\" Lusk", 12, 13, 4, 5, 1, 13, 0), ("Doc Delia Kemp", 9, 11, 3, 1, 4, 15, 0),
+        ("Brother Isaiah Dade", 9, 9, 3, -1, 4, 16, 0),         ("Anni Halvorsen", 12, 10, 4, 0, 4, 15, 0),
+        ("Frank Haskins", 8, 12, 0, 4, 3, 14, 0),               ("Nettie Swain", 7, 10, 1, 0, 5, 17, 1),
+    };
+    foreach (var n in printed)
+    {
+        var s = built.FirstOrDefault(b => b.Name == n.who);
+        TD($"appendix D / {n.who}: Blood, Defense, saves, Nerve and Mark as printed", s != null
+            && (s.Blood, s.Defense, s.Fort, s.Ref, s.Will, s.NerveMax, s.Mark) == (n.blood, n.def, n.fort, n.rf, n.will, n.nerve, n.mark),
+            s == null ? "missing" : $"{s.Blood}/{s.Defense}/{s.Fort}/{s.Ref}/{s.Will}/{s.NerveMax}/{s.Mark}");
+    }
+    T("appendix D: the Preacher's Conviction opens at 3", built.FirstOrDefault(b => b.Calling == "Preacher")?.PoolMax == 3);
+    T("appendix D: and seats onto the posse as built", built.Select(CharGen.Seat).All(m => m.Sheet != null && m.BloodMax == m.Sheet.Blood));
 }
 
 // ---- Where the table lives (AppState.Resolve) ----
@@ -4899,6 +5029,24 @@ T("daybook: and says so rather than reading as an empty night", Daybook.Dump().C
     T("a dawn in the field does not either", CharGen.RefreshFeatures(soul, FeatureCadence.Dawn) == 0);
     T("a new session does",       CharGen.RefreshFeatures(soul, FeatureCadence.Session) == 1);
     T("and it is back",           CharGen.LedgerFor(soul).First(r => r.Name == "Last Stand").Left == 1);
+    CharGen.SpendFeature(soul, "Last Stand");
+    T("and the New session button's own refresh hands it back too", CharGen.RefreshForSession(soul) == 1);
+
+    // A new session is not a sunrise (W03, v1.61.0). The New session button's "No" gave the dawn's
+    // features back with the once-a-session ones, while promising Grit and those and nothing else.
+    // A session that picks up the same night begins where the last one stopped (Ch. XII), so what
+    // is prepared at dawn stays spent until a rest reaches it, the same as the pool.
+    {
+        var dig = new PartyMember { Name = "Hollis", Calling = "Prospector", Level = 10,
+                                    Sheet = CharGen.Generate(10, false, "Prospector") };
+        int Powder() => CharGen.LedgerFor(dig).First(r => r.Name == "Powderman").Left;
+        int charges = CharGen.LedgerFor(dig).First(r => r.Name == "Powderman").Of;
+        for (int i = 0; i < charges; i++) CharGen.SpendFeature(dig, "Powderman");
+        T("session: Powderman spent to the last charge", Powder() == 0);
+        T("session: a new session leaves the dawn's features spent", CharGen.RefreshForSession(dig) == 0 && Powder() == 0);
+        Rest.Take(dig, RestKind.Dawn);
+        T("session: and a dawn in the field gives them back", Powder() == charges);
+    }
 
     // Command is counted off PRE, so it takes as many presses as the modifier allows and no more.
     var cmd = CharGen.LedgerFor(soul).FirstOrDefault(r => r.Name == "Command");

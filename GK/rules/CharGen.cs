@@ -192,6 +192,35 @@ public class CgCalling
     public CgRow Row(int level) => rows.First(r => r.level == level);
 }
 
+/// <summary>One of Appendix D's six ready-made souls, as the choices that build its printed
+/// sheet: scores before the Origin's gifts, the Calling's skill picks, Edges, workings, what was
+/// bought and the Four Questions. <see cref="CharGen.AppendixD"/> walks them through Assemble, so
+/// every derived number is reckoned the one way and Validate holds them like any other sheet.
+/// audits/verify_rules.py holds these to the printed boxes. Coin is the one line that cannot
+/// match: the book prints story purses, and the ledger only balances on a whole roll of the
+/// Calling's dice less the printed prices, so each <c>coinRolled</c> is the roll whose change
+/// comes nearest the printed purse.</summary>
+public class CgPregen
+{
+    public string name { get; set; } public string gender { get; set; }
+    public string calling { get; set; } public string origin { get; set; }
+    public Dictionary<string, int> preGiftScores { get; set; } = new();
+    public string originSkillChoice { get; set; }
+    public List<string> trained { get; set; } = new();
+    public List<string> edges { get; set; } = new();
+    public List<string> bonusCombatEdges { get; set; } = new();
+    public List<string> signs { get; set; } = new();
+    public List<string> miracles { get; set; } = new();
+    public double coinRolled { get; set; }
+    public List<string> buyWeapons { get; set; } = new();
+    public List<string> buyGear { get; set; } = new();
+    /// <summary>What the sheet carries that the price list doesn't sell (the horse she didn't
+    /// pay for, the irons, the crow). Unpriced, so the coin ledger never sees it.</summary>
+    public List<string> freeGear { get; set; } = new();
+    public string lost { get; set; } public string seen { get; set; }
+    public string vice { get; set; } public string moving { get; set; }
+}
+
 public class CgData
 {
     /// <summary>Kit and gear lines that grant a weapon outright. See <see cref="CgGranted"/>.</summary>
@@ -213,6 +242,8 @@ public class CgData
     public Dictionary<string, double> gearPrices { get; set; } = new();
     public List<CgCalling> callings { get; set; } = new();
     public JsonElement flavor { get; set; }
+    /// <summary>Appendix D's ready-made posse. See <see cref="CgPregen"/>.</summary>
+    public List<CgPregen> pregens { get; set; } = new();
 }
 
 // ============================================================ THE SHEET
@@ -1114,6 +1145,26 @@ public static class CharGen
         s.Moving = string.IsNullOrWhiteSpace(spec.Moving) ? Pick(FlavorList("moving")) : spec.Moving;
         return s;
     }
+
+    /// <summary>Appendix D's six ready-made souls, built to their printed sheets (A05). The
+    /// first-launch posse used to be six <see cref="Generate"/> draws wearing the six names, so
+    /// the app's Mattie Lusk had whatever Origin, scores and skills the seed handed her and not
+    /// the book's. Every choice is pinned here, which leaves the dice only a look and a Compass
+    /// to draw (the book prints neither); the caller seeds the stream if it wants those fixed.</summary>
+    public static List<CharacterSheet> AppendixD() => D.pregens.Select(p =>
+    {
+        var s = Assemble(new AssembleSpec
+        {
+            Level = 1, Calling = p.calling, Origin = p.origin,
+            PreGiftScores = new(p.preGiftScores), OriginSkillChoice = p.originSkillChoice,
+            TrainedPicks = new(p.trained), Edges = new(p.edges), BonusCombatEdges = new(p.bonusCombatEdges),
+            Signs = new(p.signs), Miracles = new(p.miracles), CoinRolled = p.coinRolled,
+            BuyWeapons = new(p.buyWeapons), BuyGear = new(p.buyGear),
+            Name = p.name, Gender = p.gender, Lost = p.lost, Seen = p.seen, Vice = p.vice, Moving = p.moving
+        });
+        s.Gear.AddRange(p.freeGear);
+        return s;
+    }).ToList();
 
     // ============================================================ LEVELLING UP
     // One soul, one level higher. Rather than reconstruct an AssembleSpec and re-walk from
@@ -2503,9 +2554,23 @@ public static class CharGen
     /// <summary>A boundary has passed: return everything that comes back at or before it. A scene
     /// returns the turn, round and scene features and leaves the once-a-session ones spent; any
     /// rest (<see cref="Rest.Take"/>) reaches the dawn ones as well; a new session returns the
-    /// lot. Answers with how many features actually came back, so the caller can say so instead
-    /// of logging a boundary that changed nothing.</summary>
+    /// rest of them through <see cref="RefreshForSession"/>. Answers with how many features
+    /// actually came back, so the caller can say so instead of logging a boundary that changed
+    /// nothing.</summary>
     public static int RefreshFeatures(PartyMember p, FeatureCadence upTo)
+        => Refresh(p, upTo, FeatureCadence.None);
+
+    /// <summary>A new session: every rationed feature but the dawn's (W03, v1.61.0). A session is
+    /// a sitting at the table and not a sunrise, and one that picks up the same night "begins where
+    /// the last one stopped" (Ch. XII, The Nerve Pool). So a feature prepared at dawn stays spent,
+    /// like the pool it is prepared from, until a rest reaches it. A week of peace has already
+    /// worked its dawns through <see cref="Rest.Take"/> by the time this runs. Until this, the
+    /// New session button's "No" handed the dawn features back while promising nothing but Grit
+    /// and the once-a-session ones.</summary>
+    public static int RefreshForSession(PartyMember p)
+        => Refresh(p, FeatureCadence.Session, FeatureCadence.Dawn);
+
+    static int Refresh(PartyMember p, FeatureCadence upTo, FeatureCadence skip)
     {
         // FeatureSpent only, on purpose: PartyMember.TallyOwed is a separate store precisely so
         // that no boundary can reach it. See the note there before wiring a reset through here.
@@ -2513,7 +2578,7 @@ public static class CharGen
         int gave = 0;
         foreach (var row in LedgerFor(p))
         {
-            if (row.Limit.Cadence > upTo) continue;
+            if (row.Limit.Cadence > upTo || row.Limit.Cadence == skip) continue;
             if (p.FeatureSpent.Remove(row.Name)) gave++;
         }
         if (gave > 0) p.Touched(nameof(PartyMember.FeatureSpent));

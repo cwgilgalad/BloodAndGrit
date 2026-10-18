@@ -8,6 +8,108 @@ Desktop\Git repos.)
 
 ---
 
+- **The demo posse is Appendix D's own. GritKeeper v1.61.0 (2026-10-17).**
+
+  GritKeeper seats the six ready-made souls on first launch, and until now it seated six souls it rolled for itself
+  and named after Appendix D's. Mattie Lusk came up with somebody else's scores, skills and Edges, so a Keeper who
+  held the Posse tab up against the Player's Book was looking at two different women. `chargen.json` now carries
+  the six as `pregens`: the Honest Array each was built from, the Origin's skill, the trained picks, the Edges, the
+  Signs and Miracles, the arms and goods bought, the story items handed over free, and the Four Questions word for
+  word. `CharGen.AppendixD()` hands those to `Assemble`, and `SeedDemo` seats what comes back through
+  `CharGen.Seat`, the route every other soul takes. The fixed seed still draws the two things the book prints for
+  nobody, a look and a Compass.
+
+  **The purses are the book's story amounts.** Appendix D gives each soul a figure ($9, $14, $11, pelts, $22, $6)
+  that no roll of the Calling's coin dice leaves after paying for that kit. The data rolls the purse whose change
+  comes nearest the printed figure (Mattie rolls $40 and keeps $10.75 against the printed $9), so the coin ledger
+  still balances.
+
+  **Two copies, both audited.** The six boxes now live as data in two places, `chargen.json` and the smoke rig's
+  table of printed Blood, Defense, saves, Nerve and Mark. `check_pregen_seed` in `audits/verify_rules.py` holds
+  both to the built Player's Book: the Calling and Origin in each heading, the scores after the Origin's gifts, the
+  Trained line with the Origin's skill on it, the Edges, the workings, every bought weapon against the Attack line,
+  every story item against the Gear line, the Four Questions, and each number in the smoke table. It caught all
+  fourteen drifts planted to test it. The smoke rig builds the six, runs `Validate` on each, and checks every choice
+  and every printed number came through (16,646 assertions, up from 16,577).
+
+  **The Reference deck against Ch. XV.** v1.60.0 rewrote the Keeper's Book's *Powers of the Territory*, so the deck
+  was read for anything quoting it. Nothing does. Its one Keeper's-Book prose leaf, *Running in Town*, comes from
+  Ch. XIV and still matches it point for point, and the generators' rumours about the Army sit easily with the Army
+  as a fifth Power. No change.
+
+  **v1.60.0, read again.** Its diff was gone back through line by line against the books, and four things in it were
+  wrong.
+
+  *New session* asks whether a week of peace has passed. On No it promised Grit and the once-a-session features and
+  nothing else, and it also handed back every feature prepared at dawn: a Prospector's Powderman charges, a
+  Sawbones' Tonics. A session that picks up the same night begins where the last one stopped (Ch. XII), so those
+  now wait for a rest, the same as the pool they are prepared from. `CharGen.RefreshForSession` is that boundary,
+  and four new smoke checks hold it (16,650 assertions).
+
+  The Reference deck's Wounds leaf told the Keeper that fresh harm opens a Stable soul's wound again. Neither book
+  prints that and the engine never did it. The leaf now says what Ch. XI says: down and senseless, bleeding no
+  more, round on 1 Blood after ten quiet minutes or at once on a critical success.
+
+  `verify_rules` held the book's arms tables to the data in one direction only, so a row the parser stopped reading
+  took its weapon out of the check without a word. Every weapon in `chargen.json` must now be a printed row as
+  well. All 21 are, and the check caught the three drifts planted to test it (2,381 cross-checks).
+
+  Two comments in `Core.cs` were stale: one said every rest refills a caster's pool, when Devotion and Tribute come
+  back through observance and preaching, and one quoted the Drained rule as "until a full night's rest" where the
+  book says a safe night.
+
+  **The Wall / Punt Gun is a long gun.** The app picked long guns out by name (rifle, carbine, shotgun, repeater), a
+  list made when Ch. X printed its Two-Handed trait on no weapon at all. The book prints it on every long gun now,
+  and on the punt gun, whose name holds none of those words, so the biggest iron in the table fired from a galloping
+  horse at a pistol's −2 and cost nothing to swing at arm's length. A long gun is now a gun that prints Two-Handed,
+  less the bow, which is Ch. X's own rule ("A bow, made for the saddle, takes only the –2"). Every other weapon comes
+  out as it did. Nine new smoke checks (16,659 assertions), one of them holding every rifle, carbine, shotgun and
+  repeater to the rule so a trait lost in transcription fails the build.
+
+  **A blank on the sheet is a dash again.** The v1.58.0 voice pass took the em dash out of the app's words and, in
+  fourteen places, out of its empty fields as well. A soul typed in off a paper sheet showed ":" for Gender, Origin,
+  each ability it had no score for, Defense, Speed, Init. and Attack, and in its empty features and gear boxes; the
+  Reference deck printed ":" for the price of Fists / Boots, a Sign or Miracle with no cost, a Tier I trace with no
+  Dread DC, and a fight with no promise. A colon reads as a label that lost its value. All fourteen are dashes again, as the books' stat blocks
+  print them.
+
+  **The dead stay dead, and a heal wakes the senseless.** Blood typed on the Posse tab, or handed back there by a
+  rest, reaches the Tracker through a mirror that restates the number. The mirror cleared the bleeding count on any
+  row above zero and never asked whether the row was dead, so a week of peace at New session put a soul killed
+  outright back on the field at full Blood, and the log said nothing about it. It also forgot the senselessness: a
+  soul laid out by a pulled blow and healed on the Posse tab got up still Senseless, and the next blow against them
+  read "SENSELESS: laid out, not killed" over somebody standing. Every door onto a row's feet (a heal, the mirror, a
+  number typed into the Tracker's Blood cell) now goes through one `Combatant.Rise`, which does nothing for the
+  dead. Heal on either tab, Restore, and a single soul's rest refuse a corpse by name; the posse's Rest and New
+  session's week pass them over in the log. The row's "They were not dead after all" is the way back, and it now
+  lands the soul on 1 Blood whatever was typed over the body. Four new smoke checks (16,663 assertions), and a
+  self-test probe that walks both doors from the Posse tab (46 checks).
+
+  **Frontier Medicine puts Blood back.** Ch. IX says the Edge's healer stops a friend's bleeding and "gives back
+  1d6 Blood as well", and the app stopped the bleeding and left the patient senseless on nothing. The Stabilize
+  dialog now has a box for it: tick it when the healer has the Edge, and a check that holds rolls the d6 (or, at a
+  Keeper's-dice table, takes the die typed beside it) and brings the patient round on that much. A critical
+  success's 1 Blood is added to it, since the book's "as well" sits beside that rule rather than in place of it.
+  The box goes grey for a soul's own Fortitude, which is not a Medicine check, and for a Returned patient, who heals
+  only by Mending. `Rules.Stabilize` takes the Edge as an argument and the outcome says how much the d6 gave. Nine
+  new smoke checks (16,671 assertions), two of them holding the Edge to its printed name and to Doc Kemp's sheet.
+
+  **Where the table is kept, said right.** Since v1.31.0 the table has been saved in `%APPDATA%\GritKeeper` unless
+  a `portable.txt` sits beside the exe, and three places went on telling Keepers to put the exe somewhere writable
+  because the game was saved beside it: the requirements screen under Help, the README that ships in the zip, and
+  the front page. All three now say where the table is and how to keep it beside the exe on a USB stick. The zip's
+  README and the Help screen's New Soul entry also offered levels 1–10 and Chapter III's eight steps. The Help
+  screen reads the cap off `Rules.MaxLevel` now, neither names a count of steps, the wizard's tooltip spells its
+  step count the way its welcome page does, and the level-up message has stopped counting the Callings (it said
+  seventeen, and there are eighteen).
+
+  **The front page sells the app.** README's GritKeeper section opened on packaging and a ninety-word list of
+  features. It opens now on what a night at the table is like with the app in it, puts the three ways to sit down
+  first, lists what it does as things a Keeper gets, and keeps the requirements and the download details beneath.
+  It had also typed an eleven-leaf Keeper's screen (there are thirteen) and a CI job that checks the books, which
+  CI hasn't done since 2026-08-10. No count is typed there now, and the workflow's step name drops its "~12,000
+  assertions" for the same reason.
+
 - **Three rests and the bottle, and a season of errata. GritKeeper v1.60.0, the Player's Book v2.57, the Keeper's
   Book v2.42, the Bestiary v2.28, the Book of Legends v1.12, modules v1.12 / v1.13 / v1.13 (2026-10-15).**
 
