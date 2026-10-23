@@ -82,7 +82,7 @@ tools) documented in their own sections below.
   **What changed, and why this is not the old flip-flop repeating:** until 2026-08-27 the PDFs
   were tracked and README linked each book at `blob/main/*.pdf`, so a stale PDF was an extra that
   disagreed with an HTML file anybody could open. Untracking them made the Release asset the only
-  way a stranger reads a book, because README's seven "Read" links now point at
+  way a stranger reads a book, because README's "Read" links now point at
   `/releases/latest/download/*.pdf`. A stale PDF is a stale front page. The lean sources and the self-contained HTML are the deliverable; the PDFs are
   an extra, never a replacement. The recipe is under *"Save to PDF": my standing preference*
   below, which has always said this. **This bullet used to say the opposite**, that the CLI
@@ -163,8 +163,8 @@ cloning it and splicing in their own content.
   top kicker line: EB Garamond, small-caps, bold, upright, 24px.
 - **The parchment paper texture is GONE.** Pages use a flat warm `--paper` color plus a
   subtle radial-vignette gradient, no tiled background image. The old texture, `img01.png`,
-  is no longer referenced anywhere; it still sits in `assets/` but is unused and can be
-  deleted.
+  is referenced nowhere and was never committed (see the `assets/` row below); a copy left on
+  a working machine is unused and can be deleted.
 - Because the Player's Book no longer inlines 18 plates, its self-contained HTML is now
   **~0.40 MB** (was ~5–10 MB). All three books are now small enough to be comfortable on a
   phone.
@@ -187,7 +187,7 @@ Each book's cheapest editable form is **bolded**.
 | **`build_legends_companion.py`** | **The Legends Companion**, in full the Keeper's Companion to the Book of Legends. Edit this. The fifth book (2026-09-29), Keeper-side: for every section of the Book of Legends it tells the story behind the papers whole (*What happened*), sets out what it won't settle with two or three ways to hold each question (*Left open*), and gives a way onto the table with the Bestiary entries to run (*At the table*). **Nothing structural is typed.** Its chapters, numerals, titles, running heads and section titles are read off the built `legends.html`, and the build stops if a Book of Legends section has no entry, or an entry names a section that isn't there; every Keeper's Book chapter number comes off `keeper-handbook.html` by anchor (`[[kb:anchor]]` in the prose); every creature must resolve in `creatures.json` and its Tier is read from there; the timeline, the index of people and places and the What-to-Run appendix are generated from the entries. So it **builds after** the Player's Book, the Keeper's Book and the Book of Legends, and a chapter moved in the Book of Legends moves here on the next build. `--draft` builds with sections still missing, for writing. See its own section below for the rules its stories keep. |
 | **`book_shell.py`** | The shell transform every one-of-a-kind book shares (2026-09-29): `retext_cover()` swaps the Player's Book's seven cover and title strings for a book's own, reading the Player's version off the shell and asserting every string it replaces; `set_epigraph()` and `swap_epigraphs()` are the two epigraph swaps the builders used; `splice()` drops a book's body into the shell. Lifted out of the Keeper's, Bestiary and Book of Legends builders when the fifth book was made, and **all three rebuilt byte-identical** after the move. The CSS stays per-book. The modules keep `modules_common.py`. |
 | **`perdition_map.py`** | Draws the **Perdition Basin** map as inline SVG from one coordinate model. `player_map_html()` = the clean honest map (river, wells, three towns, mission, trails, mesas); `keeper_map_html()` = the same base + a secrets overlay (well states bound/failing/broken, the ring of nails, faction washes, the two starter-adventure pins). Run `python perdition_map.py both` to write `_map_preview.html`. Imported by `build_player.py` (fills the `<!--PERDITION_MAP-->` placeholder in Appendix E) and `build_keeper.py` (Ch. XIII). **It also owns the seven places a rider can name** (2026-09-19): `RIDER_KNOWS` is the list and `rider_knows_html(here=None)` renders it, bolding the module's own town when `here` is given. The Player's Book fills `<!--BASIN_PLACES-->` with it and all three modules call it through `modules_common.basin()`, so four books print one list. The copies they used to carry drifted for weeks; `audit_consistency.py` check 8 now compares all four. |
-| `add_detail.py` | One-shot that already baked earlier additions into the builds. **Do not re-run.** |
+| ~~`add_detail.py`~~ | Dead one-shot that baked earlier additions into the builds. Never tracked in git; if a copy is still on disk, **do not re-run** it. |
 | ~~`add_index.py`~~ | Dead one-shot (baked the v2.9 Index into `player-src.html`, a file retired 2026-07-18). Still on disk, **git-ignored since 2026-07-29**, do not re-run. |
 | `measure_index.py` | **Player's Book verification tool** (Windows; needs `pip install playwright` + Edge): builds the Player's Book, renders it headless at desktop+mobile widths, asserts page parity / zero clipping / zero h-scroll / no unresolved TOC **and** index anchors, reports TOC drift, and re-patches the static Index page numbers from the rendered truth. Run after any Player's Book content change. (Clip check forces `zoom:1` on **each `.page`**, per the note below.) |
 | **`measure_book.py`** | **General verification tool**, `python measure_book.py <built-file.html>`. Renders any built book headless, asserts desktop/mobile page parity, zero true-scale clipping (mobile forces `zoom:1` per `.page`; sub-10px desktop-flow clips are tolerated as sub-pixel rounding), zero mobile h-scroll, and that every `.toc2` and `.ix` anchor resolves live. Read-only (never patches). Use for the Keeper's Book and Bestiary. |
@@ -279,7 +279,8 @@ and requires each to show exactly one version, the one its own builder stamps.
 
 ## "Save to PDF" — my standing preference
 
-Only when I explicitly ask. Generate via headless Chromium print-to-PDF (Playwright
+In step 5 of every ship, and otherwise only when I explicitly ask (see the PDFs bullet under
+*How I like to work*). Generate via headless Chromium print-to-PDF (Playwright
 `page.pdf`) with `prefer_css_page_size=True`, `print_background=True`, margins 0. The books
 already define `@page { size: Letter; margin: 0 }` and fixed 8.5×11in sheets, so one sheet =
 one US-Letter PDF page. Before printing: wait for `.book.pages.ready` and fonts loaded, then
@@ -312,7 +313,7 @@ which a scheduled task made every 30 minutes. Two problems, neither of them the 
 the job ran against work that was half-written by definition, and eight checks under one
 name meant any one failing read as "the books are broken" while the job was also auditing
 the C# UI, the release tags and the repo's own prose. `audits/README.md` says what each
-one checks and what it costs. Only the app job (build, ~12,000 assertions, self-test) 
+one checks and what it costs. Only the app job (build, the smoke suite, self-test) 
 still runs automatically, and only on `main` and pull requests.
 
 **One entry point runs them: `python audits/verify_all.py`.** It shells out to the files in
@@ -901,7 +902,8 @@ blizzard). Keep that rule for any new natural animals or ordinary men.
   *outside* the sorter/generator scope, so they're safe to hand-author.)
 - **Ordinary beasts** (Section VIII) cost **no Nerve and never move the Mark**. Dread line
   reads "—", no "How to Play It" note; their field-guide lore + Found line come from
-  `LIVING_LORE` in `bestiary_extra.py`. Keep that rule for any new natural animals.
+  `LIVING_LORE` in `build_bestiary.py` (it lived in `bestiary_extra.py` until the merge of
+  2026-07-18). Keep that rule for any new natural animals.
 - **Two per-creature wrappers:** `sb(...)` builds a bare stat block; `creature(...)` wraps
   lore + optional witness quote + Found + `sb(...)` + optional keeper note into one sortable
   `<div class="creature">` unit. `creature()` signature:
@@ -1140,7 +1142,7 @@ recoverable from history.
 
 | Group | Verdict | Why |
 |---|---|---|
-| The 7 PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's seven "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. **Purged from the history on 2026-08-28** with `filter-branch`, which took the pack from 98.8 MB to 4.0 MB and a fresh clone to 4.7 MB; all 319 commits and 92 tags survived, and a full mirror was kept at `Desktop\Git\_BloodAndGrit-prepurge-backup.git`. |
+| The PDFs | **untracked, shipped on the Release** | Printed output. Untracked 2026-08-27: git stores no delta between two prints of the same book, so 68 blobs had reached 206 MB of history against ~4 MB of text, and they were already duplicated inside the Release zips. They are Release assets in their own right now, and README's "Read" links point at `/releases/latest/download/`, which never goes stale. Printed by `make_pdf.py`, bundled by `tools/make_bundles.py`. **Purged from the history on 2026-08-28** with `filter-branch`, which took the pack from 98.8 MB to 4.0 MB and a fresh clone to 4.7 MB; all 319 commits and 92 tags survived, and a full mirror was kept at `Desktop\Git\_BloodAndGrit-prepurge-backup.git`. |
 | The 3 built HTML + `build_*.py` + `nav_tools`/`perdition_map`/`pag_patch`/`make_pdf`/`extract_creatures`/`update_readme` + `assets/` | **keep** | The deliverables and the pipeline that makes them. |
 | `GK/rules`, `GK/source`, `GK/smoke`, `sign.ps1`, `package.ps1`, `GritKeeper/README.md` | **keep** | The app and how it is built, signed and packaged. |
 | `measure_index.py`, `measure_book.py`, and all of `audits/` | **keep** | These are how the deliverables are *supported*: you need them to CHANGE a book or the app safely, even if not to read one. `audits/verify_rules.py` is the guard that stops the printed book and the app's data drifting: the discipline the whole project is built on. Cutting them would leave the repo's own quality claims uncheckable. |
